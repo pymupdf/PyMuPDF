@@ -1,0 +1,509 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Functions &mdash; python-fitz 0.0.9 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="python-fitz 0.0.9 documentation" href="index.html" />
+    <link rel="next" title="Constants and enums" href="vars.html" />
+    <link rel="prev" title="TextSheet" href="textsheet.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="vars.html" title="Constants and enums"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="textsheet.html" title="TextSheet"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">python-fitz 0.0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="functions">
+<h1>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h1>
+<p>All the module level functions are listed here.</p>
+<div class="section" id="function-summary">
+<h2>Function Summary<a class="headerlink" href="#function-summary" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#n">N</a> | <a class="reference internal" href="#o">O</a> | <a class="reference internal" href="#r">R</a> | <a class="reference internal" href="#s">S</a> | <a class="reference internal" href="#t">T</a></p>
+<div class="section" id="n">
+<h3>N<a class="headerlink" href="#n" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference internal" href="#new_bbox_device" title="new_bbox_device"><tt class="xref py py-func docutils literal"><span class="pre">new_bbox_device</span></tt></a></li>
+<li><a class="reference internal" href="#new_context" title="new_context"><tt class="xref py py-func docutils literal"><span class="pre">new_context</span></tt></a></li>
+<li><a class="reference internal" href="#new_draw_device" title="new_draw_device"><tt class="xref py py-func docutils literal"><span class="pre">new_draw_device</span></tt></a></li>
+<li><a class="reference internal" href="#new_draw_device_with_bbox" title="new_draw_device_with_bbox"><tt class="xref py py-func docutils literal"><span class="pre">new_draw_device_with_bbox</span></tt></a></li>
+<li><a class="reference internal" href="#new_display_list" title="new_display_list"><tt class="xref py py-func docutils literal"><span class="pre">new_display_list</span></tt></a></li>
+<li><a class="reference internal" href="#new_list_device" title="new_list_device"><tt class="xref py py-func docutils literal"><span class="pre">new_list_device</span></tt></a></li>
+<li><a class="reference internal" href="#new_pixmap" title="new_pixmap"><tt class="xref py py-func docutils literal"><span class="pre">new_pixmap</span></tt></a></li>
+<li><a class="reference internal" href="#new_pixmap_with_bbox" title="new_pixmap_with_bbox"><tt class="xref py py-func docutils literal"><span class="pre">new_pixmap_with_bbox</span></tt></a></li>
+<li><a class="reference internal" href="#new_text_device" title="new_text_device"><tt class="xref py py-func docutils literal"><span class="pre">new_text_device</span></tt></a></li>
+<li><a class="reference internal" href="#new_text_page" title="new_text_page"><tt class="xref py py-func docutils literal"><span class="pre">new_text_page</span></tt></a></li>
+<li><a class="reference internal" href="#new_text_sheet" title="new_text_sheet"><tt class="xref py py-func docutils literal"><span class="pre">new_text_sheet</span></tt></a></li>
+</ul>
+</div>
+<div class="section" id="o">
+<h3>O<a class="headerlink" href="#o" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference internal" href="#open_document" title="open_document"><tt class="xref py py-func docutils literal"><span class="pre">open_document</span></tt></a></li>
+</ul>
+</div>
+<div class="section" id="r">
+<h3>R<a class="headerlink" href="#r" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference internal" href="#rotate_matrix" title="rotate_matrix"><tt class="xref py py-func docutils literal"><span class="pre">rotate_matrix</span></tt></a></li>
+</ul>
+</div>
+<div class="section" id="s">
+<h3>S<a class="headerlink" href="#s" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference internal" href="#scale_matrix" title="scale_matrix"><tt class="xref py py-func docutils literal"><span class="pre">scale_matrix</span></tt></a></li>
+<li><a class="reference internal" href="#shear_matrix" title="shear_matrix"><tt class="xref py py-func docutils literal"><span class="pre">shear_matrix</span></tt></a></li>
+</ul>
+</div>
+<div class="section" id="t">
+<h3>T<a class="headerlink" href="#t" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference internal" href="#translate_matrix" title="translate_matrix"><tt class="xref py py-func docutils literal"><span class="pre">translate_matrix</span></tt></a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="function-description">
+<h2>Function Description<a class="headerlink" href="#function-description" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="new_bbox_device">
+<tt class="descname">new_bbox_device</tt><big>(</big><em>ctx</em><big>)</big><a class="headerlink" href="#new_bbox_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a device to compute the bounding box of all marks on a page.</p>
+<p>The returned bounding box will be the union of all bounding boxes of all objects on a page.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="context.html#context"><em>Context</em></a>) &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="device.html#device"><em>Device</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="new_context">
+<tt class="descname">new_context</tt><big>(</big><em>max_store</em><big>)</big><a class="headerlink" href="#new_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allocate context containing global state.</p>
+<p>The global state contains an exception stack, resource store, etc. Most functions in MuPDF take a context argument to be able to reference the global state.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>max_store</strong> &#8211; maximum size in bytes of the resource store, before it will start evicting cached resources such as fonts and images. <a class="reference internal" href="vars.html#FZ_STORE_UNLIMITED" title="FZ_STORE_UNLIMITED"><tt class="xref py py-data docutils literal"><span class="pre">FZ_STORE_UNLIMITED</span></tt></a> can be used if a hard limit is not desired. Use <a class="reference internal" href="vars.html#FZ_STORE_DEFAULT" title="FZ_STORE_DEFAULT"><tt class="xref py py-data docutils literal"><span class="pre">FZ_STORE_DEFAULT</span></tt></a> to get a reasonable size.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="context.html#context"><em>Context</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="new_draw_device">
+<tt class="descname">new_draw_device</tt><big>(</big><em>pixmap</em><big>)</big><a class="headerlink" href="#new_draw_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a device to draw on a pixmap.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pixmap</strong> (<a class="reference internal" href="pixmap.html#Pixmap" title="Pixmap"><em>Pixmap</em></a>) &#8211; target pixmap for the draw device. See <a class="reference internal" href="#new_pixmap" title="new_pixmap"><tt class="xref py py-func docutils literal"><span class="pre">new_pixmap</span></tt></a> for how to obtain a pixmap. The pixmap is not cleared by the draw device, see <a class="reference internal" href="pixmap.html#Pixmap.clear_pixmap" title="Pixmap.clear_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">Pixmap.clear_pixmap</span></tt></a> for how to clear it prior to calling <a class="reference internal" href="#new_draw_device" title="new_draw_device"><tt class="xref py py-func docutils literal"><span class="pre">new_draw_device</span></tt></a>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="device.html#device"><em>Device</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="new_draw_device_with_bbox">
+<tt class="descname">new_draw_device_with_bbox</tt><big>(</big><em>pixmap</em>, <em>bbox</em><big>)</big><a class="headerlink" href="#new_draw_device_with_bbox" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a device to draw on a pixmap.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pixmap</strong> (<a class="reference internal" href="pixmap.html#Pixmap" title="Pixmap"><em>Pixmap</em></a>) &#8211; target pixmap for the draw device. See <a class="reference internal" href="#new_pixmap" title="new_pixmap"><tt class="xref py py-func docutils literal"><span class="pre">new_pixmap</span></tt></a> for how to obtain a pixmap. The pixmap is not cleared by the draw device, see <a class="reference internal" href="pixmap.html#Pixmap.clear_pixmap" title="Pixmap.clear_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">Pixmap.clear_pixmap</span></tt></a> for how to clear it prior to calling <a class="reference internal" href="#new_draw_device" title="new_draw_device"><tt class="xref py py-func docutils literal"><span class="pre">new_draw_device</span></tt></a>.</li>
+<li><strong>bbox</strong> (<a class="reference internal" href="bbox.html#bbox"><em>BBox</em></a>) &#8211; bounding box to restrict any marking operations of the draw device.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="device.html#device"><em>Device</em></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="new_display_list">
+<tt class="descname">new_display_list</tt><big>(</big><em>ctx</em><big>)</big><a class="headerlink" href="#new_display_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an empty display list.</p>
+<p>A display list contains drawing commands (text, images, etc.). Use <a class="reference internal" href="#new_list_device" title="new_list_device"><tt class="xref py py-func docutils literal"><span class="pre">new_list_device</span></tt></a> for populating the list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="context.html#context"><em>Context</em></a>) &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="displaylist.html#displaylist"><em>DisplayList</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="new_list_device">
+<tt class="descname">new_list_device</tt><big>(</big><em>display_list</em><big>)</big><a class="headerlink" href="#new_list_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a rendering device for a display list.</p>
+<p>When the device is rendering a page it will populate the display list with drawing commsnds (text, images, etc.). The display list can later be reused to render a page many times without having to re-interpret the page from the document file for each rendering.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>display_list</strong> (<a class="reference internal" href="displaylist.html#DisplayList" title="DisplayList"><em>DisplayList</em></a>) &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="device.html#device"><em>Device</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="new_pixmap">
+<tt class="descname">new_pixmap</tt><big>(</big><em>ctx</em>, <em>cs</em>, <em>w</em>, <em>h</em><big>)</big><a class="headerlink" href="#new_pixmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new pixmap, with it&#8217;s origin at (0,0)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ctx</strong> (<a class="reference internal" href="context.html#context"><em>Context</em></a>) &#8211; </li>
+<li><strong>cs</strong> (<em>ColorSpace</em>) &#8211; The colorspace to use for the pixmap. See <a class="reference internal" href="vars.html#fz_device_rgb" title="fz_device_rgb"><tt class="xref py py-data docutils literal"><span class="pre">fz_device_rgb</span></tt></a>, <a class="reference internal" href="vars.html#fz_device_gray" title="fz_device_gray"><tt class="xref py py-data docutils literal"><span class="pre">fz_device_gray</span></tt></a>.</li>
+<li><strong>w</strong> (<em>int</em>) &#8211; The width of the pixmap (in pixels)</li>
+<li><strong>h</strong> (<em>int</em>) &#8211; The height of the pixmap (in pixels)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="new_pixmap_with_bbox">
+<tt class="descname">new_pixmap_with_bbox</tt><big>(</big><em>ctx</em>, <em>cs</em>, <em>bbox</em><big>)</big><a class="headerlink" href="#new_pixmap_with_bbox" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a pixmap of a given size, location and pixel format.</p>
+<p>The bounding box specifies the size of the created pixmap and where it will be located. The colorspace determines the number of components per pixel. Alpha is always present.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ctx</strong> (<a class="reference internal" href="context.html#context"><em>Context</em></a>) &#8211; </li>
+<li><strong>cs</strong> (<em>ColorSpace</em>) &#8211; The colorspace to use for the pixmap. See <a class="reference internal" href="vars.html#fz_device_rgb" title="fz_device_rgb"><tt class="xref py py-data docutils literal"><span class="pre">fz_device_rgb</span></tt></a>, <a class="reference internal" href="vars.html#fz_device_gray" title="fz_device_gray"><tt class="xref py py-data docutils literal"><span class="pre">fz_device_gray</span></tt></a>.</li>
+<li><strong>bbox</strong> (<a class="reference internal" href="bbox.html#BBox" title="BBox"><em>BBox</em></a>) &#8211; Bounding box specifying location/size of created pixmap.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="new_text_device">
+<tt class="descname">new_text_device</tt><big>(</big><em>sheet</em>, <em>page</em><big>)</big><a class="headerlink" href="#new_text_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a device to extract the text on a page.</p>
+<p>Gather and sort the text on a page into spans of uniform style, arranged into lines and blocks by reading order. The reading order is determined by various heuristics, so may not be accurate.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sheet</strong> (<a class="reference internal" href="textsheet.html#TextSheet" title="TextSheet"><em>TextSheet</em></a>) &#8211; The text sheet to which styles should be added. This can either be a newly created (empty) text sheet by <a class="reference internal" href="#new_text_sheet" title="new_text_sheet"><tt class="xref py py-func docutils literal"><span class="pre">new_text_sheet</span></tt></a>, or one containing styles from a previous text device. The same sheet cannot be used in multiple threads simultaneously.</li>
+<li><strong>page</strong> (<a class="reference internal" href="textpage.html#TextPage" title="TextPage"><em>TextPage</em></a>) &#8211; The text page to which content should be added. This will usually be a newly created (empty) text page by <a class="reference internal" href="#new_text_page" title="new_text_page"><tt class="xref py py-func docutils literal"><span class="pre">new_text_page</span></tt></a>, but it can be one containing data already (for example when merging multiple pages, or watermarking).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="device.html#device"><em>Device</em></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="new_text_page">
+<tt class="descname">new_text_page</tt><big>(</big><em>ctx</em>, <em>rect</em><big>)</big><a class="headerlink" href="#new_text_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an empty text page.</p>
+<p>The text page is filled out by the text device to contain the blocks, lines and spans of text on the page.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ctx</strong> (<a class="reference internal" href="context.html#context"><em>Context</em></a>) &#8211; </li>
+<li><strong>rect</strong> (<a class="reference internal" href="rect.html#Rect" title="Rect"><em>Rect</em></a>) &#8211; The rectangle covering the page.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="textpage.html#textpage"><em>TextPage</em></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="new_text_sheet">
+<tt class="descname">new_text_sheet</tt><big>(</big><em>ctx</em><big>)</big><a class="headerlink" href="#new_text_sheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an empty style sheet.</p>
+<p>The style sheet is filled out by the text device, creating one style for each unique font, color, size combination that is used.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ctx</strong> (<a class="reference internal" href="context.html#context"><em>Context</em></a>) &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="textsheet.html#textsheet"><em>TextSheet</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="open_document">
+<tt class="descname">open_document</tt><big>(</big><em>ctx</em>, <em>filename</em><big>)</big><a class="headerlink" href="#open_document" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open a PDF, XPS or CBZ document.</p>
+<p>Open a document file and read its basic structure so pages and objects can be located. MuPDF will try to repair broken documents (without actually changing the file contents).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ctx</strong> (<a class="reference internal" href="context.html#context"><em>Context</em></a>) &#8211; </li>
+<li><strong>filename</strong> (<em>String</em>) &#8211; a path to a file as it would be given to open(2).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="document.html#document"><em>Document</em></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="rotate_matrix">
+<tt class="descname">rotate_matrix</tt><big>(</big><em>degrees</em><big>)</big><a class="headerlink" href="#rotate_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a rotation matrix.</p>
+<p>The returned matrix is of the form [ cos(deg) sin(deg) -sin(deg) cos(deg) 0 0 ].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>degrees</strong> (<em>float</em>) &#8211; Degrees of counter clockwise rotation. Values less than zero and greater than 360 are handled as expected.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="scale_matrix">
+<tt class="descname">scale_matrix</tt><big>(</big><em>sx</em>, <em>sy</em><big>)</big><a class="headerlink" href="#scale_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a scaling matrix.</p>
+<p>The returned matrix is of the form [ sx 0 0 sy 0 0 ].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sx</strong> (<em>float</em>) &#8211; Scaling factors along the X-axes.</li>
+<li><strong>sy</strong> (<em>float</em>) &#8211; Scaling factors along the Y-axes.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="shear_matrix">
+<tt class="descname">shear_matrix</tt><big>(</big><em>sx</em>, <em>sy</em><big>)</big><a class="headerlink" href="#shear_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a shearing matrix.</p>
+<p>The returned matrix is of the form [ 1 sy sx 1 0 0 ].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sx</strong> (<em>float</em>) &#8211; Shearing factors.</li>
+<li><strong>sy</strong> (<em>float</em>) &#8211; Shearing factors.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="function">
+<dt id="translate_matrix">
+<tt class="descname">translate_matrix</tt><big>(</big><em>tx</em>, <em>ty</em><big>)</big><a class="headerlink" href="#translate_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a translation matrix.</p>
+<p>The returned matrix is of the form [ 1 0 0 1 tx ty ].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tx</strong> (<em>float</em>) &#8211; Translation distances along the X-axes.</li>
+<li><strong>ty</strong> (<em>float</em>) &#8211; Translation distances along the Y-axes.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Functions</a><ul>
+<li><a class="reference internal" href="#function-summary">Function Summary</a><ul>
+<li><a class="reference internal" href="#n">N</a></li>
+<li><a class="reference internal" href="#o">O</a></li>
+<li><a class="reference internal" href="#r">R</a></li>
+<li><a class="reference internal" href="#s">S</a></li>
+<li><a class="reference internal" href="#t">T</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#function-description">Function Description</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="textsheet.html"
+                        title="previous chapter"><strong>TextSheet</strong></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="vars.html"
+                        title="next chapter">Constants and enums</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/function_index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="vars.html" title="Constants and enums"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="textsheet.html" title="TextSheet"
+             >previous</a> |</li>
+        <li><a href="index.html">python-fitz 0.0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Ruikai Liu.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

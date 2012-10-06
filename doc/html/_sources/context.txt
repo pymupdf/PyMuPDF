@@ -1,0 +1,37 @@
+.. _Context:
+
+================
+**Context**
+================
+
+Context is an object that contains the global state. Most functions in MuPDF take a context argument to be able to reference the global state. 
+
+Use :func:`new_context` to create context.
+
+Methods
+=======
+
+============================== ======================================================================
+:meth:`~Context.get_aa_level`  Get the number of bits of antialiasing we are using. Between 0 and 8.
+:meth:`~Context.set_aa_level`  Set the number of bits of antialiasing we should use.
+============================== ======================================================================
+
+Class API
+==========
+
+.. class:: Context
+
+   .. method:: get_aa_level(self)
+   
+      Get the number of bits of antialiasing we are using. Between 0 and 8.
+
+      :rtype: int
+
+   .. method:: set_aa_level(self, bits)
+
+      Set the number of bits of antialiasing we should use.
+
+      :param `bits`: The number of bits of antialiasing to use (values are clamped to within the 0 to 8 range).
+      :type `bits`: int
+
+

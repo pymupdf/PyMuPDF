@@ -1,0 +1,179 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Context &mdash; python-fitz 0.0.9 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="python-fitz 0.0.9 documentation" href="index.html" />
+    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="next" title="Cookie" href="cookie.html" />
+    <link rel="prev" title="BBox" href="bbox.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="cookie.html" title="Cookie"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="bbox.html" title="BBox"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">python-fitz 0.0.9 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="context">
+<span id="id1"></span><h1><strong>Context</strong><a class="headerlink" href="#context" title="Permalink to this headline">¶</a></h1>
+<p>Context is an object that contains the global state. Most functions in MuPDF take a context argument to be able to reference the global state.</p>
+<p>Use <a class="reference internal" href="function_index.html#new_context" title="new_context"><tt class="xref py py-func docutils literal"><span class="pre">new_context</span></tt></a> to create context.</p>
+<div class="section" id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="70%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#Context.get_aa_level" title="Context.get_aa_level"><tt class="xref py py-meth docutils literal"><span class="pre">get_aa_level</span></tt></a></td>
+<td>Get the number of bits of antialiasing we are using. Between 0 and 8.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Context.set_aa_level" title="Context.set_aa_level"><tt class="xref py py-meth docutils literal"><span class="pre">set_aa_level</span></tt></a></td>
+<td>Set the number of bits of antialiasing we should use.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="class-api">
+<h2>Class API<a class="headerlink" href="#class-api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Context">
+<em class="property">class </em><tt class="descname">Context</tt><a class="headerlink" href="#Context" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Context.get_aa_level">
+<tt class="descname">get_aa_level</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#Context.get_aa_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of bits of antialiasing we are using. Between 0 and 8.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Context.set_aa_level">
+<tt class="descname">set_aa_level</tt><big>(</big><em>self</em>, <em>bits</em><big>)</big><a class="headerlink" href="#Context.set_aa_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the number of bits of antialiasing we should use.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bits</strong> (<em>int</em>) &#8211; The number of bits of antialiasing to use (values are clamped to within the 0 to 8 range).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><strong>Context</strong></a><ul>
+<li><a class="reference internal" href="#methods">Methods</a></li>
+<li><a class="reference internal" href="#class-api">Class API</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="bbox.html"
+                        title="previous chapter"><strong>BBox</strong></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="cookie.html"
+                        title="next chapter"><strong>Cookie</strong></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/context.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="cookie.html" title="Cookie"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="bbox.html" title="BBox"
+             >previous</a> |</li>
+        <li><a href="index.html">python-fitz 0.0.9 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" >Classes</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Ruikai Liu.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

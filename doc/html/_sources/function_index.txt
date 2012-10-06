@@ -1,0 +1,287 @@
+=========================
+Functions
+=========================
+All the module level functions are listed here.
+
+Function Summary
+================
+
+`N`_ | `O`_ | `R`_ | `S`_ | `T`_
+
+N
+~
+
+* :func:`new_bbox_device`
+* :func:`new_context`
+* :func:`new_draw_device`
+* :func:`new_draw_device_with_bbox`
+* :func:`new_display_list`
+* :func:`new_list_device`
+* :func:`new_pixmap`
+* :func:`new_pixmap_with_bbox`
+* :func:`new_text_device`
+* :func:`new_text_page`
+* :func:`new_text_sheet`
+
+
+O
+~
+
+* :func:`open_document`
+
+
+R
+~
+
+* :func:`rotate_matrix`
+
+
+S
+~
+
+* :func:`scale_matrix`
+* :func:`shear_matrix`
+
+
+T
+~
+
+* :func:`translate_matrix`
+
+Function Description
+====================
+
+.. function:: new_bbox_device(ctx)
+   
+   Create a device to compute the bounding box of all marks on a page.
+
+   The returned bounding box will be the union of all bounding boxes of all objects on a page.
+
+   :param `ctx`:
+   :type `ctx`: :ref:`Context`
+
+   :rtype: :ref:`Device`
+
+
+------------------------------------------
+
+.. function:: new_context(max_store)
+
+   Allocate context containing global state.
+
+   The global state contains an exception stack, resource store, etc. Most functions in MuPDF take a context argument to be able to reference the global state. 
+
+
+   :param `max_store`: maximum size in bytes of the resource store, before it will start evicting cached resources such as fonts and images. :data:`FZ_STORE_UNLIMITED` can be used if a hard limit is not desired. Use :data:`FZ_STORE_DEFAULT` to get a reasonable size.
+
+   :rtype: :ref:`Context`
+
+------------------------------------------
+
+.. function:: new_draw_device(pixmap)
+
+   Create a device to draw on a pixmap.
+
+   :param `pixmap`: target pixmap for the draw device. See :func:`new_pixmap` for how to obtain a pixmap. The pixmap is not cleared by the draw device, see :meth:`Pixmap.clear_pixmap` for how to clear it prior to calling :func:`new_draw_device`. 
+   :type `pixmap`: Pixmap
+   :rtype: :ref:`Device`
+
+------------------------------------------
+
+.. function:: new_draw_device_with_bbox(pixmap, bbox)
+
+   Create a device to draw on a pixmap.
+   
+   :param `pixmap`: target pixmap for the draw device. See :func:`new_pixmap` for how to obtain a pixmap. The pixmap is not cleared by the draw device, see :meth:`Pixmap.clear_pixmap` for how to clear it prior to calling :func:`new_draw_device`. 
+   :type `pixmap`: Pixmap
+   :param `bbox`: bounding box to restrict any marking operations of the draw device.
+   :type `bbox`: :ref:`BBox`
+   :rtype: :ref:`Device`
+
+------------------------------------------
+
+.. function:: new_display_list(ctx)
+
+   Create an empty display list.
+
+   A display list contains drawing commands (text, images, etc.). Use :func:`new_list_device` for populating the list.
+
+   :param `ctx`:
+   :type `ctx`: :ref:`Context`
+
+   :rtype: :ref:`DisplayList`
+
+------------------------------------------
+
+.. function:: new_list_device(display_list)
+
+   Create a rendering device for a display list.
+
+   When the device is rendering a page it will populate the display list with drawing commsnds (text, images, etc.). The display list can later be reused to render a page many times without having to re-interpret the page from the document file for each rendering. 
+
+   :param `display_list`:
+   :type `display_list`: DisplayList
+
+   :rtype: :ref:`Device`
+
+------------------------------------------
+
+.. function:: new_pixmap(ctx, cs, w, h)
+
+   Create a new pixmap, with it's origin at (0,0)
+
+   :param `ctx`:
+   :type `ctx`: :ref:`Context`
+
+   :param `cs`: The colorspace to use for the pixmap. See :data:`fz_device_rgb`, :data:`fz_device_gray`.
+   :type `cs`: ColorSpace
+
+   :param `w`: The width of the pixmap (in pixels)
+   :type `w`: int
+
+   :param `h`: The height of the pixmap (in pixels)
+   :type `h`: int
+
+   :rtype: :ref:`Pixmap`
+
+------------------------------------------
+
+.. function:: new_pixmap_with_bbox(ctx, cs, bbox)
+
+   Create a pixmap of a given size, location and pixel format.
+
+   The bounding box specifies the size of the created pixmap and where it will be located. The colorspace determines the number of components per pixel. Alpha is always present. 
+
+   :param `ctx`:
+   :type `ctx`: :ref:`Context`
+
+   :param `cs`: The colorspace to use for the pixmap. See :data:`fz_device_rgb`, :data:`fz_device_gray`.
+   :type `cs`: ColorSpace
+
+   :param `bbox`: Bounding box specifying location/size of created pixmap.
+   :type `bbox`: BBox
+
+   :rtype: :ref:`Pixmap`
+
+------------------------------------------
+
+.. function:: new_text_device(sheet, page)
+
+   Create a device to extract the text on a page.
+
+   Gather and sort the text on a page into spans of uniform style, arranged into lines and blocks by reading order. The reading order is determined by various heuristics, so may not be accurate.
+
+   :param `sheet`: The text sheet to which styles should be added. This can either be a newly created (empty) text sheet by :func:`new_text_sheet`, or one containing styles from a previous text device. The same sheet cannot be used in multiple threads simultaneously.
+   :type `sheet`: TextSheet
+
+   :param `page`: The text page to which content should be added. This will usually be a newly created (empty) text page by :func:`new_text_page`, but it can be one containing data already (for example when merging multiple pages, or watermarking).
+   :type `page`: TextPage
+
+   :rtype: :ref:`Device`
+
+------------------------------------------
+
+.. function:: new_text_page(ctx, rect)
+
+   Create an empty text page.
+
+   The text page is filled out by the text device to contain the blocks, lines and spans of text on the page.
+
+   :param `ctx`:
+   :type `ctx`: :ref:`Context`
+
+   :param `rect`: The rectangle covering the page.
+   :type `rect`: Rect
+
+   :rtype: :ref:`TextPage`
+
+------------------------------------------
+   
+.. function:: new_text_sheet(ctx)
+
+   Create an empty style sheet.
+
+   The style sheet is filled out by the text device, creating one style for each unique font, color, size combination that is used.
+
+   :param `ctx`:
+   :type `ctx`: :ref:`Context`
+
+   :rtype: :ref:`TextSheet`
+
+------------------------------------------
+
+.. function:: open_document(ctx, filename)
+
+   Open a PDF, XPS or CBZ document.
+
+   Open a document file and read its basic structure so pages and objects can be located. MuPDF will try to repair broken documents (without actually changing the file contents).
+
+   :param `ctx`:
+   :type `ctx`: :ref:`Context`
+
+   :param `filename`: a path to a file as it would be given to open(2).
+   :type `filename`: String
+
+   :rtype: :ref:`Document`
+
+------------------------------------------
+
+.. function:: rotate_matrix(degrees)
+
+   Create a rotation matrix.
+
+   The returned matrix is of the form [ cos(deg) sin(deg) -sin(deg) cos(deg) 0 0 ].
+
+   :param `degrees`: Degrees of counter clockwise rotation. Values less than zero and greater than 360 are handled as expected.
+   :type `degrees`: float
+
+   :rtype: :ref:`Matrix`
+
+------------------------------------------
+
+.. function:: scale_matrix(sx, sy)
+
+   Create a scaling matrix.
+
+   The returned matrix is of the form [ sx 0 0 sy 0 0 ].
+
+   :param `sx`: Scaling factors along the X-axes.
+   :type `sx`: float 
+
+   :param `sy`: Scaling factors along the Y-axes. 
+   :type `sy`: float 
+
+   :rtype: :ref:`Matrix`
+
+------------------------------------------
+
+.. function:: shear_matrix(sx, sy)
+
+   Create a shearing matrix.
+
+   The returned matrix is of the form [ 1 sy sx 1 0 0 ].
+
+   :param `sx`: Shearing factors.
+   :type `sx`: float 
+
+   :param `sy`: Shearing factors. 
+   :type `sy`: float 
+
+   :rtype: :ref:`Matrix`
+
+------------------------------------------
+
+.. function:: translate_matrix(tx, ty)
+
+   Create a translation matrix.
+
+   The returned matrix is of the form [ 1 0 0 1 tx ty ].
+
+   :param `tx`: Translation distances along the X-axes.
+   :type `tx`: float 
+
+   :param `ty`: Translation distances along the Y-axes. 
+   :type `ty`: float 
+
+   :rtype: :ref:`Matrix`
+

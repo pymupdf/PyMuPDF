@@ -1,0 +1,20 @@
+.. _Device:
+
+================
+**Device**
+================
+
+The different format handlers (pdf, xps etc) interpret pages to a device. These devices can then process the stream of calls they recieve in various ways:
+
+* The bbox device calculates the bounding box for the page.
+* The draw device will render them.
+* The list device stores them in a list to play back later.
+* The text device performs text extraction and searching.
+
+Device can be created by :
+
+* :func:`new_bbox_device`
+* :func:`new_draw_device`
+* :func:`new_draw_device_with_bbox`
+* :func:`new_list_device`
+* :func:`new_text_device`
