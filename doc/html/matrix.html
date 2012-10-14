@@ -10,8 +10,8 @@
     
     <title>Matrix &mdash; python-fitz 0.0.9 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -22,9 +22,9 @@
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="top" title="python-fitz 0.0.9 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="Outline" href="outline.html" />
@@ -70,25 +70,28 @@
 <col width="60%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#Matrix.concat" title="Matrix.concat"><tt class="xref py py-meth docutils literal"><span class="pre">concat</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Matrix.__init__" title="Matrix.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">__init__</span></tt></a></td>
+<td>Constructor.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Matrix.concat" title="Matrix.concat"><tt class="xref py py-meth docutils literal"><span class="pre">concat</span></tt></a></td>
 <td>Multiply the matrix to the left of another matrix.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Matrix.invert" title="Matrix.invert"><tt class="xref py py-meth docutils literal"><span class="pre">invert</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Matrix.invert" title="Matrix.invert"><tt class="xref py py-meth docutils literal"><span class="pre">invert</span></tt></a></td>
 <td>Create an inverse matrix.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Matrix.is_rectilinear" title="Matrix.is_rectilinear"><tt class="xref py py-meth docutils literal"><span class="pre">is_rectilinear</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Matrix.is_rectilinear" title="Matrix.is_rectilinear"><tt class="xref py py-meth docutils literal"><span class="pre">is_rectilinear</span></tt></a></td>
 <td>Check if a transformation is rectilinear.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Matrix.expansion" title="Matrix.expansion"><tt class="xref py py-meth docutils literal"><span class="pre">expansion</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Matrix.expansion" title="Matrix.expansion"><tt class="xref py py-meth docutils literal"><span class="pre">expansion</span></tt></a></td>
 <td>Calculate average scaling factor of matrix.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Matrix.transform_bbox" title="Matrix.transform_bbox"><tt class="xref py py-meth docutils literal"><span class="pre">transform_bbox</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Matrix.transform_bbox" title="Matrix.transform_bbox"><tt class="xref py py-meth docutils literal"><span class="pre">transform_bbox</span></tt></a></td>
 <td>Apply a transformation to a bounding box.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Matrix.transform_point" title="Matrix.transform_point"><tt class="xref py py-meth docutils literal"><span class="pre">transform_point</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Matrix.transform_point" title="Matrix.transform_point"><tt class="xref py py-meth docutils literal"><span class="pre">transform_point</span></tt></a></td>
 <td>Apply a transformation to a point.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Matrix.transform_rect" title="Matrix.transform_rect"><tt class="xref py py-meth docutils literal"><span class="pre">transform_rect</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Matrix.transform_rect" title="Matrix.transform_rect"><tt class="xref py py-meth docutils literal"><span class="pre">transform_rect</span></tt></a></td>
 <td>Apply a transformation to a rectangle.</td>
 </tr>
 </tbody>
@@ -129,6 +132,12 @@
 <dt id="Matrix">
 <em class="property">class </em><tt class="descname">Matrix</tt><a class="headerlink" href="#Matrix" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
+<dt id="Matrix.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>self</em>, <em>a=1</em>, <em>b=0</em>, <em>c=0</em>, <em>d=1</em>, <em>e=0</em>, <em>f=0</em><big>)</big><a class="headerlink" href="#Matrix.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor. An identity matrix will be built if no arguments given.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="Matrix.concat">
 <tt class="descname">concat</tt><big>(</big><em>self</em>, <em>right</em><big>)</big><a class="headerlink" href="#Matrix.concat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Multiply the matrix to the left of another matrix.</p>
@@ -350,7 +359,7 @@
                         title="next chapter"><strong>Outline</strong></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/matrix.txt"
+    <li><a href="sources/matrix.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">

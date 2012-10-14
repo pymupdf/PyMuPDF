@@ -10,8 +10,8 @@
     
     <title>Rect &mdash; python-fitz 0.0.9 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -22,9 +22,9 @@
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="top" title="python-fitz 0.0.9 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="TextChar" href="textchar.html" />
@@ -66,28 +66,31 @@
 <col width="67%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#Rect.bbox_covering_rect" title="Rect.bbox_covering_rect"><tt class="xref py py-meth docutils literal"><span class="pre">bbox_covering_rect</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.__init__" title="Rect.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">__init__</span></tt></a></td>
+<td>Constructor.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.bbox_covering_rect" title="Rect.bbox_covering_rect"><tt class="xref py py-meth docutils literal"><span class="pre">bbox_covering_rect</span></tt></a></td>
 <td>Get the minimal bounding box that covers the rectangle.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.round_rect" title="Rect.round_rect"><tt class="xref py py-meth docutils literal"><span class="pre">round_rect</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.round_rect" title="Rect.round_rect"><tt class="xref py py-meth docutils literal"><span class="pre">round_rect</span></tt></a></td>
 <td>Round a rect into a bounding box.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Rect.intersect_rect" title="Rect.intersect_rect"><tt class="xref py py-meth docutils literal"><span class="pre">intersect_rect</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.intersect_rect" title="Rect.intersect_rect"><tt class="xref py py-meth docutils literal"><span class="pre">intersect_rect</span></tt></a></td>
 <td>Compute the intersection with another rectangle.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.union_rect" title="Rect.union_rect"><tt class="xref py py-meth docutils literal"><span class="pre">union_rect</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.union_rect" title="Rect.union_rect"><tt class="xref py py-meth docutils literal"><span class="pre">union_rect</span></tt></a></td>
 <td>Compute the union with another rectangle.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Rect.get_width" title="Rect.get_width"><tt class="xref py py-meth docutils literal"><span class="pre">get_width</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.get_width" title="Rect.get_width"><tt class="xref py py-meth docutils literal"><span class="pre">get_width</span></tt></a></td>
 <td>Get width of the rectangle.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.get_height" title="Rect.get_height"><tt class="xref py py-meth docutils literal"><span class="pre">get_height</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.get_height" title="Rect.get_height"><tt class="xref py py-meth docutils literal"><span class="pre">get_height</span></tt></a></td>
 <td>Get height of the rectangle.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Rect.is_empty" title="Rect.is_empty"><tt class="xref py py-meth docutils literal"><span class="pre">is_empty</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.is_empty" title="Rect.is_empty"><tt class="xref py py-meth docutils literal"><span class="pre">is_empty</span></tt></a></td>
 <td>Check if the rectangle is empty.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.is_infinite" title="Rect.is_infinite"><tt class="xref py py-meth docutils literal"><span class="pre">is_infinite</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.is_infinite" title="Rect.is_infinite"><tt class="xref py py-meth docutils literal"><span class="pre">is_infinite</span></tt></a></td>
 <td>Check if the rectangle is infinite.</td>
 </tr>
 </tbody>
@@ -122,6 +125,12 @@
 <dt id="Rect">
 <em class="property">class </em><tt class="descname">Rect</tt><a class="headerlink" href="#Rect" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
+<dt id="Rect.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>self</em>, <em>x0=0</em>, <em>y0=0</em>, <em>x1=0</em>, <em>y1=0</em><big>)</big><a class="headerlink" href="#Rect.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor. An empty rectangle will be built if no arguments given.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="Rect.bbox_covering_rect">
 <tt class="descname">bbox_covering_rect</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#Rect.bbox_covering_rect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the minimal bounding box that covers the rectangle.</p>
@@ -330,7 +339,7 @@
                         title="next chapter"><strong>TextChar</strong></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/rect.txt"
+    <li><a href="sources/rect.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">

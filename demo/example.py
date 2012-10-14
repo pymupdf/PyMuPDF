@@ -5,23 +5,28 @@
 # Usage: example.py document page_number scale PNG_filename
 
 import sys
-from fitz import *
+import fitz
 
 def render(filename, page_idx, scale, output):
-    ctx = new_context(FZ_STORE_UNLIMITED)
+    ctx = fitz.Context(fitz.FZ_STORE_UNLIMITED)
 
-    doc = open_document(ctx, filename)
+    doc = ctx.open_document(filename)
     page = doc.load_page(page_idx-1)
 
-    trans = scale_matrix(scale, scale)
+    trans = fitz.scale_matrix(scale, scale)
     bbox = trans.transform_rect(page.bound_page()).round_rect()
 
-    pix = new_pixmap_with_bbox(ctx, fz_device_rgb, bbox)
+    pix = ctx.new_pixmap_with_bbox(fitz.fz_device_rgb, bbox)
     pix.clear_pixmap(255);
+    data = pix.get_samples()
 
-    dev = new_draw_device(pix)
+    #pix1 = ctx.new_pixmap_with_bbox_and_data(fitz.fz_device_rgb, 
+                                             #bbox,
+                                             #data)
+    dev = pix.new_draw_device()
     page.run_page(dev, trans, None)
     pix.write_png(output, 0)
+
 
 
 if __name__ == '__main__':

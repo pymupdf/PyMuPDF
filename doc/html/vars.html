@@ -10,8 +10,8 @@
     
     <title>Constants and enums &mdash; python-fitz 0.0.9 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -22,9 +22,9 @@
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="top" title="python-fitz 0.0.9 documentation" href="index.html" />
     <link rel="prev" title="Functions" href="function_index.html" /> 
   </head>
@@ -64,7 +64,7 @@
 <dd></dd></dl>
 
 </td>
-<td>A reasonable upper bound on the context size. See <a class="reference internal" href="function_index.html#new_context" title="new_context"><tt class="xref py py-func docutils literal"><span class="pre">new_context</span></tt></a></td>
+<td>A reasonable upper bound on the context size.</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="FZ_STORE_UNLIMITED">
@@ -72,7 +72,7 @@
 <dd></dd></dl>
 
 </td>
-<td>Let the context size unbounded. See <a class="reference internal" href="function_index.html#new_context" title="new_context"><tt class="xref py py-func docutils literal"><span class="pre">new_context</span></tt></a></td>
+<td>Let the context size unbounded.</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="fz_device_bgr">
@@ -107,6 +107,30 @@
 <td>Abstract colorspace representing device specific rgb.</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
+<dt id="fz_expand_images">
+<tt class="descname">fz_expand_images</tt><a class="headerlink" href="#fz_expand_images" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>Expand images when writing document.</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="fz_expand_fonts">
+<tt class="descname">fz_expand_fonts</tt><a class="headerlink" href="#fz_expand_fonts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>Expand fonts when writing document.</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="fz_expand_all">
+<tt class="descname">fz_expand_all</tt><a class="headerlink" href="#fz_expand_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>Expand images and fonts when writing document.</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
 <dt id="fz_empty_bbox">
 <tt class="descname">fz_empty_bbox</tt><a class="headerlink" href="#fz_empty_bbox" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -114,7 +138,7 @@
 </td>
 <td>An empty bounding box with an area equal to zero. Both the top left and bottom right corner are at (0, 0).</td>
 </tr>
-<tr class="row-even"><td><dl class="first last data">
+<tr class="row-odd"><td><dl class="first last data">
 <dt id="fz_empty_rect">
 <tt class="descname">fz_empty_rect</tt><a class="headerlink" href="#fz_empty_rect" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -122,7 +146,7 @@
 </td>
 <td>An empty rectangle with an area equal to zero. Both the top left and bottom right corner are at (0, 0).</td>
 </tr>
-<tr class="row-odd"><td><dl class="first last data">
+<tr class="row-even"><td><dl class="first last data">
 <dt id="fz_identity">
 <tt class="descname">fz_identity</tt><a class="headerlink" href="#fz_identity" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -130,7 +154,7 @@
 </td>
 <td>Identity transform matrix.</td>
 </tr>
-<tr class="row-even"><td><dl class="first last data">
+<tr class="row-odd"><td><dl class="first last data">
 <dt id="fz_infinite_bbox">
 <tt class="descname">fz_infinite_bbox</tt><a class="headerlink" href="#fz_infinite_bbox" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -138,7 +162,7 @@
 </td>
 <td>An infinite bounding box with negative area. Corner (x0, y0) is at (1, 1) while corner (x1, y1) is at (-1, -1).</td>
 </tr>
-<tr class="row-odd"><td><dl class="first last data">
+<tr class="row-even"><td><dl class="first last data">
 <dt id="fz_infinite_rect">
 <tt class="descname">fz_infinite_rect</tt><a class="headerlink" href="#fz_infinite_rect" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -146,21 +170,21 @@
 </td>
 <td>An infinite rectangle with negative area. Corner (x0, y0) is at (1, 1) while corner (x1, y1) is at (-1, -1).</td>
 </tr>
-<tr class="row-even"><td><dl class="first last data">
+<tr class="row-odd"><td><dl class="first last data">
 <dt id="fz_unit_bbox">
 <tt class="descname">fz_unit_bbox</tt><a class="headerlink" href="#fz_unit_bbox" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </td>
-<td>A bounding box with sides of length one. The bottom left corner is at (0, 0) and the top right corner is at (1, 1).</td>
+<td>A bounding box with sides of length one. The top left corner is at (0, 0) and the bottom right corner is at (1, 1).</td>
 </tr>
-<tr class="row-odd"><td><dl class="first last data">
+<tr class="row-even"><td><dl class="first last data">
 <dt id="fz_unit_rect">
 <tt class="descname">fz_unit_rect</tt><a class="headerlink" href="#fz_unit_rect" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </td>
-<td>A rectangle with sides of length one. The bottom left corner is at (0, 0) and the top right corner is at (1, 1).</td>
+<td>A rectangle with sides of length one. The top left corner is at (0, 0) and the bottom right corner is at (1, 1).</td>
 </tr>
 </tbody>
 </table>
@@ -233,6 +257,81 @@
 </tr>
 </tbody>
 </table>
+<hr class="docutils" />
+<table border="1" class="docutils">
+<colgroup>
+<col width="48%" />
+<col width="52%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><dl class="first last data">
+<dt id="fz_link_flag">
+<tt class="descname">fz_link_flag</tt><a class="headerlink" href="#fz_link_flag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><dl class="first last data">
+<dt id="fz_link_flag_l_valid">
+<tt class="descname">fz_link_flag_l_valid</tt><a class="headerlink" href="#fz_link_flag_l_valid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>lt.x is valid</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="fz_link_flag_t_valid">
+<tt class="descname">fz_link_flag_t_valid</tt><a class="headerlink" href="#fz_link_flag_t_valid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>lt.y is valid</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="fz_link_flag_r_valid">
+<tt class="descname">fz_link_flag_r_valid</tt><a class="headerlink" href="#fz_link_flag_r_valid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>rb.x is valid</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="fz_link_flag_b_valid">
+<tt class="descname">fz_link_flag_b_valid</tt><a class="headerlink" href="#fz_link_flag_b_valid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>rb.y is valid</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="fz_link_flag_fit_h">
+<tt class="descname">fz_link_flag_fit_h</tt><a class="headerlink" href="#fz_link_flag_fit_h" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>Fit horizontally</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="fz_link_flag_fit_v">
+<tt class="descname">fz_link_flag_fit_v</tt><a class="headerlink" href="#fz_link_flag_fit_v" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>Fit vertically</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="fz_link_flag_r_is_zoom">
+<tt class="descname">fz_link_flag_r_is_zoom</tt><a class="headerlink" href="#fz_link_flag_r_is_zoom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>rb.x is actually a zoom figure</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 
@@ -256,7 +355,7 @@
                         title="previous chapter">Functions</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/vars.txt"
+    <li><a href="sources/vars.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">

@@ -10,8 +10,8 @@
     
     <title>Pixmap &mdash; python-fitz 0.0.9 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -22,9 +22,9 @@
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="top" title="python-fitz 0.0.9 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="Point" href="point.html" />
@@ -56,13 +56,13 @@
   <div class="section" id="pixmap">
 <span id="id1"></span><h1><strong>Pixmap</strong><a class="headerlink" href="#pixmap" title="Permalink to this headline">¶</a></h1>
 <p>Pixmaps represent a set of pixels for a 2 dimensional region of a plane. Each pixel has n components per pixel, the last of which is always alpha. The data is in premultiplied alpha when rendering, but non-premultiplied for colorspace conversions and rescaling.</p>
-<p>Create a new pixmap by <a class="reference internal" href="function_index.html#new_pixmap" title="new_pixmap"><tt class="xref py py-func docutils literal"><span class="pre">new_pixmap</span></tt></a> or <a class="reference internal" href="function_index.html#new_pixmap_with_bbox" title="new_pixmap_with_bbox"><tt class="xref py py-func docutils literal"><span class="pre">new_pixmap_with_bbox</span></tt></a>.</p>
+<p>Create a new pixmap by <a class="reference internal" href="context.html#Context.new_pixmap" title="Context.new_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">Context.new_pixmap</span></tt></a>, <a class="reference internal" href="context.html#Context.new_pixmap_with_bbox" title="Context.new_pixmap_with_bbox"><tt class="xref py py-meth docutils literal"><span class="pre">Context.new_pixmap_with_bbox</span></tt></a>, <a class="reference internal" href="context.html#Context.new_pixmap_with_data" title="Context.new_pixmap_with_data"><tt class="xref py py-meth docutils literal"><span class="pre">Context.new_pixmap_with_data</span></tt></a>, or <a class="reference internal" href="context.html#Context.new_pixmap_with_bbox_and_data" title="Context.new_pixmap_with_bbox_and_data"><tt class="xref py py-meth docutils literal"><span class="pre">Context.new_pixmap_with_bbox_and_data</span></tt></a>.</p>
 <div class="section" id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="34%" />
-<col width="66%" />
+<col width="40%" />
+<col width="60%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#Pixmap.clear_pixmap" title="Pixmap.clear_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">clear_pixmap</span></tt></a></td>
@@ -92,19 +92,22 @@
 <tr class="row-odd"><td><a class="reference internal" href="#Pixmap.invert_pixmap" title="Pixmap.invert_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">invert_pixmap</span></tt></a></td>
 <td>Invert all the pixels in the pixmap(or a given bounding box).</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.unmultiply_pixmap" title="Pixmap.unmultiply_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">unmultiply_pixmap</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.new_draw_device" title="Pixmap.new_draw_device"><tt class="xref py py-meth docutils literal"><span class="pre">new_draw_device</span></tt></a></td>
+<td>Create a device to draw on a pixmap.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.unmultiply_pixmap" title="Pixmap.unmultiply_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">unmultiply_pixmap</span></tt></a></td>
 <td>Convert a pixmap from premultiplied to non-premultiplied format.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.write_pam" title="Pixmap.write_pam"><tt class="xref py py-meth docutils literal"><span class="pre">write_pam</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.write_pam" title="Pixmap.write_pam"><tt class="xref py py-meth docutils literal"><span class="pre">write_pam</span></tt></a></td>
 <td>Save a pixmap as a pam.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.write_pixmap" title="Pixmap.write_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">write_pixmap</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.write_pixmap" title="Pixmap.write_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">write_pixmap</span></tt></a></td>
 <td>Save a pixmap out.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.write_png" title="Pixmap.write_png"><tt class="xref py py-meth docutils literal"><span class="pre">write_png</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.write_png" title="Pixmap.write_png"><tt class="xref py py-meth docutils literal"><span class="pre">write_png</span></tt></a></td>
 <td>Save a pixmap as a png.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.write_pnm" title="Pixmap.write_pnm"><tt class="xref py py-meth docutils literal"><span class="pre">write_pnm</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.write_pnm" title="Pixmap.write_pnm"><tt class="xref py py-meth docutils literal"><span class="pre">write_pnm</span></tt></a></td>
 <td>Save a pixmap as a pnm.</td>
 </tr>
 </tbody>
@@ -242,6 +245,22 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="Pixmap.new_draw_device">
+<tt class="descname">new_draw_device</tt><big>(</big><em>self</em>, <em>bbox</em><big>)</big><a class="headerlink" href="#Pixmap.new_draw_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a device to draw on a pixmap. The pixmap is not cleared by the draw device, see <a class="reference internal" href="#Pixmap.clear_pixmap" title="Pixmap.clear_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">clear_pixmap</span></tt></a> for how to clear it prior to calling <a class="reference internal" href="#Pixmap.new_draw_device" title="Pixmap.new_draw_device"><tt class="xref py py-meth docutils literal"><span class="pre">new_draw_device</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bbox</strong> (<a class="reference internal" href="bbox.html#bbox"><em>BBox</em></a>) &#8211; bounding box to restrict any marking operations of the draw device. If not given, the draw device will be created on the whole pixmap.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="device.html#device"><em>Device</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="Pixmap.unmultiply_pixmap">
 <tt class="descname">unmultiply_pixmap</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#Pixmap.unmultiply_pixmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a pixmap from premultiplied to non-premultiplied format.</p>
@@ -343,7 +362,7 @@
                         title="next chapter"><strong>Point</strong></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/pixmap.txt"
+    <li><a href="sources/pixmap.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">

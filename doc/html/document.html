@@ -10,8 +10,8 @@
     
     <title>Document &mdash; python-fitz 0.0.9 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -22,9 +22,9 @@
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="top" title="python-fitz 0.0.9 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="Link" href="link.html" />
@@ -55,7 +55,7 @@
             
   <div class="section" id="document">
 <span id="id1"></span><h1><strong>Document</strong><a class="headerlink" href="#document" title="Permalink to this headline">¶</a></h1>
-<p>Document interface, created by <a class="reference internal" href="function_index.html#open_document" title="open_document"><tt class="xref py py-func docutils literal"><span class="pre">open_document</span></tt></a>.</p>
+<p>Document interface, created by <a class="reference internal" href="context.html#Context.open_document" title="Context.open_document"><tt class="xref py py-meth docutils literal"><span class="pre">Context.open_document</span></tt></a>.</p>
 <div class="section" id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
@@ -64,6 +64,12 @@
 <col width="64%" />
 </colgroup>
 <tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#Document.authenticate_password" title="Document.authenticate_password"><tt class="xref py py-meth docutils literal"><span class="pre">authenticate_password</span></tt></a></td>
+<td>Test if the given password can decrypt the document.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.count_page" title="Document.count_page"><tt class="xref py py-meth docutils literal"><span class="pre">count_page</span></tt></a></td>
+<td>Return the number of pages in document</td>
+</tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.load_page" title="Document.load_page"><tt class="xref py py-meth docutils literal"><span class="pre">load_page</span></tt></a></td>
 <td>Load a page.</td>
 </tr>
@@ -73,11 +79,8 @@
 <tr class="row-odd"><td><a class="reference internal" href="#Document.needs_password" title="Document.needs_password"><tt class="xref py py-meth docutils literal"><span class="pre">needs_password</span></tt></a></td>
 <td>Check if a document is encrypted with a non-blank password.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.authenticate_password" title="Document.authenticate_password"><tt class="xref py py-meth docutils literal"><span class="pre">authenticate_password</span></tt></a></td>
-<td>Test if the given password can decrypt the document.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.count_page" title="Document.count_page"><tt class="xref py py-meth docutils literal"><span class="pre">count_page</span></tt></a></td>
-<td>Return the number of pages in document</td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.write_document" title="Document.write_document"><tt class="xref py py-meth docutils literal"><span class="pre">write_document</span></tt></a></td>
+<td>Write a document out.</td>
 </tr>
 </tbody>
 </table>
@@ -165,6 +168,25 @@
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="Document.write_document">
+<tt class="descname">write_document</tt><big>(</big><em>self</em>, <em>filename</em>, <em>writeoptions</em><big>)</big><a class="headerlink" href="#Document.write_document" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a document out.</p>
+<p>Save a copy of the current document in its original format. Internally the document may change.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> (<em>string</em>) &#8211; The filename to save to.</li>
+<li><strong>writeoptions</strong> (<a class="reference internal" href="writeoptions.html#writeoptions"><em>WriteOptions</em></a>) &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -193,7 +215,7 @@
                         title="next chapter"><strong>Link</strong></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/document.txt"
+    <li><a href="sources/document.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
