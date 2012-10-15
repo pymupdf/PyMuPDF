@@ -5218,8 +5218,13 @@ SWIGINTERN PyObject *_wrap_Document_count_pages(PyObject *self, PyObject *args) 
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_count_pages" "', argument " "1"" of type '" "Document""'"); 
   }
   arg1 = (Document *)(argp1);
-  result = fz_count_pages(arg1->doc);
-  resultobj = SWIG_From_int((int)(result));
+  fz_try(arg1->ctx) {
+	  result = fz_count_pages(arg1->doc);
+	  resultobj = SWIG_From_int((int)(result));
+  }
+  fz_catch(arg1->ctx) {
+	  SWIG_exception_fail(SWIG_IOError, "Cannot load page.");
+  }
   return resultobj;
 fail:
   return NULL;

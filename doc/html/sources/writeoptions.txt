@@ -1,0 +1,57 @@
+.. _WriteOptions:
+
+==================
+**WriteOptions**
+==================
+
+Options used in :meth:`Document.write_document`.
+
+Methods
+==========
+
+============================== ================
+:meth:`~WriteOptions.__init__` Constructor.
+============================== ================
+
+Attributes
+=============
+
+================================== ======================================================
+:attr:`~WriteOptions.do_ascii`     Whether to make the output ascii.
+:attr:`~WriteOptions.do_expand`    Indicate Which aspect of the file should be expanded.
+:attr:`~WriteOptions.do_garbage`   Whether to garbage collect the file before writing.
+:attr:`~WriteOptions.do_linear`    Whether write linearised.
+================================== ======================================================
+
+Class API
+==========
+
+.. class:: WriteOptions
+
+   .. method:: __init__(self, do_ascii=0, do_expand=fz_expand_all, do_garbage=1, do_linear=0)
+
+      Constructor.
+
+   .. attribute:: do_ascii
+
+	  If non-zero then attempt (where possible) to make the output ascii.
+
+      :type: int
+
+   .. attribute:: do_expand
+
+	  Bitflags; each non zero bit indicates an aspect of the file that should be 'expanded' on writing. See :data:`fz_expand_images`, :data:`fz_expand_fonts`, :data:`fz_expand_all`.
+
+      :type: int
+
+   .. attribute:: do_garbage
+
+	  If non-zero then attempt (where possible) to garbage collect the file before writing.
+
+      :type: int
+
+   .. attribute:: do_linear
+
+      If non-zero then write linearised. 
+
+      :type: int
