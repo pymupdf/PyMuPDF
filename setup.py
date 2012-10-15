@@ -1,10 +1,11 @@
 from distutils.core import setup, Extension
 
 module = Extension('fitz._fitz',
-				   include_dirs = ['./fitz'],
-				   libraries = ['fitz', 'jpeg', 'jbig2dec', 
+				   define_macros=[('DEBUG', None)],
+				   include_dirs=['./fitz'],
+				   libraries=['fitz', 'jpeg', 'jbig2dec',
 					   			'openjpeg', 'freetype', 'z', 'm'],
-				   sources = ['./fitz/fitz_wrap.c'])
+				   sources=['./fitz/fitz_wrap.c'])
 					
 
 setup(name = 'fitz',

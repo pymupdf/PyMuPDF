@@ -4067,7 +4067,6 @@ SWIGINTERN PyObject *_wrap_Context_new_pixmap_with_bbox(PyObject *self, PyObject
 	  result->pix = fz_new_pixmap_with_bbox(arg1,arg2,arg3);
 	  SET_CTX_OBJ(arg1, self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Pixmap, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new pixmap with bbox");
@@ -4097,11 +4096,11 @@ SWIGINTERN PyObject *_wrap_DisplayList_new_list_device(PyObject *self, PyObject 
 	  result->ctx_obj = arg1->ctx_obj;
 	  Py_INCREF(arg1->ctx_obj);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Device, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new list device");
   }
+  return resultobj;
 fail:
   return NULL;
 }
@@ -4175,11 +4174,11 @@ SWIGINTERN PyObject *_wrap_Context_open_document(PyObject *self, PyObject *args)
 	  SET_CTX_OBJ(arg1, self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Document, SWIG_POINTER_OWN |  0 );
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_catch(arg1) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot open document");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -4226,12 +4225,11 @@ SWIGINTERN PyObject *_wrap_Pixmap_new_draw_device(PyObject *self, PyObject *args
 	  result->ctx_obj = arg1->ctx_obj;
 	  Py_INCREF(arg1->ctx_obj);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Device, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new draw device");
   }
-
+  return resultobj;
 fail:
   return NULL;
 }
@@ -4265,11 +4263,11 @@ SWIGINTERN PyObject *_wrap_TextPage_new_text_device(PyObject *self, PyObject *ar
 	  result->ctx_obj = arg1->ctx_obj;
 	  Py_INCREF(arg1->ctx_obj);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Device, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new text device");
   }
+  return resultobj;
 fail:
   return NULL;
 }
@@ -4320,11 +4318,11 @@ SWIGINTERN PyObject *_wrap_Context_new_pixmap(PyObject *self, PyObject *args) {
 	  result->pix = fz_new_pixmap(arg1,arg2,arg3,arg4);
 	  SET_CTX_OBJ(arg1,self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Pixmap, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new pixmap");
   }
+  return resultobj;
 fail:
   return NULL;
 }
@@ -4383,11 +4381,11 @@ SWIGINTERN PyObject *_wrap_Context_new_pixmap_with_data(PyObject *self, PyObject
 	  result->pix = (fz_pixmap *)fz_new_pixmap_with_data(arg1,arg2,arg3,arg4,(unsigned char *)arg5);
 	  SET_CTX_OBJ(arg1, self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Pixmap, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new pixmap");
   }
+  return resultobj;
 fail:
   return NULL;
 }
@@ -4436,11 +4434,11 @@ SWIGINTERN PyObject *_wrap_Context_new_pixmap_with_bbox_and_data(PyObject *self,
 	  result->pix = (fz_pixmap *)fz_new_pixmap_with_bbox_and_data(arg1,arg2,*arg3,(unsigned char *)arg4);
 	  SET_CTX_OBJ(arg1, self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Pixmap, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new pixmap");
   }
+  return resultobj;
 fail:
   return NULL;
 }
@@ -4463,11 +4461,11 @@ SWIGINTERN PyObject *_wrap_Context_new_text_sheet(PyObject *self, PyObject *args
 	  result->text_sheet = fz_new_text_sheet(arg1);
 	  SET_CTX_OBJ(arg1,self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_TextSheet, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new text sheet");
   }
+  return resultobj;
 fail:
   return NULL;
 }
@@ -4506,11 +4504,11 @@ SWIGINTERN PyObject *_wrap_Context_new_text_page(PyObject *self, PyObject *args)
 	  result->text_page = fz_new_text_page(arg1,arg2);
 	  SET_CTX_OBJ(arg1,self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_TextPage, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new text page");
   }
+  return resultobj;
 fail:
   return NULL;
 }
@@ -4534,11 +4532,11 @@ SWIGINTERN PyObject *_wrap_Context_new_display_list(PyObject *self, PyObject *ar
 	  result->display_list = fz_new_display_list(arg1);
 	  SET_CTX_OBJ(arg1,self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DisplayList, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new display list");
   }
+  return resultobj;
 fail:
   return NULL;
 }
@@ -4748,11 +4746,11 @@ SWIGINTERN PyObject *_wrap_Pixmap_write_png(PyObject *self, PyObject *args) {
 	  fz_write_png(arg1->ctx, arg1->pix,arg2,arg3);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot write png");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -4884,11 +4882,11 @@ SWIGINTERN PyObject *_wrap_Pixmap_write_pixmap(PyObject *self, PyObject *args) {
 	  fz_write_pixmap(arg1->ctx,arg1->pix,arg2,arg3);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot write pixmap");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -4921,11 +4919,11 @@ SWIGINTERN PyObject *_wrap_Pixmap_write_pnm(PyObject *self, PyObject *args) {
 	  fz_write_pnm(arg1->ctx,arg1->pix,arg2);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot write pnm");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -4967,11 +4965,11 @@ SWIGINTERN PyObject *_wrap_Pixmap_write_pam(PyObject *self, PyObject *args) {
 	  fz_write_pam(arg1->ctx,arg1->pix,arg2,arg3);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot write pam");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -5067,11 +5065,11 @@ SWIGINTERN PyObject *_wrap_Document_load_page(PyObject *self, PyObject *args) {
 		  Py_INCREF(self);
 		  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Page, SWIG_POINTER_OWN |  0 );
 	  }
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot load page.");
   }
+  return resultobj;
 fail:
   return NULL;
 }
@@ -5102,11 +5100,11 @@ SWIGINTERN PyObject *_wrap_Document_load_outline(PyObject *self, PyObject *args)
 		  SET_CTX_OBJ(arg1->ctx, arg1->ctx_obj);
 		  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Outline, SWIG_POINTER_OWN |  0 );
 	  }
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot load outline");
   }
+  return resultobj;
 fail:
   return NULL;
 }
@@ -5450,11 +5448,11 @@ SWIGINTERN PyObject *_wrap_Page_load_links(PyObject *self, PyObject *args) {
 		  link = link->next;
 		  fz_keep_link(arg1->doc->ctx, link);
 	  }
-	  return resultobj;
   }
   fz_catch(arg1->doc->ctx) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot load links");
   }
+  return resultobj;
 fail:
   return NULL;
 }
@@ -5617,7 +5615,6 @@ SWIGINTERN PyObject *_wrap_TextSheet_print_text_sheet(PyObject *self, PyObject *
 	  fz_print_text_sheet(arg1->ctx,fp,arg1->text_sheet);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_always(arg1->ctx) {
 	  fclose(fp);
@@ -5625,7 +5622,7 @@ SWIGINTERN PyObject *_wrap_TextSheet_print_text_sheet(PyObject *self, PyObject *
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot print text sheet");
   }
-
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -5836,7 +5833,6 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page_html(PyObject *self, PyObjec
 	  fz_print_text_page_html(arg1->ctx,fp,arg1->text_page);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_always(arg1->ctx) {
 	  fclose(fp);
@@ -5845,6 +5841,7 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page_html(PyObject *self, PyObjec
 	  SWIG_exception_fail(SWIG_IOError, "Cannot print text page html");
   }
 
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -5879,7 +5876,6 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page_xml(PyObject *self, PyObject
 	  fz_print_text_page_xml(arg1->ctx,fp,arg1->text_page);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_always(arg1->ctx) {
 	  fclose(fp);
@@ -5887,6 +5883,7 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page_xml(PyObject *self, PyObject
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot print text page xml");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -5921,7 +5918,6 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page(PyObject *self, PyObject *ar
 	  fz_print_text_page(arg1->ctx,fp,arg1->text_page);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_always(arg1->ctx) {
 	  fclose(fp);
@@ -5929,6 +5925,7 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page(PyObject *self, PyObject *ar
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot print text page");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -6305,7 +6302,6 @@ SWIGINTERN PyObject *_wrap_Outline_print_outline_xml(PyObject *self, PyObject *a
 	  fz_print_outline_xml(arg1->ctx,fp,arg1->outline);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_always(arg1->ctx) {
 	  fclose(fp);
@@ -6314,6 +6310,7 @@ SWIGINTERN PyObject *_wrap_Outline_print_outline_xml(PyObject *self, PyObject *a
 	  SWIG_exception_fail(SWIG_IOError, "Cannot print outline xml");
   }
 
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -6348,7 +6345,6 @@ SWIGINTERN PyObject *_wrap_Outline_print_outline(PyObject *self, PyObject *args)
 	  fz_print_outline(arg1->ctx,fp,arg1->outline);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_always(arg1->ctx) {
 	  fclose(fp);
@@ -6356,6 +6352,7 @@ SWIGINTERN PyObject *_wrap_Outline_print_outline(PyObject *self, PyObject *args)
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot print outline");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
