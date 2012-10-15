@@ -3467,8 +3467,9 @@ SwigPyBuiltin_SetMetaType (PyTypeObject *type, PyTypeObject *metatype)
 #define SWIGTYPE_p_fz_text_style_s swig_types[20]
 #define SWIGTYPE_p_fz_write_options_s swig_types[21]
 #define SWIGTYPE_p_fz_outline_s swig_types[22]
-static swig_type_info *swig_types[24];
-static swig_module_info swig_module = {swig_types, 23, 0, 0, 0, 0};
+#define SWIGTYPE_p_fz_annot_s swig_types[23]
+static swig_type_info *swig_types[25];
+static swig_module_info swig_module = {swig_types, 24, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3540,9 +3541,10 @@ SWIGINTERN PyObject *text_page_search(PyObject *self, fz_text_page *page, char *
     fz_text_span *span;
 	fz_text_char *text;
 	PyObject *result = PyList_New(0);
+	PyObject *bbox_obj = PyList_New(0);
 
-	int c;
-	int tc;
+	int c = 0;
+	int tc = 0;
 	char *s0 = s;
 	fz_bbox bbox = fz_empty_bbox;
 	PyObject *hitbbox;
@@ -3550,13 +3552,16 @@ SWIGINTERN PyObject *text_page_search(PyObject *self, fz_text_page *page, char *
     for (block = page->blocks; block < page->blocks + page->len; block++) {
         for (line = block->lines; line < block->lines + block->len; line++) {
             for (span = line->spans; span < line->spans + line->len; span++) {
-				for (text = span->text; text <span->text + span->len; text++) {
+				for (text = span->text; text < span->text + span->len; text++) {
 					if (!(*s0)) {
 						hitbbox = SWIG_NewPointerObj((fz_bbox *)memcpy((fz_bbox *)malloc(sizeof(fz_bbox)),&bbox,sizeof(fz_bbox)), SWIGTYPE_p_fz_bbox_s, SWIG_POINTER_OWN |  0 );
-						PyList_Append(result, hitbbox);
+						PyList_Append(bbox_obj, hitbbox);
 						Py_DECREF(hitbbox);
+						PyList_Append(result, bbox_obj);
+						Py_DECREF(bbox_obj);
 						s0 = s;
 						bbox = fz_empty_bbox;
+						bbox_obj = PyList_New(0);
 					}
 					else {
 						c = *s0++;
@@ -3571,10 +3576,23 @@ SWIGINTERN PyObject *text_page_search(PyObject *self, fz_text_page *page, char *
 							bbox = fz_union_bbox(bbox, fz_bbox_covering_rect(text->bbox));
 						}
 						else {
+							if (PyList_GET_SIZE(bbox_obj) > 0) {
+								Py_DECREF(bbox_obj);
+								bbox_obj = PyList_New(0);
+							}
 							s0 = s;
 							bbox = fz_empty_bbox;
 						}
 					}
+				}
+			}
+		    if (s0[0] == ' ' && c != ' ') {
+				s0++; 
+				if (!fz_is_empty_bbox(bbox)) {
+					hitbbox = SWIG_NewPointerObj((fz_bbox *)memcpy((fz_bbox *)malloc(sizeof(fz_bbox)),&bbox,sizeof(fz_bbox)), SWIGTYPE_p_fz_bbox_s, SWIG_POINTER_OWN |  0 );
+					PyList_Append(bbox_obj, hitbbox);
+					Py_DECREF(hitbbox);
+					bbox = fz_empty_bbox;
 				}
 			}
 		}
@@ -3956,59 +3974,58 @@ SWIG_From_float  (float value)
 #ifdef __cplusplus
 extern "C" {
 #endif
-SWIGINTERN PyObject *_wrap_new_context(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  unsigned int arg1 ;
-  unsigned int val1 ;
-  int ecode1 = 0 ;
-  PyObject * obj0 = 0 ;
-  fz_context *result = 0 ;
+/*SWIGINTERN PyObject *_wrap_new_context(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*unsigned int arg1 ;*/
+  /*unsigned int val1 ;*/
+  /*int ecode1 = 0 ;*/
+  /*PyObject * obj0 = 0 ;*/
+  /*fz_context *result = 0 ;*/
   
-  if (!PyArg_ParseTuple(args,(char *)"O:new_context",&obj0)) SWIG_fail;
-  ecode1 = SWIG_AsVal_unsigned_SS_int(obj0, &val1);
-  if (!SWIG_IsOK(ecode1)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_context" "', argument " "1"" of type '" "unsigned int""'");
-  } 
-  arg1 = (unsigned int)(val1);
-  result = (fz_context *)fz_new_context(NULL,NULL,arg1);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_context_s, SWIG_POINTER_OWN |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
+  /*if (!PyArg_ParseTuple(args,(char *)"O:new_context",&obj0)) SWIG_fail;*/
+  /*ecode1 = SWIG_AsVal_unsigned_SS_int(obj0, &val1);*/
+  /*if (!SWIG_IsOK(ecode1)) {*/
+    /*SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_context" "', argument " "1"" of type '" "unsigned int""'");*/
+  /*} */
+  /*arg1 = (unsigned int)(val1);*/
+  /*result = (fz_context *)fz_new_context(NULL,NULL,arg1);*/
+  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_context_s, SWIG_POINTER_OWN |  0 );*/
+  /*return resultobj;*/
+/*fail:*/
+  /*return NULL;*/
+/*}*/
 
 
-SWIGINTERN PyObject *_wrap_new_draw_device(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  Pixmap *arg1 = (Pixmap *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  Device *result = 0 ;
+/*SWIGINTERN PyObject *_wrap_Pixmap_new_draw_device(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*Pixmap *arg1 = (Pixmap *) 0 ;*/
+  /*void *argp1 = 0 ;*/
+  /*int res1 = 0 ;*/
+  /*Device *result = 0 ;*/
   
-  if (!PyArg_ParseTuple(args,(char *)"O:new_draw_device",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Pixmap, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_draw_device" "', argument " "1"" of type '" "Pixmap *""'"); 
-  }
-  arg1 = (Pixmap *)(argp1);
-  fz_try(arg1->ctx) {
-	  result = (Device *)malloc(sizeof(Device)) ;
-	  result->dev = fz_new_draw_device(arg1->ctx, arg1->pix);
-	  result->ctx_obj = arg1->ctx_obj;
-	  Py_INCREF(arg1->ctx_obj);
-	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Device, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
-  }
-  fz_catch(arg1->ctx) {
-	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new draw device");
-  }
-fail:
-  return NULL;
-}
+  /*if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;*/
+  /*res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Pixmap, 0 |  0 );*/
+  /*if (!SWIG_IsOK(res1)) {*/
+    /*SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_draw_device" "', argument " "1"" of type '" "Pixmap *""'"); */
+  /*}*/
+  /*arg1 = (Pixmap *)(argp1);*/
+  /*fz_try(arg1->ctx) {*/
+	  /*result = (Device *)malloc(sizeof(Device)) ;*/
+	  /*result->dev = fz_new_draw_device(arg1->ctx, arg1->pix);*/
+	  /*result->ctx_obj = arg1->ctx_obj;*/
+	  /*Py_INCREF(arg1->ctx_obj);*/
+	  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Device, SWIG_POINTER_OWN |  0 );*/
+	  /*return resultobj;*/
+  /*}*/
+  /*fz_catch(arg1->ctx) {*/
+	  /*SWIG_exception_fail(SWIG_UnknownError, "Cannot create new draw device");*/
+  /*}*/
+/*fail:*/
+  /*return NULL;*/
+/*}*/
 
 
-SWIGINTERN PyObject *_wrap_new_pixmap_with_bbox(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_Context_new_pixmap_with_bbox(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   fz_context *arg1 = (fz_context *) 0 ;
   fz_colorspace *arg2 = (fz_colorspace *) 0 ;
@@ -4019,20 +4036,19 @@ SWIGINTERN PyObject *_wrap_new_pixmap_with_bbox(PyObject *self, PyObject *args) 
   int res2 = 0 ;
   void *argp3 ;
   int res3 = 0 ;
-  PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   Pixmap *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO:new_pixmap_with_bbox",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_pixmap_with_bbox",&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_pixmap_with_bbox" "', argument " "1"" of type '" "Context *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_pixmap_with_bbox" "', argument " "1"" of type '" "Context""'"); 
   }
   arg1 = (fz_context *)(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_colorspace_s, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_pixmap_with_bbox" "', argument " "2"" of type '" "Colorspace *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_pixmap_with_bbox" "', argument " "2"" of type '" "Colorspace""'"); 
   }
   arg2 = (fz_colorspace *)(argp2);
   {
@@ -4049,9 +4065,8 @@ SWIGINTERN PyObject *_wrap_new_pixmap_with_bbox(PyObject *self, PyObject *args) 
   fz_try(arg1) {
 	  result = (Pixmap *)malloc(sizeof(Pixmap));
 	  result->pix = fz_new_pixmap_with_bbox(arg1,arg2,arg3);
-	  SET_CTX_OBJ(arg1, obj0);
+	  SET_CTX_OBJ(arg1, self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Pixmap, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new pixmap with bbox");
@@ -4062,18 +4077,17 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_new_list_device(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_DisplayList_new_list_device(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   DisplayList *arg1 = (DisplayList *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  PyObject * obj0 = 0 ;
   Device *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:new_list_device",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DisplayList, 0 |  0 );
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_DisplayList, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_list_device" "', argument " "1"" of type '" "DisplayList *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_list_device" "', argument " "1"" of type '" "DisplayList""'"); 
   }
   arg1 = (DisplayList *)(argp1);
   fz_try(arg1->ctx) {
@@ -4082,56 +4096,56 @@ SWIGINTERN PyObject *_wrap_new_list_device(PyObject *self, PyObject *args) {
 	  result->ctx_obj = arg1->ctx_obj;
 	  Py_INCREF(arg1->ctx_obj);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Device, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new list device");
   }
+  return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_new_bbox_device(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  fz_context *arg1 = (fz_context *) 0 ;
-  fz_bbox *arg2 = (fz_bbox *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  Device *result = 0 ;
+/*SWIGINTERN PyObject *_wrap_new_bbox_device(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*fz_context *arg1 = (fz_context *) 0 ;*/
+  /*fz_bbox *arg2 = (fz_bbox *) 0 ;*/
+  /*void *argp1 = 0 ;*/
+  /*int res1 = 0 ;*/
+  /*void *argp2 = 0 ;*/
+  /*int res2 = 0 ;*/
+  /*PyObject * obj0 = 0 ;*/
+  /*PyObject * obj1 = 0 ;*/
+  /*Device *result = 0 ;*/
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:new_bbox_device",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_bbox_device" "', argument " "1"" of type '" "Context *""'"); 
-  }
-  arg1 = (fz_context *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_bbox_s, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_bbox_device" "', argument " "2"" of type '" "BBox *""'"); 
-  }
-  arg2 = (fz_bbox *)(argp2);
-  fz_try(arg1) {
-	  result = (Device *)malloc(sizeof(Device)) ;
-	  result->dev = fz_new_bbox_device(arg1,arg2);
-	  result->ctx_obj = obj0;
-	  Py_INCREF(obj0);
-	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Device, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
-  }
-  fz_catch(arg1) {
-	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new bbox device");
-  }
-fail:
-  return NULL;
-}
+  /*if (!PyArg_ParseTuple(args,(char *)"OO:new_bbox_device",&obj0,&obj1)) SWIG_fail;*/
+  /*res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );*/
+  /*if (!SWIG_IsOK(res1)) {*/
+    /*SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_bbox_device" "', argument " "1"" of type '" "Context *""'"); */
+  /*}*/
+  /*arg1 = (fz_context *)(argp1);*/
+  /*res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_bbox_s, 0 |  0 );*/
+  /*if (!SWIG_IsOK(res2)) {*/
+    /*SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_bbox_device" "', argument " "2"" of type '" "BBox *""'"); */
+  /*}*/
+  /*arg2 = (fz_bbox *)(argp2);*/
+  /*fz_try(arg1) {*/
+	  /*result = (Device *)malloc(sizeof(Device)) ;*/
+	  /*result->dev = fz_new_bbox_device(arg1,arg2);*/
+	  /*result->ctx_obj = obj0;*/
+	  /*Py_INCREF(obj0);*/
+	  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Device, SWIG_POINTER_OWN |  0 );*/
+	  /*return resultobj;*/
+  /*}*/
+  /*fz_catch(arg1) {*/
+	  /*SWIG_exception_fail(SWIG_UnknownError, "Cannot create new bbox device");*/
+  /*}*/
+/*fail:*/
+  /*return NULL;*/
+/*}*/
 
 
-SWIGINTERN PyObject *_wrap_open_document(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_Context_open_document(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   fz_context *arg1 = (fz_context *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -4140,12 +4154,11 @@ SWIGINTERN PyObject *_wrap_open_document(PyObject *self, PyObject *args) {
   int res2 ;
   char *buf2 = 0 ;
   int alloc2 = 0 ;
-  PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   Document *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:open_document",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"O:open_document",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "open_document" "', argument " "1"" of type '" "Context *""'"); 
   }
@@ -4158,21 +4171,21 @@ SWIGINTERN PyObject *_wrap_open_document(PyObject *self, PyObject *args) {
   fz_try(arg1) {
 	  result = (Document *)malloc(sizeof(Document)) ;
 	  result->doc = fz_open_document(arg1,arg2);
-	  SET_CTX_OBJ(arg1, obj0);
+	  SET_CTX_OBJ(arg1, self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Document, SWIG_POINTER_OWN |  0 );
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_catch(arg1) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot open document");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_new_draw_device_with_bbox(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_Pixmap_new_draw_device(PyObject *self, PyObject *args, PyObject *kwargs) {
   PyObject *resultobj = 0;
   Pixmap *arg1 = (Pixmap *) 0 ;
   fz_bbox arg2 ;
@@ -4180,45 +4193,49 @@ SWIGINTERN PyObject *_wrap_new_draw_device_with_bbox(PyObject *self, PyObject *a
   int res1 = 0 ;
   void *argp2 ;
   int res2 = 0 ;
-  PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   Device *result = 0 ;
+  char *kwnames[] = {
+	  (char *)"bbox", NULL
+  };
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:new_draw_device_with_bbox",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Pixmap, 0 |  0 );
+  if (!PyArg_ParseTupleAndKeywords(args,kwargs,(char *)"|O:Pixmap_new_draw_device",kwnames,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Pixmap, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_draw_device_with_bbox" "', argument " "1"" of type '" "Pixmap *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_draw_device" "', argument " "1"" of type '" "Pixmap""'"); 
   }
   arg1 = (Pixmap *)(argp1);
+  if (obj1)
   {
     res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_fz_bbox_s,  0 );
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_draw_device_with_bbox" "', argument " "2"" of type '" "BBox""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_draw_device" "', argument " "2"" of type '" "BBox""'"); 
     }  
     if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_draw_device_with_bbox" "', argument " "2"" of type '" "BBox""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_draw_device" "', argument " "2"" of type '" "BBox""'");
     } else {
       arg2 = *((fz_bbox *)(argp2));
     }
   }
+
   fz_try(arg1->ctx) {
 	  result = (Device *)malloc(sizeof(Device)) ;
-	  result->dev = fz_new_draw_device_with_bbox(arg1->ctx, arg1->pix,arg2);
+	  if (obj1) result->dev = fz_new_draw_device_with_bbox(arg1->ctx, arg1->pix,arg2);
+	  else result->dev = fz_new_draw_device(arg1->ctx, arg1->pix);
 	  result->ctx_obj = arg1->ctx_obj;
 	  Py_INCREF(arg1->ctx_obj);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Device, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
-	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new draw device with bbox");
+	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new draw device");
   }
-
+  return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_new_text_device(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_TextPage_new_text_device(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   TextSheet *arg1 = (TextSheet *) 0 ;
   TextPage *arg2 = (TextPage *) 0 ;
@@ -4226,19 +4243,18 @@ SWIGINTERN PyObject *_wrap_new_text_device(PyObject *self, PyObject *args) {
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
-  PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   Device *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:new_text_device",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_TextSheet, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"O:TextPage_new_text_device",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj1, &argp1,SWIGTYPE_p_TextSheet, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_text_device" "', argument " "1"" of type '" "TextSheet *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_text_device" "', argument " "1"" of type '" "TextSheet""'"); 
   }
   arg1 = (TextSheet *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_TextPage, 0 |  0 );
+  res2 = SWIG_ConvertPtr(self, &argp2,SWIGTYPE_p_TextPage, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_text_device" "', argument " "2"" of type '" "TextPage *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_text_device" "', argument " "2"" of type '" "TextPage""'"); 
   }
   arg2 = (TextPage *)(argp2);
   fz_try(arg1->ctx) {
@@ -4247,17 +4263,17 @@ SWIGINTERN PyObject *_wrap_new_text_device(PyObject *self, PyObject *args) {
 	  result->ctx_obj = arg1->ctx_obj;
 	  Py_INCREF(arg1->ctx_obj);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Device, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new text device");
   }
+  return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_new_pixmap(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_Context_new_pixmap(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   fz_context *arg1 = (fz_context *) 0 ;
   fz_colorspace *arg2 = (fz_colorspace *) 0 ;
@@ -4271,21 +4287,20 @@ SWIGINTERN PyObject *_wrap_new_pixmap(PyObject *self, PyObject *args) {
   int ecode3 = 0 ;
   int val4 ;
   int ecode4 = 0 ;
-  PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   Pixmap *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:new_pixmap",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"OOO:new_pixmap",&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_pixmap" "', argument " "1"" of type '" "Context *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_pixmap" "', argument " "1"" of type '" "Context""'"); 
   }
   arg1 = (fz_context *)(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_colorspace_s, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_pixmap" "', argument " "2"" of type '" "Colorspace *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_pixmap" "', argument " "2"" of type '" "Colorspace""'"); 
   }
   arg2 = (fz_colorspace *)(argp2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
@@ -4301,28 +4316,142 @@ SWIGINTERN PyObject *_wrap_new_pixmap(PyObject *self, PyObject *args) {
   fz_try(arg1) {
 	  result = (Pixmap *)malloc(sizeof(Pixmap)) ;
 	  result->pix = fz_new_pixmap(arg1,arg2,arg3,arg4);
-	  SET_CTX_OBJ(arg1,obj0);
+	  SET_CTX_OBJ(arg1,self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Pixmap, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new pixmap");
   }
+  return resultobj;
 fail:
   return NULL;
 }
 
+SWIGINTERN PyObject *_wrap_Context_new_pixmap_with_data(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  fz_context *arg1 = (fz_context *) 0 ;
+  fz_colorspace *arg2 = (fz_colorspace *) 0 ;
+  int arg3 ;
+  int arg4 ;
+  char *arg5 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  /*void *argp5 = 0 ;*/
+  /*int res5 = 0 ;*/
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  /*PyObject * obj4 = 0 ;*/
+  Pixmap *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOs:fz_new_pixmap_with_data",&obj1,&obj2,&obj3,&arg5)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_pixmap_with_data" "', argument " "1"" of type '" "Context""'"); 
+  }
+  arg1 = (fz_context *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_colorspace_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_pixmap_with_data" "', argument " "2"" of type '" "Colorspace""'"); 
+  }
+  arg2 = (fz_colorspace *)(argp2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "fz_new_pixmap_with_data" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = (int)(val3);
+  ecode4 = SWIG_AsVal_int(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "fz_new_pixmap_with_data" "', argument " "4"" of type '" "int""'");
+  } 
+  arg4 = (int)(val4);
+  /*res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_unsigned_char, 0 |  0 );*/
+  /*if (!SWIG_IsOK(res5)) {*/
+    /*SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "fz_new_pixmap_with_data" "', argument " "5"" of type '" "unsigned char *""'"); */
+  /*}*/
+  /*arg5 = (unsigned char *)(argp5);*/
+  fz_try(arg1) {
+	  result = (Pixmap *)malloc(sizeof(Pixmap)) ;
+	  result->pix = (fz_pixmap *)fz_new_pixmap_with_data(arg1,arg2,arg3,arg4,(unsigned char *)arg5);
+	  SET_CTX_OBJ(arg1, self);
+	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Pixmap, SWIG_POINTER_OWN |  0 );
+  }
+  fz_catch(arg1) {
+	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new pixmap");
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
 
-SWIGINTERN PyObject *_wrap_new_text_sheet(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_Context_new_pixmap_with_bbox_and_data(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  fz_context *arg1 = (fz_context *) 0 ;
+  fz_colorspace *arg2 = (fz_colorspace *) 0 ;
+  fz_bbox *arg3 ;
+  char *arg4 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  Pixmap *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOs:fz_new_pixmap_with_bbox_and_data",&obj1,&obj2,&arg4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_pixmap_with_bbox_and_data" "', argument " "1"" of type '" "Context""'"); 
+  }
+  arg1 = (fz_context *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_colorspace_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_pixmap_with_bbox_and_data" "', argument " "2"" of type '" "Colorspace""'"); 
+  }
+  arg2 = (fz_colorspace *)(argp2);
+
+  {
+    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_fz_bbox_s,  0 );
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "new_pixmap_with_bbox_and_data" "', argument " "3"" of type '" "BBox""'"); 
+    }  
+    if (!argp3) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_pixmap_with_bbox_and_data" "', argument " "3"" of type '" "BBox""'");
+    } else {
+      arg3 = (fz_bbox *)(argp3);
+    }
+  }
+  fz_try(arg1) {
+	  result = (Pixmap *)malloc(sizeof(Pixmap)) ;
+	  result->pix = (fz_pixmap *)fz_new_pixmap_with_bbox_and_data(arg1,arg2,*arg3,(unsigned char *)arg4);
+	  SET_CTX_OBJ(arg1, self);
+	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Pixmap, SWIG_POINTER_OWN |  0 );
+  }
+  fz_catch(arg1) {
+	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new pixmap");
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+SWIGINTERN PyObject *_wrap_Context_new_text_sheet(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   fz_context *arg1 = (fz_context *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  PyObject * obj0 = 0 ;
   TextSheet *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:new_text_sheet",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_text_sheet" "', argument " "1"" of type '" "Context *""'"); 
   }
@@ -4330,19 +4459,19 @@ SWIGINTERN PyObject *_wrap_new_text_sheet(PyObject *self, PyObject *args) {
   fz_try(arg1) {
 	  result = (TextSheet *)malloc(sizeof(TextSheet));
 	  result->text_sheet = fz_new_text_sheet(arg1);
-	  SET_CTX_OBJ(arg1,obj0);
+	  SET_CTX_OBJ(arg1,self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_TextSheet, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new text sheet");
   }
+  return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_new_text_page(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_Context_new_text_page(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   fz_context *arg1 = (fz_context *) 0 ;
   fz_rect arg2 ;
@@ -4350,14 +4479,13 @@ SWIGINTERN PyObject *_wrap_new_text_page(PyObject *self, PyObject *args) {
   int res1 = 0 ;
   void *argp2 ;
   int res2 = 0 ;
-  PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   TextPage *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:new_text_page",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"O:new_text_page",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_text_page" "', argument " "1"" of type '" "Context *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_text_page" "', argument " "1"" of type '" "Context""'"); 
   }
   arg1 = (fz_context *)(argp1);
   {
@@ -4374,42 +4502,41 @@ SWIGINTERN PyObject *_wrap_new_text_page(PyObject *self, PyObject *args) {
   fz_try(arg1) {
 	  result = (TextPage *)malloc(sizeof(TextPage)) ;
 	  result->text_page = fz_new_text_page(arg1,arg2);
-	  SET_CTX_OBJ(arg1,obj0);
+	  SET_CTX_OBJ(arg1,self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_TextPage, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new text page");
   }
+  return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_new_display_list(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_Context_new_display_list(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   fz_context *arg1 = (fz_context *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  PyObject * obj0 = 0 ;
   DisplayList *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:new_display_list",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_display_list" "', argument " "1"" of type '" "Context *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_display_list" "', argument " "1"" of type '" "Context""'"); 
   }
   arg1 = (fz_context *)(argp1);
   fz_try(arg1) {
 	  result = (DisplayList *)malloc(sizeof(DisplayList)) ;
 	  result->display_list = fz_new_display_list(arg1);
-	  SET_CTX_OBJ(arg1,obj0);
+	  SET_CTX_OBJ(arg1,self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DisplayList, SWIG_POINTER_OWN |  0 );
-	  return resultobj;
   }
   fz_catch(arg1) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new display list");
   }
+  return resultobj;
 fail:
   return NULL;
 }
@@ -4441,7 +4568,7 @@ SWIGINTERN PyObject *_wrap_Pixmap_get_samples(PyObject *self, PyObject *args) {
   Pixmap *arg1 = (Pixmap *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  unsigned char *result = 0 ;
+  char *result = 0 ;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Pixmap, 0 |  0 );
@@ -4450,12 +4577,12 @@ SWIGINTERN PyObject *_wrap_Pixmap_get_samples(PyObject *self, PyObject *args) {
   }
   arg1 = (Pixmap *)(argp1);
   fz_pixmap *pix = arg1->pix;
-  result = fz_pixmap_samples(arg1->ctx, pix);
+  result = (char *)fz_pixmap_samples(arg1->ctx, pix);
   int w = fz_pixmap_width(arg1->ctx, pix);
   int h = fz_pixmap_height(arg1->ctx, pix);
   int n = fz_pixmap_components(arg1->ctx, pix);
 #if PY_VERSION_HEX >= 0x03000000
-  resultobj = PyUnicode_FromStringAndSize(result, (int)(w*h*n));
+  resultobj = PyBytes_FromStringAndSize(result, (int)(w*h*n));
 #else
   resultobj = PyString_FromStringAndSize(result, (int)w*h*n);
 #endif
@@ -4619,11 +4746,11 @@ SWIGINTERN PyObject *_wrap_Pixmap_write_png(PyObject *self, PyObject *args) {
 	  fz_write_png(arg1->ctx, arg1->pix,arg2,arg3);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot write png");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -4755,11 +4882,11 @@ SWIGINTERN PyObject *_wrap_Pixmap_write_pixmap(PyObject *self, PyObject *args) {
 	  fz_write_pixmap(arg1->ctx,arg1->pix,arg2,arg3);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot write pixmap");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -4792,11 +4919,11 @@ SWIGINTERN PyObject *_wrap_Pixmap_write_pnm(PyObject *self, PyObject *args) {
 	  fz_write_pnm(arg1->ctx,arg1->pix,arg2);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot write pnm");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -4838,11 +4965,11 @@ SWIGINTERN PyObject *_wrap_Pixmap_write_pam(PyObject *self, PyObject *args) {
 	  fz_write_pam(arg1->ctx,arg1->pix,arg2,arg3);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot write pam");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -4890,17 +5017,17 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_Pixmap(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  Pixmap *result = 0 ;
+/*SWIGINTERN int _wrap_new_Pixmap(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*Pixmap *result = 0 ;*/
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  result = (Pixmap *)calloc(1, sizeof(Pixmap));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Pixmap, SWIG_BUILTIN_INIT |  0 );
-  return resultobj == Py_None ? -1 : 0;
-fail:
-  return -1;
-}
+  /*if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;*/
+  /*result = (Pixmap *)calloc(1, sizeof(Pixmap));*/
+  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Pixmap, SWIG_BUILTIN_INIT |  0 );*/
+  /*return resultobj == Py_None ? -1 : 0;*/
+/*fail:*/
+  /*return -1;*/
+/*}*/
 
 
 SWIGINTERN PyObject *_wrap_Document_load_page(PyObject *self, PyObject *args) {
@@ -4938,11 +5065,11 @@ SWIGINTERN PyObject *_wrap_Document_load_page(PyObject *self, PyObject *args) {
 		  Py_INCREF(self);
 		  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Page, SWIG_POINTER_OWN |  0 );
 	  }
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot load page.");
   }
+  return resultobj;
 fail:
   return NULL;
 }
@@ -4959,7 +5086,7 @@ SWIGINTERN PyObject *_wrap_Document_load_outline(PyObject *self, PyObject *args)
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Document, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_load_outline" "', argument " "1"" of type '" "Document *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_load_outline" "', argument " "1"" of type '" "Document""'"); 
   }
   arg1 = (Document *)(argp1);
   fz_try(arg1->ctx) {
@@ -4973,11 +5100,11 @@ SWIGINTERN PyObject *_wrap_Document_load_outline(PyObject *self, PyObject *args)
 		  SET_CTX_OBJ(arg1->ctx, arg1->ctx_obj);
 		  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Outline, SWIG_POINTER_OWN |  0 );
 	  }
-	  return resultobj;
   }
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot load outline");
   }
+  return resultobj;
 fail:
   return NULL;
 }
@@ -5019,7 +5146,7 @@ SWIGINTERN PyObject *_wrap_Document_authenticate_password(PyObject *self, PyObje
   if (!PyArg_ParseTuple(args,(char *)"O:Document_authenticate_password",&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Document, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_authenticate_password" "', argument " "1"" of type '" "Document *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_authenticate_password" "', argument " "1"" of type '" "Document""'"); 
   }
   arg1 = (Document *)(argp1);
   res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
@@ -5036,6 +5163,47 @@ fail:
   return NULL;
 }
 
+SWIGINTERN PyObject *_wrap_Document_write_document(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  Document *arg1 = (Document *) 0 ;
+  char *arg2 = (char *) 0 ;
+  fz_write_options *arg3 = (fz_write_options *) 0 ;
+  void *argp1 = 0 ;
+  void *argp2 = 0 ;
+  int res1 = 0 ;
+  int res2 = 0 ;
+  int res3 = 0 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Document_write_document",&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Document, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_write_document" "', argument " "1"" of type '" "Document""'"); 
+  }
+  arg1 = (Document *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Document_write_document" "', argument " "2"" of type '" "char *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_ConvertPtr(obj2, &argp2,SWIGTYPE_p_fz_write_options_s, 0 | 0);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Document_write_document" "', argument " "3"" of type '" "WriteOptions""'");
+  }
+  arg3 = (fz_write_options *)(argp2);
+  fz_write_document(arg1->doc,arg2,arg3);
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
 
 SWIGINTERN PyObject *_wrap_Document_count_pages(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
@@ -5047,7 +5215,7 @@ SWIGINTERN PyObject *_wrap_Document_count_pages(PyObject *self, PyObject *args) 
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Document, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_count_pages" "', argument " "1"" of type '" "Document *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_count_pages" "', argument " "1"" of type '" "Document""'"); 
   }
   arg1 = (Document *)(argp1);
   result = fz_count_pages(arg1->doc);
@@ -5056,6 +5224,95 @@ SWIGINTERN PyObject *_wrap_Document_count_pages(PyObject *self, PyObject *args) 
 fail:
   return NULL;
 }
+
+/*SWIGINTERN PyObject *_wrap_Document_get_first_annot(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*Document *arg1 = (Document *) 0 ;*/
+  /*Page *arg2 = (Page *) 0 ;*/
+  /*void *argp1 = 0 ;*/
+  /*int res1 = 0 ;*/
+  /*void *argp2 = 0 ;*/
+  /*int res2 = 0 ;*/
+  /*PyObject * obj1 = 0 ;*/
+  /*struct fz_annot_s *result = 0 ;*/
+  
+  /*if (!PyArg_ParseTuple(args,(char *)"O:Document_get_first_annot",&obj1)) SWIG_fail;*/
+  /*res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Document, 0 |  0 );*/
+  /*if (!SWIG_IsOK(res1)) {*/
+    /*SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "get_first_annot" "', argument " "1"" of type '" "Document""'"); */
+  /*}*/
+  /*arg1 = (Document *)(argp1);*/
+  /*res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_Page, 0 |  0 );*/
+  /*if (!SWIG_IsOK(res2)) {*/
+    /*SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "get_first_annot" "', argument " "2"" of type '" "Page""'"); */
+  /*}*/
+  /*arg2 = (Page *)(argp2);*/
+  /*result = (struct fz_annot_s *)fz_first_annot(arg1->doc,arg2->page);*/
+  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_annot_s, 0 |  0 );*/
+  /*return resultobj;*/
+/*fail:*/
+  /*return NULL;*/
+/*}*/
+
+
+/*SWIGINTERN PyObject *_wrap_Document_get_next_annot(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*Document *arg1 = (Document *) 0 ;*/
+  /*struct fz_annot_s *arg2 = (struct fz_annot_s *) 0 ;*/
+  /*void *argp1 = 0 ;*/
+  /*int res1 = 0 ;*/
+  /*void *argp2 = 0 ;*/
+  /*int res2 = 0 ;*/
+  /*PyObject * obj1 = 0 ;*/
+  /*struct fz_annot_s *result = 0 ;*/
+  
+  /*if (!PyArg_ParseTuple(args,(char *)"O:Document_get_next_annot",&obj1)) SWIG_fail;*/
+  /*res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Document, 0 |  0 );*/
+  /*if (!SWIG_IsOK(res1)) {*/
+    /*SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_get_next_annot" "', argument " "1"" of type '" "Document""'"); */
+  /*}*/
+  /*arg1 = (Document *)(argp1);*/
+  /*res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_annot_s, 0 |  0 );*/
+  /*if (!SWIG_IsOK(res2)) {*/
+    /*SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Document_get_next_annot" "', argument " "2"" of type '" "Annotation""'"); */
+  /*}*/
+  /*arg2 = (struct fz_annot_s *)(argp2);*/
+  /*result = (struct fz_annot_s *)fz_next_annot(arg1->doc,arg2);*/
+  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_annot_s, 0 |  0 );*/
+  /*return resultobj;*/
+/*fail:*/
+  /*return NULL;*/
+/*}*/
+
+
+/*SWIGINTERN PyObject *_wrap_Document_bound_annot(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*Document *arg1 = (Document *) 0 ;*/
+  /*struct fz_annot_s *arg2 = (struct fz_annot_s *) 0 ;*/
+  /*void *argp1 = 0 ;*/
+  /*int res1 = 0 ;*/
+  /*void *argp2 = 0 ;*/
+  /*int res2 = 0 ;*/
+  /*PyObject * obj1 = 0 ;*/
+  /*fz_rect result;*/
+  
+  /*if (!PyArg_ParseTuple(args,(char *)"O:Document_bound_annot",&obj1)) SWIG_fail;*/
+  /*res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Document, 0 |  0 );*/
+  /*if (!SWIG_IsOK(res1)) {*/
+    /*SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_bound_annot" "', argument " "1"" of type '" "Document""'"); */
+  /*}*/
+  /*arg1 = (Document *)(argp1);*/
+  /*res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_annot_s, 0 |  0 );*/
+  /*if (!SWIG_IsOK(res2)) {*/
+    /*SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Document_bound_annot" "', argument " "2"" of type '" "Annotation""'"); */
+  /*}*/
+  /*arg2 = (struct fz_annot_s *)(argp2);*/
+  /*result = fz_bound_annot(arg1->doc,arg2);*/
+  /*resultobj = SWIG_NewPointerObj((fz_rect *)memcpy((fz_rect *)malloc(sizeof(fz_rect)),&result,sizeof(fz_rect)), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_OWN |  0 );*/
+  /*return resultobj;*/
+/*fail:*/
+  /*return NULL;*/
+/*}*/
 
 
 SWIGINTERN PyObject *_wrap_delete_Document(PyObject *self, PyObject *args) {
@@ -5099,17 +5356,17 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_Document(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  Document *result = 0 ;
+/*SWIGINTERN int _wrap_new_Document(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*Document *result = 0 ;*/
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  result = (Document *)calloc(1, sizeof(Document));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Document, SWIG_BUILTIN_INIT |  0 );
-  return resultobj == Py_None ? -1 : 0;
-fail:
-  return -1;
-}
+  /*if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;*/
+  /*result = (Document *)calloc(1, sizeof(Document));*/
+  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Document, SWIG_BUILTIN_INIT |  0 );*/
+  /*return resultobj == Py_None ? -1 : 0;*/
+/*fail:*/
+  /*return -1;*/
+/*}*/
 
 
 SWIGINTERN PyObject *_wrap_Page_run_page(PyObject *self, PyObject *args) {
@@ -5191,11 +5448,11 @@ SWIGINTERN PyObject *_wrap_Page_load_links(PyObject *self, PyObject *args) {
 		  link = link->next;
 		  fz_keep_link(arg1->doc->ctx, link);
 	  }
-	  return resultobj;
   }
   fz_catch(arg1->doc->ctx) {
 	  SWIG_exception_fail(SWIG_UnknownError, "Cannot load links");
   }
+  return resultobj;
 fail:
   return NULL;
 }
@@ -5263,17 +5520,17 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_Page(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  Page *result = 0 ;
+/*SWIGINTERN int _wrap_new_Page(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*Page *result = 0 ;*/
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  result = (Page *)calloc(1, sizeof(Page));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Page, SWIG_BUILTIN_INIT |  0 );
-  return resultobj == Py_None ? -1 : 0;
-fail:
-  return -1;
-}
+  /*if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;*/
+  /*result = (Page *)calloc(1, sizeof(Page));*/
+  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Page, SWIG_BUILTIN_INIT |  0 );*/
+  /*return resultobj == Py_None ? -1 : 0;*/
+/*fail:*/
+  /*return -1;*/
+/*}*/
 
 
 SWIGINTERN PyObject *_wrap_delete_Device(PyObject *self, PyObject *args) {
@@ -5317,17 +5574,17 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_Device(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  Device *result = 0 ;
+/*SWIGINTERN int _wrap_new_Device(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*Device *result = 0 ;*/
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  result = (Device *)calloc(1, sizeof(Device));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Device, SWIG_BUILTIN_INIT |  0 );
-  return resultobj == Py_None ? -1 : 0;
-fail:
-  return -1;
-}
+  /*if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;*/
+  /*result = (Device *)calloc(1, sizeof(Device));*/
+  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Device, SWIG_BUILTIN_INIT |  0 );*/
+  /*return resultobj == Py_None ? -1 : 0;*/
+/*fail:*/
+  /*return -1;*/
+/*}*/
 
 
 SWIGINTERN PyObject *_wrap_TextSheet_print_text_sheet(PyObject *self, PyObject *args) {
@@ -5358,7 +5615,6 @@ SWIGINTERN PyObject *_wrap_TextSheet_print_text_sheet(PyObject *self, PyObject *
 	  fz_print_text_sheet(arg1->ctx,fp,arg1->text_sheet);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_always(arg1->ctx) {
 	  fclose(fp);
@@ -5366,7 +5622,7 @@ SWIGINTERN PyObject *_wrap_TextSheet_print_text_sheet(PyObject *self, PyObject *
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot print text sheet");
   }
-
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -5414,17 +5670,17 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_TextSheet(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  TextSheet *result = 0 ;
+/*SWIGINTERN int _wrap_new_TextSheet(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*TextSheet *result = 0 ;*/
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  result = (TextSheet *)calloc(1, sizeof(TextSheet));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_TextSheet, SWIG_BUILTIN_INIT |  0 );
-  return resultobj == Py_None ? -1 : 0;
-fail:
-  return -1;
-}
+  /*if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;*/
+  /*result = (TextSheet *)calloc(1, sizeof(TextSheet));*/
+  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_TextSheet, SWIG_BUILTIN_INIT |  0 );*/
+  /*return resultobj == Py_None ? -1 : 0;*/
+/*fail:*/
+  /*return -1;*/
+/*}*/
 
 
 SWIGINTERN PyObject *_wrap_DisplayList_run_display_list(PyObject *self, PyObject *args) {
@@ -5536,17 +5792,17 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_DisplayList(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  DisplayList *result = 0 ;
+/*SWIGINTERN int _wrap_new_DisplayList(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*DisplayList *result = 0 ;*/
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  result = (DisplayList *)calloc(1, sizeof(DisplayList));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DisplayList, SWIG_BUILTIN_INIT |  0 );
-  return resultobj == Py_None ? -1 : 0;
-fail:
-  return -1;
-}
+  /*if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;*/
+  /*result = (DisplayList *)calloc(1, sizeof(DisplayList));*/
+  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DisplayList, SWIG_BUILTIN_INIT |  0 );*/
+  /*return resultobj == Py_None ? -1 : 0;*/
+/*fail:*/
+  /*return -1;*/
+/*}*/
 
 
 SWIGINTERN PyObject *_wrap_TextPage_print_text_page_html(PyObject *self, PyObject *args) {
@@ -5577,7 +5833,6 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page_html(PyObject *self, PyObjec
 	  fz_print_text_page_html(arg1->ctx,fp,arg1->text_page);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_always(arg1->ctx) {
 	  fclose(fp);
@@ -5586,6 +5841,7 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page_html(PyObject *self, PyObjec
 	  SWIG_exception_fail(SWIG_IOError, "Cannot print text page html");
   }
 
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -5620,7 +5876,6 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page_xml(PyObject *self, PyObject
 	  fz_print_text_page_xml(arg1->ctx,fp,arg1->text_page);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_always(arg1->ctx) {
 	  fclose(fp);
@@ -5628,6 +5883,7 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page_xml(PyObject *self, PyObject
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot print text page xml");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -5662,7 +5918,6 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page(PyObject *self, PyObject *ar
 	  fz_print_text_page(arg1->ctx,fp,arg1->text_page);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_always(arg1->ctx) {
 	  fclose(fp);
@@ -5670,6 +5925,7 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page(PyObject *self, PyObject *ar
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot print text page");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -5802,17 +6058,17 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_TextPage(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  TextPage *result = 0 ;
+/*SWIGINTERN int _wrap_new_TextPage(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*TextPage *result = 0 ;*/
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  result = (TextPage *)calloc(1, sizeof(TextPage));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_TextPage, SWIG_BUILTIN_INIT |  0 );
-  return resultobj == Py_None ? -1 : 0;
-fail:
-  return -1;
-}
+  /*if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;*/
+  /*result = (TextPage *)calloc(1, sizeof(TextPage));*/
+  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_TextPage, SWIG_BUILTIN_INIT |  0 );*/
+  /*return resultobj == Py_None ? -1 : 0;*/
+/*fail:*/
+  /*return -1;*/
+/*}*/
 
 
 SWIGINTERN PyObject *_wrap_Link_get_rect(PyObject *self, PyObject *args) {
@@ -5820,7 +6076,7 @@ SWIGINTERN PyObject *_wrap_Link_get_rect(PyObject *self, PyObject *args) {
   Link *arg1 = (Link *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  fz_rect result;
+  fz_rect *result;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Link, 0 |  0 );
@@ -5828,8 +6084,8 @@ SWIGINTERN PyObject *_wrap_Link_get_rect(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Link_get_rect" "', argument " "1"" of type '" "Link""'"); 
   }
   arg1 = (Link *)(argp1);
-  result = arg1->link->rect;
-  resultobj = SWIG_NewPointerObj((fz_rect *)memcpy((fz_rect *)malloc(sizeof(fz_rect)),&result,sizeof(fz_rect)), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_OWN |  0 );
+  result = &(arg1->link->rect);
+  resultobj = SWIG_NewPointerObj((fz_rect *)memcpy((fz_rect *)malloc(sizeof(fz_rect)),result,sizeof(fz_rect)), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -5927,7 +6183,7 @@ SWIGINTERN PyObject *_wrap_Link_get_page_lt(PyObject *self, PyObject *args) {
   Link *arg1 = (Link *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  fz_point result;
+  fz_point *result;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Link, 0 |  0 );
@@ -5935,8 +6191,8 @@ SWIGINTERN PyObject *_wrap_Link_get_page_lt(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Link_get_page_lt" "', argument " "1"" of type '" "Link""'"); 
   }
   arg1 = (Link *)(argp1);
-  result = arg1->link->dest.ld.gotor.lt;
-  resultobj = SWIG_NewPointerObj((fz_point *)memcpy((fz_point *)malloc(sizeof(fz_point)),&result,sizeof(fz_point)), SWIGTYPE_p_fz_point_s, SWIG_POINTER_OWN |  0 );
+  result = &(arg1->link->dest.ld.gotor.lt);
+  resultobj = SWIG_NewPointerObj((fz_point *)memcpy((fz_point *)malloc(sizeof(fz_point)),result,sizeof(fz_point)), SWIGTYPE_p_fz_point_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -6005,17 +6261,17 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_Link(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  Link *result = 0 ;
+/*SWIGINTERN int _wrap_new_Link(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*Link *result = 0 ;*/
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  result = (Link *)calloc(1, sizeof(Link));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Link, SWIG_BUILTIN_INIT |  0 );
-  return resultobj == Py_None ? -1 : 0;
-fail:
-  return -1;
-}
+  /*if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;*/
+  /*result = (Link *)calloc(1, sizeof(Link));*/
+  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Link, SWIG_BUILTIN_INIT |  0 );*/
+  /*return resultobj == Py_None ? -1 : 0;*/
+/*fail:*/
+  /*return -1;*/
+/*}*/
 
 
 SWIGINTERN PyObject *_wrap_Outline_print_outline_xml(PyObject *self, PyObject *args) {
@@ -6046,7 +6302,6 @@ SWIGINTERN PyObject *_wrap_Outline_print_outline_xml(PyObject *self, PyObject *a
 	  fz_print_outline_xml(arg1->ctx,fp,arg1->outline);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_always(arg1->ctx) {
 	  fclose(fp);
@@ -6055,6 +6310,7 @@ SWIGINTERN PyObject *_wrap_Outline_print_outline_xml(PyObject *self, PyObject *a
 	  SWIG_exception_fail(SWIG_IOError, "Cannot print outline xml");
   }
 
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -6089,7 +6345,6 @@ SWIGINTERN PyObject *_wrap_Outline_print_outline(PyObject *self, PyObject *args)
 	  fz_print_outline(arg1->ctx,fp,arg1->outline);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-	  return resultobj;
   }
   fz_always(arg1->ctx) {
 	  fclose(fp);
@@ -6097,6 +6352,7 @@ SWIGINTERN PyObject *_wrap_Outline_print_outline(PyObject *self, PyObject *args)
   fz_catch(arg1->ctx) {
 	  SWIG_exception_fail(SWIG_IOError, "Cannot print outline");
   }
+  return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
@@ -6162,17 +6418,17 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_Outline(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  Outline *result = 0 ;
+/*SWIGINTERN int _wrap_new_Outline(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*Outline *result = 0 ;*/
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  result = (Outline *)calloc(1, sizeof(Outline));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Outline, SWIG_BUILTIN_INIT |  0 );
-  return resultobj == Py_None ? -1 : 0;
-fail:
-  return -1;
-}
+  /*if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;*/
+  /*result = (Outline *)malloc(sizeof(Outline));*/
+  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Outline, SWIG_BUILTIN_INIT | 0);*/
+  /*return resultobj == Py_None ? -1 : 0;*/
+/*fail:*/
+  /*return -1;*/
+/*}*/
 
 SWIGINTERN PyObject *_wrap_OutlineItem_get_title(PyObject *self, PyObject *args) {
 	PyObject *resultobj = 0;
@@ -6216,6 +6472,77 @@ SWIGINTERN PyObject *_wrap_OutlineItem_get_page(PyObject *self, PyObject *args) 
 fail:
 	return NULL;
 }
+
+SWIGINTERN PyObject *_wrap_OutlineItem_get_page_flags(PyObject *self, PyObject *args) {
+	PyObject *resultobj = 0;
+	fz_outline *arg1 = (fz_outline *) 0;
+	void *argp1 = 0;
+	int res1 = 0;
+    int result = 0;
+
+	if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+	res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_outline_s, 0 |  0 );
+	if (!SWIG_IsOK(res1)) {
+		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OutlineItem_get_page_lt" "', argument " "1"" of type '" "OutlineItem""'"); 
+	}
+	arg1 = (fz_outline *)(argp1);
+	fz_link_dest* dest = &(arg1->dest);
+	if (dest->kind != FZ_LINK_NONE) {
+		result = dest->ld.gotor.flags;
+	}
+    resultobj = SWIG_From_int((int)(result));
+	return resultobj;
+fail:
+	return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_OutlineItem_get_page_lt(PyObject *self, PyObject *args) {
+	PyObject *resultobj = 0;
+	fz_outline *arg1 = (fz_outline *) 0;
+	void *argp1 = 0;
+	int res1 = 0;
+    fz_point *result;
+
+	if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+	res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_outline_s, 0 |  0 );
+	if (!SWIG_IsOK(res1)) {
+		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OutlineItem_get_page_lt" "', argument " "1"" of type '" "OutlineItem""'"); 
+	}
+	arg1 = (fz_outline *)(argp1);
+	fz_link_dest* dest = &(arg1->dest);
+	if (dest->kind != FZ_LINK_NONE) {
+		result = &(dest->ld.gotor.lt);
+	}
+    resultobj = SWIG_NewPointerObj((fz_point *)memcpy((fz_point *)malloc(sizeof(fz_point)),result,sizeof(fz_point)), SWIGTYPE_p_fz_point_s, SWIG_POINTER_OWN |  0 );
+	return resultobj;
+fail:
+	return NULL;
+}
+
+SWIGINTERN PyObject *_wrap_OutlineItem_get_page_rb(PyObject *self, PyObject *args) {
+	PyObject *resultobj = 0;
+	fz_outline *arg1 = (fz_outline *) 0;
+	void *argp1 = 0;
+	int res1 = 0;
+    fz_point *result;
+
+	if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+	res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_outline_s, 0 |  0 );
+	if (!SWIG_IsOK(res1)) {
+		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OutlineItem_get_page_lt" "', argument " "1"" of type '" "OutlineItem""'"); 
+	}
+	arg1 = (fz_outline *)(argp1);
+	fz_link_dest* dest = &(arg1->dest);
+	if (dest->kind != FZ_LINK_NONE) {
+		result = &(dest->ld.gotor.rb);
+	}
+    resultobj = SWIG_NewPointerObj((fz_point *)memcpy((fz_point *)malloc(sizeof(fz_point)),result,sizeof(fz_point)), SWIGTYPE_p_fz_point_s, SWIG_POINTER_OWN |  0 );
+	return resultobj;
+fail:
+	return NULL;
+}
+
 
 SWIGINTERN PyObject *_wrap_OutlineItem_get_next(PyObject *self, PyObject *args) {
 	PyObject *resultobj = 0;
@@ -6281,17 +6608,17 @@ fail:
   return NULL;
 }
 
-SWIGINTERN int _wrap_new_OutlineItem(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_outline_s *result = 0 ;
+/*SWIGINTERN int _wrap_new_OutlineItem(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*struct fz_outline_s *result = 0 ;*/
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  result = (struct fz_outline_s *)calloc(1, sizeof(struct fz_outline_s));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_outline_s, SWIG_BUILTIN_INIT |  0 );
-  return resultobj == Py_None ? -1 : 0;
-fail:
-  return -1;
-}
+  /*if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;*/
+  /*result = (struct fz_outline_s *)calloc(1, sizeof(struct fz_outline_s));*/
+  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_outline_s, SWIG_BUILTIN_INIT |  0 );*/
+  /*return resultobj == Py_None ? -1 : 0;*/
+/*fail:*/
+  /*return -1;*/
+/*}*/
 
 
 SWIGINTERN PyObject *_wrap_Context_get_aa_level(PyObject *self, PyObject *args) {
@@ -6366,10 +6693,19 @@ fail:
 
 SWIGINTERN int _wrap_new_Context(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_context_s *result = 0 ;
+  unsigned int arg1 ;
+  unsigned int val1 ;
+  int ecode1 = 0 ;
+  PyObject * obj0 = 0 ;
+  fz_context *result = 0 ;
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  result = (struct fz_context_s *)calloc(1, sizeof(struct fz_context_s));
+  if (!PyArg_ParseTuple(args,(char *)"O:new_context",&obj0)) SWIG_fail;
+  ecode1 = SWIG_AsVal_unsigned_SS_int(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "Context" "', argument " "1"" of type '" "unsigned int""'");
+  } 
+  arg1 = (unsigned int)(val1);
+  result = (fz_context *)fz_new_context(NULL,NULL,arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_context_s, SWIG_BUILTIN_INIT |  0 );
   return resultobj == Py_None ? -1 : 0;
 fail:
@@ -6477,12 +6813,20 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_Point(PyObject *self, PyObject *args) {
+SWIGINTERN int _wrap_new_Point(PyObject *self, PyObject *args, PyObject *kwargs) {
   PyObject *resultobj = 0;
   struct fz_point_s *result = 0 ;
-  
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+
+  float arg1 = 0;
+  float arg2 = 0;
+  char *kwnames[] = {
+	  (char *)"x", (char *)"y", NULL
+  };
+
+  if (!PyArg_ParseTupleAndKeywords(args,kwargs,(char *)"|ff:Point",kwnames,&arg1,&arg2)) SWIG_fail;
   result = (struct fz_point_s *)calloc(1, sizeof(struct fz_point_s));
+  result->x = arg1;
+  result->y = arg2;
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_point_s, SWIG_BUILTIN_INIT |  0 );
   return resultobj == Py_None ? -1 : 0;
 fail:
@@ -6909,12 +7253,23 @@ fail:
   return NULL;
 }
 
-SWIGINTERN int _wrap_new_Rect(PyObject *self, PyObject *args) {
+SWIGINTERN int _wrap_new_Rect(PyObject *self, PyObject *args, PyObject *kwargs) {
   PyObject *resultobj = 0;
   struct fz_rect_s *result = 0 ;
+  float arg1 = 0;
+  float arg2 = 0;
+  float arg3 = 0;
+  float arg4 = 0;
+  char *kwnames[] = {
+	  (char *)"x0", (char *)"y0", (char *)"x1", (char *)"y1", NULL
+  };
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  if (!PyArg_ParseTupleAndKeywords(args,kwargs,(char *)"|ffff:Rect",kwnames,&arg1,&arg2,&arg3,&arg4)) SWIG_fail;
   result = (struct fz_rect_s *)calloc(1, sizeof(struct fz_rect_s));
+  result->x0 = arg1;
+  result->y0 = arg2;
+  result->x1 = arg3;
+  result->y1 = arg4;
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, SWIG_BUILTIN_INIT |  0 );
   return resultobj == Py_None ? -1 : 0;
 fail:
@@ -7298,12 +7653,23 @@ fail:
   return NULL;
 }
 
-SWIGINTERN int _wrap_new_BBox(PyObject *self, PyObject *args) {
+SWIGINTERN int _wrap_new_BBox(PyObject *self, PyObject *args, PyObject *kwargs) {
   PyObject *resultobj = 0;
   struct fz_bbox_s *result = 0 ;
+  int arg1 = 0;
+  int arg2 = 0;
+  int arg3 = 0;
+  int arg4 = 0;
+  char *kwnames[] = {
+	  (char *)"x0", (char *)"y0", (char *)"x1", (char *)"y1", NULL
+  };
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
+  if (!PyArg_ParseTupleAndKeywords(args,kwargs,(char *)"|iiii:BBox",kwnames,&arg1,&arg2,&arg3,&arg4)) SWIG_fail;
   result = (struct fz_bbox_s *)calloc(1, sizeof(struct fz_bbox_s));
+  result->x0 = arg1;
+  result->y0 = arg2;
+  result->x1 = arg3;
+  result->y1 = arg4;
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_bbox_s, SWIG_BUILTIN_INIT |  0 );
   return resultobj == Py_None ? -1 : 0;
 fail:
@@ -7934,12 +8300,28 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_Matrix(PyObject *self, PyObject *args) {
+SWIGINTERN int _wrap_new_Matrix(PyObject *self, PyObject *args, PyObject *kwargs) {
   PyObject *resultobj = 0;
   struct fz_matrix_s *result = 0 ;
+
+  float arg1 = 1;
+  float arg2 = 0;
+  float arg3 = 0;
+  float arg4 = 1;
+  float arg5 = 0;
+  float arg6 = 0;
+  char *kwnames[] = {
+	  (char *)"a", (char *)"b", (char *)"c", (char *)"d", (char *)"e", (char *)"f", NULL
+  };
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  result = (struct fz_matrix_s *)calloc(1, sizeof(struct fz_matrix_s));
+  if (!PyArg_ParseTupleAndKeywords(args,kwargs,(char *)"|ffffff:Matrix",kwnames,&arg1,&arg2,&arg3,&arg4,&arg5,&arg6)) SWIG_fail;
+  result = (struct fz_matrix_s *)malloc(sizeof(struct fz_matrix_s));
+  result->a = arg1;
+  result->b = arg2;
+  result->c = arg3;
+  result->d = arg4;
+  result->e = arg5;
+  result->f = arg6;
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_matrix_s, SWIG_BUILTIN_INIT |  0 );
   return resultobj == Py_None ? -1 : 0;
 fail:
@@ -8267,17 +8649,17 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_TextStyle(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_text_style_s *result = 0 ;
+/*SWIGINTERN int _wrap_new_TextStyle(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*struct fz_text_style_s *result = 0 ;*/
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  result = (struct fz_text_style_s *)calloc(1, sizeof(struct fz_text_style_s));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_text_style_s, SWIG_BUILTIN_INIT |  0 );
-  return resultobj == Py_None ? -1 : 0;
-fail:
-  return -1;
-}
+  /*if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;*/
+  /*result = (struct fz_text_style_s *)calloc(1, sizeof(struct fz_text_style_s));*/
+  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_text_style_s, SWIG_BUILTIN_INIT |  0 );*/
+  /*return resultobj == Py_None ? -1 : 0;*/
+/*fail:*/
+  /*return -1;*/
+/*}*/
 
 
 SWIGINTERN PyObject *_wrap_delete_TextStyle(PyObject *self, PyObject *args) {
@@ -8340,17 +8722,17 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_TextChar(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_text_char_s *result = 0 ;
+/*SWIGINTERN int _wrap_new_TextChar(PyObject *self, PyObject *args) {*/
+  /*PyObject *resultobj = 0;*/
+  /*struct fz_text_char_s *result = 0 ;*/
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  result = (struct fz_text_char_s *)calloc(1, sizeof(struct fz_text_char_s));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_text_char_s, SWIG_BUILTIN_INIT |  0 );
-  return resultobj == Py_None ? -1 : 0;
-fail:
-  return -1;
-}
+  /*if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;*/
+  /*result = (struct fz_text_char_s *)calloc(1, sizeof(struct fz_text_char_s));*/
+  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_text_char_s, SWIG_BUILTIN_INIT |  0 );*/
+  /*return resultobj == Py_None ? -1 : 0;*/
+/*fail:*/
+  /*return -1;*/
+/*}*/
 
 
 SWIGINTERN PyObject *_wrap_delete_TextChar(PyObject *self, PyObject *args) {
@@ -8806,12 +9188,23 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_WriteOptions(PyObject *self, PyObject *args) {
+SWIGINTERN int _wrap_new_WriteOptions(PyObject *self, PyObject *args, PyObject *kwargs) {
   PyObject *resultobj = 0;
   struct fz_write_options_s *result = 0 ;
+  int arg1 = 0;
+  int arg2 = fz_expand_all;
+  int arg3 = 1;
+  int arg4 = 0;
+  char *kwnames[] = {
+	  (char *)"do_ascii", (char *)"do_expand", (char *)"do_garbage", (char *)"do_linear", NULL
+  };
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  result = (struct fz_write_options_s *)calloc(1, sizeof(struct fz_write_options_s));
+  if (!PyArg_ParseTupleAndKeywords(args,kwargs,(char *)"|iiii:WriteOptions",kwnames,&arg1,&arg2,&arg3,&arg4)) SWIG_fail;
+  result = (struct fz_write_options_s *)malloc(sizeof(struct fz_write_options_s));
+  result->do_ascii = arg1;
+  result->do_expand = arg2;
+  result->do_garbage = arg3;
+  result->do_linear = arg4;
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_write_options_s, SWIG_BUILTIN_INIT |  0 );
   return resultobj == Py_None ? -1 : 0;
 fail:
@@ -8841,18 +9234,18 @@ fail:
 
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
-	 { (char *)"new_context", _wrap_new_context, METH_VARARGS, NULL},
-	 { (char *)"new_draw_device", _wrap_new_draw_device, METH_VARARGS, NULL},
-	 { (char *)"new_pixmap_with_bbox", _wrap_new_pixmap_with_bbox, METH_VARARGS, NULL},
-	 { (char *)"new_list_device", _wrap_new_list_device, METH_VARARGS, NULL},
-	 { (char *)"new_bbox_device", _wrap_new_bbox_device, METH_VARARGS, NULL},
-	 { (char *)"open_document", _wrap_open_document, METH_VARARGS, NULL},
-	 { (char *)"new_draw_device_with_bbox", _wrap_new_draw_device_with_bbox, METH_VARARGS, NULL},
-	 { (char *)"new_text_device", _wrap_new_text_device, METH_VARARGS, NULL},
-	 { (char *)"new_pixmap", _wrap_new_pixmap, METH_VARARGS, NULL},
-	 { (char *)"new_text_sheet", _wrap_new_text_sheet, METH_VARARGS, NULL},
-	 { (char *)"new_text_page", _wrap_new_text_page, METH_VARARGS, NULL},
-	 { (char *)"new_display_list", _wrap_new_display_list, METH_VARARGS, NULL},
+	 /*{ (char *)"new_context", _wrap_new_context, METH_VARARGS, NULL},*/
+	 /*{ (char *)"new_draw_device", _wrap_new_draw_device, METH_VARARGS, NULL},*/
+	 /*{ (char *)"new_pixmap_with_bbox", _wrap_new_pixmap_with_bbox, METH_VARARGS, NULL},*/
+	 /*{ (char *)"new_list_device", _wrap_new_list_device, METH_VARARGS, NULL},*/
+	 /*{ (char *)"new_bbox_device", _wrap_new_bbox_device, METH_VARARGS, NULL},*/
+	 /*{ (char *)"open_document", _wrap_open_document, METH_VARARGS, NULL},*/
+	 /*{ (char *)"new_draw_device_with_bbox", _wrap_new_draw_device_with_bbox, METH_VARARGS, NULL},*/
+	 /*{ (char *)"new_text_device", _wrap_new_text_device, METH_VARARGS, NULL},*/
+	 /*{ (char *)"new_pixmap", _wrap_new_pixmap, METH_VARARGS, NULL},*/
+	 /*{ (char *)"new_text_sheet", _wrap_new_text_sheet, METH_VARARGS, NULL},*/
+	 /*{ (char *)"new_text_page", _wrap_new_text_page, METH_VARARGS, NULL},*/
+	 /*{ (char *)"new_display_list", _wrap_new_display_list, METH_VARARGS, NULL},*/
 	 { (char *)"scale_matrix", _wrap_scale_matrix, METH_VARARGS, NULL},
 	 { (char *)"shear_matrix", _wrap_shear_matrix, METH_VARARGS, NULL},
 	 { (char *)"rotate_matrix", _wrap_rotate_matrix, METH_VARARGS, NULL},
@@ -8902,6 +9295,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__Pixmap_methods[] = {
   { "write_pixmap", (PyCFunction) _wrap_Pixmap_write_pixmap, METH_VARARGS, (char*) "" },
   { "write_pnm", (PyCFunction) _wrap_Pixmap_write_pnm, METH_VARARGS, (char*) "" },
   { "write_pam", (PyCFunction) _wrap_Pixmap_write_pam, METH_VARARGS, (char*) "" },
+  { "new_draw_device", (PyCFunction) _wrap_Pixmap_new_draw_device, METH_VARARGS | METH_KEYWORDS, (char*) "" },
   { NULL, NULL, 0, NULL } /* Sentinel */
 };
 
@@ -8955,7 +9349,7 @@ static PyHeapTypeObject SwigPyBuiltin__Pixmap_type = {
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     (size_t)(((char*)&((SwigPyObject *) 64L)->dict) - (char*) 64L), /* tp_dictoffset */
-    (initproc) _wrap_new_Pixmap,              /* tp_init */
+    (initproc) 0,              			 	  /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */
@@ -9101,6 +9495,10 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__Document_methods[] = {
   { "needs_password", (PyCFunction) _wrap_Document_needs_password, METH_VARARGS, (char*) "" },
   { "authenticate_password", (PyCFunction) _wrap_Document_authenticate_password, METH_VARARGS, (char*) "" },
   { "count_pages", (PyCFunction) _wrap_Document_count_pages, METH_VARARGS, (char*) "" },
+  { "write_document", (PyCFunction) _wrap_Document_write_document, METH_VARARGS, (char*) "" },
+  /*{ "get_first_annot", (PyCFunction) _wrap_Document_get_first_annot, METH_VARARGS, (char*) "" },*/
+  /*{ "get_next_annot", (PyCFunction) _wrap_Document_get_next_annot, METH_VARARGS, (char*) "" },*/
+  /*{ "bound_annot", (PyCFunction) _wrap_Document_bound_annot, METH_VARARGS, (char*) "" },*/
   { NULL, NULL, 0, NULL } /* Sentinel */
 };
 
@@ -9154,7 +9552,7 @@ static PyHeapTypeObject SwigPyBuiltin__Document_type = {
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     (size_t)(((char*)&((SwigPyObject *) 64L)->dict) - (char*) 64L), /* tp_dictoffset */
-    (initproc) _wrap_new_Document,            /* tp_init */
+    (initproc) 0,				              /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */
@@ -9351,7 +9749,7 @@ static PyHeapTypeObject SwigPyBuiltin__Page_type = {
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     (size_t)(((char*)&((SwigPyObject *) 64L)->dict) - (char*) 64L), /* tp_dictoffset */
-    (initproc) _wrap_new_Page,                /* tp_init */
+    (initproc) 0,			                  /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */
@@ -9545,7 +9943,7 @@ static PyHeapTypeObject SwigPyBuiltin__Device_type = {
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     (size_t)(((char*)&((SwigPyObject *) 64L)->dict) - (char*) 64L), /* tp_dictoffset */
-    (initproc) _wrap_new_Device,              /* tp_init */
+    (initproc) 0,				              /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */
@@ -9740,7 +10138,7 @@ static PyHeapTypeObject SwigPyBuiltin__TextSheet_type = {
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     (size_t)(((char*)&((SwigPyObject *) 64L)->dict) - (char*) 64L), /* tp_dictoffset */
-    (initproc) _wrap_new_TextSheet,           /* tp_init */
+    (initproc) 0,			   	              /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */
@@ -9882,6 +10280,7 @@ SwigPyBuiltin__DisplayList_richcompare(PyObject *self, PyObject *other, int op) 
 
 SWIGINTERN PyMethodDef SwigPyBuiltin__DisplayList_methods[] = {
   { "run_display_list", (PyCFunction) _wrap_DisplayList_run_display_list, METH_VARARGS, (char*) "" },
+  { "new_list_device", (PyCFunction) _wrap_DisplayList_new_list_device, METH_VARARGS, (char*) "" },
   { NULL, NULL, 0, NULL } /* Sentinel */
 };
 
@@ -9935,7 +10334,7 @@ static PyHeapTypeObject SwigPyBuiltin__DisplayList_type = {
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     (size_t)(((char*)&((SwigPyObject *) 64L)->dict) - (char*) 64L), /* tp_dictoffset */
-    (initproc) _wrap_new_DisplayList,         /* tp_init */
+    (initproc) 0,					          /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */
@@ -10080,6 +10479,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__TextPage_methods[] = {
   { "print_text_page_xml", (PyCFunction) _wrap_TextPage_print_text_page_xml, METH_VARARGS, (char*) "" },
   { "print_text_page", (PyCFunction) _wrap_TextPage_print_text_page, METH_VARARGS, (char*) "" },
   { "get_textlen", (PyCFunction) _wrap_TextPage_get_textlen, METH_VARARGS, (char*) ""},
+  { "new_text_device", (PyCFunction) _wrap_TextPage_new_text_device, METH_VARARGS, (char*) ""},
   { "text_char_at", (PyCFunction) _wrap_TextPage_text_char_at, METH_VARARGS, (char*) ""},
   { "search", (PyCFunction) _wrap_TextPage_search, METH_VARARGS, (char*) ""},
   { NULL, NULL, 0, NULL } /* Sentinel */
@@ -10135,7 +10535,7 @@ static PyHeapTypeObject SwigPyBuiltin__TextPage_type = {
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     (size_t)(((char*)&((SwigPyObject *) 64L)->dict) - (char*) 64L), /* tp_dictoffset */
-    (initproc) _wrap_new_TextPage,            /* tp_init */
+    (initproc) 0,				              /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */
@@ -10336,7 +10736,7 @@ static PyHeapTypeObject SwigPyBuiltin__Link_type = {
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     (size_t)(((char*)&((SwigPyObject *) 64L)->dict) - (char*) 64L), /* tp_dictoffset */
-    (initproc) _wrap_new_Link,                /* tp_init */
+    (initproc) 0,			                  /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */
@@ -10533,7 +10933,7 @@ static PyHeapTypeObject SwigPyBuiltin__Outline_type = {
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     (size_t)(((char*)&((SwigPyObject *) 64L)->dict) - (char*) 64L), /* tp_dictoffset */
-    (initproc) _wrap_new_Outline,             /* tp_init */
+    (initproc) 0,             				  /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */
@@ -10675,6 +11075,9 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__fz_outline_s_methods[] = {
   { "get_down", (PyCFunction) _wrap_OutlineItem_get_down, METH_VARARGS, (char*) "" },
   { "get_title", (PyCFunction) _wrap_OutlineItem_get_title, METH_VARARGS, (char*) "" },
   { "get_page", (PyCFunction) _wrap_OutlineItem_get_page, METH_VARARGS, (char*) "" },
+  { "get_page_flags", (PyCFunction) _wrap_OutlineItem_get_page_flags, METH_VARARGS, (char*) "" },
+  { "get_page_lt", (PyCFunction) _wrap_OutlineItem_get_page_lt, METH_VARARGS, (char*) "" },
+  { "get_page_rb", (PyCFunction) _wrap_OutlineItem_get_page_rb, METH_VARARGS, (char*) "" },
   { NULL, NULL, 0, NULL } /* Sentinel */
 };
 
@@ -10728,7 +11131,7 @@ static PyHeapTypeObject SwigPyBuiltin__fz_outline_s_type = {
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     (size_t)(((char*)&((SwigPyObject *) 64L)->dict) - (char*) 64L), /* tp_dictoffset */
-    (initproc) _wrap_new_OutlineItem,         /* tp_init */
+    (initproc) 0,					          /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */
@@ -10866,6 +11269,14 @@ SwigPyBuiltin__fz_context_s_richcompare(PyObject *self, PyObject *other, int op)
 }
 
 SWIGINTERN PyMethodDef SwigPyBuiltin__fz_context_s_methods[] = {
+  { "open_document", (PyCFunction) _wrap_Context_open_document, METH_VARARGS, (char *)"" },
+  { "new_pixmap", (PyCFunction) _wrap_Context_new_pixmap, METH_VARARGS, (char *)"" },
+  { "new_pixmap_with_bbox", (PyCFunction) _wrap_Context_new_pixmap_with_bbox, METH_VARARGS, (char *)"" },
+  { "new_pixmap_with_data", (PyCFunction) _wrap_Context_new_pixmap_with_data, METH_VARARGS, (char *)"" },
+  { "new_pixmap_with_bbox_and_data", (PyCFunction) _wrap_Context_new_pixmap_with_bbox_and_data, METH_VARARGS, (char *)"" },
+  { "new_display_list", (PyCFunction) _wrap_Context_new_display_list, METH_VARARGS, (char *)"" },
+  { "new_text_page", (PyCFunction) _wrap_Context_new_text_page, METH_VARARGS, (char *)"" },
+  { "new_text_sheet", (PyCFunction) _wrap_Context_new_text_sheet, METH_VARARGS, (char *)"" },
   { "get_aa_level", (PyCFunction) _wrap_Context_get_aa_level, METH_VARARGS, (char*) "" },
   { "set_aa_level", (PyCFunction) _wrap_Context_set_aa_level, METH_VARARGS, (char*) "" },
   { NULL, NULL, 0, NULL } /* Sentinel */
@@ -11960,7 +12371,7 @@ static PyHeapTypeObject SwigPyBuiltin__fz_text_style_s_type = {
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     (size_t)(((char*)&((SwigPyObject *) 64L)->dict) - (char*) 64L), /* tp_dictoffset */
-    (initproc) _wrap_new_TextStyle,           /* tp_init */
+    (initproc) 0,           				  /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */
@@ -12157,7 +12568,7 @@ static PyHeapTypeObject SwigPyBuiltin__fz_text_char_s_type = {
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     (size_t)(((char*)&((SwigPyObject *) 64L)->dict) - (char*) 64L), /* tp_dictoffset */
-    (initproc) _wrap_new_TextChar,            /* tp_init */
+    (initproc) 0,				              /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */
@@ -12702,6 +13113,7 @@ static swig_type_info _swigt__p_fz_rect_s = {"_p_fz_rect_s", "fz_rect *|struct f
 static swig_type_info _swigt__p_fz_text_char_s = {"_p_fz_text_char_s", "fz_text_char *|struct fz_text_char_s *|fz_text_char_s *", 0, 0, (void*)&SwigPyBuiltin__fz_text_char_s_clientdata, 0};
 static swig_type_info _swigt__p_fz_text_style_s = {"_p_fz_text_style_s", "fz_text_style *|struct fz_text_style_s *|fz_text_style_s *", 0, 0, (void*)&SwigPyBuiltin__fz_text_style_s_clientdata, 0};
 static swig_type_info _swigt__p_fz_write_options_s = {"_p_fz_write_options_s", "fz_write_options *|struct fz_write_options_s *|fz_write_options_s *", 0, 0, (void*)&SwigPyBuiltin__fz_write_options_s_clientdata, 0};
+static swig_type_info _swigt__p_fz_annot_s = {"_p_fz_annot_s", "fz_annot *|struct fz_annot_s *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_Device,
@@ -12727,6 +13139,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_fz_text_style_s,
   &_swigt__p_fz_write_options_s,
   &_swigt__p_fz_outline_s,
+  &_swigt__p_fz_annot_s,
 };
 
 static swig_cast_info _swigc__p_Device[] = {  {&_swigt__p_Device, 0, 0, 0},{0, 0, 0, 0}};
@@ -12752,6 +13165,7 @@ static swig_cast_info _swigc__p_fz_rect_s[] = {  {&_swigt__p_fz_rect_s, 0, 0, 0}
 static swig_cast_info _swigc__p_fz_text_char_s[] = {  {&_swigt__p_fz_text_char_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_text_style_s[] = {  {&_swigt__p_fz_text_style_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_write_options_s[] = {  {&_swigt__p_fz_write_options_s, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_fz_annot_s[] = {  {&_swigt__p_fz_annot_s, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_Device,
@@ -12777,6 +13191,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_fz_text_style_s,
   _swigc__p_fz_write_options_s,
   _swigc__p_fz_outline_s,
+  _swigc__p_fz_annot_s,
 };
 
 
@@ -12848,7 +13263,7 @@ SWIG_InitializeModule(void *clientdata) {
   size_t i;
   swig_module_info *module_head, *iter;
   int found, init;
-  (void *)clientdata;
+  /*(void *)clientdata;*/
   
   /* check to see if the circular list has been setup, if not, set it up */
   if (swig_module.next==0) {
@@ -13696,6 +14111,17 @@ SWIG_init(void) {
   d = md;
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "FZ_STORE_UNLIMITED",SWIG_From_int((int)(FZ_STORE_UNLIMITED)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "FZ_STORE_DEFAULT",SWIG_From_int((int)(FZ_STORE_DEFAULT)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "fz_link_flag_l_valid",SWIG_From_int((int)(fz_link_flag_l_valid)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "fz_link_flag_t_valid",SWIG_From_int((int)(fz_link_flag_t_valid)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "fz_link_flag_r_valid",SWIG_From_int((int)(fz_link_flag_r_valid)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "fz_link_flag_b_valid",SWIG_From_int((int)(fz_link_flag_b_valid)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "fz_link_flag_fit_h",SWIG_From_int((int)(fz_link_flag_fit_h)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "fz_link_flag_fit_v",SWIG_From_int((int)(fz_link_flag_fit_v)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "fz_link_flag_r_is_zoom",SWIG_From_int((int)(fz_link_flag_r_is_zoom)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "fz_expand_images",SWIG_From_int((int)(fz_expand_images)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "fz_expand_fonts",SWIG_From_int((int)(fz_expand_fonts)));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "fz_expand_all",SWIG_From_int((int)(fz_expand_all)));
+
   
   /* type '::fz_point_s' */
   builtin_pytype = (PyTypeObject *)&SwigPyBuiltin__fz_point_s_type;

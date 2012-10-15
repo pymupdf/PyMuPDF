@@ -10,8 +10,8 @@
     
     <title>Link &mdash; python-fitz 0.0.9 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -22,9 +22,9 @@
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="top" title="python-fitz 0.0.9 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="Matrix" href="matrix.html" />
@@ -59,8 +59,8 @@
 <h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="25%" />
-<col width="75%" />
+<col width="26%" />
+<col width="74%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#Link.get_rect" title="Link.get_rect"><tt class="xref py py-meth docutils literal"><span class="pre">get_rect</span></tt></a></td>
@@ -73,12 +73,15 @@
 <td>Get a UTF-8 encoded URI to launch.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Link.get_page" title="Link.get_page"><tt class="xref py py-meth docutils literal"><span class="pre">get_page</span></tt></a></td>
-<td>Get the target page number to move to.</td>
+<td>Get the target page number of a internal link</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Link.get_page_lt" title="Link.get_page_lt"><tt class="xref py py-meth docutils literal"><span class="pre">get_page_lt</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Link.get_page_flags" title="Link.get_page_flags"><tt class="xref py py-meth docutils literal"><span class="pre">get_page_flags</span></tt></a></td>
+<td>Get the validity and meaning of a internal link, see <a class="reference internal" href="vars.html#fz_link_flag" title="fz_link_flag"><tt class="xref py py-data docutils literal"><span class="pre">fz_link_flag</span></tt></a></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Link.get_page_lt" title="Link.get_page_lt"><tt class="xref py py-meth docutils literal"><span class="pre">get_page_lt</span></tt></a></td>
 <td>Get the top left corner of the destination bounding box.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Link.get_page_rb" title="Link.get_page_rb"><tt class="xref py py-meth docutils literal"><span class="pre">get_page_rb</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Link.get_page_rb" title="Link.get_page_rb"><tt class="xref py py-meth docutils literal"><span class="pre">get_page_rb</span></tt></a></td>
 <td>Get the bottom right corner of the destination bounding box.</td>
 </tr>
 </tbody>
@@ -134,7 +137,27 @@
 <dl class="method">
 <dt id="Link.get_page">
 <tt class="descname">get_page</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#Link.get_page" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the target page number to move to.</p>
+<dd><p>Get the target page number of a internal link</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Link.get_page_flags">
+<tt class="descname">get_page_flags</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#Link.get_page_flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the validity and meaning of a internal link, see <a class="reference internal" href="vars.html#fz_link_flag" title="fz_link_flag"><tt class="xref py py-data docutils literal"><span class="pre">fz_link_flag</span></tt></a>.</p>
+<blockquote>
+<div>The flags is a bitfield consisting of <a class="reference internal" href="vars.html#fz_link_flag" title="fz_link_flag"><tt class="xref py py-data docutils literal"><span class="pre">fz_link_flag</span></tt></a> describing the validity and meaning of the different parts of lr and rb. Link destinations are constructed (as far as possible) so that lt and rb can be treated as a bounding box, though the validity flags indicate which of the values was actually specified in the file.</div></blockquote>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#Link.get_page_lt" title="Link.get_page_lt"><tt class="xref py py-meth docutils literal"><span class="pre">get_page_lt</span></tt></a>, <a class="reference internal" href="#Link.get_page_rb" title="Link.get_page_rb"><tt class="xref py py-meth docutils literal"><span class="pre">get_page_rb</span></tt></a></p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -149,6 +172,10 @@
 <dt id="Link.get_page_lt">
 <tt class="descname">get_page_lt</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#Link.get_page_lt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the top left corner of the destination bounding box.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">For the returning point, (0, 0) is in the bottom left corner, which is different from <a class="reference internal" href="rect.html#rect"><em>Rect</em></a> and <a class="reference internal" href="bbox.html#bbox"><em>BBox</em></a>.</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -163,6 +190,10 @@
 <dt id="Link.get_page_rb">
 <tt class="descname">get_page_rb</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#Link.get_page_rb" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the bottom right corner of the destination bounding box.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">For the returning point, (0, 0) is in the bottom left corner, which is different from <a class="reference internal" href="rect.html#rect"><em>Rect</em></a> and <a class="reference internal" href="bbox.html#bbox"><em>BBox</em></a>.</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -201,7 +232,7 @@
                         title="next chapter"><strong>Matrix</strong></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/link.txt"
+    <li><a href="sources/link.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">

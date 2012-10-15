@@ -63,6 +63,10 @@ typedef struct
     PyObject *ctx_obj;
 }Outline;
 
+
+void lock_mutex(void *user, int lock);
+void unlock_mutex(void *user, int lock);
+
 #define SET_CTX_OBJ(context, context_obj) result->ctx = context;\
 result->ctx_obj=context_obj;Py_INCREF(context_obj);
 
