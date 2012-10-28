@@ -4,7 +4,7 @@ README for python-fitz
 
 python-fitz is a set of python bindings for MuPDF's rendering library. Most of the work is done by SWIG with ``-builtin`` option on.
 
-A online document can be found at http://rk700.github.com/python-fitz/
+A online document can be found at http://rk700.github.com/python-fitz/index.html
 
 Dependencies
 ------------
