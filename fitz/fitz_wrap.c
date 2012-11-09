@@ -6507,7 +6507,7 @@ SWIGINTERN PyObject *_wrap_OutlineItem_get_page_lt(PyObject *self, PyObject *arg
 	fz_outline *arg1 = (fz_outline *) 0;
 	void *argp1 = 0;
 	int res1 = 0;
-    fz_point *result;
+    fz_point *result = 0;
 
 	if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
 	res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_outline_s, 0 |  0 );
@@ -6519,7 +6519,12 @@ SWIGINTERN PyObject *_wrap_OutlineItem_get_page_lt(PyObject *self, PyObject *arg
 	if (dest->kind != FZ_LINK_NONE) {
 		result = &(dest->ld.gotor.lt);
 	}
-    resultobj = SWIG_NewPointerObj((fz_point *)memcpy((fz_point *)malloc(sizeof(fz_point)),result,sizeof(fz_point)), SWIGTYPE_p_fz_point_s, SWIG_POINTER_OWN |  0 );
+    if (result != NULL) {
+        resultobj = SWIG_NewPointerObj((fz_point *)memcpy((fz_point *)malloc(sizeof(fz_point)),result,sizeof(fz_point)), SWIGTYPE_p_fz_point_s, SWIG_POINTER_OWN |  0 );
+    }
+    else {
+        resultobj = Py_None;
+    }
 	return resultobj;
 fail:
 	return NULL;
@@ -6530,7 +6535,7 @@ SWIGINTERN PyObject *_wrap_OutlineItem_get_page_rb(PyObject *self, PyObject *arg
 	fz_outline *arg1 = (fz_outline *) 0;
 	void *argp1 = 0;
 	int res1 = 0;
-    fz_point *result;
+    fz_point *result = 0;
 
 	if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
 	res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_outline_s, 0 |  0 );
@@ -6542,7 +6547,12 @@ SWIGINTERN PyObject *_wrap_OutlineItem_get_page_rb(PyObject *self, PyObject *arg
 	if (dest->kind != FZ_LINK_NONE) {
 		result = &(dest->ld.gotor.rb);
 	}
-    resultobj = SWIG_NewPointerObj((fz_point *)memcpy((fz_point *)malloc(sizeof(fz_point)),result,sizeof(fz_point)), SWIGTYPE_p_fz_point_s, SWIG_POINTER_OWN |  0 );
+    if (result != NULL) {
+        resultobj = SWIG_NewPointerObj((fz_point *)memcpy((fz_point *)malloc(sizeof(fz_point)),result,sizeof(fz_point)), SWIGTYPE_p_fz_point_s, SWIG_POINTER_OWN |  0 );
+    }
+    else {
+        resultobj = Py_None;
+    }
 	return resultobj;
 fail:
 	return NULL;
