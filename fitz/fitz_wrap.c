@@ -3507,6 +3507,75 @@ static swig_module_info swig_module = {swig_types, 24, 0, 0, 0, 0};
 
 #define SWIG_From_double   PyFloat_FromDouble 
 
+typedef struct QueueElmt_ {
+    void *data;
+    struct QueueElmt_ *next;
+} QueueElmt;
+
+typedef struct Queue_ {
+    int size;
+    void (*destroy)(void *data);
+    QueueElmt *head;
+    QueueElmt *tail;
+} Queue;
+
+#define queue_size(queue) ((queue)->size)
+#define queue_head(queue) ((queue)->head)
+#define queue_tail(queue) ((queue)->tail)
+
+static void queue_init(Queue* queue, void (*destroy)(void *data)) {
+    queue->size = 0;
+    queue->destroy = destroy;
+    queue->head = NULL;
+    queue->tail = NULL;
+}
+
+static int queue_enqueue(Queue *queue, void *data) {
+    QueueElmt *new_elmt;
+    if((new_elmt = (QueueElmt *)malloc(sizeof(QueueElmt))) == NULL) 
+        return -1;
+    new_elmt->data = data;
+    new_elmt->next = NULL;
+
+    if(queue->tail == NULL) {
+        queue->head = new_elmt;
+        queue->tail = new_elmt;
+    }
+    else {
+        queue->tail->next = new_elmt;
+        queue->tail = new_elmt;
+    }
+    queue->size++;
+    return 0;
+}
+
+static int queue_dequeue(Queue *queue, void **data) {
+    QueueElmt *old_elmt;
+    if(queue_size(queue) == 0)
+        return -1;
+    *data = queue->head->data;
+    old_elmt = queue->head;
+    queue->head = old_elmt->next;
+    if(queue_size(queue) == 1)
+        queue->tail = NULL;
+    free(old_elmt);
+    queue->size--;
+    return 0;
+}
+
+
+static void queue_destroy(Queue *queue) {
+    void *data;
+    while(queue_size(queue) > 0) {
+        if(!queue_dequeue(queue, (void **)&data)) {
+            if(queue->destroy)
+                queue->destroy(data);
+        }
+    }
+}
+
+
+
 SWIGINTERN fz_text_char text_page_text_char_at(fz_text_page *page, int idx) {
     static fz_text_char emptychar = { {0,0,0,0}, ' ' };
     fz_text_block *block;
@@ -3535,6 +3604,27 @@ SWIGINTERN fz_text_char text_page_text_char_at(fz_text_page *page, int idx) {
     return emptychar;
 }
 
+SWIGINTERN int KMP_prefix(const char *s, int **p, int *size) {
+    int n = strlen(s)+1;
+    int *temp;
+    if((temp=(int *)malloc(n*sizeof(int))) == NULL)
+        return -1;
+    temp[0] = -1;
+    temp[1] = 0;
+    int i, j;
+    for(i=2; i<n; i++) {
+        j = temp[i-1];
+        while(s[j] != s[i-1] && j>0)
+            j = temp[j];
+        if(s[j] == s[i-1])
+            j += 1;
+        temp[i] = j;
+    }
+    *p = temp;
+    *size = n;
+    return 0;
+}
+
 SWIGINTERN PyObject *text_page_search(PyObject *self, fz_text_page *page, char *s, int ic) {
     fz_text_block *block;
     fz_text_line *line;
@@ -3543,63 +3633,55 @@ SWIGINTERN PyObject *text_page_search(PyObject *self, fz_text_page *page, char *
 	PyObject *result = PyList_New(0);
 	PyObject *bbox_obj = PyList_New(0);
 
-	int c = 0;
-	int tc = 0;
-	char *s0 = s;
 	fz_bbox bbox = fz_empty_bbox;
 	PyObject *hitbbox;
 
+    int n, j=0, k, i;
+    int *p;
+    if(KMP_prefix(s, &p, &n)) {
+        return SWIG_Py_Void();
+    }
+    Queue text_rects;
+    queue_init(&text_rects, NULL);
+    void *data;
     for (block = page->blocks; block < page->blocks + page->len; block++) {
         for (line = block->lines; line < block->lines + block->len; line++) {
             for (span = line->spans; span < line->spans + line->len; span++) {
 				for (text = span->text; text < span->text + span->len; text++) {
-					if (!(*s0)) {
-						hitbbox = SWIG_NewPointerObj((fz_bbox *)memcpy((fz_bbox *)malloc(sizeof(fz_bbox)),&bbox,sizeof(fz_bbox)), SWIGTYPE_p_fz_bbox_s, SWIG_POINTER_OWN |  0 );
-						PyList_Append(bbox_obj, hitbbox);
-						Py_DECREF(hitbbox);
-						PyList_Append(result, bbox_obj);
-						Py_DECREF(bbox_obj);
-						s0 = s;
-						bbox = fz_empty_bbox;
-						bbox_obj = PyList_New(0);
-					}
-					else {
-						c = *s0++;
-						if (ic) {
-							c = tolower(c);
-							tc = tolower(text->c);
-						}
-						else {
-							tc = text->c;
-						}
-						if (c == tc) {
-							bbox = fz_union_bbox(bbox, fz_bbox_covering_rect(text->bbox));
-						}
-						else {
-							if (PyList_GET_SIZE(bbox_obj) > 0) {
-								Py_DECREF(bbox_obj);
-								bbox_obj = PyList_New(0);
-							}
-							s0 = s;
-							bbox = fz_empty_bbox;
-						}
-					}
-				}
-			}
-		    if (s0[0] == ' ' && c != ' ') {
-				s0++; 
-				if (!fz_is_empty_bbox(bbox)) {
-					hitbbox = SWIG_NewPointerObj((fz_bbox *)memcpy((fz_bbox *)malloc(sizeof(fz_bbox)),&bbox,sizeof(fz_bbox)), SWIGTYPE_p_fz_bbox_s, SWIG_POINTER_OWN |  0 );
-					PyList_Append(bbox_obj, hitbbox);
-					Py_DECREF(hitbbox);
-					bbox = fz_empty_bbox;
+                    while(j>0 && (ic ? tolower(s[j])!=tolower(text->c) : s[j]!=text->c)) {
+                        k = p[j];
+                        for(i=k; i<j; i++) {
+                            queue_dequeue(&text_rects, (void **)&data);
+                        }
+                        j = k;
+                    }
+                    if(ic ? tolower(s[j])==tolower(text->c) : s[j]==text->c) {
+                        j += 1;
+                        queue_enqueue(&text_rects, (void *)&(text->bbox));
+                    }
+                    if(j == n-1) {
+                        j == p[j];
+                        bbox.x0 = (int)(((fz_rect *)queue_head(&text_rects)->data)->x0);
+                        bbox.y0 = (int)(((fz_rect *)queue_head(&text_rects)->data)->y0);
+                        bbox.x1 = (int)(((fz_rect *)queue_tail(&text_rects)->data)->x1);
+                        bbox.y1 = (int)(((fz_rect *)queue_tail(&text_rects)->data)->y1);
+                        hitbbox = SWIG_NewPointerObj((fz_bbox *)memcpy((fz_bbox *)malloc(sizeof(fz_bbox)),&bbox,sizeof(fz_bbox)), SWIGTYPE_p_fz_bbox_s, SWIG_POINTER_OWN |  0 );
+                        PyList_Append(bbox_obj, hitbbox);
+                        Py_DECREF(hitbbox);
+                        PyList_Append(result, bbox_obj);
+                        Py_DECREF(bbox_obj);
+                        bbox = fz_empty_bbox;
+                        bbox_obj = PyList_New(0);
+                        queue_destroy(&text_rects);
+                    }
 				}
 			}
 		}
 	}
+    free(p);
+    queue_destroy(&text_rects);
 	return result;
 }
-
 
 SWIGINTERN int text_page_get_textlen(fz_text_page *page) {
     fz_text_block *block;
