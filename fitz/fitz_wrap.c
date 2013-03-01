@@ -3455,7 +3455,7 @@ SwigPyBuiltin_SetMetaType (PyTypeObject *type, PyTypeObject *metatype)
 #define SWIGTYPE_p_TextPage swig_types[8]
 #define SWIGTYPE_p_TextSheet swig_types[9]
 #define SWIGTYPE_p_char swig_types[10]
-#define SWIGTYPE_p_fz_bbox_s swig_types[11]
+#define SWIGTYPE_p_fz_irect_s swig_types[11]
 #define SWIGTYPE_p_fz_colorspace_s swig_types[12]
 #define SWIGTYPE_p_fz_context_s swig_types[13]
 #define SWIGTYPE_p_fz_cookie_s swig_types[14]
@@ -3574,8 +3574,6 @@ static void queue_destroy(Queue *queue) {
     }
 }
 
-
-
 SWIGINTERN fz_text_char text_page_text_char_at(fz_text_page *page, int idx) {
     static fz_text_char emptychar = { {0,0,0,0}, ' ' };
     fz_text_block *block;
@@ -3625,16 +3623,67 @@ SWIGINTERN int KMP_prefix(const char *s, int **p, int *size) {
     return 0;
 }
 
+SWIGINTERN fz_irect * fz_union_irect(fz_irect *restrict a, const fz_irect *restrict b)
+{
+    if (fz_is_empty_irect(b)) return a;
+    if (fz_is_empty_irect(a)) {
+        *a = *b; 
+        return a;
+    }   
+    if (fz_is_infinite_irect(a)) return a;
+    if (fz_is_infinite_irect(b)) {
+        *a = *b; 
+        return a;
+    }   
+    if (a->x0 > b->x0)
+        a->x0 = b->x0;
+    if (a->y0 > b->y0)
+        a->y0 = b->y0;
+    if (a->x1 < b->x1)
+        a->x1 = b->x1;
+    if (a->y1 < b->y1)
+        a->y1 = b->y1;
+    return a;
+}
+
+extern const fz_irect fz_infinite_irect;
+extern const fz_irect fz_empty_irect;
+extern const fz_irect fz_unit_irect;
+const fz_irect fz_unit_irect = { 0, 0, 1, 1 };
+
+
+SWIGINTERN fz_matrix *fz_concatm(fz_matrix *dst, const fz_matrix *one, const fz_matrix *two)
+{
+    dst->a = one->a * two->a + one->b * two->c;
+    dst->b = one->a * two->b + one->b * two->d;
+    dst->c = one->c * two->a + one->d * two->c;
+    dst->d = one->c * two->b + one->d * two->d;
+    dst->e = one->e * two->a + one->f * two->c + two->e;
+    dst->f = one->e * two->b + one->f * two->d + two->f;
+    return dst;
+}
+
+SWIGINTERN fz_irect *fz_transform_irect(fz_irect *restrict r, const fz_matrix *restrict m)
+{
+    fz_rect rect;
+    rect.x0 = r->x0;
+    rect.x1 = r->x1;
+    rect.y0 = r->y0;
+    rect.y1 = r->y1;
+    fz_round_rect(r, fz_transform_rect(&rect, m));
+    return r;
+}
+
 SWIGINTERN PyObject *text_page_search(PyObject *self, fz_text_page *page, char *s, int ic) {
     fz_text_block *block;
     fz_text_line *line;
     fz_text_span *span;
 	fz_text_char *text;
 	PyObject *result = PyList_New(0);
-	PyObject *bbox_obj = PyList_New(0);
+	PyObject *irect_obj = PyList_New(0);
 
-	fz_bbox bbox = fz_empty_bbox;
-	PyObject *hitbbox;
+	fz_irect irect = fz_empty_irect;
+	PyObject *hitirect;
 
     int n, j=0, k, i;
     int *p;
@@ -3661,17 +3710,17 @@ SWIGINTERN PyObject *text_page_search(PyObject *self, fz_text_page *page, char *
                     }
                     if(j == n-1) {
                         j == p[j];
-                        bbox.x0 = (int)(((fz_rect *)queue_head(&text_rects)->data)->x0);
-                        bbox.y0 = (int)(((fz_rect *)queue_head(&text_rects)->data)->y0);
-                        bbox.x1 = (int)(((fz_rect *)queue_tail(&text_rects)->data)->x1);
-                        bbox.y1 = (int)(((fz_rect *)queue_tail(&text_rects)->data)->y1);
-                        hitbbox = SWIG_NewPointerObj((fz_bbox *)memcpy((fz_bbox *)malloc(sizeof(fz_bbox)),&bbox,sizeof(fz_bbox)), SWIGTYPE_p_fz_bbox_s, SWIG_POINTER_OWN |  0 );
-                        PyList_Append(bbox_obj, hitbbox);
-                        Py_DECREF(hitbbox);
-                        PyList_Append(result, bbox_obj);
-                        Py_DECREF(bbox_obj);
-                        bbox = fz_empty_bbox;
-                        bbox_obj = PyList_New(0);
+                        irect.x0 = (int)(((fz_rect *)queue_head(&text_rects)->data)->x0);
+                        irect.y0 = (int)(((fz_rect *)queue_head(&text_rects)->data)->y0);
+                        irect.x1 = (int)(((fz_rect *)queue_tail(&text_rects)->data)->x1);
+                        irect.y1 = (int)(((fz_rect *)queue_tail(&text_rects)->data)->y1);
+                        hitirect = SWIG_NewPointerObj((fz_irect *)memcpy((fz_irect *)malloc(sizeof(fz_irect)),&irect,sizeof(fz_irect)), SWIGTYPE_p_fz_irect_s, SWIG_POINTER_OWN |  0 );
+                        PyList_Append(irect_obj, hitirect);
+                        Py_DECREF(hitirect);
+                        PyList_Append(result, irect_obj);
+                        Py_DECREF(irect_obj);
+                        irect = fz_empty_irect;
+                        irect_obj = PyList_New(0);
                         queue_destroy(&text_rects);
                     }
 				}
@@ -4107,51 +4156,51 @@ extern "C" {
 /*}*/
 
 
-SWIGINTERN PyObject *_wrap_Context_new_pixmap_with_bbox(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_Context_new_pixmap_with_irect(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   fz_context *arg1 = (fz_context *) 0 ;
   fz_colorspace *arg2 = (fz_colorspace *) 0 ;
-  fz_bbox arg3 ;
+  fz_irect *arg3 = (fz_irect *)0;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
-  void *argp3 ;
+  void *argp3 = 0 ;
   int res3 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   Pixmap *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:new_pixmap_with_bbox",&obj1,&obj2)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_pixmap_with_irect",&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_pixmap_with_bbox" "', argument " "1"" of type '" "Context""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_pixmap_with_irect" "', argument " "1"" of type '" "Context""'"); 
   }
   arg1 = (fz_context *)(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_colorspace_s, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_pixmap_with_bbox" "', argument " "2"" of type '" "Colorspace""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_pixmap_with_irect" "', argument " "2"" of type '" "Colorspace""'"); 
   }
   arg2 = (fz_colorspace *)(argp2);
   {
-    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_fz_bbox_s,  0 );
+    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_fz_irect_s,  0 );
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "new_pixmap_with_bbox" "', argument " "3"" of type '" "BBox""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "new_pixmap_with_irect" "', argument " "3"" of type '" "IRect""'"); 
     }  
     if (!argp3) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_pixmap_with_bbox" "', argument " "3"" of type '" "BBox""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_pixmap_with_irect" "', argument " "3"" of type '" "IRect""'");
     } else {
-      arg3 = *((fz_bbox *)(argp3));
+      arg3 = (fz_irect *)(argp3);
     }
   }
   fz_try(arg1) {
 	  result = (Pixmap *)malloc(sizeof(Pixmap));
-	  result->pix = fz_new_pixmap_with_bbox(arg1,arg2,arg3);
+	  result->pix = fz_new_pixmap_with_bbox(arg1,arg2,(const fz_irect *)arg3);
 	  SET_CTX_OBJ(arg1, self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Pixmap, SWIG_POINTER_OWN |  0 );
   }
   fz_catch(arg1) {
-	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new pixmap with bbox");
+	  SWIG_exception_fail(SWIG_UnknownError, "Cannot create new pixmap with irect");
   }
   return resultobj;
 fail:
@@ -4188,10 +4237,10 @@ fail:
 }
 
 
-/*SWIGINTERN PyObject *_wrap_new_bbox_device(PyObject *self, PyObject *args) {*/
+/*SWIGINTERN PyObject *_wrap_new_irect_device(PyObject *self, PyObject *args) {*/
   /*PyObject *resultobj = 0;*/
   /*fz_context *arg1 = (fz_context *) 0 ;*/
-  /*fz_bbox *arg2 = (fz_bbox *) 0 ;*/
+  /*fz_irect *arg2 = (fz_irect *) 0 ;*/
   /*void *argp1 = 0 ;*/
   /*int res1 = 0 ;*/
   /*void *argp2 = 0 ;*/
@@ -4200,27 +4249,27 @@ fail:
   /*PyObject * obj1 = 0 ;*/
   /*Device *result = 0 ;*/
   
-  /*if (!PyArg_ParseTuple(args,(char *)"OO:new_bbox_device",&obj0,&obj1)) SWIG_fail;*/
+  /*if (!PyArg_ParseTuple(args,(char *)"OO:new_irect_device",&obj0,&obj1)) SWIG_fail;*/
   /*res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );*/
   /*if (!SWIG_IsOK(res1)) {*/
-    /*SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_bbox_device" "', argument " "1"" of type '" "Context *""'"); */
+    /*SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_irect_device" "', argument " "1"" of type '" "Context *""'"); */
   /*}*/
   /*arg1 = (fz_context *)(argp1);*/
-  /*res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_bbox_s, 0 |  0 );*/
+  /*res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_irect_s, 0 |  0 );*/
   /*if (!SWIG_IsOK(res2)) {*/
-    /*SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_bbox_device" "', argument " "2"" of type '" "BBox *""'"); */
+    /*SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_irect_device" "', argument " "2"" of type '" "IRect *""'"); */
   /*}*/
-  /*arg2 = (fz_bbox *)(argp2);*/
+  /*arg2 = (fz_irect *)(argp2);*/
   /*fz_try(arg1) {*/
 	  /*result = (Device *)malloc(sizeof(Device)) ;*/
-	  /*result->dev = fz_new_bbox_device(arg1,arg2);*/
+	  /*result->dev = fz_new_irect_device(arg1,arg2);*/
 	  /*result->ctx_obj = obj0;*/
 	  /*Py_INCREF(obj0);*/
 	  /*resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Device, SWIG_POINTER_OWN |  0 );*/
 	  /*return resultobj;*/
   /*}*/
   /*fz_catch(arg1) {*/
-	  /*SWIG_exception_fail(SWIG_UnknownError, "Cannot create new bbox device");*/
+	  /*SWIG_exception_fail(SWIG_UnknownError, "Cannot create new irect device");*/
   /*}*/
 /*fail:*/
   /*return NULL;*/
@@ -4270,7 +4319,7 @@ fail:
 SWIGINTERN PyObject *_wrap_Pixmap_new_draw_device(PyObject *self, PyObject *args, PyObject *kwargs) {
   PyObject *resultobj = 0;
   Pixmap *arg1 = (Pixmap *) 0 ;
-  fz_bbox arg2 ;
+  fz_irect *arg2 = (fz_irect *) 0;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 ;
@@ -4278,7 +4327,7 @@ SWIGINTERN PyObject *_wrap_Pixmap_new_draw_device(PyObject *self, PyObject *args
   PyObject * obj1 = 0 ;
   Device *result = 0 ;
   char *kwnames[] = {
-	  (char *)"bbox", NULL
+	  (char *)"irect", NULL
   };
   
   if (!PyArg_ParseTupleAndKeywords(args,kwargs,(char *)"|O:Pixmap_new_draw_device",kwnames,&obj1)) SWIG_fail;
@@ -4289,20 +4338,20 @@ SWIGINTERN PyObject *_wrap_Pixmap_new_draw_device(PyObject *self, PyObject *args
   arg1 = (Pixmap *)(argp1);
   if (obj1)
   {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_fz_bbox_s,  0 );
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_fz_irect_s,  0 );
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_draw_device" "', argument " "2"" of type '" "BBox""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_draw_device" "', argument " "2"" of type '" "IRect""'"); 
     }  
     if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_draw_device" "', argument " "2"" of type '" "BBox""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_draw_device" "', argument " "2"" of type '" "IRect""'");
     } else {
-      arg2 = *((fz_bbox *)(argp2));
+      arg2 = (fz_irect *)(argp2);
     }
   }
 
   fz_try(arg1->ctx) {
 	  result = (Device *)malloc(sizeof(Device)) ;
-	  if (obj1) result->dev = fz_new_draw_device_with_bbox(arg1->ctx, arg1->pix,arg2);
+	  if (obj1) result->dev = fz_new_draw_device_with_bbox(arg1->ctx, arg1->pix, (const fz_irect *)arg2);
 	  else result->dev = fz_new_draw_device(arg1->ctx, arg1->pix);
 	  result->ctx_obj = arg1->ctx_obj;
 	  Py_INCREF(arg1->ctx_obj);
@@ -4472,11 +4521,11 @@ fail:
   return NULL;
 }
 
-SWIGINTERN PyObject *_wrap_Context_new_pixmap_with_bbox_and_data(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_Context_new_pixmap_with_irect_and_data(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   fz_context *arg1 = (fz_context *) 0 ;
   fz_colorspace *arg2 = (fz_colorspace *) 0 ;
-  fz_bbox *arg3 ;
+  fz_irect *arg3 = 0;
   char *arg4 = (char *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -4488,32 +4537,32 @@ SWIGINTERN PyObject *_wrap_Context_new_pixmap_with_bbox_and_data(PyObject *self,
   PyObject * obj2 = 0 ;
   Pixmap *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOs:fz_new_pixmap_with_bbox_and_data",&obj1,&obj2,&arg4)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOs:fz_new_pixmap_with_irect_and_data",&obj1,&obj2,&arg4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_context_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_pixmap_with_bbox_and_data" "', argument " "1"" of type '" "Context""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_pixmap_with_irect_and_data" "', argument " "1"" of type '" "Context""'"); 
   }
   arg1 = (fz_context *)(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_colorspace_s, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_pixmap_with_bbox_and_data" "', argument " "2"" of type '" "Colorspace""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_pixmap_with_irect_and_data" "', argument " "2"" of type '" "Colorspace""'"); 
   }
   arg2 = (fz_colorspace *)(argp2);
 
   {
-    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_fz_bbox_s,  0 );
+    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_fz_irect_s,  0 );
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "new_pixmap_with_bbox_and_data" "', argument " "3"" of type '" "BBox""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "new_pixmap_with_irect_and_data" "', argument " "3"" of type '" "IRect""'"); 
     }  
     if (!argp3) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_pixmap_with_bbox_and_data" "', argument " "3"" of type '" "BBox""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_pixmap_with_irect_and_data" "', argument " "3"" of type '" "IRect""'");
     } else {
-      arg3 = (fz_bbox *)(argp3);
+      arg3 = (fz_irect *)(argp3);
     }
   }
   fz_try(arg1) {
 	  result = (Pixmap *)malloc(sizeof(Pixmap)) ;
-	  result->pix = (fz_pixmap *)fz_new_pixmap_with_bbox_and_data(arg1,arg2,*arg3,(unsigned char *)arg4);
+	  result->pix = (fz_pixmap *)fz_new_pixmap_with_bbox_and_data(arg1,arg2,arg3,(unsigned char *)arg4);
 	  SET_CTX_OBJ(arg1, self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Pixmap, SWIG_POINTER_OWN |  0 );
   }
@@ -4556,7 +4605,7 @@ fail:
 SWIGINTERN PyObject *_wrap_Context_new_text_page(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   fz_context *arg1 = (fz_context *) 0 ;
-  fz_rect arg2 ;
+  fz_rect *arg2 = 0;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 ;
@@ -4578,12 +4627,12 @@ SWIGINTERN PyObject *_wrap_Context_new_text_page(PyObject *self, PyObject *args)
     if (!argp2) {
       SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "new_text_page" "', argument " "2"" of type '" "Rect""'");
     } else {
-      arg2 = *((fz_rect *)(argp2));
+      arg2 = (fz_rect *)(argp2);
     }
   }
   fz_try(arg1) {
 	  result = (TextPage *)malloc(sizeof(TextPage)) ;
-	  result->text_page = fz_new_text_page(arg1,arg2);
+	  result->text_page = fz_new_text_page(arg1,(const fz_rect *)arg2);
 	  SET_CTX_OBJ(arg1,self);
 	  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_TextPage, SWIG_POINTER_OWN |  0 );
   }
@@ -4624,21 +4673,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Pixmap_get_bbox(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_Pixmap_get_irect(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   Pixmap *arg1 = (Pixmap *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  fz_bbox result;
+  fz_irect irect;
+  fz_irect *result;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Pixmap, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_get_bbox" "', argument " "1"" of type '" "Pixmap *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_get_irect" "', argument " "1"" of type '" "Pixmap *""'"); 
   }
   arg1 = (Pixmap *)(argp1);
-  result = fz_pixmap_bbox(arg1->ctx, arg1->pix);
-  resultobj = SWIG_NewPointerObj((fz_bbox *)memcpy((fz_bbox *)malloc(sizeof(fz_bbox)),&result,sizeof(fz_bbox)), SWIGTYPE_p_fz_bbox_s, SWIG_POINTER_OWN |  0 );
+  result = fz_pixmap_bbox(arg1->ctx, arg1->pix, &irect);
+  resultobj = SWIG_NewPointerObj((fz_irect *)memcpy((fz_irect *)malloc(sizeof(fz_irect)),result,sizeof(fz_irect)), SWIGTYPE_p_fz_irect_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -4843,14 +4893,14 @@ fail:
 SWIGINTERN PyObject *_wrap_Pixmap_invert_pixmap(PyObject *self, PyObject *args, PyObject *kwargs) {
   PyObject *resultobj = 0;
   Pixmap *arg1 = (Pixmap *) 0 ;
-  fz_bbox arg2 ;
+  fz_irect *arg2 = 0;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0;
   int res2 = 0 ;
   PyObject * obj1 = 0 ;
   char *kwnames[] = {
-	  (char *)"bbox", NULL
+	  (char *)"irect", NULL
   };
   
   if (!PyArg_ParseTupleAndKeywords(args,kwargs,(char *)"|O:Pixmap_invert_pixmap",kwnames,&obj1)) SWIG_fail;
@@ -4861,17 +4911,17 @@ SWIGINTERN PyObject *_wrap_Pixmap_invert_pixmap(PyObject *self, PyObject *args, 
   arg1 = (Pixmap *)(argp1);
   if (obj1)
   {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_fz_bbox_s,  0 );
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_fz_irect_s,  0 );
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Pixmap_invert_pixmap" "', argument " "2"" of type '" "BBox""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Pixmap_invert_pixmap" "', argument " "2"" of type '" "IRect""'"); 
     }  
     if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Pixmap_invert_pixmap" "', argument " "2"" of type '" "BBox""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Pixmap_invert_pixmap" "', argument " "2"" of type '" "IRect""'");
     } else {
-      arg2 = *((fz_bbox *)(argp2));
+      arg2 = (fz_irect *)(argp2);
     }
   }
-  if (obj1) fz_invert_pixmap_rect(arg1->pix,arg2);
+  if (obj1) fz_invert_pixmap_rect(arg1->pix,(const fz_irect *)arg2);
   else fz_invert_pixmap(arg1->ctx, arg1->pix);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -5460,7 +5510,7 @@ SWIGINTERN PyObject *_wrap_Page_run_page(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   Page *arg1 = (Page *) 0 ;
   Device *arg2 = (Device *) 0 ;
-  fz_matrix arg3 ;
+  fz_matrix *arg3 ;
   fz_cookie *arg4 = (fz_cookie *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -5493,7 +5543,7 @@ SWIGINTERN PyObject *_wrap_Page_run_page(PyObject *self, PyObject *args) {
     if (!argp3) {
       SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Page_run_page" "', argument " "3"" of type '" "Matrix""'");
     } else {
-      arg3 = *((fz_matrix *)(argp3));
+      arg3 = (fz_matrix *)(argp3);
     }
   }
   res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_fz_cookie_s, 0 |  0 );
@@ -5501,7 +5551,7 @@ SWIGINTERN PyObject *_wrap_Page_run_page(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "Page_run_page" "', argument " "4"" of type '" "Cookie *""'"); 
   }
   arg4 = (fz_cookie *)(argp4);
-  fz_run_page(arg1->doc->doc,arg1->page,arg2->dev,arg3,arg4);
+  fz_run_page(arg1->doc->doc,arg1->page,arg2->dev,(const fz_matrix *)arg3,arg4);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -5550,7 +5600,8 @@ SWIGINTERN PyObject *_wrap_Page_bound_page(PyObject *self, PyObject *args) {
   Page *arg1 = (Page *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  fz_rect result;
+  fz_rect rect;
+  fz_rect *result;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Page, 0 |  0 );
@@ -5558,8 +5609,8 @@ SWIGINTERN PyObject *_wrap_Page_bound_page(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_bound_page" "', argument " "1"" of type '" "Page *""'"); 
   }
   arg1 = (Page *)(argp1);
-  result = fz_bound_page(arg1->doc->doc, arg1->page);
-  resultobj = SWIG_NewPointerObj((fz_rect *)memcpy((fz_rect *)malloc(sizeof(fz_rect)),&result,sizeof(fz_rect)), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_OWN |  0 );
+  result = fz_bound_page(arg1->doc->doc, arg1->page, &rect);
+  resultobj = SWIG_NewPointerObj((fz_rect *)memcpy((fz_rect *)malloc(sizeof(fz_rect)),result,sizeof(fz_rect)), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -5698,12 +5749,14 @@ SWIGINTERN PyObject *_wrap_TextSheet_print_text_sheet(PyObject *self, PyObject *
   arg2 = (char *)(buf2);
   FILE *fp = fopen(arg2,"w"); 
   if(fp == NULL) SWIG_fail;
+  fz_output *output = fz_new_output_file(arg1->ctx, fp);
   fz_try(arg1->ctx) {
-	  fz_print_text_sheet(arg1->ctx,fp,arg1->text_sheet);
+	  fz_print_text_sheet(arg1->ctx,output,arg1->text_sheet);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   }
   fz_always(arg1->ctx) {
+      fz_close_output(output);
 	  fclose(fp);
   }
   fz_catch(arg1->ctx) {
@@ -5774,8 +5827,8 @@ SWIGINTERN PyObject *_wrap_DisplayList_run_display_list(PyObject *self, PyObject
   PyObject *resultobj = 0;
   DisplayList *arg1 = (DisplayList *) 0 ;
   Device *arg2 = (Device *) 0 ;
-  fz_matrix arg3 ;
-  fz_bbox arg4 ;
+  fz_matrix *arg3 ;
+  fz_rect *arg4 ;
   fz_cookie *arg5 = (fz_cookie *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -5811,18 +5864,18 @@ SWIGINTERN PyObject *_wrap_DisplayList_run_display_list(PyObject *self, PyObject
     if (!argp3) {
       SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DisplayList_run_display_list" "', argument " "3"" of type '" "Matrix""'");
     } else {
-      arg3 = *((fz_matrix *)(argp3));
+      arg3 = (fz_matrix *)(argp3);
     }
   }
   {
-    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_fz_bbox_s,  0 );
+    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_fz_rect_s,  0 );
     if (!SWIG_IsOK(res4)) {
-      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "DisplayList_run_display_list" "', argument " "4"" of type '" "BBox""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "DisplayList_run_display_list" "', argument " "4"" of type '" "Rect""'"); 
     }  
     if (!argp4) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DisplayList_run_display_list" "', argument " "4"" of type '" "BBox""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DisplayList_run_display_list" "', argument " "4"" of type '" "Rect""'");
     } else {
-      arg4 = *((fz_bbox *)(argp4));
+      arg4 = (fz_rect *)(argp4);
     }
   }
   res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_fz_cookie_s, 0 |  0 );
@@ -5830,7 +5883,7 @@ SWIGINTERN PyObject *_wrap_DisplayList_run_display_list(PyObject *self, PyObject
     SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "DisplayList_run_display_list" "', argument " "5"" of type '" "Cookie""'"); 
   }
   arg5 = (fz_cookie *)(argp5);
-  fz_run_display_list(arg1->display_list,arg2->dev,arg3,arg4,arg5);
+  fz_run_display_list(arg1->display_list,arg2->dev,(const fz_matrix *)arg3,(const fz_rect *)arg4,NULL);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -5916,12 +5969,14 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page_html(PyObject *self, PyObjec
   arg2 = (char *)(buf2);
   FILE *fp = fopen(arg2,"w"); 
   if(fp == NULL) SWIG_fail;
+  fz_output *output = fz_new_output_file(arg1->ctx, fp);
   fz_try(arg1->ctx) {
-	  fz_print_text_page_html(arg1->ctx,fp,arg1->text_page);
+	  fz_print_text_page_html(arg1->ctx,output,arg1->text_page);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   }
   fz_always(arg1->ctx) {
+      fz_close_output(output);
 	  fclose(fp);
   }
   fz_catch(arg1->ctx) {
@@ -5959,12 +6014,14 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page_xml(PyObject *self, PyObject
   arg2 = (char *)(buf2);
   FILE *fp = fopen(arg2,"w"); 
   if(fp == NULL) SWIG_fail;
+  fz_output *output = fz_new_output_file(arg1->ctx, fp);
   fz_try(arg1->ctx) {
-	  fz_print_text_page_xml(arg1->ctx,fp,arg1->text_page);
+	  fz_print_text_page_xml(arg1->ctx,output,arg1->text_page);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   }
   fz_always(arg1->ctx) {
+      fz_close_output(output);
 	  fclose(fp);
   }
   fz_catch(arg1->ctx) {
@@ -6001,12 +6058,14 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page(PyObject *self, PyObject *ar
   arg2 = (char *)(buf2);
   FILE *fp = fopen(arg2,"w"); 
   if(fp == NULL) SWIG_fail;
+  fz_output *output = fz_new_output_file(arg1->ctx, fp);
   fz_try(arg1->ctx) {
-	  fz_print_text_page(arg1->ctx,fp,arg1->text_page);
+	  fz_print_text_page(arg1->ctx,output,arg1->text_page);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   }
   fz_always(arg1->ctx) {
+      fz_close_output(output);
 	  fclose(fp);
   }
   fz_catch(arg1->ctx) {
@@ -6385,12 +6444,14 @@ SWIGINTERN PyObject *_wrap_Outline_print_outline_xml(PyObject *self, PyObject *a
   arg2 = (char *)(buf2);
   FILE *fp = fopen(arg2,"w"); 
   if(fp == NULL) SWIG_fail;
+  fz_output *output = fz_new_output_file(arg1->ctx, fp);
   fz_try(arg1->ctx) {
-	  fz_print_outline_xml(arg1->ctx,fp,arg1->outline);
+	  fz_print_outline_xml(arg1->ctx,output,arg1->outline);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   }
   fz_always(arg1->ctx) {
+      fz_close_output(output);
 	  fclose(fp);
   }
   fz_catch(arg1->ctx) {
@@ -6428,12 +6489,14 @@ SWIGINTERN PyObject *_wrap_Outline_print_outline(PyObject *self, PyObject *args)
   arg2 = (char *)(buf2);
   FILE *fp = fopen(arg2,"w"); 
   if(fp == NULL) SWIG_fail;
+  fz_output *output = fz_new_output_file(arg1->ctx, fp);
   fz_try(arg1->ctx) {
-	  fz_print_outline(arg1->ctx,fp,arg1->outline);
+	  fz_print_outline(arg1->ctx,output,arg1->outline);
 	  resultobj = SWIG_Py_Void();
 	  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   }
   fz_always(arg1->ctx) {
+      fz_close_output(output);
 	  fclose(fp);
   }
   fz_catch(arg1->ctx) {
@@ -7151,21 +7214,22 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Rect_bbox_covering_rect(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_Rect_irect_covering_rect(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  fz_bbox result;
+  fz_irect irect;
+  fz_irect *result;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_bbox_covering_rect" "', argument " "1"" of type '" "Rect""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_irect_covering_rect" "', argument " "1"" of type '" "Rect""'"); 
   }
-  arg1 = (struct fz_rect_s *)(argp1);
-  result = fz_bbox_covering_rect(*arg1);
-  resultobj = SWIG_NewPointerObj((fz_bbox *)memcpy((fz_bbox *)malloc(sizeof(fz_bbox)),&result,sizeof(fz_bbox)), SWIGTYPE_p_fz_bbox_s, SWIG_POINTER_OWN |  0 );
+  arg1 = (fz_rect *)(argp1);
+  result = fz_irect_from_rect(&irect, (const fz_rect *)arg1);
+  resultobj = SWIG_NewPointerObj((fz_irect *)memcpy((fz_irect *)malloc(sizeof(fz_irect)),result,sizeof(fz_irect)), SWIGTYPE_p_fz_irect_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -7174,19 +7238,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Rect_round_rect(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
+  fz_rect *arg1 = (fz_rect *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  fz_bbox result;
+  fz_irect irect;
+  fz_irect *result;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_round_rect" "', argument " "1"" of type '" "Rect""'"); 
   }
-  arg1 = (struct fz_rect_s *)(argp1);
-  result = fz_round_rect(*arg1);
-  resultobj = SWIG_NewPointerObj((fz_bbox *)memcpy((fz_bbox *)malloc(sizeof(fz_bbox)),&result,sizeof(fz_bbox)), SWIGTYPE_p_fz_bbox_s, SWIG_POINTER_OWN |  0 );
+  arg1 = (fz_rect *)(argp1);
+  result = fz_round_rect(&irect, arg1);
+  resultobj = SWIG_NewPointerObj((fz_irect *)memcpy((fz_irect *)malloc(sizeof(fz_irect)),result,sizeof(fz_irect)), SWIGTYPE_p_fz_irect_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -7195,21 +7260,21 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Rect_intersect_rect(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
-  fz_rect arg2 ;
+  fz_rect *arg1 = (fz_rect *) 0 ;
+  fz_rect *arg2 = 0;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 ;
   int res2 = 0 ;
   PyObject * obj1 = 0 ;
-  fz_rect result;
+  fz_rect *result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:Rect_intersect_rect",&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_intersect_rect" "', argument " "1"" of type '" "Rect""'"); 
   }
-  arg1 = (struct fz_rect_s *)(argp1);
+  arg1 = (fz_rect *)(argp1);
   {
     res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_fz_rect_s,  0 );
     if (!SWIG_IsOK(res2)) {
@@ -7218,12 +7283,12 @@ SWIGINTERN PyObject *_wrap_Rect_intersect_rect(PyObject *self, PyObject *args) {
     if (!argp2) {
       SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Rect_intersect_rect" "', argument " "2"" of type '" "Rect""'");
     } else {
-      arg2 = *((fz_rect *)(argp2));
+      arg2 = (fz_rect *)(argp2);
     }
   }
 
-  result = fz_intersect_rect(*arg1,arg2);
-  resultobj = SWIG_NewPointerObj((fz_rect *)memcpy((fz_rect *)malloc(sizeof(fz_rect)),&result,sizeof(fz_rect)), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_OWN |  0 );
+  result = fz_intersect_rect(arg1,arg2);
+  resultobj = SWIG_NewPointerObj((fz_rect *)memcpy((fz_rect *)malloc(sizeof(fz_rect)),result,sizeof(fz_rect)), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -7233,13 +7298,13 @@ fail:
 SWIGINTERN PyObject *_wrap_Rect_union_rect(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
-  fz_rect arg2 ;
+  fz_rect *arg2 = 0;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 ;
   int res2 = 0 ;
   PyObject * obj1 = 0 ;
-  fz_rect result;
+  fz_rect *result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:Rect_union_rect",&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
@@ -7255,11 +7320,11 @@ SWIGINTERN PyObject *_wrap_Rect_union_rect(PyObject *self, PyObject *args) {
     if (!argp2) {
       SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Rect_union_rect" "', argument " "2"" of type '" "Rect""'");
     } else {
-      arg2 = *((fz_rect *)(argp2));
+      arg2 = (fz_rect *)(argp2);
     }
   }
-  result = fz_union_rect(*arg1,arg2);
-  resultobj = SWIG_NewPointerObj((fz_rect *)memcpy((fz_rect *)malloc(sizeof(fz_rect)),&result,sizeof(fz_rect)), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_OWN |  0 );
+  result = fz_union_rect(arg1,(const fz_rect *)arg2);
+  resultobj = SWIG_NewPointerObj((fz_rect *)memcpy((fz_rect *)malloc(sizeof(fz_rect)),result,sizeof(fz_rect)), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -7394,9 +7459,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_BBox_x0_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_IRect_x0_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *arg1 = (struct fz_bbox_s *) 0 ;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7404,15 +7469,15 @@ SWIGINTERN PyObject *_wrap_BBox_x0_set(PyObject *self, PyObject *args) {
   int ecode2 = 0 ;
   PyObject * obj1 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:BBox_x0_set",&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_bbox_s, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"O:IRect_x0_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBox_x0_set" "', argument " "1"" of type '" "BBox""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_x0_set" "', argument " "1"" of type '" "IRect""'"); 
   }
-  arg1 = (struct fz_bbox_s *)(argp1);
+  arg1 = (struct fz_irect_s *)(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "BBox_x0_set" "', argument " "2"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IRect_x0_set" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = (int)(val2);
   if (arg1) (arg1)->x0 = arg2;
@@ -7423,19 +7488,19 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_BBox_x0_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_IRect_x0_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *arg1 = (struct fz_bbox_s *) 0 ;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int result;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_bbox_s, 0 |  0 );
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBox_x0_get" "', argument " "1"" of type '" "BBox""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_x0_get" "', argument " "1"" of type '" "IRect""'"); 
   }
-  arg1 = (struct fz_bbox_s *)(argp1);
+  arg1 = (struct fz_irect_s *)(argp1);
   result = (int) ((arg1)->x0);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
@@ -7444,9 +7509,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_BBox_y0_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_IRect_y0_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *arg1 = (struct fz_bbox_s *) 0 ;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7454,15 +7519,15 @@ SWIGINTERN PyObject *_wrap_BBox_y0_set(PyObject *self, PyObject *args) {
   int ecode2 = 0 ;
   PyObject * obj1 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:BBox_y0_set",&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_bbox_s, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"O:IRect_y0_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBox_y0_set" "', argument " "1"" of type '" "BBox""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_y0_set" "', argument " "1"" of type '" "IRect""'"); 
   }
-  arg1 = (struct fz_bbox_s *)(argp1);
+  arg1 = (struct fz_irect_s *)(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "BBox_y0_set" "', argument " "2"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IRect_y0_set" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = (int)(val2);
   if (arg1) (arg1)->y0 = arg2;
@@ -7473,19 +7538,19 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_BBox_y0_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_IRect_y0_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *arg1 = (struct fz_bbox_s *) 0 ;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int result;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_bbox_s, 0 |  0 );
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBox_y0_get" "', argument " "1"" of type '" "BBox""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_y0_get" "', argument " "1"" of type '" "IRect""'"); 
   }
-  arg1 = (struct fz_bbox_s *)(argp1);
+  arg1 = (struct fz_irect_s *)(argp1);
   result = (int) ((arg1)->y0);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
@@ -7494,9 +7559,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_BBox_x1_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_IRect_x1_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *arg1 = (struct fz_bbox_s *) 0 ;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7504,15 +7569,15 @@ SWIGINTERN PyObject *_wrap_BBox_x1_set(PyObject *self, PyObject *args) {
   int ecode2 = 0 ;
   PyObject * obj1 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:BBox_x1_set",&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_bbox_s, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"O:IRect_x1_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBox_x1_set" "', argument " "1"" of type '" "BBox""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_x1_set" "', argument " "1"" of type '" "IRect""'"); 
   }
-  arg1 = (struct fz_bbox_s *)(argp1);
+  arg1 = (struct fz_irect_s *)(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "BBox_x1_set" "', argument " "2"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IRect_x1_set" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = (int)(val2);
   if (arg1) (arg1)->x1 = arg2;
@@ -7523,19 +7588,19 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_BBox_x1_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_IRect_x1_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *arg1 = (struct fz_bbox_s *) 0 ;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int result;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_bbox_s, 0 |  0 );
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBox_x1_get" "', argument " "1"" of type '" "BBox""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_x1_get" "', argument " "1"" of type '" "IRect""'"); 
   }
-  arg1 = (struct fz_bbox_s *)(argp1);
+  arg1 = (struct fz_irect_s *)(argp1);
   result = (int) ((arg1)->x1);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
@@ -7544,9 +7609,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_BBox_y1_set(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_IRect_y1_set(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *arg1 = (struct fz_bbox_s *) 0 ;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7554,15 +7619,15 @@ SWIGINTERN PyObject *_wrap_BBox_y1_set(PyObject *self, PyObject *args) {
   int ecode2 = 0 ;
   PyObject * obj1 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:BBox_y1_set",&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_bbox_s, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"O:IRect_y1_set",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBox_y1_set" "', argument " "1"" of type '" "BBox""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_y1_set" "', argument " "1"" of type '" "IRect""'"); 
   }
-  arg1 = (struct fz_bbox_s *)(argp1);
+  arg1 = (struct fz_irect_s *)(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "BBox_y1_set" "', argument " "2"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "IRect_y1_set" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = (int)(val2);
   if (arg1) (arg1)->y1 = arg2;
@@ -7573,19 +7638,19 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_BBox_y1_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_IRect_y1_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *arg1 = (struct fz_bbox_s *) 0 ;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int result;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_bbox_s, 0 |  0 );
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBox_y1_get" "', argument " "1"" of type '" "BBox""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_y1_get" "', argument " "1"" of type '" "IRect""'"); 
   }
-  arg1 = (struct fz_bbox_s *)(argp1);
+  arg1 = (struct fz_irect_s *)(argp1);
   result = (int) ((arg1)->y1);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
@@ -7594,92 +7659,92 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_BBox_intersect_bbox(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_IRect_intersect_irect(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *arg1 = (struct fz_bbox_s *) 0 ;
-  fz_bbox arg2 ;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
+  fz_irect *arg2 =0;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 ;
   int res2 = 0 ;
   PyObject * obj1 = 0 ;
-  fz_bbox result;
+  fz_irect *result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:BBox_intersect_bbox",&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_bbox_s, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"O:IRect_intersect_irect",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBox_intersect_bbox" "', argument " "1"" of type '" "BBox""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_intersect_irect" "', argument " "1"" of type '" "IRect""'"); 
   }
-  arg1 = (struct fz_bbox_s *)(argp1);
+  arg1 = (struct fz_irect_s *)(argp1);
   {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_fz_bbox_s,  0 );
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_fz_irect_s,  0 );
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "BBox_intersect_bbox" "', argument " "2"" of type '" "BBox""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IRect_intersect_irect" "', argument " "2"" of type '" "IRect""'"); 
     }  
     if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "BBox_intersect_bbox" "', argument " "2"" of type '" "BBox""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "IRect_intersect_irect" "', argument " "2"" of type '" "IRect""'");
     } else {
-      arg2 = *((fz_bbox *)(argp2));
+      arg2 = (fz_irect *)(argp2);
     }
   }
 
-  result = fz_intersect_bbox(*arg1,arg2);
-  resultobj = SWIG_NewPointerObj((fz_bbox *)memcpy((fz_bbox *)malloc(sizeof(fz_bbox)),&result,sizeof(fz_bbox)), SWIGTYPE_p_fz_bbox_s, SWIG_POINTER_OWN |  0 );
+  result = fz_intersect_irect(arg1,(const fz_irect *)arg2);
+  resultobj = SWIG_NewPointerObj((fz_irect *)memcpy((fz_irect *)malloc(sizeof(fz_irect)),result,sizeof(fz_irect)), SWIGTYPE_p_fz_irect_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_BBox_union_bbox(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_IRect_union_irect(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *arg1 = (struct fz_bbox_s *) 0 ;
-  fz_bbox arg2 ;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
+  fz_irect *arg2 =0;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 ;
   int res2 = 0 ;
   PyObject * obj1 = 0 ;
-  fz_bbox result;
+  fz_irect *result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:BBox_union_bbox",&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_bbox_s, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"O:IRect_union_irect",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBox_union_bbox" "', argument " "1"" of type '" "BBox""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_union_irect" "', argument " "1"" of type '" "IRect""'"); 
   }
-  arg1 = (struct fz_bbox_s *)(argp1);
+  arg1 = (struct fz_irect_s *)(argp1);
   {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_fz_bbox_s,  0 );
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_fz_irect_s,  0 );
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "BBox_union_bbox" "', argument " "2"" of type '" "BBox""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IRect_union_irect" "', argument " "2"" of type '" "IRect""'"); 
     }  
     if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "BBox_union_bbox" "', argument " "2"" of type '" "BBox""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "IRect_union_irect" "', argument " "2"" of type '" "IRect""'");
     } else {
-      arg2 = *((fz_bbox *)(argp2));
+      arg2 = (fz_irect *)(argp2);
     }
   }
-  result = fz_union_bbox(*arg1,arg2);
-  resultobj = SWIG_NewPointerObj((fz_bbox *)memcpy((fz_bbox *)malloc(sizeof(fz_bbox)),&result,sizeof(fz_bbox)), SWIGTYPE_p_fz_bbox_s, SWIG_POINTER_OWN |  0 );
+  result = fz_union_irect(arg1,arg2);
+  resultobj = SWIG_NewPointerObj((fz_irect *)memcpy((fz_irect *)malloc(sizeof(fz_irect)),result,sizeof(fz_irect)), SWIGTYPE_p_fz_irect_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_BBox_get_width(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_IRect_get_width(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *arg1 = (struct fz_bbox_s *) 0 ;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int result;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_bbox_s, 0 |  0 );
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBox_get_width" "', argument " "1"" of type '" "BBox""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_get_width" "', argument " "1"" of type '" "IRect""'"); 
   }
-  arg1 = (struct fz_bbox_s *)(argp1);
+  arg1 = (struct fz_irect_s *)(argp1);
   result = arg1->x1 - arg1->x0;
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
@@ -7688,19 +7753,19 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_BBox_get_height(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_IRect_get_height(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *arg1 = (struct fz_bbox_s *) 0 ;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int result;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_bbox_s, 0 |  0 );
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBox_get_height" "', argument " "1"" of type '" "BBox""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_get_height" "', argument " "1"" of type '" "IRect""'"); 
   }
-  arg1 = (struct fz_bbox_s *)(argp1);
+  arg1 = (struct fz_irect_s *)(argp1);
   result = arg1->y1 - arg1->y0;
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
@@ -7709,19 +7774,19 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_BBox_is_empty(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_IRect_is_empty(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *arg1 = (struct fz_bbox_s *) 0 ;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int result;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_bbox_s, 0 |  0 );
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBox_is_empty" "', argument " "1"" of type '" "BBox""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_is_empty" "', argument " "1"" of type '" "IRect""'"); 
   }
-  arg1 = (struct fz_bbox_s *)(argp1);
+  arg1 = (struct fz_irect_s *)(argp1);
   result = (arg1->x0 == arg1->x1 || arg1->y0 == arg1->y1);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
@@ -7730,19 +7795,19 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_BBox_is_infinite(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_IRect_is_infinite(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *arg1 = (struct fz_bbox_s *) 0 ;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int result;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_bbox_s, 0 |  0 );
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "BBox_is_infinite" "', argument " "1"" of type '" "BBox""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_is_infinite" "', argument " "1"" of type '" "IRect""'"); 
   }
-  arg1 = (struct fz_bbox_s *)(argp1);
+  arg1 = (struct fz_irect_s *)(argp1);
   result = (arg1->x0 > arg1->x1 || arg1->y0 > arg1->y1);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
@@ -7750,9 +7815,9 @@ fail:
   return NULL;
 }
 
-SWIGINTERN int _wrap_new_BBox(PyObject *self, PyObject *args, PyObject *kwargs) {
+SWIGINTERN int _wrap_new_IRect(PyObject *self, PyObject *args, PyObject *kwargs) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *result = 0 ;
+  struct fz_irect_s *result = 0 ;
   int arg1 = 0;
   int arg2 = 0;
   int arg3 = 0;
@@ -7761,31 +7826,31 @@ SWIGINTERN int _wrap_new_BBox(PyObject *self, PyObject *args, PyObject *kwargs) 
 	  (char *)"x0", (char *)"y0", (char *)"x1", (char *)"y1", NULL
   };
   
-  if (!PyArg_ParseTupleAndKeywords(args,kwargs,(char *)"|iiii:BBox",kwnames,&arg1,&arg2,&arg3,&arg4)) SWIG_fail;
-  result = (struct fz_bbox_s *)calloc(1, sizeof(struct fz_bbox_s));
+  if (!PyArg_ParseTupleAndKeywords(args,kwargs,(char *)"|iiii:IRect",kwnames,&arg1,&arg2,&arg3,&arg4)) SWIG_fail;
+  result = (struct fz_irect_s *)calloc(1, sizeof(struct fz_irect_s));
   result->x0 = arg1;
   result->y0 = arg2;
   result->x1 = arg3;
   result->y1 = arg4;
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_bbox_s, SWIG_BUILTIN_INIT |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_irect_s, SWIG_BUILTIN_INIT |  0 );
   return resultobj == Py_None ? -1 : 0;
 fail:
   return -1;
 }
 
 
-SWIGINTERN PyObject *_wrap_delete_BBox(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_delete_IRect(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct fz_bbox_s *arg1 = (struct fz_bbox_s *) 0 ;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_bbox_s, SWIG_POINTER_DISOWN |  0 );
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_irect_s, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_BBox" "', argument " "1"" of type '" "BBox""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_IRect" "', argument " "1"" of type '" "IRect""'"); 
   }
-  arg1 = (struct fz_bbox_s *)(argp1);
+  arg1 = (struct fz_irect_s *)(argp1);
   free((char *) arg1);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -7810,18 +7875,18 @@ SWIGINTERN PyObject *Swig_var_fz_unit_rect_get(void) {
 }
 
 
-SWIGINTERN int Swig_var_fz_unit_bbox_set(PyObject *_val SWIGUNUSED) {
-  SWIG_Error(SWIG_AttributeError,"Variable fz_unit_bbox is read-only.");
+SWIGINTERN int Swig_var_fz_unit_irect_set(PyObject *_val SWIGUNUSED) {
+  SWIG_Error(SWIG_AttributeError,"Variable fz_unit_irect is read-only.");
   return 1;
 }
 
 
-SWIGINTERN PyObject *Swig_var_fz_unit_bbox_get(void) {
+SWIGINTERN PyObject *Swig_var_fz_unit_irect_get(void) {
   PyObject *pyobj = 0;
   PyObject *self = 0;
   
   (void)self;
-  pyobj = SWIG_NewPointerObj(SWIG_as_voidptr(&fz_unit_bbox), SWIGTYPE_p_fz_bbox_s,  0 );
+  pyobj = SWIG_NewPointerObj(SWIG_as_voidptr(&fz_unit_irect), SWIGTYPE_p_fz_irect_s,  0 );
   return pyobj;
 }
 
@@ -7842,18 +7907,18 @@ SWIGINTERN PyObject *Swig_var_fz_empty_rect_get(void) {
 }
 
 
-SWIGINTERN int Swig_var_fz_empty_bbox_set(PyObject *_val SWIGUNUSED) {
-  SWIG_Error(SWIG_AttributeError,"Variable fz_empty_bbox is read-only.");
+SWIGINTERN int Swig_var_fz_empty_irect_set(PyObject *_val SWIGUNUSED) {
+  SWIG_Error(SWIG_AttributeError,"Variable fz_empty_irect is read-only.");
   return 1;
 }
 
 
-SWIGINTERN PyObject *Swig_var_fz_empty_bbox_get(void) {
+SWIGINTERN PyObject *Swig_var_fz_empty_irect_get(void) {
   PyObject *pyobj = 0;
   PyObject *self = 0;
   
   (void)self;
-  pyobj = SWIG_NewPointerObj(SWIG_as_voidptr(&fz_empty_bbox), SWIGTYPE_p_fz_bbox_s,  0 );
+  pyobj = SWIG_NewPointerObj(SWIG_as_voidptr(&fz_empty_irect), SWIGTYPE_p_fz_irect_s,  0 );
   return pyobj;
 }
 
@@ -7874,18 +7939,18 @@ SWIGINTERN PyObject *Swig_var_fz_infinite_rect_get(void) {
 }
 
 
-SWIGINTERN int Swig_var_fz_infinite_bbox_set(PyObject *_val SWIGUNUSED) {
-  SWIG_Error(SWIG_AttributeError,"Variable fz_infinite_bbox is read-only.");
+SWIGINTERN int Swig_var_fz_infinite_irect_set(PyObject *_val SWIGUNUSED) {
+  SWIG_Error(SWIG_AttributeError,"Variable fz_infinite_irect is read-only.");
   return 1;
 }
 
 
-SWIGINTERN PyObject *Swig_var_fz_infinite_bbox_get(void) {
+SWIGINTERN PyObject *Swig_var_fz_infinite_irect_get(void) {
   PyObject *pyobj = 0;
   PyObject *self = 0;
   
   (void)self;
-  pyobj = SWIG_NewPointerObj(SWIG_as_voidptr(&fz_infinite_bbox), SWIGTYPE_p_fz_bbox_s,  0 );
+  pyobj = SWIG_NewPointerObj(SWIG_as_voidptr(&fz_infinite_irect), SWIGTYPE_p_fz_irect_s,  0 );
   return pyobj;
 }
 
@@ -8193,13 +8258,14 @@ fail:
 SWIGINTERN PyObject *_wrap_Matrix_concat(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
-  fz_matrix arg2 ;
+  fz_matrix *arg2 = 0;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 ;
   int res2 = 0 ;
   PyObject * obj1 = 0 ;
-  fz_matrix result;
+  fz_matrix matrix;
+  fz_matrix *result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:Matrix_concat",&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
@@ -8215,11 +8281,11 @@ SWIGINTERN PyObject *_wrap_Matrix_concat(PyObject *self, PyObject *args) {
     if (!argp2) {
       SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Matrix_concat" "', argument " "2"" of type '" "Matrix""'");
     } else {
-      arg2 = *((fz_matrix *)(argp2));
+      arg2 = (fz_matrix *)(argp2);
     }
   }
-  result = fz_concat(*arg1,arg2);
-  resultobj = SWIG_NewPointerObj((fz_matrix *)memcpy((fz_matrix *)malloc(sizeof(fz_matrix)),&result,sizeof(fz_matrix)), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_OWN |  0 );
+  result = fz_concatm(&matrix, arg1,arg2);
+  resultobj = SWIG_NewPointerObj((fz_matrix *)memcpy((fz_matrix *)malloc(sizeof(fz_matrix)),result,sizeof(fz_matrix)), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -8231,7 +8297,8 @@ SWIGINTERN PyObject *_wrap_Matrix_invert(PyObject *self, PyObject *args) {
   struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  fz_matrix result;
+  fz_matrix matrix;
+  fz_matrix *result;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
@@ -8239,8 +8306,8 @@ SWIGINTERN PyObject *_wrap_Matrix_invert(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_invert" "', argument " "1"" of type '" "Matrix""'"); 
   }
   arg1 = (struct fz_matrix_s *)(argp1);
-  result = fz_invert_matrix(*arg1);
-  resultobj = SWIG_NewPointerObj((fz_matrix *)memcpy((fz_matrix *)malloc(sizeof(fz_matrix)),&result,sizeof(fz_matrix)), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_OWN |  0 );
+  result = fz_invert_matrix(&matrix, arg1);
+  resultobj = SWIG_NewPointerObj((fz_matrix *)memcpy((fz_matrix *)malloc(sizeof(fz_matrix)),result,sizeof(fz_matrix)), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -8260,7 +8327,7 @@ SWIGINTERN PyObject *_wrap_Matrix_is_rectilinear(PyObject *self, PyObject *args)
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_is_rectilinear" "', argument " "1"" of type '" "Matrix""'"); 
   }
   arg1 = (struct fz_matrix_s *)(argp1);
-  result = fz_is_rectilinear(*arg1);
+  result = fz_is_rectilinear(arg1);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
@@ -8281,7 +8348,7 @@ SWIGINTERN PyObject *_wrap_Matrix_expansion(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_expansion" "', argument " "1"" of type '" "Matrix""'"); 
   }
   arg1 = (struct fz_matrix_s *)(argp1);
-  result = fz_matrix_expansion(*arg1);
+  result = fz_matrix_expansion(arg1);
   resultobj = SWIG_From_float((float)(result));
   return resultobj;
 fail:
@@ -8298,7 +8365,7 @@ SWIGINTERN PyObject *_wrap_Matrix_transform_point(PyObject *self, PyObject *args
   void *argp2 ;
   int res2 = 0 ;
   PyObject * obj1 = 0 ;
-  fz_point result;
+  fz_point *result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:Matrix_transform_point",&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
@@ -8317,8 +8384,43 @@ SWIGINTERN PyObject *_wrap_Matrix_transform_point(PyObject *self, PyObject *args
       arg2 = *((fz_point *)(argp2));
     }
   }
-  result = fz_transform_point(*arg1,arg2);
-  resultobj = SWIG_NewPointerObj((fz_point *)memcpy((fz_point *)malloc(sizeof(fz_point)),&result,sizeof(fz_point)), SWIGTYPE_p_fz_point_s, SWIG_POINTER_OWN |  0 );
+  result = fz_transform_point(&arg2, arg1);
+  resultobj = SWIG_NewPointerObj((fz_point *)memcpy((fz_point *)malloc(sizeof(fz_point)),result,sizeof(fz_point)), SWIGTYPE_p_fz_point_s, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+SWIGINTERN PyObject *_wrap_Matrix_transform_irect(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  fz_irect arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj1 = 0 ;
+  fz_irect *result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Matrix_transform_irect",&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_transform_irect" "', argument " "1"" of type '" "Matrix""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_fz_irect_s,  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Matrix_transform_irect" "', argument " "2"" of type '" "IRect""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Matrix_transform_irect" "', argument " "2"" of type '" "IRect""'");
+    } else {
+      arg2 = *((fz_irect *)(argp2));
+    }
+  }
+  result = fz_transform_irect(&arg2,arg1);
+  resultobj = SWIG_NewPointerObj((fz_irect *)memcpy((fz_irect *)malloc(sizeof(fz_irect)),result,sizeof(fz_irect)), SWIGTYPE_p_fz_irect_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -8334,7 +8436,7 @@ SWIGINTERN PyObject *_wrap_Matrix_transform_rect(PyObject *self, PyObject *args)
   void *argp2 ;
   int res2 = 0 ;
   PyObject * obj1 = 0 ;
-  fz_rect result;
+  fz_rect *result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:Matrix_transform_rect",&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
@@ -8353,44 +8455,8 @@ SWIGINTERN PyObject *_wrap_Matrix_transform_rect(PyObject *self, PyObject *args)
       arg2 = *((fz_rect *)(argp2));
     }
   }
-  result = fz_transform_rect(*arg1,arg2);
-  resultobj = SWIG_NewPointerObj((fz_rect *)memcpy((fz_rect *)malloc(sizeof(fz_rect)),&result,sizeof(fz_rect)), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_OWN |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Matrix_transform_bbox(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
-  fz_bbox arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
-  PyObject * obj1 = 0 ;
-  fz_bbox result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:Matrix_transform_bbox",&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_transform_bbox" "', argument " "1"" of type '" "Matrix""'"); 
-  }
-  arg1 = (struct fz_matrix_s *)(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_fz_bbox_s,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Matrix_transform_bbox" "', argument " "2"" of type '" "BBox""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Matrix_transform_bbox" "', argument " "2"" of type '" "BBox""'");
-    } else {
-      arg2 = *((fz_bbox *)(argp2));
-    }
-  }
-  result = fz_transform_bbox(*arg1,arg2);
-  resultobj = SWIG_NewPointerObj((fz_bbox *)memcpy((fz_bbox *)malloc(sizeof(fz_bbox)),&result,sizeof(fz_bbox)), SWIGTYPE_p_fz_bbox_s, SWIG_POINTER_OWN |  0 );
+  result = fz_transform_rect(&arg2,arg1);
+  resultobj = SWIG_NewPointerObj((fz_rect *)memcpy((fz_rect *)malloc(sizeof(fz_rect)),result,sizeof(fz_rect)), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -8472,7 +8538,8 @@ SWIGINTERN PyObject *_wrap_scale_matrix(PyObject *self, PyObject *args) {
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  fz_matrix result;
+  fz_matrix matrix;
+  fz_matrix *result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:scale_matrix",&obj0,&obj1)) SWIG_fail;
   ecode1 = SWIG_AsVal_float(obj0, &val1);
@@ -8485,8 +8552,8 @@ SWIGINTERN PyObject *_wrap_scale_matrix(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "scale_matrix" "', argument " "2"" of type '" "float""'");
   } 
   arg2 = (float)(val2);
-  result = fz_scale(arg1,arg2);
-  resultobj = SWIG_NewPointerObj((fz_matrix *)memcpy((fz_matrix *)malloc(sizeof(fz_matrix)),&result,sizeof(fz_matrix)), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_OWN |  0 );
+  result = fz_scale(&matrix, arg1,arg2);
+  resultobj = SWIG_NewPointerObj((fz_matrix *)memcpy((fz_matrix *)malloc(sizeof(fz_matrix)),result,sizeof(fz_matrix)), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -8503,7 +8570,8 @@ SWIGINTERN PyObject *_wrap_shear_matrix(PyObject *self, PyObject *args) {
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  fz_matrix result;
+  fz_matrix matrix;
+  fz_matrix *result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:shear_matrix",&obj0,&obj1)) SWIG_fail;
   ecode1 = SWIG_AsVal_float(obj0, &val1);
@@ -8516,8 +8584,8 @@ SWIGINTERN PyObject *_wrap_shear_matrix(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "shear_matrix" "', argument " "2"" of type '" "float""'");
   } 
   arg2 = (float)(val2);
-  result = fz_shear(arg1,arg2);
-  resultobj = SWIG_NewPointerObj((fz_matrix *)memcpy((fz_matrix *)malloc(sizeof(fz_matrix)),&result,sizeof(fz_matrix)), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_OWN |  0 );
+  result = fz_shear(&matrix, arg1,arg2);
+  resultobj = SWIG_NewPointerObj((fz_matrix *)memcpy((fz_matrix *)malloc(sizeof(fz_matrix)),result,sizeof(fz_matrix)), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -8530,7 +8598,8 @@ SWIGINTERN PyObject *_wrap_rotate_matrix(PyObject *self, PyObject *args) {
   float val1 ;
   int ecode1 = 0 ;
   PyObject * obj0 = 0 ;
-  fz_matrix result;
+  fz_matrix matrix;
+  fz_matrix *result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:rotate_matrix",&obj0)) SWIG_fail;
   ecode1 = SWIG_AsVal_float(obj0, &val1);
@@ -8538,8 +8607,8 @@ SWIGINTERN PyObject *_wrap_rotate_matrix(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "rotate_matrix" "', argument " "1"" of type '" "float""'");
   } 
   arg1 = (float)(val1);
-  result = fz_rotate(arg1);
-  resultobj = SWIG_NewPointerObj((fz_matrix *)memcpy((fz_matrix *)malloc(sizeof(fz_matrix)),&result,sizeof(fz_matrix)), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_OWN |  0 );
+  result = fz_rotate(&matrix, arg1);
+  resultobj = SWIG_NewPointerObj((fz_matrix *)memcpy((fz_matrix *)malloc(sizeof(fz_matrix)),result,sizeof(fz_matrix)), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -8556,7 +8625,8 @@ SWIGINTERN PyObject *_wrap_translate_matrix(PyObject *self, PyObject *args) {
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  fz_matrix result;
+  fz_matrix matrix;
+  fz_matrix *result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:translate_matrix",&obj0,&obj1)) SWIG_fail;
   ecode1 = SWIG_AsVal_float(obj0, &val1);
@@ -8569,8 +8639,8 @@ SWIGINTERN PyObject *_wrap_translate_matrix(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "translate_matrix" "', argument " "2"" of type '" "float""'");
   } 
   arg2 = (float)(val2);
-  result = fz_translate(arg1,arg2);
-  resultobj = SWIG_NewPointerObj((fz_matrix *)memcpy((fz_matrix *)malloc(sizeof(fz_matrix)),&result,sizeof(fz_matrix)), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_OWN |  0 );
+  result = fz_translate(&matrix,arg1,arg2);
+  resultobj = SWIG_NewPointerObj((fz_matrix *)memcpy((fz_matrix *)malloc(sizeof(fz_matrix)),result,sizeof(fz_matrix)), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -8778,7 +8848,7 @@ fail:
   return NULL;
 }
 
-SWIGINTERN PyObject *_wrap_TextChar_bbox_get(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_TextChar_irect_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_text_char_s *arg1 = (struct fz_text_char_s *) 0 ;
   void *argp1 = 0 ;
@@ -8788,7 +8858,7 @@ SWIGINTERN PyObject *_wrap_TextChar_bbox_get(PyObject *self, PyObject *args) {
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_text_char_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TextChar_bbox_get" "', argument " "1"" of type '" "TextChar""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TextChar_irect_get" "', argument " "1"" of type '" "TextChar""'"); 
   }
   arg1 = (struct fz_text_char_s *)(argp1);
   result = (fz_rect *)& ((arg1)->bbox);
@@ -9331,18 +9401,6 @@ fail:
 
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
-	 /*{ (char *)"new_context", _wrap_new_context, METH_VARARGS, NULL},*/
-	 /*{ (char *)"new_draw_device", _wrap_new_draw_device, METH_VARARGS, NULL},*/
-	 /*{ (char *)"new_pixmap_with_bbox", _wrap_new_pixmap_with_bbox, METH_VARARGS, NULL},*/
-	 /*{ (char *)"new_list_device", _wrap_new_list_device, METH_VARARGS, NULL},*/
-	 /*{ (char *)"new_bbox_device", _wrap_new_bbox_device, METH_VARARGS, NULL},*/
-	 /*{ (char *)"open_document", _wrap_open_document, METH_VARARGS, NULL},*/
-	 /*{ (char *)"new_draw_device_with_bbox", _wrap_new_draw_device_with_bbox, METH_VARARGS, NULL},*/
-	 /*{ (char *)"new_text_device", _wrap_new_text_device, METH_VARARGS, NULL},*/
-	 /*{ (char *)"new_pixmap", _wrap_new_pixmap, METH_VARARGS, NULL},*/
-	 /*{ (char *)"new_text_sheet", _wrap_new_text_sheet, METH_VARARGS, NULL},*/
-	 /*{ (char *)"new_text_page", _wrap_new_text_page, METH_VARARGS, NULL},*/
-	 /*{ (char *)"new_display_list", _wrap_new_display_list, METH_VARARGS, NULL},*/
 	 { (char *)"scale_matrix", _wrap_scale_matrix, METH_VARARGS, NULL},
 	 { (char *)"shear_matrix", _wrap_shear_matrix, METH_VARARGS, NULL},
 	 { (char *)"rotate_matrix", _wrap_rotate_matrix, METH_VARARGS, NULL},
@@ -9378,7 +9436,7 @@ SwigPyBuiltin__Pixmap_richcompare(PyObject *self, PyObject *other, int op) {
 }
 
 SWIGINTERN PyMethodDef SwigPyBuiltin__Pixmap_methods[] = {
-  { "get_bbox", (PyCFunction) _wrap_Pixmap_get_bbox, METH_VARARGS, (char*) "" },
+  { "get_irect", (PyCFunction) _wrap_Pixmap_get_irect, METH_VARARGS, (char*) "" },
   { "get_samples", (PyCFunction) _wrap_Pixmap_get_samples, METH_VARARGS, (char*) "" },
   { "get_width", (PyCFunction) _wrap_Pixmap_get_width, METH_VARARGS, (char*) "" },
   { "get_height", (PyCFunction) _wrap_Pixmap_get_height, METH_VARARGS, (char*) "" },
@@ -11368,9 +11426,9 @@ SwigPyBuiltin__fz_context_s_richcompare(PyObject *self, PyObject *other, int op)
 SWIGINTERN PyMethodDef SwigPyBuiltin__fz_context_s_methods[] = {
   { "open_document", (PyCFunction) _wrap_Context_open_document, METH_VARARGS, (char *)"" },
   { "new_pixmap", (PyCFunction) _wrap_Context_new_pixmap, METH_VARARGS, (char *)"" },
-  { "new_pixmap_with_bbox", (PyCFunction) _wrap_Context_new_pixmap_with_bbox, METH_VARARGS, (char *)"" },
+  { "new_pixmap_with_irect", (PyCFunction) _wrap_Context_new_pixmap_with_irect, METH_VARARGS, (char *)"" },
   { "new_pixmap_with_data", (PyCFunction) _wrap_Context_new_pixmap_with_data, METH_VARARGS, (char *)"" },
-  { "new_pixmap_with_bbox_and_data", (PyCFunction) _wrap_Context_new_pixmap_with_bbox_and_data, METH_VARARGS, (char *)"" },
+  { "new_pixmap_with_irect_and_data", (PyCFunction) _wrap_Context_new_pixmap_with_irect_and_data, METH_VARARGS, (char *)"" },
   { "new_display_list", (PyCFunction) _wrap_Context_new_display_list, METH_VARARGS, (char *)"" },
   { "new_text_page", (PyCFunction) _wrap_Context_new_text_page, METH_VARARGS, (char *)"" },
   { "new_text_sheet", (PyCFunction) _wrap_Context_new_text_sheet, METH_VARARGS, (char *)"" },
@@ -11776,7 +11834,7 @@ SwigPyBuiltin__fz_rect_s_richcompare(PyObject *self, PyObject *other, int op) {
 }
 
 SWIGINTERN PyMethodDef SwigPyBuiltin__fz_rect_s_methods[] = {
-  { "bbox_covering_rect", (PyCFunction) _wrap_Rect_bbox_covering_rect, METH_VARARGS, (char*) "" },
+  { "irect_covering_rect", (PyCFunction) _wrap_Rect_irect_covering_rect, METH_VARARGS, (char*) "" },
   { "round_rect", (PyCFunction) _wrap_Rect_round_rect, METH_VARARGS, (char*) "" },
   { "intersect_rect", (PyCFunction) _wrap_Rect_intersect_rect, METH_VARARGS, (char*) "" },
   { "union_rect", (PyCFunction) _wrap_Rect_union_rect, METH_VARARGS, (char*) "" },
@@ -11950,25 +12008,25 @@ static PyHeapTypeObject SwigPyBuiltin__fz_rect_s_type = {
 
 SWIGINTERN SwigPyClientData SwigPyBuiltin__fz_rect_s_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__fz_rect_s_type};
 
-SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_BBox)
-static SwigPyGetSet BBox_y0_getset = { _wrap_BBox_y0_get, _wrap_BBox_y0_set };
-static SwigPyGetSet BBox_y1_getset = { _wrap_BBox_y1_get, _wrap_BBox_y1_set };
-static SwigPyGetSet BBox_x0_getset = { _wrap_BBox_x0_get, _wrap_BBox_x0_set };
-static SwigPyGetSet BBox_x1_getset = { _wrap_BBox_x1_get, _wrap_BBox_x1_set };
-SWIGINTERN PyGetSetDef SwigPyBuiltin__fz_bbox_s_getset[] = {
-    { (char*) "y0", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"fz_bbox_s.y0", (void*) &BBox_y0_getset }
+SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_IRect)
+static SwigPyGetSet IRect_y0_getset = { _wrap_IRect_y0_get, _wrap_IRect_y0_set };
+static SwigPyGetSet IRect_y1_getset = { _wrap_IRect_y1_get, _wrap_IRect_y1_set };
+static SwigPyGetSet IRect_x0_getset = { _wrap_IRect_x0_get, _wrap_IRect_x0_set };
+static SwigPyGetSet IRect_x1_getset = { _wrap_IRect_x1_get, _wrap_IRect_x1_set };
+SWIGINTERN PyGetSetDef SwigPyBuiltin__fz_irect_s_getset[] = {
+    { (char*) "y0", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"fz_irect_s.y0", (void*) &IRect_y0_getset }
 ,
-    { (char*) "y1", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"fz_bbox_s.y1", (void*) &BBox_y1_getset }
+    { (char*) "y1", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"fz_irect_s.y1", (void*) &IRect_y1_getset }
 ,
-    { (char*) "x0", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"fz_bbox_s.x0", (void*) &BBox_x0_getset }
+    { (char*) "x0", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"fz_irect_s.x0", (void*) &IRect_x0_getset }
 ,
-    { (char*) "x1", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"fz_bbox_s.x1", (void*) &BBox_x1_getset }
+    { (char*) "x1", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"fz_irect_s.x1", (void*) &IRect_x1_getset }
 ,
     {NULL, NULL, NULL, NULL, NULL} /* Sentinel */
 };
 
 SWIGINTERN PyObject *
-SwigPyBuiltin__fz_bbox_s_richcompare(PyObject *self, PyObject *other, int op) {
+SwigPyBuiltin__fz_irect_s_richcompare(PyObject *self, PyObject *other, int op) {
   PyObject *result = NULL;
   PyObject *tuple = PyTuple_New(1);
   assert(tuple);
@@ -11986,17 +12044,17 @@ SwigPyBuiltin__fz_bbox_s_richcompare(PyObject *self, PyObject *other, int op) {
   return result;
 }
 
-SWIGINTERN PyMethodDef SwigPyBuiltin__fz_bbox_s_methods[] = {
-  { "intersect_bbox", (PyCFunction) _wrap_BBox_intersect_bbox, METH_VARARGS, (char*) "" },
-  { "union_bbox", (PyCFunction) _wrap_BBox_union_bbox, METH_VARARGS, (char*) "" },
-  { "get_width", (PyCFunction) _wrap_BBox_get_width, METH_VARARGS, (char*) "" },
-  { "get_height", (PyCFunction) _wrap_BBox_get_height, METH_VARARGS, (char*) "" },
-  { "is_empty", (PyCFunction) _wrap_BBox_is_empty, METH_VARARGS, (char*) ""},
-  { "is_infinite", (PyCFunction) _wrap_BBox_is_infinite, METH_VARARGS, (char*) ""},
+SWIGINTERN PyMethodDef SwigPyBuiltin__fz_irect_s_methods[] = {
+  { "intersect_irect", (PyCFunction) _wrap_IRect_intersect_irect, METH_VARARGS, (char*) "" },
+  { "union_irect", (PyCFunction) _wrap_IRect_union_irect, METH_VARARGS, (char*) "" },
+  { "get_width", (PyCFunction) _wrap_IRect_get_width, METH_VARARGS, (char*) "" },
+  { "get_height", (PyCFunction) _wrap_IRect_get_height, METH_VARARGS, (char*) "" },
+  { "is_empty", (PyCFunction) _wrap_IRect_is_empty, METH_VARARGS, (char*) ""},
+  { "is_infinite", (PyCFunction) _wrap_IRect_is_infinite, METH_VARARGS, (char*) ""},
   { NULL, NULL, 0, NULL } /* Sentinel */
 };
 
-static PyHeapTypeObject SwigPyBuiltin__fz_bbox_s_type = {
+static PyHeapTypeObject SwigPyBuiltin__fz_irect_s_type = {
   {
 #if PY_VERSION_HEX >= 0x03000000
     PyVarObject_HEAD_INIT(NULL, 0)
@@ -12004,10 +12062,10 @@ static PyHeapTypeObject SwigPyBuiltin__fz_bbox_s_type = {
     PyObject_HEAD_INIT(NULL)
     0,                                        /* ob_size */
 #endif
-    "BBox",                                   /* tp_name */
+    "IRect",                                   /* tp_name */
     sizeof(SwigPyObject),                     /* tp_basicsize */
     0,                                        /* tp_itemsize */
-    (destructor) _wrap_delete_BBox_closure,   /* tp_dealloc */
+    (destructor) _wrap_delete_IRect_closure,   /* tp_dealloc */
     (printfunc) 0,                            /* tp_print */
     (getattrfunc) 0,                          /* tp_getattr */
     (setattrfunc) 0,                          /* tp_setattr */
@@ -12017,36 +12075,36 @@ static PyHeapTypeObject SwigPyBuiltin__fz_bbox_s_type = {
     (cmpfunc) 0,                              /* tp_compare */
 #endif
     (reprfunc) 0,                             /* tp_repr */
-    &SwigPyBuiltin__fz_bbox_s_type.as_number,      /* tp_as_number */
-    &SwigPyBuiltin__fz_bbox_s_type.as_sequence,    /* tp_as_sequence */
-    &SwigPyBuiltin__fz_bbox_s_type.as_mapping,     /* tp_as_mapping */
+    &SwigPyBuiltin__fz_irect_s_type.as_number,      /* tp_as_number */
+    &SwigPyBuiltin__fz_irect_s_type.as_sequence,    /* tp_as_sequence */
+    &SwigPyBuiltin__fz_irect_s_type.as_mapping,     /* tp_as_mapping */
     (hashfunc) 0,                             /* tp_hash */
     (ternaryfunc) 0,                          /* tp_call */
     (reprfunc) 0,                             /* tp_str */
     (getattrofunc) 0,                         /* tp_getattro */
     (setattrofunc) 0,                         /* tp_setattro */
-    &SwigPyBuiltin__fz_bbox_s_type.as_buffer,      /* tp_as_buffer */
+    &SwigPyBuiltin__fz_irect_s_type.as_buffer,      /* tp_as_buffer */
 #if PY_VERSION_HEX >= 0x03000000
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,   /* tp_flags */
 #else
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES, /* tp_flags */
 #endif
-    "::fz_bbox_s",                            /* tp_doc */
+    "::fz_irect_s",                            /* tp_doc */
     (traverseproc) 0,                         /* tp_traverse */
     (inquiry) 0,                              /* tp_clear */
-    (richcmpfunc) SwigPyBuiltin__fz_bbox_s_richcompare, /* feature:python:tp_richcompare */
+    (richcmpfunc) SwigPyBuiltin__fz_irect_s_richcompare, /* feature:python:tp_richcompare */
     0,                                        /* tp_weaklistoffset */
     (getiterfunc) 0,                          /* tp_iter */
     (iternextfunc) 0,                         /* tp_iternext */
-    SwigPyBuiltin__fz_bbox_s_methods,         /* tp_methods */
+    SwigPyBuiltin__fz_irect_s_methods,         /* tp_methods */
     0,                                        /* tp_members */
-    SwigPyBuiltin__fz_bbox_s_getset,          /* tp_getset */
+    SwigPyBuiltin__fz_irect_s_getset,          /* tp_getset */
     0,                                        /* tp_base */
     0,                                        /* tp_dict */
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     (size_t)(((char*)&((SwigPyObject *) 64L)->dict) - (char*) 64L), /* tp_dictoffset */
-    (initproc) _wrap_new_BBox,                /* tp_init */
+    (initproc) _wrap_new_IRect,                /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */
@@ -12157,7 +12215,7 @@ static PyHeapTypeObject SwigPyBuiltin__fz_bbox_s_type = {
     (PyObject*) 0,                            /* ht_slots */
 };
 
-SWIGINTERN SwigPyClientData SwigPyBuiltin__fz_bbox_s_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__fz_bbox_s_type};
+SWIGINTERN SwigPyClientData SwigPyBuiltin__fz_irect_s_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__fz_irect_s_type};
 
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_Matrix)
 static SwigPyGetSet Matrix_b_getset = { _wrap_Matrix_b_get, _wrap_Matrix_b_set };
@@ -12208,7 +12266,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin__fz_matrix_s_methods[] = {
   { "expansion", (PyCFunction) _wrap_Matrix_expansion, METH_VARARGS, (char*) "" },
   { "transform_point", (PyCFunction) _wrap_Matrix_transform_point, METH_VARARGS, (char*) "" },
   { "transform_rect", (PyCFunction) _wrap_Matrix_transform_rect, METH_VARARGS, (char*) "" },
-  { "transform_bbox", (PyCFunction) _wrap_Matrix_transform_bbox, METH_VARARGS, (char*) "" },
+  { "transform_irect", (PyCFunction) _wrap_Matrix_transform_irect, METH_VARARGS, (char*) "" },
   { NULL, NULL, 0, NULL } /* Sentinel */
 };
 
@@ -12583,11 +12641,11 @@ SWIGINTERN SwigPyClientData SwigPyBuiltin__fz_text_style_s_clientdata = {0, 0, 0
 
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_TextChar)
 static SwigPyGetSet TextChar_c_getset = { _wrap_TextChar_c_get, 0 };
-static SwigPyGetSet TextChar_bbox_getset = { _wrap_TextChar_bbox_get, 0 };
+static SwigPyGetSet TextChar_irect_getset = { _wrap_TextChar_irect_get, 0 };
 SWIGINTERN PyGetSetDef SwigPyBuiltin__fz_text_char_s_getset[] = {
     { (char*) "c", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"fz_text_char_s.c", (void*) &TextChar_c_getset }
 ,
-    { (char*) "bbox", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"fz_text_char_s.bbox", (void*) &TextChar_bbox_getset }
+    { (char*) "irect", (getter) SwigPyBuiltin_GetterClosure, (setter) SwigPyBuiltin_SetterClosure, (char*)"fz_text_char_s.irect", (void*) &TextChar_irect_getset }
 ,
     {NULL, NULL, NULL, NULL, NULL} /* Sentinel */
 };
@@ -13199,7 +13257,7 @@ static swig_type_info _swigt__p_SwigPyObject = {"_p_SwigPyObject", "SwigPyObject
 static swig_type_info _swigt__p_TextPage = {"_p_TextPage", "TextPage *", 0, 0, (void*)&SwigPyBuiltin__TextPage_clientdata, 0};
 static swig_type_info _swigt__p_TextSheet = {"_p_TextSheet", "TextSheet *", 0, 0, (void*)&SwigPyBuiltin__TextSheet_clientdata, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_fz_bbox_s = {"_p_fz_bbox_s", "fz_bbox *|struct fz_bbox_s *|fz_bbox_s *", 0, 0, (void*)&SwigPyBuiltin__fz_bbox_s_clientdata, 0};
+static swig_type_info _swigt__p_fz_irect_s = {"_p_fz_irect_s", "fz_irect *|struct fz_irect_s *|fz_irect_s *", 0, 0, (void*)&SwigPyBuiltin__fz_irect_s_clientdata, 0};
 static swig_type_info _swigt__p_fz_colorspace_s = {"_p_fz_colorspace_s", "struct fz_colorspace_s *|fz_colorspace *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_fz_context_s = {"_p_fz_context_s", "fz_context *|struct fz_context_s *|fz_context_s *", 0, 0, (void*)&SwigPyBuiltin__fz_context_s_clientdata, 0};
 static swig_type_info _swigt__p_fz_cookie_s = {"_p_fz_cookie_s", "struct fz_cookie_s *|fz_cookie_s *|fz_cookie *", 0, 0, (void*)&SwigPyBuiltin__fz_cookie_s_clientdata, 0};
@@ -13224,7 +13282,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_TextPage,
   &_swigt__p_TextSheet,
   &_swigt__p_char,
-  &_swigt__p_fz_bbox_s,
+  &_swigt__p_fz_irect_s,
   &_swigt__p_fz_colorspace_s,
   &_swigt__p_fz_context_s,
   &_swigt__p_fz_cookie_s,
@@ -13250,7 +13308,7 @@ static swig_cast_info _swigc__p_SwigPyObject[] = {  {&_swigt__p_SwigPyObject, 0,
 static swig_cast_info _swigc__p_TextPage[] = {  {&_swigt__p_TextPage, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_TextSheet[] = {  {&_swigt__p_TextSheet, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_fz_bbox_s[] = {  {&_swigt__p_fz_bbox_s, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_fz_irect_s[] = {  {&_swigt__p_fz_irect_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_colorspace_s[] = {  {&_swigt__p_fz_colorspace_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_context_s[] = {  {&_swigt__p_fz_context_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_cookie_s[] = {  {&_swigt__p_fz_cookie_s, 0, 0, 0},{0, 0, 0, 0}};
@@ -13276,7 +13334,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_TextPage,
   _swigc__p_TextSheet,
   _swigc__p_char,
-  _swigc__p_fz_bbox_s,
+  _swigc__p_fz_irect_s,
   _swigc__p_fz_colorspace_s,
   _swigc__p_fz_context_s,
   _swigc__p_fz_cookie_s,
@@ -14266,8 +14324,8 @@ SWIG_init(void) {
   SwigPyBuiltin_AddPublicSymbol(public_interface, "Rect");
   d = md;
   
-  /* type '::fz_bbox_s' */
-  builtin_pytype = (PyTypeObject *)&SwigPyBuiltin__fz_bbox_s_type;
+  /* type '::fz_irect_s' */
+  builtin_pytype = (PyTypeObject *)&SwigPyBuiltin__fz_irect_s_type;
   builtin_pytype->tp_dict = d = PyDict_New();
   SwigPyBuiltin_SetMetaType(builtin_pytype, metatype);
   builtin_pytype->tp_new = PyType_GenericNew;
@@ -14277,7 +14335,7 @@ SWIG_init(void) {
   PyDict_SetItemString(d, "this", this_descr);
   PyDict_SetItemString(d, "thisown", thisown_descr);
   if (PyType_Ready(builtin_pytype) < 0) {
-    PyErr_SetString(PyExc_TypeError, "Could not create type 'BBox'.");
+    PyErr_SetString(PyExc_TypeError, "Could not create type 'IRect'.");
 #if PY_VERSION_HEX >= 0x03000000
     return NULL;
 #else
@@ -14285,29 +14343,29 @@ SWIG_init(void) {
 #endif
   }
   Py_INCREF(builtin_pytype);
-  PyModule_AddObject(m, "BBox", (PyObject*) builtin_pytype);
-  SwigPyBuiltin_AddPublicSymbol(public_interface, "BBox");
+  PyModule_AddObject(m, "IRect", (PyObject*) builtin_pytype);
+  SwigPyBuiltin_AddPublicSymbol(public_interface, "IRect");
   d = md;
   PyDict_SetItemString(md,(char*)"cvar", SWIG_globals());
   SwigPyBuiltin_AddPublicSymbol(public_interface, "cvar");
   SWIG_addvarlink(SWIG_globals(),(char*)"fz_unit_rect",Swig_var_fz_unit_rect_get, Swig_var_fz_unit_rect_set);
   PyDict_SetItemString(md, (char*)"fz_unit_rect", PyObject_GetAttrString(SWIG_globals(), "fz_unit_rect"));
   SwigPyBuiltin_AddPublicSymbol(public_interface, "fz_unit_rect");
-  SWIG_addvarlink(SWIG_globals(),(char*)"fz_unit_bbox",Swig_var_fz_unit_bbox_get, Swig_var_fz_unit_bbox_set);
-  PyDict_SetItemString(md, (char*)"fz_unit_bbox", PyObject_GetAttrString(SWIG_globals(), "fz_unit_bbox"));
-  SwigPyBuiltin_AddPublicSymbol(public_interface, "fz_unit_bbox");
+  SWIG_addvarlink(SWIG_globals(),(char*)"fz_unit_irect",Swig_var_fz_unit_irect_get, Swig_var_fz_unit_irect_set);
+  PyDict_SetItemString(md, (char*)"fz_unit_irect", PyObject_GetAttrString(SWIG_globals(), "fz_unit_irect"));
+  SwigPyBuiltin_AddPublicSymbol(public_interface, "fz_unit_irect");
   SWIG_addvarlink(SWIG_globals(),(char*)"fz_empty_rect",Swig_var_fz_empty_rect_get, Swig_var_fz_empty_rect_set);
   PyDict_SetItemString(md, (char*)"fz_empty_rect", PyObject_GetAttrString(SWIG_globals(), "fz_empty_rect"));
   SwigPyBuiltin_AddPublicSymbol(public_interface, "fz_empty_rect");
-  SWIG_addvarlink(SWIG_globals(),(char*)"fz_empty_bbox",Swig_var_fz_empty_bbox_get, Swig_var_fz_empty_bbox_set);
-  PyDict_SetItemString(md, (char*)"fz_empty_bbox", PyObject_GetAttrString(SWIG_globals(), "fz_empty_bbox"));
-  SwigPyBuiltin_AddPublicSymbol(public_interface, "fz_empty_bbox");
+  SWIG_addvarlink(SWIG_globals(),(char*)"fz_empty_irect",Swig_var_fz_empty_irect_get, Swig_var_fz_empty_irect_set);
+  PyDict_SetItemString(md, (char*)"fz_empty_irect", PyObject_GetAttrString(SWIG_globals(), "fz_empty_irect"));
+  SwigPyBuiltin_AddPublicSymbol(public_interface, "fz_empty_irect");
   SWIG_addvarlink(SWIG_globals(),(char*)"fz_infinite_rect",Swig_var_fz_infinite_rect_get, Swig_var_fz_infinite_rect_set);
   PyDict_SetItemString(md, (char*)"fz_infinite_rect", PyObject_GetAttrString(SWIG_globals(), "fz_infinite_rect"));
   SwigPyBuiltin_AddPublicSymbol(public_interface, "fz_infinite_rect");
-  SWIG_addvarlink(SWIG_globals(),(char*)"fz_infinite_bbox",Swig_var_fz_infinite_bbox_get, Swig_var_fz_infinite_bbox_set);
-  PyDict_SetItemString(md, (char*)"fz_infinite_bbox", PyObject_GetAttrString(SWIG_globals(), "fz_infinite_bbox"));
-  SwigPyBuiltin_AddPublicSymbol(public_interface, "fz_infinite_bbox");
+  SWIG_addvarlink(SWIG_globals(),(char*)"fz_infinite_irect",Swig_var_fz_infinite_irect_get, Swig_var_fz_infinite_irect_set);
+  PyDict_SetItemString(md, (char*)"fz_infinite_irect", PyObject_GetAttrString(SWIG_globals(), "fz_infinite_irect"));
+  SwigPyBuiltin_AddPublicSymbol(public_interface, "fz_infinite_irect");
   
   /* type '::fz_matrix_s' */
   builtin_pytype = (PyTypeObject *)&SwigPyBuiltin__fz_matrix_s_type;
