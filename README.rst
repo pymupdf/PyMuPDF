@@ -9,7 +9,7 @@ A online document can be found at http://rk700.github.com/python-fitz/index.html
 Dependencies
 ------------
 
-This module depends on `MuPDF <http://www.mupdf.com>`_ (version=1.1). 
+This module depends on `MuPDF <http://www.mupdf.com>`_ (version=1.2). 
 
 By default, fitz is compiled as a static lib. If that's the case, you need to recompile MuPDF with ``-fPIC`` option.
 
