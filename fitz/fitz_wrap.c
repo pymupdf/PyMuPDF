@@ -3603,13 +3603,14 @@ SWIGINTERN fz_text_char text_page_text_char_at(fz_text_page *page, int idx) {
 }
 
 SWIGINTERN int KMP_prefix(const char *s, int **p, int *size) {
+	int i, j;
     int n = strlen(s)+1;
     int *temp;
     if((temp=(int *)malloc(n*sizeof(int))) == NULL)
         return -1;
     temp[0] = -1;
     temp[1] = 0;
-    int i, j;
+    
     for(i=2; i<n; i++) {
         j = temp[i-1];
         while(s[j] != s[i-1] && j>0)
@@ -3675,6 +3676,8 @@ SWIGINTERN fz_irect *fz_transform_irect(fz_irect *restrict r, const fz_matrix *r
 }
 
 SWIGINTERN PyObject *text_page_search(PyObject *self, fz_text_page *page, char *s, int ic) {
+	Queue text_rects;
+	void *data;
     fz_text_block *block;
     fz_text_line *line;
     fz_text_span *span;
@@ -3690,9 +3693,9 @@ SWIGINTERN PyObject *text_page_search(PyObject *self, fz_text_page *page, char *
     if(KMP_prefix(s, &p, &n)) {
         return SWIG_Py_Void();
     }
-    Queue text_rects;
+    
     queue_init(&text_rects, NULL);
-    void *data;
+    
     for (block = page->blocks; block < page->blocks + page->len; block++) {
         for (line = block->lines; line < block->lines + block->len; line++) {
             for (span = line->spans; span < line->spans + line->len; span++) {
@@ -3709,7 +3712,7 @@ SWIGINTERN PyObject *text_page_search(PyObject *self, fz_text_page *page, char *
                         queue_enqueue(&text_rects, (void *)&(text->bbox));
                     }
                     if(j == n-1) {
-                        j == p[j];
+                        j = p[j];
                         irect.x0 = (int)(((fz_rect *)queue_head(&text_rects)->data)->x0);
                         irect.y0 = (int)(((fz_rect *)queue_head(&text_rects)->data)->y0);
                         irect.x1 = (int)(((fz_rect *)queue_tail(&text_rects)->data)->x1);
@@ -4701,6 +4704,8 @@ SWIGINTERN PyObject *_wrap_Pixmap_get_samples(PyObject *self, PyObject *args) {
   void *argp1 = 0 ;
   int res1 = 0 ;
   char *result = 0 ;
+  fz_pixmap *pix;
+  int w, h, n;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Pixmap, 0 |  0 );
@@ -4708,11 +4713,11 @@ SWIGINTERN PyObject *_wrap_Pixmap_get_samples(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_get_samples" "', argument " "1"" of type '" "Pixmap *""'"); 
   }
   arg1 = (Pixmap *)(argp1);
-  fz_pixmap *pix = arg1->pix;
+  pix = arg1->pix;
   result = (char *)fz_pixmap_samples(arg1->ctx, pix);
-  int w = fz_pixmap_width(arg1->ctx, pix);
-  int h = fz_pixmap_height(arg1->ctx, pix);
-  int n = fz_pixmap_components(arg1->ctx, pix);
+  w = fz_pixmap_width(arg1->ctx, pix);
+  h = fz_pixmap_height(arg1->ctx, pix);
+  n = fz_pixmap_components(arg1->ctx, pix);
 #if PY_VERSION_HEX >= 0x03000000
   resultobj = PyBytes_FromStringAndSize(result, (int)(w*h*n));
 #else
@@ -5735,6 +5740,8 @@ SWIGINTERN PyObject *_wrap_TextSheet_print_text_sheet(PyObject *self, PyObject *
   char *buf2 = 0 ;
   int alloc2 = 0 ;
   PyObject * obj1 = 0 ;
+  FILE *fp;
+  fz_output *output;
   
   if (!PyArg_ParseTuple(args,(char *)"O:TextSheet_print_text_sheet",&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_TextSheet, 0 |  0 );
@@ -5747,9 +5754,9 @@ SWIGINTERN PyObject *_wrap_TextSheet_print_text_sheet(PyObject *self, PyObject *
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "TextSheet_print_text_sheet" "', argument " "2"" of type '" "char *""'");
   }
   arg2 = (char *)(buf2);
-  FILE *fp = fopen(arg2,"w"); 
+  fp = fopen(arg2,"w"); 
   if(fp == NULL) SWIG_fail;
-  fz_output *output = fz_new_output_file(arg1->ctx, fp);
+  output = fz_new_output_file(arg1->ctx, fp);
   fz_try(arg1->ctx) {
 	  fz_print_text_sheet(arg1->ctx,output,arg1->text_sheet);
 	  resultobj = SWIG_Py_Void();
@@ -5955,6 +5962,8 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page_html(PyObject *self, PyObjec
   char *buf2 = 0 ;
   int alloc2 = 0 ;
   PyObject * obj1 = 0 ;
+  FILE *fp;
+  fz_output *output;
   
   if (!PyArg_ParseTuple(args,(char *)"O:TextPage_print_text_page_html",&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_TextPage, 0 |  0 );
@@ -5967,9 +5976,9 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page_html(PyObject *self, PyObjec
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "TextPage_print_text_page_html" "', argument " "2"" of type '" "char *""'");
   }
   arg2 = (char *)(buf2);
-  FILE *fp = fopen(arg2,"w"); 
+  fp = fopen(arg2,"w"); 
   if(fp == NULL) SWIG_fail;
-  fz_output *output = fz_new_output_file(arg1->ctx, fp);
+  output = fz_new_output_file(arg1->ctx, fp);
   fz_try(arg1->ctx) {
 	  fz_print_text_page_html(arg1->ctx,output,arg1->text_page);
 	  resultobj = SWIG_Py_Void();
@@ -6000,6 +6009,8 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page_xml(PyObject *self, PyObject
   char *buf2 = 0 ;
   int alloc2 = 0 ;
   PyObject * obj1 = 0 ;
+  FILE *fp;
+  fz_output *output;
   
   if (!PyArg_ParseTuple(args,(char *)"O:TextPage_print_text_page_xml",&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_TextPage, 0 |  0 );
@@ -6012,9 +6023,9 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page_xml(PyObject *self, PyObject
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "TextPage_print_text_page_xml" "', argument " "2"" of type '" "char *""'");
   }
   arg2 = (char *)(buf2);
-  FILE *fp = fopen(arg2,"w"); 
+  fp = fopen(arg2,"w"); 
   if(fp == NULL) SWIG_fail;
-  fz_output *output = fz_new_output_file(arg1->ctx, fp);
+  output = fz_new_output_file(arg1->ctx, fp);
   fz_try(arg1->ctx) {
 	  fz_print_text_page_xml(arg1->ctx,output,arg1->text_page);
 	  resultobj = SWIG_Py_Void();
@@ -6044,6 +6055,8 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page(PyObject *self, PyObject *ar
   char *buf2 = 0 ;
   int alloc2 = 0 ;
   PyObject * obj1 = 0 ;
+  FILE *fp;
+  fz_output *output;
   
   if (!PyArg_ParseTuple(args,(char *)"O:TextPage_print_text_page",&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_TextPage, 0 |  0 );
@@ -6056,9 +6069,9 @@ SWIGINTERN PyObject *_wrap_TextPage_print_text_page(PyObject *self, PyObject *ar
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "TextPage_print_text_page" "', argument " "2"" of type '" "char *""'");
   }
   arg2 = (char *)(buf2);
-  FILE *fp = fopen(arg2,"w"); 
+  fp = fopen(arg2,"w"); 
   if(fp == NULL) SWIG_fail;
-  fz_output *output = fz_new_output_file(arg1->ctx, fp);
+  output = fz_new_output_file(arg1->ctx, fp);
   fz_try(arg1->ctx) {
 	  fz_print_text_page(arg1->ctx,output,arg1->text_page);
 	  resultobj = SWIG_Py_Void();
@@ -6430,6 +6443,8 @@ SWIGINTERN PyObject *_wrap_Outline_print_outline_xml(PyObject *self, PyObject *a
   char *buf2 = 0 ;
   int alloc2 = 0 ;
   PyObject * obj1 = 0 ;
+  FILE *fp;
+  fz_output *output;
   
   if (!PyArg_ParseTuple(args,(char *)"O:Outline_print_outline_xml",&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Outline, 0 |  0 );
@@ -6442,9 +6457,9 @@ SWIGINTERN PyObject *_wrap_Outline_print_outline_xml(PyObject *self, PyObject *a
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Outline_print_outline_xml" "', argument " "2"" of type '" "char *""'");
   }
   arg2 = (char *)(buf2);
-  FILE *fp = fopen(arg2,"w"); 
+  fp = fopen(arg2,"w"); 
   if(fp == NULL) SWIG_fail;
-  fz_output *output = fz_new_output_file(arg1->ctx, fp);
+  output = fz_new_output_file(arg1->ctx, fp);
   fz_try(arg1->ctx) {
 	  fz_print_outline_xml(arg1->ctx,output,arg1->outline);
 	  resultobj = SWIG_Py_Void();
@@ -6475,6 +6490,8 @@ SWIGINTERN PyObject *_wrap_Outline_print_outline(PyObject *self, PyObject *args)
   char *buf2 = 0 ;
   int alloc2 = 0 ;
   PyObject * obj1 = 0 ;
+  FILE *fp;
+  fz_output *output;
   
   if (!PyArg_ParseTuple(args,(char *)"O:Outline_print_outline",&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_Outline, 0 |  0 );
@@ -6487,9 +6504,9 @@ SWIGINTERN PyObject *_wrap_Outline_print_outline(PyObject *self, PyObject *args)
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Outline_print_outline" "', argument " "2"" of type '" "char *""'");
   }
   arg2 = (char *)(buf2);
-  FILE *fp = fopen(arg2,"w"); 
+  fp = fopen(arg2,"w"); 
   if(fp == NULL) SWIG_fail;
-  fz_output *output = fz_new_output_file(arg1->ctx, fp);
+  output = fz_new_output_file(arg1->ctx, fp);
   fz_try(arg1->ctx) {
 	  fz_print_outline(arg1->ctx,output,arg1->outline);
 	  resultobj = SWIG_Py_Void();
@@ -6606,6 +6623,7 @@ SWIGINTERN PyObject *_wrap_OutlineItem_get_page(PyObject *self, PyObject *args) 
 	void *argp1 = 0;
 	int res1 = 0;
     int result = -1 ;
+	fz_link_dest* dest;
 
 	if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
 	res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_outline_s, 0 |  0 );
@@ -6613,7 +6631,7 @@ SWIGINTERN PyObject *_wrap_OutlineItem_get_page(PyObject *self, PyObject *args) 
 		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OutlineItem_get_page" "', argument " "1"" of type '" "OutlineItem""'"); 
 	}
 	arg1 = (fz_outline *)(argp1);
-	fz_link_dest* dest = &(arg1->dest);
+	dest = &(arg1->dest);
 	if (dest->kind != FZ_LINK_NONE) {
 		result = dest->ld.gotor.page;
 	}
@@ -6629,6 +6647,7 @@ SWIGINTERN PyObject *_wrap_OutlineItem_get_page_flags(PyObject *self, PyObject *
 	void *argp1 = 0;
 	int res1 = 0;
     int result = 0;
+	fz_link_dest* dest;
 
 	if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
 	res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_outline_s, 0 |  0 );
@@ -6636,7 +6655,7 @@ SWIGINTERN PyObject *_wrap_OutlineItem_get_page_flags(PyObject *self, PyObject *
 		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OutlineItem_get_page_lt" "', argument " "1"" of type '" "OutlineItem""'"); 
 	}
 	arg1 = (fz_outline *)(argp1);
-	fz_link_dest* dest = &(arg1->dest);
+	dest = &(arg1->dest);
 	if (dest->kind != FZ_LINK_NONE) {
 		result = dest->ld.gotor.flags;
 	}
@@ -6653,6 +6672,7 @@ SWIGINTERN PyObject *_wrap_OutlineItem_get_page_lt(PyObject *self, PyObject *arg
 	void *argp1 = 0;
 	int res1 = 0;
     fz_point *result = 0;
+	fz_link_dest* dest;
 
 	if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
 	res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_outline_s, 0 |  0 );
@@ -6660,7 +6680,7 @@ SWIGINTERN PyObject *_wrap_OutlineItem_get_page_lt(PyObject *self, PyObject *arg
 		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OutlineItem_get_page_lt" "', argument " "1"" of type '" "OutlineItem""'"); 
 	}
 	arg1 = (fz_outline *)(argp1);
-	fz_link_dest* dest = &(arg1->dest);
+	dest = &(arg1->dest);
 	if (dest->kind != FZ_LINK_NONE) {
 		result = &(dest->ld.gotor.lt);
 	}
@@ -6681,6 +6701,7 @@ SWIGINTERN PyObject *_wrap_OutlineItem_get_page_rb(PyObject *self, PyObject *arg
 	void *argp1 = 0;
 	int res1 = 0;
     fz_point *result = 0;
+	fz_link_dest* dest;
 
 	if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_fail;
 	res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_fz_outline_s, 0 |  0 );
@@ -6688,7 +6709,7 @@ SWIGINTERN PyObject *_wrap_OutlineItem_get_page_rb(PyObject *self, PyObject *arg
 		SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "OutlineItem_get_page_lt" "', argument " "1"" of type '" "OutlineItem""'"); 
 	}
 	arg1 = (fz_outline *)(argp1);
-	fz_link_dest* dest = &(arg1->dest);
+	dest = &(arg1->dest);
 	if (dest->kind != FZ_LINK_NONE) {
 		result = &(dest->ld.gotor.rb);
 	}
