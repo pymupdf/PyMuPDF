@@ -9,7 +9,7 @@ An online document can be found at http://rk700.github.com/python-fitz/index.htm
 Dependencies
 ------------
 
-This module depends on the source code of `MuPDF <http://www.mupdf.com>`_ (version 1.2). 
+This module depends on the source code of `MuPDF <http://mupdf.com/downloads/archive/>`_ (version 1.2). 
 
 The source must be compiled / generated in order to be used by this package.  
 
