@@ -1,3 +1,0 @@
-include COPYING README fitz/*.h
-graft demo
-graft doc
