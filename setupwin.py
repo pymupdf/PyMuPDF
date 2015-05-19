@@ -1,5 +1,9 @@
 from distutils.core import setup, Extension
+#===============================================================================
 # This will build / setup python-fitz under Windows
+# There is a wiki page with detailed instructions on how to set up
+# python-fitz in Windows 7.
+#===============================================================================
 module = Extension('fitz._fitz',
                    include_dirs=['./fitz', './mupdf12/fitz'],    # mupdf source directory is also needed
                    libraries=['libmupdf-nov8',                   # only these are needed in Windows
