@@ -19,7 +19,7 @@ Windows: Use one of the (free) Visual Studio editions and the process is straigh
 
 Install
 -------
-Download mupdf source version 1.2 and unzip it.  
+Download `mupdf source version 1.2  <http://mupdf.com/downloads/archive/>`_ and unzip it.  
 
 Generate / compile mupdf according to your platform.  
 
