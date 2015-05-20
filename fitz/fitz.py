@@ -91,27 +91,42 @@ except AttributeError:
 
 
 
-_fitz.FZ_STORE_UNLIMITED_swigconstant(_fitz)
-FZ_STORE_UNLIMITED = _fitz.FZ_STORE_UNLIMITED
+def initContext():
+    return _fitz.initContext()
+initContext = _fitz.initContext
 
-_fitz.FZ_VERSION_swigconstant(_fitz)
-FZ_VERSION = _fitz.FZ_VERSION
+def dropContext():
+    return _fitz.dropContext()
+dropContext = _fitz.dropContext
+class Document(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Document, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Document, name)
+    __repr__ = _swig_repr
+    __swig_getmethods__["doc"] = _fitz.Document_doc_get
+    if _newclass:
+        doc = _swig_property(_fitz.Document_doc_get)
 
-def fz_new_context_imp(alloc, locks, max_store, versio):
-    return _fitz.fz_new_context_imp(alloc, locks, max_store, versio)
-fz_new_context_imp = _fitz.fz_new_context_imp
+    def __init__(self, filename):
+        this = _fitz.new_Document(filename)
+        try:
+            self.this.append(this)
+        except:
+            self.this = this
+    __swig_destroy__ = _fitz.delete_Document
+    __del__ = lambda self: None
 
-def fz_register_document_handlers(ctx):
-    return _fitz.fz_register_document_handlers(ctx)
-fz_register_document_handlers = _fitz.fz_register_document_handlers
+    def pageCount_get(self):
+        return _fitz.Document_pageCount_get(self)
+    __swig_getmethods__["pageCount"] = _fitz.Document_pageCount_get
+    if _newclass:
+        pageCount = _swig_property(_fitz.Document_pageCount_get)
 
-def fz_open_document(ctx, filename):
-    return _fitz.fz_open_document(ctx, filename)
-fz_open_document = _fitz.fz_open_document
+Document_swigregister = _fitz.Document_swigregister
+Document_swigregister(Document)
+cvar = _fitz.cvar
 
-def fz_count_pages(ctx, doc):
-    return _fitz.fz_count_pages(ctx, doc)
-fz_count_pages = _fitz.fz_count_pages
 # This file is compatible with both classic and new-style classes.
 
 

@@ -3,16 +3,45 @@
 %{
 #define SWIG_FILE_WITH_INIT
 #include <fitz.h>
+#include "aux.h"
 %}
 
-#define FZ_STORE_UNLIMITED 0
+%inline %{
+    fz_context *gctx = NULL;
+    
+    void initContext() {
+        gctx = fz_new_context(NULL, NULL, FZ_STORE_UNLIMITED);
+        fz_register_document_handlers(gctx);
+    }
+    
+    void dropContext() {
+        if(!gctx) return;
+        fz_drop_context(gctx);
+        gctx = NULL;
+    }
+%}
 
-#define FZ_VERSION "1.7a"
+typedef struct {
+    %immutable;
+    fz_document doc;
+}Document;
 
-fz_context *fz_new_context_imp(fz_alloc_context *alloc, fz_locks_context *locks, unsigned int max_store, const char *versio);
+%extend Document {
+    Document(const char *filename) {
+        return (Document *)fz_open_document(gctx, filename);
+    }
+    ~Document() {
+        fz_drop_document(gctx, (fz_document *)$self);
+    }
+    int pageCount_get() {
+        return fz_count_pages(gctx, (fz_document *)$self);
+    }
+    %pythoncode %{
+        __swig_getmethods__["pageCount"] = _fitz.Document_pageCount_get
+        if _newclass:
+            pageCount = _swig_property(_fitz.Document_pageCount_get)
+    %}
+};
 
-void fz_register_document_handlers(fz_context *ctx);
-
-fz_document *fz_open_document(fz_context *ctx, const char *filename);
-
-int fz_count_pages(fz_context *ctx, fz_document *doc);
+void initContext();
+void dropContext();

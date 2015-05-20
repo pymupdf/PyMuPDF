@@ -2910,13 +2910,12 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_char swig_types[0]
-#define SWIGTYPE_p_fz_alloc_context swig_types[1]
+#define SWIGTYPE_p_Document swig_types[0]
+#define SWIGTYPE_p_char swig_types[1]
 #define SWIGTYPE_p_fz_context swig_types[2]
 #define SWIGTYPE_p_fz_document swig_types[3]
-#define SWIGTYPE_p_fz_locks_context swig_types[4]
-static swig_type_info *swig_types[6];
-static swig_module_info swig_module = {swig_types, 5, 0, 0, 0, 0};
+static swig_type_info *swig_types[5];
+static swig_module_info swig_module = {swig_types, 4, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -2950,13 +2949,21 @@ static swig_module_info swig_module = {swig_types, 5, 0, 0, 0, 0};
 
 #define SWIG_FILE_WITH_INIT
 #include <fitz.h>
+#include "aux.h"
 
 
-SWIGINTERNINLINE PyObject*
-  SWIG_From_int  (int value)
-{
-  return PyInt_FromLong((long) value);
-}
+    fz_context *gctx = NULL;
+    
+    void initContext() {
+        gctx = fz_new_context(NULL, NULL, FZ_STORE_UNLIMITED);
+        fz_register_document_handlers(gctx);
+    }
+    
+    void dropContext() {
+        if(!gctx) return;
+        fz_drop_context(gctx);
+        gctx = NULL;
+    }
 
 
 SWIGINTERN swig_type_info*
@@ -2969,203 +2976,6 @@ SWIG_pchar_descriptor(void)
     init = 1;
   }
   return info;
-}
-
-
-SWIGINTERNINLINE PyObject *
-SWIG_FromCharPtrAndSize(const char* carray, size_t size)
-{
-  if (carray) {
-    if (size > INT_MAX) {
-      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
-      return pchar_descriptor ? 
-	SWIG_InternalNewPointerObj((char *)(carray), pchar_descriptor, 0) : SWIG_Py_Void();
-    } else {
-#if PY_VERSION_HEX >= 0x03000000
-#if PY_VERSION_HEX >= 0x03010000
-      return PyUnicode_DecodeUTF8(carray, (int)(size), "surrogateescape");
-#else
-      return PyUnicode_FromStringAndSize(carray, (int)(size));
-#endif
-#else
-      return PyString_FromStringAndSize(carray, (int)(size));
-#endif
-    }
-  } else {
-    return SWIG_Py_Void();
-  }
-}
-
-
-SWIGINTERNINLINE PyObject * 
-SWIG_FromCharPtr(const char *cptr)
-{ 
-  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
-}
-
-
-#include <limits.h>
-#if !defined(SWIG_NO_LLONG_MAX)
-# if !defined(LLONG_MAX) && defined(__GNUC__) && defined (__LONG_LONG_MAX__)
-#   define LLONG_MAX __LONG_LONG_MAX__
-#   define LLONG_MIN (-LLONG_MAX - 1LL)
-#   define ULLONG_MAX (LLONG_MAX * 2ULL + 1ULL)
-# endif
-#endif
-
-
-SWIGINTERN int
-SWIG_AsVal_double (PyObject *obj, double *val)
-{
-  int res = SWIG_TypeError;
-  if (PyFloat_Check(obj)) {
-    if (val) *val = PyFloat_AsDouble(obj);
-    return SWIG_OK;
-  } else if (PyInt_Check(obj)) {
-    if (val) *val = PyInt_AsLong(obj);
-    return SWIG_OK;
-  } else if (PyLong_Check(obj)) {
-    double v = PyLong_AsDouble(obj);
-    if (!PyErr_Occurred()) {
-      if (val) *val = v;
-      return SWIG_OK;
-    } else {
-      PyErr_Clear();
-    }
-  }
-#ifdef SWIG_PYTHON_CAST_MODE
-  {
-    int dispatch = 0;
-    double d = PyFloat_AsDouble(obj);
-    if (!PyErr_Occurred()) {
-      if (val) *val = d;
-      return SWIG_AddCast(SWIG_OK);
-    } else {
-      PyErr_Clear();
-    }
-    if (!dispatch) {
-      long v = PyLong_AsLong(obj);
-      if (!PyErr_Occurred()) {
-	if (val) *val = v;
-	return SWIG_AddCast(SWIG_AddCast(SWIG_OK));
-      } else {
-	PyErr_Clear();
-      }
-    }
-  }
-#endif
-  return res;
-}
-
-
-#include <float.h>
-
-
-#include <math.h>
-
-
-SWIGINTERNINLINE int
-SWIG_CanCastAsInteger(double *d, double min, double max) {
-  double x = *d;
-  if ((min <= x && x <= max)) {
-   double fx = floor(x);
-   double cx = ceil(x);
-   double rd =  ((x - fx) < 0.5) ? fx : cx; /* simple rint */
-   if ((errno == EDOM) || (errno == ERANGE)) {
-     errno = 0;
-   } else {
-     double summ, reps, diff;
-     if (rd < x) {
-       diff = x - rd;
-     } else if (rd > x) {
-       diff = rd - x;
-     } else {
-       return 1;
-     }
-     summ = rd + x;
-     reps = diff/summ;
-     if (reps < 8*DBL_EPSILON) {
-       *d = rd;
-       return 1;
-     }
-   }
-  }
-  return 0;
-}
-
-
-SWIGINTERN int
-SWIG_AsVal_unsigned_SS_long (PyObject *obj, unsigned long *val) 
-{
-#if PY_VERSION_HEX < 0x03000000
-  if (PyInt_Check(obj)) {
-    long v = PyInt_AsLong(obj);
-    if (v >= 0) {
-      if (val) *val = v;
-      return SWIG_OK;
-    } else {
-      return SWIG_OverflowError;
-    }
-  } else
-#endif
-  if (PyLong_Check(obj)) {
-    unsigned long v = PyLong_AsUnsignedLong(obj);
-    if (!PyErr_Occurred()) {
-      if (val) *val = v;
-      return SWIG_OK;
-    } else {
-      PyErr_Clear();
-#if PY_VERSION_HEX >= 0x03000000
-      {
-        long v = PyLong_AsLong(obj);
-        if (!PyErr_Occurred()) {
-          if (v < 0) {
-            return SWIG_OverflowError;
-          }
-        } else {
-          PyErr_Clear();
-        }
-      }
-#endif
-    }
-  }
-#ifdef SWIG_PYTHON_CAST_MODE
-  {
-    int dispatch = 0;
-    unsigned long v = PyLong_AsUnsignedLong(obj);
-    if (!PyErr_Occurred()) {
-      if (val) *val = v;
-      return SWIG_AddCast(SWIG_OK);
-    } else {
-      PyErr_Clear();
-    }
-    if (!dispatch) {
-      double d;
-      int res = SWIG_AddCast(SWIG_AsVal_double (obj,&d));
-      if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, 0, ULONG_MAX)) {
-	if (val) *val = (unsigned long)(d);
-	return res;
-      }
-    }
-  }
-#endif
-  return SWIG_TypeError;
-}
-
-
-SWIGINTERN int
-SWIG_AsVal_unsigned_SS_int (PyObject * obj, unsigned int *val)
-{
-  unsigned long v;
-  int res = SWIG_AsVal_unsigned_SS_long (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if ((v > UINT_MAX)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = (unsigned int)(v);
-    }
-  }  
-  return res;
 }
 
 
@@ -3247,97 +3057,53 @@ SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
 
 
 
+SWIGINTERN Document *new_Document(char const *filename){
+        return (Document *)fz_open_document(gctx, filename);
+    }
+SWIGINTERN void delete_Document(Document *self){
+        fz_drop_document(gctx, (fz_document *)self);
+    }
+SWIGINTERN int Document_pageCount_get(Document *self){
+        return fz_count_pages(gctx, (fz_document *)self);
+    }
+
+SWIGINTERNINLINE PyObject*
+  SWIG_From_int  (int value)
+{
+  return PyInt_FromLong((long) value);
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-SWIGINTERN PyObject *FZ_STORE_UNLIMITED_swigconstant(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *module;
-  PyObject *d;
-  if (!PyArg_ParseTuple(args,(char*)"O:swigconstant", &module)) return NULL;
-  d = PyModule_GetDict(module);
-  if (!d) return NULL;
-  SWIG_Python_SetConstant(d, "FZ_STORE_UNLIMITED",SWIG_From_int((int)(0)));
-  return SWIG_Py_Void();
-}
-
-
-SWIGINTERN PyObject *FZ_VERSION_swigconstant(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *module;
-  PyObject *d;
-  if (!PyArg_ParseTuple(args,(char*)"O:swigconstant", &module)) return NULL;
-  d = PyModule_GetDict(module);
-  if (!d) return NULL;
-  SWIG_Python_SetConstant(d, "FZ_VERSION",SWIG_FromCharPtr("1.7a"));
-  return SWIG_Py_Void();
-}
-
-
-SWIGINTERN PyObject *_wrap_fz_new_context_imp(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  fz_alloc_context *arg1 = (fz_alloc_context *) 0 ;
-  fz_locks_context *arg2 = (fz_locks_context *) 0 ;
-  unsigned int arg3 ;
-  char *arg4 = (char *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  unsigned int val3 ;
-  int ecode3 = 0 ;
-  int res4 ;
-  char *buf4 = 0 ;
-  int alloc4 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  fz_context *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:fz_new_context_imp",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_alloc_context, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "fz_new_context_imp" "', argument " "1"" of type '" "fz_alloc_context *""'"); 
+SWIGINTERN int Swig_var_gctx_set(PyObject *_val) {
+  {
+    void *argp = 0;
+    int res = SWIG_ConvertPtr(_val, &argp, SWIGTYPE_p_fz_context,  0 );  
+    if (!SWIG_IsOK(res)) {
+      SWIG_exception_fail(SWIG_ArgError(res), "in variable '""gctx""' of type '""fz_context *""'");
+    }
+    gctx = (fz_context *)(argp);
   }
-  arg1 = (fz_alloc_context *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_locks_context, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "fz_new_context_imp" "', argument " "2"" of type '" "fz_locks_context *""'"); 
-  }
-  arg2 = (fz_locks_context *)(argp2);
-  ecode3 = SWIG_AsVal_unsigned_SS_int(obj2, &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "fz_new_context_imp" "', argument " "3"" of type '" "unsigned int""'");
-  } 
-  arg3 = (unsigned int)(val3);
-  res4 = SWIG_AsCharPtrAndSize(obj3, &buf4, NULL, &alloc4);
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "fz_new_context_imp" "', argument " "4"" of type '" "char const *""'");
-  }
-  arg4 = (char *)(buf4);
-  result = (fz_context *)fz_new_context_imp(arg1,arg2,arg3,(char const *)arg4);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_context, 0 |  0 );
-  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
-  return resultobj;
+  return 0;
 fail:
-  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
-  return NULL;
+  return 1;
 }
 
 
-SWIGINTERN PyObject *_wrap_fz_register_document_handlers(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  fz_context *arg1 = (fz_context *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
+SWIGINTERN PyObject *Swig_var_gctx_get(void) {
+  PyObject *pyobj = 0;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:fz_register_document_handlers",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_context, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "fz_register_document_handlers" "', argument " "1"" of type '" "fz_context *""'"); 
-  }
-  arg1 = (fz_context *)(argp1);
-  fz_register_document_handlers(arg1);
+  pyobj = SWIG_NewPointerObj(SWIG_as_voidptr(gctx), SWIGTYPE_p_fz_context,  0 );
+  return pyobj;
+}
+
+
+SWIGINTERN PyObject *_wrap_initContext(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  
+  if (!PyArg_ParseTuple(args,(char *)":initContext")) SWIG_fail;
+  initContext();
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -3345,64 +3111,101 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_fz_open_document(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_dropContext(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  fz_context *arg1 = (fz_context *) 0 ;
-  char *arg2 = (char *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  fz_document *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:fz_open_document",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_context, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "fz_open_document" "', argument " "1"" of type '" "fz_context *""'"); 
-  }
-  arg1 = (fz_context *)(argp1);
-  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "fz_open_document" "', argument " "2"" of type '" "char const *""'");
-  }
-  arg2 = (char *)(buf2);
-  result = (fz_document *)fz_open_document(arg1,(char const *)arg2);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_document, 0 |  0 );
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (!PyArg_ParseTuple(args,(char *)":dropContext")) SWIG_fail;
+  dropContext();
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_fz_count_pages(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_Document_doc_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  fz_context *arg1 = (fz_context *) 0 ;
-  fz_document *arg2 = (fz_document *) 0 ;
+  Document *arg1 = (Document *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
   PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
+  fz_document result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Document_doc_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Document, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_doc_get" "', argument " "1"" of type '" "Document *""'"); 
+  }
+  arg1 = (Document *)(argp1);
+  result =  ((arg1)->doc);
+  resultobj = SWIG_NewPointerObj((fz_document *)memcpy((fz_document *)malloc(sizeof(fz_document)),&result,sizeof(fz_document)), SWIGTYPE_p_fz_document, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_Document(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  Document *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_Document",&obj0)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Document" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (Document *)new_Document((char const *)arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Document, SWIG_POINTER_NEW |  0 );
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_Document(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Document *arg1 = (Document *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_Document",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Document, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Document" "', argument " "1"" of type '" "Document *""'"); 
+  }
+  arg1 = (Document *)(argp1);
+  delete_Document(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document_pageCount_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Document *arg1 = (Document *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:fz_count_pages",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_context, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"O:Document_pageCount_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Document, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "fz_count_pages" "', argument " "1"" of type '" "fz_context *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_pageCount_get" "', argument " "1"" of type '" "Document *""'"); 
   }
-  arg1 = (fz_context *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_document, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "fz_count_pages" "', argument " "2"" of type '" "fz_document *""'"); 
-  }
-  arg2 = (fz_document *)(argp2);
-  result = (int)fz_count_pages(arg1,arg2);
+  arg1 = (Document *)(argp1);
+  result = (int)Document_pageCount_get(arg1);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
@@ -3410,46 +3213,50 @@ fail:
 }
 
 
+SWIGINTERN PyObject *Document_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_Document, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
-	 { (char *)"FZ_STORE_UNLIMITED_swigconstant", FZ_STORE_UNLIMITED_swigconstant, METH_VARARGS, NULL},
-	 { (char *)"FZ_VERSION_swigconstant", FZ_VERSION_swigconstant, METH_VARARGS, NULL},
-	 { (char *)"fz_new_context_imp", _wrap_fz_new_context_imp, METH_VARARGS, NULL},
-	 { (char *)"fz_register_document_handlers", _wrap_fz_register_document_handlers, METH_VARARGS, NULL},
-	 { (char *)"fz_open_document", _wrap_fz_open_document, METH_VARARGS, NULL},
-	 { (char *)"fz_count_pages", _wrap_fz_count_pages, METH_VARARGS, NULL},
+	 { (char *)"initContext", _wrap_initContext, METH_VARARGS, NULL},
+	 { (char *)"dropContext", _wrap_dropContext, METH_VARARGS, NULL},
+	 { (char *)"Document_doc_get", _wrap_Document_doc_get, METH_VARARGS, NULL},
+	 { (char *)"new_Document", _wrap_new_Document, METH_VARARGS, NULL},
+	 { (char *)"delete_Document", _wrap_delete_Document, METH_VARARGS, NULL},
+	 { (char *)"Document_pageCount_get", _wrap_Document_pageCount_get, METH_VARARGS, NULL},
+	 { (char *)"Document_swigregister", Document_swigregister, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
+static swig_type_info _swigt__p_Document = {"_p_Document", "Document *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_fz_alloc_context = {"_p_fz_alloc_context", "fz_alloc_context *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_fz_context = {"_p_fz_context", "fz_context *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_fz_document = {"_p_fz_document", "fz_document *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_fz_locks_context = {"_p_fz_locks_context", "fz_locks_context *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
+  &_swigt__p_Document,
   &_swigt__p_char,
-  &_swigt__p_fz_alloc_context,
   &_swigt__p_fz_context,
   &_swigt__p_fz_document,
-  &_swigt__p_fz_locks_context,
 };
 
+static swig_cast_info _swigc__p_Document[] = {  {&_swigt__p_Document, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_fz_alloc_context[] = {  {&_swigt__p_fz_alloc_context, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_context[] = {  {&_swigt__p_fz_context, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_document[] = {  {&_swigt__p_fz_document, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_fz_locks_context[] = {  {&_swigt__p_fz_locks_context, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
+  _swigc__p_Document,
   _swigc__p_char,
-  _swigc__p_fz_alloc_context,
   _swigc__p_fz_context,
   _swigc__p_fz_document,
-  _swigc__p_fz_locks_context,
 };
 
 
@@ -4133,6 +3940,8 @@ SWIG_init(void) {
   
   SWIG_InstallConstants(d,swig_const_table);
   
+  PyDict_SetItemString(md,(char*)"cvar", SWIG_globals());
+  SWIG_addvarlink(SWIG_globals(),(char*)"gctx",Swig_var_gctx_get, Swig_var_gctx_set);
 #if PY_VERSION_HEX >= 0x03000000
   return m;
 #else
