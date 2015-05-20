@@ -7,3 +7,4 @@ import sys
 fitz.initContext()
 doc = fitz.Document(sys.argv[1])
 print '%d pages' % doc.pageCount
+#page = doc.loadPage(0)

@@ -104,9 +104,6 @@ class Document(_object):
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, Document, name)
     __repr__ = _swig_repr
-    __swig_getmethods__["doc"] = _fitz.Document_doc_get
-    if _newclass:
-        doc = _swig_property(_fitz.Document_doc_get)
 
     def __init__(self, filename):
         this = _fitz.new_Document(filename)
@@ -119,6 +116,9 @@ class Document(_object):
 
     def pageCount_get(self):
         return _fitz.Document_pageCount_get(self)
+
+    def loadPage(self, number):
+        return _fitz.Document_loadPage(self, number)
     __swig_getmethods__["pageCount"] = _fitz.Document_pageCount_get
     if _newclass:
         pageCount = _swig_property(_fitz.Document_pageCount_get)
@@ -126,6 +126,57 @@ class Document(_object):
 Document_swigregister = _fitz.Document_swigregister
 Document_swigregister(Document)
 cvar = _fitz.cvar
+
+class Page(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Page, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Page, name)
+
+    def __init__(self, *args, **kwargs):
+        raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _fitz.delete_Page
+    __del__ = lambda self: None
+
+    def bound(self):
+        return _fitz.Page_bound(self)
+Page_swigregister = _fitz.Page_swigregister
+Page_swigregister(Page)
+
+class Rect(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Rect, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Rect, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["x0"] = _fitz.Rect_x0_set
+    __swig_getmethods__["x0"] = _fitz.Rect_x0_get
+    if _newclass:
+        x0 = _swig_property(_fitz.Rect_x0_get, _fitz.Rect_x0_set)
+    __swig_setmethods__["y0"] = _fitz.Rect_y0_set
+    __swig_getmethods__["y0"] = _fitz.Rect_y0_get
+    if _newclass:
+        y0 = _swig_property(_fitz.Rect_y0_get, _fitz.Rect_y0_set)
+    __swig_setmethods__["x1"] = _fitz.Rect_x1_set
+    __swig_getmethods__["x1"] = _fitz.Rect_x1_get
+    if _newclass:
+        x1 = _swig_property(_fitz.Rect_x1_get, _fitz.Rect_x1_set)
+    __swig_setmethods__["y1"] = _fitz.Rect_y1_set
+    __swig_getmethods__["y1"] = _fitz.Rect_y1_get
+    if _newclass:
+        y1 = _swig_property(_fitz.Rect_y1_get, _fitz.Rect_y1_set)
+
+    def __init__(self):
+        this = _fitz.new_Rect()
+        try:
+            self.this.append(this)
+        except:
+            self.this = this
+    __swig_destroy__ = _fitz.delete_Rect
+    __del__ = lambda self: None
+Rect_swigregister = _fitz.Rect_swigregister
+Rect_swigregister(Rect)
 
 # This file is compatible with both classic and new-style classes.
 
