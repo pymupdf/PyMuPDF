@@ -2,47 +2,23 @@
 README for python-fitz
 ======================
 
-python-fitz is a set of python bindings for MuPDF's rendering library. Most of the work is done by SWIG with ``-builtin`` option on.
+This branch intends for MuPDF 1.7. It's still in heavy development.
 
-An online document can be found at http://rk700.github.com/python-fitz/index.html
+Start Developing
+---------------
 
-Dependencies
-------------
+First, we need MuPDF 1.7 header files, which are already included in this repo(in the folder ``fitz``).
 
-This module depends on the source code of `MuPDF <http://mupdf.com/downloads/archive/>`_ (version 1.2). 
+Next, we need mupdf libraries. For linux, there are 2: ``libmupdf.a`` and ``libmujs.a``. Make sure that these 2 libs are compiled as position independent(gcc with ``-fPIC``).
 
-The source must be compiled / generated in order to be used by this package.  
+Besides, some 3rd party libraries are also needed. For linux, there are: ``libssl.so``, ``libjbig2dec.so``, ``libopenjp2.so``, ``libjpeg.so``, ``libfreetype.so``. The code of these libs can also be found in MuPDF's source.
 
-Non-Windows: You need to generate MuPDF with the ``-fPIC`` option.  
+Now that we have the env ready, we can edit the SWIG file, ``fitz/fitz.i``, to add more symbols. Then we generate the wrapper .c file using:
 
-Windows: Use one of the (free) Visual Studio editions and the process is straightforward and almost hassle-free.
+    swig -python fitz.i
 
-Install
--------
-Download `mupdf source version 1.2  <http://mupdf.com/downloads/archive/>`_ and unzip it.  
+And compile it to get the python module.
 
-Generate / compile mupdf according to your platform.  
+For linux, there's a simple bash script ``fitz/do.sh`` to do the stuff.
 
-Download and unzip this repository.  
-Update setup.py as necessary. Under Windows / Visual Studio, required changes are quite significant. Therefore a separate setup file, setupwin.py is provided.  
-
-Then run
-
-	python setup.py install
-
-If you are unsure what this process does, you can always do this
-
-	python setup.py --help
-
-and / or consult the Python documentation on distutils.
-
-
-Comments and bug reports
-------------------------
-Project page is on
-https://github.com/rk700/python-fitz
-
-You can also send email to the author:
-`Ruikai Liu`_ 
-
-.. _Ruikai Liu: lrk700@gmail.com
+Once we get the module(``_fitz.so`` on linux), we can import it in python. There's a demo script, ``fitz/demo.py``, which will display number of pages of a given PDF file.
