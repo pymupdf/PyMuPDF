@@ -167,6 +167,9 @@ class Rect(_object):
     if _newclass:
         y1 = _swig_property(_fitz.Rect_y1_get, _fitz.Rect_y1_set)
 
+    def round(self):
+        return _fitz.Rect_round(self)
+
     def __init__(self):
         this = _fitz.new_Rect()
         try:
@@ -177,6 +180,132 @@ class Rect(_object):
     __del__ = lambda self: None
 Rect_swigregister = _fitz.Rect_swigregister
 Rect_swigregister(Rect)
+
+class IRect(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, IRect, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, IRect, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["x0"] = _fitz.IRect_x0_set
+    __swig_getmethods__["x0"] = _fitz.IRect_x0_get
+    if _newclass:
+        x0 = _swig_property(_fitz.IRect_x0_get, _fitz.IRect_x0_set)
+    __swig_setmethods__["y0"] = _fitz.IRect_y0_set
+    __swig_getmethods__["y0"] = _fitz.IRect_y0_get
+    if _newclass:
+        y0 = _swig_property(_fitz.IRect_y0_get, _fitz.IRect_y0_set)
+    __swig_setmethods__["x1"] = _fitz.IRect_x1_set
+    __swig_getmethods__["x1"] = _fitz.IRect_x1_get
+    if _newclass:
+        x1 = _swig_property(_fitz.IRect_x1_get, _fitz.IRect_x1_set)
+    __swig_setmethods__["y1"] = _fitz.IRect_y1_set
+    __swig_getmethods__["y1"] = _fitz.IRect_y1_get
+    if _newclass:
+        y1 = _swig_property(_fitz.IRect_y1_get, _fitz.IRect_y1_set)
+
+    def __init__(self):
+        this = _fitz.new_IRect()
+        try:
+            self.this.append(this)
+        except:
+            self.this = this
+    __swig_destroy__ = _fitz.delete_IRect
+    __del__ = lambda self: None
+IRect_swigregister = _fitz.IRect_swigregister
+IRect_swigregister(IRect)
+
+class Pixmap(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Pixmap, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Pixmap, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["x"] = _fitz.Pixmap_x_set
+    __swig_getmethods__["x"] = _fitz.Pixmap_x_get
+    if _newclass:
+        x = _swig_property(_fitz.Pixmap_x_get, _fitz.Pixmap_x_set)
+    __swig_setmethods__["y"] = _fitz.Pixmap_y_set
+    __swig_getmethods__["y"] = _fitz.Pixmap_y_get
+    if _newclass:
+        y = _swig_property(_fitz.Pixmap_y_get, _fitz.Pixmap_y_set)
+    __swig_setmethods__["w"] = _fitz.Pixmap_w_set
+    __swig_getmethods__["w"] = _fitz.Pixmap_w_get
+    if _newclass:
+        w = _swig_property(_fitz.Pixmap_w_get, _fitz.Pixmap_w_set)
+    __swig_setmethods__["h"] = _fitz.Pixmap_h_set
+    __swig_getmethods__["h"] = _fitz.Pixmap_h_get
+    if _newclass:
+        h = _swig_property(_fitz.Pixmap_h_get, _fitz.Pixmap_h_set)
+    __swig_setmethods__["n"] = _fitz.Pixmap_n_set
+    __swig_getmethods__["n"] = _fitz.Pixmap_n_get
+    if _newclass:
+        n = _swig_property(_fitz.Pixmap_n_get, _fitz.Pixmap_n_set)
+    __swig_setmethods__["interpolate"] = _fitz.Pixmap_interpolate_set
+    __swig_getmethods__["interpolate"] = _fitz.Pixmap_interpolate_get
+    if _newclass:
+        interpolate = _swig_property(_fitz.Pixmap_interpolate_get, _fitz.Pixmap_interpolate_set)
+    __swig_setmethods__["xres"] = _fitz.Pixmap_xres_set
+    __swig_getmethods__["xres"] = _fitz.Pixmap_xres_get
+    if _newclass:
+        xres = _swig_property(_fitz.Pixmap_xres_get, _fitz.Pixmap_xres_set)
+    __swig_setmethods__["yres"] = _fitz.Pixmap_yres_set
+    __swig_getmethods__["yres"] = _fitz.Pixmap_yres_get
+    if _newclass:
+        yres = _swig_property(_fitz.Pixmap_yres_get, _fitz.Pixmap_yres_set)
+
+    def __init__(self, cs, bbox):
+        this = _fitz.new_Pixmap(cs, bbox)
+        try:
+            self.this.append(this)
+        except:
+            self.this = this
+    __swig_destroy__ = _fitz.delete_Pixmap
+    __del__ = lambda self: None
+
+    def clearWith(self, value):
+        return _fitz.Pixmap_clearWith(self, value)
+Pixmap_swigregister = _fitz.Pixmap_swigregister
+Pixmap_swigregister(Pixmap)
+
+
+_fitz.CS_RGB_swigconstant(_fitz)
+CS_RGB = _fitz.CS_RGB
+class Colorspace(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Colorspace, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Colorspace, name)
+    __repr__ = _swig_repr
+
+    def __init__(self, type):
+        this = _fitz.new_Colorspace(type)
+        try:
+            self.this.append(this)
+        except:
+            self.this = this
+    __swig_destroy__ = _fitz.delete_Colorspace
+    __del__ = lambda self: None
+Colorspace_swigregister = _fitz.Colorspace_swigregister
+Colorspace_swigregister(Colorspace)
+
+class Device(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Device, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Device, name)
+    __repr__ = _swig_repr
+
+    def __init__(self, pm):
+        this = _fitz.new_Device(pm)
+        try:
+            self.this.append(this)
+        except:
+            self.this = this
+    __swig_destroy__ = _fitz.delete_Device
+    __del__ = lambda self: None
+Device_swigregister = _fitz.Device_swigregister
+Device_swigregister(Device)
 
 # This file is compatible with both classic and new-style classes.
 
