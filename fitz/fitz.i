@@ -2,7 +2,7 @@
 
 %{
 #define SWIG_FILE_WITH_INIT
-#include "fitz.h"
+#include <fitz.h>
 %}
 
 #define FZ_STORE_UNLIMITED 0

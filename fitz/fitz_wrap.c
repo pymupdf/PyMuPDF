@@ -2949,7 +2949,7 @@ static swig_module_info swig_module = {swig_types, 5, 0, 0, 0, 0};
 
 
 #define SWIG_FILE_WITH_INIT
-#include "fitz.h"
+#include <fitz.h>
 
 
 SWIGINTERNINLINE PyObject*
