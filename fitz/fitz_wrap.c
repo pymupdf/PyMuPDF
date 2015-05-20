@@ -2916,11 +2916,12 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_fz_device_s swig_types[3]
 #define SWIGTYPE_p_fz_document_s swig_types[4]
 #define SWIGTYPE_p_fz_irect_s swig_types[5]
-#define SWIGTYPE_p_fz_page_s swig_types[6]
-#define SWIGTYPE_p_fz_pixmap_s swig_types[7]
-#define SWIGTYPE_p_fz_rect_s swig_types[8]
-static swig_type_info *swig_types[10];
-static swig_module_info swig_module = {swig_types, 9, 0, 0, 0, 0};
+#define SWIGTYPE_p_fz_matrix_s swig_types[6]
+#define SWIGTYPE_p_fz_page_s swig_types[7]
+#define SWIGTYPE_p_fz_pixmap_s swig_types[8]
+#define SWIGTYPE_p_fz_rect_s swig_types[9]
+static swig_type_info *swig_types[11];
+static swig_module_info swig_module = {swig_types, 10, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3233,6 +3234,9 @@ SWIGINTERN struct fz_rect_s *fz_page_s_bound(struct fz_page_s *self){
             fz_bound_page(gctx, self, rect);
             return rect;
         }
+SWIGINTERN void fz_page_s_run(struct fz_page_s *self,struct fz_device_s *dev,struct fz_matrix_s const *m){
+            fz_run_page(gctx, self, dev, m, NULL);
+        }
 
 /* Getting isfinite working pre C99 across multiple platforms is non-trivial. Users can provide SWIG_isfinite on older platforms. */
 #ifndef SWIG_isfinite
@@ -3285,6 +3289,9 @@ SWIGINTERN struct fz_irect_s *fz_rect_s_round(struct fz_rect_s *self){
             fz_round_rect(irect, self);
             return irect;
         }
+SWIGINTERN struct fz_rect_s *fz_rect_s_transform(struct fz_rect_s *self,struct fz_matrix_s const *m){
+            return fz_transform_rect(self, m);
+        }
 SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s(struct fz_colorspace_s *cs,struct fz_irect_s const *bbox){
             return fz_new_pixmap_with_bbox(gctx, cs, bbox);
         }
@@ -3293,6 +3300,9 @@ SWIGINTERN void delete_fz_pixmap_s(struct fz_pixmap_s *self){
         }
 SWIGINTERN void fz_pixmap_s_clearWith(struct fz_pixmap_s *self,int value){
             fz_clear_pixmap_with_value(gctx, self, value);
+        }
+SWIGINTERN void fz_pixmap_s_writePNG(struct fz_pixmap_s *self,char *filename,int savealpha){
+            fz_write_png(gctx, self, filename, savealpha);
         }
 
     #define CS_RGB 1
@@ -3314,6 +3324,30 @@ SWIGINTERN struct fz_device_s *new_fz_device_s(struct fz_pixmap_s *pm){
 SWIGINTERN void delete_fz_device_s(struct fz_device_s *self){
             fz_drop_device(gctx, self);
         }
+SWIGINTERN struct fz_matrix_s *fz_matrix_s_scale(float sx,float sy){
+            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            return fz_scale(m, sx, sy);
+        }
+SWIGINTERN struct fz_matrix_s *fz_matrix_s_preScale(struct fz_matrix_s *self,float sx,float sy){
+            return fz_pre_scale(self, sx, sy);
+        }
+SWIGINTERN struct fz_matrix_s *fz_matrix_s_shear(float sx,float sy){
+            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            return fz_shear(m, sx, sy);
+        }
+SWIGINTERN struct fz_matrix_s *fz_matrix_s_preShear(struct fz_matrix_s *self,float sx,float sy){
+            return fz_pre_shear(self, sx, sy);
+        }
+SWIGINTERN struct fz_matrix_s *fz_matrix_s_rotate(float degree){
+            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            return fz_rotate(m, degree);
+        }
+SWIGINTERN struct fz_matrix_s *fz_matrix_s_preRotate(struct fz_matrix_s *self,float degree){
+            return fz_pre_rotate(self, degree);
+        }
+
+    extern const struct fz_matrix_s fz_identity;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -3507,6 +3541,45 @@ SWIGINTERN PyObject *_wrap_Page_bound(PyObject *SWIGUNUSEDPARM(self), PyObject *
   arg1 = (struct fz_page_s *)(argp1);
   result = (struct fz_rect_s *)fz_page_s_bound(arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Page_run(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
+  struct fz_device_s *arg2 = (struct fz_device_s *) 0 ;
+  struct fz_matrix_s *arg3 = (struct fz_matrix_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Page_run",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_run" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
+  }
+  arg1 = (struct fz_page_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_device_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Page_run" "', argument " "2"" of type '" "struct fz_device_s *""'"); 
+  }
+  arg2 = (struct fz_device_s *)(argp2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Page_run" "', argument " "3"" of type '" "struct fz_matrix_s const *""'"); 
+  }
+  arg3 = (struct fz_matrix_s *)(argp3);
+  fz_page_s_run(arg1,arg2,(struct fz_matrix_s const *)arg3);
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -3744,6 +3817,37 @@ SWIGINTERN PyObject *_wrap_Rect_round(PyObject *SWIGUNUSEDPARM(self), PyObject *
   arg1 = (struct fz_rect_s *)(argp1);
   result = (struct fz_irect_s *)fz_rect_s_round(arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_irect_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Rect_transform(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
+  struct fz_matrix_s *arg2 = (struct fz_matrix_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  struct fz_rect_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Rect_transform",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_transform" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg1 = (struct fz_rect_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Rect_transform" "', argument " "2"" of type '" "struct fz_matrix_s const *""'"); 
+  }
+  arg2 = (struct fz_matrix_s *)(argp2);
+  result = (struct fz_rect_s *)fz_rect_s_transform(arg1,(struct fz_matrix_s const *)arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -4538,6 +4642,48 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Pixmap_writePNG(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Pixmap_writePNG",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_writePNG" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Pixmap_writePNG" "', argument " "2"" of type '" "char *""'");
+  }
+  arg2 = (char *)(buf2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Pixmap_writePNG" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = (int)(val3);
+  fz_pixmap_s_writePNG(arg1,arg2,arg3);
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *Pixmap_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
@@ -4656,6 +4802,568 @@ SWIGINTERN PyObject *Device_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObjec
   return SWIG_Py_Void();
 }
 
+SWIGINTERN PyObject *_wrap_Matrix_a_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Matrix_a_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_a_set" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Matrix_a_set" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  if (arg1) (arg1)->a = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_a_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Matrix_a_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_a_get" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  result = (float) ((arg1)->a);
+  resultobj = SWIG_From_float((float)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_b_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Matrix_b_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_b_set" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Matrix_b_set" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  if (arg1) (arg1)->b = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_b_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Matrix_b_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_b_get" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  result = (float) ((arg1)->b);
+  resultobj = SWIG_From_float((float)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_c_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Matrix_c_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_c_set" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Matrix_c_set" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  if (arg1) (arg1)->c = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_c_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Matrix_c_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_c_get" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  result = (float) ((arg1)->c);
+  resultobj = SWIG_From_float((float)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_d_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Matrix_d_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_d_set" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Matrix_d_set" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  if (arg1) (arg1)->d = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_d_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Matrix_d_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_d_get" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  result = (float) ((arg1)->d);
+  resultobj = SWIG_From_float((float)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_e_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Matrix_e_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_e_set" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Matrix_e_set" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  if (arg1) (arg1)->e = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_e_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Matrix_e_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_e_get" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  result = (float) ((arg1)->e);
+  resultobj = SWIG_From_float((float)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_f_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Matrix_f_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_f_set" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Matrix_f_set" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  if (arg1) (arg1)->f = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_f_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Matrix_f_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_f_get" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  result = (float) ((arg1)->f);
+  resultobj = SWIG_From_float((float)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_scale(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float arg1 ;
+  float arg2 ;
+  float val1 ;
+  int ecode1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  struct fz_matrix_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Matrix_scale",&obj0,&obj1)) SWIG_fail;
+  ecode1 = SWIG_AsVal_float(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "Matrix_scale" "', argument " "1"" of type '" "float""'");
+  } 
+  arg1 = (float)(val1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Matrix_scale" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  result = (struct fz_matrix_s *)fz_matrix_s_scale(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_preScale(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  float arg2 ;
+  float arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  float val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  struct fz_matrix_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Matrix_preScale",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_preScale" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Matrix_preScale" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  ecode3 = SWIG_AsVal_float(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Matrix_preScale" "', argument " "3"" of type '" "float""'");
+  } 
+  arg3 = (float)(val3);
+  result = (struct fz_matrix_s *)fz_matrix_s_preScale(arg1,arg2,arg3);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_shear(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float arg1 ;
+  float arg2 ;
+  float val1 ;
+  int ecode1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  struct fz_matrix_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Matrix_shear",&obj0,&obj1)) SWIG_fail;
+  ecode1 = SWIG_AsVal_float(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "Matrix_shear" "', argument " "1"" of type '" "float""'");
+  } 
+  arg1 = (float)(val1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Matrix_shear" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  result = (struct fz_matrix_s *)fz_matrix_s_shear(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_preShear(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  float arg2 ;
+  float arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  float val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  struct fz_matrix_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Matrix_preShear",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_preShear" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Matrix_preShear" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  ecode3 = SWIG_AsVal_float(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Matrix_preShear" "', argument " "3"" of type '" "float""'");
+  } 
+  arg3 = (float)(val3);
+  result = (struct fz_matrix_s *)fz_matrix_s_preShear(arg1,arg2,arg3);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_rotate(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float arg1 ;
+  float val1 ;
+  int ecode1 = 0 ;
+  PyObject * obj0 = 0 ;
+  struct fz_matrix_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Matrix_rotate",&obj0)) SWIG_fail;
+  ecode1 = SWIG_AsVal_float(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "Matrix_rotate" "', argument " "1"" of type '" "float""'");
+  } 
+  arg1 = (float)(val1);
+  result = (struct fz_matrix_s *)fz_matrix_s_rotate(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Matrix_preRotate(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  struct fz_matrix_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Matrix_preRotate",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Matrix_preRotate" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Matrix_preRotate" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  result = (struct fz_matrix_s *)fz_matrix_s_preRotate(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_Matrix(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_Matrix")) SWIG_fail;
+  result = (struct fz_matrix_s *)calloc(1, sizeof(struct fz_matrix_s));
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_Matrix(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_Matrix",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Matrix" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  free((char *) arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *Matrix_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_fz_matrix_s, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN int Swig_var_Identity_set(PyObject *_val SWIGUNUSED) {
+  SWIG_Error(SWIG_AttributeError,"Variable Identity is read-only.");
+  return 1;
+}
+
+
+SWIGINTERN PyObject *Swig_var_Identity_get(void) {
+  PyObject *pyobj = 0;
+  
+  pyobj = SWIG_NewPointerObj(SWIG_as_voidptr(&fz_identity), SWIGTYPE_p_fz_matrix_s,  0 );
+  return pyobj;
+}
+
+
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { (char *)"initContext", _wrap_initContext, METH_VARARGS, NULL},
@@ -4667,6 +5375,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document_swigregister", Document_swigregister, METH_VARARGS, NULL},
 	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, NULL},
 	 { (char *)"Page_bound", _wrap_Page_bound, METH_VARARGS, NULL},
+	 { (char *)"Page_run", _wrap_Page_run, METH_VARARGS, NULL},
 	 { (char *)"Page_swigregister", Page_swigregister, METH_VARARGS, NULL},
 	 { (char *)"Rect_x0_set", _wrap_Rect_x0_set, METH_VARARGS, NULL},
 	 { (char *)"Rect_x0_get", _wrap_Rect_x0_get, METH_VARARGS, NULL},
@@ -4677,6 +5386,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Rect_y1_set", _wrap_Rect_y1_set, METH_VARARGS, NULL},
 	 { (char *)"Rect_y1_get", _wrap_Rect_y1_get, METH_VARARGS, NULL},
 	 { (char *)"Rect_round", _wrap_Rect_round, METH_VARARGS, NULL},
+	 { (char *)"Rect_transform", _wrap_Rect_transform, METH_VARARGS, NULL},
 	 { (char *)"new_Rect", _wrap_new_Rect, METH_VARARGS, NULL},
 	 { (char *)"delete_Rect", _wrap_delete_Rect, METH_VARARGS, NULL},
 	 { (char *)"Rect_swigregister", Rect_swigregister, METH_VARARGS, NULL},
@@ -4710,6 +5420,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_Pixmap", _wrap_new_Pixmap, METH_VARARGS, NULL},
 	 { (char *)"delete_Pixmap", _wrap_delete_Pixmap, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_clearWith", _wrap_Pixmap_clearWith, METH_VARARGS, NULL},
+	 { (char *)"Pixmap_writePNG", _wrap_Pixmap_writePNG, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_swigregister", Pixmap_swigregister, METH_VARARGS, NULL},
 	 { (char *)"CS_RGB_swigconstant", CS_RGB_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"new_Colorspace", _wrap_new_Colorspace, METH_VARARGS, NULL},
@@ -4718,6 +5429,27 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_Device", _wrap_new_Device, METH_VARARGS, NULL},
 	 { (char *)"delete_Device", _wrap_delete_Device, METH_VARARGS, NULL},
 	 { (char *)"Device_swigregister", Device_swigregister, METH_VARARGS, NULL},
+	 { (char *)"Matrix_a_set", _wrap_Matrix_a_set, METH_VARARGS, NULL},
+	 { (char *)"Matrix_a_get", _wrap_Matrix_a_get, METH_VARARGS, NULL},
+	 { (char *)"Matrix_b_set", _wrap_Matrix_b_set, METH_VARARGS, NULL},
+	 { (char *)"Matrix_b_get", _wrap_Matrix_b_get, METH_VARARGS, NULL},
+	 { (char *)"Matrix_c_set", _wrap_Matrix_c_set, METH_VARARGS, NULL},
+	 { (char *)"Matrix_c_get", _wrap_Matrix_c_get, METH_VARARGS, NULL},
+	 { (char *)"Matrix_d_set", _wrap_Matrix_d_set, METH_VARARGS, NULL},
+	 { (char *)"Matrix_d_get", _wrap_Matrix_d_get, METH_VARARGS, NULL},
+	 { (char *)"Matrix_e_set", _wrap_Matrix_e_set, METH_VARARGS, NULL},
+	 { (char *)"Matrix_e_get", _wrap_Matrix_e_get, METH_VARARGS, NULL},
+	 { (char *)"Matrix_f_set", _wrap_Matrix_f_set, METH_VARARGS, NULL},
+	 { (char *)"Matrix_f_get", _wrap_Matrix_f_get, METH_VARARGS, NULL},
+	 { (char *)"Matrix_scale", _wrap_Matrix_scale, METH_VARARGS, NULL},
+	 { (char *)"Matrix_preScale", _wrap_Matrix_preScale, METH_VARARGS, NULL},
+	 { (char *)"Matrix_shear", _wrap_Matrix_shear, METH_VARARGS, NULL},
+	 { (char *)"Matrix_preShear", _wrap_Matrix_preShear, METH_VARARGS, NULL},
+	 { (char *)"Matrix_rotate", _wrap_Matrix_rotate, METH_VARARGS, NULL},
+	 { (char *)"Matrix_preRotate", _wrap_Matrix_preRotate, METH_VARARGS, NULL},
+	 { (char *)"new_Matrix", _wrap_new_Matrix, METH_VARARGS, NULL},
+	 { (char *)"delete_Matrix", _wrap_delete_Matrix, METH_VARARGS, NULL},
+	 { (char *)"Matrix_swigregister", Matrix_swigregister, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 
@@ -4730,6 +5462,7 @@ static swig_type_info _swigt__p_fz_context = {"_p_fz_context", "fz_context *", 0
 static swig_type_info _swigt__p_fz_device_s = {"_p_fz_device_s", "struct fz_device_s *|fz_device_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_fz_document_s = {"_p_fz_document_s", "struct fz_document_s *|fz_document_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_fz_irect_s = {"_p_fz_irect_s", "struct fz_irect_s *|fz_irect_s *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_fz_matrix_s = {"_p_fz_matrix_s", "struct fz_matrix_s *|fz_matrix_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_fz_page_s = {"_p_fz_page_s", "struct fz_page_s *|fz_page_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_fz_pixmap_s = {"_p_fz_pixmap_s", "struct fz_pixmap_s *|fz_pixmap_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_fz_rect_s = {"_p_fz_rect_s", "struct fz_rect_s *|fz_rect_s *", 0, 0, (void*)0, 0};
@@ -4741,6 +5474,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_fz_device_s,
   &_swigt__p_fz_document_s,
   &_swigt__p_fz_irect_s,
+  &_swigt__p_fz_matrix_s,
   &_swigt__p_fz_page_s,
   &_swigt__p_fz_pixmap_s,
   &_swigt__p_fz_rect_s,
@@ -4752,6 +5486,7 @@ static swig_cast_info _swigc__p_fz_context[] = {  {&_swigt__p_fz_context, 0, 0, 
 static swig_cast_info _swigc__p_fz_device_s[] = {  {&_swigt__p_fz_device_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_document_s[] = {  {&_swigt__p_fz_document_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_irect_s[] = {  {&_swigt__p_fz_irect_s, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_fz_matrix_s[] = {  {&_swigt__p_fz_matrix_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_page_s[] = {  {&_swigt__p_fz_page_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_pixmap_s[] = {  {&_swigt__p_fz_pixmap_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_rect_s[] = {  {&_swigt__p_fz_rect_s, 0, 0, 0},{0, 0, 0, 0}};
@@ -4763,6 +5498,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_fz_device_s,
   _swigc__p_fz_document_s,
   _swigc__p_fz_irect_s,
+  _swigc__p_fz_matrix_s,
   _swigc__p_fz_page_s,
   _swigc__p_fz_pixmap_s,
   _swigc__p_fz_rect_s,
@@ -5451,6 +6187,7 @@ SWIG_init(void) {
   
   PyDict_SetItemString(md,(char*)"cvar", SWIG_globals());
   SWIG_addvarlink(SWIG_globals(),(char*)"gctx",Swig_var_gctx_get, Swig_var_gctx_set);
+  SWIG_addvarlink(SWIG_globals(),(char*)"Identity",Swig_var_Identity_get, Swig_var_Identity_set);
 #if PY_VERSION_HEX >= 0x03000000
   return m;
 #else

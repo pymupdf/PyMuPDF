@@ -141,6 +141,9 @@ class Page(_object):
 
     def bound(self):
         return _fitz.Page_bound(self)
+
+    def run(self, dev, m):
+        return _fitz.Page_run(self, dev, m)
 Page_swigregister = _fitz.Page_swigregister
 Page_swigregister(Page)
 
@@ -169,6 +172,9 @@ class Rect(_object):
 
     def round(self):
         return _fitz.Rect_round(self)
+
+    def transform(self, m):
+        return _fitz.Rect_transform(self, m)
 
     def __init__(self):
         this = _fitz.new_Rect()
@@ -265,6 +271,9 @@ class Pixmap(_object):
 
     def clearWith(self, value):
         return _fitz.Pixmap_clearWith(self, value)
+
+    def writePNG(self, filename, savealpha):
+        return _fitz.Pixmap_writePNG(self, filename, savealpha)
 Pixmap_swigregister = _fitz.Pixmap_swigregister
 Pixmap_swigregister(Pixmap)
 
@@ -307,6 +316,79 @@ class Device(_object):
 Device_swigregister = _fitz.Device_swigregister
 Device_swigregister(Device)
 
+class Matrix(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Matrix, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Matrix, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["a"] = _fitz.Matrix_a_set
+    __swig_getmethods__["a"] = _fitz.Matrix_a_get
+    if _newclass:
+        a = _swig_property(_fitz.Matrix_a_get, _fitz.Matrix_a_set)
+    __swig_setmethods__["b"] = _fitz.Matrix_b_set
+    __swig_getmethods__["b"] = _fitz.Matrix_b_get
+    if _newclass:
+        b = _swig_property(_fitz.Matrix_b_get, _fitz.Matrix_b_set)
+    __swig_setmethods__["c"] = _fitz.Matrix_c_set
+    __swig_getmethods__["c"] = _fitz.Matrix_c_get
+    if _newclass:
+        c = _swig_property(_fitz.Matrix_c_get, _fitz.Matrix_c_set)
+    __swig_setmethods__["d"] = _fitz.Matrix_d_set
+    __swig_getmethods__["d"] = _fitz.Matrix_d_get
+    if _newclass:
+        d = _swig_property(_fitz.Matrix_d_get, _fitz.Matrix_d_set)
+    __swig_setmethods__["e"] = _fitz.Matrix_e_set
+    __swig_getmethods__["e"] = _fitz.Matrix_e_get
+    if _newclass:
+        e = _swig_property(_fitz.Matrix_e_get, _fitz.Matrix_e_set)
+    __swig_setmethods__["f"] = _fitz.Matrix_f_set
+    __swig_getmethods__["f"] = _fitz.Matrix_f_get
+    if _newclass:
+        f = _swig_property(_fitz.Matrix_f_get, _fitz.Matrix_f_set)
+    __swig_getmethods__["scale"] = lambda x: _fitz.Matrix_scale
+    if _newclass:
+        scale = staticmethod(_fitz.Matrix_scale)
+
+    def preScale(self, sx, sy):
+        return _fitz.Matrix_preScale(self, sx, sy)
+    __swig_getmethods__["shear"] = lambda x: _fitz.Matrix_shear
+    if _newclass:
+        shear = staticmethod(_fitz.Matrix_shear)
+
+    def preShear(self, sx, sy):
+        return _fitz.Matrix_preShear(self, sx, sy)
+    __swig_getmethods__["rotate"] = lambda x: _fitz.Matrix_rotate
+    if _newclass:
+        rotate = staticmethod(_fitz.Matrix_rotate)
+
+    def preRotate(self, degree):
+        return _fitz.Matrix_preRotate(self, degree)
+
+    def __init__(self):
+        this = _fitz.new_Matrix()
+        try:
+            self.this.append(this)
+        except:
+            self.this = this
+    __swig_destroy__ = _fitz.delete_Matrix
+    __del__ = lambda self: None
+Matrix_swigregister = _fitz.Matrix_swigregister
+Matrix_swigregister(Matrix)
+
+def Matrix_scale(sx, sy):
+    return _fitz.Matrix_scale(sx, sy)
+Matrix_scale = _fitz.Matrix_scale
+
+def Matrix_shear(sx, sy):
+    return _fitz.Matrix_shear(sx, sy)
+Matrix_shear = _fitz.Matrix_shear
+
+def Matrix_rotate(degree):
+    return _fitz.Matrix_rotate(degree)
+Matrix_rotate = _fitz.Matrix_rotate
+
 # This file is compatible with both classic and new-style classes.
 
+Identity = cvar.Identity
 

@@ -61,6 +61,9 @@ struct fz_page_s {
             fz_bound_page(gctx, $self, rect);
             return rect;
         }
+        void run(struct fz_device_s *dev, const struct fz_matrix_s *m) {
+            fz_run_page(gctx, $self, dev, m, NULL);
+        }
     }
 };
 %clearnodefaultctor;
@@ -77,6 +80,9 @@ struct fz_rect_s
             fz_irect *irect = (fz_irect *)malloc(sizeof(fz_irect));
             fz_round_rect(irect, $self);
             return irect;
+        }
+        struct fz_rect_s *transform(const struct fz_matrix_s *m) {
+            return fz_transform_rect($self, m);
         }
     }
 };
@@ -107,6 +113,9 @@ struct fz_pixmap_s
         }
         void clearWith(int value) {
             fz_clear_pixmap_with_value(gctx, $self, value);
+        }
+        void writePNG(char *filename, int savealpha) {
+            fz_write_png(gctx, $self, filename, savealpha);
         }
     }
 };
@@ -149,3 +158,38 @@ struct fz_device_s
         }
     }
 };
+
+
+/* fz_matrix */
+%rename(Matrix) fz_matrix_s;
+struct fz_matrix_s
+{
+    float a, b, c, d, e, f;
+    %extend {
+        static struct fz_matrix_s *scale(float sx, float sy) {
+            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            return fz_scale(m, sx, sy);
+        }
+        struct fz_matrix_s *preScale(float sx, float sy) {
+            return fz_pre_scale($self, sx, sy);
+        }
+        static struct fz_matrix_s *shear(float sx, float sy) {
+            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            return fz_shear(m, sx, sy);
+        }
+        struct fz_matrix_s *preShear(float sx, float sy) {
+            return fz_pre_shear($self, sx, sy);
+        }
+        static struct fz_matrix_s *rotate(float degree) {
+            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            return fz_rotate(m, degree);
+        }
+        struct fz_matrix_s *preRotate(float degree) {
+            return fz_pre_rotate($self, degree);
+        }
+    }
+};
+%rename (Identity) fz_identity;
+%inline %{
+    extern const struct fz_matrix_s fz_identity;
+%}
