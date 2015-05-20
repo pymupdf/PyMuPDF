@@ -259,6 +259,10 @@ class Pixmap(_object):
     __swig_getmethods__["yres"] = _fitz.Pixmap_yres_get
     if _newclass:
         yres = _swig_property(_fitz.Pixmap_yres_get, _fitz.Pixmap_yres_set)
+    __swig_setmethods__["samples"] = _fitz.Pixmap_samples_set
+    __swig_getmethods__["samples"] = _fitz.Pixmap_samples_get
+    if _newclass:
+        samples = _swig_property(_fitz.Pixmap_samples_get, _fitz.Pixmap_samples_set)
 
     def __init__(self, cs, bbox):
         this = _fitz.new_Pixmap(cs, bbox)

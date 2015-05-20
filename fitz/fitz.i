@@ -98,12 +98,16 @@ struct fz_irect_s
 
 
 /* fz_pixmap */
+%typemap(out) unsigned char * {
+    $result = PyString_FromString((char *)$1);
+}
 %rename(Pixmap) fz_pixmap_s;
 struct fz_pixmap_s
 {
     int x, y, w, h, n;
     int interpolate;
     int xres, yres;
+    unsigned char *samples;
     %extend {
         fz_pixmap_s(struct fz_colorspace_s *cs, const struct fz_irect_s *bbox) {
             return fz_new_pixmap_with_bbox(gctx, cs, bbox);
