@@ -90,14 +90,6 @@ except AttributeError:
     _newclass = 0
 
 
-
-def initContext():
-    return _fitz.initContext()
-initContext = _fitz.initContext
-
-def dropContext():
-    return _fitz.dropContext()
-dropContext = _fitz.dropContext
 class Document(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Document, name, value)
@@ -114,18 +106,28 @@ class Document(_object):
     __swig_destroy__ = _fitz.delete_Document
     __del__ = lambda self: None
 
-    def pageCount_get(self):
-        return _fitz.Document_pageCount_get(self)
-
     def loadPage(self, number):
-        return _fitz.Document_loadPage(self, number)
-    __swig_getmethods__["pageCount"] = _fitz.Document_pageCount_get
-    if _newclass:
-        pageCount = _swig_property(_fitz.Document_pageCount_get)
+        val = _fitz.Document_loadPage(self, number)
+        val.thisown = True
+
+
+        return val
+
+
+    def loadOutline(self):
+        val = _fitz.Document_loadOutline(self)
+        val.thisown = True
+
+
+        return val
+
+
+    def _getPageCount(self):
+        return _fitz.Document__getPageCount(self)
+    pageCount = property(_getPageCount)
 
 Document_swigregister = _fitz.Document_swigregister
 Document_swigregister(Document)
-cvar = _fitz.cvar
 
 class Page(_object):
     __swig_setmethods__ = {}
@@ -140,13 +142,30 @@ class Page(_object):
     __del__ = lambda self: None
 
     def bound(self):
-        return _fitz.Page_bound(self)
+        val = _fitz.Page_bound(self)
+        val.thisown = True
+
+
+        return val
+
 
     def run(self, dev, m):
         return _fitz.Page_run(self, dev, m)
+
+    def loadLinks(self):
+        val = _fitz.Page_loadLinks(self)
+        val.thisown = True
+
+
+        return val
+
 Page_swigregister = _fitz.Page_swigregister
 Page_swigregister(Page)
 
+
+def _fz_transform_rect(rect, transform):
+    return _fitz._fz_transform_rect(rect, transform)
+_fz_transform_rect = _fitz._fz_transform_rect
 class Rect(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Rect, name, value)
@@ -170,20 +189,28 @@ class Rect(_object):
     if _newclass:
         y1 = _swig_property(_fitz.Rect_y1_get, _fitz.Rect_y1_set)
 
-    def round(self):
-        return _fitz.Rect_round(self)
-
-    def transform(self, m):
-        return _fitz.Rect_transform(self, m)
-
-    def __init__(self):
-        this = _fitz.new_Rect()
+    def __init__(self, *args):
+        this = _fitz.new_Rect(*args)
         try:
             self.this.append(this)
         except:
             self.this = this
     __swig_destroy__ = _fitz.delete_Rect
     __del__ = lambda self: None
+
+    def round(self):
+        val = _fitz.Rect_round(self)
+        val.thisown = True
+
+
+        return val
+
+    def transform(self, m):
+        _fitz._fz_transform_rect(self, m)
+        return self
+    width = property(lambda self: self.x1-self.x0)
+    height = property(lambda self: self.y1-self.y0)
+
 Rect_swigregister = _fitz.Rect_swigregister
 Rect_swigregister(Rect)
 
@@ -209,15 +236,18 @@ class IRect(_object):
     __swig_getmethods__["y1"] = _fitz.IRect_y1_get
     if _newclass:
         y1 = _swig_property(_fitz.IRect_y1_get, _fitz.IRect_y1_set)
+    __swig_destroy__ = _fitz.delete_IRect
+    __del__ = lambda self: None
 
-    def __init__(self):
-        this = _fitz.new_IRect()
+    def __init__(self, *args):
+        this = _fitz.new_IRect(*args)
         try:
             self.this.append(this)
         except:
             self.this = this
-    __swig_destroy__ = _fitz.delete_IRect
-    __del__ = lambda self: None
+    width = property(lambda self: self.x1-self.x0)
+    height = property(lambda self: self.y1-self.y0)
+
 IRect_swigregister = _fitz.IRect_swigregister
 IRect_swigregister(IRect)
 
@@ -320,6 +350,18 @@ class Device(_object):
 Device_swigregister = _fitz.Device_swigregister
 Device_swigregister(Device)
 
+
+def _fz_pre_scale(m, sx, sy):
+    return _fitz._fz_pre_scale(m, sx, sy)
+_fz_pre_scale = _fitz._fz_pre_scale
+
+def _fz_pre_shear(m, sx, sy):
+    return _fitz._fz_pre_shear(m, sx, sy)
+_fz_pre_shear = _fitz._fz_pre_shear
+
+def _fz_pre_rotate(m, degree):
+    return _fitz._fz_pre_rotate(m, degree)
+_fz_pre_rotate = _fitz._fz_pre_rotate
 class Matrix(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Matrix, name, value)
@@ -350,49 +392,220 @@ class Matrix(_object):
     __swig_getmethods__["f"] = _fitz.Matrix_f_get
     if _newclass:
         f = _swig_property(_fitz.Matrix_f_get, _fitz.Matrix_f_set)
-    __swig_getmethods__["scale"] = lambda x: _fitz.Matrix_scale
-    if _newclass:
-        scale = staticmethod(_fitz.Matrix_scale)
+    __swig_destroy__ = _fitz.delete_Matrix
+    __del__ = lambda self: None
 
-    def preScale(self, sx, sy):
-        return _fitz.Matrix_preScale(self, sx, sy)
-    __swig_getmethods__["shear"] = lambda x: _fitz.Matrix_shear
-    if _newclass:
-        shear = staticmethod(_fitz.Matrix_shear)
-
-    def preShear(self, sx, sy):
-        return _fitz.Matrix_preShear(self, sx, sy)
-    __swig_getmethods__["rotate"] = lambda x: _fitz.Matrix_rotate
-    if _newclass:
-        rotate = staticmethod(_fitz.Matrix_rotate)
-
-    def preRotate(self, degree):
-        return _fitz.Matrix_preRotate(self, degree)
-
-    def __init__(self):
-        this = _fitz.new_Matrix()
+    def __init__(self, *args):
+        this = _fitz.new_Matrix(*args)
         try:
             self.this.append(this)
         except:
             self.this = this
-    __swig_destroy__ = _fitz.delete_Matrix
-    __del__ = lambda self: None
+    def preScale(self, sx, sy):
+        _fitz._fz_pre_scale(self, sx, sy)
+        return self
+    def preShear(self, sx, sy):
+        _fitz._fz_pre_shear(self, sx, sy)
+        return self
+    def preRotate(self, degree):
+        _fitz._fz_pre_rotate(self, degree)
+        return self
+
 Matrix_swigregister = _fitz.Matrix_swigregister
 Matrix_swigregister(Matrix)
 
-def Matrix_scale(sx, sy):
-    return _fitz.Matrix_scale(sx, sy)
-Matrix_scale = _fitz.Matrix_scale
+class Outline(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Outline, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Outline, name)
 
-def Matrix_shear(sx, sy):
-    return _fitz.Matrix_shear(sx, sy)
-Matrix_shear = _fitz.Matrix_shear
+    def __init__(self, *args, **kwargs):
+        raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_getmethods__["title"] = _fitz.Outline_title_get
+    if _newclass:
+        title = _swig_property(_fitz.Outline_title_get)
+    __swig_getmethods__["dest"] = _fitz.Outline_dest_get
+    if _newclass:
+        dest = _swig_property(_fitz.Outline_dest_get)
+    __swig_getmethods__["next"] = _fitz.Outline_next_get
+    if _newclass:
+        next = _swig_property(_fitz.Outline_next_get)
+    __swig_getmethods__["down"] = _fitz.Outline_down_get
+    if _newclass:
+        down = _swig_property(_fitz.Outline_down_get)
+    __swig_getmethods__["is_open"] = _fitz.Outline_is_open_get
+    if _newclass:
+        is_open = _swig_property(_fitz.Outline_is_open_get)
+    __swig_destroy__ = _fitz.delete_Outline
+    __del__ = lambda self: None
+Outline_swigregister = _fitz.Outline_swigregister
+Outline_swigregister(Outline)
+cvar = _fitz.cvar
+Identity = cvar.Identity
 
-def Matrix_rotate(degree):
-    return _fitz.Matrix_rotate(degree)
-Matrix_rotate = _fitz.Matrix_rotate
+
+_fitz.LINK_NONE_swigconstant(_fitz)
+LINK_NONE = _fitz.LINK_NONE
+
+_fitz.LINK_GOTO_swigconstant(_fitz)
+LINK_GOTO = _fitz.LINK_GOTO
+
+_fitz.LINK_URI_swigconstant(_fitz)
+LINK_URI = _fitz.LINK_URI
+
+_fitz.LINK_LAUNCH_swigconstant(_fitz)
+LINK_LAUNCH = _fitz.LINK_LAUNCH
+
+_fitz.LINK_NAMED_swigconstant(_fitz)
+LINK_NAMED = _fitz.LINK_NAMED
+
+_fitz.LINK_GOTOR_swigconstant(_fitz)
+LINK_GOTOR = _fitz.LINK_GOTOR
+class linkDest(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, linkDest, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, linkDest, name)
+
+    def __init__(self, *args, **kwargs):
+        raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_getmethods__["kind"] = _fitz.linkDest_kind_get
+    if _newclass:
+        kind = _swig_property(_fitz.linkDest_kind_get)
+
+    def _getPage(self):
+        return _fitz.linkDest__getPage(self)
+
+    def _getDest(self):
+        return _fitz.linkDest__getDest(self)
+
+    def _getFlags(self):
+        return _fitz.linkDest__getFlags(self)
+
+    def _getLt(self):
+        return _fitz.linkDest__getLt(self)
+
+    def _getRb(self):
+        return _fitz.linkDest__getRb(self)
+
+    def _getFileSpec(self):
+        return _fitz.linkDest__getFileSpec(self)
+
+    def _getNewWindow(self):
+        return _fitz.linkDest__getNewWindow(self)
+
+    def _getUri(self):
+        return _fitz.linkDest__getUri(self)
+
+    def _getIsMap(self):
+        return _fitz.linkDest__getIsMap(self)
+
+    def _getIsUri(self):
+        return _fitz.linkDest__getIsUri(self)
+
+    def _getNamed(self):
+        return _fitz.linkDest__getNamed(self)
+    __swig_destroy__ = _fitz.delete_linkDest
+    __del__ = lambda self: None
+    page = property(_getPage)
+    dest = property(_getDest)
+    flags = property(_getFlags)
+    lt = property(_getLt)
+    rb = property(_getRb)
+    fileSpec = property(_getFileSpec)
+    newWindow = property(_getNewWindow)
+    uri = property(_getUri)
+    isMap = property(_getIsMap)
+    isUri = property(_getIsUri)
+    named = property(_getNamed)
+
+linkDest_swigregister = _fitz.linkDest_swigregister
+linkDest_swigregister(linkDest)
+
+
+def _fz_transform_point(point, transform):
+    return _fitz._fz_transform_point(point, transform)
+_fz_transform_point = _fitz._fz_transform_point
+class Point(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Point, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Point, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["x"] = _fitz.Point_x_set
+    __swig_getmethods__["x"] = _fitz.Point_x_get
+    if _newclass:
+        x = _swig_property(_fitz.Point_x_get, _fitz.Point_x_set)
+    __swig_setmethods__["y"] = _fitz.Point_y_set
+    __swig_getmethods__["y"] = _fitz.Point_y_get
+    if _newclass:
+        y = _swig_property(_fitz.Point_y_get, _fitz.Point_y_set)
+    __swig_destroy__ = _fitz.delete_Point
+    __del__ = lambda self: None
+
+    def __init__(self, *args):
+        this = _fitz.new_Point(*args)
+        try:
+            self.this.append(this)
+        except:
+            self.this = this
+    def transform(self, m):
+        _fitz._fz_transform_point(self, m)
+        return self
+
+Point_swigregister = _fitz.Point_swigregister
+Point_swigregister(Point)
+
+
+_fitz.LINK_FLAG_L_VALID_swigconstant(_fitz)
+LINK_FLAG_L_VALID = _fitz.LINK_FLAG_L_VALID
+
+_fitz.LINK_FLAG_T_VALID_swigconstant(_fitz)
+LINK_FLAG_T_VALID = _fitz.LINK_FLAG_T_VALID
+
+_fitz.LINK_FLAG_R_VALID_swigconstant(_fitz)
+LINK_FLAG_R_VALID = _fitz.LINK_FLAG_R_VALID
+
+_fitz.LINK_FLAG_B_VALID_swigconstant(_fitz)
+LINK_FLAG_B_VALID = _fitz.LINK_FLAG_B_VALID
+
+_fitz.LINK_FLAG_FIT_H_swigconstant(_fitz)
+LINK_FLAG_FIT_H = _fitz.LINK_FLAG_FIT_H
+
+_fitz.LINK_FLAG_FIT_V_swigconstant(_fitz)
+LINK_FLAG_FIT_V = _fitz.LINK_FLAG_FIT_V
+
+_fitz.LINK_FLAG_R_IS_ZOOM_swigconstant(_fitz)
+LINK_FLAG_R_IS_ZOOM = _fitz.LINK_FLAG_R_IS_ZOOM
+class Link(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Link, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Link, name)
+
+    def __init__(self, *args, **kwargs):
+        raise AttributeError("No constructor defined")
+    __repr__ = _swig_repr
+    __swig_getmethods__["refs"] = _fitz.Link_refs_get
+    if _newclass:
+        refs = _swig_property(_fitz.Link_refs_get)
+    __swig_getmethods__["rect"] = _fitz.Link_rect_get
+    if _newclass:
+        rect = _swig_property(_fitz.Link_rect_get)
+    __swig_getmethods__["dest"] = _fitz.Link_dest_get
+    if _newclass:
+        dest = _swig_property(_fitz.Link_dest_get)
+    __swig_getmethods__["next"] = _fitz.Link_next_get
+    if _newclass:
+        next = _swig_property(_fitz.Link_next_get)
+    __swig_destroy__ = _fitz.delete_Link
+    __del__ = lambda self: None
+Link_swigregister = _fitz.Link_swigregister
+Link_swigregister(Link)
 
 # This file is compatible with both classic and new-style classes.
 
-Identity = cvar.Identity
 
