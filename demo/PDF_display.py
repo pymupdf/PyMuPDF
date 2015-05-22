@@ -74,8 +74,7 @@ class PDFdispl (wx.Dialog):
 #==============================================================================
     def Seitevor(self, event):                 # means: page forward
         seite = int(self.zuSeite.Value) + 1    # current page + 1
-        if seite > seiten:                     # cannot go beyond last page
-            seite = seiten
+        seite = min(seite, seiten)             # cannot go beyond last page
         self.zuSeite.Value = str(seite)        # put target page# in screen
         self.bm = pdf_show(doc, seite)         # get page image 
         self.PDFbild.SetBitmap(self.bm)        # put it in screen
@@ -85,8 +84,7 @@ class PDFdispl (wx.Dialog):
     
     def Seitezur(self, event):                 # means: page back
         seite = int(self.zuSeite.Value) - 1    # current page - 1
-        if seite < 1:                          # cannot go before page 1
-            seite = 1               
+        seite = max(seite, 1)                  # cannot go before page 1
         self.zuSeite.Value = str(seite)        # put target page# in screen 
         self.bm = pdf_show(doc, seite)         # get page image 
         self.PDFbild.SetBitmap(self.bm)        # put it in screen
@@ -96,10 +94,8 @@ class PDFdispl (wx.Dialog):
     
     def SeiteZiel(self, event):                # means: go to page #
         seite = int(self.zuSeite.Value)        # get page# from screen
-        if seite > seiten:                     # must be:
-            seite = seiten                     # 0 < page# <= maxpages (seiten)
-        if seite < 1:
-            seite = 1
+        seite = min(seite, seiten)             # cannot go beyond last page
+        seite = max(seite, 1)                  # cannot go before page 1
         self.zuSeite.Value = str(seite)        # make sure it's on the screen
         self.bm = pdf_show(doc, seite)         # read page image
         self.PDFbild.SetBitmap(self.bm)        # put it in screen
@@ -122,6 +118,10 @@ def pdf_show(pdf, seite):
     page.run_page(dev, fitz.fz_identity, None) # render the page
     data = pix.get_samples()                   # point to pixel area
     bm = wx.BitmapFromBufferRGBA(width, height, data)  # turn in wx.Bitmap
+    # If you experience issues with this function, try the following code.
+    # It will use "wx.BitmapFromBuffer" and thus ignore the transparency (alpha).
+    # data2 = "".join([data[4*i:4*i+3] for i in range(len(data)/4)])
+    # bm = wx.BitmapFromBuffer(width, height, data2)
     return bm
 
     
