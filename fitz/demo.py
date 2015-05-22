@@ -14,8 +14,8 @@ if len(sys.argv) != 7:
 doc = fitz.Document(sys.argv[1])
 #SWIG returns high level python proxy class and .this points to the underlying C object
 if not doc.this:
-	print('cannot open document')
-	exit(1)
+    print('cannot open document')
+    exit(1)
 
 #here we print out the outline of the document(if any)
 #first, we define a function for traversal
@@ -118,8 +118,8 @@ dl.run(fitz.Device(ts, tp), fitz.Identity, rect)
 #the return result is a list of hit box rect
 res = tp.search(sys.argv[6], 4)
 for r in res:
-	#we invert the pixmap at the hit irect to highlight the search resuilt
-	pm1.invertIRect(r.round())
+    #we invert the pixmap at the hit irect to highlight the search resuilt
+    pm1.invertIRect(r.round())
 
 #and finally write to another PNG
 pm1.writePNG('dl-' + sys.argv[5])
