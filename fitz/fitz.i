@@ -5,6 +5,7 @@
 %{
 #define SWIG_FILE_WITH_INIT
 #include <fitz.h>
+#include <string.h>
 %}
 
 /* global context */
@@ -21,32 +22,69 @@
 %rename(Document) fz_document_s;
 struct fz_document_s {
     %extend {
-        fz_document_s(const char *filename) {
-            return fz_open_document(gctx, filename);
+        %exception fz_document_s {
+            $action
+            if(!result) {
+                PyErr_SetString(PyExc_Exception, "cannot create Document");
+                return NULL;
+            }
         }
+        %pythonappend fz_document_s(const char *) %{
+            if this:
+                self._outline = self._loadOutline() 
+        %}
+        fz_document_s(const char *filename) {
+            fz_try(gctx)
+                return fz_open_document(gctx, filename);
+            fz_catch(gctx)
+                return NULL;
+        }
+
+        %pythonprepend ~fz_document_s() %{
+            if hasattr(self, '_outline') and self._outline:
+                self._dropOutline(self._outline)
+        %}
         ~fz_document_s() {
 #ifdef MEMDEBUG
             fprintf(stderr, "free doc\n");
 #endif
             fz_drop_document(gctx, $self);
         }
+
+        %exception loadPage {
+            $action
+            if(!result) {
+                PyErr_SetString(PyExc_Exception, "cannot loadPage");
+                return NULL;
+            }
+        }
         %pythonappend loadPage(int) %{
-            val.thisown = True
+            if val:
+                val.thisown = True
         %}
         struct fz_page_s *loadPage(int number) {
-            return fz_load_page(gctx, $self, number);
+            fz_try(gctx)
+                return fz_load_page(gctx, $self, number);
+            fz_catch(gctx)
+                return  NULL;
         }
-        %pythonappend loadOutline() %{
-            val.thisown = True
-        %}
-        struct fz_outline_s *loadOutline() {
+
+        struct fz_outline_s *_loadOutline() {
             return fz_load_outline(gctx, $self);
+        }
+        void _dropOutline(struct fz_outline_s *ol) {
+#ifdef MEMDEBUG
+            fprintf(stderr, "free outline\n");
+#endif
+            fz_drop_outline(gctx, ol);
         }
         int _getPageCount() {
             return fz_count_pages(gctx, $self);
         }
+
         %pythoncode %{
             pageCount = property(_getPageCount)
+            outline = property(lambda self: self._outline)
         %}
     }
 };
@@ -63,19 +101,35 @@ struct fz_page_s {
 #endif
             fz_drop_page(gctx, $self);
         }
+
         %pythonappend bound() %{
-            val.thisown = True
+            if val:
+                val.thisown = True
         %}
         struct fz_rect_s *bound() {
             fz_rect *rect = (fz_rect *)malloc(sizeof(fz_rect));
             fz_bound_page(gctx, $self, rect);
             return rect;
         }
-        void run(struct fz_device_s *dev, const struct fz_matrix_s *m) {
-            fz_run_page(gctx, $self, dev, m, NULL);
+
+        %exception run {
+            $action
+            if(result) {
+                PyErr_SetString(PyExc_Exception, "cannot run page");
+                return NULL;
+            }
+        }
+        int run(struct fz_device_s *dev, const struct fz_matrix_s *m) {
+            fz_try(gctx) {
+                fz_run_page(gctx, $self, dev, m, NULL);
+                return 0;
+            }
+            fz_catch(gctx)
+                return 1;
         }
         %pythonappend loadLinks() %{
-            val.thisown = True
+            if val:
+                val.thisown = True
         %}
         struct fz_link_s *loadLinks() {
             return fz_load_links(gctx, $self);
@@ -164,9 +218,20 @@ struct fz_pixmap_s
     int xres, yres;
     unsigned char *samples;
     %extend {
-        fz_pixmap_s(struct fz_colorspace_s *cs, const struct fz_irect_s *bbox) {
-            return fz_new_pixmap_with_bbox(gctx, cs, bbox);
+        %exception fz_pixmap_s {
+            $action
+            if(!result) {
+                PyErr_SetString(PyExc_Exception, "cannot create Pixmap");
+                return NULL;
+            }
         }
+        fz_pixmap_s(struct fz_colorspace_s *cs, const struct fz_irect_s *bbox) {
+            fz_try(gctx)
+                return fz_new_pixmap_with_bbox(gctx, cs, bbox);
+            fz_catch(gctx)
+                return NULL;
+        }
+
         ~fz_pixmap_s() {
 #ifdef MEMDEBUG
             fprintf(stderr, "free pixmap\n");
@@ -176,8 +241,24 @@ struct fz_pixmap_s
         void clearWith(int value) {
             fz_clear_pixmap_with_value(gctx, $self, value);
         }
-        void writePNG(char *filename, int savealpha) {
-            fz_write_png(gctx, $self, filename, savealpha);
+
+        %exception writePNG {
+            $action
+            if(result) {
+                PyErr_SetString(PyExc_Exception, "cannot writePNG");
+                return NULL;
+            }
+        }
+        int writePNG(char *filename, int savealpha=0) {
+            fz_try(gctx) {
+                fz_write_png(gctx, $self, filename, savealpha);
+                return 0;
+            }
+            fz_catch(gctx) 
+                return 1;
+        }
+        void invertIRect(const struct fz_irect_s *irect) {
+            fz_invert_pixmap_rect(gctx, $self, irect);
         }
     }
 };
@@ -215,8 +296,30 @@ struct fz_colorspace_s
 struct fz_device_s
 {
     %extend {
+        %exception fz_device_s {
+            $action
+            if(!result) {
+                PyErr_SetString(PyExc_Exception, "cannot create Device");
+                return NULL;
+            }
+        }
         fz_device_s(struct fz_pixmap_s *pm) {
-            return fz_new_draw_device(gctx, pm);
+            fz_try(gctx)
+                return fz_new_draw_device(gctx, pm);
+            fz_catch(gctx)
+                return NULL;
+        }
+        fz_device_s(struct fz_display_list_s *dl) {
+            fz_try(gctx)
+                return fz_new_list_device(gctx, dl);
+            fz_catch(gctx)
+                return NULL;
+        }
+        fz_device_s(struct fz_text_sheet_s *ts, struct fz_text_page_s *tp) {
+            fz_try(gctx)
+                return fz_new_text_device(gctx, ts, tp);
+            fz_catch(gctx)
+                return NULL;
         }
         ~fz_device_s() {
 #ifdef MEMDEBUG
@@ -297,6 +400,34 @@ struct fz_outline_s {
     struct fz_outline_s *next;
     struct fz_outline_s *down;
     int is_open;
+/* 
+    fz_outline doesn't keep a ref number in mupdf's code,
+    which means that if the root outline node is dropped,
+    all the outline nodes will also be destroyed.
+
+    As a result, if the root Outline python object drops ref,
+    then other Outline will point to already freed area. E.g.:
+    >>> import fitz
+    >>> doc=fitz.Document('3.pdf')
+    >>> ol=doc.loadOutline()
+    >>> oln=ol.next
+    >>> oln.dest.page
+    5
+    >>> #drops root outline
+    ...
+    >>> ol=4
+    free outline
+    >>> oln.dest.page
+    0
+
+    I do not like to change struct of fz_document, so I decide 
+    to delegate the outline destructin work to fz_document. That is,
+    when the Document is created, its outline is loaded in advance.
+    The outline will only be freed when the doc is destroyed, which means
+    in the python code, we must keep ref to doc if we still want to use outline
+    This is a nasty way but it requires little change to the mupdf code.
+    */
+/*
     %extend {
         ~fz_outline_s() {
 #ifdef MEMDEBUG
@@ -305,6 +436,7 @@ struct fz_outline_s {
             fz_drop_outline(gctx, $self);
         }
     }
+*/
 };
 %clearnodefaultctor;
 
@@ -433,7 +565,6 @@ struct fz_link_s
     int refs;
     struct fz_rect_s rect;
     struct fz_link_dest_s dest;
-    struct fz_link_s *next;
     %extend {
         ~fz_link_s() {
 #ifdef MEMDEBUG
@@ -441,8 +572,144 @@ struct fz_link_s
 #endif
             fz_drop_link(gctx, $self);
         }
+        /* we need to increase the link refs number so that it won't be freed when the head is dropped */
+        %pythonappend _getNext() %{
+            if val:
+                val.thisown = True
+        %}
+        struct fz_link_s *_getNext() {
+            fz_keep_link(gctx, $self->next);
+        }
+        %pythoncode %{
+            next = property(_getNext)
+        %}
     }
 };
 %clearnodefaultctor;
+
+
+/* fz_display_list */
+%rename(DisplayList) fz_display_list_s;
+struct fz_display_list_s {
+    %extend {
+        %exception fz_display_list_s {
+            $action
+            if(!result) {
+                PyErr_SetString(PyExc_Exception, "cannot create DisplayList");
+                return NULL;
+            }
+        }
+        fz_display_list_s() {
+            fz_try(gctx)
+                return fz_new_display_list(gctx);
+            fz_catch(gctx)
+                return NULL;
+        }
+
+        ~fz_display_list_s() {
+#ifdef MEMDEBUG
+            fprintf(stderr, "free display list\n");
+#endif
+            fz_drop_display_list(gctx, $self);
+        }
+        %exception run {
+            $action
+            if(result) {
+                PyErr_SetString(PyExc_Exception, "cannot run display list");
+                return NULL;
+            }
+        }
+        int run(struct fz_device_s *dev, const struct fz_matrix_s *m, const struct fz_rect_s *area) {
+            fz_try(gctx) {
+                fz_run_display_list(gctx, $self, dev, m, area, NULL);
+                return 0;
+            }
+            fz_catch(gctx)
+                return 1;
+        }
+    }
+};
+
+
+/* fz_text_sheet */
+%rename(TextSheet) fz_text_sheet_s;
+struct fz_text_sheet_s {
+    %extend {
+        %exception fz_text_sheet_s {
+            $action
+            if(!result) {
+                PyErr_SetString(PyExc_Exception, "cannot create TextSheet");
+                return NULL;
+            }
+        }
+        fz_text_sheet_s() {
+            fz_try(gctx)
+                return fz_new_text_sheet(gctx);
+            fz_catch(gctx)
+                return NULL;
+        }
+
+        ~fz_text_sheet_s() {
+#ifdef MEMDEBUG
+            fprintf(stderr, "free text sheet\n");
+#endif
+            fz_drop_text_sheet(gctx, $self);
+        }
+    }
+};
+
+/* fz_text_page */
+%typemap(out) struct fz_rect_s * {
+    $result = PyList_New(0);
+    int i;
+    PyObject *pyRect;
+    struct fz_rect_s *rect = (struct fz_rect_s *)$1;
+    while(!fz_is_empty_rect(rect)) {
+        pyRect = SWIG_NewPointerObj(memcpy(malloc(sizeof(struct fz_rect_s)), rect, sizeof(struct fz_rect_s)), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_OWN);
+        PyList_Append($result, pyRect);
+        Py_DECREF(pyRect);
+        rect += 1;
+    }
+    free($1);
+}
+%rename(TextPage) fz_text_page_s;
+struct fz_text_page_s {
+    %extend {
+        %exception fz_text_page_s {
+            $action
+            if(!result) {
+                PyErr_SetString(PyExc_Exception, "cannot create TextPage");
+                return NULL;
+            }
+        }
+        fz_text_page_s() {
+            fz_try(gctx)
+                return fz_new_text_page(gctx);
+            fz_catch(gctx)
+                return NULL;
+        }
+
+        ~fz_text_page_s() {
+#ifdef MEMDEBUG
+            fprintf(stderr, "free text page\n");
+#endif
+            fz_drop_text_page(gctx, $self);
+        }
+        struct fz_rect_s *search(const char *needle, int hit_max=16) {
+            if(hit_max < 0) {
+                fprintf(stderr, "invalid hit max number %d\n", hit_max);
+                return NULL;
+            }
+            fz_rect *result = (fz_rect *)malloc(sizeof(fz_rect)*(hit_max+1));
+            int count = fz_search_text_page(gctx, $self, needle, result, hit_max);
+            result[count] = fz_empty_rect;
+#ifdef MEMDEBUG
+            fprintf(stderr, "count is %d, last one is (%g %g), (%g %g)\n", count, result[count].x0, result[count].y0, result[count].x1, result[count].y1);
+#endif
+            return result;
+        }
+    }
+};
+
 
 

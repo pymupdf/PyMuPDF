@@ -103,28 +103,39 @@ class Document(_object):
             self.this.append(this)
         except:
             self.this = this
+        if this:
+            self._outline = self._loadOutline() 
+
+
+
     __swig_destroy__ = _fitz.delete_Document
-    __del__ = lambda self: None
+    def __del__(self):
+        if hasattr(self, '_outline') and self._outline:
+            self._dropOutline(self._outline)
+
+
+        pass
+
 
     def loadPage(self, number):
         val = _fitz.Document_loadPage(self, number)
-        val.thisown = True
+        if val:
+            val.thisown = True
 
 
         return val
 
 
-    def loadOutline(self):
-        val = _fitz.Document_loadOutline(self)
-        val.thisown = True
+    def _loadOutline(self):
+        return _fitz.Document__loadOutline(self)
 
-
-        return val
-
+    def _dropOutline(self, ol):
+        return _fitz.Document__dropOutline(self, ol)
 
     def _getPageCount(self):
         return _fitz.Document__getPageCount(self)
     pageCount = property(_getPageCount)
+    outline = property(lambda self: self._outline)
 
 Document_swigregister = _fitz.Document_swigregister
 Document_swigregister(Document)
@@ -143,7 +154,8 @@ class Page(_object):
 
     def bound(self):
         val = _fitz.Page_bound(self)
-        val.thisown = True
+        if val:
+            val.thisown = True
 
 
         return val
@@ -154,7 +166,8 @@ class Page(_object):
 
     def loadLinks(self):
         val = _fitz.Page_loadLinks(self)
-        val.thisown = True
+        if val:
+            val.thisown = True
 
 
         return val
@@ -306,8 +319,11 @@ class Pixmap(_object):
     def clearWith(self, value):
         return _fitz.Pixmap_clearWith(self, value)
 
-    def writePNG(self, filename, savealpha):
+    def writePNG(self, filename, savealpha=0):
         return _fitz.Pixmap_writePNG(self, filename, savealpha)
+
+    def invertIRect(self, irect):
+        return _fitz.Pixmap_invertIRect(self, irect)
 Pixmap_swigregister = _fitz.Pixmap_swigregister
 Pixmap_swigregister(Pixmap)
 
@@ -339,8 +355,8 @@ class Device(_object):
     __getattr__ = lambda self, name: _swig_getattr(self, Device, name)
     __repr__ = _swig_repr
 
-    def __init__(self, pm):
-        this = _fitz.new_Device(pm)
+    def __init__(self, *args):
+        this = _fitz.new_Device(*args)
         try:
             self.this.append(this)
         except:
@@ -598,13 +614,81 @@ class Link(_object):
     __swig_getmethods__["dest"] = _fitz.Link_dest_get
     if _newclass:
         dest = _swig_property(_fitz.Link_dest_get)
-    __swig_getmethods__["next"] = _fitz.Link_next_get
-    if _newclass:
-        next = _swig_property(_fitz.Link_next_get)
     __swig_destroy__ = _fitz.delete_Link
     __del__ = lambda self: None
+
+    def _getNext(self):
+        val = _fitz.Link__getNext(self)
+        if val:
+            val.thisown = True
+
+
+        return val
+
+    next = property(_getNext)
+
 Link_swigregister = _fitz.Link_swigregister
 Link_swigregister(Link)
+
+class DisplayList(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, DisplayList, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, DisplayList, name)
+    __repr__ = _swig_repr
+
+    def __init__(self):
+        this = _fitz.new_DisplayList()
+        try:
+            self.this.append(this)
+        except:
+            self.this = this
+    __swig_destroy__ = _fitz.delete_DisplayList
+    __del__ = lambda self: None
+
+    def run(self, dev, m, area):
+        return _fitz.DisplayList_run(self, dev, m, area)
+DisplayList_swigregister = _fitz.DisplayList_swigregister
+DisplayList_swigregister(DisplayList)
+
+class TextSheet(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, TextSheet, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, TextSheet, name)
+    __repr__ = _swig_repr
+
+    def __init__(self):
+        this = _fitz.new_TextSheet()
+        try:
+            self.this.append(this)
+        except:
+            self.this = this
+    __swig_destroy__ = _fitz.delete_TextSheet
+    __del__ = lambda self: None
+TextSheet_swigregister = _fitz.TextSheet_swigregister
+TextSheet_swigregister(TextSheet)
+
+class TextPage(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, TextPage, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, TextPage, name)
+    __repr__ = _swig_repr
+
+    def __init__(self):
+        this = _fitz.new_TextPage()
+        try:
+            self.this.append(this)
+        except:
+            self.this = this
+    __swig_destroy__ = _fitz.delete_TextPage
+    __del__ = lambda self: None
+
+    def search(self, needle, hit_max=16):
+        return _fitz.TextPage_search(self, needle, hit_max)
+TextPage_swigregister = _fitz.TextPage_swigregister
+TextPage_swigregister(TextPage)
 
 # This file is compatible with both classic and new-style classes.
 
