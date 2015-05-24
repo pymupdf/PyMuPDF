@@ -2963,7 +2963,6 @@ static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
 
 #define SWIG_FILE_WITH_INIT
 #include <fitz.h>
-#include <string.h>
 
 
     fz_context *gctx;
@@ -3068,7 +3067,7 @@ SWIGINTERN struct fz_document_s *new_fz_document_s(char const *filename){
         }
 SWIGINTERN void delete_fz_document_s(struct fz_document_s *self){
 
-            fprintf(stderr, "free doc\n");
+
 
             fz_drop_document(gctx, self);
         }
@@ -3228,7 +3227,7 @@ SWIGINTERN struct fz_outline_s *fz_document_s__loadOutline(struct fz_document_s 
         }
 SWIGINTERN void fz_document_s__dropOutline(struct fz_document_s *self,struct fz_outline_s *ol){
 
-            fprintf(stderr, "free outline\n");
+
 
             fz_drop_outline(gctx, ol);
         }
@@ -3244,7 +3243,7 @@ SWIGINTERNINLINE PyObject*
 
 SWIGINTERN void delete_fz_page_s(struct fz_page_s *self){
 
-            fprintf(stderr, "free page\n");
+
 
             fz_drop_page(gctx, self);
         }
@@ -3316,18 +3315,10 @@ SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_1(struct fz_rect_s const *s){
             *r = *s;
             return r;
         }
-SWIGINTERN void delete_fz_rect_s(struct fz_rect_s *self){
-            fprintf(stderr, "free rect\n");
-            free(self);
-        }
 SWIGINTERN struct fz_irect_s *fz_rect_s_round(struct fz_rect_s *self){
             fz_irect *irect = (fz_irect *)malloc(sizeof(fz_irect));
             fz_round_rect(irect, self);
             return irect;
-        }
-SWIGINTERN void delete_fz_irect_s(struct fz_irect_s *self){
-            fprintf(stderr, "free irect\n");
-            free(self);
         }
 SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_1(struct fz_irect_s const *s){
             fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
@@ -3342,7 +3333,7 @@ SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s(struct fz_colorspace_s *cs,struct
         }
 SWIGINTERN void delete_fz_pixmap_s(struct fz_pixmap_s *self){
 
-            fprintf(stderr, "free pixmap\n");
+
 
             fz_drop_pixmap(gctx, self);
         }
@@ -3373,7 +3364,7 @@ SWIGINTERN struct fz_colorspace_s *new_fz_colorspace_s(int type){
         }
 SWIGINTERN void delete_fz_colorspace_s(struct fz_colorspace_s *self){
 
-            fprintf(stderr, "free colorspace\n");
+
 
             fz_drop_colorspace(gctx, self);
         }
@@ -3397,13 +3388,9 @@ SWIGINTERN struct fz_device_s *new_fz_device_s__SWIG_2(struct fz_text_sheet_s *t
         }
 SWIGINTERN void delete_fz_device_s(struct fz_device_s *self){
 
-            fprintf(stderr, "free device\n");
+
 
             fz_drop_device(gctx, self);
-        }
-SWIGINTERN void delete_fz_matrix_s(struct fz_matrix_s *self){
-            fprintf(stderr, "free matrix\n");
-            free(self);
         }
 SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_1(struct fz_matrix_s const *n){
             fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
@@ -3493,13 +3480,9 @@ SWIGINTERN char *fz_link_dest_s__getNamed(struct fz_link_dest_s *self){
         }
 SWIGINTERN void delete_fz_link_dest_s(struct fz_link_dest_s *self){
 
-            fprintf(stderr, "free link_dest\n");
+
 
             fz_drop_link_dest(gctx, self);
-        }
-SWIGINTERN void delete_fz_point_s(struct fz_point_s *self){
-            fprintf(stderr, "free point\n");
-            free(self);
         }
 SWIGINTERN struct fz_point_s *new_fz_point_s__SWIG_1(struct fz_point_s const *q){
             fz_point *p = (fz_point *)malloc(sizeof(fz_point));
@@ -3508,12 +3491,13 @@ SWIGINTERN struct fz_point_s *new_fz_point_s__SWIG_1(struct fz_point_s const *q)
         }
 SWIGINTERN void delete_fz_link_s(struct fz_link_s *self){
 
-            fprintf(stderr, "free link\n");
+
 
             fz_drop_link(gctx, self);
         }
 SWIGINTERN struct fz_link_s *fz_link_s__getNext(struct fz_link_s *self){
             fz_keep_link(gctx, self->next);
+            return self->next;
         }
 SWIGINTERN struct fz_display_list_s *new_fz_display_list_s(void){
             fz_try(gctx)
@@ -3523,7 +3507,7 @@ SWIGINTERN struct fz_display_list_s *new_fz_display_list_s(void){
         }
 SWIGINTERN void delete_fz_display_list_s(struct fz_display_list_s *self){
 
-            fprintf(stderr, "free display list\n");
+
 
             fz_drop_display_list(gctx, self);
         }
@@ -3543,7 +3527,7 @@ SWIGINTERN struct fz_text_sheet_s *new_fz_text_sheet_s(void){
         }
 SWIGINTERN void delete_fz_text_sheet_s(struct fz_text_sheet_s *self){
 
-            fprintf(stderr, "free text sheet\n");
+
 
             fz_drop_text_sheet(gctx, self);
         }
@@ -3555,7 +3539,7 @@ SWIGINTERN struct fz_text_page_s *new_fz_text_page_s(void){
         }
 SWIGINTERN void delete_fz_text_page_s(struct fz_text_page_s *self){
 
-            fprintf(stderr, "free text page\n");
+
 
             fz_drop_text_page(gctx, self);
         }
@@ -3568,7 +3552,7 @@ SWIGINTERN struct fz_rect_s *fz_text_page_s_search(struct fz_text_page_s *self,c
             int count = fz_search_text_page(gctx, self, needle, result, hit_max);
             result[count] = fz_empty_rect;
 
-            fprintf(stderr, "count is %d, last one is (%g %g), (%g %g)\n", count, result[count].x0, result[count].y0, result[count].x1, result[count].y1);
+
 
             return result;
         }
@@ -4169,27 +4153,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_delete_Rect(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_Rect",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Rect" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
-  }
-  arg1 = (struct fz_rect_s *)(argp1);
-  delete_fz_rect_s(arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_Rect_round(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
@@ -4206,6 +4169,27 @@ SWIGINTERN PyObject *_wrap_Rect_round(PyObject *SWIGUNUSEDPARM(self), PyObject *
   arg1 = (struct fz_rect_s *)(argp1);
   result = (struct fz_irect_s *)fz_rect_s_round(arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_irect_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_Rect(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_Rect",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Rect" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg1 = (struct fz_rect_s *)(argp1);
+  free((char *) arg1);
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -4440,27 +4424,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_delete_IRect(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_IRect",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_irect_s, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_IRect" "', argument " "1"" of type '" "struct fz_irect_s *""'"); 
-  }
-  arg1 = (struct fz_irect_s *)(argp1);
-  delete_fz_irect_s(arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_new_IRect__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
@@ -4512,6 +4475,27 @@ fail:
     "    fz_irect_s::fz_irect_s()\n"
     "    fz_irect_s::fz_irect_s(struct fz_irect_s const *)\n");
   return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_IRect(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_IRect",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_irect_s, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_IRect" "', argument " "1"" of type '" "struct fz_irect_s *""'"); 
+  }
+  arg1 = (struct fz_irect_s *)(argp1);
+  free((char *) arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
 }
 
 
@@ -5839,27 +5823,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_delete_Matrix(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_Matrix",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Matrix" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
-  }
-  arg1 = (struct fz_matrix_s *)(argp1);
-  delete_fz_matrix_s(arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_new_Matrix__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
@@ -6012,6 +5975,27 @@ fail:
     "    fz_matrix_s::fz_matrix_s(float,float,int)\n"
     "    fz_matrix_s::fz_matrix_s(float)\n");
   return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_Matrix(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_matrix_s *arg1 = (struct fz_matrix_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_Matrix",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Matrix" "', argument " "1"" of type '" "struct fz_matrix_s *""'"); 
+  }
+  arg1 = (struct fz_matrix_s *)(argp1);
+  free((char *) arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
 }
 
 
@@ -6680,27 +6664,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_delete_Point(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_point_s *arg1 = (struct fz_point_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_Point",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_point_s, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Point" "', argument " "1"" of type '" "struct fz_point_s *""'"); 
-  }
-  arg1 = (struct fz_point_s *)(argp1);
-  delete_fz_point_s(arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_new_Point__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_point_s *arg1 = (struct fz_point_s *) 0 ;
@@ -6752,6 +6715,27 @@ fail:
     "    fz_point_s::fz_point_s()\n"
     "    fz_point_s::fz_point_s(struct fz_point_s const *)\n");
   return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_Point(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_point_s *arg1 = (struct fz_point_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_Point",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_point_s, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Point" "', argument " "1"" of type '" "struct fz_point_s *""'"); 
+  }
+  arg1 = (struct fz_point_s *)(argp1);
+  free((char *) arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
 }
 
 
@@ -7182,7 +7166,6 @@ SWIGINTERN PyObject *_wrap_TextPage_search(PyObject *SWIGUNUSEDPARM(self), PyObj
   result = (struct fz_rect_s *)fz_text_page_s_search(arg1,(char const *)arg2,arg3);
   {
     resultobj = PyList_New(0);
-    int i;
     PyObject *pyRect;
     struct fz_rect_s *rect = (struct fz_rect_s *)result;
     while(!fz_is_empty_rect(rect)) {
@@ -7232,8 +7215,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Rect_y1_set", _wrap_Rect_y1_set, METH_VARARGS, NULL},
 	 { (char *)"Rect_y1_get", _wrap_Rect_y1_get, METH_VARARGS, NULL},
 	 { (char *)"new_Rect", _wrap_new_Rect, METH_VARARGS, NULL},
-	 { (char *)"delete_Rect", _wrap_delete_Rect, METH_VARARGS, NULL},
 	 { (char *)"Rect_round", _wrap_Rect_round, METH_VARARGS, NULL},
+	 { (char *)"delete_Rect", _wrap_delete_Rect, METH_VARARGS, NULL},
 	 { (char *)"Rect_swigregister", Rect_swigregister, METH_VARARGS, NULL},
 	 { (char *)"IRect_x0_set", _wrap_IRect_x0_set, METH_VARARGS, NULL},
 	 { (char *)"IRect_x0_get", _wrap_IRect_x0_get, METH_VARARGS, NULL},
@@ -7243,8 +7226,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"IRect_x1_get", _wrap_IRect_x1_get, METH_VARARGS, NULL},
 	 { (char *)"IRect_y1_set", _wrap_IRect_y1_set, METH_VARARGS, NULL},
 	 { (char *)"IRect_y1_get", _wrap_IRect_y1_get, METH_VARARGS, NULL},
-	 { (char *)"delete_IRect", _wrap_delete_IRect, METH_VARARGS, NULL},
 	 { (char *)"new_IRect", _wrap_new_IRect, METH_VARARGS, NULL},
+	 { (char *)"delete_IRect", _wrap_delete_IRect, METH_VARARGS, NULL},
 	 { (char *)"IRect_swigregister", IRect_swigregister, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_x_set", _wrap_Pixmap_x_set, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_x_get", _wrap_Pixmap_x_get, METH_VARARGS, NULL},
@@ -7292,8 +7275,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Matrix_e_get", _wrap_Matrix_e_get, METH_VARARGS, NULL},
 	 { (char *)"Matrix_f_set", _wrap_Matrix_f_set, METH_VARARGS, NULL},
 	 { (char *)"Matrix_f_get", _wrap_Matrix_f_get, METH_VARARGS, NULL},
-	 { (char *)"delete_Matrix", _wrap_delete_Matrix, METH_VARARGS, NULL},
 	 { (char *)"new_Matrix", _wrap_new_Matrix, METH_VARARGS, NULL},
+	 { (char *)"delete_Matrix", _wrap_delete_Matrix, METH_VARARGS, NULL},
 	 { (char *)"Matrix_swigregister", Matrix_swigregister, METH_VARARGS, NULL},
 	 { (char *)"Outline_title_get", _wrap_Outline_title_get, METH_VARARGS, NULL},
 	 { (char *)"Outline_dest_get", _wrap_Outline_dest_get, METH_VARARGS, NULL},
@@ -7327,8 +7310,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Point_x_get", _wrap_Point_x_get, METH_VARARGS, NULL},
 	 { (char *)"Point_y_set", _wrap_Point_y_set, METH_VARARGS, NULL},
 	 { (char *)"Point_y_get", _wrap_Point_y_get, METH_VARARGS, NULL},
-	 { (char *)"delete_Point", _wrap_delete_Point, METH_VARARGS, NULL},
 	 { (char *)"new_Point", _wrap_new_Point, METH_VARARGS, NULL},
+	 { (char *)"delete_Point", _wrap_delete_Point, METH_VARARGS, NULL},
 	 { (char *)"Point_swigregister", Point_swigregister, METH_VARARGS, NULL},
 	 { (char *)"LINK_FLAG_L_VALID_swigconstant", LINK_FLAG_L_VALID_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"LINK_FLAG_T_VALID_swigconstant", LINK_FLAG_T_VALID_swigconstant, METH_VARARGS, NULL},

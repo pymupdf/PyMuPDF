@@ -208,8 +208,6 @@ class Rect(_object):
             self.this.append(this)
         except:
             self.this = this
-    __swig_destroy__ = _fitz.delete_Rect
-    __del__ = lambda self: None
 
     def round(self):
         val = _fitz.Rect_round(self)
@@ -224,6 +222,8 @@ class Rect(_object):
     width = property(lambda self: self.x1-self.x0)
     height = property(lambda self: self.y1-self.y0)
 
+    __swig_destroy__ = _fitz.delete_Rect
+    __del__ = lambda self: None
 Rect_swigregister = _fitz.Rect_swigregister
 Rect_swigregister(Rect)
 
@@ -249,8 +249,6 @@ class IRect(_object):
     __swig_getmethods__["y1"] = _fitz.IRect_y1_get
     if _newclass:
         y1 = _swig_property(_fitz.IRect_y1_get, _fitz.IRect_y1_set)
-    __swig_destroy__ = _fitz.delete_IRect
-    __del__ = lambda self: None
 
     def __init__(self, *args):
         this = _fitz.new_IRect(*args)
@@ -261,6 +259,8 @@ class IRect(_object):
     width = property(lambda self: self.x1-self.x0)
     height = property(lambda self: self.y1-self.y0)
 
+    __swig_destroy__ = _fitz.delete_IRect
+    __del__ = lambda self: None
 IRect_swigregister = _fitz.IRect_swigregister
 IRect_swigregister(IRect)
 
@@ -408,8 +408,6 @@ class Matrix(_object):
     __swig_getmethods__["f"] = _fitz.Matrix_f_get
     if _newclass:
         f = _swig_property(_fitz.Matrix_f_get, _fitz.Matrix_f_set)
-    __swig_destroy__ = _fitz.delete_Matrix
-    __del__ = lambda self: None
 
     def __init__(self, *args):
         this = _fitz.new_Matrix(*args)
@@ -427,6 +425,8 @@ class Matrix(_object):
         _fitz._fz_pre_rotate(self, degree)
         return self
 
+    __swig_destroy__ = _fitz.delete_Matrix
+    __del__ = lambda self: None
 Matrix_swigregister = _fitz.Matrix_swigregister
 Matrix_swigregister(Matrix)
 
@@ -559,8 +559,6 @@ class Point(_object):
     __swig_getmethods__["y"] = _fitz.Point_y_get
     if _newclass:
         y = _swig_property(_fitz.Point_y_get, _fitz.Point_y_set)
-    __swig_destroy__ = _fitz.delete_Point
-    __del__ = lambda self: None
 
     def __init__(self, *args):
         this = _fitz.new_Point(*args)
@@ -572,6 +570,8 @@ class Point(_object):
         _fitz._fz_transform_point(self, m)
         return self
 
+    __swig_destroy__ = _fitz.delete_Point
+    __del__ = lambda self: None
 Point_swigregister = _fitz.Point_swigregister
 Point_swigregister(Point)
 

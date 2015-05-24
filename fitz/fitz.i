@@ -1,11 +1,12 @@
 %module fitz
 
+/* 
 #define MEMDEBUG
+*/
 
 %{
 #define SWIG_FILE_WITH_INIT
 #include <fitz.h>
-#include <string.h>
 %}
 
 /* global context */
@@ -579,6 +580,7 @@ struct fz_link_s
         %}
         struct fz_link_s *_getNext() {
             fz_keep_link(gctx, $self->next);
+            return $self->next;
         }
         %pythoncode %{
             next = property(_getNext)
@@ -661,7 +663,6 @@ struct fz_text_sheet_s {
 /* fz_text_page */
 %typemap(out) struct fz_rect_s * {
     $result = PyList_New(0);
-    int i;
     PyObject *pyRect;
     struct fz_rect_s *rect = (struct fz_rect_s *)$1;
     while(!fz_is_empty_rect(rect)) {
