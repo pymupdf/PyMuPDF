@@ -9,7 +9,7 @@ Start Developing
 
 First, we need MuPDF 1.7 header files. Make sure that these headers are in the compiler's search path when compiling it.
 
-Next, we need mupdf libraries. For linux, there are 2: ``libmupdf.a`` and ``libmujs.a``. Make sure that these 2 libs are compiled as position independent(gcc with ``-fPIC``).
+Next, we need mupdf libraries. For linux, there are 2: ``libmupdf.a`` and ``libmujs.a``. Make sure that these 2 libs are compiled as position independent (gcc with ``-fPIC``).
 
 Besides, some 3rd party libraries are also needed. For linux, there are: ``libssl.so``, ``libjbig2dec.so``, ``libopenjp2.so``, ``libjpeg.so``, ``libfreetype.so``, ``libz.so``. The code of these libs can also be found in MuPDF's source.  
 
