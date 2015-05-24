@@ -1,20 +1,22 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 
 import fitz
 import wx
 import wx.xrc
 import sys
 # define fitz context
-ctx = fitz.Context(fitz.FZ_STORE_UNLIMITED)
+context = fitz.Context(fitz.FZ_STORE_UNLIMITED)
 #==============================================================================
 # define the dialog
 #==============================================================================
-class PDFdispl (wx.Dialog):
-    
+class PDFdisplay (wx.Dialog):
+
     def __init__(self, parent):
-        wx.Dialog.__init__ (self, parent, id = wx.ID_ANY,
+        wx.Dialog.__init__ (self, parent,
+            id = wx.ID_ANY,
             title = u"PDF Display with MuPDF",
-            pos = wx.DefaultPosition, size = wx.DefaultSize,
+            pos = wx.DefaultPosition,
+            size = wx.DefaultSize,
             style = wx.CAPTION|
                     wx.CLOSE_BOX|
                     wx.DEFAULT_DIALOG_STYLE|
@@ -22,122 +24,122 @@ class PDFdispl (wx.Dialog):
                     wx.MAXIMIZE_BOX|
                     wx.MINIMIZE_BOX|
                     wx.RESIZE_BORDER)
-                
-        szr10 = wx.BoxSizer(wx.VERTICAL)
-        
-        szr20 = wx.BoxSizer(wx.HORIZONTAL)
-        
-        self.bm = wx.EmptyBitmap(5, 5)        # bitmap to be shown at start
-        
-        self.btn_vor = wx.Button(self, wx.ID_ANY, u"forw",
+
+        szr10 = wx.BoxSizer(wx.VERTICAL) # sorry, cryptic variable name
+
+        szr20 = wx.BoxSizer(wx.HORIZONTAL) # cryptic variable name
+
+        self.bitmap = wx.EmptyBitmap(5, 5)        # bitmap to be shown at start
+
+        self.button_next = wx.Button(self, wx.ID_ANY, u"forw",
                            wx.DefaultPosition, wx.DefaultSize, 0)
-        szr20.Add(self.btn_vor, 0, wx.ALL, 5)
-        
-        self.btn_zur = wx.Button(self, wx.ID_ANY, u"back",
+        szr20.Add(self.button_next, 0, wx.ALL, 5)
+
+        self.button_previous = wx.Button(self, wx.ID_ANY, u"back",
                            wx.DefaultPosition, wx.DefaultSize, 0)
-        szr20.Add(self.btn_zur, 0, wx.ALL, 5)
-        
-        self.zuSeite = wx.TextCtrl(self, wx.ID_ANY,
-                             u"0",            # pag# 0 to be clear it's a start 
+        szr20.Add(self.button_previous, 0, wx.ALL, 5)
+
+        self.button_topage = wx.TextCtrl(self, wx.ID_ANY,
+                             u"0",            # pag# 0 to be clear it's a start
                              wx.DefaultPosition, wx.DefaultSize,
                              wx.TE_PROCESS_ENTER)
-        szr20.Add(self.zuSeite, 0, wx.ALL, 5)
-        
-        self.statSeiteMax = wx.StaticText(self, wx.ID_ANY,
-                               str(seiten),    # show maxpages
+        szr20.Add(self.button_topage, 0, wx.ALL, 5)
+
+        self.statPageMax = wx.StaticText(self, wx.ID_ANY,
+                               str(total_pages),    # show maxpages
                                wx.DefaultPosition, wx.DefaultSize, 0)
-        self.statSeiteMax.Wrap(-1)
-        szr20.Add(self.statSeiteMax, 0, wx.ALL, 5)
-                
+        self.statPageMax.Wrap(-1)
+        szr20.Add(self.statPageMax, 0, wx.ALL, 5)
+
         szr10.Add(szr20, 0, wx.EXPAND, 5)
         # this contains the PDF pages
-        self.PDFbild = wx.StaticBitmap(self, wx.ID_ANY, self.bm,
+        self.PDFimage = wx.StaticBitmap(self, wx.ID_ANY, self.bitmap,
                            wx.DefaultPosition, wx.Size(600, 800), wx.NO_BORDER)
-        szr10.Add(self.PDFbild, 0, wx.ALL, 0)
-                
+        szr10.Add(self.PDFimage, 0, wx.ALL, 0)
+
         self.SetSizer(szr10)
         self.Layout()
         szr10.Fit(self)
-        
+
         self.Centre(wx.BOTH)
-        
+
         # Bind buttons and fields to event handlers
-        self.btn_vor.Bind(wx.EVT_BUTTON, self.Seitevor)
-        self.btn_zur.Bind(wx.EVT_BUTTON, self.Seitezur)
-        self.zuSeite.Bind(wx.EVT_TEXT_ENTER, self.SeiteZiel)
-    
+        self.button_next.Bind(wx.EVT_BUTTON, self.NextPage)
+        self.button_previous.Bind(wx.EVT_BUTTON, self.PreviousPage)
+        self.button_topage.Bind(wx.EVT_TEXT_ENTER, self.GotoPage)
+
     def __del__(self):
         pass
 
 #==============================================================================
-# Button Handlers
+# Button handlers
 #==============================================================================
-    def Seitevor(self, event):                 # means: page forward
-        seite = int(self.zuSeite.Value) + 1    # current page + 1
-        seite = min(seite, seiten)             # cannot go beyond last page
-        self.zuSeite.Value = str(seite)        # put target page# in screen
-        self.bm = pdf_show(doc, seite)         # get page image 
-        self.PDFbild.SetBitmap(self.bm)        # put it in screen
-        self.PDFbild.Refresh(True)             # refresh the image
-        self.Layout()                          # refresh the layout  
-        event.Skip()
-    
-    def Seitezur(self, event):                 # means: page back
-        seite = int(self.zuSeite.Value) - 1    # current page - 1
-        seite = max(seite, 1)                  # cannot go before page 1
-        self.zuSeite.Value = str(seite)        # put target page# in screen 
-        self.bm = pdf_show(doc, seite)         # get page image 
-        self.PDFbild.SetBitmap(self.bm)        # put it in screen
-        self.PDFbild.Refresh(True)             # refresh the image
+    def NextPage(self, event):                 # means: page forward
+        page = int(self.button_topage.Value) + 1    # current page + 1
+        page = min(page, total_pages)             # cannot go beyond last page
+        self.button_topage.Value = str(page)        # put target page# in screen
+        self.bitmap = pdf_show(doc, page)         # get page image
+        self.PDFimage.SetBitmap(self.bitmap)        # put it in screen
+        self.PDFimage.Refresh(True)             # refresh the image
         self.Layout()                          # refresh the layout
         event.Skip()
-    
-    def SeiteZiel(self, event):                # means: go to page #
-        seite = int(self.zuSeite.Value)        # get page# from screen
-        seite = min(seite, seiten)             # cannot go beyond last page
-        seite = max(seite, 1)                  # cannot go before page 1
-        self.zuSeite.Value = str(seite)        # make sure it's on the screen
-        self.bm = pdf_show(doc, seite)         # read page image
-        self.PDFbild.SetBitmap(self.bm)        # put it in screen
-        self.PDFbild.Refresh(True)             # refresh the image
+
+    def PreviousPage(self, event):                 # means: page back
+        page = int(self.button_topage.Value) - 1    # current page - 1
+        page = max(page, 1)                  # cannot go before page 1
+        self.button_topage.Value = str(page)        # put target page# in screen
+        self.bitmap = pdf_show(doc, page)         # get page image
+        self.PDFimage.SetBitmap(self.bitmap)        # put it in screen
+        self.PDFimage.Refresh(True)             # refresh the image
+        self.Layout()                          # refresh the layout
+        event.Skip()
+
+    def GotoPage(self, event):                # means: go to page #
+        page = int(self.button_topage.Value)        # get page# from screen
+        page = min(page, total_pages)             # cannot go beyond last page
+        page = max(page, 1)                  # cannot go before page 1
+        self.button_topage.Value = str(page)        # make sure it's on the screen
+        self.bitmap = pdf_show(doc, page)         # read page image
+        self.PDFimage.SetBitmap(self.bitmap)        # put it in screen
+        self.PDFimage.Refresh(True)             # refresh the image
         self.Layout()                          # and the layout
         event.Skip()
-    
+
 #==============================================================================
-# Read / render a PDF page. Parameters are: pdf = document, seite = page#
+# Read / render a PDF page. Parameters are: pdf = document, page = page#
 #==============================================================================
-def pdf_show(pdf, seite):
-    page = pdf.load_page(seite - 1)            # load the page
+def pdf_show(pdf, page):
+    page = pdf.load_page(page - 1)            # load the page
     rect = page.bound_page()                   # rectangle representing it
     width = int(rect.get_width())              # width in pixels
     height = int(rect.get_height())            # height in pixels
     # create an empty RGB pixmap of this size
-    pix = ctx.new_pixmap(fitz.fz_device_rgb, width, height)
+    pix = context.new_pixmap(fitz.fz_device_rgb, width, height)
     pix.clear_pixmap(255)                      # clear it with color "white"
     dev = pix.new_draw_device()                # create a "draw" device
     page.run_page(dev, fitz.fz_identity, None) # render the page
     data = pix.get_samples()                   # point to pixel area
-    bm = wx.BitmapFromBufferRGBA(width, height, data)  # turn in wx.Bitmap
+    bitmap = wx.BitmapFromBufferRGBA(width, height, data)  # turn in wx.Bitmap
     # If you experience issues with this function, try the following code.
     # It will use "wx.BitmapFromBuffer" and thus ignore the transparency (alpha).
     # data2 = "".join([data[4*i:4*i+3] for i in range(len(data)/4)])
-    # bm = wx.BitmapFromBuffer(width, height, data2)
-    return bm
+    # bitmap = wx.BitmapFromBuffer(width, height, data2)
+    return bitmap
 
-    
+
 #==============================================================================
-# Hauptprogramm
+# main program
 #==============================================================================
 # PDF filename goes here
-f = sys.argv[1] 
+f = sys.argv[1]
 # open it with fitz
-doc = ctx.open_document(f)
+doc = context.open_document(f)
 # get # of pages (maxpages)
-seiten = doc.count_pages()
+total_pages = doc.count_pages()
 # prepare the dialog application
 app = None
 app = wx.App()
 # create the dialog
-dlg = PDFdispl(None)
+dlg = PDFdisplay(None)
 # show it - only return for final housekeeping
 rc = dlg.ShowModal()
