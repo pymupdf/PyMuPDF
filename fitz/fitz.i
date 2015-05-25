@@ -211,9 +211,9 @@ struct fz_irect_s
 %inline %{
 PyObject *_getSamples(struct fz_pixmap_s *pm) {
     #if PY_MAJOR_VERSION==2
-    return PyString_FromStringAndSize((const char *)pm->samples, (pm->w)*(pm->h)*(pm->n));
+    return PyByteArray_FromStringAndSize((const char *)pm->samples, (pm->w)*(pm->h)*(pm->n));
     #else
-    return PyUnicode_FromStringAndSize((const char *)pm->samples, (pm->w)*(pm->h)*(pm->n));
+    return PyBytes_FromStringAndSize((const char *)pm->samples, (pm->w)*(pm->h)*(pm->n));
     #endif
 }
 
