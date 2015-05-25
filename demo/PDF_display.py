@@ -113,8 +113,8 @@ def pdf_show(pdf, page):
     pix.clearWith(255)                                      # clear it with color "white"
     dev = fitz.Device(pix)                                  # create a "draw" device
     page.run(dev, fitz.Identity)                            # render the page
-    data = pix.samples                                      # point to pixel area
-
+    data = str(pix.samples)                                 # pixel area. NEW: returns bytearray
+    # this function needs "data" to be a string
     bitmap = wx.BitmapFromBufferRGBA(irect.width, irect.height, data)  # turn in wx.Bitmap
     # If you experience issues with this function, try the following code.
     # It will use "wx.BitmapFromBuffer" and thus ignore the transparency (alpha).
