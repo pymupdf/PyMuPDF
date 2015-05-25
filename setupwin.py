@@ -5,16 +5,17 @@ from distutils.core import setup, Extension
 # python-fitz in Windows 7.
 #===============================================================================
 module = Extension('fitz._fitz',
-                   include_dirs=['./fitz', './mupdf12/fitz'],    # mupdf source directory is also needed
-                   libraries=['libmupdf-nov8',                   # only these are needed in Windows
-                              'libmupdf',                        # put them in the dir of setupwin.py or
-                              'libthirdparty'],                  # specify a lib directory here
-                   extra_link_args=['/NODEFAULTLIB:LIBCMT'],     # not doing this results in unresolved symbols
+                   include_dirs=['./fitz',
+                                 './mupdf17/include/mupdf'       # mupdf source directory is also needed
+                                ],
+                   libraries=['libmupdf',                        # only these are needed in Windows
+                              'libthirdparty'                    # put them in the dir of setupwin.py or
+                             ],                                  # specify a lib directory here
                    sources=['./fitz/fitz_wrap.c'])
 
 setup(name = 'fitz',
       version = '0.0.9',
-      description = 'Python bindings for the MuPDF rendering library',
+      description = 'Python bindings for the MuPDF 1.7a rendering library',
       classifiers = ['Development Status :: 4 - Beta',
                      'Environment :: Console',
                      'Intended Audience :: Developers',
