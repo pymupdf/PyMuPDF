@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python2
 
 import fitz
 import wx
 import wx.xrc
 import sys
-# define fitz context
-context = fitz.Context(fitz.FZ_STORE_UNLIMITED)
 #==============================================================================
 # define the dialog
 #==============================================================================
@@ -109,17 +107,15 @@ class PDFdisplay (wx.Dialog):
 # Read / render a PDF page. Parameters are: pdf = document, page = page#
 #==============================================================================
 def pdf_show(pdf, page):
-    page = pdf.load_page(page - 1)            # load the page
-    rect = page.bound_page()                   # rectangle representing it
-    width = int(rect.get_width())              # width in pixels
-    height = int(rect.get_height())            # height in pixels
-    # create an empty RGB pixmap of this size
-    pix = context.new_pixmap(fitz.fz_device_rgb, width, height)
-    pix.clear_pixmap(255)                      # clear it with color "white"
-    dev = pix.new_draw_device()                # create a "draw" device
-    page.run_page(dev, fitz.fz_identity, None) # render the page
-    data = pix.get_samples()                   # point to pixel area
-    bitmap = wx.BitmapFromBufferRGBA(width, height, data)  # turn in wx.Bitmap
+    page = pdf.loadPage(page - 1)                           # load the page
+    irect = page.bound().round()                            # integer rectangle representing it
+    pix = fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), irect)  # create an empty RGB pixmap of this size
+    pix.clearWith(255)                                      # clear it with color "white"
+    dev = fitz.Device(pix)                                  # create a "draw" device
+    page.run(dev, fitz.Identity)                            # render the page
+    data = pix.samples                                      # point to pixel area
+
+    bitmap = wx.BitmapFromBufferRGBA(irect.width, irect.height, data)  # turn in wx.Bitmap
     # If you experience issues with this function, try the following code.
     # It will use "wx.BitmapFromBuffer" and thus ignore the transparency (alpha).
     # data2 = "".join([data[4*i:4*i+3] for i in range(len(data)/4)])
@@ -133,9 +129,9 @@ def pdf_show(pdf, page):
 # PDF filename goes here
 f = sys.argv[1]
 # open it with fitz
-doc = context.open_document(f)
+doc = fitz.Document(f)
 # get # of pages (maxpages)
-total_pages = doc.count_pages()
+total_pages = doc.pageCount
 # prepare the dialog application
 app = None
 app = wx.App()

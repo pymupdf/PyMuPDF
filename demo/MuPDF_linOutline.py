@@ -29,23 +29,23 @@ def get_ol_list(outline):
     lvl = 0                            # records current indent level   
     ltab = [0]*10                      # last OutlineItem on this level
     liste = []                         # will hold flattened outline
-    olItem = outline.get_first()       # get first OutlineItem
+    olItem = outline                   # olItem will be used for iteration
     while olItem:
         while olItem:                  # process one OutlineItem
             lvl += 1                   # its indent level
             # create one outline line
-            zeile = [lvl, olItem.get_title(), olItem.get_page()]
+            zeile = [lvl, olItem.title, olItem.dest.page]
             liste.append(zeile)        # append it
             ltab[lvl] = olItem         # record OutlineItem in level table 
-            olItem = olItem.get_down() # go to child OutlineItem
-        olItem = ltab[lvl].get_next()  # no more children, look for brothers
+            olItem = olItem.down       # go to child OutlineItem
+        olItem = ltab[lvl].next        # no more children, look for brothers
         if olItem:                     # have any?
             lvl -= 1                   # prep. proc.: decrease lvl recorder 
             continue
         else:                          # no kids, no brothers, now what?
             while lvl > 1 and not olItem:
                 lvl -= 1               # go look for uncles
-                olItem = ltab[lvl].get_next()
+                olItem = ltab[lvl].next
             if lvl < 1:                # out of relatives
                 return liste           # return linearized outline
             lvl -= 1
@@ -55,13 +55,11 @@ def get_ol_list(outline):
 # Main program
 #==============================================================================
 f= sys.argv[1]                         # document dataset name
-# acquire context area
-ctx = fitz.Context(fitz.FZ_STORE_UNLIMITED)
 # open the document
-doc = ctx.open_document(f)
-print "Number of pages:", doc.count_pages()
+doc = fitz.Document(f)
+print("Number of pages:", doc.pageCount)
 # get the linear outline list
-ol = get_ol_list(doc.load_outline())
-print "linearized outline: %s entries" % (len(ol),)
+ol = get_ol_list(doc.outline)
+print("linearized outline: %s entries" % (len(ol),))
 for o in ol:
-    print o
+    print(o)
