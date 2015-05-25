@@ -264,10 +264,6 @@ class IRect(_object):
 IRect_swigregister = _fitz.IRect_swigregister
 IRect_swigregister(IRect)
 
-
-def _getSamples(pm):
-    return _fitz._getSamples(pm)
-_getSamples = _fitz._getSamples
 class Pixmap(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Pixmap, name, value)
@@ -324,7 +320,10 @@ class Pixmap(_object):
 
     def invertIRect(self, irect):
         return _fitz.Pixmap_invertIRect(self, irect)
-    samples = property(lambda self: _getSamples(self))
+
+    def _getSamples(self):
+        return _fitz.Pixmap__getSamples(self)
+    samples = property(lambda self: self._getSamples())
 
 Pixmap_swigregister = _fitz.Pixmap_swigregister
 Pixmap_swigregister(Pixmap)

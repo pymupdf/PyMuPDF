@@ -3324,16 +3324,6 @@ SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_1(struct fz_irect_s const *s)
             *r = *s;
             return r;
         }
-
-PyObject *_getSamples(struct fz_pixmap_s *pm) {
-    #if PY_MAJOR_VERSION==2
-    return PyByteArray_FromStringAndSize((const char *)pm->samples, (pm->w)*(pm->h)*(pm->n));
-    #else
-    return PyBytes_FromStringAndSize((const char *)pm->samples, (pm->w)*(pm->h)*(pm->n));
-    #endif
-}
-
-
 SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s(struct fz_colorspace_s *cs,struct fz_irect_s const *bbox){
             fz_try(gctx)
                 return fz_new_pixmap_with_bbox(gctx, cs, bbox);
@@ -3359,6 +3349,9 @@ SWIGINTERN int fz_pixmap_s_writePNG(struct fz_pixmap_s *self,char *filename,int 
         }
 SWIGINTERN void fz_pixmap_s_invertIRect(struct fz_pixmap_s *self,struct fz_irect_s const *irect){
             fz_invert_pixmap_rect(gctx, self, irect);
+        }
+SWIGINTERN PyObject *fz_pixmap_s__getSamples(struct fz_pixmap_s *self){
+            return PyByteArray_FromStringAndSize((const char *)self->samples, (self->w)*(self->h)*(self->n));
         }
 
     #define CS_RGB 1
@@ -4517,28 +4510,6 @@ SWIGINTERN PyObject *IRect_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject
   return SWIG_Py_Void();
 }
 
-SWIGINTERN PyObject *_wrap__getSamples(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:_getSamples",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_getSamples" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
-  }
-  arg1 = (struct fz_pixmap_s *)(argp1);
-  result = (PyObject *)_getSamples(arg1);
-  resultobj = result;
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_Pixmap_x_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
@@ -5118,6 +5089,28 @@ SWIGINTERN PyObject *_wrap_Pixmap_invertIRect(PyObject *SWIGUNUSEDPARM(self), Py
   arg2 = (struct fz_irect_s *)(argp2);
   fz_pixmap_s_invertIRect(arg1,(struct fz_irect_s const *)arg2);
   resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pixmap__getSamples(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Pixmap__getSamples",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap__getSamples" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  result = (PyObject *)fz_pixmap_s__getSamples(arg1);
+  resultobj = result;
   return resultobj;
 fail:
   return NULL;
@@ -7209,7 +7202,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_IRect", _wrap_new_IRect, METH_VARARGS, NULL},
 	 { (char *)"delete_IRect", _wrap_delete_IRect, METH_VARARGS, NULL},
 	 { (char *)"IRect_swigregister", IRect_swigregister, METH_VARARGS, NULL},
-	 { (char *)"_getSamples", _wrap__getSamples, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_x_set", _wrap_Pixmap_x_set, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_x_get", _wrap_Pixmap_x_get, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_y_set", _wrap_Pixmap_y_set, METH_VARARGS, NULL},
@@ -7231,6 +7223,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Pixmap_clearWith", _wrap_Pixmap_clearWith, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_writePNG", _wrap_Pixmap_writePNG, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_invertIRect", _wrap_Pixmap_invertIRect, METH_VARARGS, NULL},
+	 { (char *)"Pixmap__getSamples", _wrap_Pixmap__getSamples, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_swigregister", Pixmap_swigregister, METH_VARARGS, NULL},
 	 { (char *)"CS_RGB_swigconstant", CS_RGB_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"new_Colorspace", _wrap_new_Colorspace, METH_VARARGS, NULL},

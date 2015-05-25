@@ -208,16 +208,6 @@ struct fz_irect_s
 
 
 /* fz_pixmap */
-%inline %{
-PyObject *_getSamples(struct fz_pixmap_s *pm) {
-    #if PY_MAJOR_VERSION==2
-    return PyByteArray_FromStringAndSize((const char *)pm->samples, (pm->w)*(pm->h)*(pm->n));
-    #else
-    return PyBytes_FromStringAndSize((const char *)pm->samples, (pm->w)*(pm->h)*(pm->n));
-    #endif
-}
-
-%}
 %rename(Pixmap) fz_pixmap_s;
 struct fz_pixmap_s
 {
@@ -267,9 +257,11 @@ struct fz_pixmap_s
         void invertIRect(const struct fz_irect_s *irect) {
             fz_invert_pixmap_rect(gctx, $self, irect);
         }
-
+        PyObject *_getSamples() {
+            return PyByteArray_FromStringAndSize((const char *)$self->samples, ($self->w)*($self->h)*($self->n));
+        }
         %pythoncode %{
-            samples = property(lambda self: _getSamples(self))
+            samples = property(lambda self: self._getSamples())
         %}
     }
 };
