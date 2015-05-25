@@ -15,11 +15,13 @@ else:
 # python-fitz in Windows 7.
 #===============================================================================
     module = Extension('fitz._fitz',
-                       include_dirs=['./fitz', './mupdf12/fitz'],    # mupdf source directory is also needed
-                       libraries=['libmupdf-nov8',                   # only these are needed in Windows
-                                  'libmupdf',                        # put them in the dir of setupwin.py or
-                                  'libthirdparty'],                  # specify a lib directory here
-                       extra_link_args=['/NODEFAULTLIB:LIBCMT'],     # not doing this results in unresolved symbols
+                       include_dirs=['./fitz',
+                                     './mupdf17/include/mupdf'],     # "./mupdf17" = top level mupdf source dir
+                       libraries=[                                   # only these 2 are needed in Windows
+                                  'libmupdf',                        
+                                  'libthirdparty'                    
+                                 ],
+                       library_dirs=[],                              # dir of libmupdf.lib / libthirdparty.lib
                        sources=['./fitz/fitz_wrap.c'])
 
 setup(name = 'fitz',
