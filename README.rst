@@ -11,7 +11,7 @@ First, we need MuPDF 1.7 header files. Make sure that these headers are in the c
 
 Next, we need mupdf libraries. For linux, there are 2: ``libmupdf.a`` and ``libmujs.a``. Make sure that these 2 libs are compiled as position independent (gcc with ``-fPIC``).
 
-Besides, some 3rd party libraries are also needed. For linux, there are: ``libssl.so``, ``libjbig2dec.so``, ``libopenjp2.so``, ``libjpeg.so``, ``libfreetype.so``, ``libz.so``. The code of these libs can also be found in MuPDF's source.  
+Besides, some 3rd party libraries are also needed. For linux, there are: ``libcrypto.so``, ``libjbig2dec.so``, ``libopenjp2.so``, ``libjpeg.so``, ``libfreetype.so``, ``libz.so``. The code of these libs can also be found in MuPDF's source.  
 
 For Windows, only the following two files are needed: ``libmupdf.lib`` and ``libthirdparty.lib``. Any 3rd party software is already included.  
 We may be able to supply pre-compiled / pre-linked copies of these with this repository to save a major setup step for using MuPDF in Windows.

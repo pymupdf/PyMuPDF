@@ -3,10 +3,10 @@ import sys
 
 # check the platform
 if sys.platform.startswith('linux'):
-    module = Extension('_fitz', # name of the module
-                       ['fitz/fitz_wrap.c'], # source file of the wrapper 
+    module = Extension('fitz._fitz', # name of the module
+                       ['fitz/fitz.i'], # SWIG source file
                        include_dirs=['/usr/include/mupdf'], # we need the path of the MuPDF's headers
-                       libraries=['mupdf', 'mujs', 'ssl', 'jbig2dec', 'openjp2', 'jpeg', 'freetype'], # the libraries to link with
+                       libraries=['mupdf', 'mujs', 'crypto', 'jbig2dec', 'openjp2', 'jpeg', 'freetype'], # the libraries to link with
                       )
 else:
 #===============================================================================
@@ -37,4 +37,4 @@ setup(name = 'fitz',
       author_email = 'lrk700@gmail.com',
       license = 'GPLv3+',
       ext_modules = [module],
-      packages = ['fitz'])
+      py_modules = ['fitz.fitz'])
