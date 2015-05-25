@@ -3544,12 +3544,14 @@ SWIGINTERN void delete_fz_text_page_s(struct fz_text_page_s *self){
             fz_drop_text_page(gctx, self);
         }
 SWIGINTERN struct fz_rect_s *fz_text_page_s_search(struct fz_text_page_s *self,char const *needle,int hit_max){
+            fz_rect *result;
+            int count;
             if(hit_max < 0) {
                 fprintf(stderr, "invalid hit max number %d\n", hit_max);
                 return NULL;
             }
-            fz_rect *result = (fz_rect *)malloc(sizeof(fz_rect)*(hit_max+1));
-            int count = fz_search_text_page(gctx, self, needle, result, hit_max);
+            result = (fz_rect *)malloc(sizeof(fz_rect)*(hit_max+1));
+            count = fz_search_text_page(gctx, self, needle, result, hit_max);
             result[count] = fz_empty_rect;
 
 
@@ -7165,9 +7167,10 @@ SWIGINTERN PyObject *_wrap_TextPage_search(PyObject *SWIGUNUSEDPARM(self), PyObj
   }
   result = (struct fz_rect_s *)fz_text_page_s_search(arg1,(char const *)arg2,arg3);
   {
-    resultobj = PyList_New(0);
     PyObject *pyRect;
-    struct fz_rect_s *rect = (struct fz_rect_s *)result;
+    struct fz_rect_s *rect;
+    resultobj = PyList_New(0);
+    rect = (struct fz_rect_s *)result;
     while(!fz_is_empty_rect(rect)) {
       pyRect = SWIG_NewPointerObj(memcpy(malloc(sizeof(struct fz_rect_s)), rect, sizeof(struct fz_rect_s)), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_OWN);
       PyList_Append(resultobj, pyRect);

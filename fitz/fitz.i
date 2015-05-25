@@ -662,9 +662,10 @@ struct fz_text_sheet_s {
 
 /* fz_text_page */
 %typemap(out) struct fz_rect_s * {
-    $result = PyList_New(0);
     PyObject *pyRect;
-    struct fz_rect_s *rect = (struct fz_rect_s *)$1;
+    struct fz_rect_s *rect;
+    $result = PyList_New(0);
+    rect = (struct fz_rect_s *)$1;
     while(!fz_is_empty_rect(rect)) {
         pyRect = SWIG_NewPointerObj(memcpy(malloc(sizeof(struct fz_rect_s)), rect, sizeof(struct fz_rect_s)), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_OWN);
         PyList_Append($result, pyRect);
@@ -697,12 +698,14 @@ struct fz_text_page_s {
             fz_drop_text_page(gctx, $self);
         }
         struct fz_rect_s *search(const char *needle, int hit_max=16) {
+            fz_rect *result;
+            int count;
             if(hit_max < 0) {
                 fprintf(stderr, "invalid hit max number %d\n", hit_max);
                 return NULL;
             }
-            fz_rect *result = (fz_rect *)malloc(sizeof(fz_rect)*(hit_max+1));
-            int count = fz_search_text_page(gctx, $self, needle, result, hit_max);
+            result = (fz_rect *)malloc(sizeof(fz_rect)*(hit_max+1));
+            count = fz_search_text_page(gctx, $self, needle, result, hit_max);
             result[count] = fz_empty_rect;
 #ifdef MEMDEBUG
             fprintf(stderr, "count is %d, last one is (%g %g), (%g %g)\n", count, result[count].x0, result[count].y0, result[count].x1, result[count].y1);
