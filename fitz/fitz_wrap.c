@@ -2927,9 +2927,8 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_fz_rect_s swig_types[14]
 #define SWIGTYPE_p_fz_text_page_s swig_types[15]
 #define SWIGTYPE_p_fz_text_sheet_s swig_types[16]
-#define SWIGTYPE_p_unsigned_char swig_types[17]
-static swig_type_info *swig_types[19];
-static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
+static swig_type_info *swig_types[18];
+static swig_module_info swig_module = {swig_types, 17, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3325,6 +3324,16 @@ SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_1(struct fz_irect_s const *s)
             *r = *s;
             return r;
         }
+
+PyObject *_getSamples(struct fz_pixmap_s *pm) {
+    #if PY_MAJOR_VERSION==2
+    return PyString_FromStringAndSize((const char *)pm->samples, (pm->w)*(pm->h)*(pm->n));
+    #else
+    return PyUnicode_FromStringAndSize((const char *)pm->samples, (pm->w)*(pm->h)*(pm->n));
+    #endif
+}
+
+
 SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s(struct fz_colorspace_s *cs,struct fz_irect_s const *bbox){
             fz_try(gctx)
                 return fz_new_pixmap_with_bbox(gctx, cs, bbox);
@@ -4508,6 +4517,28 @@ SWIGINTERN PyObject *IRect_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject
   return SWIG_Py_Void();
 }
 
+SWIGINTERN PyObject *_wrap__getSamples(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:_getSamples",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_getSamples" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  result = (PyObject *)_getSamples(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Pixmap_x_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
@@ -4918,60 +4949,6 @@ SWIGINTERN PyObject *_wrap_Pixmap_yres_get(PyObject *SWIGUNUSEDPARM(self), PyObj
   arg1 = (struct fz_pixmap_s *)(argp1);
   result = (int) ((arg1)->yres);
   resultobj = SWIG_From_int((int)(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Pixmap_samples_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
-  unsigned char *arg2 = (unsigned char *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:Pixmap_samples_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_samples_set" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
-  }
-  arg1 = (struct fz_pixmap_s *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_unsigned_char, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Pixmap_samples_set" "', argument " "2"" of type '" "unsigned char *""'"); 
-  }
-  arg2 = (unsigned char *)(argp2);
-  if (arg1) (arg1)->samples = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Pixmap_samples_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  unsigned char *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:Pixmap_samples_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_samples_get" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
-  }
-  arg1 = (struct fz_pixmap_s *)(argp1);
-  result = (unsigned char *) ((arg1)->samples);
-  {
-    resultobj = PyString_FromString((char *)result);
-  }
   return resultobj;
 fail:
   return NULL;
@@ -7232,6 +7209,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_IRect", _wrap_new_IRect, METH_VARARGS, NULL},
 	 { (char *)"delete_IRect", _wrap_delete_IRect, METH_VARARGS, NULL},
 	 { (char *)"IRect_swigregister", IRect_swigregister, METH_VARARGS, NULL},
+	 { (char *)"_getSamples", _wrap__getSamples, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_x_set", _wrap_Pixmap_x_set, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_x_get", _wrap_Pixmap_x_get, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_y_set", _wrap_Pixmap_y_set, METH_VARARGS, NULL},
@@ -7248,8 +7226,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Pixmap_xres_get", _wrap_Pixmap_xres_get, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_yres_set", _wrap_Pixmap_yres_set, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_yres_get", _wrap_Pixmap_yres_get, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_samples_set", _wrap_Pixmap_samples_set, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_samples_get", _wrap_Pixmap_samples_get, METH_VARARGS, NULL},
 	 { (char *)"new_Pixmap", _wrap_new_Pixmap, METH_VARARGS, NULL},
 	 { (char *)"delete_Pixmap", _wrap_delete_Pixmap, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_clearWith", _wrap_Pixmap_clearWith, METH_VARARGS, NULL},
@@ -7363,7 +7339,6 @@ static swig_type_info _swigt__p_fz_point_s = {"_p_fz_point_s", "struct fz_point_
 static swig_type_info _swigt__p_fz_rect_s = {"_p_fz_rect_s", "struct fz_rect_s *|fz_rect_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_fz_text_page_s = {"_p_fz_text_page_s", "struct fz_text_page_s *|fz_text_page_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_fz_text_sheet_s = {"_p_fz_text_sheet_s", "struct fz_text_sheet_s *|fz_text_sheet_s *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "unsigned char *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
@@ -7383,7 +7358,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_fz_rect_s,
   &_swigt__p_fz_text_page_s,
   &_swigt__p_fz_text_sheet_s,
-  &_swigt__p_unsigned_char,
 };
 
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
@@ -7403,7 +7377,6 @@ static swig_cast_info _swigc__p_fz_point_s[] = {  {&_swigt__p_fz_point_s, 0, 0, 
 static swig_cast_info _swigc__p_fz_rect_s[] = {  {&_swigt__p_fz_rect_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_text_page_s[] = {  {&_swigt__p_fz_text_page_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_text_sheet_s[] = {  {&_swigt__p_fz_text_sheet_s, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_unsigned_char[] = {  {&_swigt__p_unsigned_char, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
@@ -7423,7 +7396,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_fz_rect_s,
   _swigc__p_fz_text_page_s,
   _swigc__p_fz_text_sheet_s,
-  _swigc__p_unsigned_char,
 };
 
 

@@ -208,16 +208,22 @@ struct fz_irect_s
 
 
 /* fz_pixmap */
-%typemap(out) unsigned char * {
-    $result = PyString_FromString((char *)$1);
+%inline %{
+PyObject *_getSamples(struct fz_pixmap_s *pm) {
+    #if PY_MAJOR_VERSION==2
+    return PyString_FromStringAndSize((const char *)pm->samples, (pm->w)*(pm->h)*(pm->n));
+    #else
+    return PyUnicode_FromStringAndSize((const char *)pm->samples, (pm->w)*(pm->h)*(pm->n));
+    #endif
 }
+
+%}
 %rename(Pixmap) fz_pixmap_s;
 struct fz_pixmap_s
 {
     int x, y, w, h, n;
     int interpolate;
     int xres, yres;
-    unsigned char *samples;
     %extend {
         %exception fz_pixmap_s {
             $action
@@ -261,6 +267,10 @@ struct fz_pixmap_s
         void invertIRect(const struct fz_irect_s *irect) {
             fz_invert_pixmap_rect(gctx, $self, irect);
         }
+
+        %pythoncode %{
+            samples = property(lambda self: _getSamples(self))
+        %}
     }
 };
 
