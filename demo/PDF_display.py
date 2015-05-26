@@ -132,7 +132,7 @@ app = wx.App()
 #==============================================================================
 # Wildcard: offer all supported filetypes
 wild = "Displayable Files (*.pdf)|*.pdf|"     \
-                   "(*.xps)|*.*|(*.epub)|*.epub"
+                   "(*.xps)|*.xps|(*.epub)|*.epub"
 # Show the dialog
 dlg = wx.FileDialog(None, message = "Choose a file to display",
                     defaultDir = os.environ["USERPROFILE"], defaultFile = "",
