@@ -27,7 +27,7 @@ def get_ol_list(outline):
     if not outline:                    # contains no outline:
         return []                      # return empty list
     lvl = 0                            # records current indent level   
-    ltab = [0]*10                      # last OutlineItem on this level
+    ltab = {}                          # current OutlineItem per level
     liste = []                         # will hold flattened outline
     olItem = outline                   # olItem will be used for iteration
     while olItem:
