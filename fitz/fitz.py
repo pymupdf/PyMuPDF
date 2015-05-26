@@ -105,6 +105,11 @@ class Document(_object):
             self.this = this
         if this:
             self._outline = self._loadOutline() 
+            self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format','encryption':'encryption','title':'info:Title',
+                                                                       'author':'info:Author','subject':'info:Subject',
+                                                                       'keywords':'info:Keywords','creator':'info:Creator',
+                                                                       'producer':'info:Producer','creationDate':'info:CreationDate',
+                                                                       'modDate':'info:ModDate'}.items()])
 
 
 
@@ -134,8 +139,21 @@ class Document(_object):
 
     def _getPageCount(self):
         return _fitz.Document__getPageCount(self)
-    pageCount = property(_getPageCount)
+
+    def _getMetadata(self, key):
+        return _fitz.Document__getMetadata(self, key)
+
+    def _needsPass(self):
+        return _fitz.Document__needsPass(self)
+
+    def authenticate(self, arg2):
+        return _fitz.Document_authenticate(self, arg2)
+
+    def write(self, filename):
+        return _fitz.Document_write(self, filename)
+    pageCount = property(lambda self: self._getPageCount())
     outline = property(lambda self: self._outline)
+    needsPass = property(lambda self: self._needsPass())
 
 Document_swigregister = _fitz.Document_swigregister
 Document_swigregister(Document)
@@ -455,6 +473,12 @@ class Outline(_object):
     __swig_getmethods__["is_open"] = _fitz.Outline_is_open_get
     if _newclass:
         is_open = _swig_property(_fitz.Outline_is_open_get)
+
+    def printXML(self, filename):
+        return _fitz.Outline_printXML(self, filename)
+
+    def printText(self, filename):
+        return _fitz.Outline_printText(self, filename)
     __swig_destroy__ = _fitz.delete_Outline
     __del__ = lambda self: None
 Outline_swigregister = _fitz.Outline_swigregister
