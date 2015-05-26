@@ -3059,10 +3059,12 @@ SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
 
 
 SWIGINTERN struct fz_document_s *new_fz_document_s(char const *filename){
+            struct fz_document_s *doc;
             fz_try(gctx)
-                return fz_open_document(gctx, filename);
+                doc = fz_open_document(gctx, filename);
             fz_catch(gctx)
-                return NULL;
+                doc = NULL;
+            return doc;
         }
 SWIGINTERN void delete_fz_document_s(struct fz_document_s *self){
 
@@ -3216,10 +3218,12 @@ SWIG_AsVal_int (PyObject * obj, int *val)
 }
 
 SWIGINTERN struct fz_page_s *fz_document_s_loadPage(struct fz_document_s *self,int number){
+            struct fz_page_s *page;
             fz_try(gctx)
-                return fz_load_page(gctx, self, number);
+                page = fz_load_page(gctx, self, number);
             fz_catch(gctx)
-                return  NULL;
+                page = NULL;
+            return page;
         }
 SWIGINTERN struct fz_outline_s *fz_document_s__loadOutline(struct fz_document_s *self){
             return fz_load_outline(gctx, self);
@@ -3254,10 +3258,11 @@ SWIGINTERN struct fz_rect_s *fz_page_s_bound(struct fz_page_s *self){
 SWIGINTERN int fz_page_s_run(struct fz_page_s *self,struct fz_device_s *dev,struct fz_matrix_s const *m){
             fz_try(gctx) {
                 fz_run_page(gctx, self, dev, m, NULL);
-                return 0;
             }
-            fz_catch(gctx)
+            fz_catch(gctx) {
                 return 1;
+            }
+            return 0;
         }
 SWIGINTERN struct fz_link_s *fz_page_s_loadLinks(struct fz_page_s *self){
             return fz_load_links(gctx, self);
@@ -3325,10 +3330,12 @@ SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_1(struct fz_irect_s const *s)
             return r;
         }
 SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s(struct fz_colorspace_s *cs,struct fz_irect_s const *bbox){
+            struct fz_pixmap_s *pm;
             fz_try(gctx)
-                return fz_new_pixmap_with_bbox(gctx, cs, bbox);
+                pm = fz_new_pixmap_with_bbox(gctx, cs, bbox);
             fz_catch(gctx)
-                return NULL;
+                pm = NULL;
+            return pm;
         }
 SWIGINTERN void delete_fz_pixmap_s(struct fz_pixmap_s *self){
 
@@ -3342,10 +3349,10 @@ SWIGINTERN void fz_pixmap_s_clearWith(struct fz_pixmap_s *self,int value){
 SWIGINTERN int fz_pixmap_s_writePNG(struct fz_pixmap_s *self,char *filename,int savealpha){
             fz_try(gctx) {
                 fz_write_png(gctx, self, filename, savealpha);
-                return 0;
             }
             fz_catch(gctx) 
                 return 1;
+            return 0;
         }
 SWIGINTERN void fz_pixmap_s_invertIRect(struct fz_pixmap_s *self,struct fz_irect_s const *irect){
             fz_invert_pixmap_rect(gctx, self, irect);
@@ -3371,22 +3378,28 @@ SWIGINTERN void delete_fz_colorspace_s(struct fz_colorspace_s *self){
             fz_drop_colorspace(gctx, self);
         }
 SWIGINTERN struct fz_device_s *new_fz_device_s__SWIG_0(struct fz_pixmap_s *pm){
+            struct fz_device_s *dv;
             fz_try(gctx)
-                return fz_new_draw_device(gctx, pm);
+                dv = fz_new_draw_device(gctx, pm);
             fz_catch(gctx)
-                return NULL;
+                dv = NULL;
+            return dv;
         }
 SWIGINTERN struct fz_device_s *new_fz_device_s__SWIG_1(struct fz_display_list_s *dl){
+            struct fz_device_s *dv;
             fz_try(gctx)
-                return fz_new_list_device(gctx, dl);
+                dv = fz_new_list_device(gctx, dl);
             fz_catch(gctx)
-                return NULL;
+                dv = NULL;
+            return dv;
         }
 SWIGINTERN struct fz_device_s *new_fz_device_s__SWIG_2(struct fz_text_sheet_s *ts,struct fz_text_page_s *tp){
+            struct fz_device_s *dv;
             fz_try(gctx)
-                return fz_new_text_device(gctx, ts, tp);
+                dv = fz_new_text_device(gctx, ts, tp);
             fz_catch(gctx)
-                return NULL;
+                dv = NULL;
+            return dv;
         }
 SWIGINTERN void delete_fz_device_s(struct fz_device_s *self){
 
@@ -3502,10 +3515,12 @@ SWIGINTERN struct fz_link_s *fz_link_s__getNext(struct fz_link_s *self){
             return self->next;
         }
 SWIGINTERN struct fz_display_list_s *new_fz_display_list_s(void){
+            struct fz_display_list_s *dl;
             fz_try(gctx)
-                return fz_new_display_list(gctx);
+                dl = fz_new_display_list(gctx);
             fz_catch(gctx)
-                return NULL;
+                dl = NULL;
+            return dl;
         }
 SWIGINTERN void delete_fz_display_list_s(struct fz_display_list_s *self){
 
@@ -3516,16 +3531,18 @@ SWIGINTERN void delete_fz_display_list_s(struct fz_display_list_s *self){
 SWIGINTERN int fz_display_list_s_run(struct fz_display_list_s *self,struct fz_device_s *dev,struct fz_matrix_s const *m,struct fz_rect_s const *area){
             fz_try(gctx) {
                 fz_run_display_list(gctx, self, dev, m, area, NULL);
-                return 0;
             }
             fz_catch(gctx)
                 return 1;
+            return 0;
         }
 SWIGINTERN struct fz_text_sheet_s *new_fz_text_sheet_s(void){
+            struct fz_text_sheet_s *ts;
             fz_try(gctx)
-                return fz_new_text_sheet(gctx);
+                ts = fz_new_text_sheet(gctx);
             fz_catch(gctx)
-                return NULL;
+                ts = NULL;
+            return ts;
         }
 SWIGINTERN void delete_fz_text_sheet_s(struct fz_text_sheet_s *self){
 
@@ -3534,10 +3551,12 @@ SWIGINTERN void delete_fz_text_sheet_s(struct fz_text_sheet_s *self){
             fz_drop_text_sheet(gctx, self);
         }
 SWIGINTERN struct fz_text_page_s *new_fz_text_page_s(void){
+            struct fz_text_page_s *tp;
             fz_try(gctx)
-                return fz_new_text_page(gctx);
+                tp = fz_new_text_page(gctx);
             fz_catch(gctx)
-                return NULL;
+                tp = NULL;
+            return tp;
         }
 SWIGINTERN void delete_fz_text_page_s(struct fz_text_page_s *self){
 

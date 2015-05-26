@@ -35,10 +35,12 @@ struct fz_document_s {
                 self._outline = self._loadOutline() 
         %}
         fz_document_s(const char *filename) {
+            struct fz_document_s *doc;
             fz_try(gctx)
-                return fz_open_document(gctx, filename);
+                doc = fz_open_document(gctx, filename);
             fz_catch(gctx)
-                return NULL;
+                doc = NULL;
+            return doc;
         }
 
         %pythonprepend ~fz_document_s() %{
@@ -64,10 +66,12 @@ struct fz_document_s {
                 val.thisown = True
         %}
         struct fz_page_s *loadPage(int number) {
+            struct fz_page_s *page;
             fz_try(gctx)
-                return fz_load_page(gctx, $self, number);
+                page = fz_load_page(gctx, $self, number);
             fz_catch(gctx)
-                return  NULL;
+                page = NULL;
+            return page;
         }
 
         struct fz_outline_s *_loadOutline() {
@@ -123,10 +127,11 @@ struct fz_page_s {
         int run(struct fz_device_s *dev, const struct fz_matrix_s *m) {
             fz_try(gctx) {
                 fz_run_page(gctx, $self, dev, m, NULL);
-                return 0;
             }
-            fz_catch(gctx)
+            fz_catch(gctx) {
                 return 1;
+            }
+            return 0;
         }
         %pythonappend loadLinks() %{
             if val:
@@ -223,10 +228,12 @@ struct fz_pixmap_s
             }
         }
         fz_pixmap_s(struct fz_colorspace_s *cs, const struct fz_irect_s *bbox) {
+            struct fz_pixmap_s *pm;
             fz_try(gctx)
-                return fz_new_pixmap_with_bbox(gctx, cs, bbox);
+                pm = fz_new_pixmap_with_bbox(gctx, cs, bbox);
             fz_catch(gctx)
-                return NULL;
+                pm = NULL;
+            return pm;
         }
 
         ~fz_pixmap_s() {
@@ -249,10 +256,10 @@ struct fz_pixmap_s
         int writePNG(char *filename, int savealpha=0) {
             fz_try(gctx) {
                 fz_write_png(gctx, $self, filename, savealpha);
-                return 0;
             }
             fz_catch(gctx) 
                 return 1;
+            return 0;
         }
         void invertIRect(const struct fz_irect_s *irect) {
             fz_invert_pixmap_rect(gctx, $self, irect);
@@ -307,22 +314,28 @@ struct fz_device_s
             }
         }
         fz_device_s(struct fz_pixmap_s *pm) {
+            struct fz_device_s *dv;
             fz_try(gctx)
-                return fz_new_draw_device(gctx, pm);
+                dv = fz_new_draw_device(gctx, pm);
             fz_catch(gctx)
-                return NULL;
+                dv = NULL;
+            return dv;
         }
         fz_device_s(struct fz_display_list_s *dl) {
+            struct fz_device_s *dv;
             fz_try(gctx)
-                return fz_new_list_device(gctx, dl);
+                dv = fz_new_list_device(gctx, dl);
             fz_catch(gctx)
-                return NULL;
+                dv = NULL;
+            return dv;
         }
         fz_device_s(struct fz_text_sheet_s *ts, struct fz_text_page_s *tp) {
+            struct fz_device_s *dv;
             fz_try(gctx)
-                return fz_new_text_device(gctx, ts, tp);
+                dv = fz_new_text_device(gctx, ts, tp);
             fz_catch(gctx)
-                return NULL;
+                dv = NULL;
+            return dv;
         }
         ~fz_device_s() {
 #ifdef MEMDEBUG
@@ -604,10 +617,12 @@ struct fz_display_list_s {
             }
         }
         fz_display_list_s() {
+            struct fz_display_list_s *dl;
             fz_try(gctx)
-                return fz_new_display_list(gctx);
+                dl = fz_new_display_list(gctx);
             fz_catch(gctx)
-                return NULL;
+                dl = NULL;
+            return dl;
         }
 
         ~fz_display_list_s() {
@@ -626,10 +641,10 @@ struct fz_display_list_s {
         int run(struct fz_device_s *dev, const struct fz_matrix_s *m, const struct fz_rect_s *area) {
             fz_try(gctx) {
                 fz_run_display_list(gctx, $self, dev, m, area, NULL);
-                return 0;
             }
             fz_catch(gctx)
                 return 1;
+            return 0;
         }
     }
 };
@@ -647,10 +662,12 @@ struct fz_text_sheet_s {
             }
         }
         fz_text_sheet_s() {
+            struct fz_text_sheet_s *ts;
             fz_try(gctx)
-                return fz_new_text_sheet(gctx);
+                ts = fz_new_text_sheet(gctx);
             fz_catch(gctx)
-                return NULL;
+                ts = NULL;
+            return ts;
         }
 
         ~fz_text_sheet_s() {
@@ -687,10 +704,12 @@ struct fz_text_page_s {
             }
         }
         fz_text_page_s() {
+            struct fz_text_page_s *tp;
             fz_try(gctx)
-                return fz_new_text_page(gctx);
+                tp = fz_new_text_page(gctx);
             fz_catch(gctx)
-                return NULL;
+                tp = NULL;
+            return tp;
         }
 
         ~fz_text_page_s() {
