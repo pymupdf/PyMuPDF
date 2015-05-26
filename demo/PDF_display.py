@@ -3,7 +3,8 @@
 import fitz
 import wx
 import wx.xrc
-import sys
+import os
+strt_Bitmap = None
 #==============================================================================
 # define the dialog
 #==============================================================================
@@ -24,10 +25,7 @@ class PDFdisplay (wx.Dialog):
                     wx.RESIZE_BORDER)
 
         szr10 = wx.BoxSizer(wx.VERTICAL) # sorry, cryptic variable name
-
         szr20 = wx.BoxSizer(wx.HORIZONTAL) # cryptic variable name
-
-        self.bitmap = wx.EmptyBitmap(5, 5)        # bitmap to be shown at start
 
         self.button_next = wx.Button(self, wx.ID_ANY, u"forw",
                            wx.DefaultPosition, wx.DefaultSize, 0)
@@ -38,7 +36,7 @@ class PDFdisplay (wx.Dialog):
         szr20.Add(self.button_previous, 0, wx.ALL, 5)
 
         self.button_topage = wx.TextCtrl(self, wx.ID_ANY,
-                             u"0",            # pag# 0 to be clear it's a start
+                             u"1",
                              wx.DefaultPosition, wx.DefaultSize,
                              wx.TE_PROCESS_ENTER)
         szr20.Add(self.button_topage, 0, wx.ALL, 5)
@@ -51,7 +49,7 @@ class PDFdisplay (wx.Dialog):
 
         szr10.Add(szr20, 0, wx.EXPAND, 5)
         # this contains the PDF pages
-        self.PDFimage = wx.StaticBitmap(self, wx.ID_ANY, self.bitmap,
+        self.PDFimage = wx.StaticBitmap(self, wx.ID_ANY, strt_Bitmap,
                            wx.DefaultPosition, wx.Size(600, 800), wx.NO_BORDER)
         szr10.Add(self.PDFimage, 0, wx.ALL, 0)
 
@@ -126,16 +124,44 @@ def pdf_show(pdf, page):
 #==============================================================================
 # main program
 #==============================================================================
-# PDF filename goes here
-f = sys.argv[1]
-# open it with fitz
-doc = fitz.Document(f)
-# get # of pages (maxpages)
-total_pages = doc.pageCount
 # prepare the dialog application
 app = None
 app = wx.App()
-# create the dialog
-dlg = PDFdisplay(None)
-# show it - only return for final housekeeping
-rc = dlg.ShowModal()
+#==============================================================================
+# Show a FileSelect dialog to choose a file for display
+#==============================================================================
+# Wildcard: offer all supported filetypes
+wild = "Displayable Files (*.pdf)|*.pdf|"     \
+                   "(*.xps)|*.*|(*.epub)|*.epub"
+# Show the dialog
+dlg = wx.FileDialog(None, message = "Choose a file to display",
+                    defaultDir = os.environ["USERPROFILE"], defaultFile = "",
+                    wildcard = wild, style=wx.OPEN|wx.CHANGE_DIR)
+# We got a file only when one was selected and OK pressed
+if dlg.ShowModal() == wx.ID_OK:
+    # This returns a Python list of files that were selected.
+    filename = str(dlg.GetPaths()[0])          # we need yet to convert to string
+else:
+    filename = None
+# destroy this dialog
+dlg.Destroy()
+#==============================================================================
+# only continue if we have a filename
+#==============================================================================
+if filename:
+    # open it with fitz
+    doc = fitz.Document(filename)
+    # get # of pages (maxpages)
+    total_pages = doc.pageCount
+    
+    # get & store the first page
+    strt_Bitmap = pdf_show(doc, 1)
+    
+    # create the dialog
+    dlg = PDFdisplay(None)
+    
+    # Dialog created - we can destroy the initial Bitmap now
+    strt_Bitmap = None
+    
+    # show it - only return for final housekeeping
+    rc = dlg.ShowModal()
