@@ -134,7 +134,8 @@ app = wx.App()
 wild = "supported files|*.pdf;*.xps;*.oxps;*.epub"
 # Show the dialog
 dlg = wx.FileDialog(None, message = "Choose a file to display",
-                    defaultDir = os.environ["USERPROFILE"], defaultFile = "",
+#get user home dir for both linux and windows
+                    defaultDir = os.path.expanduser("~"), defaultFile = "",
                     wildcard = wild, style=wx.OPEN|wx.CHANGE_DIR)
 # We got a file only when one was selected and OK pressed
 if dlg.ShowModal() == wx.ID_OK:
