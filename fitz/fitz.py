@@ -98,6 +98,14 @@ class Document(_object):
     __repr__ = _swig_repr
 
     def __init__(self, filename):
+        if type(filename) == str:
+            pass
+        elif type(filename) == unicode:
+            filename = filename.encode('utf8')
+        else:
+            raise TypeError("filename must be a string")
+
+
         this = _fitz.new_Document(filename)
         try:
             self.this.append(this)

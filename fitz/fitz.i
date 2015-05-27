@@ -30,6 +30,14 @@ struct fz_document_s {
                 return NULL;
             }
         }
+        %pythonprepend fz_document_s(const char *) %{
+            if type(filename) == str:
+                pass
+            elif type(filename) == unicode:
+                filename = filename.encode('utf8')
+            else:
+                raise TypeError("filename must be a string")
+        %}
         %pythonappend fz_document_s(const char *) %{
             if this:
                 self._outline = self._loadOutline() 
