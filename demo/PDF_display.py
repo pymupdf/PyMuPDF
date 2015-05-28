@@ -140,7 +140,7 @@ dlg = wx.FileDialog(None, message = "Choose a file to display",
 # We got a file only when one was selected and OK pressed
 if dlg.ShowModal() == wx.ID_OK:
     # This returns a Python list of files that were selected.
-    filename = str(dlg.GetPaths()[0])          # we need yet to convert to string
+    filename = dlg.GetPaths()[0]
 else:
     filename = None
 # destroy this dialog
