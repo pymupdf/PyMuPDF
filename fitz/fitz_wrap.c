@@ -3244,6 +3244,63 @@ SWIGINTERNINLINE PyObject*
   return PyInt_FromLong((long) value);
 }
 
+SWIGINTERN char *fz_document_s__getMetadata(struct fz_document_s *self,char const *key){
+            int vsize;
+            char *value;
+            vsize = fz_lookup_metadata(gctx, self, key, NULL, 0)+1;
+            if(vsize > 1) {
+                value = (char *)malloc(sizeof(char)*vsize);
+                fz_lookup_metadata(gctx, self, key, value, vsize);
+                return value;
+            }
+            else 
+                return NULL;
+        }
+
+SWIGINTERNINLINE PyObject *
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  if (carray) {
+    if (size > INT_MAX) {
+      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+      return pchar_descriptor ? 
+	SWIG_InternalNewPointerObj((char *)(carray), pchar_descriptor, 0) : SWIG_Py_Void();
+    } else {
+#if PY_VERSION_HEX >= 0x03000000
+#if PY_VERSION_HEX >= 0x03010000
+      return PyUnicode_DecodeUTF8(carray, (int)(size), "surrogateescape");
+#else
+      return PyUnicode_FromStringAndSize(carray, (int)(size));
+#endif
+#else
+      return PyString_FromStringAndSize(carray, (int)(size));
+#endif
+    }
+  } else {
+    return SWIG_Py_Void();
+  }
+}
+
+
+SWIGINTERNINLINE PyObject * 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
+}
+
+SWIGINTERN int fz_document_s__needsPass(struct fz_document_s *self){
+            return fz_needs_password(gctx, self);
+        }
+SWIGINTERN int fz_document_s_authenticate(struct fz_document_s *self,char const *pass){
+            return !fz_authenticate_password(gctx, self, pass);
+        }
+SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename){
+            fz_try(gctx)
+                fz_write_document(gctx, self, filename, NULL);
+            fz_catch(gctx)
+                return 1;
+            return 0;
+        }
 SWIGINTERN void delete_fz_page_s(struct fz_page_s *self){
 
 
@@ -3428,38 +3485,32 @@ SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_3(float degree){
 
     extern const struct fz_matrix_s fz_identity;
 
-
-SWIGINTERNINLINE PyObject *
-SWIG_FromCharPtrAndSize(const char* carray, size_t size)
-{
-  if (carray) {
-    if (size > INT_MAX) {
-      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
-      return pchar_descriptor ? 
-	SWIG_InternalNewPointerObj((char *)(carray), pchar_descriptor, 0) : SWIG_Py_Void();
-    } else {
-#if PY_VERSION_HEX >= 0x03000000
-#if PY_VERSION_HEX >= 0x03010000
-      return PyUnicode_DecodeUTF8(carray, (int)(size), "surrogateescape");
-#else
-      return PyUnicode_FromStringAndSize(carray, (int)(size));
-#endif
-#else
-      return PyString_FromStringAndSize(carray, (int)(size));
-#endif
-    }
-  } else {
-    return SWIG_Py_Void();
-  }
-}
-
-
-SWIGINTERNINLINE PyObject * 
-SWIG_FromCharPtr(const char *cptr)
-{ 
-  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
-}
-
+SWIGINTERN int fz_outline_s_saveXML(struct fz_outline_s *self,char const *filename){
+            int res;
+            struct fz_output_s *xml;
+            fz_try(gctx) {
+                xml = fz_new_output_to_filename(gctx, filename);
+                fz_print_outline_xml(gctx, xml, self);
+                fz_drop_output(gctx, xml);
+                res = 0;
+            }
+            fz_catch(gctx)
+                res = 1;
+            return res;
+        }
+SWIGINTERN int fz_outline_s_saveText(struct fz_outline_s *self,char const *filename){
+            int res;
+            struct fz_output_s *text;
+            fz_try(gctx) {
+                text = fz_new_output_to_filename(gctx, filename);
+                fz_print_outline(gctx, text, self);
+                fz_drop_output(gctx, text);
+                res = 0;
+            }
+            fz_catch(gctx)
+                res = 1;
+            return res;
+        }
 SWIGINTERN int fz_link_dest_s__getPage(struct fz_link_dest_s *self){
             return (self->kind == FZ_LINK_GOTO || self->kind == FZ_LINK_GOTOR) ? self->ld.gotor.page : 0;
         }
@@ -3741,6 +3792,136 @@ SWIGINTERN PyObject *_wrap_Document__getPageCount(PyObject *SWIGUNUSEDPARM(self)
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document__getMetadata(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Document__getMetadata",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__getMetadata" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Document__getMetadata" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  result = (char *)fz_document_s__getMetadata(arg1,(char const *)arg2);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document__needsPass(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Document__needsPass",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__needsPass" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  result = (int)fz_document_s__needsPass(arg1);
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document_authenticate(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Document_authenticate",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_authenticate" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Document_authenticate" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  result = (int)fz_document_s_authenticate(arg1,(char const *)arg2);
+  resultobj = SWIG_From_int((int)(result));
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document_save(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Document_save",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_save" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Document_save" "', argument " "2"" of type '" "char *""'");
+  }
+  arg2 = (char *)(buf2);
+  {
+    result = (int)fz_document_s_save(arg1,arg2);
+    if(result) {
+      PyErr_SetString(PyExc_Exception, "cannot save Document");
+      return NULL;
+    }
+  }
+  resultobj = SWIG_From_int((int)(result));
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
 }
 
@@ -6121,6 +6302,86 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Outline_saveXML(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_outline_s *arg1 = (struct fz_outline_s *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Outline_saveXML",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_outline_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Outline_saveXML" "', argument " "1"" of type '" "struct fz_outline_s *""'"); 
+  }
+  arg1 = (struct fz_outline_s *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Outline_saveXML" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  {
+    result = (int)fz_outline_s_saveXML(arg1,(char const *)arg2);
+    if(result) {
+      PyErr_SetString(PyExc_Exception, "cannot printXML");
+      return NULL;
+    }
+  }
+  resultobj = SWIG_From_int((int)(result));
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Outline_saveText(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_outline_s *arg1 = (struct fz_outline_s *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Outline_saveText",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_outline_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Outline_saveText" "', argument " "1"" of type '" "struct fz_outline_s *""'"); 
+  }
+  arg1 = (struct fz_outline_s *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Outline_saveText" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  {
+    result = (int)fz_outline_s_saveText(arg1,(char const *)arg2);
+    if(result) {
+      PyErr_SetString(PyExc_Exception, "cannot printText");
+      return NULL;
+    }
+  }
+  resultobj = SWIG_From_int((int)(result));
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_delete_Outline(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_outline_s *arg1 = (struct fz_outline_s *) 0 ;
@@ -7191,6 +7452,10 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document__loadOutline", _wrap_Document__loadOutline, METH_VARARGS, NULL},
 	 { (char *)"Document__dropOutline", _wrap_Document__dropOutline, METH_VARARGS, NULL},
 	 { (char *)"Document__getPageCount", _wrap_Document__getPageCount, METH_VARARGS, NULL},
+	 { (char *)"Document__getMetadata", _wrap_Document__getMetadata, METH_VARARGS, NULL},
+	 { (char *)"Document__needsPass", _wrap_Document__needsPass, METH_VARARGS, NULL},
+	 { (char *)"Document_authenticate", _wrap_Document_authenticate, METH_VARARGS, NULL},
+	 { (char *)"Document_save", _wrap_Document_save, METH_VARARGS, NULL},
 	 { (char *)"Document_swigregister", Document_swigregister, METH_VARARGS, NULL},
 	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, NULL},
 	 { (char *)"Page_bound", _wrap_Page_bound, METH_VARARGS, NULL},
@@ -7274,6 +7539,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Outline_next_get", _wrap_Outline_next_get, METH_VARARGS, NULL},
 	 { (char *)"Outline_down_get", _wrap_Outline_down_get, METH_VARARGS, NULL},
 	 { (char *)"Outline_is_open_get", _wrap_Outline_is_open_get, METH_VARARGS, NULL},
+	 { (char *)"Outline_saveXML", _wrap_Outline_saveXML, METH_VARARGS, NULL},
+	 { (char *)"Outline_saveText", _wrap_Outline_saveText, METH_VARARGS, NULL},
 	 { (char *)"delete_Outline", _wrap_delete_Outline, METH_VARARGS, NULL},
 	 { (char *)"Outline_swigregister", Outline_swigregister, METH_VARARGS, NULL},
 	 { (char *)"LINK_NONE_swigconstant", LINK_NONE_swigconstant, METH_VARARGS, NULL},

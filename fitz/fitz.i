@@ -41,6 +41,11 @@ struct fz_document_s {
         %pythonappend fz_document_s(const char *) %{
             if this:
                 self._outline = self._loadOutline() 
+                self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format','encryption':'encryption','title':'info:Title',
+                                                                           'author':'info:Author','subject':'info:Subject',
+                                                                           'keywords':'info:Keywords','creator':'info:Creator',
+                                                                           'producer':'info:Producer','creationDate':'info:CreationDate',
+                                                                           'modDate':'info:ModDate'}.items()])
         %}
         fz_document_s(const char *filename) {
             struct fz_document_s *doc;
@@ -95,9 +100,51 @@ struct fz_document_s {
             return fz_count_pages(gctx, $self);
         }
 
+        char *_getMetadata(const char *key) {
+            int vsize;
+            char *value;
+            vsize = fz_lookup_metadata(gctx, $self, key, NULL, 0)+1;
+            if(vsize > 1) {
+                value = (char *)malloc(sizeof(char)*vsize);
+                fz_lookup_metadata(gctx, $self, key, value, vsize);
+                return value;
+            }
+            else 
+                return NULL;
+        }
+        int _needsPass() {
+            return fz_needs_password(gctx, $self);
+        }
+        int authenticate(const char *pass) {
+            return !fz_authenticate_password(gctx, $self, pass);
+        }
+        %pythonprepend save(char * filename) %{
+            if type(filename) == str:
+                pass
+            elif type(filename) == unicode:
+                filename = filename.encode('utf8')
+            else:
+                raise TypeError("filename must be a string")
+        %}
+        %exception save {
+            $action
+            if(result) {
+                PyErr_SetString(PyExc_Exception, "cannot save Document");
+                return NULL;
+            }
+        }
+        int save(char *filename) {
+            fz_try(gctx)
+                fz_write_document(gctx, $self, filename, NULL);
+            fz_catch(gctx)
+                return 1;
+            return 0;
+        }
+
         %pythoncode %{
-            pageCount = property(_getPageCount)
+            pageCount = property(lambda self: self._getPageCount())
             outline = property(lambda self: self._outline)
+            needsPass = property(lambda self: self._needsPass())
         %}
     }
 };
@@ -261,6 +308,14 @@ struct fz_pixmap_s
                 return NULL;
             }
         }
+        %pythonprepend writePNG(char * filename, int savealpha) %{
+            if type(filename) == str:
+                pass
+            elif type(filename) == unicode:
+                filename = filename.encode('utf8')
+            else:
+                raise TypeError("filename must be a string")
+        %}
         int writePNG(char *filename, int savealpha=0) {
             fz_try(gctx) {
                 fz_write_png(gctx, $self, filename, savealpha);
@@ -461,6 +516,64 @@ struct fz_outline_s {
         }
     }
 */
+    %extend {
+        %exception saveXML {
+            $action
+            if(result) {
+                PyErr_SetString(PyExc_Exception, "cannot printXML");
+                return NULL;
+            }
+        }
+        %pythonprepend saveXML(const char *filename) %{
+            if type(filename) == str:
+                pass
+            elif type(filename) == unicode:
+                filename = filename.encode('utf8')
+            else:
+                raise TypeError("filename must be a string")
+        %}
+        int saveXML(const char *filename) {
+            int res;
+            struct fz_output_s *xml;
+            fz_try(gctx) {
+                xml = fz_new_output_to_filename(gctx, filename);
+                fz_print_outline_xml(gctx, xml, $self);
+                fz_drop_output(gctx, xml);
+                res = 0;
+            }
+            fz_catch(gctx)
+                res = 1;
+            return res;
+        }
+        %exception saveText {
+            $action
+            if(result) {
+                PyErr_SetString(PyExc_Exception, "cannot printText");
+                return NULL;
+            }
+        }
+        %pythonprepend saveText(const char *filename) %{
+            if type(filename) == str:
+                pass
+            elif type(filename) == unicode:
+                filename = filename.encode('utf8')
+            else:
+                raise TypeError("filename must be a string")
+        %}
+        int saveText(const char *filename) {
+            int res;
+            struct fz_output_s *text;
+            fz_try(gctx) {
+                text = fz_new_output_to_filename(gctx, filename);
+                fz_print_outline(gctx, text, $self);
+                fz_drop_output(gctx, text);
+                res = 0;
+            }
+            fz_catch(gctx)
+                res = 1;
+            return res;
+        }
+    }
 };
 %clearnodefaultctor;
 

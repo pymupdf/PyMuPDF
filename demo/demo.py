@@ -17,6 +17,13 @@ if not doc.this:
     print('cannot open document')
     exit(1)
 
+#the metadata is a python dict, whose keys are:
+#format, encryption, title, author, subject, keywords, creator, producer, creationDate, modDate
+#the value will be None if the info is N/A
+for key in doc.metadata:
+    if doc.metadata[key]:
+        print('%s: %s' % (key, doc.metadata[key]))
+
 #here we print out the outline of the document(if any)
 #first, we define a function for traversal
 def olTraversal(root):
@@ -38,6 +45,9 @@ ol=doc.outline
 if ol:
     print('Outline of the document')
     olTraversal(ol)
+#we can also save outline into XML or TXT file
+    ol.saveXML(sys.argv[1]+'.xml')
+    ol.saveText(sys.argv[1]+'.txt')
 else:
     print('No outline available')
 
