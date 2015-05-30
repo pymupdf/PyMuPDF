@@ -118,7 +118,7 @@ class Document(_object):
                                                                        'keywords':'info:Keywords','creator':'info:Creator',
                                                                        'producer':'info:Producer','creationDate':'info:CreationDate',
                                                                        'modDate':'info:ModDate'}.items()])
-            self.metadata['enctypion'] = None if self._getMetadata('enctypion')=='None' else self._getMetadata('enctypion')=='None' 
+            self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
 
 
 
