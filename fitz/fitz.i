@@ -41,11 +41,12 @@ struct fz_document_s {
         %pythonappend fz_document_s(const char *) %{
             if this:
                 self._outline = self._loadOutline() 
-                self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format','encryption':'encryption','title':'info:Title',
+                self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format','title':'info:Title',
                                                                            'author':'info:Author','subject':'info:Subject',
                                                                            'keywords':'info:Keywords','creator':'info:Creator',
                                                                            'producer':'info:Producer','creationDate':'info:CreationDate',
                                                                            'modDate':'info:ModDate'}.items()])
+                self.metadata['enctypion'] = None if self._getMetadata('enctypion')=='None' else self._getMetadata('enctypion')=='None' 
         %}
         fz_document_s(const char *filename) {
             struct fz_document_s *doc;
