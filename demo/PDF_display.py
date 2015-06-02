@@ -24,38 +24,38 @@ class PDFdisplay (wx.Dialog):
                     wx.MINIMIZE_BOX|
                     wx.RESIZE_BORDER)
 
-        szr10 = wx.BoxSizer(wx.VERTICAL) # sorry, cryptic variable name
-        szr20 = wx.BoxSizer(wx.HORIZONTAL) # cryptic variable name
+        BoxSizerVertical = wx.BoxSizer(wx.VERTICAL)
+        BoxSizerHorizontal = wx.BoxSizer(wx.HORIZONTAL)
 
         self.button_next = wx.Button(self, wx.ID_ANY, u"forw",
                            wx.DefaultPosition, wx.DefaultSize, 0)
-        szr20.Add(self.button_next, 0, wx.ALL, 5)
+        BoxSizerHorizontal.Add(self.button_next, 0, wx.ALL, 5)
 
         self.button_previous = wx.Button(self, wx.ID_ANY, u"back",
                            wx.DefaultPosition, wx.DefaultSize, 0)
-        szr20.Add(self.button_previous, 0, wx.ALL, 5)
+        BoxSizerHorizontal.Add(self.button_previous, 0, wx.ALL, 5)
 
         self.button_topage = wx.TextCtrl(self, wx.ID_ANY,
                              u"1",
                              wx.DefaultPosition, wx.DefaultSize,
                              wx.TE_PROCESS_ENTER)
-        szr20.Add(self.button_topage, 0, wx.ALL, 5)
+        BoxSizerHorizontal.Add(self.button_topage, 0, wx.ALL, 5)
 
         self.statPageMax = wx.StaticText(self, wx.ID_ANY,
                                str(total_pages),    # show maxpages
                                wx.DefaultPosition, wx.DefaultSize, 0)
         self.statPageMax.Wrap(-1)
-        szr20.Add(self.statPageMax, 0, wx.ALL, 5)
+        BoxSizerHorizontal.Add(self.statPageMax, 0, wx.ALL, 5)
 
-        szr10.Add(szr20, 0, wx.EXPAND, 5)
+        BoxSizerVertical.Add(BoxSizerHorizontal, 0, wx.EXPAND, 5)
         # this contains the PDF pages
         self.PDFimage = wx.StaticBitmap(self, wx.ID_ANY, strt_Bitmap,
                            wx.DefaultPosition, wx.Size(600, 800), wx.NO_BORDER)
-        szr10.Add(self.PDFimage, 0, wx.ALL, 0)
+        BoxSizerVertical.Add(self.PDFimage, 0, wx.ALL, 0)
 
-        self.SetSizer(szr10)
+        self.SetSizer(BoxSizerVertical)
         self.Layout()
-        szr10.Fit(self)
+        BoxSizerVertical.Fit(self)
 
         self.Centre(wx.BOTH)
 
