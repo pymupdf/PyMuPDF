@@ -111,14 +111,50 @@ class Document(_object):
             self.this.append(this)
         except:
             self.this = this
+        #================================================================
+        # Function: Create a table of contents
+        #================================================================
+        def ToC():
+            if not self._outline:              # contains no outline:
+                return []                      # return empty list
+            lvl = 0                            # records current indent level
+            ltab = {}                          # last OutlineItem on this level
+            liste = []                         # will hold flattened outline
+            olItem = self._outline
+            while olItem:
+                while olItem:                  # process one OutlineItem
+                    lvl += 1                   # its indent level
+                    zeile = [lvl,              # create one outline line
+                             olItem.title.decode("UTF-8"),
+                             olItem.dest.page]
+                    liste.append(zeile)        # append it
+                    ltab[lvl] = olItem         # record OutlineItem in level table
+                    olItem = olItem.down       # go to child OutlineItem
+                olItem = ltab[lvl].next        # no more children, look for brothers
+                if olItem:                     # have any?
+                    lvl -= 1                   # prep. proc.: decrease lvl recorder
+                    continue
+                else:                          # no kids, no brothers, now what?
+                    while lvl > 1 and not olItem:
+                        lvl -= 1               # go look for uncles
+                        olItem = ltab[lvl].next
+                    if lvl < 1:                # out of relatives
+                        return liste           # return linearized outline
+                    lvl -= 1
+            return liste                       # return linearized outline
+
+        #================================================================
+        # Create metadata and outline
+        #================================================================
         if this:
-            self._outline = self._loadOutline() 
+            self._outline = self._loadOutline()
             self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format','title':'info:Title',
                                                                        'author':'info:Author','subject':'info:Subject',
                                                                        'keywords':'info:Keywords','creator':'info:Creator',
                                                                        'producer':'info:Producer','creationDate':'info:CreationDate',
                                                                        'modDate':'info:ModDate'}.items()])
             self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
+            self.ToC = ToC
 
 
 
