@@ -848,6 +848,10 @@ struct fz_text_sheet_s {
     }
     free($1);
 }
+%typemap(out) struct fz_buffer_s * {
+    $result = SWIG_FromCharPtr((const char *)$1->data);
+    fz_drop_buffer(gctx, $1);
+}
 %rename(TextPage) fz_text_page_s;
 struct fz_text_page_s {
     %extend {
@@ -887,6 +891,28 @@ struct fz_text_page_s {
             fprintf(stderr, "count is %d, last one is (%g %g), (%g %g)\n", count, result[count].x0, result[count].y0, result[count].x1, result[count].y1);
 #endif
             return result;
+        }
+        %exception extractText {
+            $action
+            if(!result) {
+                PyErr_SetString(PyExc_Exception, "cannot extract text");
+                return NULL;
+            }
+        }
+        struct fz_buffer_s *extractText() {
+            struct fz_buffer_s *res;
+            fz_output *out;
+            fz_try(gctx) {
+                /* inital size for text */
+                res = fz_new_buffer(gctx, 1024);
+                out = fz_new_output_with_buffer(gctx, res);
+                fz_print_text_page(gctx, out, $self);
+                fz_drop_output(gctx, out);
+            }
+            fz_catch(gctx) {
+                res = NULL;
+            }
+            return res;
         }
     }
 };
