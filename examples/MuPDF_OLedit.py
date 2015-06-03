@@ -580,7 +580,7 @@ class PDFDialog (wx.Dialog):
         event.Skip()
         
 #==============================================================================
-# "NeueZeile" - Event Handler für neue Zeilen im Inhaltsverzeichnis
+# "NeueZeile" - Event Handler for a new row
 #==============================================================================
     def NeueZeile(self, event):
         zeile = [1, "*** new row ***", 1, ""]
