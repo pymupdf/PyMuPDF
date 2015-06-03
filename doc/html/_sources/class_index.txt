@@ -1,0 +1,45 @@
+===============================
+Classes
+===============================
+All the classes are listed here.
+
+=============================== =============================================================
+**Class**                       **Short Description**
+=============================== =============================================================
+:ref:`IRect`                    A rectangle represented by integer corner coordinates.
+:ref:`Device`                   Represents a target object for rendering or text extraction
+:ref:`DisplayList`              A list containing drawing commands.
+:ref:`Document`                 Document interface.
+:ref:`Link`                     Represents a destination
+:ref:`Matrix`                   A 3x3 matrix used for representing transformations.
+:ref:`Outline`                  Outline of the document.
+:ref:`Page`                     Document page interface.
+:ref:`Pixmap`                   Represents a pixel map (for page rendering)
+:ref:`Point`                    A point in the plane.
+:ref:`Rect`                     A rectangle represented by the top-left and bottom-right corners.
+:ref:`TextChar`                 A unicode character with bounding rectangle.
+:ref:`TextPage`                 Text content in a page.
+:ref:`TextSheet`                A list of text styles used on a page.
+:ref:`WriteOptions`             Options used when writing the document.
+=============================== =============================================================
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   irect.txt
+   device.txt
+   displaylist.txt
+   document.txt
+   link.txt
+   matrix.txt
+   outlineitem.txt
+   page.txt
+   pixmap.txt
+   point.txt
+   rect.txt
+   textchar.txt
+   textpage.txt
+   textsheet.txt
+   writeoptions.txt
+

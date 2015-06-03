@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Page &mdash; PYTHON-FITZ 1.7 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="page">
+<span id="id1"></span><h1><strong>Page</strong><a class="headerlink" href="#page" title="Permalink to this headline">¶</a></h1>
+<p>Page interface, created by <a class="reference internal" href="document.html#Document.loadPage" title="Document.loadPage"><tt class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></tt></a>.</p>
+<div class="section" id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="73%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#Page.bound" title="Page.bound"><tt class="xref py py-meth docutils literal"><span class="pre">bound()</span></tt></a></td>
+<td>Determine the size of a page before transformation.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Page.loadLinks" title="Page.loadLinks"><tt class="xref py py-meth docutils literal"><span class="pre">loadLinks()</span></tt></a></td>
+<td>Get all the links in a page.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Page.run" title="Page.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a></td>
+<td>Run a page through a device.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="class-api">
+<h2>Class API<a class="headerlink" href="#class-api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Page">
+<em class="property">class </em><tt class="descname">Page</tt><a class="headerlink" href="#Page" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Page.bound">
+<tt class="descname">bound</tt><big>(</big><big>)</big><a class="headerlink" href="#Page.bound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine the size of a page before transformation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="rect.html#rect"><em>Rect</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Page.loadLinks">
+<tt class="descname">loadLinks</tt><big>(</big><big>)</big><a class="headerlink" href="#Page.loadLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the links in a page.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A python list of <a class="reference internal" href="link.html#link"><em>Link</em></a>. An empty list is returned if there&#8217;s no link in the page.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Page.run">
+<tt class="descname">run</tt><big>(</big><em>dev</em>, <em>transform</em><big>)</big><a class="headerlink" href="#Page.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a page through a device.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dev</strong> (<a class="reference internal" href="device.html#device"><em>Device</em></a>) &#8211; Device obtained from <tt class="xref py py-func docutils literal"><span class="pre">new_*_device()</span></tt>.</li>
+<li><strong>transform</strong> (<a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a>) &#8211; Transform to apply to page. May include for example scaling and rotation, see <a class="reference internal" href="function_index.html#scale_matrix" title="scale_matrix"><tt class="xref py py-func docutils literal"><span class="pre">scale_matrix()</span></tt></a> and <a class="reference internal" href="function_index.html#rotate_matrix" title="rotate_matrix"><tt class="xref py py-func docutils literal"><span class="pre">rotate_matrix()</span></tt></a>. Set to <a class="reference internal" href="vars.html#fz_identity" title="fz_identity"><tt class="xref py py-data docutils literal"><span class="pre">fz_identity</span></tt></a> if no transformation is desired.</li>
+<li><strong>cookie</strong> (<em class="xref std std-ref">Cookie</em>) &#8211; Communication mechanism between caller and library rendering the page. Intended for multi-threaded applications, while single-threaded applications set cookie to <tt class="docutils literal"><span class="pre">None</span></tt>. The caller may abort an ongoing rendering of a page. Cookie also communicates progress information back to the caller. The fields inside cookie are continually updated while the page is rendering.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><strong>Page</strong></a><ul>
+<li><a class="reference internal" href="#methods">Methods</a></li>
+<li><a class="reference internal" href="#class-api">Class API</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/page.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

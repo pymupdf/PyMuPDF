@@ -1,0 +1,382 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Pixmap &mdash; PYTHON-FITZ 1.7 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pixmap">
+<span id="id1"></span><h1><strong>Pixmap</strong><a class="headerlink" href="#pixmap" title="Permalink to this headline">¶</a></h1>
+<p>Pixmaps represent a set of pixels for a 2 dimensional region of a plane. Each pixel has n components per pixel, the last of which is always alpha. The data is in premultiplied alpha when rendering, but non-premultiplied for colorspace conversions and rescaling.</p>
+<p>Create a new pixmap by <tt class="xref py py-meth docutils literal"><span class="pre">Context.new_pixmap()</span></tt>, <tt class="xref py py-meth docutils literal"><span class="pre">Context.new_pixmap_with_bbox()</span></tt>, <tt class="xref py py-meth docutils literal"><span class="pre">Context.new_pixmap_with_data()</span></tt>, or <tt class="xref py py-meth docutils literal"><span class="pre">Context.new_pixmap_with_bbox_and_data()</span></tt>.</p>
+<div class="section" id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.clear_pixmap" title="Pixmap.clear_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">clear_pixmap()</span></tt></a></td>
+<td>Clears a pixmap(with given value).</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.gamma_pixmap" title="Pixmap.gamma_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">gamma_pixmap()</span></tt></a></td>
+<td>Apply gamma correction to a pixmap.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.get_bbox" title="Pixmap.get_bbox"><tt class="xref py py-meth docutils literal"><span class="pre">get_bbox()</span></tt></a></td>
+<td>Get a bounding box for a pixmap.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.get_samples" title="Pixmap.get_samples"><tt class="xref py py-meth docutils literal"><span class="pre">get_samples()</span></tt></a></td>
+<td>Get the components data for all pixels.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.get_width" title="Pixmap.get_width"><tt class="xref py py-meth docutils literal"><span class="pre">get_width()</span></tt></a></td>
+<td>Get the width of the region in pixels.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.get_height" title="Pixmap.get_height"><tt class="xref py py-meth docutils literal"><span class="pre">get_height()</span></tt></a></td>
+<td>Get the height of the region in pixels.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.get_colorspace" title="Pixmap.get_colorspace"><tt class="xref py py-meth docutils literal"><span class="pre">get_colorspace()</span></tt></a></td>
+<td>Get the colorspace the pixmap is in.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.get_components" title="Pixmap.get_components"><tt class="xref py py-meth docutils literal"><span class="pre">get_components()</span></tt></a></td>
+<td>Get the number of color components in the image.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.invert_pixmap" title="Pixmap.invert_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">invert_pixmap()</span></tt></a></td>
+<td>Invert all the pixels in the pixmap(or a given bounding box).</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.new_draw_device" title="Pixmap.new_draw_device"><tt class="xref py py-meth docutils literal"><span class="pre">new_draw_device()</span></tt></a></td>
+<td>Create a device to draw on a pixmap.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.unmultiply_pixmap" title="Pixmap.unmultiply_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">unmultiply_pixmap()</span></tt></a></td>
+<td>Convert a pixmap from premultiplied to non-premultiplied format.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.write_pam" title="Pixmap.write_pam"><tt class="xref py py-meth docutils literal"><span class="pre">write_pam()</span></tt></a></td>
+<td>Save a pixmap as a pam.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.write_pixmap" title="Pixmap.write_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">write_pixmap()</span></tt></a></td>
+<td>Save a pixmap out.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.write_png" title="Pixmap.write_png"><tt class="xref py py-meth docutils literal"><span class="pre">write_png()</span></tt></a></td>
+<td>Save a pixmap as a png.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.write_pnm" title="Pixmap.write_pnm"><tt class="xref py py-meth docutils literal"><span class="pre">write_pnm()</span></tt></a></td>
+<td>Save a pixmap as a pnm.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="class-api">
+<h2>Class API<a class="headerlink" href="#class-api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Pixmap">
+<em class="property">class </em><tt class="descname">Pixmap</tt><a class="headerlink" href="#Pixmap" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Pixmap.clear_pixmap">
+<tt class="descname">clear_pixmap</tt><big>(</big><em>self</em>, <em>value=0</em><big>)</big><a class="headerlink" href="#Pixmap.clear_pixmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears a pixmap.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) &#8211; Values in the range 0 to 255 are valid. Each component sample for each pixel in the pixmap will be set to this value, while alpha will always be set to 255 (non-transparent). If not given, all components of all pixels in a pixmap will be set to 0.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.gamma_pixmap">
+<tt class="descname">gamma_pixmap</tt><big>(</big><em>self</em>, <em>gamma</em><big>)</big><a class="headerlink" href="#Pixmap.gamma_pixmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply gamma correction to a pixmap. All components of all pixels are modified (except alpha, which is unchanged).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>gamma</strong> (<em>float</em>) &#8211; The gamma value to apply; 1.0 for no change.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.get_bbox">
+<tt class="descname">get_bbox</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#Pixmap.get_bbox" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a bounding box for a pixmap.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em class="xref std std-ref">BBox</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.get_samples">
+<tt class="descname">get_samples</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#Pixmap.get_samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the components data for all pixels. Samples is a block of memory width * height * n bytes of memory in which the components are stored. The first n bytes are components 0 to n-1 for the pixel at (x,y). Each successive n bytes gives another pixel in scanline order. Subsequent scanlines follow on with no padding.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.get_width">
+<tt class="descname">get_width</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#Pixmap.get_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the width of the region in pixels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.get_height">
+<tt class="descname">get_height</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#Pixmap.get_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the height of the region in pixels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.get_colorspace">
+<tt class="descname">get_colorspace</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#Pixmap.get_colorspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the colorspace the pixmap is in.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><em class="xref std std-ref">ColorSpace</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.get_components">
+<tt class="descname">get_components</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#Pixmap.get_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of color components n in the image. Always includes a separate alpha channel. For mask images n=1, for greyscale (plus alpha) images n=2, for rgb (plus alpha) images n=3.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.invert_pixmap">
+<tt class="descname">invert_pixmap</tt><big>(</big><em>self</em>, <em>bbox</em><big>)</big><a class="headerlink" href="#Pixmap.invert_pixmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invert all the pixels in the pixmap(or a given bounding box). All components are inverted(except alpha, which is unchanged).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bbox</strong> (<em class="xref std std-ref">BBox</em>) &#8211; Invert all the pixels in the bbox. If not given, the whole pixmap will be inverted.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.new_draw_device">
+<tt class="descname">new_draw_device</tt><big>(</big><em>self</em>, <em>bbox</em><big>)</big><a class="headerlink" href="#Pixmap.new_draw_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a device to draw on a pixmap. The pixmap is not cleared by the draw device, see <a class="reference internal" href="#Pixmap.clear_pixmap" title="Pixmap.clear_pixmap"><tt class="xref py py-meth docutils literal"><span class="pre">clear_pixmap()</span></tt></a> for how to clear it prior to calling <a class="reference internal" href="#Pixmap.new_draw_device" title="Pixmap.new_draw_device"><tt class="xref py py-meth docutils literal"><span class="pre">new_draw_device()</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bbox</strong> (<em class="xref std std-ref">BBox</em>) &#8211; bounding box to restrict any marking operations of the draw device. If not given, the draw device will be created on the whole pixmap.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="device.html#device"><em>Device</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.unmultiply_pixmap">
+<tt class="descname">unmultiply_pixmap</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#Pixmap.unmultiply_pixmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a pixmap from premultiplied to non-premultiplied format.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.write_pam">
+<tt class="descname">write_pam</tt><big>(</big><em>self</em>, <em>filename</em>, <em>savealpha</em><big>)</big><a class="headerlink" href="#Pixmap.write_pam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a pixmap as a pam.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> (<em>string</em>) &#8211; The filename to save as (including extension).</li>
+<li><strong>savealpha</strong> (<em>int</em>) &#8211; Save alpha or not.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.write_pixmap">
+<tt class="descname">write_pixmap</tt><big>(</big><em>self</em>, <em>filename</em>, <em>rgb</em><big>)</big><a class="headerlink" href="#Pixmap.write_pixmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a pixmap out.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> (<em>string</em>) &#8211; The prefix for the name of the pixmap. The pixmap will be saved as &#8220;name.png&#8221; if the pixmap is RGB or Greyscale, &#8220;name.pam&#8221; otherwise.</li>
+<li><strong>rgb</strong> (<em>int</em>) &#8211; If non zero, the pixmap is converted to rgb (if possible) before saving.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.write_png">
+<tt class="descname">write_png</tt><big>(</big><em>self</em>, <em>filename</em>, <em>savealpha</em><big>)</big><a class="headerlink" href="#Pixmap.write_png" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a pixmap as a png.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> (<em>string</em>) &#8211; The filename to save as (including extension).</li>
+<li><strong>savealpha</strong> (<em>int</em>) &#8211; Save alpha or not.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.write_pnm">
+<tt class="descname">write_pnm</tt><big>(</big><em>self</em>, <em>filename</em><big>)</big><a class="headerlink" href="#Pixmap.write_pnm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a pixmap as a pnm.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) &#8211; The filename to save as (including extension).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><strong>Pixmap</strong></a><ul>
+<li><a class="reference internal" href="#methods">Methods</a></li>
+<li><a class="reference internal" href="#class-api">Class API</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pixmap.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

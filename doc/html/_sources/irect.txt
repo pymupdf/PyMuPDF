@@ -1,0 +1,75 @@
+.. _IRect:
+
+==========
+**IRect**
+==========
+
+IRect is a bounding box similar to :ref:`Rect`, except that all corner coordinates are rounded to integer coordinates.
+
+.. seealso:: :ref:`Rect`
+
+Methods
+=======
+
+==================================== ======================================================
+:meth:`~IRect.width`                 Get width of the bounding box.
+:meth:`~IRect.height`                Get height of the bounding box.
+==================================== ======================================================
+
+Attributes
+==========
+
+================ ========================================
+:attr:`~IRect.x0` X-coordinate of the top left corner.
+:attr:`~IRect.y0` Y-coordinate of the top left corner.
+:attr:`~IRect.x1` X-coordinate of the bottom right corner.
+:attr:`~IRect.y1` Y-coordinate of the bottom right corner.
+================ ========================================
+
+Class API
+==========
+
+.. class:: IRect
+
+   .. method:: __init__(self, x0=0, y0=0, x1=0, y1=0)
+
+      Constructor. An empty ``IRect`` will be built if no arguments given.
+
+   .. attribute:: width
+
+      Contains the width of the bounding box.
+
+      :rtype: int
+
+   .. attribute:: height
+
+      Contains the height of the bounding box.
+
+      :rtype: int
+
+   .. attribute:: x0
+
+      X-coordinate of the top left corner.
+
+      :type: int
+
+
+   .. attribute:: y0
+
+      Y-coordinate of the top left corner.
+
+      :type: int
+
+   .. attribute:: x1
+
+      X-coordinate of the bottom right corner.
+
+      :type: int
+
+
+   .. attribute:: y1
+
+      Y-coordinate of the bottom right corner.
+
+      :type: int
+

@@ -1,0 +1,48 @@
+.. _Page:
+
+================
+**Page**
+================
+
+Page interface, created by :meth:`Document.loadPage`.
+
+Methods
+=======
+
+========================== ======================================================================
+:meth:`~Page.bound`        Determine the size of a page before transformation.
+:meth:`~Page.loadLinks`    Get all the links in a page.
+:meth:`~Page.run`          Run a page through a device.
+========================== ======================================================================
+
+Class API
+==========
+
+.. class:: Page
+
+   .. method:: bound()
+
+      Determine the size of a page before transformation.
+
+      :rtype: :ref:`Rect`
+
+   .. method:: loadLinks()
+
+      Get all the links in a page.
+
+      :rtype: list
+      :returns: A python list of :ref:`Link`. An empty list is returned if there's no link in the page.
+
+   .. method:: run(dev, transform)
+
+      Run a page through a device.
+
+      :param `dev`: Device obtained from :func:`new_*_device`.
+      :type `dev`: :ref:`Device`
+
+      :param `transform`: Transform to apply to page. May include for example scaling and rotation, see :func:`scale_matrix` and :func:`rotate_matrix`. Set to :data:`fz_identity` if no transformation is desired.
+      :type `transform`: :ref:`Matrix`
+
+      :param `cookie`: Communication mechanism between caller and library rendering the page. Intended for multi-threaded applications, while single-threaded applications set cookie to ``None``. The caller may abort an ongoing rendering of a page. Cookie also communicates progress information back to the caller. The fields inside cookie are continually updated while the page is rendering.
+      :type `cookie`: :ref:`Cookie`
+

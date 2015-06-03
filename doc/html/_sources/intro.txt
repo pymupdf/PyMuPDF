@@ -1,0 +1,45 @@
+===========================
+**Welcome to PYTHON-FITZ!**
+===========================
+
+**python-fitz** is a Python binding for MuPDF - "a lightweight PDF and XPS viewer".
+
+MuPDF can access files in PDF, XPS, OpenXPS and EPUB formats.
+
+These are files with file extensions ``*.pdf``, ``*.xps``, ``*.oxps`` or ``*.epub`` (so in essence, this binding can also serve to use **Python scripts as an e-book viewer** ...)
+
+python-fitz provides access to almost all functions of MuPDF from within a Python environment.
+
+MuPDF stands out among all similar products for its top rendering capability and unsurpassed processing speed.
+
+You can check this yourself:
+Try out and compare the various free PDF-viewers. In terms of speed and rendering quality **SumatraPDF** ranges at the top - and it is based on  MuPDF!
+
+While these bindings have been available since several years for an earlier version of MuPDF (1.2), it was until only recently (mid May 2015), that its creator and a few co-workers decided to elevate this repository to the current release of MuPDF, which now counts at version 1.7a.
+
+And we are determined to keep python-fitz current with major MuPDF releases in the future!
+
+This work is almost completed - final tests and bug fixes are underway.
+
+If you know how to build MuPDF on your platform (or you could use our development binaries - just drop a note), then you can use this repository to **make PDF, XPS, OpenXPS and EPUB available** to your Python scripts already **today** - everything works!
+
+python-fitz can be used today on LINUX, Windows 7, Python 2 and Python 3.
+
+**So, what do we have?**
+
+* We have a ready SWIG-generated wrapper that has been tested on LINUX and Windows installations.
+
+* We have demo scripts for typical use cases that you can take as templates for your development.
+
+* We have a detailed description of how to install under Windows and Python 2.
+
+
+**So, what is still missing then?**
+
+* New documentation is under construction. The interface has changed: compared to 1.2, it has been simplified and looks a lot less cryptic. As for now, you would have to look at the demos to see how things work.
+
+* Some tests are still outstanding, e.g. for the combination Win & Python 3.
+
+* We plan to simplify the installation procedure for the majority of potential users. In detail this means that **binaries will be supplied** e.g. for Windows and popular other platforms to reduce the setup effort (e.g. for Windows the installation will just require to put ``fitz.py`` and ``_fitz.pyd`` at a place where your Python will find it - and you are all set!).
+
+We invite you to join our efforts by contributing to the the wiki pages, by testing what is there - and, of course, by submitting issues and bugs to the site!

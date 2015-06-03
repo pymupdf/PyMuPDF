@@ -1,0 +1,94 @@
+.. _Outline:
+
+================
+**Outline**
+================
+
+``outline`` is a property of ``Document``. If present, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in either "horizontal" direction by property ``.next`` to the next item of same level, or downwards with property ``.down`` to the next item one level lower. The full tree of all outline items for e.g. a conventional table of contents can be recovered by following these "pointers".
+
+Methods and Attributes
+======================
+
+========================== ==================================================================================
+:attr:`~outline.down`      Attribute, contains the first item one step down
+:attr:`~outline.next`      Attribute, contains the next item on same level
+:attr:`~outline.dest`      Attribute, whose sub-property describe characteristics of the item's destination
+:attr:`~outline.title`     Attribute, contains the text (UTF-8 string)
+:meth:`~outline.saveText`  Method, prints a conventional table of contents to a file.
+:meth:`~outline.saveXML`   Method, prints an XML-like table of contents to a file.
+========================== ==================================================================================
+
+Properties / Methods API
+========================
+
+   .. attribute:: down
+
+      The next outline item on the next level down. Is ``None`` if the item has no children.
+
+      :rtype: :ref:`Outline`
+
+   .. attribute:: next
+
+      The next outline item at the same level as this item. Is ``None`` if the item is the last one in its level.
+
+      :rtype: :ref:`Outline`
+
+   .. attribute:: title
+
+      The item's title as a UTF-8 string.
+
+      :rtype: string
+
+   .. method:: saveText
+
+      The chain of outline items is being processed and printed to a file ``filename`` as a conventional table of contents.
+
+      :param `filename`: Name of the file to write to.
+      :type `filename`: string
+
+   .. method:: saveXML
+
+      The chain of outline items is being processed and printed to a file ``filename`` as an XML-like table of contents.
+
+      :param `filename`: Name of the file to write to.
+      :type `filename`: string
+
+      :rtype: :ref:`Outline`
+
+   .. method:: get_page(self)
+
+      Get the page number of the destination.
+
+      :rtype: int
+
+   .. method:: get_page_flags(self)
+
+      Get the validity and meaning of the destination link, see :data:`fz_link_flag`.
+
+	  The flags is a bitfield consisting of :data:`fz_link_flag` describing the validity and meaning of the different parts of lr and rb. Link destinations are constructed (as far as possible) so that lt and rb can be treated as a bounding box, though the validity flags indicate which of the values was actually specified in the file.
+
+      .. seealso:: :meth:`Link.get_page_flags`
+
+      :rtype: int
+
+   .. method:: get_page_lt(self)
+
+      Get the top left corner of the destination bounding box.
+
+      .. warning:: For the returning point, (0, 0) is in the bottom left corner, which is different from :ref:`Rect` and :ref:`BBox`.
+
+      :rtype: :ref:`Point`
+
+   .. method:: get_page_rb(self)
+
+      Get the bottom right corner of the destination bounding box.
+
+      .. warning:: For the returning point, (0, 0) is in the bottom left corner, which is different from :ref:`Rect` and :ref:`BBox`.
+
+      :rtype: :ref:`Point`
+
+   .. method:: get_title(self)
+
+      Get title of outline item using UTF-8 encoding.
+
+      :rtype: string

@@ -1,0 +1,386 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tutorial &mdash; PYTHON-FITZ 1.7 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
+    <link rel="next" title="Attributes of fitz" href="fitz_dir.html" />
+    <link rel="prev" title="Welcome to PYTHON-FITZ!" href="intro.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="fitz_dir.html" title="Attributes of fitz"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="Welcome to PYTHON-FITZ!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tutorial">
+<h1><strong>Tutorial</strong><a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial will show you the use of MuPDF in Python step by step. You should note that MuPDF supports not only PDF files, but also XPS, OpenXPS and EPUB files. The MuPDF bindings for Python also support all of these filetypes. Nevertheless we will only talk about PDF&#8217;s for the sake of brevity.</p>
+<div class="section" id="import-the-bindings">
+<h2>Import the Bindings<a class="headerlink" href="#import-the-bindings" title="Permalink to this headline">¶</a></h2>
+<p>The Python bindings to MuPDF are made available by this import statement:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="open-a-document">
+<h2>Open a Document<a class="headerlink" href="#open-a-document" title="Permalink to this headline">¶</a></h2>
+<p>In order to access a supported document, it must be opened with the following statement:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will create <tt class="docutils literal"><span class="pre">doc</span></tt> as a <a class="reference internal" href="document.html#document"><em>Document</em></a> object. <tt class="docutils literal"><span class="pre">filename</span></tt> must be a Python string or unicode object that specifies the name of an existing file (with or without a fully or partially qualified path).
+A <a class="reference internal" href="document.html#document"><em>Document</em></a> contains several attributes and functions.
+Among them are meta information (like &#8220;author&#8221; or &#8220;subject&#8221;), number of total pages, outline and encryption information.</p>
+</div>
+<div class="section" id="some-document-functions-and-attributes">
+<h2>Some <a class="reference internal" href="document.html#document"><em>Document</em></a> functions and attributes<a class="headerlink" href="#some-document-functions-and-attributes" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="82%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-attr docutils literal"><span class="pre">pageCount</span></tt></td>
+<td>the number of pages of <tt class="docutils literal"><span class="pre">filename</span></tt> (integer).</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-attr docutils literal"><span class="pre">metadata</span></tt></td>
+<td>either <tt class="docutils literal"><span class="pre">None</span></tt> or the metadata of the <tt class="docutils literal"><span class="pre">Document</span></tt> (dictionary).</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-attr docutils literal"><span class="pre">outline</span></tt></td>
+<td>either <tt class="docutils literal"><span class="pre">None</span></tt> or the document&#8217;s first outline entry.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-meth docutils literal"><span class="pre">ToC()</span></tt></td>
+<td>Table of contents of the document (or <tt class="docutils literal"><span class="pre">[]</span></tt> if there is none).</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-meth docutils literal"><span class="pre">loadPage()</span></tt></td>
+<td>creates an object of type <tt class="docutils literal"><span class="pre">Page</span></tt>, repesenting page number <tt class="docutils literal"><span class="pre">n</span></tt> (<strong>remember</strong>: zero-based!) of the document.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="access-the-meta-data">
+<h2>Access the Meta Data<a class="headerlink" href="#access-the-meta-data" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="document.html#document"><em>Document</em></a>.metadata is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals. The meta data fields are of type string if not otherwise indicated and may be missing, in which case they contain <tt class="docutils literal"><span class="pre">None</span></tt>.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="producer">
+<tt class="descname">producer</tt><a class="headerlink" href="#producer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>Producer (the basic producing software)</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="format">
+<tt class="descname">format</tt><a class="headerlink" href="#format" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>PDF release, e.g. &#8216;PDF 1.4&#8217; (string)</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="encryption">
+<tt class="descname">encryption</tt><a class="headerlink" href="#encryption" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>Encryption (<tt class="docutils literal"><span class="pre">None</span></tt> or the encryption method used)</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="author">
+<tt class="descname">author</tt><a class="headerlink" href="#author" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>Author</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="modDate">
+<tt class="descname">modDate</tt><a class="headerlink" href="#modDate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>Date of last modification</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="keywords">
+<tt class="descname">keywords</tt><a class="headerlink" href="#keywords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>Keywords (dictionary)</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="title">
+<tt class="descname">title</tt><a class="headerlink" href="#title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>Title</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="creationDate">
+<tt class="descname">creationDate</tt><a class="headerlink" href="#creationDate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>Date of creation</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="creator">
+<tt class="descname">creator</tt><a class="headerlink" href="#creator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>Creating application</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="subject">
+<tt class="descname">subject</tt><a class="headerlink" href="#subject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>Subject</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="work-with-outlines">
+<h2>Work with Outlines<a class="headerlink" href="#work-with-outlines" title="Permalink to this headline">¶</a></h2>
+<p>Entering the documents outline tree works like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">olItem</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">outline</span>    <span class="c"># this is the document&#39;s first outline item</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="some-document-outline-functions-and-attributes">
+<h2>Some <tt class="docutils literal"><span class="pre">Document.outline</span></tt> functions and attributes<a class="headerlink" href="#some-document-outline-functions-and-attributes" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-meth docutils literal"><span class="pre">saveText()</span></tt></td>
+<td>save the complete outline as a text file. Parameter: text filename</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-meth docutils literal"><span class="pre">saveXML()</span></tt></td>
+<td>save the complete outline as a quai-XML file. Parameter: XML filename</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-attr docutils literal"><span class="pre">next</span></tt></td>
+<td>either <tt class="docutils literal"><span class="pre">None</span></tt> or the next item of the same level</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-attr docutils literal"><span class="pre">down</span></tt></td>
+<td>either <tt class="docutils literal"><span class="pre">None</span></tt> or the next item one level down</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-attr docutils literal"><span class="pre">title</span></tt></td>
+<td>a string containing the text of the item in utf-8 format</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-attr docutils literal"><span class="pre">dest</span></tt></td>
+<td>a <tt class="docutils literal"><span class="pre">dest</span></tt> (destination) object with the meaning &#8216;where does this entry point to?&#8217;. It contains several attributes of which just a few will be mentioned here.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="some-document-outline-dest-functions-and-attributes">
+<h2>Some <tt class="docutils literal"><span class="pre">Document.outline.dest</span></tt> functions and attributes<a class="headerlink" href="#some-document-outline-dest-functions-and-attributes" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-attr docutils literal"><span class="pre">page</span></tt></td>
+<td>an integer specifying the page number this entry points to.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-attr docutils literal"><span class="pre">lt</span></tt></td>
+<td>a <tt class="docutils literal"><span class="pre">Point</span></tt> object with the meaning &#8216;top left corner of the rectangle this entry points to&#8217;.</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-attr docutils literal"><span class="pre">rb</span></tt></td>
+<td>a <tt class="docutils literal"><span class="pre">Point</span></tt> object with meaning &#8216;bottom right corner of the rectangle this entry points to&#8217;.</td>
+</tr>
+</tbody>
+</table>
+<p>MuPDF also supports outline destinations to other files and URIs into which we will not dive here.</p>
+<p>In order to get a complete Python outline list (&#8220;table of contents&#8221;) of a document, use the following function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">toc</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">ToC</span><span class="p">()</span>       <span class="c"># [[level, title, page], ...], or []</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="work-with-pages">
+<h2>Work with Pages<a class="headerlink" href="#work-with-pages" title="Permalink to this headline">¶</a></h2>
+<p>Tasks that can be performed with a <a class="reference internal" href="page.html#page"><em>Page</em></a> are at the core of MuPDF&#8217;s functionality. Among other things, you can render a <a class="reference internal" href="page.html#page"><em>Page</em></a>, optionally zooming, rotating or shearing it.
+You can write it&#8217;s image to files (in PNG format), extract text from it or perform searches for text elements.
+At first, a page object must be created:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">page</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">loadPage</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>               <span class="c"># create the Page object representing page n of the document</span>
+</pre></div>
+</div>
+<p>Some typical uses of <a class="reference internal" href="page.html#page"><em>Page</em></a> objects:</p>
+<p>1. Inspect the links on a <a class="reference internal" href="page.html#page"><em>Page</em></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#-----------------------------------------------------------------------------------</span>
+<span class="c"># Display all links of the current page</span>
+<span class="c">#-----------------------------------------------------------------------------------</span>
+<span class="n">ln</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">loadLinks</span><span class="p">()</span>
+<span class="c">#-----------------------------------------------------------------------------------</span>
+<span class="c"># Links are organized as a single linked list. We need to check each occurrence</span>
+<span class="c"># to see what info we can get</span>
+<span class="c">#-----------------------------------------------------------------------------------</span>
+<span class="k">while</span> <span class="n">ln</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">ln</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">fitz</span><span class="o">.</span><span class="n">LINK_URI</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;[LINK]URI: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">ln</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">uri</span>
+    <span class="k">elif</span> <span class="n">ln</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">fitz</span><span class="o">.</span><span class="n">LINK_GOTO</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;[LINK]jump to page </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">ln</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">page</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="n">ln</span> <span class="o">=</span> <span class="n">ln</span><span class="o">.</span><span class="n">next</span>
+</pre></div>
+</div>
+<p>2. Render a <a class="reference internal" href="page.html#page"><em>Page</em></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#-----------------------------------------------------------------------------------</span>
+<span class="c"># Get the size of the page - giving a rectangle</span>
+<span class="c">#-----------------------------------------------------------------------------------</span>
+<span class="n">rect</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">bound</span><span class="p">()</span>
+<span class="c">#-----------------------------------------------------------------------------------</span>
+<span class="c"># round / convert the real numbers in rect to integers</span>
+<span class="c">#-----------------------------------------------------------------------------------</span>
+<span class="n">irect</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
+<span class="c">#-----------------------------------------------------------------------------------</span>
+<span class="c"># create an empty RGBA pixel map of the rectangle&#39;s size</span>
+<span class="c">#-----------------------------------------------------------------------------------</span>
+<span class="n">pix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">Colorspace</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">CS_RGB</span><span class="p">),</span> <span class="n">irect</span><span class="p">)</span>
+<span class="n">pix</span><span class="o">.</span><span class="n">clearWith</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span>             <span class="c"># Initialize with color &quot;white&quot; and &quot;no transparency&quot;</span>
+<span class="n">dev</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Device</span><span class="p">(</span><span class="n">pix</span><span class="p">)</span>         <span class="c"># Create a draw device for the pixel map</span>
+<span class="n">page</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Identity</span><span class="p">)</span>   <span class="c"># finally render the page with no changes</span>
+<span class="c">#-----------------------------------------------------------------------------------</span>
+<span class="c"># now pix contains the rendered page, ready to be used</span>
+<span class="c">#-----------------------------------------------------------------------------------</span>
+</pre></div>
+</div>
+<p>2.1 Example: save the page image as a png file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s">&quot;test.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>2.2 Example: convert the image to a Bitmap for the wxPython dialog manager:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">pix</span><span class="o">.</span><span class="n">samples</span>                       <span class="c"># data = bytearray of raw pixel data (RGBA)</span>
+<span class="n">bitmap</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BitmapFromBufferRGBA</span><span class="p">(</span><span class="n">irect</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
+            <span class="n">irect</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>     <span class="c"># wxPython only accepts strings, no bytearrays</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><strong>Tutorial</strong></a><ul>
+<li><a class="reference internal" href="#import-the-bindings">Import the Bindings</a></li>
+<li><a class="reference internal" href="#open-a-document">Open a Document</a></li>
+<li><a class="reference internal" href="#some-document-functions-and-attributes">Some <tt class="docutils literal"><span class="pre">Document</span></tt> functions and attributes</a></li>
+<li><a class="reference internal" href="#access-the-meta-data">Access the Meta Data</a></li>
+<li><a class="reference internal" href="#work-with-outlines">Work with Outlines</a></li>
+<li><a class="reference internal" href="#some-document-outline-functions-and-attributes">Some <tt class="docutils literal"><span class="pre">Document.outline</span></tt> functions and attributes</a></li>
+<li><a class="reference internal" href="#some-document-outline-dest-functions-and-attributes">Some <tt class="docutils literal"><span class="pre">Document.outline.dest</span></tt> functions and attributes</a></li>
+<li><a class="reference internal" href="#work-with-pages">Work with Pages</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="intro.html"
+                        title="previous chapter"><strong>Welcome to PYTHON-FITZ!</strong></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="fitz_dir.html"
+                        title="next chapter"><strong>Attributes of fitz</strong></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tutorial.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="fitz_dir.html" title="Attributes of fitz"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="Welcome to PYTHON-FITZ!"
+             >previous</a> |</li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

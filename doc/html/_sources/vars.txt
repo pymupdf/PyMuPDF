@@ -1,0 +1,55 @@
+===============================
+Constants and enums
+===============================
+Constants and enums are listed here.
+
+
+Constants
+=========
+
+============================== ===================================================================================================================
+.. data:: FZ_STORE_DEFAULT     A reasonable upper bound on the context size. 
+.. data:: FZ_STORE_UNLIMITED   Let the context size unbounded.
+.. data:: fz_device_bgr        Abstract colorspace representing device specific bgr.
+.. data:: fz_device_cmyk       Abstract colorspace representing device specific CMYK.
+.. data:: fz_device_gray       Abstract colorspace representing device specific gray.
+.. data:: fz_device_rgb        Abstract colorspace representing device specific rgb.
+.. data:: fz_expand_images     Expand images when writing document. 
+.. data:: fz_expand_fonts      Expand fonts when writing document. 
+.. data:: fz_expand_all        Expand images and fonts when writing document. 
+.. data:: fz_empty_bbox        An empty bounding box with an area equal to zero. Both the top left and bottom right corner are at (0, 0).
+.. data:: fz_empty_rect        An empty rectangle with an area equal to zero. Both the top left and bottom right corner are at (0, 0).
+.. data:: fz_identity          Identity transform matrix.
+.. data:: fz_infinite_bbox     An infinite bounding box with negative area. Corner (x0, y0) is at (1, 1) while corner (x1, y1) is at (-1, -1).
+.. data:: fz_infinite_rect     An infinite rectangle with negative area. Corner (x0, y0) is at (1, 1) while corner (x1, y1) is at (-1, -1).
+.. data:: fz_unit_bbox         A bounding box with sides of length one. The top left corner is at (0, 0) and the bottom right corner is at (1, 1).
+.. data:: fz_unit_rect         A rectangle with sides of length one. The top left corner is at (0, 0) and the bottom right corner is at (1, 1).
+============================== ===================================================================================================================
+
+Enums
+=====
+
+=========================== ==================================================
+.. data:: fz_link_kind      
+=========================== ==================================================
+.. data:: FZ_LINK_GOTO      The link points to some place with the document.
+.. data:: FZ_LINK_GOTOR     The link points to some place in another document.
+.. data:: FZ_LINK_LAUNCH    The link lanches a file.
+.. data:: FZ_LINK_NAMED     The link perform some action.
+.. data:: FZ_LINK_NONE      There's no destination.
+.. data:: FZ_LINK_URI       The link points to an uri.
+=========================== ==================================================
+
+==================================
+
+================================= ====================================
+.. data:: fz_link_flag
+================================= ====================================
+.. data:: fz_link_flag_l_valid    lt.x is valid
+.. data:: fz_link_flag_t_valid    lt.y is valid 
+.. data:: fz_link_flag_r_valid    rb.x is valid
+.. data:: fz_link_flag_b_valid    rb.y is valid
+.. data:: fz_link_flag_fit_h      Fit horizontally
+.. data:: fz_link_flag_fit_v      Fit vertically
+.. data:: fz_link_flag_r_is_zoom  rb.x is actually a zoom figure
+================================= ====================================

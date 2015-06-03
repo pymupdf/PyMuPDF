@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Rect &mdash; PYTHON-FITZ 1.7 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="rect">
+<span id="id1"></span><h1><strong>Rect</strong><a class="headerlink" href="#rect" title="Permalink to this headline">¶</a></h1>
+<p>Rect is a rectangle represented by its top left and its bottom right corner coordinates: ((x0, y0), (x1, y1)).</p>
+<p>Rectangles are always axis-aligned with the X- and Y- axes. The relationship between the coordinates are that x0 &lt;= x1 and y0 &lt;= y1 in all cases except for infinte rectangles. The area of a rectangle is defined as (x1 - x0) * (y1 - y0). If either x0 &gt; x1 or y0 &gt; y1 is true for a given rectangle then it is defined to be infinite.</p>
+<div class="section" id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="67%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-meth docutils literal"><span class="pre">round()</span></tt></td>
+<td>creates an <tt class="docutils literal"><span class="pre">Irect</span></tt> for rectangle (smallest pixel area containing it)</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-meth docutils literal"><span class="pre">transform()</span></tt></td>
+<td>transform rectangle with a <tt class="docutils literal"><span class="pre">Matrix</span></tt></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="67%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.height" title="Rect.height"><tt class="xref py py-attr docutils literal"><span class="pre">height</span></tt></a></td>
+<td>rectangle height</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.width" title="Rect.width"><tt class="xref py py-attr docutils literal"><span class="pre">width</span></tt></a></td>
+<td>rectangle width</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.x0" title="Rect.x0"><tt class="xref py py-attr docutils literal"><span class="pre">x0</span></tt></a></td>
+<td>X-coordinate of the top left corner.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.y0" title="Rect.y0"><tt class="xref py py-attr docutils literal"><span class="pre">y0</span></tt></a></td>
+<td>Y-coordinate of the top left corner.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.x1" title="Rect.x1"><tt class="xref py py-attr docutils literal"><span class="pre">x1</span></tt></a></td>
+<td>X-coordinate of the bottom right corner.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.y1" title="Rect.y1"><tt class="xref py py-attr docutils literal"><span class="pre">y1</span></tt></a></td>
+<td>Y-coordinate of the bottom right corner.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="class-api">
+<h2>Class API<a class="headerlink" href="#class-api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Rect">
+<em class="property">class </em><tt class="descname">Rect</tt><a class="headerlink" href="#Rect" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Rect.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>self</em>, <em>x0=0</em>, <em>y0=0</em>, <em>x1=0</em>, <em>y1=0</em><big>)</big><a class="headerlink" href="#Rect.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor. An empty rectangle will be built if no arguments given.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Rect.width">
+<tt class="descname">width</tt><a class="headerlink" href="#Rect.width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the width of the rectangle.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Rect.height">
+<tt class="descname">height</tt><a class="headerlink" href="#Rect.height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the height of the rectangle.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Rect.x0">
+<tt class="descname">x0</tt><a class="headerlink" href="#Rect.x0" title="Permalink to this definition">¶</a></dt>
+<dd><p>X-coordinate of the top left corner.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Rect.y0">
+<tt class="descname">y0</tt><a class="headerlink" href="#Rect.y0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Y-coordinate of the top left corner.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Rect.x1">
+<tt class="descname">x1</tt><a class="headerlink" href="#Rect.x1" title="Permalink to this definition">¶</a></dt>
+<dd><p>X-coordinate of the bottom right corner.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Rect.y1">
+<tt class="descname">y1</tt><a class="headerlink" href="#Rect.y1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Y-coordinate of the bottom right corner.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><strong>Rect</strong></a><ul>
+<li><a class="reference internal" href="#methods">Methods</a></li>
+<li><a class="reference internal" href="#attributes">Attributes</a></li>
+<li><a class="reference internal" href="#class-api">Class API</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/rect.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
