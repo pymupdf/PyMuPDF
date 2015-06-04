@@ -143,9 +143,6 @@ class Document(_object):
                     lvl -= 1
             return liste                       # return linearized outline
 
-        #================================================================
-        # Create metadata and outline
-        #================================================================
         if this:
             self._outline = self._loadOutline()
             self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format','title':'info:Title',
@@ -796,6 +793,9 @@ class TextPage(_object):
 
     def search(self, needle, hit_max=16):
         return _fitz.TextPage_search(self, needle, hit_max)
+
+    def extractText(self):
+        return _fitz.TextPage_extractText(self)
 TextPage_swigregister = _fitz.TextPage_swigregister
 TextPage_swigregister(TextPage)
 
