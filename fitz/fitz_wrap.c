@@ -3253,7 +3253,7 @@ SWIGINTERN char *fz_document_s__getMetadata(struct fz_document_s *self,char cons
                 fz_lookup_metadata(gctx, self, key, value, vsize);
                 return value;
             }
-            else 
+            else
                 return NULL;
         }
 
@@ -3300,6 +3300,9 @@ SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename){
             fz_catch(gctx)
                 return 1;
             return 0;
+        }
+SWIGINTERN int fz_document_s_close(struct fz_document_s *self){
+            return pdf_close_document(gctx, self);
         }
 SWIGINTERN void delete_fz_page_s(struct fz_page_s *self){
 
@@ -3407,7 +3410,7 @@ SWIGINTERN int fz_pixmap_s_writePNG(struct fz_pixmap_s *self,char *filename,int 
             fz_try(gctx) {
                 fz_write_png(gctx, self, filename, savealpha);
             }
-            fz_catch(gctx) 
+            fz_catch(gctx)
                 return 1;
             return 0;
         }
@@ -3629,21 +3632,6 @@ SWIGINTERN struct fz_rect_s *fz_text_page_s_search(struct fz_text_page_s *self,c
 
 
             return result;
-        }
-SWIGINTERN struct fz_buffer_s *fz_text_page_s_extractText(struct fz_text_page_s *self){
-            struct fz_buffer_s *res;
-            fz_output *out;
-            fz_try(gctx) {
-                /* inital size for text */
-                res = fz_new_buffer(gctx, 1024);
-                out = fz_new_output_with_buffer(gctx, res);
-                fz_print_text_page(gctx, out, self);
-                fz_drop_output(gctx, out);
-            }
-            fz_catch(gctx) {
-                res = NULL;
-            }
-            return res;
         }
 #ifdef __cplusplus
 extern "C" {
@@ -3937,6 +3925,28 @@ SWIGINTERN PyObject *_wrap_Document_save(PyObject *SWIGUNUSEDPARM(self), PyObjec
   return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document_close(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Document_close",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_close" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  result = (int)fz_document_s_close(arg1);
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
   return NULL;
 }
 
@@ -7452,37 +7462,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_TextPage_extractText(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_text_page_s *arg1 = (struct fz_text_page_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  struct fz_buffer_s *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:TextPage_extractText",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_text_page_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TextPage_extractText" "', argument " "1"" of type '" "struct fz_text_page_s *""'"); 
-  }
-  arg1 = (struct fz_text_page_s *)(argp1);
-  {
-    result = (struct fz_buffer_s *)fz_text_page_s_extractText(arg1);
-    if(!result) {
-      PyErr_SetString(PyExc_Exception, "cannot extract text");
-      return NULL;
-    }
-  }
-  {
-    resultobj = SWIG_FromCharPtr((const char *)result->data);
-    fz_drop_buffer(gctx, result);
-  }
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *TextPage_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
@@ -7502,6 +7481,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document__needsPass", _wrap_Document__needsPass, METH_VARARGS, NULL},
 	 { (char *)"Document_authenticate", _wrap_Document_authenticate, METH_VARARGS, NULL},
 	 { (char *)"Document_save", _wrap_Document_save, METH_VARARGS, NULL},
+	 { (char *)"Document_close", _wrap_Document_close, METH_VARARGS, NULL},
 	 { (char *)"Document_swigregister", Document_swigregister, METH_VARARGS, NULL},
 	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, NULL},
 	 { (char *)"Page_bound", _wrap_Page_bound, METH_VARARGS, NULL},
@@ -7640,7 +7620,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_TextPage", _wrap_new_TextPage, METH_VARARGS, NULL},
 	 { (char *)"delete_TextPage", _wrap_delete_TextPage, METH_VARARGS, NULL},
 	 { (char *)"TextPage_search", _wrap_TextPage_search, METH_VARARGS, NULL},
-	 { (char *)"TextPage_extractText", _wrap_TextPage_extractText, METH_VARARGS, NULL},
 	 { (char *)"TextPage_swigregister", TextPage_swigregister, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };

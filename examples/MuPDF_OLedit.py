@@ -61,7 +61,7 @@ class PDFconfig():
         self.meta = {}                   # PDF meta information
         self.seiten = 0                  # max pages
         self.inhalt = []                 # table of contents storage
-        self.oldPage = 0                 # last displayed page number 
+        self.oldPage = 0               # last displayed page number 
         self.file = None                 # pdf filename
         # we use temp png files for buffering already displayed pages
         tmppic = tempfile.NamedTemporaryFile(suffix = ".png",
@@ -580,7 +580,7 @@ class PDFDialog (wx.Dialog):
         event.Skip()
         
 #==============================================================================
-# "NeueZeile" - Event Handler for a new row
+# "NeueZeile" - Event Handler für neue Zeilen im Inhaltsverzeichnis
 #==============================================================================
     def NeueZeile(self, event):
         zeile = [1, "*** new row ***", 1, ""]
@@ -662,29 +662,30 @@ def DisableOK():
 # Read PDF document information
 #==============================================================================
 def getPDFinfo():
-    meta = PDFcfg.doc.metadata
+    PDFcfg.doc = fitz.Document(PDFcfg.file)
+    PDFcfg.inhalt = PDFcfg.doc.ToC()
+    PDFcfg.seiten = PDFcfg.doc.pageCount
     PDFmeta = {"author":"", "title":"", "subject":""}
-    for key in meta:
-        wert = meta[key]
+    for key in PDFcfg.doc.metadata:
+        wert = PDFcfg.doc.metadata[key]
         if wert:
             PDFmeta[key] = wert.decode("utf-8")
         else:
             PDFmeta[key] = ""
     PDFcfg.meta = PDFmeta
-    PDFcfg.seiten = PDFcfg.doc.pageCount
-    PDF.cfg.inhalt = PDFcfg.doc.ToC()
-    return
+    return 0
 
 #==============================================================================
 # Write the changed PDF file
 #============================================================================
 def make_pdf(dlg):
     # if outline table contains nothing interesting: do nothing!
-    if len(dlg.szr20.Table.data) < 2:
+    if len(dlg.szr20.Table.data) < 1:
         return
+    # create a PDF compatible timestamp
     cdate = wx.DateTime.Now().Format("D:%Y%m%d%H%M%S-04'30'") 
     # free MuPDF resources, because the input must be closed if overwritten
-    PDFcfg.doc = None
+    PDFcfg.doc.close()
     PDFmeta = {"/Creator":"PDF Outline Editor",
                "/Producer":"python-fitz, PyPDF2",
                "/CreationDate": cdate,
@@ -695,13 +696,14 @@ def make_pdf(dlg):
 
 #==============================================================================
 # We need PyPDF2 for writing the updated PDF file.
-# PdfFileMerger would have been more practical (and probably faster), but it
-# contains a bug in its addBookmark method - amazingly different from the
-# method with the same name in the PdfFileWriter class.
+# PdfFileMerger would have been more practical (and maybe faster), but it
+# contains a bug in its addBookmark method (which is amazingly different from
+# the method with the same name in the PdfFileWriter class).
 #==============================================================================
-    PDFif = pdf.PdfFileReader(PDFcfg.file)      
+    infile = open(PDFcfg.file, "rb")
+    PDFif = pdf.PdfFileReader(infile)      
     PDFof = pdf.PdfFileWriter()
-    for p in range(PDFcfg.seite):        # first just copy all pages to output
+    for p in range(PDFcfg.seiten):        # first just copy all pages to output
         page = PDFif.getPage(p)
         # this obviously just means storing a pointer to the page somewhere
         PDFof.addPage(page)
@@ -731,11 +733,11 @@ def make_pdf(dlg):
             None, False, False, "/Fit")
             lvl_tab[lvl - 1] = bm           # memorize it: serves as parent!
 #==============================================================================
-# now check the outfile situation
+# before saving anything, check the outfile situation
 #==============================================================================
-    outfile = dlg.btn_aus.GetPath()         # get dir / name of file in screen  
+    outfile = dlg.btn_aus.GetPath()         # get dir & name of file in screen  
     outfile_dir, outfile_name = os.path.split(outfile)
-    
+
     if outfile != PDFcfg.file:              # if outfile != input file
         PDFof_fle = open(dlg.btn_aus.GetPath(), "wb")
     else:                                   # equal: replace input file 
@@ -743,16 +745,39 @@ def make_pdf(dlg):
         PDFof_fle = PDFcfg.opdffile         # use it as output
         
     PDFof.write(PDFof_fle)                  # write new content to it
+    infile.close()                          # close input file
+    PDFof_fle.close()                       # close output file
+        
+    if outfile != PDFcfg.file:              # done if output != input
+        return
+    
+    # remove the old input file, rename temp file to input file name
     try:
-        PDFof_fle.close()                   # close it
+        os.remove(PDFcfg.file)
+        os.rename(PDFcfg.opdfname, PDFcfg.file)
+        return
     except:
         pass
-    if outfile != PDFcfg.file:              # finished if output != input
-        return
-    # remove the old input file, rename temp file to input file name
+#==============================================================================
+#   Input file is in use, save the precious work to another name
+#==============================================================================
+    new_file = outfile
+    while new_file == outfile:
+        dlg = wx.FileDialog(None,
+                message="Input file is still in use, choose another name",
+                defaultDir = outfile_dir, defaultFile = outfile_name,
+                style=wx.SAVE)
+        rc = dlg.ShowModal()
+        if rc != wx.ID_OK:               # user is giving up, so do we
+            os.remove(PDFcfg.opdfname)   # remove the temp file
+            return
+        new_file = dlg.GetPath()
+        if os.path.exists(new_file):
+            new_file = outfile
+        dlg.Destroy()
         
-    os.remove(PDFcfg.file)
-    os.rename(PDFcfg.opdfname, PDFcfg.file)
+    os.rename(PDFcfg.opdfname, new_file)
+        
 
 #==============================================================================
 #
@@ -780,18 +805,12 @@ dlg.Destroy()
 # check for password protection
 #==============================================================================
 if infile:
-    PDFcfg = PDFconfig()
+    PDFcfg = PDFconfig()        # create out PDF descriptor scratchpad
     PDFcfg.file = infile
-    PDFcfg.doc = fitz.Document(PDFcfg.file)
-    if PDFcfg.doc.needsPass:
-        wx.MessageBox("File is password protected and cannot be opened:\n"\
-                      + infile, "Password Protection!")
-        PDFcfg.doc = None
-    else:
-        getPDFinfo()
 #==============================================================================
 # Generate PDF page 1 image
 #==============================================================================
+    if getPDFinfo() == 0:
         pdf_show(PDFcfg.pic, 1)
         PDFcfg.oldPage = 1
         dlg = PDFDialog(None)
@@ -803,9 +822,10 @@ if infile:
 #==============================================================================
 # Generate modified PDF file
 #==============================================================================
-        if rc == wx.ID_OK:
+        if rc == wx.ID_OK:              # output PDF only if OK pressed
             make_pdf(dlg)
         dlg.Destroy()
         app = None
+        # delete all pdf page images accumulated during the process
         for datei in PDFcfg.pic_pages:
             os.remove(datei)

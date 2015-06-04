@@ -1,6 +1,6 @@
 %module fitz
 
-/* 
+/*
 #define MEMDEBUG
 */
 
@@ -8,8 +8,9 @@
 #define SWIG_FILE_WITH_INIT
 #include <fitz.h>
 %}
-
-/* global context */
+/*****************************************************************************/
+/* global context                                                            */
+/*****************************************************************************/
 %init %{
     gctx = fz_new_context(NULL, NULL, FZ_STORE_UNLIMITED);
     fz_register_document_handlers(gctx);
@@ -17,9 +18,10 @@
 %header %{
     fz_context *gctx;
 %}
-    
 
-/* fz_document */
+/*****************************************************************************/
+/* fz_document                                                               */
+/*****************************************************************************/
 %rename(Document) fz_document_s;
 struct fz_document_s {
     %extend {
@@ -71,8 +73,11 @@ struct fz_document_s {
                         lvl -= 1
                 return liste                       # return linearized outline
 
+            #================================================================
+            # Create metadata and outline
+            #================================================================
             if this:
-                self._outline = self._loadOutline() 
+                self._outline = self._loadOutline()
                 self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format','title':'info:Title',
                                                                            'author':'info:Author','subject':'info:Subject',
                                                                            'keywords':'info:Keywords','creator':'info:Creator',
@@ -143,7 +148,7 @@ struct fz_document_s {
                 fz_lookup_metadata(gctx, $self, key, value, vsize);
                 return value;
             }
-            else 
+            else
                 return NULL;
         }
         int _needsPass() {
@@ -175,6 +180,10 @@ struct fz_document_s {
             return 0;
         }
 
+        int close() {
+            return pdf_close_document(gctx, $self);
+        }
+
         %pythoncode %{
             pageCount = property(lambda self: self._getPageCount())
             outline = property(lambda self: self._outline)
@@ -183,8 +192,9 @@ struct fz_document_s {
     }
 };
 
-
-/* fz_page */
+/*****************************************************************************/
+/* fz_page                                                                   */
+/*****************************************************************************/
 %nodefaultctor;
 %rename(Page) fz_page_s;
 struct fz_page_s {
@@ -233,8 +243,9 @@ struct fz_page_s {
 };
 %clearnodefaultctor;
 
-
+/*****************************************************************************/
 /* fz_rect */
+/*****************************************************************************/
 %rename(_fz_transform_rect) fz_transform_rect;
 struct fz_rect_s *fz_transform_rect(struct fz_rect_s *restrict rect, const struct fz_matrix_s *restrict transform);
 %rename(Rect) fz_rect_s;
@@ -274,7 +285,9 @@ struct fz_rect_s
 };
 
 
+/*****************************************************************************/
 /* fz_irect */
+/*****************************************************************************/
 %rename(IRect) fz_irect_s;
 struct fz_irect_s
 {
@@ -301,7 +314,9 @@ struct fz_irect_s
 };
 
 
+/*****************************************************************************/
 /* fz_pixmap */
+/*****************************************************************************/
 %rename(Pixmap) fz_pixmap_s;
 struct fz_pixmap_s
 {
@@ -354,7 +369,7 @@ struct fz_pixmap_s
             fz_try(gctx) {
                 fz_write_png(gctx, $self, filename, savealpha);
             }
-            fz_catch(gctx) 
+            fz_catch(gctx)
                 return 1;
             return 0;
         }
@@ -371,7 +386,9 @@ struct fz_pixmap_s
 };
 
 
+/*****************************************************************************/
 /* fz_colorspace */
+/*****************************************************************************/
 #define CS_RGB 1
 %inline %{
     #define CS_RGB 1
@@ -394,11 +411,13 @@ struct fz_colorspace_s
 #endif
             fz_drop_colorspace(gctx, $self);
         }
-    } 
+    }
 };
 
 
+/*****************************************************************************/
 /* fz_device */
+/*****************************************************************************/
 %rename(Device) fz_device_s;
 struct fz_device_s
 {
@@ -444,7 +463,9 @@ struct fz_device_s
 };
 
 
+/*****************************************************************************/
 /* fz_matrix */
+/*****************************************************************************/
 %rename(_fz_pre_scale) fz_pre_scale;
 %rename(_fz_pre_shear) fz_pre_shear;
 %rename(_fz_pre_rotate) fz_pre_rotate;
@@ -503,7 +524,9 @@ struct fz_matrix_s
 %}
 
 
+/*****************************************************************************/
 /* fz_outline */
+/*****************************************************************************/
 %rename(Outline) fz_outline_s;
 %nodefaultctor;
 struct fz_outline_s {
@@ -513,7 +536,7 @@ struct fz_outline_s {
     struct fz_outline_s *next;
     struct fz_outline_s *down;
     int is_open;
-/* 
+/*
     fz_outline doesn't keep a ref number in mupdf's code,
     which means that if the root outline node is dropped,
     all the outline nodes will also be destroyed.
@@ -533,7 +556,7 @@ struct fz_outline_s {
     >>> oln.dest.page
     0
 
-    I do not like to change struct of fz_document, so I decide 
+    I do not like to change struct of fz_document, so I decide
     to delegate the outline destructin work to fz_document. That is,
     when the Document is created, its outline is loaded in advance.
     The outline will only be freed when the doc is destroyed, which means
@@ -612,7 +635,9 @@ struct fz_outline_s {
 %clearnodefaultctor;
 
 
+/*****************************************************************************/
 /*fz_link_kind */
+/*****************************************************************************/
 %rename("%(strip:[FZ_])s") "";
 typedef enum fz_link_kind_e
 {
@@ -625,7 +650,9 @@ typedef enum fz_link_kind_e
 } fz_link_kind;
 
 
+/*****************************************************************************/
 /* fz_link_dest */
+/*****************************************************************************/
 %rename(linkDest) fz_link_dest_s;
 %nodefaultctor;
 struct fz_link_dest_s {
@@ -688,7 +715,9 @@ struct fz_link_dest_s {
 };
 %clearnodefaultctor;
 
+/*****************************************************************************/
 /* fz_point */
+/*****************************************************************************/
 %rename(_fz_transform_point) fz_transform_point;
 struct fz_point_s *fz_transform_point(struct fz_point_s *restrict point, const struct fz_matrix_s *restrict transform);
 %rename(Point) fz_point_s;
@@ -717,7 +746,9 @@ struct fz_point_s
 };
 
 
+/*****************************************************************************/
 /* fz_link */
+/*****************************************************************************/
 %rename("%(regex:/fz_(.*)/\\U\\1/)s") "";
 enum {
     fz_link_flag_l_valid = 1, /* lt.x is valid */
@@ -760,7 +791,9 @@ struct fz_link_s
 %clearnodefaultctor;
 
 
+/*****************************************************************************/
 /* fz_display_list */
+/*****************************************************************************/
 %rename(DisplayList) fz_display_list_s;
 struct fz_display_list_s {
     %extend {
@@ -805,7 +838,9 @@ struct fz_display_list_s {
 };
 
 
+/*****************************************************************************/
 /* fz_text_sheet */
+/*****************************************************************************/
 %rename(TextSheet) fz_text_sheet_s;
 struct fz_text_sheet_s {
     %extend {
@@ -834,7 +869,9 @@ struct fz_text_sheet_s {
     }
 };
 
+/*****************************************************************************/
 /* fz_text_page */
+/*****************************************************************************/
 %typemap(out) struct fz_rect_s * {
     PyObject *pyRect;
     struct fz_rect_s *rect;
@@ -847,10 +884,6 @@ struct fz_text_sheet_s {
         rect += 1;
     }
     free($1);
-}
-%typemap(out) struct fz_buffer_s * {
-    $result = SWIG_FromCharPtr((const char *)$1->data);
-    fz_drop_buffer(gctx, $1);
 }
 %rename(TextPage) fz_text_page_s;
 struct fz_text_page_s {
@@ -892,30 +925,5 @@ struct fz_text_page_s {
 #endif
             return result;
         }
-        %exception extractText {
-            $action
-            if(!result) {
-                PyErr_SetString(PyExc_Exception, "cannot extract text");
-                return NULL;
-            }
-        }
-        struct fz_buffer_s *extractText() {
-            struct fz_buffer_s *res;
-            fz_output *out;
-            fz_try(gctx) {
-                /* inital size for text */
-                res = fz_new_buffer(gctx, 1024);
-                out = fz_new_output_with_buffer(gctx, res);
-                fz_print_text_page(gctx, out, $self);
-                fz_drop_output(gctx, out);
-            }
-            fz_catch(gctx) {
-                res = NULL;
-            }
-            return res;
-        }
     }
 };
-
-
-
