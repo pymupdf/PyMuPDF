@@ -161,8 +161,8 @@ class PDFTable(gridlib.PyGridTableBase):
         return self.colLabels[col]
 
 #==============================================================================
-# set row names (just row counters in our case). Only needed here,
-# because we want rows to draggable with the mouse, and that requires a label.
+# set row names (just row counters in our case). Only needed, because we have
+# row-based operations (dragging, duplicating) and these require a label.
 #==============================================================================
     def GetRowLabelValue(self,row):
         return str(row +1)
@@ -225,6 +225,22 @@ class PDFTable(gridlib.PyGridTableBase):
                 grid.EndBatch()
                 
 #==============================================================================
+# Duplicate a row, called with row number
+#==============================================================================
+    def DuplicateRow(self, row):
+        grid = self.GetView()
+        if grid:
+            zeile = [self.data[row][0], self.data[row][1],
+                     self.data[row][2], self.data[row][3],]
+            self.data.insert(row, zeile)
+            grid.BeginBatch()
+            msg = gridlib.GridTableMessage(self,
+                        gridlib.GRIDTABLE_NOTIFY_ROWS_INSERTED, row, 1)
+            grid.ProcessTableMessage(msg)
+            grid.EndBatch()
+            self.cur_row = row
+            
+#==============================================================================
 # delete a row. called with row number.
 #==============================================================================
     def DeleteRow(self, row):
@@ -283,6 +299,10 @@ class MyGrid(gridlib.Grid):
 # Bind: delete row        
 #==============================================================================
         self.Bind(gridlib.EVT_GRID_CELL_RIGHT_CLICK, self.OnRowDel, self)
+#==============================================================================
+# Bind: duplicate a row
+#==============================================================================
+        self.Bind(gridlib.EVT_GRID_LABEL_LEFT_DCLICK, self.OnRowDup, self)
 
 #==============================================================================
 # Bind: (double) click a cell
@@ -349,6 +369,17 @@ class MyGrid(gridlib.Grid):
         DisableOK()
 
 #==============================================================================
+# Event Method: delete row
+#==============================================================================
+    def OnRowDup(self, evt):
+        row = evt.GetRow()
+        col = evt.GetCol()
+        if col < 0 and row >= 0:       # else this is not a row duplication!
+            self.GetTable().DuplicateRow(row)    # duplicate the row and ...
+            self.GetParent().Layout()  # possibly enlarge the grid
+        DisableOK()
+
+#==============================================================================
 #
 # define dialog       
 #
@@ -375,12 +406,8 @@ class PDFDialog (wx.Dialog):
                         defPos, defSiz, 0)
         self.szr10.Add(self.btn_neu, 0, wx.ALIGN_CENTER|wx.ALL, 5)
         
-        explain = wx.StaticText(self, wx.ID_ANY,
-                      "New rows will be inserted at the end, or before the " \
-                      + "row with a right-"\
-                      + "clicked field.\nDelete: check 'del?' and right-" \
-                      + "click.\nDouble-click on titles or" \
-                      + " page numbers to display the page image.",
+        msg_txt = """New rows will be inserted at the end, or before the row with a right-clicked field.\nDuplicate: double-click the row number.  Delete: check 'del?' and right-click.\nDouble-click titles or page numbers to display the page image."""
+        explain = wx.StaticText(self, wx.ID_ANY, msg_txt,
                       defPos, wx.Size(-1, 50), 0)
         self.szr10.Add(explain, 0, wx.ALIGN_CENTER, 5)
 
@@ -580,7 +607,7 @@ class PDFDialog (wx.Dialog):
         event.Skip()
         
 #==============================================================================
-# "NeueZeile" - Event Handler for new rows: insert a model row
+# "NeueZeile" - Event Handler für neue Zeilen im Inhaltsverzeichnis
 #==============================================================================
     def NeueZeile(self, event):
         zeile = [1, "*** new row ***", 1, ""]
