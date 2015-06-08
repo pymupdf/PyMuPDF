@@ -12,8 +12,8 @@ This is an example for using the Python binding python-fitz of MuPDF.
 
 This program joins PDF files into one output file. Its features include:
 * Selection of page ranges
-* Optional rotation in 90 degree steps
-* Copying any table of contents to output
+* Optional rotation in steps of 90 degrees
+* Copying any table of contents to the output
 
 """
 
@@ -247,13 +247,14 @@ class PDFDialog (wx.Dialog):
         
         self.btn_neu = wx.FilePickerCtrl(self, wx.ID_ANY,
                         wx.EmptyString,
-                        u"Select new PDF file",
+                        u"Select a PDF file",
                         u"*.pdf",
                         wx.Point(-1, -1), wx.Size(-1, -1),
-                        wx.FLP_CHANGE_DIR|wx.FLP_FILE_MUST_EXIST)
+                        wx.FLP_CHANGE_DIR|wx.FLP_FILE_MUST_EXIST|wx.FLP_SMALL,
+                        )
         szr01.Add(self.btn_neu, 0, wx.ALIGN_TOP|wx.ALL, 5)
  
-        msg_txt ="""Include new files with the Browse button. Path and total page number will be appended to the following table.\nDuplicate row: double-click its number. Move row: drag it with the mouse. Delete row: check the box and right-click that cell."""
+        msg_txt ="""ADD files with this button. Path and total page number will be appended to the table below.\nDUPLICATE row: double-click its number. MOVE row: drag it with the mouse. DELETE row: check the box and right-click its cell."""
         msg = wx.StaticText(self, wx.ID_ANY, msg_txt,
                     wx.Point(-1, -1), wx.Size(-1, 50), wx.ALIGN_LEFT)
         msg.Wrap(-1)
@@ -281,7 +282,7 @@ class PDFDialog (wx.Dialog):
 #==============================================================================
 # Create Sizer 03 (output parameters)
 #==============================================================================
-        szr03 = wx.FlexGridSizer( 4, 2, 0, 0 )
+        szr03 = wx.FlexGridSizer( 4, 2, 0, 0 )   # 4 rows, 2 cols, gap sizes 0
         szr03.SetFlexibleDirection( wx.BOTH )
         szr03.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
         
@@ -296,7 +297,7 @@ class PDFDialog (wx.Dialog):
                         u"*.pdf",
                         wx.Point(-1, -1), wx.Size(480,-1),
                         wx.FLP_OVERWRITE_PROMPT|
-                        wx.FLP_SAVE|
+                        wx.FLP_SAVE|wx.FLP_SMALL|
                         wx.FLP_USE_TEXTCTRL)
         szr03.Add(self.btn_aus, 0, wx.ALL, 5)
         tx_autor = wx.StaticText( self, wx.ID_ANY, u"Author:",
@@ -379,6 +380,11 @@ class PDFDialog (wx.Dialog):
         dat = event.GetPath()
         if dat not in self.FileList:
             doc = fitz.Document(dat)
+            if doc.needsPass:
+                wx.MessageBox("Cannot read encrypted file\n" + dat,
+                      "Encrypted File Error")
+                event.Skip()
+                return
             self.FileList[dat] = doc
         else:
             doc = self.FileList[dat]
@@ -388,6 +394,7 @@ class PDFDialog (wx.Dialog):
         self.szr02.AutoSizeColumn(0)
         self.Layout()
         event.Skip()
+
 #==============================================================================
 # "AusgabeDatei" - Event Handler for out file
 #==============================================================================
@@ -422,14 +429,14 @@ def make_pdf(dlg):
 # process one input file
 #==============================================================================
     for zeile in dlg.szr02.Table.data:
-        if zeile[5] =="1":             # a deleted row
+        if zeile[5] == "1":                 # this is a deleted row
             continue
         dateiname = zeile[0]
         doc = dlg.FileList[dateiname]
         max_seiten = int(zeile[1])
 #==============================================================================
 # user input minus 1, PDF pages count from zero
-# also correct any illogical input
+# also correct any inconsistent input
 #==============================================================================
         von = int(zeile[2]) - 1
         bis = int(zeile[3]) - 1
@@ -473,9 +480,8 @@ def make_pdf(dlg):
         while bm_lst[0][0] > 2:
             zeile = [bm_lst[0][0] - 1, "<>", bm_lst[0][2]]
             bm_lst.insert(0, zeile)
-        # now add infile's bookmarks, with an increased indent level
+        # now add infile's bookmarks
         for b in bm_lst:
-            print b[0], b[1], b[2]
             bm = pdf_out.addBookmark(b[1].encode("cp1252"), b[2],
                     parents[b[0]-1], None, False, False, "/Fit")
             parents[b[0]] = bm
