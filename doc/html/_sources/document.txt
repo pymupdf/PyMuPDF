@@ -9,16 +9,17 @@
 Methods and Attributes
 ======================
 
-======================================== ======================================================================
-:meth:`~Document.authenticate`           Method, decrypts the document with a supplied password
-:meth:`~Document.loadPage`               Method, loads a page for further processing. Returns a `Page` object.
-:meth:`~Document.save`                   Method, saves a copy of the document.
-:meth:`~Document.ToC`                    Method, creates a table of contents for the document
-:attr:`~Document.outline`                Attribute, contains the first `Outline` item or `None` if none exists.
-:attr:`~Document.needsPass`              Attribute, indicates whether the document is encrypted (bool)
-:attr:`~Document.pageCount`              Attribute, contains the number of pages in the document (integer)
-:attr:`~Document.metadata`               Attribute, contains the meta data of the document (dict)
-======================================== ======================================================================
+=============================== ================================
+:meth:`~Document.authenticate`  Decrypts the document.
+:meth:`~Document.loadPage`      Reads a page.
+:meth:`~Document.save`          Saves a copy of the document.
+:meth:`~Document.ToC`           Creates a table of contents.
+:meth:`~Document.close`         Closes the document.
+:attr:`~Document.outline`       First `Outline` item.
+:attr:`~Document.needsPass`     Is document is encrypted?
+:attr:`~Document.pageCount`     The document's number of pages.
+:attr:`~Document.metadata`      The document's meta data.
+=============================== ================================
 
 Class API
 ==========

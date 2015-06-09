@@ -9,11 +9,11 @@ Page interface, created by :meth:`Document.loadPage`.
 Methods
 =======
 
-========================== ======================================================================
-:meth:`~Page.bound`        Determine the size of a page before transformation.
-:meth:`~Page.loadLinks`    Get all the links in a page.
-:meth:`~Page.run`          Run a page through a device.
-========================== ======================================================================
+======================== ================================
+:meth:`~Page.bound`      Page size before transformation.
+:meth:`~Page.loadLinks`  Get all the links in a page.
+:meth:`~Page.run`        Run a page through a device.
+======================== ================================
 
 Class API
 ==========

@@ -25,8 +25,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
-    <link rel="next" title="IRect" href="irect.html" />
-    <link rel="prev" title="Functions" href="function_index.html" /> 
+    <link rel="next" title="Colorspace" href="colorspace.html" />
+    <link rel="prev" title="Tutorial" href="tutorial.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,10 +36,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="irect.html" title="IRect"
+          <a href="colorspace.html" title="Colorspace"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="function_index.html" title="Functions"
+          <a href="tutorial.html" title="Tutorial"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
       </ul>
@@ -52,11 +52,11 @@
             
   <div class="section" id="classes">
 <h1>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h1>
-<p>All the classes are listed here.</p>
+<p>The list of python-fitz classes</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="32%" />
-<col width="68%" />
+<col width="30%" />
+<col width="70%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Class</strong></th>
@@ -64,50 +64,50 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><a class="reference internal" href="irect.html#irect"><em>IRect</em></a></td>
-<td>A rectangle represented by integer corner coordinates.</td>
+<tr class="row-even"><td><a class="reference internal" href="colorspace.html#colorspace"><em>Colorspace</em></a></td>
+<td>Define the color space of a <a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a>.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="device.html#device"><em>Device</em></a></td>
-<td>Represents a target object for rendering or text extraction</td>
+<td>Target object for rendering or text extraction.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="displaylist.html#displaylist"><em>DisplayList</em></a></td>
 <td>A list containing drawing commands.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="document.html#document"><em>Document</em></a></td>
-<td>Document interface.</td>
+<td>Basic class for dealing with files.</td>
+</tr>
+<tr class="row-even"><td><em class="xref std std-ref">Identity</em></td>
+<td>The do-nothing <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="irect.html#irect"><em>IRect</em></a></td>
+<td>A rectangle (pixel coordinates).</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="link.html#link"><em>Link</em></a></td>
-<td>Represents a destination</td>
+<td>A destination</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></td>
-<td>A 3x3 matrix used for representing transformations.</td>
+<td>A 3x3 matrix used for transformations.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="outlineitem.html#outline"><em>Outline</em></a></td>
-<td>Outline of the document.</td>
+<tr class="row-even"><td><a class="reference internal" href="outline.html#outline"><em>Outline</em></a></td>
+<td>Outline element (a.k.a. bookmark).</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="page.html#page"><em>Page</em></a></td>
-<td>Document page interface.</td>
+<td>A document page.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a></td>
-<td>Represents a pixel map (for page rendering)</td>
+<td>A pixel map (for rendering).</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="point.html#point"><em>Point</em></a></td>
-<td>A point in the plane.</td>
+<td>Represents a point in the plane.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="rect.html#rect"><em>Rect</em></a></td>
-<td>A rectangle represented by the top-left and bottom-right corners.</td>
+<td>A rectangle (floating point coordinates).</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="textchar.html#textchar"><em>TextChar</em></a></td>
-<td>A unicode character with bounding rectangle.</td>
+<tr class="row-odd"><td><a class="reference internal" href="textpage.html#textpage"><em>TextPage</em></a></td>
+<td>Text content of a page.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="textpage.html#textpage"><em>TextPage</em></a></td>
-<td>Text content in a page.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="textsheet.html#textsheet"><em>TextSheet</em></a></td>
-<td>A list of text styles used on a page.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="writeoptions.html#writeoptions"><em>WriteOptions</em></a></td>
-<td>Options used when writing the document.</td>
+<tr class="row-even"><td><a class="reference internal" href="textsheet.html#textsheet"><em>TextSheet</em></a></td>
+<td>A list of text styles used in a page.</td>
 </tr>
 </tbody>
 </table>
@@ -122,11 +122,11 @@
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="function_index.html"
-                        title="previous chapter">Functions</a></p>
+  <p class="topless"><a href="tutorial.html"
+                        title="previous chapter"><strong>Tutorial</strong></a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="irect.html"
-                        title="next chapter"><strong>IRect</strong></a></p>
+  <p class="topless"><a href="colorspace.html"
+                        title="next chapter"><strong>Colorspace</strong></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/class_index.txt"
@@ -156,10 +156,10 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="irect.html" title="IRect"
+          <a href="colorspace.html" title="Colorspace"
              >next</a> |</li>
         <li class="right" >
-          <a href="function_index.html" title="Functions"
+          <a href="tutorial.html" title="Tutorial"
              >previous</a> |</li>
         <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
       </ul>

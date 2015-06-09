@@ -26,7 +26,7 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
-    <link rel="next" title="Link" href="link.html" />
+    <link rel="next" title="IRect" href="irect.html" />
     <link rel="prev" title="DisplayList" href="displaylist.html" /> 
   </head>
   <body>
@@ -37,7 +37,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="link.html" title="Link"
+          <a href="irect.html" title="IRect"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="displaylist.html" title="DisplayList"
@@ -59,33 +59,36 @@
 <h2>Methods and Attributes<a class="headerlink" href="#methods-and-attributes" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="36%" />
-<col width="64%" />
+<col width="49%" />
+<col width="51%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#Document.authenticate" title="Document.authenticate"><tt class="xref py py-meth docutils literal"><span class="pre">authenticate()</span></tt></a></td>
-<td>Method, decrypts the document with a supplied password</td>
+<td>Decrypts the document.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.loadPage" title="Document.loadPage"><tt class="xref py py-meth docutils literal"><span class="pre">loadPage()</span></tt></a></td>
-<td>Method, loads a page for further processing. Returns a <cite>Page</cite> object.</td>
+<td>Reads a page.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.save" title="Document.save"><tt class="xref py py-meth docutils literal"><span class="pre">save()</span></tt></a></td>
-<td>Method, saves a copy of the document.</td>
+<td>Saves a copy of the document.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.ToC" title="Document.ToC"><tt class="xref py py-meth docutils literal"><span class="pre">ToC()</span></tt></a></td>
-<td>Method, creates a table of contents for the document</td>
+<td>Creates a table of contents.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><tt class="xref py py-attr docutils literal"><span class="pre">outline</span></tt></a></td>
-<td>Attribute, contains the first <cite>Outline</cite> item or <cite>None</cite> if none exists.</td>
+<tr class="row-odd"><td><tt class="xref py py-meth docutils literal"><span class="pre">close()</span></tt></td>
+<td>Closes the document.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><tt class="xref py py-attr docutils literal"><span class="pre">needsPass</span></tt></a></td>
-<td>Attribute, indicates whether the document is encrypted (bool)</td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><tt class="xref py py-attr docutils literal"><span class="pre">outline</span></tt></a></td>
+<td>First <cite>Outline</cite> item.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><tt class="xref py py-attr docutils literal"><span class="pre">pageCount</span></tt></a></td>
-<td>Attribute, contains the number of pages in the document (integer)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><tt class="xref py py-attr docutils literal"><span class="pre">needsPass</span></tt></a></td>
+<td>Is document is encrypted?</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><tt class="xref py py-attr docutils literal"><span class="pre">metadata</span></tt></a></td>
-<td>Attribute, contains the meta data of the document (dict)</td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><tt class="xref py py-attr docutils literal"><span class="pre">pageCount</span></tt></a></td>
+<td>The document&#8217;s number of pages.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><tt class="xref py py-attr docutils literal"><span class="pre">metadata</span></tt></a></td>
+<td>The document&#8217;s meta data.</td>
 </tr>
 </tbody>
 </table>
@@ -160,12 +163,12 @@
 <dl class="attribute">
 <dt id="Document.outline">
 <tt class="descname">outline</tt><a class="headerlink" href="#Document.outline" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains either <tt class="docutils literal"><span class="pre">None</span></tt> or the first <a class="reference internal" href="outlineitem.html#outline"><em>Outline</em></a> entry of the document. Can be used as a starting point to walk through all outline items.</p>
+<dd><p>Contains either <tt class="docutils literal"><span class="pre">None</span></tt> or the first <a class="reference internal" href="outline.html#outline"><em>Outline</em></a> entry of the document. Can be used as a starting point to walk through all outline items.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="outlineitem.html#outline"><em>Outline</em></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="outline.html#outline"><em>Outline</em></a></td>
 </tr>
 </tbody>
 </table>
@@ -237,8 +240,8 @@
   <p class="topless"><a href="displaylist.html"
                         title="previous chapter"><strong>DisplayList</strong></a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="link.html"
-                        title="next chapter"><strong>Link</strong></a></p>
+  <p class="topless"><a href="irect.html"
+                        title="next chapter"><strong>IRect</strong></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/document.txt"
@@ -268,7 +271,7 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="link.html" title="Link"
+          <a href="irect.html" title="IRect"
              >next</a> |</li>
         <li class="right" >
           <a href="displaylist.html" title="DisplayList"

@@ -24,7 +24,10 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" /> 
+    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
+    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="next" title="Document" href="document.html" />
+    <link rel="prev" title="Device" href="device.html" /> 
   </head>
   <body>
     <div class="related">
@@ -33,7 +36,14 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="document.html" title="Document"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="device.html" title="Device"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -44,21 +54,18 @@
             
   <div class="section" id="displaylist">
 <span id="id1"></span><h1><strong>DisplayList</strong><a class="headerlink" href="#displaylist" title="Permalink to this headline">¶</a></h1>
-<p>DisplayList is a list containing drawing commands (text, images, etc.). The intent is two-fold: as a caching-mechanism to reduce parsing of a page, and to be used as a data structure in multi-threading where one thread parses the page and another renders pages.</p>
-<p>A displaylist is created by <tt class="xref py py-meth docutils literal"><span class="pre">Context.new_display_list()</span></tt>, and populated with objects from a page by running <tt class="xref py py-meth docutils literal"><span class="pre">Page.run_page()</span></tt> on a device obtained from <a class="reference internal" href="#DisplayList.new_list_device" title="DisplayList.new_list_device"><tt class="xref py py-meth docutils literal"><span class="pre">new_list_device()</span></tt></a>. Replay the list (once or many times) by calling <a class="reference internal" href="#DisplayList.run_display_list" title="DisplayList.run_display_list"><tt class="xref py py-meth docutils literal"><span class="pre">run_display_list()</span></tt></a>.</p>
+<p>DisplayList is a list containing drawing commands (text, images, etc.). The intent is two-fold: as a caching-mechanism to reduce parsing of a page, and to be used as a data structure in multi-threading where one thread parses the page and another one renders pages.</p>
+<p>A <tt class="docutils literal"><span class="pre">DisplayList</span></tt> is populated with objects from a page by running <a class="reference internal" href="page.html#Page.run" title="Page.run"><tt class="xref py py-meth docutils literal"><span class="pre">Page.run()</span></tt></a> on a <a class="reference internal" href="device.html#device"><em>Device</em></a>. Replay the list (once or many times) by calling <a class="reference internal" href="#DisplayList.run" title="DisplayList.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a>.</p>
 <div class="section" id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="43%" />
-<col width="57%" />
+<col width="38%" />
+<col width="62%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#DisplayList.run_display_list" title="DisplayList.run_display_list"><tt class="xref py py-meth docutils literal"><span class="pre">run_display_list()</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#DisplayList.run" title="DisplayList.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a></td>
 <td>(Re)-run a display list through a device.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#DisplayList.new_list_device" title="DisplayList.new_list_device"><tt class="xref py py-meth docutils literal"><span class="pre">new_list_device()</span></tt></a></td>
-<td>Create a rendering device for a display list.</td>
 </tr>
 </tbody>
 </table>
@@ -69,10 +76,10 @@
 <dt id="DisplayList">
 <em class="property">class </em><tt class="descname">DisplayList</tt><a class="headerlink" href="#DisplayList" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="DisplayList.new_list_device">
-<tt class="descname">new_list_device</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#DisplayList.new_list_device" title="Permalink to this definition">¶</a></dt>
+<dt id="DisplayList.fitz.DisplayList">
+<tt class="descclassname">fitz.</tt><tt class="descname">DisplayList</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#DisplayList.fitz.DisplayList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a rendering device for a display list.</p>
-<p>When the device is rendering a page it will populate the display list with drawing commsnds (text, images, etc.). The display list can later be reused to render a page many times without having to re-interpret the page from the document file for each rendering.</p>
+<p>When the device is rendering a page it will populate the display list with drawing commands (text, images, etc.). The display list can later be reused to render a page many times without having to re-interpret the page from the document file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -84,17 +91,16 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="DisplayList.run_display_list">
-<tt class="descname">run_display_list</tt><big>(</big><em>self</em>, <em>dev</em>, <em>ctm</em>, <em>cookie</em><big>)</big><a class="headerlink" href="#DisplayList.run_display_list" title="Permalink to this definition">¶</a></dt>
+<dt id="DisplayList.run">
+<tt class="descname">run</tt><big>(</big><em>self</em>, <em>dev</em>, <em>ctm</em><big>)</big><a class="headerlink" href="#DisplayList.run" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>dev</strong> (<a class="reference internal" href="device.html#device"><em>Device</em></a>) &#8211; Device obtained from <tt class="xref py py-func docutils literal"><span class="pre">new_*_device()</span></tt>.</li>
-<li><strong>ctm</strong> (<a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a>) &#8211; Transform matrix to apply to display list contents. May include for example scaling and rotation, see <a class="reference internal" href="function_index.html#scale_matrix" title="scale_matrix"><tt class="xref py py-func docutils literal"><span class="pre">scale_matrix()</span></tt></a> and <a class="reference internal" href="function_index.html#rotate_matrix" title="rotate_matrix"><tt class="xref py py-func docutils literal"><span class="pre">rotate_matrix()</span></tt></a>. Set to <a class="reference internal" href="vars.html#fz_identity" title="fz_identity"><tt class="xref py py-data docutils literal"><span class="pre">fz_identity</span></tt></a> if no transformation is desired.</li>
-<li><strong>area</strong> (<em class="xref std std-ref">BBox</em>) &#8211; Only the part of the contents of the display list visible within this area will be considered when the list is run through the device. This does not imply for tile objects contained in the display list.</li>
-<li><strong>cookie</strong> (<em class="xref std std-ref">Cookie</em>) &#8211; Communication mechanism between caller and library running the page. Intended for multi-threaded applications, while single-threaded applications set cookie to <tt class="docutils literal"><span class="pre">None</span></tt>. The caller may abort an ongoing page run. Cookie also communicates progress information back to the caller. The fields inside cookie are continually updated while the page is being run.</li>
+<li><strong>dev</strong> (<a class="reference internal" href="device.html#device"><em>Device</em></a>) &#8211; Device obtained from <a class="reference internal" href="device.html#device"><em>Device</em></a></li>
+<li><strong>ctm</strong> (<a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a>) &#8211; Transform matrix to apply to display list contents.</li>
+<li><strong>area</strong> (<a class="reference internal" href="irect.html#irect"><em>IRect</em></a>) &#8211; Only the part of the contents of the display list visible within this area will be considered when the list is run through the device. This does not imply for tile objects contained in the display list.</li>
 </ul>
 </td>
 </tr>
@@ -122,6 +128,12 @@
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="device.html"
+                        title="previous chapter"><strong>Device</strong></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="document.html"
+                        title="next chapter"><strong>Document</strong></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/displaylist.txt"
@@ -150,7 +162,14 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="document.html" title="Document"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="device.html" title="Device"
+             >previous</a> |</li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

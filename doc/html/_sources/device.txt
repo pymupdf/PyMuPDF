@@ -4,15 +4,35 @@
 **Device**
 ================
 
-The different format handlers (pdf, xps etc) interpret pages to a device. These devices can then process the stream of calls they recieve in various ways:
+The different format handlers (pdf, xps, etc.) interpret pages to a "device". These devices are the basis for everything that be done with a page, like rendering, text extraction and searching. What will actually be done with a page, depends on the argument type used in constructing a device.
 
-* The bbox device calculates the bounding box for the page.
-* The draw device will render them.
-* The list device stores them in a list to play back later.
-* The text device performs text extraction and searching.
+Class API
+==========
 
-Device can be created by :
+.. class:: Device
 
-* :meth:`Pixmap.new_draw_device`
-* :meth:`DisplayList.new_list_device`
-* :meth:`TextPage.new_text_device`
+   .. method:: __init__(self, obj)
+
+      Constructor
+
+   .. attribute:: obj
+
+      An object representing on of :ref:`Pixmap`, :ref:`DisplayList`
+
+      :type: instance
+
+   .. method:: __init__(self, ts, tp)
+
+      Constructor
+
+   .. attribute:: ts
+
+      A :ref:`TextSheet` object.
+
+      :type: instance
+
+   .. attribute:: tp
+
+      A :ref:`TextPage` object.
+
+      :type: instance

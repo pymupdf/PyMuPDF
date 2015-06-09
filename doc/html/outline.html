@@ -24,7 +24,10 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" /> 
+    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
+    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="next" title="Page" href="page.html" />
+    <link rel="prev" title="Matrix" href="matrix.html" /> 
   </head>
   <body>
     <div class="related">
@@ -33,7 +36,14 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="page.html" title="Page"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="matrix.html" title="Matrix"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -44,50 +54,85 @@
             
   <div class="section" id="outline">
 <span id="id1"></span><h1><strong>Outline</strong><a class="headerlink" href="#outline" title="Permalink to this headline">¶</a></h1>
-<p>Outline is a tree of the outline of a document (also known as table of contents). The outline can be obtained by <tt class="xref py py-meth docutils literal"><span class="pre">Document.load_outline()</span></tt>.</p>
-<div class="section" id="methods">
-<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">outline</span></tt> is a property of <tt class="docutils literal"><span class="pre">Document</span></tt>. If not <tt class="docutils literal"><span class="pre">None</span></tt>, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in either &#8220;horizontal&#8221; direction by property <tt class="docutils literal"><span class="pre">.next</span></tt> to the next item of same level, or downwards with property <tt class="docutils literal"><span class="pre">.down</span></tt> to the next item one level lower. The full tree of all outline items for e.g. a conventional table of contents can be recovered by following these &#8220;pointers&#8221;.</p>
+<div class="section" id="methods-and-attributes">
+<h2>Methods and Attributes<a class="headerlink" href="#methods-and-attributes" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="36%" />
-<col width="64%" />
+<col width="34%" />
+<col width="66%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#Outline.get_first" title="Outline.get_first"><tt class="xref py py-meth docutils literal"><span class="pre">get_first()</span></tt></a></td>
-<td>Get the first item in the outline.</td>
+<tr class="row-odd"><td><tt class="xref py py-attr docutils literal"><span class="pre">down</span></tt></td>
+<td>Next item downwards</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Outline.print_outline" title="Outline.print_outline"><tt class="xref py py-meth docutils literal"><span class="pre">print_outline()</span></tt></a></td>
-<td>Write the outline to file.</td>
+<tr class="row-even"><td><tt class="xref py py-attr docutils literal"><span class="pre">next</span></tt></td>
+<td>Next item same level</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Outline.print_outline_xml" title="Outline.print_outline_xml"><tt class="xref py py-meth docutils literal"><span class="pre">print_outline_xml()</span></tt></a></td>
-<td>Write the outline as (pseudo) XML.</td>
+<tr class="row-odd"><td><tt class="xref py py-attr docutils literal"><span class="pre">dest</span></tt></td>
+<td>Destination, contains sub-properties.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-attr docutils literal"><span class="pre">title</span></tt></td>
+<td>Title (UTF-8 string)</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-meth docutils literal"><span class="pre">saveText()</span></tt></td>
+<td>Prints a conventional table of contents to a file.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-meth docutils literal"><span class="pre">saveXML()</span></tt></td>
+<td>Prints an XML-like table of contents to a file.</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="section" id="class-api">
-<h2>Class API<a class="headerlink" href="#class-api" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="Outline">
-<em class="property">class </em><tt class="descname">Outline</tt><a class="headerlink" href="#Outline" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="Outline.get_first">
-<tt class="descname">get_first</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#Outline.get_first" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the first item in the outline.</p>
+<div class="section" id="properties-methods-api">
+<h2>Properties / Methods API<a class="headerlink" href="#properties-methods-api" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><dl class="attribute">
+<dt id="down">
+<tt class="descname">down</tt><a class="headerlink" href="#down" title="Permalink to this definition">¶</a></dt>
+<dd><p>The next outline item on the next level down. Is <tt class="docutils literal"><span class="pre">None</span></tt> if the item has no children.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="outlineitem.html#outlineitem"><em>OutlineItem</em></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#outline"><em>Outline</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="next">
+<tt class="descname">next</tt><a class="headerlink" href="#next" title="Permalink to this definition">¶</a></dt>
+<dd><p>The next outline item at the same level as this item. Is <tt class="docutils literal"><span class="pre">None</span></tt> if the item is the last one in its level.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#outline"><em>Outline</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="title">
+<tt class="descname">title</tt><a class="headerlink" href="#title" title="Permalink to this definition">¶</a></dt>
+<dd><p>The item&#8217;s title as a UTF-8 string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="Outline.print_outline">
-<tt class="descname">print_outline</tt><big>(</big><em>self</em>, <em>filename</em><big>)</big><a class="headerlink" href="#Outline.print_outline" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write the outline to file.</p>
+<dt id="saveText">
+<tt class="descname">saveText</tt><big>(</big><big>)</big><a class="headerlink" href="#saveText" title="Permalink to this definition">¶</a></dt>
+<dd><p>The chain of outline items is being processed and printed to a file <tt class="docutils literal"><span class="pre">filename</span></tt> as a conventional table of contents.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -99,21 +144,106 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="Outline.print_outline_xml">
-<tt class="descname">print_outline_xml</tt><big>(</big><em>self</em>, <em>filename</em><big>)</big><a class="headerlink" href="#Outline.print_outline_xml" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write the outline as (pseudo) XML.</p>
+<dt id="saveXML">
+<tt class="descname">saveXML</tt><big>(</big><big>)</big><a class="headerlink" href="#saveXML" title="Permalink to this definition">¶</a></dt>
+<dd><p>The chain of outline items is being processed and printed to a file <tt class="docutils literal"><span class="pre">filename</span></tt> as an XML-like table of contents.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) &#8211; Name of the file to write to.</td>
 </tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#outline"><em>Outline</em></a></td>
+</tr>
 </tbody>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="get_page">
+<tt class="descname">get_page</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#get_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the page number of the destination.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
+<dl class="method">
+<dt id="get_page_flags">
+<tt class="descname">get_page_flags</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#get_page_flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the validity and meaning of the destination link, see <a class="reference internal" href="vars.html#fz_link_flag" title="fz_link_flag"><tt class="xref py py-data docutils literal"><span class="pre">fz_link_flag</span></tt></a>.</p>
+<blockquote>
+<div>The flags is a bitfield consisting of <a class="reference internal" href="vars.html#fz_link_flag" title="fz_link_flag"><tt class="xref py py-data docutils literal"><span class="pre">fz_link_flag</span></tt></a> describing the validity and meaning of the different parts of lr and rb. Link destinations are constructed (as far as possible) so that lt and rb can be treated as a bounding box, though the validity flags indicate which of the values was actually specified in the file.</div></blockquote>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="link.html#Link.get_page_flags" title="Link.get_page_flags"><tt class="xref py py-meth docutils literal"><span class="pre">Link.get_page_flags()</span></tt></a></p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="get_page_lt">
+<tt class="descname">get_page_lt</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#get_page_lt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the top left corner of the destination bounding box.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">For the returning point, (0, 0) is in the bottom left corner, which is different from <a class="reference internal" href="rect.html#rect"><em>Rect</em></a> and <a class="reference internal" href="irect.html#irect"><em>IRect</em></a>.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="point.html#point"><em>Point</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="get_page_rb">
+<tt class="descname">get_page_rb</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#get_page_rb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the bottom right corner of the destination bounding box.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">For the returning point, (0, 0) is in the bottom left corner, which is different from <a class="reference internal" href="rect.html#rect"><em>Rect</em></a> and <a class="reference internal" href="irect.html#irect"><em>IRect</em></a>.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="point.html#point"><em>Point</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="get_title">
+<tt class="descname">get_title</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#get_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get title of outline item using UTF-8 encoding.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
 </div>
 </div>
 
@@ -126,12 +256,18 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#"><strong>Outline</strong></a><ul>
-<li><a class="reference internal" href="#methods">Methods</a></li>
-<li><a class="reference internal" href="#class-api">Class API</a></li>
+<li><a class="reference internal" href="#methods-and-attributes">Methods and Attributes</a></li>
+<li><a class="reference internal" href="#properties-methods-api">Properties / Methods API</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="matrix.html"
+                        title="previous chapter"><strong>Matrix</strong></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="page.html"
+                        title="next chapter"><strong>Page</strong></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/outline.txt"
@@ -160,7 +296,14 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="page.html" title="Page"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="matrix.html" title="Matrix"
+             >previous</a> |</li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

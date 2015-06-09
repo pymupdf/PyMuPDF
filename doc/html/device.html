@@ -24,7 +24,10 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" /> 
+    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
+    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="next" title="DisplayList" href="displaylist.html" />
+    <link rel="prev" title="Colorspace" href="colorspace.html" /> 
   </head>
   <body>
     <div class="related">
@@ -33,7 +36,14 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="displaylist.html" title="DisplayList"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="colorspace.html" title="Colorspace"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -44,19 +54,69 @@
             
   <div class="section" id="device">
 <span id="id1"></span><h1><strong>Device</strong><a class="headerlink" href="#device" title="Permalink to this headline">¶</a></h1>
-<p>The different format handlers (pdf, xps etc) interpret pages to a device. These devices can then process the stream of calls they recieve in various ways:</p>
-<ul class="simple">
-<li>The bbox device calculates the bounding box for the page.</li>
-<li>The draw device will render them.</li>
-<li>The list device stores them in a list to play back later.</li>
-<li>The text device performs text extraction and searching.</li>
-</ul>
-<p>Device can be created by :</p>
-<ul class="simple">
-<li><a class="reference internal" href="pixmap.html#Pixmap.new_draw_device" title="Pixmap.new_draw_device"><tt class="xref py py-meth docutils literal"><span class="pre">Pixmap.new_draw_device()</span></tt></a></li>
-<li><a class="reference internal" href="displaylist.html#DisplayList.new_list_device" title="DisplayList.new_list_device"><tt class="xref py py-meth docutils literal"><span class="pre">DisplayList.new_list_device()</span></tt></a></li>
-<li><a class="reference internal" href="textpage.html#TextPage.new_text_device" title="TextPage.new_text_device"><tt class="xref py py-meth docutils literal"><span class="pre">TextPage.new_text_device()</span></tt></a></li>
-</ul>
+<p>The different format handlers (pdf, xps, etc.) interpret pages to a &#8220;device&#8221;. These devices are the basis for everything that be done with a page, like rendering, text extraction and searching. What will actually be done with a page, depends on the argument type used in constructing a device.</p>
+<div class="section" id="class-api">
+<h2>Class API<a class="headerlink" href="#class-api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Device">
+<em class="property">class </em><tt class="descname">Device</tt><a class="headerlink" href="#Device" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Device.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>self</em>, <em>obj</em><big>)</big><a class="headerlink" href="#Device.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Device.obj">
+<tt class="descname">obj</tt><a class="headerlink" href="#Device.obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>An object representing on of <a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a>, <a class="reference internal" href="displaylist.html#displaylist"><em>DisplayList</em></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">instance</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">__init__</tt><big>(</big><em>self</em>, <em>ts</em>, <em>tp</em><big>)</big></dt>
+<dd><p>Constructor</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Device.ts">
+<tt class="descname">ts</tt><a class="headerlink" href="#Device.ts" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="textsheet.html#textsheet"><em>TextSheet</em></a> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">instance</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Device.tp">
+<tt class="descname">tp</tt><a class="headerlink" href="#Device.tp" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="textpage.html#textpage"><em>TextPage</em></a> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">instance</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -65,6 +125,20 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><strong>Device</strong></a><ul>
+<li><a class="reference internal" href="#class-api">Class API</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="colorspace.html"
+                        title="previous chapter"><strong>Colorspace</strong></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="displaylist.html"
+                        title="next chapter"><strong>DisplayList</strong></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/device.txt"
@@ -93,7 +167,14 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="displaylist.html" title="DisplayList"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="colorspace.html" title="Colorspace"
+             >previous</a> |</li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

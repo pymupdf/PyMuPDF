@@ -24,7 +24,10 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" /> 
+    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
+    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="next" title="TextPage" href="textpage.html" />
+    <link rel="prev" title="Point" href="point.html" /> 
   </head>
   <body>
     <div class="related">
@@ -33,7 +36,14 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="textpage.html" title="TextPage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="point.html" title="Point"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -44,21 +54,21 @@
             
   <div class="section" id="rect">
 <span id="id1"></span><h1><strong>Rect</strong><a class="headerlink" href="#rect" title="Permalink to this headline">¶</a></h1>
-<p>Rect is a rectangle represented by its top left and its bottom right corner coordinates: ((x0, y0), (x1, y1)).</p>
-<p>Rectangles are always axis-aligned with the X- and Y- axes. The relationship between the coordinates are that x0 &lt;= x1 and y0 &lt;= y1 in all cases except for infinte rectangles. The area of a rectangle is defined as (x1 - x0) * (y1 - y0). If either x0 &gt; x1 or y0 &gt; y1 is true for a given rectangle then it is defined to be infinite.</p>
+<p><tt class="docutils literal"><span class="pre">Rect</span></tt> is a rectangle represented by its top left and its bottom right corner coordinates: ((x0, y0), (x1, y1)).</p>
+<p>Rectangles are always axis-aligned with the X- and Y- axes. If x0 &lt;= x1 and y0 &lt;= y1 is true, the rectangle is called &#8220;finite&#8221;, else &#8220;infinite&#8221;.</p>
 <div class="section" id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="33%" />
-<col width="67%" />
+<col width="24%" />
+<col width="76%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><tt class="xref py py-meth docutils literal"><span class="pre">round()</span></tt></td>
-<td>creates an <tt class="docutils literal"><span class="pre">Irect</span></tt> for rectangle (smallest pixel area containing it)</td>
+<td>creates an <a class="reference internal" href="irect.html#irect"><em>IRect</em></a> for <tt class="docutils literal"><span class="pre">Rect</span></tt> (smallest pixel area containing it)</td>
 </tr>
 <tr class="row-even"><td><tt class="xref py py-meth docutils literal"><span class="pre">transform()</span></tt></td>
-<td>transform rectangle with a <tt class="docutils literal"><span class="pre">Matrix</span></tt></td>
+<td>transform rectangle with a <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></td>
 </tr>
 </tbody>
 </table>
@@ -208,6 +218,12 @@
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="point.html"
+                        title="previous chapter"><strong>Point</strong></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="textpage.html"
+                        title="next chapter"><strong>TextPage</strong></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/rect.txt"
@@ -236,7 +252,14 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="textpage.html" title="TextPage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="point.html" title="Point"
+             >previous</a> |</li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

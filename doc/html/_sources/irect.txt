@@ -8,23 +8,17 @@ IRect is a bounding box similar to :ref:`Rect`, except that all corner coordinat
 
 .. seealso:: :ref:`Rect`
 
-Methods
-=======
-
-==================================== ======================================================
-:meth:`~IRect.width`                 Get width of the bounding box.
-:meth:`~IRect.height`                Get height of the bounding box.
-==================================== ======================================================
-
 Attributes
 ==========
 
-================ ========================================
-:attr:`~IRect.x0` X-coordinate of the top left corner.
-:attr:`~IRect.y0` Y-coordinate of the top left corner.
-:attr:`~IRect.x1` X-coordinate of the bottom right corner.
-:attr:`~IRect.y1` Y-coordinate of the bottom right corner.
-================ ========================================
+====================== ========================================
+:attr:`~IRect.width`   width of the bounding box.
+:attr:`~IRect.height`  height of the bounding box.
+:attr:`~IRect.x0`      X-coordinate of the top left corner.
+:attr:`~IRect.y0`      Y-coordinate of the top left corner.
+:attr:`~IRect.x1`      X-coordinate of the bottom right corner.
+:attr:`~IRect.y1`      Y-coordinate of the bottom right corner.
+====================== ========================================
 
 Class API
 ==========
@@ -39,13 +33,13 @@ Class API
 
       Contains the width of the bounding box.
 
-      :rtype: int
+      :type: int
 
    .. attribute:: height
 
       Contains the height of the bounding box.
 
-      :rtype: int
+      :type: int
 
    .. attribute:: x0
 
@@ -72,4 +66,3 @@ Class API
       Y-coordinate of the bottom right corner.
 
       :type: int
-

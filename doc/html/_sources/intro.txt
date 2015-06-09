@@ -6,14 +6,14 @@
 
 MuPDF can access files in PDF, XPS, OpenXPS and EPUB formats.
 
-These are files with file extensions ``*.pdf``, ``*.xps``, ``*.oxps`` or ``*.epub`` (so in essence, this binding can also serve to use **Python scripts as an e-book viewer** ...)
+These are files with file extensions ``*.pdf``, ``*.xps``, ``*.oxps`` or ``*.epub`` (so in essence, this binding can also serve to use **Python scripts as e-book viewers** ...)
 
-python-fitz provides access to almost all functions of MuPDF from within a Python environment.
+python-fitz provides access to all important functions of MuPDF from within a Python environment. We are continuously increasing the set of accessible MuPDF functions.
 
 MuPDF stands out among all similar products for its top rendering capability and unsurpassed processing speed.
 
-You can check this yourself:
-Try out and compare the various free PDF-viewers. In terms of speed and rendering quality **SumatraPDF** ranges at the top - and it is based on  MuPDF!
+You can check this out yourself:
+Compare the various free PDF-viewers. In terms of speed and rendering quality **SumatraPDF** ranges at the top - and it is based on  MuPDF!
 
 While these bindings have been available since several years for an earlier version of MuPDF (1.2), it was until only recently (mid May 2015), that its creator and a few co-workers decided to elevate this repository to the current release of MuPDF, which now counts at version 1.7a.
 

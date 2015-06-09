@@ -13,9 +13,8 @@ Contents:
 
    intro.txt
    tutorial.txt
-   fitz_dir.txt
-   function_index.txt
    class_index.txt
+   function_index.txt
    vars.txt
 
 
@@ -26,4 +25,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

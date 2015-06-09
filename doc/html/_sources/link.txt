@@ -3,20 +3,20 @@
 ================
 **Link**
 ================
-Represents a link to somewhere (in the document, other documents or the internet). Links are by document page, and they are chained to each other, starting from an initial link which is accessible by the ``page.loadLinks()`` method.
+Represents a pointer to somewhere (this document, other documents, the internet). Links exist per document page, and they are chained to each other, starting from an initial link which is accessible by the ``Page.loadLinks()`` method.
 
 Methods
 =======
 
-============================= =================================================================================
-:meth:`~Link.rect`            Get the hot zone. The area that can be clicked in untransformed coordinates.
-:meth:`~Link.get_kind`        Get the kind of link destination.
-:meth:`~Link.get_uri`         Get a UTF-8 encoded URI to launch.
-:meth:`~Link.get_page`        Get the target page number of a internal link
-:meth:`~Link.get_page_flags`  Get the validity and meaning of a internal link, see :data:`fz_link_flag`
-:meth:`~Link.get_page_lt`     Get the top left corner of the destination bounding box.
-:meth:`~Link.get_page_rb`     Get the bottom right corner of the destination bounding box.
-============================= =================================================================================
+============================= ============================================
+:meth:`~Link.rect`            Clickable area in untransformed coordinates.
+:meth:`~Link.get_kind`        Kind of link destination.
+:meth:`~Link.get_uri`         UTF-8 encoded URI to launch.
+:meth:`~Link.get_page`        Target page number of an internal link
+:meth:`~Link.get_page_flags`  Validity and meaning of an internal link.
+:meth:`~Link.get_page_lt`     Top left corner of target rectangle.
+:meth:`~Link.get_page_rb`     Bottom right corner of target rectangle.
+============================= ============================================
 
 Class API
 ==========
@@ -37,7 +37,7 @@ Class API
 
    .. method:: get_uri(self)
 
-      Get a UTF-8 encoded URI to launch. Return ``None`` if no uri avaliable.
+      Get a UTF-8 encoded URI to launch. Return ``None`` if no URI is avaliable.
 
       :rtype: string
 
@@ -49,9 +49,7 @@ Class API
 
    .. method:: get_page_flags(self)
 
-      Get the validity and meaning of a internal link, see :data:`fz_link_flag`.
-
-	  The flags is a bitfield consisting of :data:`fz_link_flag` describing the validity and meaning of the different parts of lr and rb. Link destinations are constructed (as far as possible) so that lt and rb can be treated as a bounding box, though the validity flags indicate which of the values was actually specified in the file.
+      Get the validity and meaning of a internal link, see :data:`fz_link_flag`. The flags is a bitfield consisting of :data:`fz_link_flag` describing the validity and meaning of the different parts of lr and rb. Link destinations are constructed (as far as possible) so that lt and rb can be treated as a bounding box, though the validity flags indicate which of the values was actually specified in the file.
 
       .. seealso:: :meth:`~Link.get_page_lt`, :meth:`~Link.get_page_rb`
 
@@ -61,7 +59,7 @@ Class API
 
       Get the top left corner of the destination bounding box.
 
-      .. warning:: For the returning point, (0, 0) is in the bottom left corner, which is different from :ref:`Rect` and :ref:`BBox`.
+      .. warning:: For the returning point, (0, 0) is in the bottom left corner, which is different from :ref:`Rect` and :ref:`IRect`.
 
       :rtype: :ref:`Point`
 
@@ -69,6 +67,6 @@ Class API
 
       Get the bottom right corner of the destination bounding box.
 
-      .. warning:: For the returning point, (0, 0) is in the bottom left corner, which is different from :ref:`Rect` and :ref:`BBox`.
+      .. warning:: For the returning point, (0, 0) is in the bottom left corner, which is different from :ref:`Rect` and :ref:`IRect`.
 
       :rtype: :ref:`Point`

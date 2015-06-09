@@ -53,33 +53,17 @@
 <h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="21%" />
-<col width="79%" />
+<col width="39%" />
+<col width="61%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><dl class="first last data">
-<dt id="FZ_STORE_DEFAULT">
-<tt class="descname">FZ_STORE_DEFAULT</tt><a class="headerlink" href="#FZ_STORE_DEFAULT" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
-<td>A reasonable upper bound on the context size.</td>
-</tr>
-<tr class="row-even"><td><dl class="first last data">
-<dt id="FZ_STORE_UNLIMITED">
-<tt class="descname">FZ_STORE_UNLIMITED</tt><a class="headerlink" href="#FZ_STORE_UNLIMITED" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
-<td>Let the context size unbounded.</td>
-</tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="fz_device_bgr">
 <tt class="descname">fz_device_bgr</tt><a class="headerlink" href="#fz_device_bgr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </td>
-<td>Abstract colorspace representing device specific bgr.</td>
+<td>obsolete</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="fz_device_cmyk">
@@ -87,7 +71,7 @@
 <dd></dd></dl>
 
 </td>
-<td>Abstract colorspace representing device specific CMYK.</td>
+<td>obsolete</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="fz_device_gray">
@@ -95,7 +79,7 @@
 <dd></dd></dl>
 
 </td>
-<td>Abstract colorspace representing device specific gray.</td>
+<td>obsolete</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="fz_device_rgb">
@@ -103,7 +87,7 @@
 <dd></dd></dl>
 
 </td>
-<td>Abstract colorspace representing device specific rgb.</td>
+<td>obsolete</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="fz_expand_images">
@@ -111,7 +95,7 @@
 <dd></dd></dl>
 
 </td>
-<td>Expand images when writing document.</td>
+<td>obsolete</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="fz_expand_fonts">
@@ -119,7 +103,7 @@
 <dd></dd></dl>
 
 </td>
-<td>Expand fonts when writing document.</td>
+<td>obsolete</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="fz_expand_all">
@@ -127,7 +111,7 @@
 <dd></dd></dl>
 
 </td>
-<td>Expand images and fonts when writing document.</td>
+<td>obsolete</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="fz_empty_bbox">
@@ -135,7 +119,7 @@
 <dd></dd></dl>
 
 </td>
-<td>An empty bounding box with an area equal to zero. Both the top left and bottom right corner are at (0, 0).</td>
+<td>obsolete</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="fz_empty_rect">
@@ -143,7 +127,7 @@
 <dd></dd></dl>
 
 </td>
-<td>An empty rectangle with an area equal to zero. Both the top left and bottom right corner are at (0, 0).</td>
+<td>obsolete</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="fz_identity">
@@ -151,7 +135,7 @@
 <dd></dd></dl>
 
 </td>
-<td>Identity transform matrix.</td>
+<td>obsolete</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="fz_infinite_bbox">
@@ -159,7 +143,7 @@
 <dd></dd></dl>
 
 </td>
-<td>An infinite bounding box with negative area. Corner (x0, y0) is at (1, 1) while corner (x1, y1) is at (-1, -1).</td>
+<td>obsolete</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="fz_infinite_rect">
@@ -167,7 +151,7 @@
 <dd></dd></dl>
 
 </td>
-<td>An infinite rectangle with negative area. Corner (x0, y0) is at (1, 1) while corner (x1, y1) is at (-1, -1).</td>
+<td>obsolete</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="fz_unit_bbox">
@@ -175,7 +159,7 @@
 <dd></dd></dl>
 
 </td>
-<td>A bounding box with sides of length one. The top left corner is at (0, 0) and the bottom right corner is at (1, 1).</td>
+<td>obsolete</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="fz_unit_rect">
@@ -183,7 +167,7 @@
 <dd></dd></dl>
 
 </td>
-<td>A rectangle with sides of length one. The top left corner is at (0, 0) and the bottom right corner is at (1, 1).</td>
+<td>obsolete</td>
 </tr>
 </tbody>
 </table>
@@ -192,8 +176,8 @@
 <h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="35%" />
-<col width="65%" />
+<col width="42%" />
+<col width="58%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><dl class="first last data">
@@ -212,7 +196,7 @@
 <dd></dd></dl>
 
 </td>
-<td>The link points to some place with the document.</td>
+<td>Points to some place in this document.</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="FZ_LINK_GOTOR">
@@ -220,7 +204,7 @@
 <dd></dd></dl>
 
 </td>
-<td>The link points to some place in another document.</td>
+<td>Points to another document.</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="FZ_LINK_LAUNCH">
@@ -228,7 +212,7 @@
 <dd></dd></dl>
 
 </td>
-<td>The link lanches a file.</td>
+<td>Launches a file.</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="FZ_LINK_NAMED">
@@ -236,7 +220,7 @@
 <dd></dd></dl>
 
 </td>
-<td>The link perform some action.</td>
+<td>Performs some action.</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="FZ_LINK_NONE">
@@ -244,7 +228,7 @@
 <dd></dd></dl>
 
 </td>
-<td>There&#8217;s no destination.</td>
+<td>No destination.</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="FZ_LINK_URI">
@@ -252,15 +236,15 @@
 <dd></dd></dl>
 
 </td>
-<td>The link points to an uri.</td>
+<td>Points to an URI.</td>
 </tr>
 </tbody>
 </table>
 <hr class="docutils" />
 <table border="1" class="docutils">
 <colgroup>
-<col width="48%" />
 <col width="52%" />
+<col width="48%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><dl class="first last data">

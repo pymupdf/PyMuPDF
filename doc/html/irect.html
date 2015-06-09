@@ -24,7 +24,10 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" /> 
+    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
+    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="next" title="Link" href="link.html" />
+    <link rel="prev" title="Document" href="document.html" /> 
   </head>
   <body>
     <div class="related">
@@ -33,7 +36,14 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="link.html" title="Link"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="document.html" title="Document"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -49,25 +59,34 @@
 <p class="first admonition-title">See also</p>
 <p class="last"><a class="reference internal" href="rect.html#rect"><em>Rect</em></a></p>
 </div>
-<div class="section" id="methods">
-<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="40%" />
-<col width="60%" />
+<col width="35%" />
+<col width="65%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#IRect.width" title="IRect.width"><tt class="xref py py-meth docutils literal"><span class="pre">width()</span></tt></a></td>
-<td>Get width of the bounding box.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#IRect.width" title="IRect.width"><tt class="xref py py-attr docutils literal"><span class="pre">width</span></tt></a></td>
+<td>width of the bounding box.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#IRect.height" title="IRect.height"><tt class="xref py py-meth docutils literal"><span class="pre">height()</span></tt></a></td>
-<td>Get height of the bounding box.</td>
+<tr class="row-even"><td><a class="reference internal" href="#IRect.height" title="IRect.height"><tt class="xref py py-attr docutils literal"><span class="pre">height</span></tt></a></td>
+<td>height of the bounding box.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#IRect.x0" title="IRect.x0"><tt class="xref py py-attr docutils literal"><span class="pre">x0</span></tt></a></td>
+<td>X-coordinate of the top left corner.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#IRect.y0" title="IRect.y0"><tt class="xref py py-attr docutils literal"><span class="pre">y0</span></tt></a></td>
+<td>Y-coordinate of the top left corner.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#IRect.x1" title="IRect.x1"><tt class="xref py py-attr docutils literal"><span class="pre">x1</span></tt></a></td>
+<td>X-coordinate of the bottom right corner.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#IRect.y1" title="IRect.y1"><tt class="xref py py-attr docutils literal"><span class="pre">y1</span></tt></a></td>
+<td>Y-coordinate of the bottom right corner.</td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="attributes">
-<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="class-api">
 <h2>Class API<a class="headerlink" href="#class-api" title="Permalink to this headline">¶</a></h2>
@@ -88,7 +107,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
 </tr>
 </tbody>
 </table>
@@ -102,7 +121,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
 </tr>
 </tbody>
 </table>
@@ -178,13 +197,18 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#"><strong>IRect</strong></a><ul>
-<li><a class="reference internal" href="#methods">Methods</a></li>
 <li><a class="reference internal" href="#attributes">Attributes</a></li>
 <li><a class="reference internal" href="#class-api">Class API</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="document.html"
+                        title="previous chapter"><strong>Document</strong></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="link.html"
+                        title="next chapter"><strong>Link</strong></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/irect.txt"
@@ -213,7 +237,14 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="link.html" title="Link"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="document.html" title="Document"
+             >previous</a> |</li>
+        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

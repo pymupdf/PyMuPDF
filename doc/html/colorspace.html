@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>TextPage &mdash; PYTHON-FITZ 1.7 1.7.0 documentation</title>
+    <title>Colorspace &mdash; PYTHON-FITZ 1.7 1.7.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
-    <link rel="next" title="TextSheet" href="textsheet.html" />
-    <link rel="prev" title="Rect" href="rect.html" /> 
+    <link rel="next" title="Device" href="device.html" />
+    <link rel="prev" title="Classes" href="class_index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -37,10 +37,10 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="textsheet.html" title="TextSheet"
+          <a href="device.html" title="Device"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="rect.html" title="Rect"
+          <a href="class_index.html" title="Classes"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
@@ -52,64 +52,43 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="textpage">
-<span id="id1"></span><h1><strong>TextPage</strong><a class="headerlink" href="#textpage" title="Permalink to this headline">¶</a></h1>
-<p>TextPage contains all the text in a page. Create a new TextPage by <tt class="xref py py-meth docutils literal"><span class="pre">Context.new_text_page()</span></tt>.</p>
-<div class="section" id="methods">
-<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
-<table border="1" class="docutils">
-<colgroup>
-<col width="39%" />
-<col width="61%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#TextPage.extractText" title="TextPage.extractText"><tt class="xref py py-meth docutils literal"><span class="pre">extractText()</span></tt></a></td>
-<td>Extract the text from the <tt class="docutils literal"><span class="pre">TextPage</span></tt> object.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#TextPage.search" title="TextPage.search"><tt class="xref py py-meth docutils literal"><span class="pre">search()</span></tt></a></td>
-<td>Search for a string in the current page.</td>
-</tr>
-</tbody>
-</table>
-</div>
+  <div class="section" id="colorspace">
+<span id="id1"></span><h1><strong>Colorspace</strong><a class="headerlink" href="#colorspace" title="Permalink to this headline">¶</a></h1>
+<p>Represents the color space of a <a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a>.</p>
 <div class="section" id="class-api">
 <h2>Class API<a class="headerlink" href="#class-api" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="TextPage">
-<em class="property">class </em><tt class="descname">TextPage</tt><a class="headerlink" href="#TextPage" title="Permalink to this definition">¶</a></dt>
+<dt id="Colorspace">
+<em class="property">class </em><tt class="descname">Colorspace</tt><a class="headerlink" href="#Colorspace" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="TextPage.extractText">
-<tt class="descname">extractText</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#TextPage.extractText" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract the text from a <tt class="docutils literal"><span class="pre">TextPage</span></tt> object. Returns a UTF-8 encoded string of the page&#8217;s complete text.</p>
+<dt id="Colorspace.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>self</em>, <em>colorspace</em>, <em>irect</em><big>)</big><a class="headerlink" href="#Colorspace.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Colorspace.colorspace">
+<tt class="descname">colorspace</tt><a class="headerlink" href="#Colorspace.colorspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>A number identifying the colorspace. Currently only RGBA is supported (<tt class="docutils literal"><span class="pre">fitz.CS_RGB</span></tt>).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
-<dl class="method">
-<dt id="TextPage.search">
-<tt class="descname">search</tt><big>(</big><em>self</em>, <em>s</em>, <em>ic</em><big>)</big><a class="headerlink" href="#TextPage.search" title="Permalink to this definition">¶</a></dt>
-<dd><p>Search string <tt class="docutils literal"><span class="pre">s</span></tt>.</p>
+<dl class="attribute">
+<dt id="Colorspace.irect">
+<tt class="descname">irect</tt><a class="headerlink" href="#Colorspace.irect" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="irect.html#irect"><em>IRect</em></a> object representing the area of the image.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>s</strong> (<em>string</em>) &#8211; </li>
-<li><strong>ic</strong> (<em>int</em>) &#8211; Ignore case or not.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">list</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A python list. Each element of the list is a list of <a class="reference internal" href="irect.html#irect"><em>IRect</em></a> (without transformation) where <tt class="docutils literal"><span class="pre">s</span></tt> is found in the page. An empty list is returned if <tt class="docutils literal"><span class="pre">s</span></tt> not found.</p>
-</td>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">instance</td>
 </tr>
 </tbody>
 </table>
@@ -128,22 +107,21 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><strong>TextPage</strong></a><ul>
-<li><a class="reference internal" href="#methods">Methods</a></li>
+<li><a class="reference internal" href="#"><strong>Colorspace</strong></a><ul>
 <li><a class="reference internal" href="#class-api">Class API</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="rect.html"
-                        title="previous chapter"><strong>Rect</strong></a></p>
+  <p class="topless"><a href="class_index.html"
+                        title="previous chapter">Classes</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="textsheet.html"
-                        title="next chapter"><strong>TextSheet</strong></a></p>
+  <p class="topless"><a href="device.html"
+                        title="next chapter"><strong>Device</strong></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/textpage.txt"
+    <li><a href="_sources/colorspace.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
@@ -170,10 +148,10 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="textsheet.html" title="TextSheet"
+          <a href="device.html" title="Device"
              >next</a> |</li>
         <li class="right" >
-          <a href="rect.html" title="Rect"
+          <a href="class_index.html" title="Classes"
              >previous</a> |</li>
         <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" >Classes</a> &raquo;</li> 
