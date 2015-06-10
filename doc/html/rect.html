@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Rect &mdash; PYTHON-FITZ 1.7 1.7.0 documentation</title>
+    <title>Rect &mdash; Python-Fitz 1.7.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
+    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="TextPage" href="textpage.html" />
     <link rel="prev" title="Point" href="point.html" /> 
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="point.html" title="Point"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>  
@@ -54,8 +54,8 @@
             
   <div class="section" id="rect">
 <span id="id1"></span><h1><strong>Rect</strong><a class="headerlink" href="#rect" title="Permalink to this headline">¶</a></h1>
-<p><tt class="docutils literal"><span class="pre">Rect</span></tt> is a rectangle represented by its top left and its bottom right corner coordinates: ((x0, y0), (x1, y1)).</p>
-<p>Rectangles are always axis-aligned with the X- and Y- axes. If x0 &lt;= x1 and y0 &lt;= y1 is true, the rectangle is called &#8220;finite&#8221;, else &#8220;infinite&#8221;.</p>
+<p><tt class="docutils literal"><span class="pre">Rect</span></tt> represents a rectangle defined by its top left and its bottom right <a class="reference internal" href="point.html#point"><em>Point</em></a> objects, in coordinates: ((x0, y0), (x1, y1)).</p>
+<p>Rectangles are always aligned with the respective X- and Y-axes. If x0 &lt;= x1 and y0 &lt;= y1 is true, the rectangle is called &#8220;finite&#8221;, else &#8220;infinite&#8221;.</p>
 <div class="section" id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
@@ -64,11 +64,11 @@
 <col width="76%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><tt class="xref py py-meth docutils literal"><span class="pre">round()</span></tt></td>
-<td>creates an <a class="reference internal" href="irect.html#irect"><em>IRect</em></a> for <tt class="docutils literal"><span class="pre">Rect</span></tt> (smallest pixel area containing it)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.round" title="Rect.round"><tt class="xref py py-meth docutils literal"><span class="pre">Rect.round()</span></tt></a></td>
+<td>creates the smallest <a class="reference internal" href="irect.html#irect"><em>IRect</em></a> containing <tt class="docutils literal"><span class="pre">Rect</span></tt></td>
 </tr>
-<tr class="row-even"><td><tt class="xref py py-meth docutils literal"><span class="pre">transform()</span></tt></td>
-<td>transform rectangle with a <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.transform" title="Rect.transform"><tt class="xref py py-meth docutils literal"><span class="pre">Rect.transform()</span></tt></a></td>
+<td>transform <tt class="docutils literal"><span class="pre">Rect</span></tt> with a <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></td>
 </tr>
 </tbody>
 </table>
@@ -81,23 +81,23 @@
 <col width="67%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#Rect.height" title="Rect.height"><tt class="xref py py-attr docutils literal"><span class="pre">height</span></tt></a></td>
-<td>rectangle height</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.height" title="Rect.height"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.height</span></tt></a></td>
+<td><tt class="docutils literal"><span class="pre">Rect</span></tt> height.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.width" title="Rect.width"><tt class="xref py py-attr docutils literal"><span class="pre">width</span></tt></a></td>
-<td>rectangle width</td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.width" title="Rect.width"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.width</span></tt></a></td>
+<td><tt class="docutils literal"><span class="pre">Rect</span></tt> width.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Rect.x0" title="Rect.x0"><tt class="xref py py-attr docutils literal"><span class="pre">x0</span></tt></a></td>
-<td>X-coordinate of the top left corner.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.x0" title="Rect.x0"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.x0</span></tt></a></td>
+<td>Top left corner&#8217;s X-coordinate.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.y0" title="Rect.y0"><tt class="xref py py-attr docutils literal"><span class="pre">y0</span></tt></a></td>
-<td>Y-coordinate of the top left corner.</td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.y0" title="Rect.y0"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.y0</span></tt></a></td>
+<td>Top left corner&#8217;s Y-coordinate.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Rect.x1" title="Rect.x1"><tt class="xref py py-attr docutils literal"><span class="pre">x1</span></tt></a></td>
-<td>X-coordinate of the bottom right corner.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.x1" title="Rect.x1"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.x1</span></tt></a></td>
+<td>Bottom right corner&#8217;s X-coordinate.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.y1" title="Rect.y1"><tt class="xref py py-attr docutils literal"><span class="pre">y1</span></tt></a></td>
-<td>Y-coordinate of the bottom right corner.</td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.y1" title="Rect.y1"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.y1</span></tt></a></td>
+<td>Bottom right corner&#8217;s Y-coordinate.</td>
 </tr>
 </tbody>
 </table>
@@ -110,7 +110,35 @@
 <dd><dl class="method">
 <dt id="Rect.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>self</em>, <em>x0=0</em>, <em>y0=0</em>, <em>x1=0</em>, <em>y1=0</em><big>)</big><a class="headerlink" href="#Rect.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor. An empty rectangle will be built if no arguments given.</p>
+<dd><p>Constructor. The default values will create an empty rectangle.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Rect.round">
+<tt class="descname">round</tt><big>(</big><big>)</big><a class="headerlink" href="#Rect.round" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the smallest <a class="reference internal" href="irect.html#irect"><em>IRect</em></a> that contains <tt class="docutils literal"><span class="pre">Rect</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="irect.html#irect"><em>IRect</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Rect.transform">
+<tt class="descname">transform</tt><a class="headerlink" href="#Rect.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transforms <tt class="docutils literal"><span class="pre">Rect</span></tt> with a <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rect"><em>Rect</em></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
@@ -258,7 +286,7 @@
         <li class="right" >
           <a href="point.html" title="Point"
              >previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>TextPage &mdash; PYTHON-FITZ 1.7 1.7.0 documentation</title>
+    <title>TextPage &mdash; Python-Fitz 1.7.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
+    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="TextSheet" href="textsheet.html" />
     <link rel="prev" title="Rect" href="rect.html" /> 
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="rect.html" title="Rect"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>  
@@ -54,7 +54,7 @@
             
   <div class="section" id="textpage">
 <span id="id1"></span><h1><strong>TextPage</strong><a class="headerlink" href="#textpage" title="Permalink to this headline">¶</a></h1>
-<p>TextPage contains all the text in a page. Create a new TextPage by <tt class="xref py py-meth docutils literal"><span class="pre">Context.new_text_page()</span></tt>.</p>
+<p><tt class="docutils literal"><span class="pre">TextPage</span></tt> contains the text of a page.</p>
 <div class="section" id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
@@ -63,11 +63,11 @@
 <col width="61%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#TextPage.extractText" title="TextPage.extractText"><tt class="xref py py-meth docutils literal"><span class="pre">extractText()</span></tt></a></td>
-<td>Extract the text from the <tt class="docutils literal"><span class="pre">TextPage</span></tt> object.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#TextPage.extractText" title="TextPage.extractText"><tt class="xref py py-meth docutils literal"><span class="pre">TextPage.extractText()</span></tt></a></td>
+<td>Extract the page&#8217;s text.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#TextPage.search" title="TextPage.search"><tt class="xref py py-meth docutils literal"><span class="pre">search()</span></tt></a></td>
-<td>Search for a string in the current page.</td>
+<tr class="row-even"><td><a class="reference internal" href="#TextPage.search" title="TextPage.search"><tt class="xref py py-meth docutils literal"><span class="pre">TextPage.search()</span></tt></a></td>
+<td>Search for a string in the page.</td>
 </tr>
 </tbody>
 </table>
@@ -93,22 +93,22 @@
 
 <dl class="method">
 <dt id="TextPage.search">
-<tt class="descname">search</tt><big>(</big><em>self</em>, <em>s</em>, <em>ic</em><big>)</big><a class="headerlink" href="#TextPage.search" title="Permalink to this definition">¶</a></dt>
-<dd><p>Search string <tt class="docutils literal"><span class="pre">s</span></tt>.</p>
+<tt class="descname">search</tt><big>(</big><em>self</em>, <em>string</em>, <em>maxhit</em><big>)</big><a class="headerlink" href="#TextPage.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for the string <tt class="docutils literal"><span class="pre">string</span></tt>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>s</strong> (<em>string</em>) &#8211; </li>
-<li><strong>ic</strong> (<em>int</em>) &#8211; Ignore case or not.</li>
+<li><strong>string</strong> (<em>string</em>) &#8211; The string to search for.</li>
+<li><strong>maxhit</strong> (<em>int</em>) &#8211; Maximum number of expected hits (default 16).</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">list</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A python list. Each element of the list is a list of <a class="reference internal" href="irect.html#irect"><em>IRect</em></a> (without transformation) where <tt class="docutils literal"><span class="pre">s</span></tt> is found in the page. An empty list is returned if <tt class="docutils literal"><span class="pre">s</span></tt> not found.</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A python list. Each element of the list is an <a class="reference internal" href="irect.html#irect"><em>IRect</em></a> (without transformation) surrounding a found <tt class="docutils literal"><span class="pre">string</span></tt> occurrence (or an empty list).</p>
 </td>
 </tr>
 </tbody>
@@ -175,7 +175,7 @@
         <li class="right" >
           <a href="rect.html" title="Rect"
              >previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>

@@ -11,27 +11,27 @@ Class API
 
 .. class:: Device
 
-   .. method:: __init__(self, obj)
+   .. method:: __init__(self, object)
 
-      Constructor
+      Constructor for either a pixel map or a display list device.
 
-   .. attribute:: obj
+   .. attribute:: object
 
-      An object representing on of :ref:`Pixmap`, :ref:`DisplayList`
+      An object representing one of :ref:`Pixmap`, or :ref:`DisplayList`
 
       :type: instance
 
-   .. method:: __init__(self, ts, tp)
+   .. method:: __init__(self, textsheet, textpage)
 
-      Constructor
+      Constructor for a text page device.
 
-   .. attribute:: ts
+   .. attribute:: textsheet
 
       A :ref:`TextSheet` object.
 
       :type: instance
 
-   .. attribute:: tp
+   .. attribute:: textpage
 
       A :ref:`TextPage` object.
 

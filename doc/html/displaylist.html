@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>DisplayList &mdash; PYTHON-FITZ 1.7 1.7.0 documentation</title>
+    <title>DisplayList &mdash; Python-Fitz 1.7.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
+    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="Document" href="document.html" />
     <link rel="prev" title="Device" href="device.html" /> 
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="device.html" title="Device"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>  
@@ -54,8 +54,15 @@
             
   <div class="section" id="displaylist">
 <span id="id1"></span><h1><strong>DisplayList</strong><a class="headerlink" href="#displaylist" title="Permalink to this headline">¶</a></h1>
-<p>DisplayList is a list containing drawing commands (text, images, etc.). The intent is two-fold: as a caching-mechanism to reduce parsing of a page, and to be used as a data structure in multi-threading where one thread parses the page and another one renders pages.</p>
-<p>A <tt class="docutils literal"><span class="pre">DisplayList</span></tt> is populated with objects from a page by running <a class="reference internal" href="page.html#Page.run" title="Page.run"><tt class="xref py py-meth docutils literal"><span class="pre">Page.run()</span></tt></a> on a <a class="reference internal" href="device.html#device"><em>Device</em></a>. Replay the list (once or many times) by calling <a class="reference internal" href="#DisplayList.run" title="DisplayList.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a>.</p>
+<dl class="docutils">
+<dt>DisplayList is a list containing drawing commands (text, images, etc.). The intent is two-fold:</dt>
+<dd><ol class="first last arabic simple">
+<li>as a caching-mechanism to reduce parsing of a page</li>
+<li>as a data structure in multi-threading setups, where one thread parses the page and another one renders pages.</li>
+</ol>
+</dd>
+</dl>
+<p>A <tt class="docutils literal"><span class="pre">DisplayList</span></tt> is populated with objects from a page by running <a class="reference internal" href="page.html#Page.run" title="Page.run"><tt class="xref py py-meth docutils literal"><span class="pre">Page.run()</span></tt></a> on a <a class="reference internal" href="device.html#device"><em>Device</em></a>. Replay the list (once or many times) by invoking the display list&#8217;s <a class="reference internal" href="#DisplayList.run" title="DisplayList.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a> function.</p>
 <div class="section" id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
@@ -92,7 +99,7 @@
 
 <dl class="method">
 <dt id="DisplayList.run">
-<tt class="descname">run</tt><big>(</big><em>self</em>, <em>dev</em>, <em>ctm</em><big>)</big><a class="headerlink" href="#DisplayList.run" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">run</tt><big>(</big><em>self</em>, <em>dev</em>, <em>ctm</em>, <em>area</em><big>)</big><a class="headerlink" href="#DisplayList.run" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -168,7 +175,7 @@
         <li class="right" >
           <a href="device.html" title="Device"
              >previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>

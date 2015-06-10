@@ -4,14 +4,14 @@
 **TextPage**
 ================
 
-TextPage contains all the text in a page. Create a new TextPage by :meth:`Context.new_text_page`.
+``TextPage`` contains the text of a page.
 
 Methods
 ==========
 
 ============================== ==============================================
-:meth:`~TextPage.extractText`  Extract the text from the ``TextPage`` object.
-:meth:`~TextPage.search`       Search for a string in the current page.
+:meth:`TextPage.extractText`   Extract the page's text.
+:meth:`TextPage.search`        Search for a string in the page.
 ============================== ==============================================
 
 Class API
@@ -25,16 +25,16 @@ Class API
 
       :rtype: string
 
-   .. method:: search(self, s, ic)
+   .. method:: search(self, string, maxhit)
 
-      Search string ``s``.
+      Search for the string ``string``.
 
-      :param `s`:
-      :type `s`: string
+      :param `string`: The string to search for.
+      :type `string`: string
 
-      :param `ic`: Ignore case or not.
-      :type `ic`: int
+      :param `maxhit`: Maximum number of expected hits (default 16).
+      :type `maxhit`: int
 
       :rtype: list
-      :returns: A python list. Each element of the list is a list of :ref:`IRect` (without transformation) where ``s`` is found in the page. An empty list is returned if ``s`` not found.
+      :returns: A python list. Each element of the list is an :ref:`IRect` (without transformation) surrounding a found ``string`` occurrence (or an empty list).
 

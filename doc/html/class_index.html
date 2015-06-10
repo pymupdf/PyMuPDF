@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Classes &mdash; PYTHON-FITZ 1.7 1.7.0 documentation</title>
+    <title>Classes &mdash; Python-Fitz 1.7.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
+    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
     <link rel="next" title="Colorspace" href="colorspace.html" />
     <link rel="prev" title="Tutorial" href="tutorial.html" /> 
   </head>
@@ -41,7 +41,7 @@
         <li class="right" >
           <a href="tutorial.html" title="Tutorial"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -51,12 +51,12 @@
           <div class="body">
             
   <div class="section" id="classes">
-<h1>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h1>
-<p>The list of python-fitz classes</p>
+<span id="fitz"></span><h1>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h1>
+<p>The list of python-fitz classes, to be used as <tt class="docutils literal"><span class="pre">fitz.class</span></tt>.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="30%" />
-<col width="70%" />
+<col width="28%" />
+<col width="72%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Class</strong></th>
@@ -76,7 +76,7 @@
 <tr class="row-odd"><td><a class="reference internal" href="document.html#document"><em>Document</em></a></td>
 <td>Basic class for dealing with files.</td>
 </tr>
-<tr class="row-even"><td><em class="xref std std-ref">Identity</em></td>
+<tr class="row-even"><td><a class="reference internal" href="identity.html#identity"><em>Identity</em></a></td>
 <td>The do-nothing <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="irect.html#irect"><em>IRect</em></a></td>
@@ -85,28 +85,31 @@
 <tr class="row-even"><td><a class="reference internal" href="link.html#link"><em>Link</em></a></td>
 <td>A destination</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="linkdest.html#linkdest"><em>linkDest</em></a></td>
+<td>The destination of an outline entry</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></td>
 <td>A 3x3 matrix used for transformations.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="outline.html#outline"><em>Outline</em></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="outline.html#outline"><em>Outline</em></a></td>
 <td>Outline element (a.k.a. bookmark).</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="page.html#page"><em>Page</em></a></td>
+<tr class="row-even"><td><a class="reference internal" href="page.html#page"><em>Page</em></a></td>
 <td>A document page.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a></td>
 <td>A pixel map (for rendering).</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="point.html#point"><em>Point</em></a></td>
+<tr class="row-even"><td><a class="reference internal" href="point.html#point"><em>Point</em></a></td>
 <td>Represents a point in the plane.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="rect.html#rect"><em>Rect</em></a></td>
-<td>A rectangle (floating point coordinates).</td>
+<tr class="row-odd"><td><a class="reference internal" href="rect.html#rect"><em>Rect</em></a></td>
+<td>A rectangle (float coordinates).</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="textpage.html#textpage"><em>TextPage</em></a></td>
+<tr class="row-even"><td><a class="reference internal" href="textpage.html#textpage"><em>TextPage</em></a></td>
 <td>Text content of a page.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="textsheet.html#textsheet"><em>TextSheet</em></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="textsheet.html#textsheet"><em>TextSheet</em></a></td>
 <td>A list of text styles used in a page.</td>
 </tr>
 </tbody>
@@ -123,7 +126,7 @@
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="tutorial.html"
-                        title="previous chapter"><strong>Tutorial</strong></a></p>
+                        title="previous chapter">Tutorial</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="colorspace.html"
                         title="next chapter"><strong>Colorspace</strong></a></p>
@@ -161,7 +164,7 @@
         <li class="right" >
           <a href="tutorial.html" title="Tutorial"
              >previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

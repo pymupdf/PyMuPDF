@@ -1,8 +1,7 @@
-===========================
-**Welcome to PYTHON-FITZ!**
-===========================
-
-**python-fitz** is a Python binding for MuPDF - "a lightweight PDF and XPS viewer".
+=============
+Introduction
+=============
+**python-fitz** is a Python binding for `MuPDF <http://www.mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS and EPUB formats.
 
@@ -13,7 +12,7 @@ python-fitz provides access to all important functions of MuPDF from within a Py
 MuPDF stands out among all similar products for its top rendering capability and unsurpassed processing speed.
 
 You can check this out yourself:
-Compare the various free PDF-viewers. In terms of speed and rendering quality **SumatraPDF** ranges at the top - and it is based on  MuPDF!
+Compare the various free PDF-viewers. In terms of speed and rendering quality `SumatraPDF <http://www.sumatrapdfreader.org/>`_ ranges at the top - and it is based on  MuPDF!
 
 While these bindings have been available since several years for an earlier version of MuPDF (1.2), it was until only recently (mid May 2015), that its creator and a few co-workers decided to elevate this repository to the current release of MuPDF, which now counts at version 1.7a.
 
@@ -36,7 +35,7 @@ python-fitz can be used today on LINUX, Windows 7, Python 2 and Python 3.
 
 **So, what is still missing then?**
 
-* New documentation is under construction. The interface has changed: compared to 1.2, it has been simplified and looks a lot less cryptic. As for now, you would have to look at the demos to see how things work.
+* New documentation is under construction, though we are making progress - you are looking at its result. Do have a look at the demos and examples provided to learn how things work in practice.
 
 * Some tests are still outstanding, e.g. for the combination Win & Python 3.
 

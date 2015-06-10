@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Tutorial &mdash; PYTHON-FITZ 1.7 1.7.0 documentation</title>
+    <title>Tutorial &mdash; Python-Fitz 1.7.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,9 +24,9 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
+    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
     <link rel="next" title="Classes" href="class_index.html" />
-    <link rel="prev" title="Welcome to PYTHON-FITZ!" href="intro.html" /> 
+    <link rel="prev" title="Introduction" href="intro.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,9 +39,9 @@
           <a href="class_index.html" title="Classes"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="intro.html" title="Welcome to PYTHON-FITZ!"
+          <a href="intro.html" title="Introduction"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -51,11 +51,8 @@
           <div class="body">
             
   <div class="section" id="tutorial">
-<h1><strong>Tutorial</strong><a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
-<p>This tutorial will show you the use of MuPDF in Python step by step.
-You should note that MuPDF supports not only PDF files, but also XPS, OpenXPS and EPUB files.
-The MuPDF bindings for Python also support all of these filetypes.
-Nevertheless we will only talk about PDF&#8217;s for the sake of brevity.</p>
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial will show you the use of MuPDF in Python step by step. You should note that MuPDF supports not only PDF files, but also XPS, OpenXPS and EPUB files. The MuPDF bindings for Python also support all of these filetypes. Nevertheless we will only talk about PDF&#8217;s for the sake of brevity.</p>
 <div class="section" id="import-the-bindings">
 <h2>Import the Bindings<a class="headerlink" href="#import-the-bindings" title="Permalink to this headline">¶</a></h2>
 <p>The Python bindings to MuPDF are made available by this import statement:</p>
@@ -192,7 +189,7 @@ Nevertheless we will only talk about PDF&#8217;s for the sake of brevity.</p>
 <div class="section" id="work-with-outlines">
 <h2>Work with Outlines<a class="headerlink" href="#work-with-outlines" title="Permalink to this headline">¶</a></h2>
 <p>Entering the documents outline tree works like this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">olItem</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">outline</span>    <span class="c"># this is the document&#39;s first outline item</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">olItem</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">outline</span>    <span class="c"># the document&#39;s first outline item</span>
 </pre></div>
 </div>
 </div>
@@ -256,7 +253,7 @@ Nevertheless we will only talk about PDF&#8217;s for the sake of brevity.</p>
 Among other things, you can render a <a class="reference internal" href="page.html#page"><em>Page</em></a>, optionally zooming, rotating or shearing it.
 You can write it&#8217;s image to files (in PNG format), extract text from it or perform searches for text elements.
 At first, a page object must be created:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">page</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">loadPage</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>               <span class="c"># create the Page object representing page n of the document</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">page</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">loadPage</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>        <span class="c"># represents page n of the document</span>
 </pre></div>
 </div>
 <p>Some typical uses of <a class="reference internal" href="page.html#page"><em>Page</em></a> objects:</p>
@@ -333,7 +330,7 @@ At first, a page object must be created:</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><strong>Tutorial</strong></a><ul>
+<li><a class="reference internal" href="#">Tutorial</a><ul>
 <li><a class="reference internal" href="#import-the-bindings">Import the Bindings</a></li>
 <li><a class="reference internal" href="#open-a-document">Open a Document</a></li>
 <li><a class="reference internal" href="#some-document-functions-and-attributes">Some <tt class="docutils literal"><span class="pre">Document</span></tt> functions and attributes</a></li>
@@ -348,7 +345,7 @@ At first, a page object must be created:</p>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="intro.html"
-                        title="previous chapter"><strong>Welcome to PYTHON-FITZ!</strong></a></p>
+                        title="previous chapter">Introduction</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="class_index.html"
                         title="next chapter">Classes</a></p>
@@ -384,9 +381,9 @@ At first, a page object must be created:</p>
           <a href="class_index.html" title="Classes"
              >next</a> |</li>
         <li class="right" >
-          <a href="intro.html" title="Welcome to PYTHON-FITZ!"
+          <a href="intro.html" title="Introduction"
              >previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

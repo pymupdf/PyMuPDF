@@ -4,4 +4,4 @@
 **TextSheet**
 ================
 
-TextSheet contains a list of distinct text styles used on a page (or a series of pages). Create a new TextSheet by :meth:`fitz.TextSheet`.
+``TextSheet`` contains a list of distinct text styles used on a page (or a series of pages).

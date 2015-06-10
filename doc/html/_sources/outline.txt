@@ -9,17 +9,21 @@
 Methods and Attributes
 ======================
 
-========================== ==================================================
-:attr:`~outline.down`      Next item downwards
-:attr:`~outline.next`      Next item same level
-:attr:`~outline.dest`      Destination, contains sub-properties.
-:attr:`~outline.title`     Title (UTF-8 string)
-:meth:`~outline.saveText`  Prints a conventional table of contents to a file.
-:meth:`~outline.saveXML`   Prints an XML-like table of contents to a file.
-========================== ==================================================
+========================= ==================================================
+**Method / Attribute**    **Short Description**
+========================= ==================================================
+:attr:`Outline.down`      Next item downwards
+:attr:`Outline.next`      Next item same level
+:attr:`Outline.dest`      Link destination
+:attr:`Outline.title`     Title (UTF-8 string)
+:meth:`Outline.saveText`  Prints a conventional table of contents to a file
+:meth:`Outline.saveXML`   Prints an XML-like table of contents to a file
+========================= ==================================================
 
-Properties / Methods API
-========================
+Class API
+=========
+
+.. class:: Outline
 
    .. attribute:: down
 
@@ -32,6 +36,12 @@ Properties / Methods API
       The next outline item at the same level as this item. Is ``None`` if the item is the last one in its level.
 
       :rtype: :ref:`Outline`
+
+   .. attribute:: dest
+
+      The destination this entry points to. Can be a place in this or another document, or an internet resource. It can include actions to perform like opening a new window, invoking a javascript or opening another document.
+
+      :rtype: :ref:`linkDest`
 
    .. attribute:: title
 
@@ -52,43 +62,3 @@ Properties / Methods API
 
       :param `filename`: Name of the file to write to.
       :type `filename`: string
-
-      :rtype: :ref:`Outline`
-
-   .. method:: get_page(self)
-
-      Get the page number of the destination.
-
-      :rtype: int
-
-   .. method:: get_page_flags(self)
-
-      Get the validity and meaning of the destination link, see :data:`fz_link_flag`.
-
-	  The flags is a bitfield consisting of :data:`fz_link_flag` describing the validity and meaning of the different parts of lr and rb. Link destinations are constructed (as far as possible) so that lt and rb can be treated as a bounding box, though the validity flags indicate which of the values was actually specified in the file.
-
-      .. seealso:: :meth:`Link.get_page_flags`
-
-      :rtype: int
-
-   .. method:: get_page_lt(self)
-
-      Get the top left corner of the destination bounding box.
-
-      .. warning:: For the returning point, (0, 0) is in the bottom left corner, which is different from :ref:`Rect` and :ref:`IRect`.
-
-      :rtype: :ref:`Point`
-
-   .. method:: get_page_rb(self)
-
-      Get the bottom right corner of the destination bounding box.
-
-      .. warning:: For the returning point, (0, 0) is in the bottom left corner, which is different from :ref:`Rect` and :ref:`IRect`.
-
-      :rtype: :ref:`Point`
-
-   .. method:: get_title(self)
-
-      Get title of outline item using UTF-8 encoding.
-
-      :rtype: string

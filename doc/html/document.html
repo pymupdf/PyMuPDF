@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Document &mdash; PYTHON-FITZ 1.7 1.7.0 documentation</title>
+    <title>Document &mdash; Python-Fitz 1.7.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,9 +24,9 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
+    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
-    <link rel="next" title="IRect" href="irect.html" />
+    <link rel="next" title="Identity" href="identity.html" />
     <link rel="prev" title="DisplayList" href="displaylist.html" /> 
   </head>
   <body>
@@ -37,12 +37,12 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="irect.html" title="IRect"
+          <a href="identity.html" title="Identity"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="displaylist.html" title="DisplayList"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>  
@@ -54,7 +54,7 @@
             
   <div class="section" id="document">
 <span id="id1"></span><h1><strong>Document</strong><a class="headerlink" href="#document" title="Permalink to this headline">¶</a></h1>
-<p><tt class="docutils literal"><span class="pre">Document</span></tt> class, constructor <tt class="docutils literal"><span class="pre">fitz.Document(filename)</span></tt>. This will also open the document specified as <tt class="docutils literal"><span class="pre">filename</span></tt>. Returns a <tt class="docutils literal"><span class="pre">Document</span></tt> object.</p>
+<p>This class represents a document and is constructed by <tt class="docutils literal"><span class="pre">fitz.Document(filename)</span></tt>. This will also <strong>open</strong> the document specified as <tt class="docutils literal"><span class="pre">filename</span></tt>. Returns a <tt class="docutils literal"><span class="pre">Document</span></tt> object.</p>
 <div class="section" id="methods-and-attributes">
 <h2>Methods and Attributes<a class="headerlink" href="#methods-and-attributes" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
@@ -62,32 +62,37 @@
 <col width="49%" />
 <col width="51%" />
 </colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Method / Attribute</strong></th>
+<th class="head"><strong>Short Description</strong></th>
+</tr>
+</thead>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#Document.authenticate" title="Document.authenticate"><tt class="xref py py-meth docutils literal"><span class="pre">authenticate()</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.authenticate" title="Document.authenticate"><tt class="xref py py-meth docutils literal"><span class="pre">Document.authenticate()</span></tt></a></td>
 <td>Decrypts the document.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.loadPage" title="Document.loadPage"><tt class="xref py py-meth docutils literal"><span class="pre">loadPage()</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.loadPage" title="Document.loadPage"><tt class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></tt></a></td>
 <td>Reads a page.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.save" title="Document.save"><tt class="xref py py-meth docutils literal"><span class="pre">save()</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.save" title="Document.save"><tt class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></tt></a></td>
 <td>Saves a copy of the document.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.ToC" title="Document.ToC"><tt class="xref py py-meth docutils literal"><span class="pre">ToC()</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.ToC" title="Document.ToC"><tt class="xref py py-meth docutils literal"><span class="pre">Document.ToC()</span></tt></a></td>
 <td>Creates a table of contents.</td>
 </tr>
-<tr class="row-odd"><td><tt class="xref py py-meth docutils literal"><span class="pre">close()</span></tt></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.close" title="Document.close"><tt class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></tt></a></td>
 <td>Closes the document.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><tt class="xref py py-attr docutils literal"><span class="pre">outline</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><tt class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></tt></a></td>
 <td>First <cite>Outline</cite> item.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><tt class="xref py py-attr docutils literal"><span class="pre">needsPass</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><tt class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></tt></a></td>
 <td>Is document is encrypted?</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><tt class="xref py py-attr docutils literal"><span class="pre">pageCount</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><tt class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></tt></a></td>
 <td>The document&#8217;s number of pages.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><tt class="xref py py-attr docutils literal"><span class="pre">metadata</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><tt class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></tt></a></td>
 <td>The document&#8217;s meta data.</td>
 </tr>
 </tbody>
@@ -160,6 +165,12 @@
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="Document.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="headerlink" href="#Document.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes <tt class="docutils literal"><span class="pre">filename</span></tt> thus freeing it for other purposes.</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="Document.outline">
 <tt class="descname">outline</tt><a class="headerlink" href="#Document.outline" title="Permalink to this definition">¶</a></dt>
@@ -191,7 +202,7 @@
 <dl class="attribute">
 <dt id="Document.metadata">
 <tt class="descname">metadata</tt><a class="headerlink" href="#Document.metadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the document&#8217;s meta data as a Python dictionary. Its keys are <tt class="docutils literal"><span class="pre">format</span></tt>, <tt class="docutils literal"><span class="pre">encryption</span></tt>, <tt class="docutils literal"><span class="pre">title</span></tt>, <tt class="docutils literal"><span class="pre">author</span></tt>, <tt class="docutils literal"><span class="pre">subject</span></tt>, <tt class="docutils literal"><span class="pre">keywords</span></tt>, <tt class="docutils literal"><span class="pre">creator</span></tt>, <tt class="docutils literal"><span class="pre">producer</span></tt>, <tt class="docutils literal"><span class="pre">creationDate</span></tt>, <tt class="docutils literal"><span class="pre">modDate</span></tt>. These key names correspond to the PDF&#8217;s &#8220;official&#8221; meta data fields <tt class="docutils literal"><span class="pre">/Creator</span></tt>, <tt class="docutils literal"><span class="pre">/Producer</span></tt>, <tt class="docutils literal"><span class="pre">/CreationDate</span></tt>, <tt class="docutils literal"><span class="pre">/ModDate</span></tt>, <tt class="docutils literal"><span class="pre">/Title</span></tt>, <tt class="docutils literal"><span class="pre">/Author</span></tt>, <tt class="docutils literal"><span class="pre">/Subject</span></tt>, <tt class="docutils literal"><span class="pre">/Keywords</span></tt> respectively where applicable. <tt class="docutils literal"><span class="pre">format</span></tt> contains the PDF format version of the file (e.g. &#8216;PDF 1.4&#8217;), <tt class="docutils literal"><span class="pre">encryption</span></tt> contains either <tt class="docutils literal"><span class="pre">None</span></tt> when not encrypted, or a string naming the encryption method used (e.g. <tt class="docutils literal"><span class="pre">'Standard</span> <span class="pre">V4</span> <span class="pre">R4</span> <span class="pre">128-bit</span> <span class="pre">RC4'</span></tt>).  Note that all other metadata values are encrypted if the value for &#8216;encoding&#8217; is not <tt class="docutils literal"><span class="pre">None</span></tt>. All item values are UTF-8 encoded strings (or <tt class="docutils literal"><span class="pre">None</span></tt>), except <tt class="docutils literal"><span class="pre">keywords</span></tt>. If <tt class="docutils literal"><span class="pre">keywords</span></tt> is not <tt class="docutils literal"><span class="pre">None</span></tt>, it contains a Python dictionary specifying the document&#8217;s keywords (again, as UTF-8 encoded strings). The date fields are strings with the internal timestamp format &#8220;D:&lt;DateTime&gt;&lt;TZ&gt;&#8221;, where &lt;DateTime&gt; is the 12 character ISO date <tt class="docutils literal"><span class="pre">YYYMMDDhhmmss</span></tt> (<tt class="docutils literal"><span class="pre">YYYY</span></tt> - year, <tt class="docutils literal"><span class="pre">MM</span></tt> - month, <tt class="docutils literal"><span class="pre">DD</span></tt> - day, <tt class="docutils literal"><span class="pre">hh</span></tt> - hour, <tt class="docutils literal"><span class="pre">mm</span></tt> - minute, <tt class="docutils literal"><span class="pre">ss</span></tt> - second), and &lt;TZ&gt; is a time zone value (time intervall relative to GMT) containing a sign (&#8216;+&#8217; or &#8216;-&#8216;), the hour (<tt class="docutils literal"><span class="pre">hh</span></tt>), and minute (<tt class="docutils literal"><span class="pre">'mm'</span></tt>, attention: enclosed in apostrophies!). For example, a Venezuelan value might look like this <tt class="docutils literal"><span class="pre">D:20150415131602-04'30'</span></tt>, which means the timestamp April 15, 2015, at 1:16:02 pm local time Venezuela.</p>
+<dd><p>Contains the document&#8217;s meta data as a Python dictionary. Its keys are <tt class="docutils literal"><span class="pre">format</span></tt>, <tt class="docutils literal"><span class="pre">encryption</span></tt>, <tt class="docutils literal"><span class="pre">title</span></tt>, <tt class="docutils literal"><span class="pre">author</span></tt>, <tt class="docutils literal"><span class="pre">subject</span></tt>, <tt class="docutils literal"><span class="pre">keywords</span></tt>, <tt class="docutils literal"><span class="pre">creator</span></tt>, <tt class="docutils literal"><span class="pre">producer</span></tt>, <tt class="docutils literal"><span class="pre">creationDate</span></tt>, <tt class="docutils literal"><span class="pre">modDate</span></tt>. These key names correspond to the PDF&#8217;s &#8220;official&#8221; meta data fields <tt class="docutils literal"><span class="pre">/Creator</span></tt>, <tt class="docutils literal"><span class="pre">/Producer</span></tt>, <tt class="docutils literal"><span class="pre">/CreationDate</span></tt>, <tt class="docutils literal"><span class="pre">/ModDate</span></tt>, <tt class="docutils literal"><span class="pre">/Title</span></tt>, <tt class="docutils literal"><span class="pre">/Author</span></tt>, <tt class="docutils literal"><span class="pre">/Subject</span></tt>, <tt class="docutils literal"><span class="pre">/Keywords</span></tt> respectively where applicable. <tt class="docutils literal"><span class="pre">format</span></tt> contains the PDF format version of the file (e.g. &#8216;PDF 1.4&#8217;), <tt class="docutils literal"><span class="pre">encryption</span></tt> contains either <tt class="docutils literal"><span class="pre">None</span></tt> when not encrypted, or a string naming the encryption method used (e.g. <tt class="docutils literal"><span class="pre">'Standard</span> <span class="pre">V4</span> <span class="pre">R4</span> <span class="pre">128-bit</span> <span class="pre">RC4'</span></tt>).  Note that all other metadata values are encrypted if the value for &#8216;encoding&#8217; is not <tt class="docutils literal"><span class="pre">None</span></tt>. All item values are UTF-8 encoded strings (or <tt class="docutils literal"><span class="pre">None</span></tt>), except <tt class="docutils literal"><span class="pre">keywords</span></tt>. If <tt class="docutils literal"><span class="pre">keywords</span></tt> is not <tt class="docutils literal"><span class="pre">None</span></tt>, it contains a Python dictionary specifying the document&#8217;s keywords (again, as UTF-8 encoded strings). The date fields are strings with the internal timestamp format &#8220;D:&lt;DateTime&gt;&lt;TZ&gt;&#8221;, where &lt;DateTime&gt; is the 12 character ISO date <tt class="docutils literal"><span class="pre">YYYMMDDhhmmss</span></tt> (<tt class="docutils literal"><span class="pre">YYYY</span></tt> - year, <tt class="docutils literal"><span class="pre">MM</span></tt> - month, <tt class="docutils literal"><span class="pre">DD</span></tt> - day, <tt class="docutils literal"><span class="pre">hh</span></tt> - hour, <tt class="docutils literal"><span class="pre">mm</span></tt> - minute, <tt class="docutils literal"><span class="pre">ss</span></tt> - second), and &lt;TZ&gt; is a time zone value (time intervall relative to GMT) containing a sign (&#8216;+&#8217; or &#8216;-&#8216;), the hour (<tt class="docutils literal"><span class="pre">hh</span></tt>), and minute (<tt class="docutils literal"><span class="pre">'mm'</span></tt>, attention: enclose in apostrophies!). For example, a Venezuelan value might look like <tt class="docutils literal"><span class="pre">D:20150415131602-04'30'</span></tt>, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Venezuela.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -240,8 +251,8 @@
   <p class="topless"><a href="displaylist.html"
                         title="previous chapter"><strong>DisplayList</strong></a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="irect.html"
-                        title="next chapter"><strong>IRect</strong></a></p>
+  <p class="topless"><a href="identity.html"
+                        title="next chapter"><strong>Identity</strong></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/document.txt"
@@ -271,12 +282,12 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="irect.html" title="IRect"
+          <a href="identity.html" title="Identity"
              >next</a> |</li>
         <li class="right" >
           <a href="displaylist.html" title="DisplayList"
              >previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>

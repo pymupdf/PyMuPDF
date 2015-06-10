@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>IRect &mdash; PYTHON-FITZ 1.7 1.7.0 documentation</title>
+    <title>IRect &mdash; Python-Fitz 1.7.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,10 +24,10 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
+    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="Link" href="link.html" />
-    <link rel="prev" title="Document" href="document.html" /> 
+    <link rel="prev" title="Identity" href="identity.html" /> 
   </head>
   <body>
     <div class="related">
@@ -40,9 +40,9 @@
           <a href="link.html" title="Link"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="document.html" title="Document"
+          <a href="identity.html" title="Identity"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>  
@@ -54,7 +54,7 @@
             
   <div class="section" id="irect">
 <span id="id1"></span><h1><strong>IRect</strong><a class="headerlink" href="#irect" title="Permalink to this headline">¶</a></h1>
-<p>IRect is a bounding box similar to <a class="reference internal" href="rect.html#rect"><em>Rect</em></a>, except that all corner coordinates are rounded to integer coordinates.</p>
+<p>IRect is a rectangular bounding box similar to <a class="reference internal" href="rect.html#rect"><em>Rect</em></a>, except that all corner coordinates are integers. IRect is used to specify an area of pixels, e.g. to receive image data during rendering.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <p class="last"><a class="reference internal" href="rect.html#rect"><em>Rect</em></a></p>
@@ -66,24 +66,29 @@
 <col width="35%" />
 <col width="65%" />
 </colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Attribute</strong></th>
+<th class="head"><strong>Short Description</strong></th>
+</tr>
+</thead>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#IRect.width" title="IRect.width"><tt class="xref py py-attr docutils literal"><span class="pre">width</span></tt></a></td>
-<td>width of the bounding box.</td>
+<tr class="row-even"><td><a class="reference internal" href="#IRect.width" title="IRect.width"><tt class="xref py py-attr docutils literal"><span class="pre">IRect.width</span></tt></a></td>
+<td>Width of the bounding box</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#IRect.height" title="IRect.height"><tt class="xref py py-attr docutils literal"><span class="pre">height</span></tt></a></td>
-<td>height of the bounding box.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#IRect.height" title="IRect.height"><tt class="xref py py-attr docutils literal"><span class="pre">IRect.height</span></tt></a></td>
+<td>Height of the bounding box</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#IRect.x0" title="IRect.x0"><tt class="xref py py-attr docutils literal"><span class="pre">x0</span></tt></a></td>
-<td>X-coordinate of the top left corner.</td>
+<tr class="row-even"><td><a class="reference internal" href="#IRect.x0" title="IRect.x0"><tt class="xref py py-attr docutils literal"><span class="pre">IRect.x0</span></tt></a></td>
+<td>X-coordinate of the top left corner</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#IRect.y0" title="IRect.y0"><tt class="xref py py-attr docutils literal"><span class="pre">y0</span></tt></a></td>
-<td>Y-coordinate of the top left corner.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#IRect.y0" title="IRect.y0"><tt class="xref py py-attr docutils literal"><span class="pre">IRect.y0</span></tt></a></td>
+<td>Y-coordinate of the top left corner</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#IRect.x1" title="IRect.x1"><tt class="xref py py-attr docutils literal"><span class="pre">x1</span></tt></a></td>
-<td>X-coordinate of the bottom right corner.</td>
+<tr class="row-even"><td><a class="reference internal" href="#IRect.x1" title="IRect.x1"><tt class="xref py py-attr docutils literal"><span class="pre">IRect.x1</span></tt></a></td>
+<td>X-coordinate of the bottom right corner</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#IRect.y1" title="IRect.y1"><tt class="xref py py-attr docutils literal"><span class="pre">y1</span></tt></a></td>
-<td>Y-coordinate of the bottom right corner.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#IRect.y1" title="IRect.y1"><tt class="xref py py-attr docutils literal"><span class="pre">IRect.y1</span></tt></a></td>
+<td>Y-coordinate of the bottom right corner</td>
 </tr>
 </tbody>
 </table>
@@ -96,7 +101,7 @@
 <dd><dl class="method">
 <dt id="IRect.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>self</em>, <em>x0=0</em>, <em>y0=0</em>, <em>x1=0</em>, <em>y1=0</em><big>)</big><a class="headerlink" href="#IRect.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor. An empty <tt class="docutils literal"><span class="pre">IRect</span></tt> will be built if no arguments given.</p>
+<dd><p>Constructor. The default values will create an empty rectangle. Function <tt class="xref py py-meth docutils literal"><span class="pre">Rect.round()</span></tt> creates the smallest <tt class="docutils literal"><span class="pre">IRect</span></tt> containing <tt class="docutils literal"><span class="pre">Rect</span></tt>.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -204,8 +209,8 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="document.html"
-                        title="previous chapter"><strong>Document</strong></a></p>
+  <p class="topless"><a href="identity.html"
+                        title="previous chapter"><strong>Identity</strong></a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="link.html"
                         title="next chapter"><strong>Link</strong></a></p>
@@ -241,9 +246,9 @@
           <a href="link.html" title="Link"
              >next</a> |</li>
         <li class="right" >
-          <a href="document.html" title="Document"
+          <a href="identity.html" title="Identity"
              >previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>

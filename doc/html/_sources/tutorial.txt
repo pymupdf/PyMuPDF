@@ -1,10 +1,7 @@
-================
-**Tutorial**
-================
-This tutorial will show you the use of MuPDF in Python step by step.
-You should note that MuPDF supports not only PDF files, but also XPS, OpenXPS and EPUB files.
-The MuPDF bindings for Python also support all of these filetypes.
-Nevertheless we will only talk about PDF's for the sake of brevity.
+=========
+Tutorial
+=========
+This tutorial will show you the use of MuPDF in Python step by step. You should note that MuPDF supports not only PDF files, but also XPS, OpenXPS and EPUB files. The MuPDF bindings for Python also support all of these filetypes. Nevertheless we will only talk about PDF's for the sake of brevity.
 
 Import the Bindings
 ==========================
@@ -53,7 +50,7 @@ Work with Outlines
 =========================
 Entering the documents outline tree works like this:
 ::
- olItem = doc.outline    # this is the document's first outline item
+ olItem = doc.outline    # the document's first outline item
 
 
 Some ``Document.outline`` functions and attributes
@@ -91,7 +88,7 @@ Among other things, you can render a :ref:`Page`, optionally zooming, rotating o
 You can write it's image to files (in PNG format), extract text from it or perform searches for text elements.
 At first, a page object must be created:
 ::
- page = doc.loadPage(n)               # create the Page object representing page n of the document
+ page = doc.loadPage(n)        # represents page n of the document
 
 Some typical uses of :ref:`Page` objects:
 

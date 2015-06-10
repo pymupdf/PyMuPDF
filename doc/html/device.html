@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Device &mdash; PYTHON-FITZ 1.7 1.7.0 documentation</title>
+    <title>Device &mdash; Python-Fitz 1.7.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PYTHON-FITZ 1.7 1.7.0 documentation" href="index.html" />
+    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="DisplayList" href="displaylist.html" />
     <link rel="prev" title="Colorspace" href="colorspace.html" /> 
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="colorspace.html" title="Colorspace"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>  
@@ -62,14 +62,14 @@
 <em class="property">class </em><tt class="descname">Device</tt><a class="headerlink" href="#Device" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="Device.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>self</em>, <em>obj</em><big>)</big><a class="headerlink" href="#Device.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor</p>
+<tt class="descname">__init__</tt><big>(</big><em>self</em>, <em>object</em><big>)</big><a class="headerlink" href="#Device.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor for either a pixel map or a display list device.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="Device.obj">
-<tt class="descname">obj</tt><a class="headerlink" href="#Device.obj" title="Permalink to this definition">¶</a></dt>
-<dd><p>An object representing on of <a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a>, <a class="reference internal" href="displaylist.html#displaylist"><em>DisplayList</em></a></p>
+<dt id="Device.object">
+<tt class="descname">object</tt><a class="headerlink" href="#Device.object" title="Permalink to this definition">¶</a></dt>
+<dd><p>An object representing one of <a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a>, or <a class="reference internal" href="displaylist.html#displaylist"><em>DisplayList</em></a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -82,13 +82,13 @@
 
 <dl class="method">
 <dt>
-<tt class="descname">__init__</tt><big>(</big><em>self</em>, <em>ts</em>, <em>tp</em><big>)</big></dt>
-<dd><p>Constructor</p>
+<tt class="descname">__init__</tt><big>(</big><em>self</em>, <em>textsheet</em>, <em>textpage</em><big>)</big></dt>
+<dd><p>Constructor for a text page device.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="Device.ts">
-<tt class="descname">ts</tt><a class="headerlink" href="#Device.ts" title="Permalink to this definition">¶</a></dt>
+<dt id="Device.textsheet">
+<tt class="descname">textsheet</tt><a class="headerlink" href="#Device.textsheet" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference internal" href="textsheet.html#textsheet"><em>TextSheet</em></a> object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -101,8 +101,8 @@
 </dd></dl>
 
 <dl class="attribute">
-<dt id="Device.tp">
-<tt class="descname">tp</tt><a class="headerlink" href="#Device.tp" title="Permalink to this definition">¶</a></dt>
+<dt id="Device.textpage">
+<tt class="descname">textpage</tt><a class="headerlink" href="#Device.textpage" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference internal" href="textpage.html#textpage"><em>TextPage</em></a> object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -173,7 +173,7 @@
         <li class="right" >
           <a href="colorspace.html" title="Colorspace"
              >previous</a> |</li>
-        <li><a href="index.html">PYTHON-FITZ 1.7 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>

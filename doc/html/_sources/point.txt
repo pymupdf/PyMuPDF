@@ -4,21 +4,21 @@
 **Point**
 ================
 
-``Point`` is a point in the plane, defined by its x and y coordinates.
+``Point`` represents a point in the plane, defined by its x and y coordinates.
 
 Methods
 =======
 
 ======================== ============
-:meth:`~Point.__init__`  Constructor.
+:meth:`Point.__init__`   Constructor.
 ======================== ============
 
 Attributes
 ==========
 
 ================ ==================
-:attr:`~Point.x` The X- coordinate.
-:attr:`~Point.y` The Y- coordinate.
+:attr:`Point.x`  The X- coordinate.
+:attr:`Point.y`  The Y- coordinate.
 ================ ==================
 
 Class API
@@ -28,7 +28,7 @@ Class API
 
    .. method:: __init__(self, x=0, y=0)
 
-      Constructor.
+      Constructor, defaulting to "top left".
 
    .. attribute:: x
 

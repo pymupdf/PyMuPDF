@@ -4,9 +4,11 @@
 **DisplayList**
 ================
 
-DisplayList is a list containing drawing commands (text, images, etc.). The intent is two-fold: as a caching-mechanism to reduce parsing of a page, and to be used as a data structure in multi-threading where one thread parses the page and another one renders pages.
+DisplayList is a list containing drawing commands (text, images, etc.). The intent is two-fold:
+ 1. as a caching-mechanism to reduce parsing of a page
+ 2. as a data structure in multi-threading setups, where one thread parses the page and another one renders pages.
 
-A ``DisplayList`` is populated with objects from a page by running :meth:`Page.run` on a :ref:`Device`. Replay the list (once or many times) by calling :meth:`~DisplayList.run`.
+A ``DisplayList`` is populated with objects from a page by running :meth:`Page.run` on a :ref:`Device`. Replay the list (once or many times) by invoking the display list's :meth:`~DisplayList.run` function.
 
 Methods
 =======
@@ -29,7 +31,7 @@ Class API
 
       :rtype: :ref:`Device`
 
-   .. method:: run(self, dev, ctm)
+   .. method:: run(self, dev, ctm, area)
 
       :param `dev`: Device obtained from :ref:`Device`
       :type `dev`: :ref:`Device`

@@ -4,25 +4,27 @@
 **Pixmap**
 ================
 
-Pixmaps represent a set of pixels for a 2 dimensional region of a plane. Each pixel has n components per pixel, the last of which is always alpha. The data is in premultiplied alpha when rendering, but non-premultiplied for colorspace conversions and rescaling.
+Pixmaps represent a set of pixels for a 2 dimensional region. Each pixel consists of n bytes ("components"), plus always an alpha. The data is in premultiplied alpha when rendering, but non-premultiplied for colorspace conversions and rescaling.
 
 
-Methods
-=======
+Methods and Attributes
+======================
 
 ============================ ===========================================
-:meth:`~Pixmap.clearWith`    Clears a pixmap (with given value).
-:meth:`~Pixmap.writePNG`     Saves a pixmap as a png file.
-:attr:`~Pixmap.samples`      The components data for all pixels.
-:meth:`~Pixmap.invertIRect`  Invert the pixels of a given bounding box.
-:meth:`~Pixmap.interpolate`  unknown 
-:meth:`~Pixmap.h`            Height of the region in pixels.
-:meth:`~Pixmap.w`            Width of the region in pixels
-:meth:`~Pixmap.x`            X-coordinate of top-left corner of pixmap
-:meth:`~Pixmap.y`            Y-coordinate of top-left corner of pixmap
-:meth:`~Pixmap.n`            Number of components per pixel
-:meth:`~Pixmap.xres`         Resolution in X-direction
-:meth:`~Pixmap.yres`         Resolution in Y-direction
+**Method / Attribute**       **Short Description**
+============================ ===========================================
+:meth:`Pixmap.clearWith`     Clears a pixmap (with given value)
+:meth:`Pixmap.writePNG`      Saves a pixmap as a png file
+:meth:`Pixmap.invertIRect`   Invert the pixels of a given bounding box
+:meth:`Pixmap.interpolate`   unknown
+:attr:`Pixmap.samples`       The components data for all pixels
+:attr:`Pixmap.h`             Height of the region in pixels
+:attr:`Pixmap.w`             Width of the region in pixels
+:attr:`Pixmap.x`             X-coordinate of top-left corner of pixmap
+:attr:`Pixmap.y`             Y-coordinate of top-left corner of pixmap
+:attr:`Pixmap.n`             Number of components per pixel
+:attr:`Pixmap.xres`          Resolution in X-direction
+:attr:`Pixmap.yres`          Resolution in Y-direction
 ============================ ===========================================
 
 Class API
@@ -34,12 +36,12 @@ Class API
 
       Clears a pixmap.
 
-      :param `value`: Values in the range 0 to 255 are valid. Each component sample for each pixel in the pixmap will be set to this value, while alpha will always be set to 255 (non-transparent). If not given, all components of all pixels in a pixmap will be set to 0.
+      :param `value`: Values in the range 0 to 255 are valid. Each color byte of each pixel will be set to this value, while alpha will always be set to 255 (non-transparent). Default is 0.
       :type `value`: int
 
    .. attribute:: samples
 
-      The components data for all pixels. Samples is a block of memory width * height * n bytes of memory in which the components are stored. The first n bytes are components 0 to n-1 for the pixel at (x,y). Each successive n bytes gives another pixel in scanline order. Subsequent scanlines follow on with no padding. E.g. for RGBA this means, that each pixel ist described by the four bytes r, g, b, alpha.
+      The color and transparency values for all pixels. Samples is a memory area of size ``width * height * n`` bytes. The first n bytes are components 0 to n-1 for the pixel at point (x,y). Each successive n bytes gives another pixel in scanline order. Subsequent scanlines follow each other with no padding. E.g. for an RGBA colorspace this means, ``samples`` is a bytearray like ``..., R, G, B, A, ...``, and the four byte values R, G, B, A describe one pixel (RGBA is the only supported colorspace at this time).
 
       :rtype: bytearray
 
@@ -87,12 +89,12 @@ Class API
 
    .. method:: invertIRect(self, irect)
 
-      Invert all the pixels in :ref:`IRect`. All components are inverted(except alpha, which is unchanged).
+      Invert all pixels in :ref:`IRect`. All components except alpha are inverted.
 
       :param `irect`: Invert all the pixels in the irect. If not given, the whole pixmap will be inverted.
       :type `IRect`: :ref:`IRect`
 
-   .. method:: writePNG(self, filename, savealpha)
+   .. method:: writePNG(self, filename, savealpha=False)
 
       Save a pixmap as a png.
 
@@ -100,14 +102,11 @@ Class API
       :type `filename`: string
 
       :param `savealpha`: Save alpha or not.
-      :type `savealpha`: int
+      :type `savealpha`: bool
 
-.. method:: interpolate
+   .. method:: interpolate
 
-      Save a pixmap as a png.
+      Unknown ...
 
-      :param `filename`: The filename to save as (including extension).
-      :type `filename`: string
-
-      :param `savealpha`: Save alpha or not.
-      :type `savealpha`: int
+      :param `unknown`: Unknown.
+      :type `string`: string

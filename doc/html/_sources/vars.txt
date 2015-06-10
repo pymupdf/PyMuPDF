@@ -1,53 +1,42 @@
 ===============================
-Constants and enums
+Constants and Enumerations
 ===============================
-Constants and enums are listed here.
+Here are the constants and enumerations of MuPDF as implemented by python-fitz.
 
 
 Constants
 =========
 
-============================ ============================================
-.. data:: fz_device_bgr      obsolete
-.. data:: fz_device_cmyk     obsolete
-.. data:: fz_device_gray     obsolete
-.. data:: fz_device_rgb      obsolete
-.. data:: fz_expand_images   obsolete
-.. data:: fz_expand_fonts    obsolete
-.. data:: fz_expand_all      obsolete
-.. data:: fz_empty_bbox      obsolete
-.. data:: fz_empty_rect      obsolete
-.. data:: fz_identity        obsolete
-.. data:: fz_infinite_bbox   obsolete
-.. data:: fz_infinite_rect   obsolete
-.. data:: fz_unit_bbox       obsolete
-.. data:: fz_unit_rect       obsolete
-============================ ============================================
+===================== ==================================
+.. data:: fitz.CS_RGB Type of :ref:`Colorspace` is RGBA
+===================== ==================================
 
-Enums
-=====
+Enumerations
+=============
 
-=========================== ======================================
-.. data:: fz_link_kind      
-=========================== ======================================
-.. data:: FZ_LINK_GOTO      Points to some place in this document.
-.. data:: FZ_LINK_GOTOR     Points to another document.
-.. data:: FZ_LINK_LAUNCH    Launches a file.
-.. data:: FZ_LINK_NAMED     Performs some action.
-.. data:: FZ_LINK_NONE      No destination.
-.. data:: FZ_LINK_URI       Points to an URI.
-=========================== ======================================
+Possible values of :attr:`linkDest.kind` (link destination type).
 
-==================================
+============================ ==========================================
+**Value**                    **Description**
+============================ ==========================================
+.. data:: FZ_LINK_NONE       0 - No destination.
+.. data:: FZ_LINK_GOTO       1 - Points to a place in this document.
+.. data:: FZ_LINK_URI        2 - Points to an URI.
+.. data:: FZ_LINK_LAUNCH     3 - Launches (opens) a file.
+.. data:: FZ_LINK_NAMED      4 - Performs some action.
+.. data:: FZ_LINK_GOTOR      5 - Points to a place in another document.
+============================ ==========================================
 
-================================= ===============================
-.. data:: fz_link_flag
-================================= ===============================
-.. data:: fz_link_flag_l_valid    lt.x is valid
-.. data:: fz_link_flag_t_valid    lt.y is valid 
-.. data:: fz_link_flag_r_valid    rb.x is valid
-.. data:: fz_link_flag_b_valid    rb.y is valid
-.. data:: fz_link_flag_fit_h      Fit horizontally
-.. data:: fz_link_flag_fit_v      Fit vertically
-.. data:: fz_link_flag_r_is_zoom  rb.x is actually a zoom figure
-================================= ===============================
+Possible values of :attr:`linkDest.flags` (link destination flags). **Attention**: these values represent boolean indicators, of which several can be ``True`` or ``False``, and not numerical values. I.e. :attr:`linkDest.flags` is the sum of these values.
+
+=============================== ========================================
+**Value**                       **Description**
+=============================== ========================================
+.. data:: LINK_FLAG_L_VALID     1  - Top left x value is valid.
+.. data:: LINK_FLAG_T_VALID     2  - Top left y value is valid.
+.. data:: LINK_FLAG_R_VALID     4  - Bottom right x value is valid.
+.. data:: LINK_FLAG_B_VALID     8  - Bottom right y value is valid.
+.. data:: LINK_FLAG_FIT_H       16 - Horizontal fit.
+.. data:: LINK_FLAG_FIT_V       32 - Vertical fit.
+.. data:: LINK_FLAG_R_IS_ZOOM   64 - Bottom right x is a zoom figure.
+=============================== ========================================
