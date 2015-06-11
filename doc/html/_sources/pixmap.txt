@@ -87,6 +87,12 @@ Class API
 
       :rtype: int
 
+   .. attribute:: interpolate
+
+      A boolean flag set to non-zero if the image will be drawn using linear interpolation, or set to zero if image will be using nearest neighbour sampling.
+
+      :rtype: int
+
    .. method:: invertIRect(self, irect)
 
       Invert all pixels in :ref:`IRect`. All components except alpha are inverted.
@@ -103,10 +109,3 @@ Class API
 
       :param `savealpha`: Save alpha or not.
       :type `savealpha`: bool
-
-   .. method:: interpolate
-
-      Unknown ...
-
-      :param `unknown`: Unknown.
-      :type `string`: string

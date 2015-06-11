@@ -40,9 +40,3 @@ Class API
 
       :rtype: :ref:`Link`
 
-   .. attribute:: refs
-
-      The ???
-
-      :rtype: :ref:`Link`
-
