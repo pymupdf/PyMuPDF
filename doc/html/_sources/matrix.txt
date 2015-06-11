@@ -17,12 +17,12 @@ normally represented as [ a b c d e f ].
 Methods
 =======
 
-========================= ===================
+========================= =======================
 :meth:`Matrix.__init__`   Constructor.
 :meth:`Matrix.preRotate`  Perform a rotation
 :meth:`Matrix.preScale`   Perform a scaling
 :meth:`Matrix.preShear`   Perform a shearing
-========================= ===================
+========================= =======================
 
 Attributes
 ==========

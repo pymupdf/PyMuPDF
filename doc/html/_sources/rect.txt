@@ -11,21 +11,21 @@ Rectangles are always aligned with the respective X- and Y-axes. If x0 <= x1 and
 Methods
 =======
 
-======================= =========================================================================
-:meth:`Rect.round`      creates the smallest :ref:`Irect` containing ``Rect``
-:meth:`Rect.transform`  transform ``Rect`` with a :ref:`Matrix`
-======================= =========================================================================
+=========================== =========================================================================
+:meth:`Rect.round`          creates the smallest :ref:`Irect` containing ``Rect``
+:meth:`Rect.transform`      transform ``Rect`` with a :ref:`Matrix`
+=========================== =========================================================================
 
 Attributes
 ==========
 
 ==================== ========================================
-:attr:`Rect.height`  ``Rect`` height.
-:attr:`Rect.width`   ``Rect`` width.
-:attr:`Rect.x0`      Top left corner's X-coordinate.
-:attr:`Rect.y0`      Top left corner's Y-coordinate.
-:attr:`Rect.x1`      Bottom right corner's X-coordinate.
-:attr:`Rect.y1`      Bottom right corner's Y-coordinate.
+:attr:`Rect.height`  ``Rect`` height
+:attr:`Rect.width`   ``Rect`` width
+:attr:`Rect.x0`      Top left corner's X-coordinat
+:attr:`Rect.y0`      Top left corner's Y-coordinate
+:attr:`Rect.x1`      Bottom right corner's X-coordinate
+:attr:`Rect.y1`      Bottom right corner's Y-coordinate
 ==================== ========================================
 
 Class API

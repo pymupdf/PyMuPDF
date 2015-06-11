@@ -9,8 +9,9 @@ module = Extension('fitz._fitz',
                                  './mupdf17/include/mupdf'       # mupdf source directory is also needed
                                 ],
                    libraries=['libmupdf',                        # only these are needed in Windows
-                              'libthirdparty'                    # put them in the dir of setupwin.py or
+                              'libthirdparty',                   # put them in the dir of setupwin.py or
                              ],                                  # specify a lib directory here
+                   library_dirs=['./LibWin32'],                  # dir of libmupdf.lib / libthirdparty.lib
                    sources=['./fitz/fitz_wrap.c'])
 
 setup(name = 'fitz',

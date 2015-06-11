@@ -6,7 +6,10 @@ if sys.platform.startswith('linux'):
     module = Extension('fitz._fitz', # name of the module
                        ['fitz/fitz.i'], # SWIG source file
                        include_dirs=['/usr/include/mupdf'], # we need the path of the MuPDF's headers
-                       libraries=['mupdf', 'mujs', 'crypto', 'jbig2dec', 'openjp2', 'jpeg', 'freetype'], # the libraries to link with
+                       libraries=['mupdf', 'mujs', 'crypto',
+                                  'jbig2dec', 'openjp2', 'jpeg',
+                                  'freetype'],                   # the libraries to link with
+                       library_dirs=['./LibLinux'],              # dir of the libraries
                       )
 else:
 #===============================================================================
@@ -16,12 +19,12 @@ else:
 #===============================================================================
     module = Extension('fitz._fitz',
                        include_dirs=['./fitz',
-                                     './mupdf17/include/mupdf'],     # "./mupdf17" = top level mupdf source dir
-                       libraries=[                                   # only these 2 are needed in Windows
+                                     './mupdf17/include/mupdf'],  # "./mupdf17" = top level mupdf source dir
+                       libraries=[                                # only these 2 are needed in Windows
                                   'libmupdf',                        
-                                  'libthirdparty'                    
+                                  'libthirdparty',                    
                                  ],
-                       library_dirs=[],                              # dir of libmupdf.lib / libthirdparty.lib
+                       library_dirs=['./LibWin32'],               # dir of libmupdf.lib / libthirdparty.lib
                        sources=['./fitz/fitz_wrap.c'])
 
 setup(name = 'fitz',

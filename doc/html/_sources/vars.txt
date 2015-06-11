@@ -7,12 +7,14 @@ Here are the constants and enumerations of MuPDF as implemented by python-fitz.
 Constants
 =========
 
-===================== ==================================
+===================== =======================================
 .. data:: fitz.CS_RGB Type of :ref:`Colorspace` is RGBA
-===================== ==================================
+===================== =======================================
 
 Enumerations
 =============
+
+If your import statement was ``import fitz`` then each of the following variables ``var`` is accessible as ``fitz.var``
 
 Possible values of :attr:`linkDest.kind` (link destination type).
 

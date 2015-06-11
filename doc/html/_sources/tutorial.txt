@@ -1,7 +1,9 @@
 =========
 Tutorial
 =========
-This tutorial will show you the use of MuPDF in Python step by step. You should note that MuPDF supports not only PDF files, but also XPS, OpenXPS and EPUB files. The MuPDF bindings for Python also support all of these filetypes. Nevertheless we will only talk about PDF's for the sake of brevity.
+This tutorial will show you the use of MuPDF in Python step by step.
+
+Because MuPDF supports not only PDF, but also XPS, OpenXPS and EPUB formats, so does python-fitz. Nevertheless we will only talk about PDF's for the sake of brevity.
 
 Import the Bindings
 ==========================
@@ -21,22 +23,24 @@ This will create ``doc`` as a :ref:`Document` object. ``filename`` must be a Pyt
 Some :ref:`Document` functions and attributes
 =============================================
 
-======================== ==========================================
-:attr:`~doc.pageCount`   Number of pages of ``filename`` (integer).
-:attr:`~doc.metadata`    Metadata of the ``Document`` (dictionary).
-:attr:`~doc.outline`     First outline entry of ``Document``
-:meth:`~doc.ToC`         Table of contents of ``Document`` (list).
-:meth:`~doc.loadPage`    Create a ``Page`` object.
-======================== ==========================================
+=========================== ==========================================
+:attr:`Document.pageCount`  Number of pages of ``filename`` (integer).
+:attr:`Document.metadata`   Metadata of the ``Document`` (dictionary).
+:attr:`Document.outline`    First outline entry of ``Document``
+:meth:`Document.ToC`        Table of contents of ``Document`` (list).
+:meth:`Document.loadPage`   Create a ``Page`` object.
+=========================== ==========================================
 
-Access the Meta Data
+Access Meta Data
 ========================
 :ref:`Document`.metadata is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals. The meta data fields are of type string if not otherwise indicated and may be missing, in which case they contain ``None``.
 
 ======================== ==============================
+**Key**                  **Value**
+======================== ==============================
 .. data:: producer       Producer (producing software)
-.. data:: format         PDF release, e.g. 'PDF 1.4'
-.. data:: encryption     Encryption method method used
+.. data:: format         PDF format, e.g. 'PDF 1.4'
+.. data:: encryption     Encryption method used
 .. data:: author         Author
 .. data:: modDate        Date of last modification
 .. data:: keywords       Keywords (dictionary)
@@ -52,26 +56,27 @@ Entering the documents outline tree works like this:
 ::
  olItem = doc.outline    # the document's first outline item
 
+This creates olItem as an :ref:`Outline` object.
 
-Some ``Document.outline`` functions and attributes
+Some :ref:`Outline` functions and attributes
 ===================================================
 
 ========================== =================================================
-:meth:`~outline.saveText`  Save table of contents text to a file.
-:meth:`~outline.saveXML`   Save table of contents quasi-XML to a file.
-:attr:`~outline.next`      Next item of the same level
-:attr:`~outline.down`      Next item one level down
-:attr:`~outline.title`     Title of this item (UTF-8).
-:attr:`~outline.dest`      Destination ('where does this entry point to?').
+:meth:`Outline.saveText`   Save table of contents text to a file.
+:meth:`Outline.saveXML`    Save table of contents quasi-XML to a file.
+:attr:`Outline.next`       Next item of the same level
+:attr:`Outline.down`       Next item one level down
+:attr:`Outline.title`      Title of this item (UTF-8).
+:attr:`Outline.dest`       Destination ('where does this entry point to?').
 ========================== =================================================
 
-Some ``Document.outline.dest`` functions and attributes
-========================================================
+Some :attr:`Outline.dest` attributes
+=====================================
 
 =========================== ========================================
-:attr:`~outlItem.dest.page` Target page number.
-:attr:`~outlItem.dest.lt`   Top-left corner of target rectangle.
-:attr:`~outlItem.dest.rb`   Bottem-right corner of target rectangle.
+:attr:`Outline.dest.page`   Target page number.
+:attr:`Outline.dest.lt`     Top-left corner of target rectangle.
+:attr:`Outline.dest.rb`     Bottem-right corner of target rectangle.
 =========================== ========================================
 
 MuPDF also supports outline destinations to other files and URIs into which we will not dive here.
@@ -90,7 +95,7 @@ At first, a page object must be created:
 ::
  page = doc.loadPage(n)        # represents page n of the document
 
-Some typical uses of :ref:`Page` objects:
+Here are some typical uses of :ref:`Page` objects:
 
 1. Inspect the links on a :ref:`Page`:
 ::
@@ -123,14 +128,14 @@ Some typical uses of :ref:`Page` objects:
  #-----------------------------------------------------------------------------------
  irect = rect.round()
  #-----------------------------------------------------------------------------------
- # create an empty RGBA pixel map of the rectangle's size
+ # create an empty RGBA pixel map of irect's size
  #-----------------------------------------------------------------------------------
  pix = fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), irect)
  pix.clearWith(255)             # Initialize with color "white" and "no transparency"
  dev = fitz.Device(pix)         # Create a draw device for the pixel map
  page.run(dev, fitz.Identity)   # finally render the page with no changes
  #-----------------------------------------------------------------------------------
- # now pix contains the rendered page, ready to be used
+ # now pix contains an image of the page, ready to be used
  #-----------------------------------------------------------------------------------
 
 2.1 Example: save the page image as a png file:
@@ -139,9 +144,9 @@ Some typical uses of :ref:`Page` objects:
 
 2.2 Example: convert the image to a Bitmap for use in the wxPython dialog manager:
 ::
- data = pix.samples                       # data = bytearray of raw pixel data (RGBA)
+ data = pix.samples                   # data = bytearray of raw pixel data (RGBA)
  bitmap = wx.BitmapFromBufferRGBA(irect.width,
-             irect.height, str(data))     # wxPython only accepts strings, no bytearrays
+             irect.height, str(data)) # wxPython only accepts strings, no bytearrays
 
 3. Extract the text of a :ref:`Page`:
 ::

@@ -12,7 +12,7 @@ Attributes
 **Attribute**               **Short Description**
 =========================== ====================================
 :attr:`linkDest.dest`       Destination
-:attr:`linkDest.fileSpec`   File specification (path / filename)
+:attr:`linkDest.fileSpec`   File specification (path, filename)
 :attr:`linkDest.flags`      Descriptive flags
 :attr:`linkDest.isMap`      Is this a MAP?
 :attr:`linkDest.isUri`      Is this an URI?

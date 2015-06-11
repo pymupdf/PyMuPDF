@@ -4,36 +4,25 @@ Installation
 This describes how to install python-fitz.
 
 Step 1: Download python-fitz
-============================
+=============================
 Download this repository and unzip it. This will give you a folder, let us call it ``PyFitz``.
 
 Step 2: Download MuPDF 1.7a
-===========================
-Download MuPDF version 1.7(a) source, and unzip it. Let us call the resulting folder ``mupdf17``.
+============================
+Download `MuPDF version 1.7a source <http://mupdf.com/downloads/>`_, and unzip it. Let us call the resulting folder ``mupdf17``.
 
-You can put it inside ``PyFitz`` as a subdirectory, if you want keep everything in one place.
+Put it inside ``PyFitz`` as a subdirectory, if you want to keep everything in one place.
 
-Step 3: Generate MuPDF
-========================
-For many platforms supported by MuPDF, generating scripts are provided. I.e. makefiles exist for Linux / Unix platforms and Visual Studio solutions / projects are provided for Windows. As MuPDF depends on a number of third party software components, you must generate these, too. Follow the instructions provided with the MuPDF download package.
-
-
-For Windows, you only need to BUILD the solution in Visual Studio (set the configuration to "Release Win32"). This will generate MuPDF together with any third party software.
-
-
-The result of this step will be libraries, which are needed for the setup of python-fitz.
-
-
-On Windows, the following two libraries are required: ``libmupdf.lib`` and ``libthirdparty.lib``.
-
-
-On Unix / Linux platforms, the libraries are these: ``mupdf.a``, ``mujs.a``, ``crypto.a``, ``jbig2dec.a``, ``openjp2.a``, ``jpeg.a`` and ``freetype.a``.
-
-Step 4: Build / Setup python-fitz
+Step 3: Build / Setup python-fitz
 ===================================
 If necessary, adjust the setup.py script now. E.g. make sure that
 
-  * the include directory is correctly set,
-  * the directory for the libraries created in Step 3 is correcly set.
+  * the include directory is correctly set in sync with your directory structure
+
+It is no longer necessary to generate MuPDF object code if your platform is either Windows (32 Bit) or Linux.
+The required object libraries for these two platforms have been put into respective directories, and the setup script has been updated. These are the names of those directories:
+
+	* LibLinux - for the Linux-generated MuPDF libraries
+	* LibWin32 - for the Windows-generated MuPDF libraries
 
 Now perform a ``python setup.py install``
