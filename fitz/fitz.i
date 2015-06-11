@@ -80,6 +80,7 @@ struct fz_document_s {
                                                                            'modDate':'info:ModDate'}.items()])
                 self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
                 self.ToC = ToC
+                self.name = filename
                 self.thisown = False
         %}
         fz_document_s(const char *filename) {
@@ -160,6 +161,8 @@ struct fz_document_s {
                 filename = filename.encode('utf8')
             else:
                 raise TypeError("filename must be a string")
+            if filename == self.name:
+                raise ValueError("cannot save to input file")
         %}
         %exception save {
             $action

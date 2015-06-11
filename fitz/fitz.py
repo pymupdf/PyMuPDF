@@ -152,6 +152,7 @@ class Document(_object):
                                                                        'modDate':'info:ModDate'}.items()])
             self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
             self.ToC = ToC
+            self.name = filename
             self.thisown = False
 
 
@@ -199,6 +200,8 @@ class Document(_object):
             filename = filename.encode('utf8')
         else:
             raise TypeError("filename must be a string")
+        if filename == self.name:
+            raise ValueError("cannot save to input file")
 
 
         return _fitz.Document_save(self, filename)
