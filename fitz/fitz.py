@@ -152,16 +152,17 @@ class Document(_object):
                                                                        'modDate':'info:ModDate'}.items()])
             self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
             self.ToC = ToC
+            self.thisown = False
 
 
 
-    __swig_destroy__ = _fitz.delete_Document
-    def __del__(self):
+
+    def close(self):
         if hasattr(self, '_outline') and self._outline:
             self._dropOutline(self._outline)
 
 
-        pass
+        return _fitz.Document_close(self)
 
 
     def loadPage(self, number):
@@ -202,13 +203,12 @@ class Document(_object):
 
         return _fitz.Document_save(self, filename)
 
-
-    def close(self):
-        return _fitz.Document_close(self)
     pageCount = property(lambda self: self._getPageCount())
     outline = property(lambda self: self._outline)
     needsPass = property(lambda self: self._needsPass())
 
+    __swig_destroy__ = _fitz.delete_Document
+    __del__ = lambda self: None
 Document_swigregister = _fitz.Document_swigregister
 Document_swigregister(Document)
 
@@ -711,9 +711,6 @@ class Link(_object):
     def __init__(self, *args, **kwargs):
         raise AttributeError("No constructor defined")
     __repr__ = _swig_repr
-    __swig_getmethods__["refs"] = _fitz.Link_refs_get
-    if _newclass:
-        refs = _swig_property(_fitz.Link_refs_get)
     __swig_getmethods__["rect"] = _fitz.Link_rect_get
     if _newclass:
         rect = _swig_property(_fitz.Link_rect_get)

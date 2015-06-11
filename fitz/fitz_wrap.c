@@ -3059,18 +3059,19 @@ SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
 
 
 SWIGINTERN struct fz_document_s *new_fz_document_s(char const *filename){
-            struct fz_document_s *doc;
+            struct fz_document_s *doc = NULL;
             fz_try(gctx)
                 doc = fz_open_document(gctx, filename);
             fz_catch(gctx)
-                doc = NULL;
+                ;
             return doc;
         }
-SWIGINTERN void delete_fz_document_s(struct fz_document_s *self){
+SWIGINTERN void fz_document_s_close(struct fz_document_s *self){
 
 
 
-            fz_drop_document(gctx, self);
+            while(self->refs)
+                fz_drop_document(gctx, self);
         }
 
 #include <limits.h>
@@ -3218,11 +3219,11 @@ SWIG_AsVal_int (PyObject * obj, int *val)
 }
 
 SWIGINTERN struct fz_page_s *fz_document_s_loadPage(struct fz_document_s *self,int number){
-            struct fz_page_s *page;
+            struct fz_page_s *page = NULL;
             fz_try(gctx)
                 page = fz_load_page(gctx, self, number);
             fz_catch(gctx)
-                page = NULL;
+                ;
             return page;
         }
 SWIGINTERN struct fz_outline_s *fz_document_s__loadOutline(struct fz_document_s *self){
@@ -3300,9 +3301,6 @@ SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename){
             fz_catch(gctx)
                 return 1;
             return 0;
-        }
-SWIGINTERN int fz_document_s_close(struct fz_document_s *self){
-            return pdf_close_document(gctx, self);
         }
 SWIGINTERN void delete_fz_page_s(struct fz_page_s *self){
 
@@ -3390,11 +3388,11 @@ SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_1(struct fz_irect_s const *s)
             return r;
         }
 SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s(struct fz_colorspace_s *cs,struct fz_irect_s const *bbox){
-            struct fz_pixmap_s *pm;
+            struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
                 pm = fz_new_pixmap_with_bbox(gctx, cs, bbox);
             fz_catch(gctx)
-                pm = NULL;
+                ;
             return pm;
         }
 SWIGINTERN void delete_fz_pixmap_s(struct fz_pixmap_s *self){
@@ -3438,27 +3436,27 @@ SWIGINTERN void delete_fz_colorspace_s(struct fz_colorspace_s *self){
             fz_drop_colorspace(gctx, self);
         }
 SWIGINTERN struct fz_device_s *new_fz_device_s__SWIG_0(struct fz_pixmap_s *pm){
-            struct fz_device_s *dv;
+            struct fz_device_s *dv = NULL;
             fz_try(gctx)
                 dv = fz_new_draw_device(gctx, pm);
             fz_catch(gctx)
-                dv = NULL;
+                ;
             return dv;
         }
 SWIGINTERN struct fz_device_s *new_fz_device_s__SWIG_1(struct fz_display_list_s *dl){
-            struct fz_device_s *dv;
+            struct fz_device_s *dv = NULL;
             fz_try(gctx)
                 dv = fz_new_list_device(gctx, dl);
             fz_catch(gctx)
-                dv = NULL;
+                ;
             return dv;
         }
 SWIGINTERN struct fz_device_s *new_fz_device_s__SWIG_2(struct fz_text_sheet_s *ts,struct fz_text_page_s *tp){
-            struct fz_device_s *dv;
+            struct fz_device_s *dv = NULL;
             fz_try(gctx)
                 dv = fz_new_text_device(gctx, ts, tp);
             fz_catch(gctx)
-                dv = NULL;
+                ;
             return dv;
         }
 SWIGINTERN void delete_fz_device_s(struct fz_device_s *self){
@@ -3489,7 +3487,7 @@ SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_3(float degree){
     extern const struct fz_matrix_s fz_identity;
 
 SWIGINTERN int fz_outline_s_saveXML(struct fz_outline_s *self,char const *filename){
-            int res;
+            int res = 1;
             struct fz_output_s *xml;
             fz_try(gctx) {
                 xml = fz_new_output_to_filename(gctx, filename);
@@ -3498,11 +3496,11 @@ SWIGINTERN int fz_outline_s_saveXML(struct fz_outline_s *self,char const *filena
                 res = 0;
             }
             fz_catch(gctx)
-                res = 1;
+                ;
             return res;
         }
 SWIGINTERN int fz_outline_s_saveText(struct fz_outline_s *self,char const *filename){
-            int res;
+            int res = 1;
             struct fz_output_s *text;
             fz_try(gctx) {
                 text = fz_new_output_to_filename(gctx, filename);
@@ -3511,7 +3509,7 @@ SWIGINTERN int fz_outline_s_saveText(struct fz_outline_s *self,char const *filen
                 res = 0;
             }
             fz_catch(gctx)
-                res = 1;
+                ;
             return res;
         }
 SWIGINTERN int fz_link_dest_s__getPage(struct fz_link_dest_s *self){
@@ -3569,11 +3567,11 @@ SWIGINTERN struct fz_link_s *fz_link_s__getNext(struct fz_link_s *self){
             return self->next;
         }
 SWIGINTERN struct fz_display_list_s *new_fz_display_list_s(void){
-            struct fz_display_list_s *dl;
+            struct fz_display_list_s *dl = NULL;
             fz_try(gctx)
                 dl = fz_new_display_list(gctx);
             fz_catch(gctx)
-                dl = NULL;
+                ;
             return dl;
         }
 SWIGINTERN void delete_fz_display_list_s(struct fz_display_list_s *self){
@@ -3591,11 +3589,11 @@ SWIGINTERN int fz_display_list_s_run(struct fz_display_list_s *self,struct fz_de
             return 0;
         }
 SWIGINTERN struct fz_text_sheet_s *new_fz_text_sheet_s(void){
-            struct fz_text_sheet_s *ts;
+            struct fz_text_sheet_s *ts = NULL;
             fz_try(gctx)
                 ts = fz_new_text_sheet(gctx);
             fz_catch(gctx)
-                ts = NULL;
+                ;
             return ts;
         }
 SWIGINTERN void delete_fz_text_sheet_s(struct fz_text_sheet_s *self){
@@ -3605,11 +3603,11 @@ SWIGINTERN void delete_fz_text_sheet_s(struct fz_text_sheet_s *self){
             fz_drop_text_sheet(gctx, self);
         }
 SWIGINTERN struct fz_text_page_s *new_fz_text_page_s(void){
-            struct fz_text_page_s *tp;
+            struct fz_text_page_s *tp = NULL;
             fz_try(gctx)
                 tp = fz_new_text_page(gctx);
             fz_catch(gctx)
-                tp = NULL;
+                ;
             return tp;
         }
 SWIGINTERN void delete_fz_text_page_s(struct fz_text_page_s *self){
@@ -3634,7 +3632,7 @@ SWIGINTERN struct fz_rect_s *fz_text_page_s_search(struct fz_text_page_s *self,c
             return result;
         }
 SWIGINTERN struct fz_buffer_s *fz_text_page_s_extractText(struct fz_text_page_s *self){
-            struct fz_buffer_s *res;
+            struct fz_buffer_s *res = NULL;
             fz_output *out;
             fz_try(gctx) {
                 /* inital size for text */
@@ -3644,7 +3642,7 @@ SWIGINTERN struct fz_buffer_s *fz_text_page_s_extractText(struct fz_text_page_s 
                 fz_drop_output(gctx, out);
             }
             fz_catch(gctx) {
-                res = NULL;
+                ;
             }
             return res;
         }
@@ -3682,20 +3680,20 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_delete_Document(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_Document_close(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_Document",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, SWIG_POINTER_DISOWN |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"O:Document_close",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Document" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_close" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
   }
   arg1 = (struct fz_document_s *)(argp1);
-  delete_fz_document_s(arg1);
+  fz_document_s_close(arg1);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -3944,22 +3942,21 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Document_close(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_delete_Document(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:Document_close",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_Document",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_close" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Document" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
   }
   arg1 = (struct fz_document_s *)(argp1);
-  result = (int)fz_document_s_close(arg1);
-  resultobj = SWIG_From_int((int)(result));
+  free((char *) arg1);
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -7115,28 +7112,6 @@ SWIGINTERN PyObject *LINK_FLAG_R_IS_ZOOM_swigconstant(PyObject *SWIGUNUSEDPARM(s
 }
 
 
-SWIGINTERN PyObject *_wrap_Link_refs_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_link_s *arg1 = (struct fz_link_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:Link_refs_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_link_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Link_refs_get" "', argument " "1"" of type '" "struct fz_link_s *""'"); 
-  }
-  arg1 = (struct fz_link_s *)(argp1);
-  result = (int) ((arg1)->refs);
-  resultobj = SWIG_From_int((int)(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_Link_rect_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_link_s *arg1 = (struct fz_link_s *) 0 ;
@@ -7518,7 +7493,7 @@ SWIGINTERN PyObject *TextPage_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObj
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { (char *)"new_Document", _wrap_new_Document, METH_VARARGS, NULL},
-	 { (char *)"delete_Document", _wrap_delete_Document, METH_VARARGS, NULL},
+	 { (char *)"Document_close", _wrap_Document_close, METH_VARARGS, NULL},
 	 { (char *)"Document_loadPage", _wrap_Document_loadPage, METH_VARARGS, NULL},
 	 { (char *)"Document__loadOutline", _wrap_Document__loadOutline, METH_VARARGS, NULL},
 	 { (char *)"Document__dropOutline", _wrap_Document__dropOutline, METH_VARARGS, NULL},
@@ -7527,7 +7502,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document__needsPass", _wrap_Document__needsPass, METH_VARARGS, NULL},
 	 { (char *)"Document_authenticate", _wrap_Document_authenticate, METH_VARARGS, NULL},
 	 { (char *)"Document_save", _wrap_Document_save, METH_VARARGS, NULL},
-	 { (char *)"Document_close", _wrap_Document_close, METH_VARARGS, NULL},
+	 { (char *)"delete_Document", _wrap_delete_Document, METH_VARARGS, NULL},
 	 { (char *)"Document_swigregister", Document_swigregister, METH_VARARGS, NULL},
 	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, NULL},
 	 { (char *)"Page_bound", _wrap_Page_bound, METH_VARARGS, NULL},
@@ -7650,7 +7625,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"LINK_FLAG_FIT_H_swigconstant", LINK_FLAG_FIT_H_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"LINK_FLAG_FIT_V_swigconstant", LINK_FLAG_FIT_V_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"LINK_FLAG_R_IS_ZOOM_swigconstant", LINK_FLAG_R_IS_ZOOM_swigconstant, METH_VARARGS, NULL},
-	 { (char *)"Link_refs_get", _wrap_Link_refs_get, METH_VARARGS, NULL},
 	 { (char *)"Link_rect_get", _wrap_Link_rect_get, METH_VARARGS, NULL},
 	 { (char *)"Link_dest_get", _wrap_Link_dest_get, METH_VARARGS, NULL},
 	 { (char *)"delete_Link", _wrap_delete_Link, METH_VARARGS, NULL},

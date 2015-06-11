@@ -80,27 +80,28 @@ struct fz_document_s {
                                                                            'modDate':'info:ModDate'}.items()])
                 self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
                 self.ToC = ToC
+                self.thisown = False
         %}
         fz_document_s(const char *filename) {
-            struct fz_document_s *doc;
+            struct fz_document_s *doc = NULL;
             fz_try(gctx)
                 doc = fz_open_document(gctx, filename);
             fz_catch(gctx)
-                doc = NULL;
+                ;
             return doc;
         }
 
-        %pythonprepend ~fz_document_s() %{
+        %pythonprepend close() %{
             if hasattr(self, '_outline') and self._outline:
                 self._dropOutline(self._outline)
         %}
-        ~fz_document_s() {
+        void close() {
 #ifdef MEMDEBUG
             fprintf(stderr, "free doc\n");
 #endif
-            fz_drop_document(gctx, $self);
+            while($self->refs)
+                fz_drop_document(gctx, $self);
         }
-
         %exception loadPage {
             $action
             if(!result) {
@@ -113,11 +114,11 @@ struct fz_document_s {
                 val.thisown = True
         %}
         struct fz_page_s *loadPage(int number) {
-            struct fz_page_s *page;
+            struct fz_page_s *page = NULL;
             fz_try(gctx)
                 page = fz_load_page(gctx, $self, number);
             fz_catch(gctx)
-                page = NULL;
+                ;
             return page;
         }
 
@@ -173,10 +174,6 @@ struct fz_document_s {
             fz_catch(gctx)
                 return 1;
             return 0;
-        }
-
-        int close() {
-            return pdf_close_document(gctx, $self);
         }
 
         %pythoncode %{
@@ -321,11 +318,11 @@ struct fz_pixmap_s
             }
         }
         fz_pixmap_s(struct fz_colorspace_s *cs, const struct fz_irect_s *bbox) {
-            struct fz_pixmap_s *pm;
+            struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
                 pm = fz_new_pixmap_with_bbox(gctx, cs, bbox);
             fz_catch(gctx)
-                pm = NULL;
+                ;
             return pm;
         }
 
@@ -415,27 +412,27 @@ struct fz_device_s
             }
         }
         fz_device_s(struct fz_pixmap_s *pm) {
-            struct fz_device_s *dv;
+            struct fz_device_s *dv = NULL;
             fz_try(gctx)
                 dv = fz_new_draw_device(gctx, pm);
             fz_catch(gctx)
-                dv = NULL;
+                ;
             return dv;
         }
         fz_device_s(struct fz_display_list_s *dl) {
-            struct fz_device_s *dv;
+            struct fz_device_s *dv = NULL;
             fz_try(gctx)
                 dv = fz_new_list_device(gctx, dl);
             fz_catch(gctx)
-                dv = NULL;
+                ;
             return dv;
         }
         fz_device_s(struct fz_text_sheet_s *ts, struct fz_text_page_s *tp) {
-            struct fz_device_s *dv;
+            struct fz_device_s *dv = NULL;
             fz_try(gctx)
                 dv = fz_new_text_device(gctx, ts, tp);
             fz_catch(gctx)
-                dv = NULL;
+                ;
             return dv;
         }
         ~fz_device_s() {
@@ -571,7 +568,7 @@ struct fz_outline_s {
                 raise TypeError("filename must be a string")
         %}
         int saveXML(const char *filename) {
-            int res;
+            int res = 1;
             struct fz_output_s *xml;
             fz_try(gctx) {
                 xml = fz_new_output_to_filename(gctx, filename);
@@ -580,7 +577,7 @@ struct fz_outline_s {
                 res = 0;
             }
             fz_catch(gctx)
-                res = 1;
+                ;
             return res;
         }
         %exception saveText {
@@ -599,7 +596,7 @@ struct fz_outline_s {
                 raise TypeError("filename must be a string")
         %}
         int saveText(const char *filename) {
-            int res;
+            int res = 1;
             struct fz_output_s *text;
             fz_try(gctx) {
                 text = fz_new_output_to_filename(gctx, filename);
@@ -608,7 +605,7 @@ struct fz_outline_s {
                 res = 0;
             }
             fz_catch(gctx)
-                res = 1;
+                ;
             return res;
         }
     }
@@ -737,7 +734,6 @@ enum {
 struct fz_link_s
 {
     %immutable;
-    int refs;
     struct fz_rect_s rect;
     struct fz_link_dest_s dest;
     %extend {
@@ -776,11 +772,11 @@ struct fz_display_list_s {
             }
         }
         fz_display_list_s() {
-            struct fz_display_list_s *dl;
+            struct fz_display_list_s *dl = NULL;
             fz_try(gctx)
                 dl = fz_new_display_list(gctx);
             fz_catch(gctx)
-                dl = NULL;
+                ;
             return dl;
         }
 
@@ -821,11 +817,11 @@ struct fz_text_sheet_s {
             }
         }
         fz_text_sheet_s() {
-            struct fz_text_sheet_s *ts;
+            struct fz_text_sheet_s *ts = NULL;
             fz_try(gctx)
                 ts = fz_new_text_sheet(gctx);
             fz_catch(gctx)
-                ts = NULL;
+                ;
             return ts;
         }
 
@@ -867,11 +863,11 @@ struct fz_text_page_s {
             }
         }
         fz_text_page_s() {
-            struct fz_text_page_s *tp;
+            struct fz_text_page_s *tp = NULL;
             fz_try(gctx)
                 tp = fz_new_text_page(gctx);
             fz_catch(gctx)
-                tp = NULL;
+                ;
             return tp;
         }
 
@@ -904,7 +900,7 @@ struct fz_text_page_s {
             }
         }
         struct fz_buffer_s *extractText() {
-            struct fz_buffer_s *res;
+            struct fz_buffer_s *res = NULL;
             fz_output *out;
             fz_try(gctx) {
                 /* inital size for text */
@@ -914,7 +910,7 @@ struct fz_text_page_s {
                 fz_drop_output(gctx, out);
             }
             fz_catch(gctx) {
-                res = NULL;
+                ;
             }
             return res;
         }
