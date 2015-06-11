@@ -1,0 +1,90 @@
+.. _Document:
+
+================
+**Document**
+================
+
+This class represents a document and is constructed by ``fitz.Document(filename)``. This will also **open** the document specified as ``filename``. Returns a ``Document`` object.
+
+Methods and Attributes
+======================
+
+=============================== ================================
+**Method / Attribute**          **Short Description**
+=============================== ================================
+:meth:`Document.authenticate`   Decrypts the document.
+:meth:`Document.loadPage`       Reads a page.
+:meth:`Document.save`           Saves a copy of the document.
+:meth:`Document.ToC`            Creates a table of contents.
+:meth:`Document.close`          Closes the document.
+:attr:`Document.outline`        First `Outline` item.
+:attr:`Document.needsPass`      Is document is encrypted?
+:attr:`Document.pageCount`      The document's number of pages.
+:attr:`Document.metadata`       The document's meta data.
+=============================== ================================
+
+Class API
+==========
+
+.. class:: Document
+
+    .. method:: authenticate(password)
+
+      Decrypts the document with the string ``password``. If successfull, the document's data can be accessed (e.g. for rendering).
+
+      :param `password`: The password to be used.
+      :type `password`: string
+
+      :rtype: int
+      :returns: ``True`` (``1``) if decryption with ``password`` was successfull, ``False`` (``0``) otherwise.
+
+    .. method:: loadPage(number)
+
+      Loads a ``Page`` for further processing like rendering, text searching, etc. See the :ref:`Page` object.
+
+      :param `number`: page number, zero-based (0 is the first page of the document).
+      :type `number`: int
+
+      :rtype: :ref:`Page`
+
+    .. method:: save(filename)
+
+      Saves a copy of the document under the ``filename`` (absolute or relative path specifications). Internally the document may have changed, i.e. if the document has been decrypted before, an unencrypted copy will be saved.
+
+      :param `filename`: The filename to save to. Must be different from the original file name.
+      :type `filename`: string
+
+    .. method:: ToC()
+
+      Creates a table of contents from the ``outline`` entries. This will be a Python list ``[[level, title, page], [...], ...]`` or ``[]`` if there are no outline entries. Note that the title entries are unicode strings.
+
+      :rtype: list
+
+    .. method:: close()
+
+      Closes ``filename`` thus freeing it for other purposes.
+
+    .. attribute:: outline
+
+      Contains either ``None`` or the first :ref:`Outline` entry of the document. Can be used as a starting point to walk through all outline items.
+
+      :rtype: :ref:`Outline`
+
+
+    .. Attribute:: needsPass
+
+      Contains an indicator showing whether the document is encrypted (``True`` (``1``)) or not (``False`` (``0``)).
+
+      :rtype: bool
+
+    .. Attribute:: metadata
+
+      Contains the document's meta data as a Python dictionary. Its keys are ``format``, ``encryption``, ``title``, ``author``, ``subject``, ``keywords``, ``creator``, ``producer``, ``creationDate``, ``modDate``. These key names correspond to the PDF's "official" meta data fields ``/Creator``, ``/Producer``, ``/CreationDate``, ``/ModDate``, ``/Title``, ``/Author``, ``/Subject``, ``/Keywords`` respectively where applicable. ``format`` contains the PDF format version of the file (e.g. 'PDF 1.4'), ``encryption`` contains either ``None`` when not encrypted, or a string naming the encryption method used (e.g. ``'Standard V4 R4 128-bit RC4'``).  Note that all other metadata values are encrypted if the value for 'encoding' is not ``None``. All item values are UTF-8 encoded strings (or ``None``), except ``keywords``. If ``keywords`` is not ``None``, it contains a Python dictionary specifying the document's keywords (again, as UTF-8 encoded strings). The date fields are strings with the internal timestamp format "D:<DateTime><TZ>", where <DateTime> is the 12 character ISO date ``YYYMMDDhhmmss`` (``YYYY`` - year, ``MM`` - month, ``DD`` - day, ``hh`` - hour, ``mm`` - minute, ``ss`` - second), and <TZ> is a time zone value (time intervall relative to GMT) containing a sign ('+' or '-'), the hour (``hh``), and minute (``'mm'``, attention: enclose in apostrophies!). For example, a Venezuelan value might look like ``D:20150415131602-04'30'``, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Venezuela.
+
+      :rtype: dict
+
+    .. Attribute:: pageCount
+
+      Contains the number of pages of the document. May return 0 for documents with no pages.
+
+      :rtype: int

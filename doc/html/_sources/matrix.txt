@@ -1,0 +1,105 @@
+.. _Matrix:
+
+==========
+**Matrix**
+==========
+
+Matrix is a row-major 3x3 matrix used for representing transformations of coordinates throughout MuPDF.
+
+Since all points reside in a two-dimensional space, one vector is always a constant unit vector; hence only some elements may vary in a matrix. Below is how the elements map between different representations::
+
+	/ a b 0 \
+	| c d 0 |
+	\ e f 1 /
+
+normally represented as [ a b c d e f ].
+
+Methods
+=======
+
+========================= =======================
+:meth:`Matrix.__init__`   Constructor.
+:meth:`Matrix.preRotate`  Perform a rotation
+:meth:`Matrix.preScale`   Perform a scaling
+:meth:`Matrix.preShear`   Perform a shearing
+========================= =======================
+
+Attributes
+==========
+
+================== ======================
+:attr:`Matrix.a`   Matrix entry at (1, 1)
+:attr:`Matrix.b`   Matrix entry at (1, 2)
+:attr:`Matrix.c`   Matrix entry at (2, 1)
+:attr:`Matrix.d`   Matrix entry at (2, 2)
+:attr:`Matrix.e`   Matrix entry at (3, 1)
+:attr:`Matrix.f`   Matrix entry at (3, 2)
+================== ======================
+
+Class API
+==========
+
+.. class:: Matrix
+
+   .. method:: __init__(self, a=1, b=0, c=0, d=1, e=0, f=0)
+
+      Constructor. The default values will construct an identity matrix.
+
+   .. method:: preRotate(deg)
+
+      Perform a rotation for ``deg`` degrees
+
+      :param `degree`: The extent of the rotation in degrees.
+      :type `right`: :ref:`Matrix`
+
+      :rtype: :ref:`Matrix`
+
+   .. method:: preScale
+
+      Scale
+
+      :rtype: :ref:`Matrix`
+
+   .. method:: preShear
+
+      Shear
+
+      :rtype: int
+
+
+   .. attribute:: a
+
+      Matrix entry at (1, 1), default value 1.
+
+      :type: float
+
+   .. attribute:: b
+
+      Matrix entry at (1, 2), default value 0.
+
+      :type: float
+
+   .. attribute:: c
+
+      Matrix entry at (2, 1), default value 0.
+
+      :type: float
+
+   .. attribute:: d
+
+      Matrix entry at (2, 2), default value 1.
+
+      :type: float
+
+   .. attribute:: e
+
+      Matrix entry at (3, 1), default value 0.
+
+      :type: float
+
+   .. attribute:: f
+
+      Matrix entry at (3, 2), default value 0.
+
+      :type: float
+

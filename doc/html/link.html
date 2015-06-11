@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Link &mdash; Python-Fitz 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
+    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="next" title="linkDest" href="linkdest.html" />
+    <link rel="prev" title="IRect" href="irect.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="linkdest.html" title="linkDest"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="irect.html" title="IRect"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="link">
+<span id="id1"></span><h1><strong>Link</strong><a class="headerlink" href="#link" title="Permalink to this headline">¶</a></h1>
+<p>Represents a pointer to somewhere (this document, other documents, the internet). Links exist per document page, and they are forward-chained to each other, starting from an initial link which is accessible by the <a class="reference internal" href="page.html#Page.loadLinks" title="Page.loadLinks"><tt class="xref py py-meth docutils literal"><span class="pre">Page.loadLinks()</span></tt></a> method.</p>
+<div class="section" id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="67%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Attribute</strong></th>
+<th class="head"><strong>Short Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference internal" href="#Link.rect" title="Link.rect"><tt class="xref py py-attr docutils literal"><span class="pre">Link.rect</span></tt></a></td>
+<td>Clickable area in untransformed coordinates.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Link.dest" title="Link.dest"><tt class="xref py py-attr docutils literal"><span class="pre">Link.dest</span></tt></a></td>
+<td>Kind of link destination.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Link.next" title="Link.next"><tt class="xref py py-attr docutils literal"><span class="pre">Link.next</span></tt></a></td>
+<td>Link to next link</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="class-api">
+<h2>Class API<a class="headerlink" href="#class-api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Link">
+<em class="property">class </em><tt class="descname">Link</tt><a class="headerlink" href="#Link" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="Link.rect">
+<tt class="descname">rect</tt><a class="headerlink" href="#Link.rect" title="Permalink to this definition">¶</a></dt>
+<dd><p>The area that can be clicked in untransformed coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="rect.html#rect"><em>Rect</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Link.dest">
+<tt class="descname">dest</tt><a class="headerlink" href="#Link.dest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the kind of link destination. An integer to interpreted as one of the <tt class="docutils literal"><span class="pre">FZ_LINK_*</span></tt> values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Link.next">
+<tt class="descname">next</tt><a class="headerlink" href="#Link.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>The next <tt class="docutils literal"><span class="pre">Link</span></tt> or <tt class="docutils literal"><span class="pre">None</span></tt></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#link"><em>Link</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><strong>Link</strong></a><ul>
+<li><a class="reference internal" href="#attributes">Attributes</a></li>
+<li><a class="reference internal" href="#class-api">Class API</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="irect.html"
+                        title="previous chapter"><strong>IRect</strong></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="linkdest.html"
+                        title="next chapter"><strong>linkDest</strong></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/link.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="linkdest.html" title="linkDest"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="irect.html" title="IRect"
+             >previous</a> |</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" >Classes</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

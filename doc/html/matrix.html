@@ -1,0 +1,326 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Matrix &mdash; Python-Fitz 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
+    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="next" title="Outline" href="outline.html" />
+    <link rel="prev" title="linkDest" href="linkdest.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="outline.html" title="Outline"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="linkdest.html" title="linkDest"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="matrix">
+<span id="id1"></span><h1><strong>Matrix</strong><a class="headerlink" href="#matrix" title="Permalink to this headline">¶</a></h1>
+<p>Matrix is a row-major 3x3 matrix used for representing transformations of coordinates throughout MuPDF.</p>
+<p>Since all points reside in a two-dimensional space, one vector is always a constant unit vector; hence only some elements may vary in a matrix. Below is how the elements map between different representations:</p>
+<div class="highlight-python"><div class="highlight"><pre>/ a b 0 \
+| c d 0 |
+\ e f 1 /
+</pre></div>
+</div>
+<p>normally represented as [ a b c d e f ].</p>
+<div class="section" id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="52%" />
+<col width="48%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#Matrix.__init__" title="Matrix.__init__"><tt class="xref py py-meth docutils literal"><span class="pre">Matrix.__init__()</span></tt></a></td>
+<td>Constructor.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Matrix.preRotate" title="Matrix.preRotate"><tt class="xref py py-meth docutils literal"><span class="pre">Matrix.preRotate()</span></tt></a></td>
+<td>Perform a rotation</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Matrix.preScale" title="Matrix.preScale"><tt class="xref py py-meth docutils literal"><span class="pre">Matrix.preScale()</span></tt></a></td>
+<td>Perform a scaling</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Matrix.preShear" title="Matrix.preShear"><tt class="xref py py-meth docutils literal"><span class="pre">Matrix.preShear()</span></tt></a></td>
+<td>Perform a shearing</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="45%" />
+<col width="55%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#Matrix.a" title="Matrix.a"><tt class="xref py py-attr docutils literal"><span class="pre">Matrix.a</span></tt></a></td>
+<td>Matrix entry at (1, 1)</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Matrix.b" title="Matrix.b"><tt class="xref py py-attr docutils literal"><span class="pre">Matrix.b</span></tt></a></td>
+<td>Matrix entry at (1, 2)</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Matrix.c" title="Matrix.c"><tt class="xref py py-attr docutils literal"><span class="pre">Matrix.c</span></tt></a></td>
+<td>Matrix entry at (2, 1)</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Matrix.d" title="Matrix.d"><tt class="xref py py-attr docutils literal"><span class="pre">Matrix.d</span></tt></a></td>
+<td>Matrix entry at (2, 2)</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Matrix.e" title="Matrix.e"><tt class="xref py py-attr docutils literal"><span class="pre">Matrix.e</span></tt></a></td>
+<td>Matrix entry at (3, 1)</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Matrix.f" title="Matrix.f"><tt class="xref py py-attr docutils literal"><span class="pre">Matrix.f</span></tt></a></td>
+<td>Matrix entry at (3, 2)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="class-api">
+<h2>Class API<a class="headerlink" href="#class-api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Matrix">
+<em class="property">class </em><tt class="descname">Matrix</tt><a class="headerlink" href="#Matrix" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Matrix.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>self</em>, <em>a=1</em>, <em>b=0</em>, <em>c=0</em>, <em>d=1</em>, <em>e=0</em>, <em>f=0</em><big>)</big><a class="headerlink" href="#Matrix.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor. The default values will construct an identity matrix.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Matrix.preRotate">
+<tt class="descname">preRotate</tt><big>(</big><em>deg</em><big>)</big><a class="headerlink" href="#Matrix.preRotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform a rotation for <tt class="docutils literal"><span class="pre">deg</span></tt> degrees</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>degree</strong> &#8211; The extent of the rotation in degrees.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#matrix"><em>Matrix</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Matrix.preScale">
+<tt class="descname">preScale</tt><big>(</big><big>)</big><a class="headerlink" href="#Matrix.preScale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#matrix"><em>Matrix</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Matrix.preShear">
+<tt class="descname">preShear</tt><big>(</big><big>)</big><a class="headerlink" href="#Matrix.preShear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shear</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Matrix.a">
+<tt class="descname">a</tt><a class="headerlink" href="#Matrix.a" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matrix entry at (1, 1), default value 1.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Matrix.b">
+<tt class="descname">b</tt><a class="headerlink" href="#Matrix.b" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matrix entry at (1, 2), default value 0.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Matrix.c">
+<tt class="descname">c</tt><a class="headerlink" href="#Matrix.c" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matrix entry at (2, 1), default value 0.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Matrix.d">
+<tt class="descname">d</tt><a class="headerlink" href="#Matrix.d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matrix entry at (2, 2), default value 1.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Matrix.e">
+<tt class="descname">e</tt><a class="headerlink" href="#Matrix.e" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matrix entry at (3, 1), default value 0.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Matrix.f">
+<tt class="descname">f</tt><a class="headerlink" href="#Matrix.f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matrix entry at (3, 2), default value 0.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><strong>Matrix</strong></a><ul>
+<li><a class="reference internal" href="#methods">Methods</a></li>
+<li><a class="reference internal" href="#attributes">Attributes</a></li>
+<li><a class="reference internal" href="#class-api">Class API</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="linkdest.html"
+                        title="previous chapter"><strong>linkDest</strong></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="outline.html"
+                        title="next chapter"><strong>Outline</strong></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/matrix.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="outline.html" title="Outline"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="linkdest.html" title="linkDest"
+             >previous</a> |</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" >Classes</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

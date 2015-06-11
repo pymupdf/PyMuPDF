@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Outline &mdash; Python-Fitz 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
+    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="next" title="Page" href="page.html" />
+    <link rel="prev" title="Matrix" href="matrix.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="page.html" title="Page"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="matrix.html" title="Matrix"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="outline">
+<span id="id1"></span><h1><strong>Outline</strong><a class="headerlink" href="#outline" title="Permalink to this headline">¶</a></h1>
+<p><tt class="docutils literal"><span class="pre">outline</span></tt> is a property of <tt class="docutils literal"><span class="pre">Document</span></tt>. If not <tt class="docutils literal"><span class="pre">None</span></tt>, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in either &#8220;horizontal&#8221; direction by property <tt class="docutils literal"><span class="pre">.next</span></tt> to the next item of same level, or downwards with property <tt class="docutils literal"><span class="pre">.down</span></tt> to the next item one level lower. The full tree of all outline items for e.g. a conventional table of contents can be recovered by following these &#8220;pointers&#8221;.</p>
+<div class="section" id="methods-and-attributes">
+<h2>Methods and Attributes<a class="headerlink" href="#methods-and-attributes" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="67%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Method / Attribute</strong></th>
+<th class="head"><strong>Short Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference internal" href="#Outline.down" title="Outline.down"><tt class="xref py py-attr docutils literal"><span class="pre">Outline.down</span></tt></a></td>
+<td>Next item downwards</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Outline.next" title="Outline.next"><tt class="xref py py-attr docutils literal"><span class="pre">Outline.next</span></tt></a></td>
+<td>Next item same level</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Outline.dest" title="Outline.dest"><tt class="xref py py-attr docutils literal"><span class="pre">Outline.dest</span></tt></a></td>
+<td>Link destination</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Outline.title" title="Outline.title"><tt class="xref py py-attr docutils literal"><span class="pre">Outline.title</span></tt></a></td>
+<td>Title (UTF-8 string)</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Outline.saveText" title="Outline.saveText"><tt class="xref py py-meth docutils literal"><span class="pre">Outline.saveText()</span></tt></a></td>
+<td>Prints a conventional table of contents to a file</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Outline.saveXML" title="Outline.saveXML"><tt class="xref py py-meth docutils literal"><span class="pre">Outline.saveXML()</span></tt></a></td>
+<td>Prints an XML-like table of contents to a file</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="class-api">
+<h2>Class API<a class="headerlink" href="#class-api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Outline">
+<em class="property">class </em><tt class="descname">Outline</tt><a class="headerlink" href="#Outline" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="Outline.down">
+<tt class="descname">down</tt><a class="headerlink" href="#Outline.down" title="Permalink to this definition">¶</a></dt>
+<dd><p>The next outline item on the next level down. Is <tt class="docutils literal"><span class="pre">None</span></tt> if the item has no children.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#outline"><em>Outline</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Outline.next">
+<tt class="descname">next</tt><a class="headerlink" href="#Outline.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>The next outline item at the same level as this item. Is <tt class="docutils literal"><span class="pre">None</span></tt> if the item is the last one in its level.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#outline"><em>Outline</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Outline.dest">
+<tt class="descname">dest</tt><a class="headerlink" href="#Outline.dest" title="Permalink to this definition">¶</a></dt>
+<dd><p>The destination this entry points to. Can be a place in this or another document, or an internet resource. It can include actions to perform like opening a new window, invoking a javascript or opening another document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="linkdest.html#linkdest"><em>linkDest</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Outline.title">
+<tt class="descname">title</tt><a class="headerlink" href="#Outline.title" title="Permalink to this definition">¶</a></dt>
+<dd><p>The item&#8217;s title as a UTF-8 string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Outline.saveText">
+<tt class="descname">saveText</tt><big>(</big><big>)</big><a class="headerlink" href="#Outline.saveText" title="Permalink to this definition">¶</a></dt>
+<dd><p>The chain of outline items is being processed and printed to a file <tt class="docutils literal"><span class="pre">filename</span></tt> as a conventional table of contents.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) &#8211; Name of the file to write to.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Outline.saveXML">
+<tt class="descname">saveXML</tt><big>(</big><big>)</big><a class="headerlink" href="#Outline.saveXML" title="Permalink to this definition">¶</a></dt>
+<dd><p>The chain of outline items is being processed and printed to a file <tt class="docutils literal"><span class="pre">filename</span></tt> as an XML-like table of contents.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) &#8211; Name of the file to write to.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><strong>Outline</strong></a><ul>
+<li><a class="reference internal" href="#methods-and-attributes">Methods and Attributes</a></li>
+<li><a class="reference internal" href="#class-api">Class API</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="matrix.html"
+                        title="previous chapter"><strong>Matrix</strong></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="page.html"
+                        title="next chapter"><strong>Page</strong></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/outline.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="page.html" title="Page"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="matrix.html" title="Matrix"
+             >previous</a> |</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" >Classes</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

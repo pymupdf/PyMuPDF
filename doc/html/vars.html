@@ -1,0 +1,266 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Constants and Enumerations &mdash; Python-Fitz 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
+    <link rel="prev" title="TextSheet" href="textsheet.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="textsheet.html" title="TextSheet"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="constants-and-enumerations">
+<h1>Constants and Enumerations<a class="headerlink" href="#constants-and-enumerations" title="Permalink to this headline">¶</a></h1>
+<p>Here are the constants and enumerations of MuPDF as implemented by python-fitz.</p>
+<div class="section" id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="35%" />
+<col width="65%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="fitz.CS_RGB">
+<tt class="descclassname">fitz.</tt><tt class="descname">CS_RGB</tt><a class="headerlink" href="#fitz.CS_RGB" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>Type of <a class="reference internal" href="colorspace.html#colorspace"><em>Colorspace</em></a> is RGBA</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="enumerations">
+<h2>Enumerations<a class="headerlink" href="#enumerations" title="Permalink to this headline">¶</a></h2>
+<p>If your import statement was <tt class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></tt> then each of the following variables <tt class="docutils literal"><span class="pre">var</span></tt> is accessible as <tt class="docutils literal"><span class="pre">fitz.var</span></tt></p>
+<p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.kind" title="linkDest.kind"><tt class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></tt></a> (link destination type).</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Value</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><dl class="first last data">
+<dt id="FZ_LINK_NONE">
+<tt class="descname">FZ_LINK_NONE</tt><a class="headerlink" href="#FZ_LINK_NONE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>0 - No destination.</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="FZ_LINK_GOTO">
+<tt class="descname">FZ_LINK_GOTO</tt><a class="headerlink" href="#FZ_LINK_GOTO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>1 - Points to a place in this document.</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="FZ_LINK_URI">
+<tt class="descname">FZ_LINK_URI</tt><a class="headerlink" href="#FZ_LINK_URI" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>2 - Points to an URI.</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="FZ_LINK_LAUNCH">
+<tt class="descname">FZ_LINK_LAUNCH</tt><a class="headerlink" href="#FZ_LINK_LAUNCH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>3 - Launches (opens) a file.</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="FZ_LINK_NAMED">
+<tt class="descname">FZ_LINK_NAMED</tt><a class="headerlink" href="#FZ_LINK_NAMED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>4 - Performs some action.</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="FZ_LINK_GOTOR">
+<tt class="descname">FZ_LINK_GOTOR</tt><a class="headerlink" href="#FZ_LINK_GOTOR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>5 - Points to a place in another document.</td>
+</tr>
+</tbody>
+</table>
+<p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.flags" title="linkDest.flags"><tt class="xref py py-attr docutils literal"><span class="pre">linkDest.flags</span></tt></a> (link destination flags). <strong>Attention</strong>: these values represent boolean indicators, of which several can be <tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt>, and not numerical values. I.e. <a class="reference internal" href="linkdest.html#linkDest.flags" title="linkDest.flags"><tt class="xref py py-attr docutils literal"><span class="pre">linkDest.flags</span></tt></a> is the sum of these values.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="44%" />
+<col width="56%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Value</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><dl class="first last data">
+<dt id="LINK_FLAG_L_VALID">
+<tt class="descname">LINK_FLAG_L_VALID</tt><a class="headerlink" href="#LINK_FLAG_L_VALID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>1  - Top left x value is valid.</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="LINK_FLAG_T_VALID">
+<tt class="descname">LINK_FLAG_T_VALID</tt><a class="headerlink" href="#LINK_FLAG_T_VALID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>2  - Top left y value is valid.</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="LINK_FLAG_R_VALID">
+<tt class="descname">LINK_FLAG_R_VALID</tt><a class="headerlink" href="#LINK_FLAG_R_VALID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>4  - Bottom right x value is valid.</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="LINK_FLAG_B_VALID">
+<tt class="descname">LINK_FLAG_B_VALID</tt><a class="headerlink" href="#LINK_FLAG_B_VALID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>8  - Bottom right y value is valid.</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="LINK_FLAG_FIT_H">
+<tt class="descname">LINK_FLAG_FIT_H</tt><a class="headerlink" href="#LINK_FLAG_FIT_H" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>16 - Horizontal fit.</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="LINK_FLAG_FIT_V">
+<tt class="descname">LINK_FLAG_FIT_V</tt><a class="headerlink" href="#LINK_FLAG_FIT_V" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>32 - Vertical fit.</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="LINK_FLAG_R_IS_ZOOM">
+<tt class="descname">LINK_FLAG_R_IS_ZOOM</tt><a class="headerlink" href="#LINK_FLAG_R_IS_ZOOM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>64 - Bottom right x is a zoom figure.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Constants and Enumerations</a><ul>
+<li><a class="reference internal" href="#constants">Constants</a></li>
+<li><a class="reference internal" href="#enumerations">Enumerations</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="textsheet.html"
+                        title="previous chapter"><strong>TextSheet</strong></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/vars.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="textsheet.html" title="TextSheet"
+             >previous</a> |</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>DisplayList &mdash; Python-Fitz 1.7.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
+    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="next" title="Document" href="document.html" />
+    <link rel="prev" title="Device" href="device.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="document.html" title="Document"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="device.html" title="Device"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="displaylist">
+<span id="id1"></span><h1><strong>DisplayList</strong><a class="headerlink" href="#displaylist" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>DisplayList is a list containing drawing commands (text, images, etc.). The intent is two-fold:</dt>
+<dd><ol class="first last arabic simple">
+<li>as a caching-mechanism to reduce parsing of a page</li>
+<li>as a data structure in multi-threading setups, where one thread parses the page and another one renders pages.</li>
+</ol>
+</dd>
+</dl>
+<p>A <tt class="docutils literal"><span class="pre">DisplayList</span></tt> is populated with objects from a page by running <a class="reference internal" href="page.html#Page.run" title="Page.run"><tt class="xref py py-meth docutils literal"><span class="pre">Page.run()</span></tt></a> on a <a class="reference internal" href="device.html#device"><em>Device</em></a>. Replay the list (once or many times) by invoking the display list&#8217;s <a class="reference internal" href="#DisplayList.run" title="DisplayList.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a> function.</p>
+<div class="section" id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="62%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#DisplayList.run" title="DisplayList.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a></td>
+<td>(Re)-run a display list through a device.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="class-api">
+<h2>Class API<a class="headerlink" href="#class-api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="DisplayList">
+<em class="property">class </em><tt class="descname">DisplayList</tt><a class="headerlink" href="#DisplayList" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="DisplayList.fitz.DisplayList">
+<tt class="descclassname">fitz.</tt><tt class="descname">DisplayList</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#DisplayList.fitz.DisplayList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a rendering device for a display list.</p>
+<p>When the device is rendering a page it will populate the display list with drawing commands (text, images, etc.). The display list can later be reused to render a page many times without having to re-interpret the page from the document file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="device.html#device"><em>Device</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="DisplayList.run">
+<tt class="descname">run</tt><big>(</big><em>self</em>, <em>dev</em>, <em>ctm</em>, <em>area</em><big>)</big><a class="headerlink" href="#DisplayList.run" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dev</strong> (<a class="reference internal" href="device.html#device"><em>Device</em></a>) &#8211; Device obtained from <a class="reference internal" href="device.html#device"><em>Device</em></a></li>
+<li><strong>ctm</strong> (<a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a>) &#8211; Transform matrix to apply to display list contents.</li>
+<li><strong>area</strong> (<a class="reference internal" href="irect.html#irect"><em>IRect</em></a>) &#8211; Only the part of the contents of the display list visible within this area will be considered when the list is run through the device. This does not imply for tile objects contained in the display list.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><strong>DisplayList</strong></a><ul>
+<li><a class="reference internal" href="#methods">Methods</a></li>
+<li><a class="reference internal" href="#class-api">Class API</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="device.html"
+                        title="previous chapter"><strong>Device</strong></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="document.html"
+                        title="next chapter"><strong>Document</strong></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/displaylist.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="document.html" title="Document"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="device.html" title="Device"
+             >previous</a> |</li>
+        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
+          <li><a href="class_index.html" >Classes</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
