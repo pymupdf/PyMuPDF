@@ -113,6 +113,7 @@ struct fz_document_s {
         %pythonappend loadPage(int) %{
             if val:
                 val.thisown = True
+                val.number = number
         %}
         struct fz_page_s *loadPage(int number) {
             struct fz_page_s *page = NULL;

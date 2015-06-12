@@ -1,29 +1,16 @@
-======================
-README for python-fitz
-======================
+=======
+README
+=======
 
-This branch intends for MuPDF 1.7. It's still in heavy development.
+This the **new version 1.7 of python-fitz**, a Python binding for `MuPDF <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
 
-Start Developing
----------------
+MuPDF can access files in PDF, XPS, OpenXPS and EPUB (e-book) formats, and it is known for its top performance and high rendering quality.
 
-First, we need MuPDF 1.7 header files. Make sure that these headers are in the compiler's search path when compiling it.
+With python-fitz you therefore can also access files with extensions ``*.pdf``, ``*.xps``, ``*.oxps`` or ``*.epub`` from your Python scripts.
 
-Next, we need mupdf libraries. For linux, there are 2: ``libmupdf.a`` and ``libmujs.a``. Make sure that these 2 libs are compiled as position independent (gcc with ``-fPIC``).
+Documentation is available online `here <https://github.com/rk700/python-fitz/blob/master/doc/>`_ . In the doc dicrectory you can also find documentation version in several other formats. You download a `PDF <https://github.com/rk700/python-fitz/blob/master/doc/Python-Fitz.pdf>`_ or a `Windows Help <https://github.com/rk700/python-fitz/blob/master/doc/Python-Fitz.chm>`_ version.
 
-Besides, some 3rd party libraries are also needed. For linux, there are: ``libcrypto.so``, ``libjbig2dec.so``, ``libopenjp2.so``, ``libjpeg.so``, ``libfreetype.so``, ``libz.so``. The code of these libs can also be found in MuPDF's source.  
+We invite you to join our efforts by contributing to the the wiki pages.
 
-For Windows, only the following two files are needed: ``libmupdf.lib`` and ``libthirdparty.lib``. Any 3rd party software is already included.  
-We may be able to supply pre-compiled / pre-linked copies of these with this repository to save a major setup step for using MuPDF in Windows.
+Submit any issues either to this site or by sending an e-mail to @rk700 or to @JorjMcKie.
 
-Now that we have the env ready, we can edit the SWIG file, ``fitz/fitz.i``, to add more symbols. Then we generate the wrapper .c file using:
-
-    swig -python fitz.i
-
-And compile the ``fitz_wrap.c`` to get the python module.
-
-For linux, there's a simple bash script ``fitz/do.sh`` to do compiling stuff.
-
-Once we get the module, we can import it in python. 
-
-There are several demo scripts, ``demo.py``, ``PDF_display.py``, and ``PDF_outline.py``, which open PDF documents to save pages to PNG files, display them using a dialog manager like wxPython, or create Python lists from PDF outlines.  

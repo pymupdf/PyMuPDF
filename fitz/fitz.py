@@ -170,6 +170,7 @@ class Document(_object):
         val = _fitz.Document_loadPage(self, number)
         if val:
             val.thisown = True
+            val.number = number
 
 
         return val
