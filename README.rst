@@ -8,7 +8,7 @@ MuPDF can access files in PDF, XPS, OpenXPS, CBZ (comic book) and EPUB (e-book) 
 
 With PyMuPDF you therefore can also access files with extensions ``*.pdf``, ``*.xps``, ``*.oxps``, ``*.cbz`` or ``*.epub`` from your Python scripts.
 
-You can access the documentation from here: `PDF <https://github.com/rk700/python-fitz/blob/master/doc/Python-Fitz.pdf>`_ or a `Windows Help <https://github.com/rk700/python-fitz/blob/master/doc/Python-Fitz.chm>`_ version.
+You can access the documentation from here: `PDF <https://github.com/JorjMcKie/PyMuPDF/blob/master/doc/Python-Fitz.pdf>`_ or a `Windows Help <https://github.com/JorjMcKie/PyMuPDF/blob/master/doc/Python-Fitz.chm>`_ version.
 
 We invite you to join our efforts by contributing to the the wiki pages.
 
