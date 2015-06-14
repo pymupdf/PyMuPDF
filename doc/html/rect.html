@@ -55,7 +55,8 @@
   <div class="section" id="rect">
 <span id="id1"></span><h1><strong>Rect</strong><a class="headerlink" href="#rect" title="Permalink to this headline">¶</a></h1>
 <p><tt class="docutils literal"><span class="pre">Rect</span></tt> represents a rectangle defined by its top left and its bottom right <a class="reference internal" href="point.html#point"><em>Point</em></a> objects, in coordinates: ((x0, y0), (x1, y1)).</p>
-<p>Rectangles are always aligned with the respective X- and Y-axes. If x0 &lt;= x1 and y0 &lt;= y1 is true, the rectangle is called &#8220;finite&#8221;, else &#8220;infinite&#8221;.</p>
+<p>Rectangle borders are always in parallel with the respective X- and Y-axes.
+A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is true, else &#8220;infinite&#8221;.</p>
 <div class="section" id="methods">
 <h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
@@ -63,11 +64,16 @@
 <col width="27%" />
 <col width="73%" />
 </colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Methods</strong></th>
+<th class="head"><strong>Short Description</strong></th>
+</tr>
+</thead>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#Rect.round" title="Rect.round"><tt class="xref py py-meth docutils literal"><span class="pre">Rect.round()</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.round" title="Rect.round"><tt class="xref py py-meth docutils literal"><span class="pre">Rect.round()</span></tt></a></td>
 <td>creates the smallest <a class="reference internal" href="irect.html#irect"><em>IRect</em></a> containing <tt class="docutils literal"><span class="pre">Rect</span></tt></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.transform" title="Rect.transform"><tt class="xref py py-meth docutils literal"><span class="pre">Rect.transform()</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.transform" title="Rect.transform"><tt class="xref py py-meth docutils literal"><span class="pre">Rect.transform()</span></tt></a></td>
 <td>transform <tt class="docutils literal"><span class="pre">Rect</span></tt> with a <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></td>
 </tr>
 </tbody>
@@ -80,23 +86,28 @@
 <col width="33%" />
 <col width="67%" />
 </colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Attribute</strong></th>
+<th class="head"><strong>Short Description</strong></th>
+</tr>
+</thead>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#Rect.height" title="Rect.height"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.height</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.height" title="Rect.height"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.height</span></tt></a></td>
 <td><tt class="docutils literal"><span class="pre">Rect</span></tt> height</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.width" title="Rect.width"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.width</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.width" title="Rect.width"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.width</span></tt></a></td>
 <td><tt class="docutils literal"><span class="pre">Rect</span></tt> width</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Rect.x0" title="Rect.x0"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.x0</span></tt></a></td>
-<td>Top left corner&#8217;s X-coordinat</td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.x0" title="Rect.x0"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.x0</span></tt></a></td>
+<td>Top left corner&#8217;s X-coordinate</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.y0" title="Rect.y0"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.y0</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.y0" title="Rect.y0"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.y0</span></tt></a></td>
 <td>Top left corner&#8217;s Y-coordinate</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Rect.x1" title="Rect.x1"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.x1</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.x1" title="Rect.x1"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.x1</span></tt></a></td>
 <td>Bottom right corner&#8217;s X-coordinate</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.y1" title="Rect.y1"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.y1</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.y1" title="Rect.y1"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.y1</span></tt></a></td>
 <td>Bottom right corner&#8217;s Y-coordinate</td>
 </tr>
 </tbody>
@@ -129,13 +140,15 @@
 
 <dl class="attribute">
 <dt id="Rect.transform">
-<tt class="descname">transform</tt><a class="headerlink" href="#Rect.transform" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">transform</tt><big>(</big><em>m</em><big>)</big><a class="headerlink" href="#Rect.transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transforms <tt class="docutils literal"><span class="pre">Rect</span></tt> with a <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rect"><em>Rect</em></a></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> &#8211; A <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a> to be used for the transformation.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rect"><em>Rect</em></a></td>
 </tr>
 </tbody>
 </table>
@@ -144,7 +157,7 @@
 <dl class="attribute">
 <dt id="Rect.width">
 <tt class="descname">width</tt><a class="headerlink" href="#Rect.width" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the width of the rectangle.</p>
+<dd><p>Contains the width of the rectangle. Equals <tt class="docutils literal"><span class="pre">x1</span> <span class="pre">-</span> <span class="pre">x0</span></tt>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -158,7 +171,7 @@
 <dl class="attribute">
 <dt id="Rect.height">
 <tt class="descname">height</tt><a class="headerlink" href="#Rect.height" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the height of the rectangle.</p>
+<dd><p>Contains the height of the rectangle. Equals <tt class="docutils literal"><span class="pre">y1</span> <span class="pre">-</span> <span class="pre">y0</span></tt>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

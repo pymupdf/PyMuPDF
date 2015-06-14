@@ -1,0 +1,58 @@
+.. raw:: pdf
+
+    PageBreak
+
+===============================
+Matrix Examples
+===============================
+This page illustrates some of the effects achievable with matrices. The following pictures start with a page of this help file. We show what will happen when a matrix is being applied. Though we always create full pages, only parts are displayed here to save space.
+
+As the original we take a page of this help file.
+
+Original
+---------
+This is the original page image
+
+.. image:: original.png
+
+
+Shifting
+------------
+We transform it with a matrix where ``e = 100`` (right shift by 100 pixels)
+
+.. image:: e_is_100.png
+
+
+Next we do a down shift by 100 pixels: ``f = 100``
+
+.. image:: f_is_100.png
+
+
+Flipping
+--------------
+Flip the page vertically (``a = -1``)
+
+.. image:: a_is_-1.png
+
+
+Flip horizontally (``d = -1``)
+
+.. image:: d_is_-1.png
+
+
+Shearing
+----------------
+First a shear in Y direction (``b = 0.5``)
+
+.. image:: b_is_0.5.png
+
+Second a shear in X direction (``c = 0.5``)
+
+.. image:: c_is_0.5.png
+
+Rotating
+---------
+Finally a rotation by 60 degrees
+
+.. image:: rot_60.png
+

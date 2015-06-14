@@ -14,6 +14,7 @@
    tutorial.txt
    class_index.txt
    vars.txt
+   matrix_examples.txt
 
 * :ref:`genindex`
 * :ref:`search`

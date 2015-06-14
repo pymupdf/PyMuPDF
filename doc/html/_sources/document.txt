@@ -91,6 +91,7 @@ Class API
     .. Attribute:: name
 
       Contains the ``filename`` value with which ``Document`` was created.
+
       :rtype: dict
 
     .. Attribute:: pageCount

@@ -35,13 +35,13 @@ Class API
 
    .. attribute:: width
 
-      Contains the width of the bounding box.
+      Contains the width of the bounding box. Equals ``x1 - x0``.
 
       :type: int
 
    .. attribute:: height
 
-      Contains the height of the bounding box.
+      Contains the height of the bounding box. Equals ``y1 - y0``.
 
       :type: int
 

@@ -36,19 +36,19 @@ Class API
 
    .. attribute:: dest
 
-      something
+      Destination of ``linkDest``.
 
       :rtype: :ref:`Link`
 
    .. attribute:: fileSpec
 
-      Contains the filename (including any path specifications) this link points to.
+      Contains the filename (including any path specifications) this link points to, if applicable.
 
       :rtype: string
 
    .. attribute:: flags
 
-      The flags is a bitfield consisting of indicators describing the validity and meaning of the different aspects of the destination. As far as possible, link destinations are constructed such that e.g. :attr:`linkDest.lt` and :attr:`linkDest.rb` can be treated as defining a bounding box, though the validity flags (see ``LINK_FLAG_*`` values) indicate which of the values was actually specified in the file. Note that the numerical values for each of the LINK_FLAGs are powers of 2 and thus indicate the position of the bit to be tested. More than one bit can be on / ``True``, so do not test for the value of the integer.
+      A one-byte bitfield consisting of indicators describing the validity and meaning of the different aspects of the destination. As far as possible, link destinations are constructed such that e.g. :attr:`linkDest.lt` and :attr:`linkDest.rb` can be treated as defining a bounding box, though the validity flags (see ``LINK_FLAG_*`` values) indicate which of the values were actually specified. Note that the numerical values for each of the LINK_FLAGs are powers of 2 and thus indicate the position of the bit to be tested. More than one bit can be ``True``, so do not test for the value of the integer.
 
       :rtype: int
 

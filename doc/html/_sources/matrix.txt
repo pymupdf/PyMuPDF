@@ -8,37 +8,44 @@
 **Matrix**
 ==========
 
-Matrix is a row-major 3x3 matrix used for representing transformations of coordinates throughout MuPDF.
+Matrix is a row-major 3x3 matrix used image transformations in MuPDF. With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) pages can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six numerical values.
 
-Since all points reside in a two-dimensional space, one vector is always a constant unit vector; hence only some elements may vary in a matrix. Below is how the elements map between different representations::
+Since all points or pixels live in a two-dimensional space, one column vector of that matrix is a constant unit vector, and only the remaining six elements are used for manipulations. These six elements are usually represented by ``[a,b,c,d,e,f]``. Here is how they are positioned in the matrix:
 
-	/ a b 0 \
-	| c d 0 |
-	\ e f 1 /
+.. image:: matrix.png
 
-normally represented as [ a b c d e f ].
+It should be noted, that
+
+    * the below methods are just convenience functions. Everything they do, can also be achieved by directly manipulating ``[a,b,c,d,e,f]``
+    * all manipulations can combined - you can construct a matrix to rotate **and** shear **and** scale **and** shift etc. in one go
+
+
 
 Methods
 =======
 
-========================= =======================
+========================= ============================
+**Method**                **Description**
+========================= ============================
 :meth:`Matrix.__init__`   Constructor.
 :meth:`Matrix.preRotate`  Perform a rotation
 :meth:`Matrix.preScale`   Perform a scaling
 :meth:`Matrix.preShear`   Perform a shearing
-========================= =======================
+========================= ============================
 
 Attributes
 ==========
 
-================== ======================
-:attr:`Matrix.a`   Matrix entry at (1, 1)
-:attr:`Matrix.b`   Matrix entry at (1, 2)
-:attr:`Matrix.c`   Matrix entry at (2, 1)
-:attr:`Matrix.d`   Matrix entry at (2, 2)
-:attr:`Matrix.e`   Matrix entry at (3, 1)
-:attr:`Matrix.f`   Matrix entry at (3, 2)
-================== ======================
+================== =========================================
+**Atribute**       **Description**
+================== =========================================
+:attr:`Matrix.a`   Zoom factor X direction
+:attr:`Matrix.b`   Shearing effect Y direction
+:attr:`Matrix.c`   Shearing effect X direction
+:attr:`Matrix.d`   Zoom factor Y direction
+:attr:`Matrix.e`   Horizontal shift
+:attr:`Matrix.f`   Vertical shift
+================== =========================================
 
 Class API
 ==========
@@ -47,63 +54,67 @@ Class API
 
    .. method:: __init__(self, a=1, b=0, c=0, d=1, e=0, f=0)
 
-      Constructor. The default values will construct an identity matrix.
+      Constructor. ``Matrix(1, 1)`` will construct the :ref:`Identity` matrix.
 
    .. method:: preRotate(deg)
 
-      Perform a rotation for ``deg`` degrees
+      Performs a clockwise rotation for ``deg`` degrees. This will change the matrix elements in the following way: ``a = cos(deg)``, ``b = sin(deg)``, ``c = -sin(deg)``, ``d = cos(deg)``.  ``e`` and ``f`` will remain unchanged.
 
-      :param `degree`: The extent of the rotation in degrees.
+      :param `deg`: The extent of the rotation in degrees.
       :type `right`: :ref:`Matrix`
 
       :rtype: :ref:`Matrix`
 
-   .. method:: preScale
+   .. method:: preScale(sx, sy)
 
-      Scale
+      Scales by the zoom factors sx and sy. Has effects on attributes ``a`` and ``d`` only.
 
+      :param `sx`: Zoom factor in X direction. For the effect see description of attribute ``a``.
+      :param `sy`: Zoom factor in Y direction. For the effect see description of attribute ``d``.
       :rtype: :ref:`Matrix`
 
-   .. method:: preShear
+   .. method:: preShear(sx, sy)
 
-      Shear
+      Performs shearing, i.e. transformation of rectangles into parallelograms (rhomboids).
 
-      :rtype: int
+      :param `sx`: Shearing effect in X direction. See attribute ``c``.
+      :param `sy`: Shearing effect in Y direction. See attribute ``b``.
+      :rtype: :ref:`Matrix`
 
 
    .. attribute:: a
 
-      Matrix entry at (1, 1), default value 1.
+      Scaling in X-direction **(width)**. For example, a value of 0.5 performs a shrink of the **width** by a factor of 2. If a < 0, a vertical flip will occur, i.e. mirrors the rectangle's picture along the Y axis.
 
       :type: float
 
    .. attribute:: b
 
-      Matrix entry at (1, 2), default value 0.
+      Causes a shearing effect: each ``Point(x, y)`` will become ``Point(x, y - b*x)``.
 
       :type: float
 
    .. attribute:: c
 
-      Matrix entry at (2, 1), default value 0.
+      Causes a shearing effect: each ``Point(x, y)`` will become ``Point(x - c*y, y)``.
 
       :type: float
 
    .. attribute:: d
 
-      Matrix entry at (2, 2), default value 1.
+      Scaling in Y-direction **(height)**. For example, a value of 1.5 performs a stretch of the **height** by 50%. If d < 0, a horizontal flip will occur, i.e. mirrors the rectangle's picture along the X axis.
 
       :type: float
 
    .. attribute:: e
 
-      Matrix entry at (3, 1), default value 0.
+      Causes a horizontal shift effect: Each ``Point(x, y)`` will be shifted right to become ``Point(x + e, y)``. Note that negative values of ``e`` will shift left.
 
       :type: float
 
    .. attribute:: f
 
-      Matrix entry at (3, 2), default value 0.
+      Causes a vertical shift effect: Each ``Point(x, y)`` will be shifted down to become ``Point(x, y - f)``. Note that negative values of ``f`` will shift up.
 
       :type: float
 
