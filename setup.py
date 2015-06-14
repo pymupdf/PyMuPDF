@@ -25,19 +25,20 @@ else:
                                   'libthirdparty',                    
                                  ],
                        library_dirs=['./LibWin32'],               # dir of libmupdf.lib / libthirdparty.lib
+                       extra_link_args=['/LTCG'],
                        sources=['./fitz/fitz_wrap.c'])
 
 setup(name = 'fitz',
       version = '1.7.0',
       description = 'Python bindings for the MuPDF rendering library',
-      classifiers = ['Development Status :: 4 - Beta',
+      classifiers = ['Development Status :: 5 - Release',
                      'Environment :: Console',
                      'Intended Audience :: Developers',
                      'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
                      'Operating System :: WINDOWS',
                      'Programming Language :: C',
                      'Topic :: Utilities'],
-      url = 'https://github.com/rk700/python-fitz',
+      url = 'https://github.com/JorjMcKie/PyMuPDF',
       author = 'Ruikai Liu',
       author_email = 'lrk700@gmail.com',
       license = 'GPLv3+',
