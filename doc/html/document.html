@@ -69,31 +69,34 @@
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><a class="reference internal" href="#Document.authenticate" title="Document.authenticate"><tt class="xref py py-meth docutils literal"><span class="pre">Document.authenticate()</span></tt></a></td>
-<td>Decrypts the document.</td>
+<td>Decrypts the document</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.loadPage" title="Document.loadPage"><tt class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></tt></a></td>
-<td>Reads a page.</td>
+<td>Reads a page</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.save" title="Document.save"><tt class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></tt></a></td>
-<td>Saves a copy of the document.</td>
+<td>Saves a copy of the document</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.ToC" title="Document.ToC"><tt class="xref py py-meth docutils literal"><span class="pre">Document.ToC()</span></tt></a></td>
-<td>Creates a table of contents.</td>
+<td>Creates a table of contents</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.close" title="Document.close"><tt class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></tt></a></td>
-<td>Closes the document.</td>
+<td>Closes the document</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><tt class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></tt></a></td>
-<td>First <cite>Outline</cite> item.</td>
+<td>First <cite>Outline</cite> item</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><tt class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.name" title="Document.name"><tt class="xref py py-attr docutils literal"><span class="pre">Document.name</span></tt></a></td>
+<td>filename of document</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><tt class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></tt></a></td>
 <td>Is document is encrypted?</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><tt class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></tt></a></td>
-<td>The document&#8217;s number of pages.</td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><tt class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></tt></a></td>
+<td>The document&#8217;s number of pages</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><tt class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></tt></a></td>
-<td>The document&#8217;s meta data.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><tt class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></tt></a></td>
+<td>The document&#8217;s meta data</td>
 </tr>
 </tbody>
 </table>
@@ -202,7 +205,7 @@
 <dl class="attribute">
 <dt id="Document.metadata">
 <tt class="descname">metadata</tt><a class="headerlink" href="#Document.metadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the document&#8217;s meta data as a Python dictionary. Its keys are <tt class="docutils literal"><span class="pre">format</span></tt>, <tt class="docutils literal"><span class="pre">encryption</span></tt>, <tt class="docutils literal"><span class="pre">title</span></tt>, <tt class="docutils literal"><span class="pre">author</span></tt>, <tt class="docutils literal"><span class="pre">subject</span></tt>, <tt class="docutils literal"><span class="pre">keywords</span></tt>, <tt class="docutils literal"><span class="pre">creator</span></tt>, <tt class="docutils literal"><span class="pre">producer</span></tt>, <tt class="docutils literal"><span class="pre">creationDate</span></tt>, <tt class="docutils literal"><span class="pre">modDate</span></tt>. These key names correspond to the PDF&#8217;s &#8220;official&#8221; meta data fields <tt class="docutils literal"><span class="pre">/Creator</span></tt>, <tt class="docutils literal"><span class="pre">/Producer</span></tt>, <tt class="docutils literal"><span class="pre">/CreationDate</span></tt>, <tt class="docutils literal"><span class="pre">/ModDate</span></tt>, <tt class="docutils literal"><span class="pre">/Title</span></tt>, <tt class="docutils literal"><span class="pre">/Author</span></tt>, <tt class="docutils literal"><span class="pre">/Subject</span></tt>, <tt class="docutils literal"><span class="pre">/Keywords</span></tt> respectively where applicable. <tt class="docutils literal"><span class="pre">format</span></tt> contains the PDF format version of the file (e.g. &#8216;PDF 1.4&#8217;), <tt class="docutils literal"><span class="pre">encryption</span></tt> contains either <tt class="docutils literal"><span class="pre">None</span></tt> when not encrypted, or a string naming the encryption method used (e.g. <tt class="docutils literal"><span class="pre">'Standard</span> <span class="pre">V4</span> <span class="pre">R4</span> <span class="pre">128-bit</span> <span class="pre">RC4'</span></tt>).  Note that all other metadata values are encrypted if the value for &#8216;encoding&#8217; is not <tt class="docutils literal"><span class="pre">None</span></tt>. All item values are UTF-8 encoded strings (or <tt class="docutils literal"><span class="pre">None</span></tt>), except <tt class="docutils literal"><span class="pre">keywords</span></tt>. If <tt class="docutils literal"><span class="pre">keywords</span></tt> is not <tt class="docutils literal"><span class="pre">None</span></tt>, it contains a Python dictionary specifying the document&#8217;s keywords (again, as UTF-8 encoded strings). The date fields are strings with the internal timestamp format &#8220;D:&lt;DateTime&gt;&lt;TZ&gt;&#8221;, where &lt;DateTime&gt; is the 12 character ISO date <tt class="docutils literal"><span class="pre">YYYMMDDhhmmss</span></tt> (<tt class="docutils literal"><span class="pre">YYYY</span></tt> - year, <tt class="docutils literal"><span class="pre">MM</span></tt> - month, <tt class="docutils literal"><span class="pre">DD</span></tt> - day, <tt class="docutils literal"><span class="pre">hh</span></tt> - hour, <tt class="docutils literal"><span class="pre">mm</span></tt> - minute, <tt class="docutils literal"><span class="pre">ss</span></tt> - second), and &lt;TZ&gt; is a time zone value (time intervall relative to GMT) containing a sign (&#8216;+&#8217; or &#8216;-&#8216;), the hour (<tt class="docutils literal"><span class="pre">hh</span></tt>), and minute (<tt class="docutils literal"><span class="pre">'mm'</span></tt>, attention: enclose in apostrophies!). For example, a Venezuelan value might look like <tt class="docutils literal"><span class="pre">D:20150415131602-04'30'</span></tt>, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Venezuela.</p>
+<dd><p>Contains the document&#8217;s meta data as a Python dictionary. Its keys are <tt class="docutils literal"><span class="pre">format</span></tt>, <tt class="docutils literal"><span class="pre">encryption</span></tt>, <tt class="docutils literal"><span class="pre">title</span></tt>, <tt class="docutils literal"><span class="pre">author</span></tt>, <tt class="docutils literal"><span class="pre">subject</span></tt>, <tt class="docutils literal"><span class="pre">keywords</span></tt>, <tt class="docutils literal"><span class="pre">creator</span></tt>, <tt class="docutils literal"><span class="pre">producer</span></tt>, <tt class="docutils literal"><span class="pre">creationDate</span></tt>, <tt class="docutils literal"><span class="pre">modDate</span></tt>. For the most part, these key names in an obvious way correspond to the PDF&#8217;s &#8220;official&#8221; meta data fields <tt class="docutils literal"><span class="pre">/Creator</span></tt>, <tt class="docutils literal"><span class="pre">/Producer</span></tt>, <tt class="docutils literal"><span class="pre">/CreationDate</span></tt>, <tt class="docutils literal"><span class="pre">/ModDate</span></tt>, <tt class="docutils literal"><span class="pre">/Title</span></tt>, <tt class="docutils literal"><span class="pre">/Author</span></tt>, <tt class="docutils literal"><span class="pre">/Subject</span></tt>, <tt class="docutils literal"><span class="pre">/Keywords</span></tt> respectively. <tt class="docutils literal"><span class="pre">format</span></tt> contains the PDF format version of the file (e.g. &#8216;PDF 1.4&#8217;), <tt class="docutils literal"><span class="pre">encryption</span></tt> contains either <tt class="docutils literal"><span class="pre">None</span></tt> when not encrypted, or a string naming the encryption method used (e.g. <tt class="docutils literal"><span class="pre">'Standard</span> <span class="pre">V4</span> <span class="pre">R4</span> <span class="pre">128-bit</span> <span class="pre">RC4'</span></tt>). Note that all other metadata values are encrypted if the value for &#8216;encoding&#8217; is not <tt class="docutils literal"><span class="pre">None</span></tt>. All item values are UTF-8 encoded strings (or <tt class="docutils literal"><span class="pre">None</span></tt>), except <tt class="docutils literal"><span class="pre">keywords</span></tt>. If <tt class="docutils literal"><span class="pre">keywords</span></tt> is not <tt class="docutils literal"><span class="pre">None</span></tt>, it contains a Python dictionary specifying the document&#8217;s keywords (again, as UTF-8 encoded strings). The date fields are strings with the PDF-internal timestamp format &#8220;D:&lt;DateTime&gt;&lt;TZ&gt;&#8221;, where &lt;DateTime&gt; is the 12 character ISO date <tt class="docutils literal"><span class="pre">YYYMMDDhhmmss</span></tt> (<tt class="docutils literal"><span class="pre">YYYY</span></tt> - year, <tt class="docutils literal"><span class="pre">MM</span></tt> - month, <tt class="docutils literal"><span class="pre">DD</span></tt> - day, <tt class="docutils literal"><span class="pre">hh</span></tt> - hour, <tt class="docutils literal"><span class="pre">mm</span></tt> - minute, <tt class="docutils literal"><span class="pre">ss</span></tt> - second), and &lt;TZ&gt; is a time zone value (time intervall relative to GMT) containing a sign (&#8216;+&#8217; or &#8216;-&#8216;), the hour (<tt class="docutils literal"><span class="pre">hh</span></tt>), and minute (<tt class="docutils literal"><span class="pre">'mm'</span></tt>, attention: enclose in apostrophies!). For example, a Venezuelan value might look like <tt class="docutils literal"><span class="pre">D:20150415131602-04'30'</span></tt>, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Venezuela.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -211,6 +214,13 @@
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Document.name">
+<tt class="descname">name</tt><a class="headerlink" href="#Document.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the <tt class="docutils literal"><span class="pre">filename</span></tt> value with which <tt class="docutils literal"><span class="pre">Document</span></tt> was created.
+:rtype: dict</p>
 </dd></dl>
 
 <dl class="attribute">

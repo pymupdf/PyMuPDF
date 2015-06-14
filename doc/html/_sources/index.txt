@@ -15,10 +15,5 @@
    class_index.txt
    vars.txt
 
-
-
-Indices and tables
-==================
-
 * :ref:`genindex`
 * :ref:`search`

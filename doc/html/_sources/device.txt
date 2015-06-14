@@ -1,10 +1,14 @@
+.. raw:: pdf
+
+    PageBreak
+
 .. _Device:
 
 ================
 **Device**
 ================
 
-The different format handlers (pdf, xps, etc.) interpret pages to a "device". These devices are the basis for everything that be done with a page, like rendering, text extraction and searching. What will actually be done with a page, depends on the argument type used in constructing a device.
+The different format handlers (pdf, xps, etc.) interpret pages to a "device". These devices are the basis for everything that can be done with a page: rendering, text extraction and searching. The device type is determined by the selected construction method.
 
 Class API
 ==========

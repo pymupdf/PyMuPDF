@@ -48,29 +48,49 @@
             
   <div class="section" id="constants-and-enumerations">
 <h1>Constants and Enumerations<a class="headerlink" href="#constants-and-enumerations" title="Permalink to this headline">¶</a></h1>
-<p>Here are the constants and enumerations of MuPDF as implemented by python-fitz.</p>
+<p>Constants and enumerations of MuPDF as implemented by python-fitz. If your import statement was <tt class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></tt> then each of the following variables <tt class="docutils literal"><span class="pre">var</span></tt> is accessible as <tt class="docutils literal"><span class="pre">fitz.var</span></tt></p>
 <div class="section" id="constants">
 <h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="35%" />
-<col width="65%" />
+<col width="41%" />
+<col width="59%" />
 </colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Constant</strong></th>
+<th class="head"><strong>Description</strong></th>
+</tr>
+</thead>
 <tbody valign="top">
-<tr class="row-odd"><td><dl class="first last data">
-<dt id="fitz.CS_RGB">
-<tt class="descclassname">fitz.</tt><tt class="descname">CS_RGB</tt><a class="headerlink" href="#fitz.CS_RGB" title="Permalink to this definition">¶</a></dt>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="CS_RGB">
+<tt class="descname">CS_RGB</tt><a class="headerlink" href="#CS_RGB" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </td>
-<td>Type of <a class="reference internal" href="colorspace.html#colorspace"><em>Colorspace</em></a> is RGBA</td>
+<td>1 - Type of <a class="reference internal" href="colorspace.html#colorspace"><em>Colorspace</em></a> is RGBA</td>
+</tr>
+<tr class="row-odd"><td><dl class="first last data">
+<dt id="VersionBind">
+<tt class="descname">VersionBind</tt><a class="headerlink" href="#VersionBind" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>&#8216;1.7.0&#8217; - Version of python-fitz</td>
+</tr>
+<tr class="row-even"><td><dl class="first last data">
+<dt id="VersionFitz">
+<tt class="descname">VersionFitz</tt><a class="headerlink" href="#VersionFitz" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</td>
+<td>&#8216;1.7a&#8217; - Version of MuPDF</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="enumerations">
 <h2>Enumerations<a class="headerlink" href="#enumerations" title="Permalink to this headline">¶</a></h2>
-<p>If your import statement was <tt class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></tt> then each of the following variables <tt class="docutils literal"><span class="pre">var</span></tt> is accessible as <tt class="docutils literal"><span class="pre">fitz.var</span></tt></p>
 <p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.kind" title="linkDest.kind"><tt class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></tt></a> (link destination type).</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -89,7 +109,7 @@
 <dd></dd></dl>
 
 </td>
-<td>0 - No destination.</td>
+<td>0 - No destination</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="FZ_LINK_GOTO">
@@ -97,7 +117,7 @@
 <dd></dd></dl>
 
 </td>
-<td>1 - Points to a place in this document.</td>
+<td>1 - Points to a place in this document</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="FZ_LINK_URI">
@@ -105,7 +125,7 @@
 <dd></dd></dl>
 
 </td>
-<td>2 - Points to an URI.</td>
+<td>2 - Points to an URI</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="FZ_LINK_LAUNCH">
@@ -113,7 +133,7 @@
 <dd></dd></dl>
 
 </td>
-<td>3 - Launches (opens) a file.</td>
+<td>3 - Launches (opens) a file</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="FZ_LINK_NAMED">
@@ -121,7 +141,7 @@
 <dd></dd></dl>
 
 </td>
-<td>4 - Performs some action.</td>
+<td>4 - Performs some action</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="FZ_LINK_GOTOR">
@@ -129,15 +149,15 @@
 <dd></dd></dl>
 
 </td>
-<td>5 - Points to a place in another document.</td>
+<td>5 - Points to a place in another document</td>
 </tr>
 </tbody>
 </table>
-<p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.flags" title="linkDest.flags"><tt class="xref py py-attr docutils literal"><span class="pre">linkDest.flags</span></tt></a> (link destination flags). <strong>Attention</strong>: these values represent boolean indicators, of which several can be <tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt>, and not numerical values. I.e. <a class="reference internal" href="linkdest.html#linkDest.flags" title="linkDest.flags"><tt class="xref py py-attr docutils literal"><span class="pre">linkDest.flags</span></tt></a> is the sum of these values.</p>
+<p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.flags" title="linkDest.flags"><tt class="xref py py-attr docutils literal"><span class="pre">linkDest.flags</span></tt></a> (link destination flags). <strong>Attention</strong>: This is a one-byte bit field. The values represent boolean indicators showing whether the corresponding bit is <tt class="docutils literal"><span class="pre">ON</span></tt>.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="44%" />
-<col width="56%" />
+<col width="42%" />
+<col width="58%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Value</strong></th>
@@ -151,7 +171,7 @@
 <dd></dd></dl>
 
 </td>
-<td>1  - Top left x value is valid.</td>
+<td>1  (bit 0) Top left x value is valid</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="LINK_FLAG_T_VALID">
@@ -159,7 +179,7 @@
 <dd></dd></dl>
 
 </td>
-<td>2  - Top left y value is valid.</td>
+<td>2  (bit 1) Top left y value is valid</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="LINK_FLAG_R_VALID">
@@ -167,7 +187,7 @@
 <dd></dd></dl>
 
 </td>
-<td>4  - Bottom right x value is valid.</td>
+<td>4  (bit 2) Bottom right x value is valid</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="LINK_FLAG_B_VALID">
@@ -175,7 +195,7 @@
 <dd></dd></dl>
 
 </td>
-<td>8  - Bottom right y value is valid.</td>
+<td>8  (bit 3) Bottom right y value is valid</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="LINK_FLAG_FIT_H">
@@ -183,7 +203,7 @@
 <dd></dd></dl>
 
 </td>
-<td>16 - Horizontal fit.</td>
+<td>16 (bit 4) Horizontal fit</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
 <dt id="LINK_FLAG_FIT_V">
@@ -191,7 +211,7 @@
 <dd></dd></dl>
 
 </td>
-<td>32 - Vertical fit.</td>
+<td>32 (bit 5) Vertical fit</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="LINK_FLAG_R_IS_ZOOM">
@@ -199,7 +219,7 @@
 <dd></dd></dl>
 
 </td>
-<td>64 - Bottom right x is a zoom figure.</td>
+<td>64 (bit 6) Bottom right x is a zoom figure</td>
 </tr>
 </tbody>
 </table>

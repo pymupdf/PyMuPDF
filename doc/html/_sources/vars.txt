@@ -1,44 +1,54 @@
+.. raw:: pdf
+
+    PageBreak
+
 ===============================
 Constants and Enumerations
 ===============================
-Here are the constants and enumerations of MuPDF as implemented by python-fitz.
+Constants and enumerations of MuPDF as implemented by python-fitz. If your import statement was ``import fitz`` then each of the following variables ``var`` is accessible as ``fitz.var``
+
 
 
 Constants
 =========
 
-===================== =======================================
-.. data:: fitz.CS_RGB Type of :ref:`Colorspace` is RGBA
-===================== =======================================
+=========================== =======================================
+**Constant**                **Description**
+=========================== =======================================
+.. data:: CS_RGB            1 - Type of :ref:`Colorspace` is RGBA
+.. data:: VersionBind       '1.7.0' - Version of python-fitz
+.. data:: VersionFitz       '1.7a' - Version of MuPDF
+=========================== =======================================
 
 Enumerations
 =============
-
-If your import statement was ``import fitz`` then each of the following variables ``var`` is accessible as ``fitz.var``
-
 Possible values of :attr:`linkDest.kind` (link destination type).
 
 ============================ ==========================================
 **Value**                    **Description**
 ============================ ==========================================
-.. data:: FZ_LINK_NONE       0 - No destination.
-.. data:: FZ_LINK_GOTO       1 - Points to a place in this document.
-.. data:: FZ_LINK_URI        2 - Points to an URI.
-.. data:: FZ_LINK_LAUNCH     3 - Launches (opens) a file.
-.. data:: FZ_LINK_NAMED      4 - Performs some action.
-.. data:: FZ_LINK_GOTOR      5 - Points to a place in another document.
+.. data:: FZ_LINK_NONE       0 - No destination
+.. data:: FZ_LINK_GOTO       1 - Points to a place in this document
+.. data:: FZ_LINK_URI        2 - Points to an URI
+.. data:: FZ_LINK_LAUNCH     3 - Launches (opens) a file
+.. data:: FZ_LINK_NAMED      4 - Performs some action
+.. data:: FZ_LINK_GOTOR      5 - Points to a place in another document
 ============================ ==========================================
 
-Possible values of :attr:`linkDest.flags` (link destination flags). **Attention**: these values represent boolean indicators, of which several can be ``True`` or ``False``, and not numerical values. I.e. :attr:`linkDest.flags` is the sum of these values.
+Possible values of :attr:`linkDest.flags` (link destination flags). **Attention**: This is a one-byte bit field. The values represent boolean indicators showing whether the corresponding bit is ``ON``.
 
-=============================== ========================================
+=============================== ===========================================
 **Value**                       **Description**
-=============================== ========================================
-.. data:: LINK_FLAG_L_VALID     1  - Top left x value is valid.
-.. data:: LINK_FLAG_T_VALID     2  - Top left y value is valid.
-.. data:: LINK_FLAG_R_VALID     4  - Bottom right x value is valid.
-.. data:: LINK_FLAG_B_VALID     8  - Bottom right y value is valid.
-.. data:: LINK_FLAG_FIT_H       16 - Horizontal fit.
-.. data:: LINK_FLAG_FIT_V       32 - Vertical fit.
-.. data:: LINK_FLAG_R_IS_ZOOM   64 - Bottom right x is a zoom figure.
-=============================== ========================================
+=============================== ===========================================
+.. data:: LINK_FLAG_L_VALID     1  (bit 0) Top left x value is valid
+.. data:: LINK_FLAG_T_VALID     2  (bit 1) Top left y value is valid
+.. data:: LINK_FLAG_R_VALID     4  (bit 2) Bottom right x value is valid
+.. data:: LINK_FLAG_B_VALID     8  (bit 3) Bottom right y value is valid
+.. data:: LINK_FLAG_FIT_H       16 (bit 4) Horizontal fit
+.. data:: LINK_FLAG_FIT_V       32 (bit 5) Vertical fit
+.. data:: LINK_FLAG_R_IS_ZOOM   64 (bit 6) Bottom right x is a zoom figure
+=============================== ===========================================
+
+.. raw:: pdf
+
+    PageBreak

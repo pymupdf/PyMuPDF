@@ -1,9 +1,13 @@
+.. raw:: pdf
+
+    PageBreak
+
 .. _fitz:
 
 ===============================
 Classes
 ===============================
-The list of python-fitz classes, to be used as ``fitz.class``.
+The list of python-fitz classes, accessible via the prefix ``fitz.``.
 
 ================== ===============================================
 **Class**          **Short Description**

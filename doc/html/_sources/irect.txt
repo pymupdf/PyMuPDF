@@ -1,3 +1,7 @@
+.. raw:: pdf
+
+    PageBreak
+
 .. _IRect:
 
 ==========
@@ -5,8 +9,6 @@
 ==========
 
 IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corner coordinates are integers. IRect is used to specify an area of pixels, e.g. to receive image data during rendering.
-
-.. seealso:: :ref:`Rect`
 
 Attributes
 ==========

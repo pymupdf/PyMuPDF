@@ -18,6 +18,11 @@
     fz_context *gctx;
 %}
 
+/* include version information */
+%pythoncode %{
+VersionFitz = "1.7a"
+VersionBind = "1.7.0"
+%}
 
 /* fz_document */
 %rename(Document) fz_document_s;

@@ -90,6 +90,9 @@ except AttributeError:
     _newclass = 0
 
 
+VersionFitz = "1.7a"
+VersionBind = "1.7.0"
+
 class Document(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Document, name, value)
