@@ -20,6 +20,10 @@ else:
     module = Extension('fitz._fitz',
                        include_dirs=['./fitz',
                                      './mupdf17/include/mupdf'],  # "./mupdf17" = top level mupdf source dir
+                       extra_compile_args=['/D', '_MBCS', '/MT', '/Gy',
+                                           '/WX-', '/O2', '/Oi',
+                                           '/Oy-', '/GL',
+                                           '/Gm-', '/EHsc'],
                        libraries=[                                # only these 2 are needed in Windows
                                   'libmupdf',                        
                                   'libthirdparty',                    
