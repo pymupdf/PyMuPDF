@@ -12,7 +12,7 @@ You can access the documentation from here: `PDF <https://github.com/JorjMcKie/P
 
 We invite you to join our efforts by contributing to the the wiki pages.
 
-Please submit comments or any issues either to this site or by sending an e-mail to the author
-`Ruikai Liu`_.
+Please submit comments or any issues either to this site or by sending an e-mail to
+`Jorj McKie`_.
 
-.. _Ruikai Liu: lrk700@gmail.com 
+.. _Jorj McKie: jorj.x.mckie@outlook.com 
