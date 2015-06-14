@@ -6,7 +6,7 @@ This is a fork of the **new version 1.7 of python-fitz**, a Python binding which
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ (comic book) and EPUB (e-book) formats, and it is known for its top performance and high rendering quality.
 
-With python-fitz you therefore can also access files with extensions ``*.pdf``, ``*.xps``, ``*.oxps``, ``*.cbz`` or ``*.epub`` from your Python scripts.
+With PyMuPDF you therefore can also access files with extensions ``*.pdf``, ``*.xps``, ``*.oxps``, ``*.cbz`` or ``*.epub`` from your Python scripts.
 
 You can access the documentation from here: `PDF <https://github.com/rk700/python-fitz/blob/master/doc/Python-Fitz.pdf>`_ or a `Windows Help <https://github.com/rk700/python-fitz/blob/master/doc/Python-Fitz.chm>`_ version.
 
