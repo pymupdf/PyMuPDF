@@ -1,0 +1,55 @@
+.. raw:: pdf
+
+    PageBreak
+
+.. _Page:
+
+================
+Page
+================
+
+Page interface, created by :meth:`Document.loadPage`.
+
+
+======================== ================================
+**Method / Attribute**   **Short Description**
+======================== ================================
+:meth:`Page.bound`       The Page's rectangle
+:meth:`Page.loadLinks`   Get all the links in a page
+:meth:`Page.run`         Run a page through a device
+:attr:`Page.number`      Page number
+======================== ================================
+
+**Class API**
+
+.. class:: Page
+
+   .. method:: bound()
+
+      Determine the a page's rectangle (before transformation).
+
+      :rtype: :ref:`Rect`
+
+   .. method:: loadLinks()
+
+      Get all the links in a page.
+
+      :rtype: list
+      :returns: A python list of :ref:`Link`. An empty list is returned if there's no link in the page.
+
+   .. method:: run(dev, transform)
+
+      Run a page through a device.
+
+      :param `dev`: Device, obtained from one of the :ref:`Device` constructors.
+      :type `dev`: :ref:`Device`
+
+      :param `transform`: Transformation to apply to the page. May include for example scaling and rotation, see :meth:`Matrix.preScale` and :meth:`Matrix.preRotate`. Set it to :ref:`Identity` if no transformation is desired.
+      :type `transform`: :ref:`Matrix`
+
+   .. attribute:: number
+
+      The page number
+
+      :rtype: int
+

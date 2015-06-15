@@ -1,0 +1,69 @@
+.. raw:: pdf
+
+    PageBreak
+
+.. _IRect:
+
+==========
+IRect
+==========
+
+IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corner coordinates are integers. IRect is used to specify an area of pixels, e.g. to receive image data during rendering.
+
+
+====================== ========================================
+**Attribute**          **Short Description**
+====================== ========================================
+:attr:`IRect.width`    Width of the bounding box
+:attr:`IRect.height`   Height of the bounding box
+:attr:`IRect.x0`       X-coordinate of the top left corner
+:attr:`IRect.y0`       Y-coordinate of the top left corner
+:attr:`IRect.x1`       X-coordinate of the bottom right corner
+:attr:`IRect.y1`       Y-coordinate of the bottom right corner
+====================== ========================================
+
+**Class API**
+
+.. class:: IRect
+
+   .. method:: __init__(self, x0=0, y0=0, x1=0, y1=0)
+
+      Constructor. The default values will create an empty rectangle. Function :meth:`Rect.round` creates the smallest ``IRect`` containing ``Rect``.
+
+   .. attribute:: width
+
+      Contains the width of the bounding box. Equals ``x1 - x0``.
+
+      :type: int
+
+   .. attribute:: height
+
+      Contains the height of the bounding box. Equals ``y1 - y0``.
+
+      :type: int
+
+   .. attribute:: x0
+
+      X-coordinate of the top left corner.
+
+      :type: int
+
+
+   .. attribute:: y0
+
+      Y-coordinate of the top left corner.
+
+      :type: int
+
+   .. attribute:: x1
+
+      X-coordinate of the bottom right corner.
+
+      :type: int
+
+
+   .. attribute:: y1
+
+      Y-coordinate of the bottom right corner.
+
+      :type: int

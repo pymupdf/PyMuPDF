@@ -1,0 +1,41 @@
+.. raw:: pdf
+
+    PageBreak
+
+.. _Link:
+
+================
+Link
+================
+Represents a pointer to somewhere (this document, other documents, the internet). Links exist per document page, and they are forward-chained to each other, starting from an initial link which is accessible by the :meth:`Page.loadLinks` method.
+
+
+====================== ============================================
+**Attribute**          **Short Description**
+====================== ============================================
+:attr:`Link.rect`      Clickable area in untransformed coordinates.
+:attr:`Link.dest`      Kind of link destination.
+:attr:`Link.next`      Link to next link
+====================== ============================================
+
+**Class API**
+
+.. class:: Link
+
+   .. attribute:: rect
+
+      The area that can be clicked in untransformed coordinates.
+
+      :rtype: :ref:`Rect`
+
+   .. attribute:: dest
+
+      The link destination kind. An integer to be interpreted as one of the ``FZ_LINK_*`` values.
+
+      :rtype: int
+
+   .. attribute:: next
+
+      The next ``Link`` or ``None``
+
+      :rtype: :ref:`Link`

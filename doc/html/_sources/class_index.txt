@@ -1,0 +1,52 @@
+.. raw:: pdf
+
+    PageBreak
+
+.. _fitz:
+
+===============================
+Classes
+===============================
+The list of PyMuPDF classes, accessible via the prefix ``fitz.`` if your import statement was ``import fitz``
+
+================== ===============================================
+**Class**          **Short Description**
+================== ===============================================
+:ref:`Colorspace`  Define the color space of a :ref:`Pixmap`.
+:ref:`Device`      Target object for rendering or text extraction.
+:ref:`DisplayList` A list containing drawing commands.
+:ref:`Document`    Basic class for dealing with files.
+:ref:`Identity`    The do-nothing :ref:`Matrix`
+:ref:`IRect`       A rectangle (pixel coordinates).
+:ref:`Link`        A destination
+:ref:`linkDest`    The destination of an outline entry
+:ref:`Matrix`      A 3x3 matrix used for transformations.
+:ref:`Outline`     Outline element (a.k.a. bookmark).
+:ref:`Page`        A document page.
+:ref:`Pixmap`      A pixel map (for rendering).
+:ref:`Point`       Represents a point in the plane.
+:ref:`Rect`        A rectangle (float coordinates).
+:ref:`TextPage`    Text content of a page.
+:ref:`TextSheet`   A list of text styles used in a page.
+================== ===============================================
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   colorspace.txt
+   device.txt
+   displaylist.txt
+   document.txt
+   identity.txt
+   irect.txt
+   link.txt
+   linkdest.txt
+   matrix.txt
+   outline.txt
+   page.txt
+   pixmap.txt
+   point.txt
+   rect.txt
+   textpage.txt
+   textsheet.txt

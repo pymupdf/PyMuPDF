@@ -1,0 +1,87 @@
+.. raw:: pdf
+
+    PageBreak
+
+.. _Rect:
+
+==========
+Rect
+==========
+
+``Rect`` represents a rectangle defined by its top left and its bottom right :ref:`Point` objects, in coordinates: ((x0, y0), (x1, y1)).
+
+Rectangle borders are always in parallel with the respective X- and Y-axes.
+A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite".
+
+
+=========================== =========================================================================
+**Methods / Attributes**    **Short Description**
+=========================== =========================================================================
+:meth:`Rect.round`          creates the smallest :ref:`Irect` containing ``Rect``
+:meth:`Rect.transform`      transform ``Rect`` with a :ref:`Matrix`
+:attr:`Rect.height`         ``Rect`` height
+:attr:`Rect.width`          ``Rect`` width
+:attr:`Rect.x0`             Top left corner's X-coordinate
+:attr:`Rect.y0`             Top left corner's Y-coordinate
+:attr:`Rect.x1`             Bottom right corner's X-coordinate
+:attr:`Rect.y1`             Bottom right corner's Y-coordinate
+=========================== =========================================================================
+
+**Class API**
+
+.. class:: Rect
+
+   .. method:: __init__(self, x0=0, y0=0, x1=0, y1=0)
+
+      Constructor. The default values will create an empty rectangle.
+
+
+   .. method:: round()
+
+      Creates the smallest :ref:`IRect` that contains ``Rect``.
+
+      :rtype: :ref:`IRect`
+
+   .. attribute:: transform(m)
+
+      Transforms ``Rect`` with a :ref:`Matrix`.
+
+      :param `m`: A :ref:`Matrix` to be used for the transformation.
+      :rtype: :ref:`Rect`
+
+   .. attribute:: width
+
+      Contains the width of the rectangle. Equals ``x1 - x0``.
+
+      :rtype: float
+
+   .. attribute:: height
+
+      Contains the height of the rectangle. Equals ``y1 - y0``.
+
+      :rtype: float
+
+   .. attribute:: x0
+
+      X-coordinate of the top left corner.
+
+      :type: float
+
+   .. attribute:: y0
+
+      Y-coordinate of the top left corner.
+
+      :type: float
+
+   .. attribute:: x1
+
+      X-coordinate of the bottom right corner.
+
+      :type: float
+
+   .. attribute:: y1
+
+      Y-coordinate of the bottom right corner.
+
+      :type: float
+

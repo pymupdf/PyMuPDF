@@ -1,0 +1,41 @@
+.. raw:: pdf
+
+    PageBreak
+
+.. _Device:
+
+================
+Device
+================
+
+The different format handlers (pdf, xps, etc.) interpret pages to a "device". These devices are the basis for everything that can be done with a page: rendering, text extraction and searching. The device type is determined by the selected construction method.
+
+**Class API**
+
+.. class:: Device
+
+   .. method:: __init__(self, object)
+
+      Constructor for either a pixel map or a display list device.
+
+   .. attribute:: object
+
+      An object representing one of :ref:`Pixmap`, or :ref:`DisplayList`
+
+      :type: instance
+
+   .. method:: __init__(self, textsheet, textpage)
+
+      Constructor for a text page device.
+
+   .. attribute:: textsheet
+
+      A :ref:`TextSheet` object.
+
+      :type: instance
+
+   .. attribute:: textpage
+
+      A :ref:`TextPage` object.
+
+      :type: instance

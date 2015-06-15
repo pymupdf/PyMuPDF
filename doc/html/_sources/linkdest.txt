@@ -1,0 +1,105 @@
+.. raw:: pdf
+
+    PageBreak
+
+.. _linkDest:
+
+================
+linkDest
+================
+Class representing the `dest` property of an outline entry.
+
+
+=========================== ====================================
+**Attribute**               **Short Description**
+=========================== ====================================
+:attr:`linkDest.dest`       Destination
+:attr:`linkDest.fileSpec`   File specification (path, filename)
+:attr:`linkDest.flags`      Descriptive flags
+:attr:`linkDest.isMap`      Is this a MAP?
+:attr:`linkDest.isUri`      Is this an URI?
+:attr:`linkDest.kind`       Kind of destination
+:attr:`linkDest.lt`         Top left coordinates
+:attr:`linkDest.named`      Name if named destination
+:attr:`linkDest.newWindow`  Name of new window
+:attr:`linkDest.page`       Page number
+:attr:`linkDest.rb`         Bottom right coordinates
+:attr:`linkDest.uri`        URI
+=========================== ====================================
+
+**Class API**
+
+.. class:: linkDest
+
+   .. attribute:: dest
+
+      Destination of ``linkDest``.
+
+      :rtype: :ref:`Link`
+
+   .. attribute:: fileSpec
+
+      Contains the filename (including any path specifications) this link points to, if applicable.
+
+      :rtype: string
+
+   .. attribute:: flags
+
+      A one-byte bitfield consisting of indicators describing the validity and meaning of the different aspects of the destination. As far as possible, link destinations are constructed such that e.g. :attr:`linkDest.lt` and :attr:`linkDest.rb` can be treated as defining a bounding box, though the validity flags (see ``LINK_FLAG_*`` values) indicate which of the values were actually specified. Note that the numerical values for each of the LINK_FLAGs are powers of 2 and thus indicate the position of the bit to be tested. More than one bit can be ``True``, so do not test for the value of the integer.
+
+      :rtype: int
+
+   .. attribute:: isMap
+
+      This flag specifies whether to track the mouse position when the URI is resolved. Default value: False.
+
+      :rtype: bool
+
+   .. attribute:: isUri
+
+      Specifies whether this destination is an internet resource.
+
+      :rtype: bool
+
+   .. attribute:: kind
+
+      Indicates the type of this destination, like a place in this document, a URI, a file launch, an action or a place in another file. Look at index entries ``FZ_LINK_*`` to see the names and numerical values.
+
+      :rtype: int
+
+   .. attribute:: lt
+
+      The top left :ref:`Point` of the destination.
+
+      :rtype: :ref:`Point`
+
+   .. attribute:: named
+
+      This destination refers to some named resource of the document (see Adobe PDF documentation).
+
+      :rtype: int
+
+   .. attribute:: newWindow
+
+      This destination refers to an action that will open a new window.
+
+      :rtype: bool
+
+   .. attribute:: page
+
+      The page number (in this document) this destination points to.
+
+      :rtype: int
+
+   .. attribute:: rb
+
+      The bottom right :ref:`Point` of this destination.
+
+      :rtype: :ref:`Point`
+
+   .. attribute:: uri
+
+      The name of the URI this destination points to.
+
+      :rtype: string
+

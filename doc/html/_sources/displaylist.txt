@@ -1,0 +1,46 @@
+.. raw:: pdf
+
+    PageBreak
+
+.. _DisplayList:
+
+================
+DisplayList
+================
+
+DisplayList is a list containing drawing commands (text, images, etc.). The intent is two-fold:
+ 1. as a caching-mechanism to reduce parsing of a page
+ 2. as a data structure in multi-threading setups, where one thread parses the page and another one renders pages.
+
+A ``DisplayList`` is populated with objects from a page by running :meth:`Page.run` on a :ref:`Device`. Replay the list (once or many times) by invoking the display list's :meth:`~DisplayList.run` function.
+
+
+========================= =========================================
+**Method**                **Short Description**
+========================= =========================================
+:meth:`~DisplayList.run`  (Re)-run a display list through a device.
+========================= =========================================
+
+
+**Class API**
+
+.. class:: DisplayList
+
+   .. method:: fitz.DisplayList(self)
+
+      Create a rendering device for a display list.
+
+      When the device is rendering a page it will populate the display list with drawing commands (text, images, etc.). The display list can later be reused to render a page many times without having to re-interpret the page from the document file.
+
+      :rtype: :ref:`Device`
+
+   .. method:: run(self, dev, ctm, area)
+
+      :param `dev`: Device obtained from :ref:`Device`
+      :type `dev`: :ref:`Device`
+
+      :param `ctm`: Transform matrix to apply to display list contents.
+      :type `ctm`: :ref:`Matrix`
+
+      :param `area`: Only the part of the contents of the display list visible within this area will be considered when the list is run through the device. This does not imply for tile objects contained in the display list.
+      :type `area`: :ref:`IRect`
