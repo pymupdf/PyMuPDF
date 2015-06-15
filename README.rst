@@ -12,7 +12,7 @@ Authors
 Introduction
 ============
 
-This is the **new version 1.7 of PyMuPDF(formerly python-fitz)**, a Python binding which supports `MuPDF 1.7a <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
+This is the **new version 1.7 of PyMuPDF (formerly python-fitz)**, a Python binding which supports `MuPDF 1.7a <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS and EPUB (e-book) formats, and it is known for its top performance and high rendering quality.
 
