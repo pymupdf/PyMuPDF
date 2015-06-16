@@ -23,7 +23,7 @@ If necessary, adjust the setup.py script now. E.g. make sure that
 
   * the include directory is correctly set in sync with your directory structure
 
-It is no longer necessary to generate MuPDF object code if your platform is either Windows (32 Bit) or Linux.
+It is no longer necessary to generate MuPDF object code if your platform is either Windows or Linux.
 The required object libraries for these two platforms have been put into respective directories, and the setup script has been updated. These are the names of those directories:
 
 	* LibLinux - for the Linux-generated MuPDF libraries

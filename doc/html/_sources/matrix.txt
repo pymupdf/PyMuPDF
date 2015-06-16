@@ -108,9 +108,8 @@ It should be noted, that
 
 **Examples**
 
-Here are examples to illustrate some of the effects achievable with matrices. The following pictures start with a page of this help file. We show what will happen when a matrix is being applied. Though we always create full pages, only parts are displayed here to save space.
+Here are examples to illustrate some of the effects achievable with matrices. The following pictures start with a page of this help file. We show what will happen when a matrix is being applied (though always full pages are created, only parts are displayed here to save space).
 
-As the original we take a page of this help file.
 This is the original page image
 
 .. image:: original.png
