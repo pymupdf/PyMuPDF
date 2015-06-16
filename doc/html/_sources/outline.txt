@@ -5,13 +5,11 @@
 .. _Outline:
 
 ================
-**Outline**
+Outline
 ================
 
 ``outline`` is a property of ``Document``. If not ``None``, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in either "horizontal" direction by property ``.next`` to the next item of same level, or downwards with property ``.down`` to the next item one level lower. The full tree of all outline items for e.g. a conventional table of contents can be recovered by following these "pointers".
 
-Methods and Attributes
-======================
 
 ========================= ==================================================
 **Method / Attribute**    **Short Description**
@@ -24,8 +22,7 @@ Methods and Attributes
 :meth:`Outline.saveXML`   Prints an XML-like table of contents to a file
 ========================= ==================================================
 
-Class API
-=========
+**Class API**
 
 .. class:: Outline
 

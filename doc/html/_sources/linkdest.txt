@@ -5,12 +5,10 @@
 .. _linkDest:
 
 ================
-**linkDest**
+linkDest
 ================
 Class representing the `dest` property of an outline entry.
 
-Attributes
-==========
 
 =========================== ====================================
 **Attribute**               **Short Description**
@@ -29,8 +27,7 @@ Attributes
 :attr:`linkDest.uri`        URI
 =========================== ====================================
 
-Class API
-==========
+**Class API**
 
 .. class:: linkDest
 

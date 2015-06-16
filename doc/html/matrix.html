@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Matrix &mdash; Python-Fitz 1.7.0 documentation</title>
+    <title>Matrix &mdash; PyMuPDF 1.7.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
+    <link rel="top" title="PyMuPDF 1.7.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="Outline" href="outline.html" />
     <link rel="prev" title="linkDest" href="linkdest.html" /> 
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="linkdest.html" title="linkDest"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>  
@@ -53,26 +53,24 @@
           <div class="body">
             
   <div class="section" id="matrix">
-<span id="id1"></span><h1><strong>Matrix</strong><a class="headerlink" href="#matrix" title="Permalink to this headline">¶</a></h1>
-<p>Matrix is a row-major 3x3 matrix used image transformations in MuPDF. With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) pages can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six numerical values.</p>
+<span id="id1"></span><h1>Matrix<a class="headerlink" href="#matrix" title="Permalink to this headline">¶</a></h1>
+<p>Matrix is a row-major 3x3 matrix used by image transformations in MuPDF. With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) the page can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six numerical values.</p>
 <p>Since all points or pixels live in a two-dimensional space, one column vector of that matrix is a constant unit vector, and only the remaining six elements are used for manipulations. These six elements are usually represented by <tt class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span></tt>. Here is how they are positioned in the matrix:</p>
 <img alt="_images/matrix.png" src="_images/matrix.png" />
 <p>It should be noted, that</p>
 <blockquote>
 <div><ul class="simple">
-<li>the below methods are just convenience functions. Everything they do, can also be achieved by directly manipulating <tt class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span></tt></li>
-<li>all manipulations can combined - you can construct a matrix to rotate <strong>and</strong> shear <strong>and</strong> scale <strong>and</strong> shift etc. in one go</li>
+<li>the below methods are just convenience functions - everything they do, can also be achieved by directly manipulating <tt class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span></tt></li>
+<li>all manipulations can be combined - you can construct a matrix that does a rotate <strong>and</strong> a shear <strong>and</strong> a scale <strong>and</strong> a shift etc. in one go</li>
 </ul>
 </div></blockquote>
-<div class="section" id="methods">
-<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
 <col width="47%" />
 <col width="53%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head"><strong>Method</strong></th>
+<tr class="row-odd"><th class="head"><strong>Method / Attribute</strong></th>
 <th class="head"><strong>Description</strong></th>
 </tr>
 </thead>
@@ -89,22 +87,6 @@
 <tr class="row-odd"><td><a class="reference internal" href="#Matrix.preShear" title="Matrix.preShear"><tt class="xref py py-meth docutils literal"><span class="pre">Matrix.preShear()</span></tt></a></td>
 <td>Perform a shearing</td>
 </tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="attributes">
-<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h2>
-<table border="1" class="docutils">
-<colgroup>
-<col width="31%" />
-<col width="69%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head"><strong>Atribute</strong></th>
-<th class="head"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody valign="top">
 <tr class="row-even"><td><a class="reference internal" href="#Matrix.a" title="Matrix.a"><tt class="xref py py-attr docutils literal"><span class="pre">Matrix.a</span></tt></a></td>
 <td>Zoom factor X direction</td>
 </tr>
@@ -125,9 +107,7 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="class-api">
-<h2>Class API<a class="headerlink" href="#class-api" title="Permalink to this headline">¶</a></h2>
+<p><strong>Class API</strong></p>
 <dl class="class">
 <dt id="Matrix">
 <em class="property">class </em><tt class="descname">Matrix</tt><a class="headerlink" href="#Matrix" title="Permalink to this definition">¶</a></dt>
@@ -145,7 +125,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deg</strong> &#8211; The extent of the rotation in degrees.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deg</strong> &#8211; The rotation amount in degrees - use a value between 0 and 360.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#matrix"><em>Matrix</em></a></td>
 </tr>
@@ -177,7 +157,7 @@
 <dl class="method">
 <dt id="Matrix.preShear">
 <tt class="descname">preShear</tt><big>(</big><em>sx</em>, <em>sy</em><big>)</big><a class="headerlink" href="#Matrix.preShear" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs shearing, i.e. transformation of rectangles into parallelograms (rhomboids).</p>
+<dd><p>Performs shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has efects on attributes <tt class="docutils literal"><span class="pre">b</span></tt> and <tt class="docutils literal"><span class="pre">c</span></tt> only.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -198,7 +178,7 @@
 <dl class="attribute">
 <dt id="Matrix.a">
 <tt class="descname">a</tt><a class="headerlink" href="#Matrix.a" title="Permalink to this definition">¶</a></dt>
-<dd><p>Scaling in X-direction <strong>(width)</strong>. For example, a value of 0.5 performs a shrink of the <strong>width</strong> by a factor of 2. If a &lt; 0, a vertical flip will occur, i.e. mirrors the rectangle&#8217;s picture along the Y axis.</p>
+<dd><p>Scaling in X-direction <strong>(width)</strong>. For example, a value of 0.5 performs a shrink of the <strong>width</strong> by a factor of 2. If a &lt; 0, a (additional) vertical flip will occur, i.e. the rectangle&#8217;s picture will be mirrored along the Y axis.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -212,7 +192,7 @@
 <dl class="attribute">
 <dt id="Matrix.b">
 <tt class="descname">b</tt><a class="headerlink" href="#Matrix.b" title="Permalink to this definition">¶</a></dt>
-<dd><p>Causes a shearing effect: each <tt class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y)</span></tt> will become <tt class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y</span> <span class="pre">-</span> <span class="pre">b*x)</span></tt>.</p>
+<dd><p>Causes a shearing effect: each <tt class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y)</span></tt> will become <tt class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y</span> <span class="pre">-</span> <span class="pre">b*x)</span></tt>. Therefore, looking from left to right, e.g. horizontal lines will be &#8220;tilt&#8221; - downwards if b &gt; 0, upwards otherwise (b is the tangens of the tilting angle).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -226,7 +206,7 @@
 <dl class="attribute">
 <dt id="Matrix.c">
 <tt class="descname">c</tt><a class="headerlink" href="#Matrix.c" title="Permalink to this definition">¶</a></dt>
-<dd><p>Causes a shearing effect: each <tt class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y)</span></tt> will become <tt class="docutils literal"><span class="pre">Point(x</span> <span class="pre">-</span> <span class="pre">c*y,</span> <span class="pre">y)</span></tt>.</p>
+<dd><p>Causes a shearing effect: each <tt class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y)</span></tt> will become <tt class="docutils literal"><span class="pre">Point(x</span> <span class="pre">-</span> <span class="pre">c*y,</span> <span class="pre">y)</span></tt>. Therefore, looking upwards, vertical lines will be &#8220;tilt&#8221; - to the left if c &gt; 0, to the right otherwise (c ist the tangens of the tilting angle).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -240,7 +220,7 @@
 <dl class="attribute">
 <dt id="Matrix.d">
 <tt class="descname">d</tt><a class="headerlink" href="#Matrix.d" title="Permalink to this definition">¶</a></dt>
-<dd><p>Scaling in Y-direction <strong>(height)</strong>. For example, a value of 1.5 performs a stretch of the <strong>height</strong> by 50%. If d &lt; 0, a horizontal flip will occur, i.e. mirrors the rectangle&#8217;s picture along the X axis.</p>
+<dd><p>Scaling in Y-direction <strong>(height)</strong>. For example, a value of 1.5 performs a stretch of the <strong>height</strong> by 50%. If d &lt; 0, a (additional) horizontal flip will occur, i.e. the rectangle&#8217;s picture will be mirrored along the X axis.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -281,6 +261,36 @@
 
 </dd></dl>
 
+<p><strong>Examples</strong></p>
+<p>Here are examples to illustrate some of the effects achievable with matrices. The following pictures start with a page of this help file. We show what will happen when a matrix is being applied. Though we always create full pages, only parts are displayed here to save space.</p>
+<p>As the original we take a page of this help file.
+This is the original page image</p>
+<img alt="_images/original.png" src="_images/original.png" />
+<div class="section" id="shifting">
+<h2>Shifting<a class="headerlink" href="#shifting" title="Permalink to this headline">¶</a></h2>
+<p>We transform it with a matrix where <tt class="docutils literal"><span class="pre">e</span> <span class="pre">=</span> <span class="pre">100</span></tt> (right shift by 100 pixels)</p>
+<img alt="_images/e_is_100.png" src="_images/e_is_100.png" />
+<p>Next we do a down shift by 100 pixels: <tt class="docutils literal"><span class="pre">f</span> <span class="pre">=</span> <span class="pre">100</span></tt></p>
+<img alt="_images/f_is_100.png" src="_images/f_is_100.png" />
+</div>
+<div class="section" id="flipping">
+<h2>Flipping<a class="headerlink" href="#flipping" title="Permalink to this headline">¶</a></h2>
+<p>Flip the page vertically (<tt class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">-1</span></tt>)</p>
+<img alt="_images/a_is_-1.png" src="_images/a_is_-1.png" />
+<p>Flip horizontally (<tt class="docutils literal"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">-1</span></tt>)</p>
+<img alt="_images/d_is_-1.png" src="_images/d_is_-1.png" />
+</div>
+<div class="section" id="shearing">
+<h2>Shearing<a class="headerlink" href="#shearing" title="Permalink to this headline">¶</a></h2>
+<p>First a shear in Y direction (<tt class="docutils literal"><span class="pre">b</span> <span class="pre">=</span> <span class="pre">0.5</span></tt>)</p>
+<img alt="_images/b_is_0.5.png" src="_images/b_is_0.5.png" />
+<p>Second a shear in X direction (<tt class="docutils literal"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">0.5</span></tt>)</p>
+<img alt="_images/c_is_0.5.png" src="_images/c_is_0.5.png" />
+</div>
+<div class="section" id="rotating">
+<h2>Rotating<a class="headerlink" href="#rotating" title="Permalink to this headline">¶</a></h2>
+<p>Finally a rotation by 60 degrees</p>
+<img alt="_images/rot_60.png" src="_images/rot_60.png" />
 </div>
 </div>
 
@@ -292,20 +302,21 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><strong>Matrix</strong></a><ul>
-<li><a class="reference internal" href="#methods">Methods</a></li>
-<li><a class="reference internal" href="#attributes">Attributes</a></li>
-<li><a class="reference internal" href="#class-api">Class API</a></li>
+<li><a class="reference internal" href="#">Matrix</a><ul>
+<li><a class="reference internal" href="#shifting">Shifting</a></li>
+<li><a class="reference internal" href="#flipping">Flipping</a></li>
+<li><a class="reference internal" href="#shearing">Shearing</a></li>
+<li><a class="reference internal" href="#rotating">Rotating</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="linkdest.html"
-                        title="previous chapter"><strong>linkDest</strong></a></p>
+                        title="previous chapter">linkDest</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="outline.html"
-                        title="next chapter"><strong>Outline</strong></a></p>
+                        title="next chapter">Outline</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/matrix.txt"
@@ -340,7 +351,7 @@
         <li class="right" >
           <a href="linkdest.html" title="linkDest"
              >previous</a> |</li>
-        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>

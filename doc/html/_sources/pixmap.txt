@@ -5,14 +5,10 @@
 .. _Pixmap:
 
 ================
-**Pixmap**
+Pixmap
 ================
 
 Pixmaps represent a set of pixels for a 2 dimensional region. Each pixel consists of n bytes ("components"), plus always an alpha. The data is in premultiplied alpha when rendering, but non-premultiplied for colorspace conversions and rescaling.
-
-
-Methods and Attributes
-======================
 
 ============================ ===========================================
 **Method / Attribute**       **Short Description**
@@ -31,8 +27,7 @@ Methods and Attributes
 :attr:`Pixmap.interpolate`   Interpolation method indicator
 ============================ ===========================================
 
-Class API
-==========
+**Class API**
 
 .. class:: Pixmap
 

@@ -5,28 +5,19 @@
 .. _Point:
 
 ================
-**Point**
+Point
 ================
 
 ``Point`` represents a point in the plane, defined by its x and y coordinates.
 
-Methods
-=======
+======================== =======================
+**Attribute **           **Short Description**
+======================== =======================
+:attr:`Point.x`          The X-coordinate.
+:attr:`Point.y`          The Y-coordinate.
+======================== =======================
 
-======================== ============
-:meth:`Point.__init__`   Constructor.
-======================== ============
-
-Attributes
-==========
-
-================ ==================
-:attr:`Point.x`  The X- coordinate.
-:attr:`Point.y`  The Y- coordinate.
-================ ==================
-
-Class API
-==========
+**Class API**
 
 .. class:: Point
 

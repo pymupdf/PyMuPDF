@@ -5,13 +5,11 @@
 .. _Document:
 
 ================
-**Document**
+Document
 ================
 
 This class represents a document and is constructed by ``fitz.Document(filename)``. This will also **open** the document specified as ``filename``. Returns a ``Document`` object.
 
-Methods and Attributes
-======================
 
 =============================== ================================
 **Method / Attribute**          **Short Description**
@@ -28,8 +26,7 @@ Methods and Attributes
 :attr:`Document.metadata`       The document's meta data
 =============================== ================================
 
-Class API
-==========
+**Class API**
 
 .. class:: Document
 

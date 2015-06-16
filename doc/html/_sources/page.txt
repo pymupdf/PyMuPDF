@@ -5,13 +5,11 @@
 .. _Page:
 
 ================
-**Page**
+Page
 ================
 
 Page interface, created by :meth:`Document.loadPage`.
 
-Methods and Attributes
-=======================
 
 ======================== ================================
 **Method / Attribute**   **Short Description**
@@ -22,8 +20,7 @@ Methods and Attributes
 :attr:`Page.number`      Page number
 ======================== ================================
 
-Class API
-==========
+**Class API**
 
 .. class:: Page
 

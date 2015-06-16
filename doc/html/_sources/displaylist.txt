@@ -5,7 +5,7 @@
 .. _DisplayList:
 
 ================
-**DisplayList**
+DisplayList
 ================
 
 DisplayList is a list containing drawing commands (text, images, etc.). The intent is two-fold:
@@ -14,16 +14,15 @@ DisplayList is a list containing drawing commands (text, images, etc.). The inte
 
 A ``DisplayList`` is populated with objects from a page by running :meth:`Page.run` on a :ref:`Device`. Replay the list (once or many times) by invoking the display list's :meth:`~DisplayList.run` function.
 
-Methods
-=======
 
+========================= =========================================
+**Method**                **Short Description**
 ========================= =========================================
 :meth:`~DisplayList.run`  (Re)-run a display list through a device.
 ========================= =========================================
 
 
-Class API
-==========
+**Class API**
 
 .. class:: DisplayList
 

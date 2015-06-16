@@ -5,20 +5,20 @@
 =============
 Installation
 =============
-This describes how to install python-fitz.
+This describes how to install PyMuPDF.
 
-Step 1: Download python-fitz
-=============================
+Step 1: Download PyMuPDF
+-------------------------------
 Download this repository and unzip it. This will give you a folder, let us call it ``PyFitz``.
 
 Step 2: Download MuPDF 1.7a
-============================
+---------------------------------
 Download `MuPDF version 1.7a source <http://mupdf.com/downloads/>`_, and unzip it. Let us call the resulting folder ``mupdf17``.
 
 Put it inside ``PyFitz`` as a subdirectory, if you want to keep everything in one place.
 
-Step 3: Build / Setup python-fitz
-===================================
+Step 3: Build / Setup PyMuPDF
+----------------------------------
 If necessary, adjust the setup.py script now. E.g. make sure that
 
   * the include directory is correctly set in sync with your directory structure
@@ -30,3 +30,7 @@ The required object libraries for these two platforms have been put into respect
 	* LibWin32 - for the Windows-generated MuPDF libraries
 
 Now perform a ``python setup.py install``
+
+Note on Using UPX on Windows
+------------------------------
+In Windows systems, your PyMuPDF installation will end up with three files: ``__init__.py``, ``fitz.py`` and ``_fitz.pyd`` in the ``site-packages`` directory. The PYD file is Python's DLL version on Windows systems. ``_fitz.pyd`` has a size of 9.5 to 10 MB. You can reduce this by applying the compression utility UPX to it: ``upx -9 _fitz.pyd``. This will reduce the file to about 4.5 MB. This should reduce load times (``import fitz`` statement) while keeping it fully functional.

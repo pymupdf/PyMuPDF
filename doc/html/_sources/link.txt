@@ -5,12 +5,10 @@
 .. _Link:
 
 ================
-**Link**
+Link
 ================
 Represents a pointer to somewhere (this document, other documents, the internet). Links exist per document page, and they are forward-chained to each other, starting from an initial link which is accessible by the :meth:`Page.loadLinks` method.
 
-Attributes
-===========
 
 ====================== ============================================
 **Attribute**          **Short Description**
@@ -20,8 +18,7 @@ Attributes
 :attr:`Link.next`      Link to next link
 ====================== ============================================
 
-Class API
-==========
+**Class API**
 
 .. class:: Link
 

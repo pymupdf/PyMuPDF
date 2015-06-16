@@ -5,14 +5,13 @@
 .. _Colorspace:
 
 ================
-**Colorspace**
+Colorspace
 ================
 
 Represents the color space of a :ref:`Pixmap`.
 
 
-Class API
-==========
+**Class API**
 
 .. class:: Colorspace
 

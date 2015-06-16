@@ -5,7 +5,7 @@
 ===============================
 Constants and Enumerations
 ===============================
-Constants and enumerations of MuPDF as implemented by python-fitz. If your import statement was ``import fitz`` then each of the following variables ``var`` is accessible as ``fitz.var``
+Constants and enumerations of MuPDF as implemented by PyMuPDF. If your import statement was ``import fitz`` then each of the following variables ``var`` is accessible as ``fitz.var``
 
 
 
@@ -16,7 +16,7 @@ Constants
 **Constant**                **Description**
 =========================== =======================================
 .. data:: CS_RGB            1 - Type of :ref:`Colorspace` is RGBA
-.. data:: VersionBind       '1.7.0' - Version of python-fitz
+.. data:: VersionBind       '1.7.0' - Version of PyMuPDF
 .. data:: VersionFitz       '1.7a' - Version of MuPDF
 =========================== =======================================
 

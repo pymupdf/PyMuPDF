@@ -7,7 +7,7 @@
 ===============================
 Classes
 ===============================
-The list of python-fitz classes, accessible via the prefix ``fitz.``.
+The list of PyMuPDF classes, accessible via the prefix ``fitz.`` if your import statement was ``import fitz``
 
 ================== ===============================================
 **Class**          **Short Description**

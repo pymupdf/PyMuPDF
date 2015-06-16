@@ -5,10 +5,10 @@
 .. _Matrix:
 
 ==========
-**Matrix**
+Matrix
 ==========
 
-Matrix is a row-major 3x3 matrix used image transformations in MuPDF. With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) pages can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six numerical values.
+Matrix is a row-major 3x3 matrix used by image transformations in MuPDF. With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) the page can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six numerical values.
 
 Since all points or pixels live in a two-dimensional space, one column vector of that matrix is a constant unit vector, and only the remaining six elements are used for manipulations. These six elements are usually represented by ``[a,b,c,d,e,f]``. Here is how they are positioned in the matrix:
 
@@ -16,39 +16,26 @@ Since all points or pixels live in a two-dimensional space, one column vector of
 
 It should be noted, that
 
-    * the below methods are just convenience functions. Everything they do, can also be achieved by directly manipulating ``[a,b,c,d,e,f]``
-    * all manipulations can combined - you can construct a matrix to rotate **and** shear **and** scale **and** shift etc. in one go
+    * the below methods are just convenience functions - everything they do, can also be achieved by directly manipulating ``[a,b,c,d,e,f]``
+    * all manipulations can be combined - you can construct a matrix that does a rotate **and** a shear **and** a scale **and** a shift etc. in one go
 
-
-
-Methods
-=======
 
 ========================= ============================
-**Method**                **Description**
+**Method / Attribute**    **Description**
 ========================= ============================
 :meth:`Matrix.__init__`   Constructor.
 :meth:`Matrix.preRotate`  Perform a rotation
 :meth:`Matrix.preScale`   Perform a scaling
 :meth:`Matrix.preShear`   Perform a shearing
+:attr:`Matrix.a`          Zoom factor X direction
+:attr:`Matrix.b`          Shearing effect Y direction
+:attr:`Matrix.c`          Shearing effect X direction
+:attr:`Matrix.d`          Zoom factor Y direction
+:attr:`Matrix.e`          Horizontal shift
+:attr:`Matrix.f`          Vertical shift
 ========================= ============================
 
-Attributes
-==========
-
-================== =========================================
-**Atribute**       **Description**
-================== =========================================
-:attr:`Matrix.a`   Zoom factor X direction
-:attr:`Matrix.b`   Shearing effect Y direction
-:attr:`Matrix.c`   Shearing effect X direction
-:attr:`Matrix.d`   Zoom factor Y direction
-:attr:`Matrix.e`   Horizontal shift
-:attr:`Matrix.f`   Vertical shift
-================== =========================================
-
-Class API
-==========
+**Class API**
 
 .. class:: Matrix
 
@@ -60,7 +47,7 @@ Class API
 
       Performs a clockwise rotation for ``deg`` degrees. This will change the matrix elements in the following way: ``a = cos(deg)``, ``b = sin(deg)``, ``c = -sin(deg)``, ``d = cos(deg)``.  ``e`` and ``f`` will remain unchanged.
 
-      :param `deg`: The extent of the rotation in degrees.
+      :param `deg`: The rotation amount in degrees - use a value between 0 and 360.
       :type `right`: :ref:`Matrix`
 
       :rtype: :ref:`Matrix`
@@ -75,7 +62,7 @@ Class API
 
    .. method:: preShear(sx, sy)
 
-      Performs shearing, i.e. transformation of rectangles into parallelograms (rhomboids).
+      Performs shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has efects on attributes ``b`` and ``c`` only.
 
       :param `sx`: Shearing effect in X direction. See attribute ``c``.
       :param `sy`: Shearing effect in Y direction. See attribute ``b``.
@@ -84,25 +71,25 @@ Class API
 
    .. attribute:: a
 
-      Scaling in X-direction **(width)**. For example, a value of 0.5 performs a shrink of the **width** by a factor of 2. If a < 0, a vertical flip will occur, i.e. mirrors the rectangle's picture along the Y axis.
+      Scaling in X-direction **(width)**. For example, a value of 0.5 performs a shrink of the **width** by a factor of 2. If a < 0, a (additional) vertical flip will occur, i.e. the rectangle's picture will be mirrored along the Y axis.
 
       :type: float
 
    .. attribute:: b
 
-      Causes a shearing effect: each ``Point(x, y)`` will become ``Point(x, y - b*x)``.
+      Causes a shearing effect: each ``Point(x, y)`` will become ``Point(x, y - b*x)``. Therefore, looking from left to right, e.g. horizontal lines will be "tilt" - downwards if b > 0, upwards otherwise (b is the tangens of the tilting angle).
 
       :type: float
 
    .. attribute:: c
 
-      Causes a shearing effect: each ``Point(x, y)`` will become ``Point(x - c*y, y)``.
+      Causes a shearing effect: each ``Point(x, y)`` will become ``Point(x - c*y, y)``. Therefore, looking upwards, vertical lines will be "tilt" - to the left if c > 0, to the right otherwise (c ist the tangens of the tilting angle).
 
       :type: float
 
    .. attribute:: d
 
-      Scaling in Y-direction **(height)**. For example, a value of 1.5 performs a stretch of the **height** by 50%. If d < 0, a horizontal flip will occur, i.e. mirrors the rectangle's picture along the X axis.
+      Scaling in Y-direction **(height)**. For example, a value of 1.5 performs a stretch of the **height** by 50%. If d < 0, a (additional) horizontal flip will occur, i.e. the rectangle's picture will be mirrored along the X axis.
 
       :type: float
 
@@ -118,3 +105,53 @@ Class API
 
       :type: float
 
+
+**Examples**
+
+Here are examples to illustrate some of the effects achievable with matrices. The following pictures start with a page of this help file. We show what will happen when a matrix is being applied. Though we always create full pages, only parts are displayed here to save space.
+
+As the original we take a page of this help file.
+This is the original page image
+
+.. image:: original.png
+
+
+Shifting
+------------
+We transform it with a matrix where ``e = 100`` (right shift by 100 pixels)
+
+.. image:: e_is_100.png
+
+
+Next we do a down shift by 100 pixels: ``f = 100``
+
+.. image:: f_is_100.png
+
+
+Flipping
+--------------
+Flip the page vertically (``a = -1``)
+
+.. image:: a_is_-1.png
+
+
+Flip horizontally (``d = -1``)
+
+.. image:: d_is_-1.png
+
+
+Shearing
+----------------
+First a shear in Y direction (``b = 0.5``)
+
+.. image:: b_is_0.5.png
+
+Second a shear in X direction (``c = 0.5``)
+
+.. image:: c_is_0.5.png
+
+Rotating
+---------
+Finally a rotation by 60 degrees
+
+.. image:: rot_60.png

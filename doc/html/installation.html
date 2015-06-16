@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Installation &mdash; Python-Fitz 1.7.0 documentation</title>
+    <title>Installation &mdash; PyMuPDF 1.7.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
+    <link rel="top" title="PyMuPDF 1.7.0 documentation" href="index.html" />
     <link rel="next" title="Tutorial" href="tutorial.html" />
     <link rel="prev" title="Introduction" href="intro.html" /> 
   </head>
@@ -41,7 +41,7 @@
         <li class="right" >
           <a href="intro.html" title="Introduction"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -52,9 +52,9 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>This describes how to install python-fitz.</p>
-<div class="section" id="step-1-download-python-fitz">
-<h2>Step 1: Download python-fitz<a class="headerlink" href="#step-1-download-python-fitz" title="Permalink to this headline">¶</a></h2>
+<p>This describes how to install PyMuPDF.</p>
+<div class="section" id="step-1-download-pymupdf">
+<h2>Step 1: Download PyMuPDF<a class="headerlink" href="#step-1-download-pymupdf" title="Permalink to this headline">¶</a></h2>
 <p>Download this repository and unzip it. This will give you a folder, let us call it <tt class="docutils literal"><span class="pre">PyFitz</span></tt>.</p>
 </div>
 <div class="section" id="step-2-download-mupdf-1-7a">
@@ -62,8 +62,8 @@
 <p>Download <a class="reference external" href="http://mupdf.com/downloads/">MuPDF version 1.7a source</a>, and unzip it. Let us call the resulting folder <tt class="docutils literal"><span class="pre">mupdf17</span></tt>.</p>
 <p>Put it inside <tt class="docutils literal"><span class="pre">PyFitz</span></tt> as a subdirectory, if you want to keep everything in one place.</p>
 </div>
-<div class="section" id="step-3-build-setup-python-fitz">
-<h2>Step 3: Build / Setup python-fitz<a class="headerlink" href="#step-3-build-setup-python-fitz" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="step-3-build-setup-pymupdf">
+<h2>Step 3: Build / Setup PyMuPDF<a class="headerlink" href="#step-3-build-setup-pymupdf" title="Permalink to this headline">¶</a></h2>
 <p>If necessary, adjust the setup.py script now. E.g. make sure that</p>
 <blockquote>
 <div><ul class="simple">
@@ -80,6 +80,10 @@ The required object libraries for these two platforms have been put into respect
 </div></blockquote>
 <p>Now perform a <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></tt></p>
 </div>
+<div class="section" id="note-on-using-upx-on-windows">
+<h2>Note on Using UPX on Windows<a class="headerlink" href="#note-on-using-upx-on-windows" title="Permalink to this headline">¶</a></h2>
+<p>In Windows systems, your PyMuPDF installation will end up with three files: <tt class="docutils literal"><span class="pre">__init__.py</span></tt>, <tt class="docutils literal"><span class="pre">fitz.py</span></tt> and <tt class="docutils literal"><span class="pre">_fitz.pyd</span></tt> in the <tt class="docutils literal"><span class="pre">site-packages</span></tt> directory. The PYD file is Python&#8217;s DLL version on Windows systems. <tt class="docutils literal"><span class="pre">_fitz.pyd</span></tt> has a size of 9.5 to 10 MB. You can reduce this by applying the compression utility UPX to it: <tt class="docutils literal"><span class="pre">upx</span> <span class="pre">-9</span> <span class="pre">_fitz.pyd</span></tt>. This will reduce the file to about 4.5 MB. This should reduce load times (<tt class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></tt> statement) while keeping it fully functional.</p>
+</div>
 </div>
 
 
@@ -91,9 +95,10 @@ The required object libraries for these two platforms have been put into respect
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
-<li><a class="reference internal" href="#step-1-download-python-fitz">Step 1: Download python-fitz</a></li>
+<li><a class="reference internal" href="#step-1-download-pymupdf">Step 1: Download PyMuPDF</a></li>
 <li><a class="reference internal" href="#step-2-download-mupdf-1-7a">Step 2: Download MuPDF 1.7a</a></li>
-<li><a class="reference internal" href="#step-3-build-setup-python-fitz">Step 3: Build / Setup python-fitz</a></li>
+<li><a class="reference internal" href="#step-3-build-setup-pymupdf">Step 3: Build / Setup PyMuPDF</a></li>
+<li><a class="reference internal" href="#note-on-using-upx-on-windows">Note on Using UPX on Windows</a></li>
 </ul>
 </li>
 </ul>
@@ -138,7 +143,7 @@ The required object libraries for these two platforms have been put into respect
         <li class="right" >
           <a href="intro.html" title="Introduction"
              >previous</a> |</li>
-        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

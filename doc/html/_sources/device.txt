@@ -5,13 +5,12 @@
 .. _Device:
 
 ================
-**Device**
+Device
 ================
 
 The different format handlers (pdf, xps, etc.) interpret pages to a "device". These devices are the basis for everything that can be done with a page: rendering, text extraction and searching. The device type is determined by the selected construction method.
 
-Class API
-==========
+**Class API**
 
 .. class:: Device
 

@@ -7,7 +7,7 @@ Tutorial
 =========
 This tutorial will show you the use of MuPDF in Python step by step.
 
-Because MuPDF supports not only PDF, but also XPS, OpenXPS and EPUB formats, so does python-fitz. Nevertheless we will only talk about PDF's for the sake of brevity.
+Because MuPDF supports not only PDF, but also XPS, OpenXPS and EPUB formats, so does PyMuPDF. Nevertheless we will only talk about PDF's for the sake of brevity.
 
 Import the Bindings
 ==========================

@@ -5,31 +5,29 @@
 .. _TextPage:
 
 ================
-**TextPage**
+TextPage
 ================
 
-``TextPage`` contains the text of a page.
+``TextPage`` represents the text of a page.
 
-Methods
-==========
-
+============================== ==============================================
+**Method**                     **Short Description**
 ============================== ==============================================
 :meth:`TextPage.extractText`   Extract the page's text.
 :meth:`TextPage.search`        Search for a string in the page.
 ============================== ==============================================
 
-Class API
-==========
+**Class API**
 
 .. class:: TextPage
 
-   .. method:: extractText(self)
+   .. method:: extractText()
 
       Extract the text from a ``TextPage`` object. Returns a UTF-8 encoded string of the page's complete text.
 
       :rtype: string
 
-   .. method:: search(self, string, maxhit)
+   .. method:: search(string, maxhit)
 
       Search for the string ``string``.
 
@@ -40,5 +38,5 @@ Class API
       :type `maxhit`: int
 
       :rtype: list
-      :returns: A python list. Each element of the list is an :ref:`IRect` (without transformation) surrounding a found ``string`` occurrence (or an empty list).
+      :returns: A python list. If not empty, each element of the list is an :ref:`IRect` (without transformation) surrounding a found ``string`` occurrence.
 

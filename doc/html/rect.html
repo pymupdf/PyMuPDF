@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Rect &mdash; Python-Fitz 1.7.0 documentation</title>
+    <title>Rect &mdash; PyMuPDF 1.7.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="Python-Fitz 1.7.0 documentation" href="index.html" />
+    <link rel="top" title="PyMuPDF 1.7.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="TextPage" href="textpage.html" />
     <link rel="prev" title="Point" href="point.html" /> 
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="point.html" title="Point"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>  
@@ -53,19 +53,17 @@
           <div class="body">
             
   <div class="section" id="rect">
-<span id="id1"></span><h1><strong>Rect</strong><a class="headerlink" href="#rect" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Rect<a class="headerlink" href="#rect" title="Permalink to this headline">¶</a></h1>
 <p><tt class="docutils literal"><span class="pre">Rect</span></tt> represents a rectangle defined by its top left and its bottom right <a class="reference internal" href="point.html#point"><em>Point</em></a> objects, in coordinates: ((x0, y0), (x1, y1)).</p>
 <p>Rectangle borders are always in parallel with the respective X- and Y-axes.
 A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is true, else &#8220;infinite&#8221;.</p>
-<div class="section" id="methods">
-<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
 <col width="27%" />
 <col width="73%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head"><strong>Methods</strong></th>
+<tr class="row-odd"><th class="head"><strong>Methods / Attributes</strong></th>
 <th class="head"><strong>Short Description</strong></th>
 </tr>
 </thead>
@@ -76,22 +74,6 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
 <tr class="row-odd"><td><a class="reference internal" href="#Rect.transform" title="Rect.transform"><tt class="xref py py-meth docutils literal"><span class="pre">Rect.transform()</span></tt></a></td>
 <td>transform <tt class="docutils literal"><span class="pre">Rect</span></tt> with a <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></td>
 </tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="attributes">
-<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h2>
-<table border="1" class="docutils">
-<colgroup>
-<col width="33%" />
-<col width="67%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head"><strong>Attribute</strong></th>
-<th class="head"><strong>Short Description</strong></th>
-</tr>
-</thead>
-<tbody valign="top">
 <tr class="row-even"><td><a class="reference internal" href="#Rect.height" title="Rect.height"><tt class="xref py py-attr docutils literal"><span class="pre">Rect.height</span></tt></a></td>
 <td><tt class="docutils literal"><span class="pre">Rect</span></tt> height</td>
 </tr>
@@ -112,9 +94,7 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="class-api">
-<h2>Class API<a class="headerlink" href="#class-api" title="Permalink to this headline">¶</a></h2>
+<p><strong>Class API</strong></p>
 <dl class="class">
 <dt id="Rect">
 <em class="property">class </em><tt class="descname">Rect</tt><a class="headerlink" href="#Rect" title="Permalink to this definition">¶</a></dt>
@@ -241,7 +221,6 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
 </dd></dl>
 
 </div>
-</div>
 
 
           </div>
@@ -249,22 +228,12 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#"><strong>Rect</strong></a><ul>
-<li><a class="reference internal" href="#methods">Methods</a></li>
-<li><a class="reference internal" href="#attributes">Attributes</a></li>
-<li><a class="reference internal" href="#class-api">Class API</a></li>
-</ul>
-</li>
-</ul>
-
   <h4>Previous topic</h4>
   <p class="topless"><a href="point.html"
-                        title="previous chapter"><strong>Point</strong></a></p>
+                        title="previous chapter">Point</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="textpage.html"
-                        title="next chapter"><strong>TextPage</strong></a></p>
+                        title="next chapter">TextPage</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/rect.txt"
@@ -299,7 +268,7 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
         <li class="right" >
           <a href="point.html" title="Point"
              >previous</a> |</li>
-        <li><a href="index.html">Python-Fitz 1.7.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li>
           <li><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
