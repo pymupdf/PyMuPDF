@@ -164,6 +164,7 @@ class Document(_object):
     def close(self):
         if hasattr(self, '_outline') and self._outline:
             self._dropOutline(self._outline)
+            self._outline = None
 
 
         return _fitz.Document_close(self)

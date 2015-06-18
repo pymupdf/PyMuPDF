@@ -100,13 +100,16 @@ struct fz_document_s {
         %pythonprepend close() %{
             if hasattr(self, '_outline') and self._outline:
                 self._dropOutline(self._outline)
+                self._outline = None
         %}
         void close() {
 #ifdef MEMDEBUG
             fprintf(stderr, "free doc\n");
 #endif
-            while($self->refs)
+            while($self->refs > 1) {
                 fz_drop_document(gctx, $self);
+            }
+            fz_drop_document(gctx, $self);
         }
         %exception loadPage {
             $action

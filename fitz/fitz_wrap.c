@@ -3070,8 +3070,10 @@ SWIGINTERN void fz_document_s_close(struct fz_document_s *self){
 
 
 
-            while(self->refs)
+            while(self->refs > 1) {
                 fz_drop_document(gctx, self);
+            }
+            fz_drop_document(gctx, self);
         }
 
 #include <limits.h>
