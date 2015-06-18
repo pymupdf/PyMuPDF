@@ -45,9 +45,10 @@ It should be noted, that
 
    .. method:: preRotate(deg)
 
-      Performs a clockwise rotation for ``deg`` degrees. This will change the matrix elements in the following way: ``a = cos(deg)``, ``b = sin(deg)``, ``c = -sin(deg)``, ``d = cos(deg)``.  ``e`` and ``f`` will remain unchanged.
+      Performs a clockwise rotation for positive ``deg`` degrees, else counterclockwise. This will change the matrix elements in the following way: ``a = cos(deg)``, ``b = sin(deg)``, ``c = -sin(deg)``, ``d = cos(deg)``.  ``e`` and ``f`` will remain unchanged.
 
-      :param `deg`: The rotation amount in degrees - use a value between 0 and 360.
+      :param `deg`: The rotation angle [float] in degrees (use conventional notation based on Pi = 180 degrees).
+
       :type `right`: :ref:`Matrix`
 
       :rtype: :ref:`Matrix`
@@ -56,16 +57,20 @@ It should be noted, that
 
       Scales by the zoom factors sx and sy. Has effects on attributes ``a`` and ``d`` only.
 
-      :param `sx`: Zoom factor in X direction. For the effect see description of attribute ``a``.
-      :param `sy`: Zoom factor in Y direction. For the effect see description of attribute ``d``.
+      :param `sx`: Zoom factor [float] in X direction. For the effect see description of attribute ``a``.
+
+      :param `sy`: Zoom factor [float] in Y direction. For the effect see description of attribute ``d``.
+
       :rtype: :ref:`Matrix`
 
    .. method:: preShear(sx, sy)
 
-      Performs shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has efects on attributes ``b`` and ``c`` only.
+      Performs shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has effects on attributes ``b`` and ``c`` only.
 
-      :param `sx`: Shearing effect in X direction. See attribute ``c``.
-      :param `sy`: Shearing effect in Y direction. See attribute ``b``.
+      :param `sx`: Shearing effect [float] in X direction. See attribute ``c``.
+
+      :param `sy`: Shearing effect [float] in Y direction. See attribute ``b``.
+
       :rtype: :ref:`Matrix`
 
 

@@ -120,12 +120,12 @@
 <dl class="method">
 <dt id="Matrix.preRotate">
 <tt class="descname">preRotate</tt><big>(</big><em>deg</em><big>)</big><a class="headerlink" href="#Matrix.preRotate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs a clockwise rotation for <tt class="docutils literal"><span class="pre">deg</span></tt> degrees. This will change the matrix elements in the following way: <tt class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">cos(deg)</span></tt>, <tt class="docutils literal"><span class="pre">b</span> <span class="pre">=</span> <span class="pre">sin(deg)</span></tt>, <tt class="docutils literal"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">-sin(deg)</span></tt>, <tt class="docutils literal"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">cos(deg)</span></tt>.  <tt class="docutils literal"><span class="pre">e</span></tt> and <tt class="docutils literal"><span class="pre">f</span></tt> will remain unchanged.</p>
+<dd><p>Performs a clockwise rotation for positive <tt class="docutils literal"><span class="pre">deg</span></tt> degrees, else counterclockwise. This will change the matrix elements in the following way: <tt class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">cos(deg)</span></tt>, <tt class="docutils literal"><span class="pre">b</span> <span class="pre">=</span> <span class="pre">sin(deg)</span></tt>, <tt class="docutils literal"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">-sin(deg)</span></tt>, <tt class="docutils literal"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">cos(deg)</span></tt>.  <tt class="docutils literal"><span class="pre">e</span></tt> and <tt class="docutils literal"><span class="pre">f</span></tt> will remain unchanged.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deg</strong> &#8211; The rotation amount in degrees - use a value between 0 and 360.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deg</strong> &#8211; The rotation angle [float] in degrees (use conventional notation based on Pi = 180 degrees).</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#matrix"><em>Matrix</em></a></td>
 </tr>
@@ -142,8 +142,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sx</strong> &#8211; Zoom factor in X direction. For the effect see description of attribute <tt class="docutils literal"><span class="pre">a</span></tt>.</li>
-<li><strong>sy</strong> &#8211; Zoom factor in Y direction. For the effect see description of attribute <tt class="docutils literal"><span class="pre">d</span></tt>.</li>
+<li><strong>sx</strong> &#8211; Zoom factor [float] in X direction. For the effect see description of attribute <tt class="docutils literal"><span class="pre">a</span></tt>.</li>
+<li><strong>sy</strong> &#8211; Zoom factor [float] in Y direction. For the effect see description of attribute <tt class="docutils literal"><span class="pre">d</span></tt>.</li>
 </ul>
 </td>
 </tr>
@@ -157,14 +157,14 @@
 <dl class="method">
 <dt id="Matrix.preShear">
 <tt class="descname">preShear</tt><big>(</big><em>sx</em>, <em>sy</em><big>)</big><a class="headerlink" href="#Matrix.preShear" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has efects on attributes <tt class="docutils literal"><span class="pre">b</span></tt> and <tt class="docutils literal"><span class="pre">c</span></tt> only.</p>
+<dd><p>Performs shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has effects on attributes <tt class="docutils literal"><span class="pre">b</span></tt> and <tt class="docutils literal"><span class="pre">c</span></tt> only.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sx</strong> &#8211; Shearing effect in X direction. See attribute <tt class="docutils literal"><span class="pre">c</span></tt>.</li>
-<li><strong>sy</strong> &#8211; Shearing effect in Y direction. See attribute <tt class="docutils literal"><span class="pre">b</span></tt>.</li>
+<li><strong>sx</strong> &#8211; Shearing effect [float] in X direction. See attribute <tt class="docutils literal"><span class="pre">c</span></tt>.</li>
+<li><strong>sy</strong> &#8211; Shearing effect [float] in Y direction. See attribute <tt class="docutils literal"><span class="pre">b</span></tt>.</li>
 </ul>
 </td>
 </tr>
@@ -356,7 +356,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on Jun 18, 2015.
+      Last updated on 18. Jun 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>

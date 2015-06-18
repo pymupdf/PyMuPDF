@@ -11,10 +11,10 @@ Point
 ``Point`` represents a point in the plane, defined by its x and y coordinates.
 
 ======================== =======================
-**Attribute **           **Short Description**
+**Attribute**            **Short Description**
 ======================== =======================
-:attr:`Point.x`          The X-coordinate.
-:attr:`Point.y`          The Y-coordinate.
+:attr:`Point.x`          The X-coordinate
+:attr:`Point.y`          The Y-coordinate
 ======================== =======================
 
 **Class API**

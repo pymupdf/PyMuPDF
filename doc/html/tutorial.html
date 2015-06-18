@@ -103,7 +103,7 @@
 </div>
 <div class="section" id="access-meta-data">
 <h2>Access Meta Data<a class="headerlink" href="#access-meta-data" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="document.html#document"><em>Document</em></a>.metadata is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. <a class="reference external" href="http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf">Adobe PDF Reference sixth edition 1.7 November 2006</a>. Some details can also be found in the chapter for <a class="reference internal" href="document.html#document"><em>Document</em></a>. The meta data fields are of type string if not otherwise indicated and may be missing, in which case they contain <tt class="docutils literal"><span class="pre">None</span></tt>.</p>
+<p><a class="reference internal" href="document.html#Document.metadata" title="Document.metadata"><tt class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></tt></a> is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. <a class="reference external" href="http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf">Adobe PDF Reference sixth edition 1.7 November 2006</a>. Some details can also be found in the chapter for <a class="reference internal" href="document.html#document"><em>Document</em></a>. The meta data fields are of type string if not otherwise indicated and may be missing, in which case they contain <tt class="docutils literal"><span class="pre">None</span></tt>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="44%" />
@@ -373,14 +373,15 @@ At first, a page object must be created:</p>
 <div class="section" id="close">
 <h2>Close<a class="headerlink" href="#close" title="Permalink to this headline">¶</a></h2>
 <p>In some situations it may be desirable to &#8220;close&#8221; a <a class="reference internal" href="document.html#document"><em>Document</em></a> such that it becomes again fully available to other tasks / the operating system. This can be achieved by the <a class="reference internal" href="document.html#Document.close" title="Document.close"><tt class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></tt></a> method.</p>
-<p>After invoking it, <strong>all</strong> objects created in relation to the underlying file (<a class="reference internal" href="document.html#document"><em>Document</em></a>, <a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a>, <a class="reference internal" href="page.html#page"><em>Page</em></a>, etc.) will be invalid  and may no longer be used - or really bad things will happen.</p>
-<p>Re-opening the same file by creating another <a class="reference internal" href="document.html#document"><em>Document</em></a> is, however, no problem. As an illustration of possibilities, here a sequence of statements that could be used</p>
+<p><strong>Caution:</strong></p>
+<p>After invoking it, <strong>all objects</strong> created in relation to the underlying file (<a class="reference internal" href="document.html#document"><em>Document</em></a>, <a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a>, <a class="reference internal" href="page.html#page"><em>Page</em></a>, etc.) will be invalid  and <strong>may no longer be used</strong> - or really bad things will happen.</p>
+<p>Re-opening the same file by creating another <a class="reference internal" href="document.html#document"><em>Document</em></a> is, however, no problem. As an illustration of possibilities, here is a sequence of statements that could be used:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="c"># open a document</span>
 <span class="o">...</span> <span class="n">other</span> <span class="n">statements</span>   <span class="c"># like decryption</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">fnew</span><span class="p">)</span>         <span class="c"># save it decrypted / cleaned up</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>            <span class="c"># close input file</span>
 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>           <span class="c"># remove it</span>
-<span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">fnew</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>     <span class="c"># rename the cleaned / decrypted version</span>
+<span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">fnew</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>     <span class="c"># rename the decrypted / cleaned version</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="c"># use it as input for MuPDF</span>
 </pre></div>
 </div>
@@ -462,7 +463,7 @@ At first, a page object must be created:</p>
     </div>
     <div class="footer">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on Jun 18, 2015.
+      Last updated on 18. Jun 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>

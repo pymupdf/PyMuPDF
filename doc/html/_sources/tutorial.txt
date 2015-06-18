@@ -41,7 +41,7 @@ Some :ref:`Document` methods and attributes
 
 Access Meta Data
 ========================
-:ref:`Document`.metadata is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_. Some details can also be found in the chapter for :ref:`Document`. The meta data fields are of type string if not otherwise indicated and may be missing, in which case they contain ``None``.
+:attr:`Document.metadata` is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_. Some details can also be found in the chapter for :ref:`Document`. The meta data fields are of type string if not otherwise indicated and may be missing, in which case they contain ``None``.
 
 ======================== ==============================
 **Key**                  **Value**
@@ -203,16 +203,18 @@ Close
 ======
 In some situations it may be desirable to "close" a :ref:`Document` such that it becomes again fully available to other tasks / the operating system. This can be achieved by the :meth:`Document.close` method.
 
-After invoking it, **all** objects created in relation to the underlying file (:ref:`Document`, :ref:`Pixmap`, :ref:`Page`, etc.) will be invalid  and may no longer be used - or really bad things will happen.
+**Caution:**
 
-Re-opening the same file by creating another :ref:`Document` is, however, no problem. As an illustration of possibilities, here a sequence of statements that could be used
+After invoking it, **all objects** created in relation to the underlying file (:ref:`Document`, :ref:`Pixmap`, :ref:`Page`, etc.) will be invalid  and **may no longer be used** - or really bad things will happen.
+
+Re-opening the same file by creating another :ref:`Document` is, however, no problem. As an illustration of possibilities, here is a sequence of statements that could be used:
 ::
  doc = fitz.Document(f) # open a document
  ... other statements   # like decryption
  doc.save(fnew)         # save it decrypted / cleaned up
  doc.close()            # close input file
  os.remove(f)           # remove it
- os.rename(fnew, f)     # rename the cleaned / decrypted version
+ os.rename(fnew, f)     # rename the decrypted / cleaned version
  doc = fitz.Document(f) # use it as input for MuPDF
 
 
