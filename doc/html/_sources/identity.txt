@@ -8,4 +8,14 @@
 Identity
 ============
 
-Identity is just a :ref:`Matrix` that performs no action. The default constructor of :ref:`Matrix` creates an identity matrix.
+Identity is just a :ref:`Matrix` that performs no action, to be used whenever the syntax requires a :ref:`Matrix`, but no actual transformation should take place.
+
+**Caution:** ``Identity`` is a constant in the C code and therefore **readonly, do not try to modify** its properties in any way, e.g. by manipulating ``[a,b,c,d,e,f]`` or by applying the methods.
+
+``Matrix(1, 1)`` creates a matrix that acts like ``Identity`` but can be changed. Use this when you need a starting point for further modification, e.g. by one of the :ref:`Matrix` methods. In other words:
+::
+ m = fitz.Identity.preRotate(90)    # will not work - the interpreter will crash!
+
+ # do this instead:
+ m = fitz.Matrix(1, 1).preRotate(90)
+

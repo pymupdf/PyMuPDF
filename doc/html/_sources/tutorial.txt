@@ -9,6 +9,8 @@ This tutorial will show you the use of MuPDF in Python step by step.
 
 Because MuPDF supports not only PDF, but also XPS, OpenXPS and EPUB formats, so does PyMuPDF. Nevertheless we will only talk about PDF's for the sake of brevity.
 
+As for string handling, MuPDF will pass back any string as UTF-8 encoded - no exceptions. Where this binding has added functionality, we usually decode string to unicode. An example is the :meth:`Document.ToC` method.
+
 Import the Bindings
 ==========================
 The Python bindings to MuPDF are made available by this import statement:
@@ -39,7 +41,7 @@ Some :ref:`Document` methods and attributes
 
 Access Meta Data
 ========================
-:ref:`Document`.metadata is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals. The meta data fields are of type string if not otherwise indicated and may be missing, in which case they contain ``None``.
+:ref:`Document`.metadata is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_. Some details can also be found in the chapter for :ref:`Document`. The meta data fields are of type string if not otherwise indicated and may be missing, in which case they contain ``None``.
 
 ======================== ==============================
 **Key**                  **Value**
@@ -166,6 +168,8 @@ Or we convert the image into a bitmap usable by a dialog manager:
  bitmap = wx.BitmapFromBufferRGBA(irect.width,
              irect.height, str(data)) # wxPython only accepts strings, no bytearrays
 
+
+
 Extract and search for text of a :ref:`Page`
 ---------------------------------------------
 We can also extract all text of a page in a big chunk of string:
@@ -185,5 +189,33 @@ If you want more details, you can determine exactly where on a page a certain st
  # search for at most 4 page locations with specific contents
  res = tp.search('MuPDF', 4)
 
-The result ``res`` will now be ``[]`` or a list of no more than 4 :ref:`IRect` rectangles that contain the string 'MuPDF'.
+The result ``res`` will now be ``[]`` or a list of no more than 4 :ref:`IRect` rectangles that contain the string 'MuPDF'. The ``maxhit`` parameter (in our case set to 4) is optional defaulting to 16.
+
+Output
+=======
+Output capabilities of MuPDF (like PDF generation or the like) are currently very limited. Some code exists to save PDF documents with only a subset of pages, cleaned up and / or decrypted.
+
+As mentioned above, we support a method :meth:`Document.save`. This function creates a copy of the input document. If we have successfully decrypted the document before, this outcome will be a decrypted version. In addition, this method will perform a clean-up: if the input containes invalid / broken cross references, the saved version will have them corrected, such that it is usually readable by other Python PDF software, like PyPDF2. In many cases, the saved version will also be smaller than the original.
+
+MuPDF's standalone utility ``mutool`` offers a ``clean`` option, which does the same thing, but offers more compression / decompession options. We are considering to support this in our binding as well.
+
+Close
+======
+In some situations it may be desirable to "close" a :ref:`Document` such that it becomes again fully available to other tasks / the operating system. This can be achieved by the :meth:`Document.close` method.
+
+After invoking it, **all** objects created in relation to the underlying file (:ref:`Document`, :ref:`Pixmap`, :ref:`Page`, etc.) will be invalid  and may no longer be used - or really bad things will happen.
+
+Re-opening the same file by creating another :ref:`Document` is, however, no problem. As an illustration of possibilities, here a sequence of statements that could be used
+::
+ doc = fitz.Document(f) # open a document
+ ... other statements   # like decryption
+ doc.save(fnew)         # save it decrypted / cleaned up
+ doc.close()            # close input file
+ os.remove(f)           # remove it
+ os.rename(fnew, f)     # rename the cleaned / decrypted version
+ doc = fitz.Document(f) # use it as input for MuPDF
+
+
+
+
 

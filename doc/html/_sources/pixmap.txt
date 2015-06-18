@@ -76,13 +76,13 @@ Pixmaps represent a set of pixels for a 2 dimensional region. Each pixel consist
 
    .. attribute:: xres
 
-      Horizontal resolution
+      Horizontal resolution in pixels per inch.
 
       :rtype: int
 
    .. attribute:: yres
 
-      Vertical resolution
+      Vertical resolution in pixels per inch
 
       :rtype: int
 

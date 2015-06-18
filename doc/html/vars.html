@@ -91,7 +91,7 @@
 </div>
 <div class="section" id="enumerations">
 <h2>Enumerations<a class="headerlink" href="#enumerations" title="Permalink to this headline">¶</a></h2>
-<p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.kind" title="linkDest.kind"><tt class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></tt></a> (link destination type).</p>
+<p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.kind" title="linkDest.kind"><tt class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></tt></a> (link destination type). For details consult <a class="reference external" href="http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf">Adobe PDF Reference sixth edition 1.7 November 2006</a>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="40%" />
@@ -153,7 +153,7 @@
 </tr>
 </tbody>
 </table>
-<p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.flags" title="linkDest.flags"><tt class="xref py py-attr docutils literal"><span class="pre">linkDest.flags</span></tt></a> (link destination flags). <strong>Attention</strong>: This is a one-byte bit field. The values represent boolean indicators showing whether the corresponding bit is <tt class="docutils literal"><span class="pre">ON</span></tt>.</p>
+<p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.flags" title="linkDest.flags"><tt class="xref py py-attr docutils literal"><span class="pre">linkDest.flags</span></tt></a> (link destination flags). <strong>Attention</strong>: The rightmost byte of this integer is a bit field. The values represent boolean indicators showing whether the associated statement is <tt class="docutils literal"><span class="pre">True</span></tt>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="42%" />
@@ -280,7 +280,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on Jun 16, 2015.
+      Last updated on Jun 18, 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>

@@ -54,6 +54,7 @@
 <h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial will show you the use of MuPDF in Python step by step.</p>
 <p>Because MuPDF supports not only PDF, but also XPS, OpenXPS and EPUB formats, so does PyMuPDF. Nevertheless we will only talk about PDF&#8217;s for the sake of brevity.</p>
+<p>As for string handling, MuPDF will pass back any string as UTF-8 encoded - no exceptions. Where this binding has added functionality, we usually decode string to unicode. An example is the <a class="reference internal" href="document.html#Document.ToC" title="Document.ToC"><tt class="xref py py-meth docutils literal"><span class="pre">Document.ToC()</span></tt></a> method.</p>
 <div class="section" id="import-the-bindings">
 <h2>Import the Bindings<a class="headerlink" href="#import-the-bindings" title="Permalink to this headline">¶</a></h2>
 <p>The Python bindings to MuPDF are made available by this import statement:</p>
@@ -102,7 +103,7 @@
 </div>
 <div class="section" id="access-meta-data">
 <h2>Access Meta Data<a class="headerlink" href="#access-meta-data" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="document.html#document"><em>Document</em></a>.metadata is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals. The meta data fields are of type string if not otherwise indicated and may be missing, in which case they contain <tt class="docutils literal"><span class="pre">None</span></tt>.</p>
+<p><a class="reference internal" href="document.html#document"><em>Document</em></a>.metadata is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. <a class="reference external" href="http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf">Adobe PDF Reference sixth edition 1.7 November 2006</a>. Some details can also be found in the chapter for <a class="reference internal" href="document.html#document"><em>Document</em></a>. The meta data fields are of type string if not otherwise indicated and may be missing, in which case they contain <tt class="docutils literal"><span class="pre">None</span></tt>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="44%" />
@@ -360,7 +361,28 @@ At first, a page object must be created:</p>
 <span class="n">res</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;MuPDF&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The result <tt class="docutils literal"><span class="pre">res</span></tt> will now be <tt class="docutils literal"><span class="pre">[]</span></tt> or a list of no more than 4 <a class="reference internal" href="irect.html#irect"><em>IRect</em></a> rectangles that contain the string &#8216;MuPDF&#8217;.</p>
+<p>The result <tt class="docutils literal"><span class="pre">res</span></tt> will now be <tt class="docutils literal"><span class="pre">[]</span></tt> or a list of no more than 4 <a class="reference internal" href="irect.html#irect"><em>IRect</em></a> rectangles that contain the string &#8216;MuPDF&#8217;. The <tt class="docutils literal"><span class="pre">maxhit</span></tt> parameter (in our case set to 4) is optional defaulting to 16.</p>
+</div>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p>Output capabilities of MuPDF (like PDF generation or the like) are currently very limited. Some code exists to save PDF documents with only a subset of pages, cleaned up and / or decrypted.</p>
+<p>As mentioned above, we support a method <a class="reference internal" href="document.html#Document.save" title="Document.save"><tt class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></tt></a>. This function creates a copy of the input document. If we have successfully decrypted the document before, this outcome will be a decrypted version. In addition, this method will perform a clean-up: if the input containes invalid / broken cross references, the saved version will have them corrected, such that it is usually readable by other Python PDF software, like PyPDF2. In many cases, the saved version will also be smaller than the original.</p>
+<p>MuPDF&#8217;s standalone utility <tt class="docutils literal"><span class="pre">mutool</span></tt> offers a <tt class="docutils literal"><span class="pre">clean</span></tt> option, which does the same thing, but offers more compression / decompession options. We are considering to support this in our binding as well.</p>
+</div>
+<div class="section" id="close">
+<h2>Close<a class="headerlink" href="#close" title="Permalink to this headline">¶</a></h2>
+<p>In some situations it may be desirable to &#8220;close&#8221; a <a class="reference internal" href="document.html#document"><em>Document</em></a> such that it becomes again fully available to other tasks / the operating system. This can be achieved by the <a class="reference internal" href="document.html#Document.close" title="Document.close"><tt class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></tt></a> method.</p>
+<p>After invoking it, <strong>all</strong> objects created in relation to the underlying file (<a class="reference internal" href="document.html#document"><em>Document</em></a>, <a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a>, <a class="reference internal" href="page.html#page"><em>Page</em></a>, etc.) will be invalid  and may no longer be used - or really bad things will happen.</p>
+<p>Re-opening the same file by creating another <a class="reference internal" href="document.html#document"><em>Document</em></a> is, however, no problem. As an illustration of possibilities, here a sequence of statements that could be used</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="c"># open a document</span>
+<span class="o">...</span> <span class="n">other</span> <span class="n">statements</span>   <span class="c"># like decryption</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">fnew</span><span class="p">)</span>         <span class="c"># save it decrypted / cleaned up</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>            <span class="c"># close input file</span>
+<span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>           <span class="c"># remove it</span>
+<span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">fnew</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>     <span class="c"># rename the cleaned / decrypted version</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="c"># use it as input for MuPDF</span>
+</pre></div>
 </div>
 </div>
 </div>
@@ -389,6 +411,8 @@ At first, a page object must be created:</p>
 <li><a class="reference internal" href="#extract-and-search-for-text-of-a-page">Extract and search for text of a <tt class="docutils literal"><span class="pre">Page</span></tt></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#output">Output</a></li>
+<li><a class="reference internal" href="#close">Close</a></li>
 </ul>
 </li>
 </ul>
@@ -438,7 +462,7 @@ At first, a page object must be created:</p>
     </div>
     <div class="footer">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on Jun 16, 2015.
+      Last updated on Jun 18, 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>

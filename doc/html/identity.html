@@ -54,7 +54,15 @@
             
   <div class="section" id="identity">
 <span id="id1"></span><h1>Identity<a class="headerlink" href="#identity" title="Permalink to this headline">¶</a></h1>
-<p>Identity is just a <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a> that performs no action. The default constructor of <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a> creates an identity matrix.</p>
+<p>Identity is just a <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a> that performs no action, to be used whenever the syntax requires a <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a>, but no actual transformation should take place.</p>
+<p><strong>Caution:</strong> <tt class="docutils literal"><span class="pre">Identity</span></tt> is a constant in the C code and therefore <strong>readonly, do not try to modify</strong> its properties in any way, e.g. by manipulating <tt class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span></tt> or by applying the methods.</p>
+<p><tt class="docutils literal"><span class="pre">Matrix(1,</span> <span class="pre">1)</span></tt> creates a matrix that acts like <tt class="docutils literal"><span class="pre">Identity</span></tt> but can be changed. Use this when you need a starting point for further modification, e.g. by one of the <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a> methods. In other words:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">m</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Identity</span><span class="o">.</span><span class="n">preRotate</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>    <span class="c"># will not work - the interpreter will crash!</span>
+
+<span class="c"># do this instead:</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">preRotate</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 
 
@@ -109,7 +117,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on Jun 16, 2015.
+      Last updated on Jun 18, 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>

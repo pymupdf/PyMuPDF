@@ -22,7 +22,7 @@ Constants
 
 Enumerations
 =============
-Possible values of :attr:`linkDest.kind` (link destination type).
+Possible values of :attr:`linkDest.kind` (link destination type). For details consult `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_.
 
 ============================ ==========================================
 **Value**                    **Description**
@@ -35,7 +35,7 @@ Possible values of :attr:`linkDest.kind` (link destination type).
 .. data:: FZ_LINK_GOTOR      5 - Points to a place in another document
 ============================ ==========================================
 
-Possible values of :attr:`linkDest.flags` (link destination flags). **Attention**: This is a one-byte bit field. The values represent boolean indicators showing whether the corresponding bit is ``ON``.
+Possible values of :attr:`linkDest.flags` (link destination flags). **Attention**: The rightmost byte of this integer is a bit field. The values represent boolean indicators showing whether the associated statement is ``True``.
 
 =============================== ===========================================
 **Value**                       **Description**

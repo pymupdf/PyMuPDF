@@ -51,14 +51,14 @@ This class represents a document and is constructed by ``fitz.Document(filename)
 
     .. method:: save(filename)
 
-      Saves a copy of the document under the ``filename`` (absolute or relative path specifications). Internally the document may have changed, i.e. if the document has been decrypted before, an unencrypted copy will be saved.
+      Saves a copy of the document under the ``filename`` (include path specifications as necessary). Internally the document may have changed, i.e. if the document has been decrypted before, an unencrypted copy will be saved. In addition, some basic cleaning of document data will also occur, e.g. broken xref tables will be corrected as far as possible.
 
-      :param `filename`: The filename to save to. Must be different from the original file name.
+      :param `filename`: The filename to save to. Must be different from the original file name or else a ValueError will be raised.
       :type `filename`: string
 
     .. method:: ToC()
 
-      Creates a table of contents from the ``outline`` entries. This will be a Python list ``[[level, title, page], [...], ...]`` or ``[]`` if there are no outline entries. Note that the title entries are unicode strings.
+      A convenience function that creates a table of contents from the ``outline`` entries. If none exist ``[]`` will be returned, otherwise a Python list ``[[level, title, page], [...], ...]``. Note that the title entries have already been decoded to unicode here.
 
       :rtype: list
 
@@ -89,7 +89,7 @@ This class represents a document and is constructed by ``fitz.Document(filename)
 
       Contains the ``filename`` value with which ``Document`` was created.
 
-      :rtype: dict
+      :rtype: string
 
     .. Attribute:: pageCount
 

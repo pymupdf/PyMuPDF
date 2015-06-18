@@ -41,7 +41,7 @@ It should be noted, that
 
    .. method:: __init__(self, a=1, b=0, c=0, d=1, e=0, f=0)
 
-      Constructor. ``Matrix(1, 1)`` will construct the :ref:`Identity` matrix.
+      Constructor. ``Matrix(1, 1)`` will construct a modifyable version of the :ref:`Identity` matrix.
 
    .. method:: preRotate(deg)
 
