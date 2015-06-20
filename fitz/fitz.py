@@ -107,6 +107,9 @@ class Document(_object):
             filename = filename.encode('utf8')
         else:
             raise TypeError("filename must be a string")
+        self.name = filename
+        self.isClosed = 0
+
 
 
         this = _fitz.new_Document(filename)
@@ -155,22 +158,30 @@ class Document(_object):
                                                                        'modDate':'info:ModDate'}.items()])
             self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
             self.ToC = ToC
-            self.name = filename
             self.thisown = False
 
 
 
 
     def close(self):
+        if self.isClosed == 1:
+            raise ValueError("operation on closed document")
         if hasattr(self, '_outline') and self._outline:
             self._dropOutline(self._outline)
             self._outline = None
+        self.metadata = None
+        self.ToC = None
+        self.isClosed = 1
 
 
         return _fitz.Document_close(self)
 
 
     def loadPage(self, number):
+        if self.isClosed == 1:
+            raise ValueError("operation on closed document")
+
+
         val = _fitz.Document_loadPage(self, number)
         if val:
             val.thisown = True
@@ -181,24 +192,56 @@ class Document(_object):
 
 
     def _loadOutline(self):
+        if self.isClosed == 1:
+            raise ValueError("operation on closed document")
+
+
         return _fitz.Document__loadOutline(self)
 
+
     def _dropOutline(self, ol):
+        if self.isClosed == 1:
+            raise ValueError("operation on closed document")
+
+
         return _fitz.Document__dropOutline(self, ol)
 
+
     def _getPageCount(self):
+        if self.isClosed == 1:
+            raise ValueError("operation on closed document")
+
+
         return _fitz.Document__getPageCount(self)
 
+
     def _getMetadata(self, key):
+        if self.isClosed == 1:
+            raise ValueError("operation on closed document")
+
+
         return _fitz.Document__getMetadata(self, key)
 
+
     def _needsPass(self):
+        if self.isClosed == 1:
+            raise ValueError("operation on closed document")
+
+
         return _fitz.Document__needsPass(self)
 
+
     def authenticate(self, arg2):
+        if self.isClosed == 1:
+            raise ValueError("operation on closed document")
+
+
         return _fitz.Document_authenticate(self, arg2)
 
+
     def save(self, filename):
+        if self.isClosed == 1:
+            raise ValueError("operation on closed document")
         if type(filename) == str:
             pass
         elif type(filename) == unicode:

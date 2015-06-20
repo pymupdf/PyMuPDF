@@ -42,6 +42,9 @@ struct fz_document_s {
                 filename = filename.encode('utf8')
             else:
                 raise TypeError("filename must be a string")
+            self.name = filename
+            self.isClosed = 0
+
         %}
         %pythonappend fz_document_s(const char *) %{
             #================================================================
@@ -85,7 +88,6 @@ struct fz_document_s {
                                                                            'modDate':'info:ModDate'}.items()])
                 self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
                 self.ToC = ToC
-                self.name = filename
                 self.thisown = False
         %}
         fz_document_s(const char *filename) {
@@ -98,9 +100,14 @@ struct fz_document_s {
         }
 
         %pythonprepend close() %{
+            if self.isClosed == 1:
+                raise ValueError("operation on closed document")
             if hasattr(self, '_outline') and self._outline:
                 self._dropOutline(self._outline)
                 self._outline = None
+            self.metadata = None
+            self.ToC = None
+            self.isClosed = 1
         %}
         void close() {
 #ifdef MEMDEBUG
@@ -118,6 +125,10 @@ struct fz_document_s {
                 return NULL;
             }
         }
+        %pythonprepend loadPage(int) %{
+            if self.isClosed == 1:
+                raise ValueError("operation on closed document")
+        %}
         %pythonappend loadPage(int) %{
             if val:
                 val.thisown = True
@@ -132,19 +143,35 @@ struct fz_document_s {
             return page;
         }
 
+        %pythonprepend _loadOutline() %{
+            if self.isClosed == 1:
+                raise ValueError("operation on closed document")
+        %}
         struct fz_outline_s *_loadOutline() {
             return fz_load_outline(gctx, $self);
         }
+        %pythonprepend _dropOutline(struct fz_outline_s *ol) %{
+            if self.isClosed == 1:
+                raise ValueError("operation on closed document")
+        %}
         void _dropOutline(struct fz_outline_s *ol) {
 #ifdef MEMDEBUG
             fprintf(stderr, "free outline\n");
 #endif
             fz_drop_outline(gctx, ol);
         }
+        %pythonprepend _getPageCount() %{
+            if self.isClosed == 1:
+                raise ValueError("operation on closed document")
+        %}
         int _getPageCount() {
             return fz_count_pages(gctx, $self);
         }
 
+        %pythonprepend _getMetadata(const char *key) %{
+            if self.isClosed == 1:
+                raise ValueError("operation on closed document")
+        %}
         char *_getMetadata(const char *key) {
             int vsize;
             char *value;
@@ -157,13 +184,24 @@ struct fz_document_s {
             else
                 return NULL;
         }
+        %pythonprepend _needsPass() %{
+            if self.isClosed == 1:
+                raise ValueError("operation on closed document")
+        %}
         int _needsPass() {
             return fz_needs_password(gctx, $self);
         }
+
+        %pythonprepend authenticate(const char *pass) %{
+            if self.isClosed == 1:
+                raise ValueError("operation on closed document")
+        %}
         int authenticate(const char *pass) {
             return !fz_authenticate_password(gctx, $self, pass);
         }
         %pythonprepend save(char * filename) %{
+            if self.isClosed == 1:
+                raise ValueError("operation on closed document")
             if type(filename) == str:
                 pass
             elif type(filename) == unicode:
