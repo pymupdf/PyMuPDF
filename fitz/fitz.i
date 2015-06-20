@@ -133,6 +133,7 @@ struct fz_document_s {
             if val:
                 val.thisown = True
                 val.number = number
+                val.parent = self
         %}
         struct fz_page_s *loadPage(int number) {
             struct fz_page_s *page = NULL;
@@ -247,6 +248,10 @@ struct fz_page_s {
             fz_drop_page(gctx, $self);
         }
 
+        %pythonprepend bound() %{
+            if self.parent.isClosed == 1:
+                raise ValueError("page operation on closed document")
+        %}
         %pythonappend bound() %{
             if val:
                 val.thisown = True
@@ -257,6 +262,10 @@ struct fz_page_s {
             return rect;
         }
 
+        %pythonprepend run(struct fz_device_s *dev, const struct fz_matrix_s *m) %{
+            if self.parent.isClosed == 1:
+                raise ValueError("page operation on closed document")
+        %}
         %exception run {
             $action
             if(result) {
@@ -273,6 +282,10 @@ struct fz_page_s {
             }
             return 0;
         }
+        %pythonprepend loadLinks() %{
+            if self.parent.isClosed == 1:
+                raise ValueError("page operation on closed document")
+        %}
         %pythonappend loadLinks() %{
             if val:
                 val.thisown = True

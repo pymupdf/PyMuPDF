@@ -186,6 +186,7 @@ class Document(_object):
         if val:
             val.thisown = True
             val.number = number
+            val.parent = self
 
 
         return val
@@ -276,6 +277,10 @@ class Page(_object):
     __del__ = lambda self: None
 
     def bound(self):
+        if self.parent.isClosed == 1:
+            raise ValueError("page operation on closed document")
+
+
         val = _fitz.Page_bound(self)
         if val:
             val.thisown = True
@@ -285,9 +290,18 @@ class Page(_object):
 
 
     def run(self, dev, m):
+        if self.parent.isClosed == 1:
+            raise ValueError("page operation on closed document")
+
+
         return _fitz.Page_run(self, dev, m)
 
+
     def loadLinks(self):
+        if self.parent.isClosed == 1:
+            raise ValueError("page operation on closed document")
+
+
         val = _fitz.Page_loadLinks(self)
         if val:
             val.thisown = True
