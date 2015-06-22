@@ -118,7 +118,7 @@ class Document(_object):
         except:
             self.this = this
         #================================================================
-        # Function: Create a table of contents
+        # Function: Table of Contents
         #================================================================
         def ToC():
             if not self._outline:              # contains no outline:
@@ -240,7 +240,12 @@ class Document(_object):
         return _fitz.Document_authenticate(self, arg2)
 
 
-    def save(self, filename):
+    def save(self, filename, garbage=0, clean=0, deflate=0):
+        '''filename: path / name of file to save to. Must not be the document's filename\n
+        garbage:     level of garbage collection, 0 = none, 3 = all\n
+        clean:       clean content streams, 0 = False, 1 = True\n
+        deflate:     deflate uncompressed streams, 0 = False, 1 = True
+        '''
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
         if type(filename) == str:
@@ -253,7 +258,7 @@ class Document(_object):
             raise ValueError("cannot save to input file")
 
 
-        return _fitz.Document_save(self, filename)
+        return _fitz.Document_save(self, filename, garbage, clean, deflate)
 
     pageCount = property(lambda self: self._getPageCount())
     outline = property(lambda self: self._outline)

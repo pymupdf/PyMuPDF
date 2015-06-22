@@ -48,7 +48,7 @@ struct fz_document_s {
         %}
         %pythonappend fz_document_s(const char *) %{
             #================================================================
-            # Function: Create a table of contents
+            # Function: Table of Contents
             #================================================================
             def ToC():
                 if not self._outline:              # contains no outline:
@@ -200,7 +200,16 @@ struct fz_document_s {
         int authenticate(const char *pass) {
             return !fz_authenticate_password(gctx, $self, pass);
         }
-        %pythonprepend save(char * filename) %{
+        /****************************************************************/
+        /* save(filename, garbage=0, clean=0, deflate=0)                */
+        /****************************************************************/
+        %pythonprepend save(char *filename, int garbage=0, int clean=0, int deflate=0) %{
+            '''
+            filename: path / name of file to save to. Must not be the document's filename
+            garbage:  level of garbage collection, 0 = none, 3 = all
+            clean:    clean content streams, 0 = False, 1 = True
+            deflate:  deflate uncompressed streams, 0 = False, 1 = True
+            '''
             if self.isClosed == 1:
                 raise ValueError("operation on closed document")
             if type(filename) == str:
@@ -219,12 +228,27 @@ struct fz_document_s {
                 return NULL;
             }
         }
-        int save(char *filename) {
+        int save(char *filename, int garbage=0, int clean=0, int deflate=0) {
+            int compress = garbage + clean + deflate;
+            int errors = 0;
+            fz_write_options opts;
+            opts.do_incremental = 0;
+            opts.do_ascii = 0;
+            opts.do_deflate = deflate;
+            opts.do_expand = 0;
+            opts.do_garbage = garbage;
+            opts.do_linear = 0;
+            opts.do_clean = clean;
+            opts.continue_on_error = 1;
+            opts.errors = &errors;
             fz_try(gctx)
-                fz_write_document(gctx, $self, filename, NULL);
+                if (compress == 0)
+                    fz_write_document(gctx, $self, filename, NULL);
+                else
+                    fz_write_document(gctx, $self, filename, &opts);
             fz_catch(gctx)
-                return 1;
-            return 0;
+                return -1;
+            return errors;
         }
 
         %pythoncode %{
@@ -262,10 +286,6 @@ struct fz_page_s {
             return rect;
         }
 
-        %pythonprepend run(struct fz_device_s *dev, const struct fz_matrix_s *m) %{
-            if self.parent.isClosed == 1:
-                raise ValueError("page operation on closed document")
-        %}
         %exception run {
             $action
             if(result) {
@@ -273,6 +293,13 @@ struct fz_page_s {
                 return NULL;
             }
         }
+        /***********************************************************/
+        /* Page.run()                                              */
+        /***********************************************************/
+        %pythonprepend run(struct fz_device_s *dev, const struct fz_matrix_s *m) %{
+            if self.parent.isClosed == 1:
+                raise ValueError("page operation on closed document")
+        %}
         int run(struct fz_device_s *dev, const struct fz_matrix_s *m) {
             fz_try(gctx) {
                 fz_run_page(gctx, $self, dev, m, NULL);
@@ -282,6 +309,9 @@ struct fz_page_s {
             }
             return 0;
         }
+        /***********************************************************/
+        /* Page.loadLinks()                                        */
+        /***********************************************************/
         %pythonprepend loadLinks() %{
             if self.parent.isClosed == 1:
                 raise ValueError("page operation on closed document")

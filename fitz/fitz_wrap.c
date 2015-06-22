@@ -3297,12 +3297,27 @@ SWIGINTERN int fz_document_s__needsPass(struct fz_document_s *self){
 SWIGINTERN int fz_document_s_authenticate(struct fz_document_s *self,char const *pass){
             return !fz_authenticate_password(gctx, self, pass);
         }
-SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename){
+SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename,int garbage,int clean,int deflate){
+            int compress = garbage + clean + deflate;
+            int errors = 0;
+            fz_write_options opts;
+            opts.do_incremental = 0;
+            opts.do_ascii = 0;
+            opts.do_deflate = deflate;
+            opts.do_expand = 0;
+            opts.do_garbage = garbage;
+            opts.do_linear = 0;
+            opts.do_clean = clean;
+            opts.continue_on_error = 1;
+            opts.errors = &errors;
             fz_try(gctx)
-                fz_write_document(gctx, self, filename, NULL);
+                if (compress == 0)
+                    fz_write_document(gctx, self, filename, NULL);
+                else
+                    fz_write_document(gctx, self, filename, &opts);
             fz_catch(gctx)
-                return 1;
-            return 0;
+                return -1;
+            return errors;
         }
 SWIGINTERN void delete_fz_page_s(struct fz_page_s *self){
 
@@ -3908,16 +3923,28 @@ SWIGINTERN PyObject *_wrap_Document_save(PyObject *SWIGUNUSEDPARM(self), PyObjec
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
   char *arg2 = (char *) 0 ;
+  int arg3 = (int) 0 ;
+  int arg4 = (int) 0 ;
+  int arg5 = (int) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res2 ;
   char *buf2 = 0 ;
   int alloc2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:Document_save",&obj0,&obj1)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO|OOO:Document_save",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_save" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
@@ -3928,8 +3955,29 @@ SWIGINTERN PyObject *_wrap_Document_save(PyObject *SWIGUNUSEDPARM(self), PyObjec
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Document_save" "', argument " "2"" of type '" "char *""'");
   }
   arg2 = (char *)(buf2);
+  if (obj2) {
+    ecode3 = SWIG_AsVal_int(obj2, &val3);
+    if (!SWIG_IsOK(ecode3)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Document_save" "', argument " "3"" of type '" "int""'");
+    } 
+    arg3 = (int)(val3);
+  }
+  if (obj3) {
+    ecode4 = SWIG_AsVal_int(obj3, &val4);
+    if (!SWIG_IsOK(ecode4)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "Document_save" "', argument " "4"" of type '" "int""'");
+    } 
+    arg4 = (int)(val4);
+  }
+  if (obj4) {
+    ecode5 = SWIG_AsVal_int(obj4, &val5);
+    if (!SWIG_IsOK(ecode5)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "Document_save" "', argument " "5"" of type '" "int""'");
+    } 
+    arg5 = (int)(val5);
+  }
   {
-    result = (int)fz_document_s_save(arg1,arg2);
+    result = (int)fz_document_s_save(arg1,arg2,arg3,arg4,arg5);
     if(result) {
       PyErr_SetString(PyExc_Exception, "cannot save Document");
       return NULL;
