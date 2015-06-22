@@ -7,7 +7,7 @@ Tutorial
 =========
 This tutorial will show you the use of MuPDF in Python step by step.
 
-Because MuPDF supports not only PDF, but also XPS, OpenXPS and EPUB formats, so does PyMuPDF. Nevertheless we will only talk about PDF's for the sake of brevity.
+Because MuPDF supports not only PDF, but also XPS, OpenXPS and EPUB formats, so does PyMuPDF. Nevertheless we will only talk about PDF files for the sake of brevity.
 
 As for string handling, MuPDF will pass back any string as UTF-8 encoded - no exceptions. Where this binding has added functionality, we usually decode string to unicode. An example is the :meth:`Document.ToC` method.
 
@@ -162,12 +162,19 @@ We can simply store the image in a PNG file:
 
 Use the image in a dialog manager
 -----------------------------------
-Or we convert the image into a bitmap usable by a dialog manager:
+Or we convert the image into a bitmap usable by a dialog manager.
+
+**wxPython**:
 ::
  data = pix.samples                   # data = bytearray of raw pixel data (RGBA)
  bitmap = wx.BitmapFromBufferRGBA(irect.width,
              irect.height, str(data)) # wxPython only accepts strings, no bytearrays
 
+**Tkinter**:
+::
+ data = pix.samples
+ img = Image.frombytes("RGBA", [irect.width, irect.height], str(data))
+ photo = ImageTk.PhotoImage(img)
 
 
 Extract and search for text of a :ref:`Page`
@@ -184,7 +191,7 @@ We can also extract all text of a page in a big chunk of string:
  # Includes all whitespace (tabulation, end-of-line, etc.) characters, too.
  text = tp.extractText()                  # remember: UTF-8 encoding!
 
-If you want more details, you can determine exactly where on a page a certain string appears:
+If you want even more details you can determine, exactly where on a page a certain string appears:
 ::
  # search for at most 4 page locations with specific contents
  res = tp.search('MuPDF', 4)
@@ -193,29 +200,49 @@ The result ``res`` will now be ``[]`` or a list of no more than 4 :ref:`IRect` r
 
 Output
 =======
-Output capabilities of MuPDF (like PDF generation or the like) are currently very limited. Some code exists to save PDF documents with only a subset of pages, cleaned up and / or decrypted.
+Output capabilities of MuPDF (such as PDF generation) are currently very limited. However, a copy of the currently opened document can be created.
 
-As mentioned above, we support a method :meth:`Document.save`. This function creates a copy of the input document. If we have successfully decrypted the document before, this outcome will be a decrypted version. In addition, this method will perform a clean-up: if the input containes invalid / broken cross references, the saved version will have them corrected, such that it is usually readable by other Python PDF software, like PyPDF2. In many cases, the saved version will also be smaller than the original.
+We support this with the method :meth:`Document.save`. If the document had been successfully decrypted before, ``save()`` will create a decrypted copy.
 
-MuPDF's standalone utility ``mutool`` offers a ``clean`` option, which does the same thing, but offers more compression / decompession options. We are considering to support this in our binding as well.
+In addition, this method will also perform some clean-up:
+
+If the document containes invalid or broken cross references, the saved version will have them corrected, which makes it readable by other Python PDF software, like `pdfrw <https://github.com/pmaupin/pdfrw>`_ and `PyPDF2 <http://mstamy2.github.io/PyPDF2>`_. In many cases, the saved version will also be smaller than the original.
+
+:meth:`Document.save` now supports several options of MuPDF's standalone utility ``mutool clean``.
+
+================== ============================================
+**Option**         **Effect**
+================== ============================================
+garbage = 1        garbage collect unused objects
+garbage = 2        in addition to 1, compact xref tables
+garbage = 3        in addition to 2, merge duplicate objects
+clean = 1          clean content streams (use with care)
+deflate = 1        deflate uncompressed streams
+================== ============================================
+
+Please note, that :meth:`Document.save` according to MuPDF's documentation is still under development and therefore prone to future changes.
+
+Like with ``mutool clean``, not all combinations of the above options may work for all documents - so use them with care.
+
+We have found, that the most stable combination seems to be ``mutool clean -ggg -z``, which corresponds to ``doc.save(filename,garbage=3,deflate=1)``. This is also considerably faster than including the ``clean=1`` option.
 
 Close
 ======
-In some situations it may be desirable to "close" a :ref:`Document` such that it becomes again fully available to other tasks / the operating system. This can be achieved by the :meth:`Document.close` method.
+In some situations it may be desirable to "close" a :ref:`Document` such that it becomes fully available again to other tasks and / or the operating system. This can be achieved by the :meth:`Document.close` method.
 
 **Caution:**
 
-After invoking it, **all objects** created in relation to the underlying file (:ref:`Document`, :ref:`Pixmap`, :ref:`Page`, etc.) will be invalid  and **may no longer be used** - or really bad things will happen.
+After close, the document and all objects referencing it will be invalid  and **must not be used anymore.** This binding includes protection against most such invalid uses by disabling properties and methods of the :ref:`Document` and any :meth:`Document.loadPage` objects.
 
-Re-opening the same file by creating another :ref:`Document` is, however, no problem. As an illustration of possibilities, here is a sequence of statements that could be used:
+However, re-opening a previously closed file by a new :ref:`Document` is no problem. Please also do have a look at the following valid example:
 ::
- doc = fitz.Document(f) # open a document
- ... other statements   # like decryption
- doc.save(fnew)         # save it decrypted / cleaned up
- doc.close()            # close input file
- os.remove(f)           # remove it
- os.rename(fnew, f)     # rename the decrypted / cleaned version
- doc = fitz.Document(f) # use it as input for MuPDF
+ doc = fitz.Document(fold)            # open a document
+ <... some statements ...>            # e.g. decryption
+ doc.save(fnew, garbage=3, deflate=1) # save a decrypted / compressed version
+ doc.close()                          # close input file
+ os.remove(fold)                      # remove it
+ os.rename(fnew, fold)                # rename the decrypted / cleaned version
+ doc = fitz.Document(fold)            # use it as input for MuPDF
 
 
 

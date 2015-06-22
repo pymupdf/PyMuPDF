@@ -53,7 +53,7 @@
   <div class="section" id="tutorial">
 <h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial will show you the use of MuPDF in Python step by step.</p>
-<p>Because MuPDF supports not only PDF, but also XPS, OpenXPS and EPUB formats, so does PyMuPDF. Nevertheless we will only talk about PDF&#8217;s for the sake of brevity.</p>
+<p>Because MuPDF supports not only PDF, but also XPS, OpenXPS and EPUB formats, so does PyMuPDF. Nevertheless we will only talk about PDF files for the sake of brevity.</p>
 <p>As for string handling, MuPDF will pass back any string as UTF-8 encoded - no exceptions. Where this binding has added functionality, we usually decode string to unicode. An example is the <a class="reference internal" href="document.html#Document.ToC" title="Document.ToC"><tt class="xref py py-meth docutils literal"><span class="pre">Document.ToC()</span></tt></a> method.</p>
 <div class="section" id="import-the-bindings">
 <h2>Import the Bindings<a class="headerlink" href="#import-the-bindings" title="Permalink to this headline">¶</a></h2>
@@ -335,10 +335,17 @@ At first, a page object must be created:</p>
 </div>
 <div class="section" id="use-the-image-in-a-dialog-manager">
 <h3>Use the image in a dialog manager<a class="headerlink" href="#use-the-image-in-a-dialog-manager" title="Permalink to this headline">¶</a></h3>
-<p>Or we convert the image into a bitmap usable by a dialog manager:</p>
+<p>Or we convert the image into a bitmap usable by a dialog manager.</p>
+<p><strong>wxPython</strong>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">pix</span><span class="o">.</span><span class="n">samples</span>                   <span class="c"># data = bytearray of raw pixel data (RGBA)</span>
 <span class="n">bitmap</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BitmapFromBufferRGBA</span><span class="p">(</span><span class="n">irect</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
             <span class="n">irect</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">))</span> <span class="c"># wxPython only accepts strings, no bytearrays</span>
+</pre></div>
+</div>
+<p><strong>Tkinter</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">pix</span><span class="o">.</span><span class="n">samples</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="s">&quot;RGBA&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">irect</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">irect</span><span class="o">.</span><span class="n">height</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="n">photo</span> <span class="o">=</span> <span class="n">ImageTk</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -356,7 +363,7 @@ At first, a page object must be created:</p>
 <span class="n">text</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">extractText</span><span class="p">()</span>                  <span class="c"># remember: UTF-8 encoding!</span>
 </pre></div>
 </div>
-<p>If you want more details, you can determine exactly where on a page a certain string appears:</p>
+<p>If you want even more details you can determine, exactly where on a page a certain string appears:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># search for at most 4 page locations with specific contents</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;MuPDF&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 </pre></div>
@@ -366,23 +373,56 @@ At first, a page object must be created:</p>
 </div>
 <div class="section" id="output">
 <h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
-<p>Output capabilities of MuPDF (like PDF generation or the like) are currently very limited. Some code exists to save PDF documents with only a subset of pages, cleaned up and / or decrypted.</p>
-<p>As mentioned above, we support a method <a class="reference internal" href="document.html#Document.save" title="Document.save"><tt class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></tt></a>. This function creates a copy of the input document. If we have successfully decrypted the document before, this outcome will be a decrypted version. In addition, this method will perform a clean-up: if the input containes invalid / broken cross references, the saved version will have them corrected, such that it is usually readable by other Python PDF software, like PyPDF2. In many cases, the saved version will also be smaller than the original.</p>
-<p>MuPDF&#8217;s standalone utility <tt class="docutils literal"><span class="pre">mutool</span></tt> offers a <tt class="docutils literal"><span class="pre">clean</span></tt> option, which does the same thing, but offers more compression / decompession options. We are considering to support this in our binding as well.</p>
+<p>Output capabilities of MuPDF (such as PDF generation) are currently very limited. However, a copy of the currently opened document can be created.</p>
+<p>We support this with the method <a class="reference internal" href="document.html#Document.save" title="Document.save"><tt class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></tt></a>. If the document had been successfully decrypted before, <tt class="docutils literal"><span class="pre">save()</span></tt> will create a decrypted copy.</p>
+<p>In addition, this method will also perform some clean-up:</p>
+<p>If the document containes invalid or broken cross references, the saved version will have them corrected, which makes it readable by other Python PDF software, like <a class="reference external" href="https://github.com/pmaupin/pdfrw">pdfrw</a> and <a class="reference external" href="http://mstamy2.github.io/PyPDF2">PyPDF2</a>. In many cases, the saved version will also be smaller than the original.</p>
+<p><a class="reference internal" href="document.html#Document.save" title="Document.save"><tt class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></tt></a> now supports several options of MuPDF&#8217;s standalone utility <tt class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></tt>.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="71%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Option</strong></th>
+<th class="head"><strong>Effect</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>garbage = 1</td>
+<td>garbage collect unused objects</td>
+</tr>
+<tr class="row-odd"><td>garbage = 2</td>
+<td>in addition to 1, compact xref tables</td>
+</tr>
+<tr class="row-even"><td>garbage = 3</td>
+<td>in addition to 2, merge duplicate objects</td>
+</tr>
+<tr class="row-odd"><td>clean = 1</td>
+<td>clean content streams (use with care)</td>
+</tr>
+<tr class="row-even"><td>deflate = 1</td>
+<td>deflate uncompressed streams</td>
+</tr>
+</tbody>
+</table>
+<p>Please note, that <a class="reference internal" href="document.html#Document.save" title="Document.save"><tt class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></tt></a> according to MuPDF&#8217;s documentation is still under development and therefore prone to future changes.</p>
+<p>Like with <tt class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></tt>, not all combinations of the above options may work for all documents - so use them with care.</p>
+<p>We have found, that the most stable combination seems to be <tt class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span> <span class="pre">-ggg</span> <span class="pre">-z</span></tt>, which corresponds to <tt class="docutils literal"><span class="pre">doc.save(filename,garbage=3,deflate=1)</span></tt>. This is also considerably faster than including the <tt class="docutils literal"><span class="pre">clean=1</span></tt> option.</p>
 </div>
 <div class="section" id="close">
 <h2>Close<a class="headerlink" href="#close" title="Permalink to this headline">¶</a></h2>
-<p>In some situations it may be desirable to &#8220;close&#8221; a <a class="reference internal" href="document.html#document"><em>Document</em></a> such that it becomes again fully available to other tasks / the operating system. This can be achieved by the <a class="reference internal" href="document.html#Document.close" title="Document.close"><tt class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></tt></a> method.</p>
+<p>In some situations it may be desirable to &#8220;close&#8221; a <a class="reference internal" href="document.html#document"><em>Document</em></a> such that it becomes fully available again to other tasks and / or the operating system. This can be achieved by the <a class="reference internal" href="document.html#Document.close" title="Document.close"><tt class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></tt></a> method.</p>
 <p><strong>Caution:</strong></p>
-<p>After invoking it, <strong>all objects</strong> created in relation to the underlying file (<a class="reference internal" href="document.html#document"><em>Document</em></a>, <a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a>, <a class="reference internal" href="page.html#page"><em>Page</em></a>, etc.) will be invalid  and <strong>may no longer be used</strong> - or really bad things will happen.</p>
-<p>Re-opening the same file by creating another <a class="reference internal" href="document.html#document"><em>Document</em></a> is, however, no problem. As an illustration of possibilities, here is a sequence of statements that could be used:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="c"># open a document</span>
-<span class="o">...</span> <span class="n">other</span> <span class="n">statements</span>   <span class="c"># like decryption</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">fnew</span><span class="p">)</span>         <span class="c"># save it decrypted / cleaned up</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>            <span class="c"># close input file</span>
-<span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>           <span class="c"># remove it</span>
-<span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">fnew</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>     <span class="c"># rename the decrypted / cleaned version</span>
-<span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="c"># use it as input for MuPDF</span>
+<p>After close, the document and all objects referencing it will be invalid  and <strong>must not be used anymore.</strong> This binding includes protection against most such invalid uses by disabling properties and methods of the <a class="reference internal" href="document.html#document"><em>Document</em></a> and any <a class="reference internal" href="document.html#Document.loadPage" title="Document.loadPage"><tt class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></tt></a> objects.</p>
+<p>However, re-opening a previously closed file by a new <a class="reference internal" href="document.html#document"><em>Document</em></a> is no problem. Please also do have a look at the following valid example:</p>
+<div class="highlight-python"><div class="highlight"><pre>doc = fitz.Document(fold)            # open a document
+&lt;... some statements ...&gt;            # e.g. decryption
+doc.save(fnew, garbage=3, deflate=1) # save a decrypted / compressed version
+doc.close()                          # close input file
+os.remove(fold)                      # remove it
+os.rename(fnew, fold)                # rename the decrypted / cleaned version
+doc = fitz.Document(fold)            # use it as input for MuPDF
 </pre></div>
 </div>
 </div>
@@ -463,7 +503,7 @@ At first, a page object must be created:</p>
     </div>
     <div class="footer">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 18. Jun 2015.
+      Last updated on 22. Jun 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>

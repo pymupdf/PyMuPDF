@@ -81,19 +81,22 @@
 <tr class="row-even"><td><a class="reference internal" href="#Document.close" title="Document.close"><tt class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></tt></a></td>
 <td>Closes the document</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><tt class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><tt class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></tt></a></td>
+<td>Has document been closed?</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><tt class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></tt></a></td>
 <td>First <cite>Outline</cite> item</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.name" title="Document.name"><tt class="xref py py-attr docutils literal"><span class="pre">Document.name</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.name" title="Document.name"><tt class="xref py py-attr docutils literal"><span class="pre">Document.name</span></tt></a></td>
 <td>filename of document</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><tt class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><tt class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></tt></a></td>
 <td>Is document is encrypted?</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><tt class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><tt class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></tt></a></td>
 <td>The document&#8217;s number of pages</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><tt class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><tt class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></tt></a></td>
 <td>The document&#8217;s meta data</td>
 </tr>
 </tbody>
@@ -114,7 +117,7 @@
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">True</span></tt> (<tt class="docutils literal"><span class="pre">1</span></tt>) if decryption with <tt class="docutils literal"><span class="pre">password</span></tt> was successfull, <tt class="docutils literal"><span class="pre">False</span></tt> (<tt class="docutils literal"><span class="pre">0</span></tt>) otherwise.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">True</span> <span class="pre">(1)</span></tt> if decryption with <tt class="docutils literal"><span class="pre">password</span></tt> was successfull, <tt class="docutils literal"><span class="pre">False</span> <span class="pre">(0)</span></tt> otherwise.</td>
 </tr>
 </tbody>
 </table>
@@ -138,13 +141,25 @@
 
 <dl class="method">
 <dt id="Document.save">
-<tt class="descname">save</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#Document.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves a copy of the document under the <tt class="docutils literal"><span class="pre">filename</span></tt> (include path specifications as necessary). Internally the document may have changed, i.e. if the document has been decrypted before, an unencrypted copy will be saved. In addition, some basic cleaning of document data will also occur, e.g. broken xref tables will be corrected as far as possible.</p>
+<tt class="descname">save</tt><big>(</big><em>filename</em>, <em>garbage = 0</em>, <em>clean = 0</em>, <em>deflate = 0</em><big>)</big><a class="headerlink" href="#Document.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves a copy of the document under <tt class="docutils literal"><span class="pre">filename</span></tt> (include path specifications as necessary). Internally the document may have changed. E.g. after a successfull <tt class="docutils literal"><span class="pre">authenticate</span></tt>, an unencrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning of the document data will also occur, e.g. broken xref tables will be corrected as far as possible.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) &#8211; The filename to save to. Must be different from the original file name or else a ValueError will be raised.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> (<em>string</em>) &#8211; The filename to save to. Must be different from the original file name or else a ValueError will be raised.</li>
+<li><strong>garbage</strong> (<em>int</em>) &#8211; Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition compact xref tables, 3 = in addition merge duplicate objects.</li>
+<li><strong>clean</strong> (<em>int</em>) &#8211; Clean content streams: 0 = False, 1 = True.</li>
+<li><strong>deflate</strong> (<em>int</em>) &#8211; Deflate uncompressed streams: 0 = False, 1 = True.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">int</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Count of errors during save.</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -179,6 +194,20 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="outline.html#outline"><em>Outline</em></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Document.isClosed">
+<tt class="descname">isClosed</tt><a class="headerlink" href="#Document.isClosed" title="Permalink to this definition">¶</a></dt>
+<dd><p><tt class="docutils literal"><span class="pre">False</span> <span class="pre">(0)</span></tt> if document is still open, <tt class="docutils literal"><span class="pre">True</span> <span class="pre">(1)</span></tt> otherwise. In the latter case, several attributes and all methods will have been deleted / disabled. In addition, <a class="reference internal" href="page.html#page"><em>Page</em></a> objects created with <a class="reference internal" href="#Document.loadPage" title="Document.loadPage"><tt class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></tt></a> will no longer be usable. For reference purposes, <a class="reference internal" href="#Document.name" title="Document.name"><tt class="xref py py-attr docutils literal"><span class="pre">Document.name</span></tt></a> still exists and will contain the filename of the original document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
 </tr>
 </tbody>
 </table>
@@ -296,7 +325,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 18. Jun 2015.
+      Last updated on 22. Jun 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
