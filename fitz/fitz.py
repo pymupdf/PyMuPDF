@@ -145,9 +145,9 @@ class Document(_object):
                         lvl -= 1               # go look for uncles
                         olItem = ltab[lvl].next
                     if lvl < 1:                # out of relatives
-                        return liste           # return linearized outline
+                        return liste           # return ToC
                     lvl -= 1
-            return liste                       # return linearized outline
+            return liste                       # return ToC
 
         if this:
             self._outline = self._loadOutline()
@@ -240,11 +240,16 @@ class Document(_object):
         return _fitz.Document_authenticate(self, arg2)
 
 
-    def save(self, filename, garbage=0, clean=0, deflate=0):
-        '''filename: path / name of file to save to. Must not be the document's filename\n
-        garbage:     level of garbage collection, 0 = none, 3 = all\n
-        clean:       clean content streams, 0 = False, 1 = True\n
-        deflate:     deflate uncompressed streams, 0 = False, 1 = True
+    def save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0):
+        '''
+        filename:     path / name of file to save to, must be unequal the document's filename
+        garbage:      level of garbage collection, 0 = none, 3 = all
+        clean:        clean content streams, 0 = False, 1 = True
+        deflate:      deflate uncompressed streams, 0 = False, 1 = True
+        incremental:  write just the changed objects, 0 = False, 1 = True
+        ascii:        where possible make the output ascii, 0 = False, 1 = True
+        expand:       one bytpe bitfield to decompress content, 0 = none, 1 = images, 2 = fonts, 255 = all
+        linear:       write linearised, 0 = False, 1 = True
         '''
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -258,7 +263,7 @@ class Document(_object):
             raise ValueError("cannot save to input file")
 
 
-        return _fitz.Document_save(self, filename, garbage, clean, deflate)
+        return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear)
 
     pageCount = property(lambda self: self._getPageCount())
     outline = property(lambda self: self._outline)

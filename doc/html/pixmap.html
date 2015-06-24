@@ -195,7 +195,7 @@
 <dl class="attribute">
 <dt id="Pixmap.n">
 <tt class="descname">n</tt><a class="headerlink" href="#Pixmap.n" title="Permalink to this definition">¶</a></dt>
-<dd><p>Number of components per pixel</p>
+<dd><p>Number of components per pixel. Will alsways be 4 because we always have an RGBA pixmap.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -242,7 +242,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>irect</strong> &#8211; Invert all the pixels in the irect. If not given, the whole pixmap will be inverted.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>irect</strong> &#8211; Invert all the pixels in the irect. If omitted, the whole pixmap will be inverted.</td>
 </tr>
 </tbody>
 </table>
@@ -251,7 +251,7 @@
 <dl class="method">
 <dt id="Pixmap.writePNG">
 <tt class="descname">writePNG</tt><big>(</big><em>self</em>, <em>filename</em>, <em>savealpha=False</em><big>)</big><a class="headerlink" href="#Pixmap.writePNG" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save a pixmap as a png.</p>
+<dd><p>Save a pixmap as a png file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -336,7 +336,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 22. Jun 2015.
+      Last updated on 24. Jun 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>

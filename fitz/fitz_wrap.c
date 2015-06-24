@@ -3297,21 +3297,21 @@ SWIGINTERN int fz_document_s__needsPass(struct fz_document_s *self){
 SWIGINTERN int fz_document_s_authenticate(struct fz_document_s *self,char const *pass){
             return !fz_authenticate_password(gctx, self, pass);
         }
-SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename,int garbage,int clean,int deflate){
-            int compress = garbage + clean + deflate;
+SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename,int garbage,int clean,int deflate,int incremental,int ascii,int expand,int linear){
+            int have_opts = garbage + clean + deflate + incremental + ascii + expand + linear;
             int errors = 0;
             fz_write_options opts;
-            opts.do_incremental = 0;
-            opts.do_ascii = 0;
+            opts.do_incremental = incremental;
+            opts.do_ascii = ascii;
             opts.do_deflate = deflate;
-            opts.do_expand = 0;
+            opts.do_expand = expand;
             opts.do_garbage = garbage;
-            opts.do_linear = 0;
+            opts.do_linear = linear;
             opts.do_clean = clean;
             opts.continue_on_error = 1;
             opts.errors = &errors;
             fz_try(gctx)
-                if (compress == 0)
+                if (have_opts == 0)
                     fz_write_document(gctx, self, filename, NULL);
                 else
                     fz_write_document(gctx, self, filename, &opts);
@@ -3926,6 +3926,10 @@ SWIGINTERN PyObject *_wrap_Document_save(PyObject *SWIGUNUSEDPARM(self), PyObjec
   int arg3 = (int) 0 ;
   int arg4 = (int) 0 ;
   int arg5 = (int) 0 ;
+  int arg6 = (int) 0 ;
+  int arg7 = (int) 0 ;
+  int arg8 = (int) 0 ;
+  int arg9 = (int) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res2 ;
@@ -3937,14 +3941,26 @@ SWIGINTERN PyObject *_wrap_Document_save(PyObject *SWIGUNUSEDPARM(self), PyObjec
   int ecode4 = 0 ;
   int val5 ;
   int ecode5 = 0 ;
+  int val6 ;
+  int ecode6 = 0 ;
+  int val7 ;
+  int ecode7 = 0 ;
+  int val8 ;
+  int ecode8 = 0 ;
+  int val9 ;
+  int ecode9 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  PyObject * obj8 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO|OOO:Document_save",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO|OOOOOOO:Document_save",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_save" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
@@ -3976,8 +3992,36 @@ SWIGINTERN PyObject *_wrap_Document_save(PyObject *SWIGUNUSEDPARM(self), PyObjec
     } 
     arg5 = (int)(val5);
   }
+  if (obj5) {
+    ecode6 = SWIG_AsVal_int(obj5, &val6);
+    if (!SWIG_IsOK(ecode6)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "Document_save" "', argument " "6"" of type '" "int""'");
+    } 
+    arg6 = (int)(val6);
+  }
+  if (obj6) {
+    ecode7 = SWIG_AsVal_int(obj6, &val7);
+    if (!SWIG_IsOK(ecode7)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "Document_save" "', argument " "7"" of type '" "int""'");
+    } 
+    arg7 = (int)(val7);
+  }
+  if (obj7) {
+    ecode8 = SWIG_AsVal_int(obj7, &val8);
+    if (!SWIG_IsOK(ecode8)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "Document_save" "', argument " "8"" of type '" "int""'");
+    } 
+    arg8 = (int)(val8);
+  }
+  if (obj8) {
+    ecode9 = SWIG_AsVal_int(obj8, &val9);
+    if (!SWIG_IsOK(ecode9)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "Document_save" "', argument " "9"" of type '" "int""'");
+    } 
+    arg9 = (int)(val9);
+  }
   {
-    result = (int)fz_document_s_save(arg1,arg2,arg3,arg4,arg5);
+    result = (int)fz_document_s_save(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9);
     if(result) {
       PyErr_SetString(PyExc_Exception, "cannot save Document");
       return NULL;

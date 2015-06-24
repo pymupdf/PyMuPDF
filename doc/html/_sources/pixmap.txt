@@ -70,7 +70,7 @@ Pixmaps represent a set of pixels for a 2 dimensional region. Each pixel consist
 
    .. attribute:: n
 
-      Number of components per pixel
+      Number of components per pixel. Will alsways be 4 because we always have an RGBA pixmap.
 
       :rtype: int
 
@@ -90,12 +90,12 @@ Pixmaps represent a set of pixels for a 2 dimensional region. Each pixel consist
 
       Invert all pixels in :ref:`IRect`. All components except alpha are inverted.
 
-      :param `irect`: Invert all the pixels in the irect. If not given, the whole pixmap will be inverted.
+      :param `irect`: Invert all the pixels in the irect. If omitted, the whole pixmap will be inverted.
       :type `IRect`: :ref:`IRect`
 
    .. method:: writePNG(self, filename, savealpha=False)
 
-      Save a pixmap as a png.
+      Save a pixmap as a png file.
 
       :param `filename`: The filename to save as (including extension).
       :type `filename`: string

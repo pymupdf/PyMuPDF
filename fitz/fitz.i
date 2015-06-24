@@ -75,9 +75,9 @@ struct fz_document_s {
                             lvl -= 1               # go look for uncles
                             olItem = ltab[lvl].next
                         if lvl < 1:                # out of relatives
-                            return liste           # return linearized outline
+                            return liste           # return ToC
                         lvl -= 1
-                return liste                       # return linearized outline
+                return liste                       # return ToC
 
             if this:
                 self._outline = self._loadOutline()
@@ -203,12 +203,16 @@ struct fz_document_s {
         /****************************************************************/
         /* save(filename, garbage=0, clean=0, deflate=0)                */
         /****************************************************************/
-        %pythonprepend save(char *filename, int garbage=0, int clean=0, int deflate=0) %{
+        %pythonprepend save(char *filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) %{
             '''
-            filename: path / name of file to save to. Must not be the document's filename
-            garbage:  level of garbage collection, 0 = none, 3 = all
-            clean:    clean content streams, 0 = False, 1 = True
-            deflate:  deflate uncompressed streams, 0 = False, 1 = True
+            filename:     path / name of file to save to, must be unequal the document's filename
+            garbage:      level of garbage collection, 0 = none, 3 = all
+            clean:        clean content streams, 0 = False, 1 = True
+            deflate:      deflate uncompressed streams, 0 = False, 1 = True
+            incremental:  write just the changed objects, 0 = False, 1 = True
+            ascii:        where possible make the output ascii, 0 = False, 1 = True
+            expand:       one bytpe bitfield to decompress content, 0 = none, 1 = images, 2 = fonts, 255 = all
+            linear:       write linearised, 0 = False, 1 = True
             '''
             if self.isClosed == 1:
                 raise ValueError("operation on closed document")
@@ -228,21 +232,21 @@ struct fz_document_s {
                 return NULL;
             }
         }
-        int save(char *filename, int garbage=0, int clean=0, int deflate=0) {
-            int compress = garbage + clean + deflate;
+        int save(char *filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) {
+            int have_opts = garbage + clean + deflate + incremental + ascii + expand + linear;
             int errors = 0;
             fz_write_options opts;
-            opts.do_incremental = 0;
-            opts.do_ascii = 0;
+            opts.do_incremental = incremental;
+            opts.do_ascii = ascii;
             opts.do_deflate = deflate;
-            opts.do_expand = 0;
+            opts.do_expand = expand;
             opts.do_garbage = garbage;
-            opts.do_linear = 0;
+            opts.do_linear = linear;
             opts.do_clean = clean;
             opts.continue_on_error = 1;
             opts.errors = &errors;
             fz_try(gctx)
-                if (compress == 0)
+                if (have_opts == 0)
                     fz_write_document(gctx, $self, filename, NULL);
                 else
                     fz_write_document(gctx, $self, filename, &opts);

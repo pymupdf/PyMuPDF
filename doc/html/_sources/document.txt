@@ -49,9 +49,9 @@ This class represents a document and is constructed by ``fitz.Document(filename)
 
       :rtype: :ref:`Page`
 
-    .. method:: save(filename, garbage = 0, clean = 0, deflate = 0)
+    .. method:: save(filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0)
 
-      Saves a copy of the document under ``filename`` (include path specifications as necessary). Internally the document may have changed. E.g. after a successfull ``authenticate``, an unencrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning of the document data will also occur, e.g. broken xref tables will be corrected as far as possible.
+      Saves a copy of the document under ``filename`` (include path specifications as necessary). Internally the document may have changed. E.g. after a successfull ``authenticate``, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning of the document data will also have occurred, e.g. broken xref tables will have been corrected as far as possible.
 
       :param `filename`: The filename to save to. Must be different from the original file name or else a ValueError will be raised.
       :type `filename`: string
@@ -65,8 +65,20 @@ This class represents a document and is constructed by ``fitz.Document(filename)
       :param `deflate`: Deflate uncompressed streams: 0 = False, 1 = True.
       :type `deflate`: int
 
+      :param `incremental`: Only save change objects: 0 = False, 1 = True.
+      :type `incremental`: int
+
+      :param `ascii`: Where possible make the output ascii: 0 = False, 1 = True.
+      :type `ascii`: int
+
+      :param `expand`: One byte bitfield to decompress content, 0 = none, 1 = images, 2 = fonts, 255 = all. This convenience option generates decompressed file versions that can be better read by some other programs.
+      :type `expand`: int
+
+      :param `linear`: Save a linearised version of the document: 0 = False, 1 = True. This option creates a file format for improved performance when read via internet connections.
+      :type `linear`: int
+
       :rtype: int
-      :returns: Count of errors during save.
+      :returns: Count of errors occurred during save. Note: PyMuPDF will tolerate many errors encountered in input documents and continue processing.
 
     .. method:: ToC()
 
@@ -76,7 +88,7 @@ This class represents a document and is constructed by ``fitz.Document(filename)
 
     .. method:: close()
 
-      Closes ``filename`` thus freeing it for other purposes.
+      Closes ``filename`` thus releasing control of it to the OS.
 
     .. attribute:: outline
 
@@ -98,7 +110,25 @@ This class represents a document and is constructed by ``fitz.Document(filename)
 
     .. Attribute:: metadata
 
-      Contains the document's meta data as a Python dictionary. Its keys are ``format``, ``encryption``, ``title``, ``author``, ``subject``, ``keywords``, ``creator``, ``producer``, ``creationDate``, ``modDate``. For the most part, these key names in an obvious way correspond to the PDF's "official" meta data fields ``/Creator``, ``/Producer``, ``/CreationDate``, ``/ModDate``, ``/Title``, ``/Author``, ``/Subject``, ``/Keywords`` respectively. ``format`` contains the PDF format version of the file (e.g. 'PDF 1.4'), ``encryption`` contains either ``None`` when not encrypted, or a string naming the encryption method used (e.g. ``'Standard V4 R4 128-bit RC4'``). Note that all other metadata values are encrypted if the value for 'encoding' is not ``None``. All item values are UTF-8 encoded strings (or ``None``), except ``keywords``. If ``keywords`` is not ``None``, it contains a Python dictionary specifying the document's keywords (again, as UTF-8 encoded strings). The date fields are strings with the PDF-internal timestamp format "D:<DateTime><TZ>", where <DateTime> is the 12 character ISO date ``YYYMMDDhhmmss`` (``YYYY`` - year, ``MM`` - month, ``DD`` - day, ``hh`` - hour, ``mm`` - minute, ``ss`` - second), and <TZ> is a time zone value (time intervall relative to GMT) containing a sign ('+' or '-'), the hour (``hh``), and minute (``'mm'``, attention: enclose in apostrophies!). For example, a Venezuelan value might look like ``D:20150415131602-04'30'``, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Venezuela.
+      Contains the document's meta data as a Python dictionary. Its keys are ``format``, ``encryption``, ``title``, ``author``, ``subject``, ``keywords``, ``creator``, ``producer``, ``creationDate``, ``modDate``.
+
+      For the most part, these key names in an obvious way correspond to the PDF's "official" meta data fields ``/Creator``, ``/Producer``, ``/CreationDate``, ``/ModDate``, ``/Title``, ``/Author``, ``/Subject``, ``/Keywords`` respectively.
+
+      The value of ``format`` contains the version of the PDF format (e.g. 'PDF 1.4').
+
+      The value of ``encryption`` contains either ``None`` (not encrypted), or a string naming the encryption method used (e.g. ``'Standard V4 R4 128-bit RC4'``). Note that all other meta data values may be encrypted if the document is encrypted.
+
+      All item values are strings (or ``None``), except for ``keywords``.
+
+      If the value of ``keywords`` is not ``None``, it contains a Python dictionary specifying the document's keywords as strings.
+
+      If the date fields contain meaningfull data, they are strings in the PDF-internal timestamp format "D:<TS><TZ>", where
+
+      <TS> is the 12 character ISO timestamp ``YYYMMDDhhmmss`` (``YYYY`` - year, ``MM`` - month, ``DD`` - day, ``hh`` - hour, ``mm`` - minute, ``ss`` - second), and
+
+      <TZ> is a time zone value (time intervall relative to GMT) containing a sign ('+' or '-'), the hour (``hh``), and the minute (``'mm'``, attention: enclose in apostrophies!).
+
+      For example, a Venezuelan value might look like ``D:20150415131602-04'30'``, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Venezuela.
 
       :rtype: dict
 

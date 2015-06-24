@@ -48,7 +48,3 @@ Possible values of :attr:`linkDest.flags` (link destination flags). **Attention*
 .. data:: LINK_FLAG_FIT_V       32 (bit 5) Vertical fit
 .. data:: LINK_FLAG_R_IS_ZOOM   64 (bit 6) Bottom right x is a zoom figure
 =============================== ===========================================
-
-.. raw:: pdf
-
-    PageBreak

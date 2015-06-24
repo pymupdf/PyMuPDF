@@ -220,7 +220,7 @@ clean = 1          clean content streams (use with care)
 deflate = 1        deflate uncompressed streams
 ================== ============================================
 
-Please note, that :meth:`Document.save` according to MuPDF's documentation is still under development and therefore prone to future changes.
+Please note, that :meth:`Document.save`, according to MuPDF's documentation is still under development and therefore prone to future changes.
 
 Like with ``mutool clean``, not all combinations of the above options may work for all documents - so use them with care.
 
