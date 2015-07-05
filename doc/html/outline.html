@@ -8,7 +8,7 @@
     
     <title>Outline &mdash; PyMuPDF 1.7.0 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -23,14 +23,14 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.7.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="Page" href="page.html" />
     <link rel="prev" title="Matrix" href="matrix.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -42,19 +42,19 @@
         <li class="right" >
           <a href="matrix.html" title="Matrix"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li>
-          <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="outline">
 <span id="id1"></span><h1>Outline<a class="headerlink" href="#outline" title="Permalink to this headline">¶</a></h1>
-<p><tt class="docutils literal"><span class="pre">outline</span></tt> is a property of <tt class="docutils literal"><span class="pre">Document</span></tt>. If not <tt class="docutils literal"><span class="pre">None</span></tt>, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in either &#8220;horizontal&#8221; direction by property <tt class="docutils literal"><span class="pre">.next</span></tt> to the next item of same level, or downwards with property <tt class="docutils literal"><span class="pre">.down</span></tt> to the next item one level lower. The full tree of all outline items for e.g. a conventional table of contents can be recovered by following these &#8220;pointers&#8221;.</p>
+<p><code class="docutils literal"><span class="pre">outline</span></code> is a property of <code class="docutils literal"><span class="pre">Document</span></code>. If not <code class="docutils literal"><span class="pre">None</span></code>, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in either &#8220;horizontal&#8221; direction by property <code class="docutils literal"><span class="pre">.next</span></code> to the next item of same level, or downwards with property <code class="docutils literal"><span class="pre">.down</span></code> to the next item one level lower. The full tree of all outline items for e.g. a conventional table of contents can be recovered by following these &#8220;pointers&#8221;.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="33%" />
@@ -66,22 +66,22 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><a class="reference internal" href="#Outline.down" title="Outline.down"><tt class="xref py py-attr docutils literal"><span class="pre">Outline.down</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Outline.down" title="Outline.down"><code class="xref py py-attr docutils literal"><span class="pre">Outline.down</span></code></a></td>
 <td>Next item downwards</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Outline.next" title="Outline.next"><tt class="xref py py-attr docutils literal"><span class="pre">Outline.next</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Outline.next" title="Outline.next"><code class="xref py py-attr docutils literal"><span class="pre">Outline.next</span></code></a></td>
 <td>Next item same level</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Outline.dest" title="Outline.dest"><tt class="xref py py-attr docutils literal"><span class="pre">Outline.dest</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Outline.dest" title="Outline.dest"><code class="xref py py-attr docutils literal"><span class="pre">Outline.dest</span></code></a></td>
 <td>Link destination</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Outline.title" title="Outline.title"><tt class="xref py py-attr docutils literal"><span class="pre">Outline.title</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Outline.title" title="Outline.title"><code class="xref py py-attr docutils literal"><span class="pre">Outline.title</span></code></a></td>
 <td>Title (UTF-8 string)</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Outline.saveText" title="Outline.saveText"><tt class="xref py py-meth docutils literal"><span class="pre">Outline.saveText()</span></tt></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Outline.saveText" title="Outline.saveText"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveText()</span></code></a></td>
 <td>Prints a conventional table of contents to a file</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Outline.saveXML" title="Outline.saveXML"><tt class="xref py py-meth docutils literal"><span class="pre">Outline.saveXML()</span></tt></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Outline.saveXML" title="Outline.saveXML"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveXML()</span></code></a></td>
 <td>Prints an XML-like table of contents to a file</td>
 </tr>
 </tbody>
@@ -89,16 +89,16 @@
 <p><strong>Class API</strong></p>
 <dl class="class">
 <dt id="Outline">
-<em class="property">class </em><tt class="descname">Outline</tt><a class="headerlink" href="#Outline" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Outline</code><a class="headerlink" href="#Outline" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
 <dt id="Outline.down">
-<tt class="descname">down</tt><a class="headerlink" href="#Outline.down" title="Permalink to this definition">¶</a></dt>
-<dd><p>The next outline item on the next level down. Is <tt class="docutils literal"><span class="pre">None</span></tt> if the item has no children.</p>
+<code class="descname">down</code><a class="headerlink" href="#Outline.down" title="Permalink to this definition">¶</a></dt>
+<dd><p>The next outline item on the next level down. Is <code class="docutils literal"><span class="pre">None</span></code> if the item has no children.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#outline"><em>Outline</em></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#outline"><span>Outline</span></a></td>
 </tr>
 </tbody>
 </table>
@@ -106,13 +106,13 @@
 
 <dl class="attribute">
 <dt id="Outline.next">
-<tt class="descname">next</tt><a class="headerlink" href="#Outline.next" title="Permalink to this definition">¶</a></dt>
-<dd><p>The next outline item at the same level as this item. Is <tt class="docutils literal"><span class="pre">None</span></tt> if the item is the last one in its level.</p>
+<code class="descname">next</code><a class="headerlink" href="#Outline.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>The next outline item at the same level as this item. Is <code class="docutils literal"><span class="pre">None</span></code> if the item is the last one in its level.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#outline"><em>Outline</em></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#outline"><span>Outline</span></a></td>
 </tr>
 </tbody>
 </table>
@@ -120,13 +120,13 @@
 
 <dl class="attribute">
 <dt id="Outline.dest">
-<tt class="descname">dest</tt><a class="headerlink" href="#Outline.dest" title="Permalink to this definition">¶</a></dt>
+<code class="descname">dest</code><a class="headerlink" href="#Outline.dest" title="Permalink to this definition">¶</a></dt>
 <dd><p>The destination this entry points to. Can be a place in this or another document, or an internet resource. It can include actions to perform like opening a new window, invoking a javascript or opening another document.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="linkdest.html#linkdest"><em>linkDest</em></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="linkdest.html#linkdest"><span>linkDest</span></a></td>
 </tr>
 </tbody>
 </table>
@@ -134,7 +134,7 @@
 
 <dl class="attribute">
 <dt id="Outline.title">
-<tt class="descname">title</tt><a class="headerlink" href="#Outline.title" title="Permalink to this definition">¶</a></dt>
+<code class="descname">title</code><a class="headerlink" href="#Outline.title" title="Permalink to this definition">¶</a></dt>
 <dd><p>The item&#8217;s title as a UTF-8 string.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -148,8 +148,8 @@
 
 <dl class="method">
 <dt id="Outline.saveText">
-<tt class="descname">saveText</tt><big>(</big><big>)</big><a class="headerlink" href="#Outline.saveText" title="Permalink to this definition">¶</a></dt>
-<dd><p>The chain of outline items is being processed and printed to a file <tt class="docutils literal"><span class="pre">filename</span></tt> as a conventional table of contents.</p>
+<code class="descname">saveText</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Outline.saveText" title="Permalink to this definition">¶</a></dt>
+<dd><p>The chain of outline items is being processed and printed to a file <code class="docutils literal"><span class="pre">filename</span></code> as a conventional table of contents.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -162,8 +162,8 @@
 
 <dl class="method">
 <dt id="Outline.saveXML">
-<tt class="descname">saveXML</tt><big>(</big><big>)</big><a class="headerlink" href="#Outline.saveXML" title="Permalink to this definition">¶</a></dt>
-<dd><p>The chain of outline items is being processed and printed to a file <tt class="docutils literal"><span class="pre">filename</span></tt> as an XML-like table of contents.</p>
+<code class="descname">saveXML</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Outline.saveXML" title="Permalink to this definition">¶</a></dt>
+<dd><p>The chain of outline items is being processed and printed to a file <code class="docutils literal"><span class="pre">filename</span></code> as an XML-like table of contents.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -182,7 +182,7 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="matrix.html"
@@ -190,12 +190,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="page.html"
                         title="next chapter">Page</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/outline.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/outline.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -212,7 +214,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -224,14 +226,14 @@
         <li class="right" >
           <a href="matrix.html" title="Matrix"
              >previous</a> |</li>
-        <li><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li>
-          <li><a href="class_index.html" >Classes</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 24. Jun 2015.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+      Last updated on 05. Jul 2015.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

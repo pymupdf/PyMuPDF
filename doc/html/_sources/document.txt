@@ -71,14 +71,14 @@ This class represents a document and is constructed by ``fitz.Document(filename)
       :param `ascii`: Where possible make the output ascii: 0 = False, 1 = True.
       :type `ascii`: int
 
-      :param `expand`: One byte bitfield to decompress content, 0 = none, 1 = images, 2 = fonts, 255 = all. This convenience option generates decompressed file versions that can be better read by some other programs.
+      :param `expand`: One byte bitfield to decompress content: 0 = none, 1 = images, 2 = fonts, 255 = all. This convenience option generates a decompressed file version that can be better read by some other programs.
       :type `expand`: int
 
       :param `linear`: Save a linearised version of the document: 0 = False, 1 = True. This option creates a file format for improved performance when read via internet connections.
       :type `linear`: int
 
       :rtype: int
-      :returns: Count of errors occurred during save. Note: PyMuPDF will tolerate many errors encountered in input documents and continue processing.
+      :returns: Count of errors occurred during save. Note: PyMuPDF will recover from many errors encountered in a PDF  and continue processing.
 
     .. method:: ToC()
 
@@ -98,31 +98,27 @@ This class represents a document and is constructed by ``fitz.Document(filename)
 
     .. attribute:: isClosed
 
-      ``False (0)`` if document is still open, ``True (1)`` otherwise. In the latter case, several attributes and all methods will have been deleted / disabled. In addition, :ref:`Page` objects created with :meth:`Document.loadPage` will no longer be usable. For reference purposes, :attr:`Document.name` still exists and will contain the filename of the original document.
+      ``False (0)`` if document is still open, ``True (1)`` otherwise. If closed, most other attributes and all methods will have been deleted / disabled. In addition, :ref:`Page` objects referring to this document (i.e. created with :meth:`Document.loadPage`) will no longer be usable. For reference purposes, :attr:`Document.name` still exists and will contain the filename of the original document.
 
       :rtype: int
 
     .. attribute:: needsPass
 
-      Contains an indicator showing whether the document is encrypted (``True`` (``1``)) or not (``False`` (``0``)).
+      Contains an indicator showing whether the document is encrypted (``True = 1``) or not (``False = 0``).
 
       :rtype: bool
 
     .. Attribute:: metadata
 
-      Contains the document's meta data as a Python dictionary. Its keys are ``format``, ``encryption``, ``title``, ``author``, ``subject``, ``keywords``, ``creator``, ``producer``, ``creationDate``, ``modDate``.
+      Contains the document's meta data as a Python dictionary. Its keys are ``format``, ``encryption``, ``title``, ``author``, ``subject``, ``keywords``, ``creator``, ``producer``, ``creationDate``, ``modDate``. All item values are strings or ``None``.
 
-      For the most part, these key names in an obvious way correspond to the PDF's "official" meta data fields ``/Creator``, ``/Producer``, ``/CreationDate``, ``/ModDate``, ``/Title``, ``/Author``, ``/Subject``, ``/Keywords`` respectively.
+      Except ``format`` and ``encryption``, the key names correspond in an obvious way to a PDF's "official" meta data fields ``/Creator``, ``/Producer``, ``/CreationDate``, ``/ModDate``, ``/Title``, ``/Author``, ``/Subject``, ``/Keywords`` respectively.
 
-      The value of ``format`` contains the version of the PDF format (e.g. 'PDF 1.4').
+      The value of ``format`` contains the version of the PDF format (e.g. 'PDF-1.6').
 
-      The value of ``encryption`` contains either ``None`` (not encrypted), or a string naming the encryption method used (e.g. ``'Standard V4 R4 128-bit RC4'``). Note that all other meta data values may be encrypted if the document is encrypted.
+      The value of ``encryption`` either contains ``None`` (not encrypted), or a string naming the used encryption method (e.g. ``'Standard V4 R4 128-bit RC4'``). Note that if the document is encrypted, the other meta data values may be encrypted, too.
 
-      All item values are strings (or ``None``), except for ``keywords``.
-
-      If the value of ``keywords`` is not ``None``, it contains a Python dictionary specifying the document's keywords as strings.
-
-      If the date fields contain meaningfull data, they are strings in the PDF-internal timestamp format "D:<TS><TZ>", where
+      If the date fields contain meaningfull data (which need not be the case), they are strings in the PDF-internal timestamp format "D:<TS><TZ>", where
 
       <TS> is the 12 character ISO timestamp ``YYYMMDDhhmmss`` (``YYYY`` - year, ``MM`` - month, ``DD`` - day, ``hh`` - hour, ``mm`` - minute, ``ss`` - second), and
 

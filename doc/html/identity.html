@@ -8,7 +8,7 @@
     
     <title>Identity &mdash; PyMuPDF 1.7.0 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -23,14 +23,14 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.7.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="IRect" href="irect.html" />
     <link rel="prev" title="Document" href="document.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -42,21 +42,21 @@
         <li class="right" >
           <a href="document.html" title="Document"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li>
-          <li><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="identity">
 <span id="id1"></span><h1>Identity<a class="headerlink" href="#identity" title="Permalink to this headline">¶</a></h1>
-<p>Identity is just a <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a> that performs no action, to be used whenever the syntax requires a <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a>, but no actual transformation should take place.</p>
-<p><strong>Caution:</strong> <tt class="docutils literal"><span class="pre">Identity</span></tt> is a constant in the C code and therefore <strong>readonly, do not try to modify</strong> its properties in any way, i.e. you must not manipulate its <tt class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span></tt>, neither apply any method.</p>
-<p><tt class="docutils literal"><span class="pre">Matrix(1,</span> <span class="pre">1)</span></tt> creates a matrix that acts like <tt class="docutils literal"><span class="pre">Identity</span></tt>, but it may be changed. Use this when you need a starting point for further modification, e.g. by one of the <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a> methods.</p>
+<p>Identity is just a <a class="reference internal" href="matrix.html#matrix"><span>Matrix</span></a> that performs no action, to be used whenever the syntax requires a <a class="reference internal" href="matrix.html#matrix"><span>Matrix</span></a>, but no actual transformation should take place.</p>
+<p><strong>Caution:</strong> <code class="docutils literal"><span class="pre">Identity</span></code> is a constant in the C code and therefore <strong>readonly, do not try to modify</strong> its properties in any way, i.e. you must not manipulate its <code class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span></code>, neither apply any method.</p>
+<p><code class="docutils literal"><span class="pre">Matrix(1,</span> <span class="pre">1)</span></code> creates a matrix that acts like <code class="docutils literal"><span class="pre">Identity</span></code>, but it may be changed. Use this when you need a starting point for further modification, e.g. by one of the <a class="reference internal" href="matrix.html#matrix"><span>Matrix</span></a> methods.</p>
 <p>In other words:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># the following will not work - the interpreter will crash!</span>
 <span class="n">m</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Identity</span><span class="o">.</span><span class="n">preRotate</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
@@ -71,7 +71,7 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="document.html"
@@ -79,12 +79,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="irect.html"
                         title="next chapter">IRect</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/identity.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/identity.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -101,7 +103,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -113,14 +115,14 @@
         <li class="right" >
           <a href="document.html" title="Document"
              >previous</a> |</li>
-        <li><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li>
-          <li><a href="class_index.html" >Classes</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 24. Jun 2015.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+      Last updated on 05. Jul 2015.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

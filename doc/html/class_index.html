@@ -8,7 +8,7 @@
     
     <title>Classes &mdash; PyMuPDF 1.7.0 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -23,13 +23,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.7.0 documentation" href="index.html" />
     <link rel="next" title="Colorspace" href="colorspace.html" />
     <link rel="prev" title="Tutorial" href="tutorial.html" /> 
   </head>
-  <body>
-    <div class="related">
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -41,18 +41,18 @@
         <li class="right" >
           <a href="tutorial.html" title="Tutorial"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="classes">
 <span id="fitz"></span><h1>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h1>
-<p>The list of PyMuPDF classes, accessible via the prefix <tt class="docutils literal"><span class="pre">fitz.</span></tt> if your import statement was <tt class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></tt></p>
+<p>The list of PyMuPDF classes, accessible via the prefix <code class="docutils literal"><span class="pre">fitz.</span></code> if your import statement was <code class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></code></p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="28%" />
@@ -64,52 +64,52 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><a class="reference internal" href="colorspace.html#colorspace"><em>Colorspace</em></a></td>
-<td>Define the color space of a <a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a>.</td>
+<tr class="row-even"><td><a class="reference internal" href="colorspace.html#colorspace"><span>Colorspace</span></a></td>
+<td>Define the color space of a <a class="reference internal" href="pixmap.html#pixmap"><span>Pixmap</span></a>.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="device.html#device"><em>Device</em></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="device.html#device"><span>Device</span></a></td>
 <td>Target object for rendering or text extraction.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="displaylist.html#displaylist"><em>DisplayList</em></a></td>
+<tr class="row-even"><td><a class="reference internal" href="displaylist.html#displaylist"><span>DisplayList</span></a></td>
 <td>A list containing drawing commands.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="document.html#document"><em>Document</em></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="document.html#document"><span>Document</span></a></td>
 <td>Basic class for dealing with files.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="identity.html#identity"><em>Identity</em></a></td>
-<td>The do-nothing <a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></td>
+<tr class="row-even"><td><a class="reference internal" href="identity.html#identity"><span>Identity</span></a></td>
+<td>The do-nothing <a class="reference internal" href="matrix.html#matrix"><span>Matrix</span></a></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="irect.html#irect"><em>IRect</em></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="irect.html#irect"><span>IRect</span></a></td>
 <td>A rectangle (pixel coordinates).</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="link.html#link"><em>Link</em></a></td>
+<tr class="row-even"><td><a class="reference internal" href="link.html#link"><span>Link</span></a></td>
 <td>A destination</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="linkdest.html#linkdest"><em>linkDest</em></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="linkdest.html#linkdest"><span>linkDest</span></a></td>
 <td>The destination of an outline entry</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="matrix.html#matrix"><em>Matrix</em></a></td>
+<tr class="row-even"><td><a class="reference internal" href="matrix.html#matrix"><span>Matrix</span></a></td>
 <td>A 3x3 matrix used for transformations.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="outline.html#outline"><em>Outline</em></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="outline.html#outline"><span>Outline</span></a></td>
 <td>Outline element (a.k.a. bookmark).</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="page.html#page"><em>Page</em></a></td>
+<tr class="row-even"><td><a class="reference internal" href="page.html#page"><span>Page</span></a></td>
 <td>A document page.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="pixmap.html#pixmap"><em>Pixmap</em></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="pixmap.html#pixmap"><span>Pixmap</span></a></td>
 <td>A pixel map (for rendering).</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="point.html#point"><em>Point</em></a></td>
+<tr class="row-even"><td><a class="reference internal" href="point.html#point"><span>Point</span></a></td>
 <td>Represents a point in the plane.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="rect.html#rect"><em>Rect</em></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="rect.html#rect"><span>Rect</span></a></td>
 <td>A rectangle (float coordinates).</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="textpage.html#textpage"><em>TextPage</em></a></td>
+<tr class="row-even"><td><a class="reference internal" href="textpage.html#textpage"><span>TextPage</span></a></td>
 <td>Text content of a page.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="textsheet.html#textsheet"><em>TextSheet</em></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="textsheet.html#textsheet"><span>TextSheet</span></a></td>
 <td>A list of text styles used in a page.</td>
 </tr>
 </tbody>
@@ -122,7 +122,7 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="tutorial.html"
@@ -130,12 +130,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="colorspace.html"
                         title="next chapter">Colorspace</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/class_index.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/class_index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -152,7 +154,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -164,13 +166,13 @@
         <li class="right" >
           <a href="tutorial.html" title="Tutorial"
              >previous</a> |</li>
-        <li><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 24. Jun 2015.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+      Last updated on 05. Jul 2015.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

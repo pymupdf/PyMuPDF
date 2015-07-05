@@ -153,16 +153,16 @@ This example creates an image out a page's content:
  # now pix contains an image of the page, ready to be used
  #-----------------------------------------------------------------------------------
 
-Save the page image in a file
+Store the page image in a file
 -----------------------------------
 We can simply store the image in a PNG file:
 ::
  pix.writePNG("test.png")
 
 
-Use the image in a dialog manager
------------------------------------
-Or we convert the image into a bitmap usable by a dialog manager.
+Display the image in dialog managers
+--------------------------------------
+Or we convert the image into a bitmap usable by dialog managers. :attr:`Pixmap.samples` represents the area of bytes of all the pixels in RGBA format as a Python bytearray. This area, or its ``str()`` version, is directly usable by presumably most dialog managers. Here are two examples.
 
 **wxPython**:
 ::

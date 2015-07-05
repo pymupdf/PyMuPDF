@@ -70,7 +70,7 @@ Pixmaps represent a set of pixels for a 2 dimensional region. Each pixel consist
 
    .. attribute:: n
 
-      Number of components per pixel. Will alsways be 4 because we always have an RGBA pixmap.
+      Number of components per pixel. Will always be 4 because we always have an RGBA pixmap.
 
       :rtype: int
 
