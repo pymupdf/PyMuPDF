@@ -482,9 +482,13 @@ struct fz_pixmap_s
 
 
 /* fz_colorspace */
-#define CS_RGB 1
+#define CS_RGB  1
+#define CS_GRAY 2
+#define CS_CMYK 3
 %inline %{
-    #define CS_RGB 1
+    #define CS_RGB  1
+    #define CS_GRAY 2
+    #define CS_CMYK 3
 %}
 %rename(Colorspace) fz_colorspace_s;
 struct fz_colorspace_s
@@ -492,6 +496,12 @@ struct fz_colorspace_s
     %extend {
         fz_colorspace_s(int type) {
             switch(type) {
+                case CS_GRAY:
+                    return fz_device_gray(gctx);
+                    break;
+                case CS_CMYK:
+                    return fz_device_cmyk(gctx);
+                    break;
                 case CS_RGB:
                 default:
                     return fz_device_rgb(gctx);

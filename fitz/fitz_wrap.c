@@ -3476,10 +3476,18 @@ SWIGINTERN PyObject *fz_pixmap_s__getSamples(struct fz_pixmap_s *self){
             return PyByteArray_FromStringAndSize((const char *)self->samples, (self->w)*(self->h)*(self->n));
         }
 
-    #define CS_RGB 1
+    #define CS_RGB  1
+    #define CS_GRAY 2
+    #define CS_CMYK 3
 
 SWIGINTERN struct fz_colorspace_s *new_fz_colorspace_s(int type){
             switch(type) {
+                case 2:
+                    return fz_device_gray(gctx);
+                    break;
+                case 3:
+                    return fz_device_cmyk(gctx);
+                    break;
                 case 1:
                 default:
                     return fz_device_rgb(gctx);
@@ -5527,6 +5535,28 @@ SWIGINTERN PyObject *CS_RGB_swigconstant(PyObject *SWIGUNUSEDPARM(self), PyObjec
   d = PyModule_GetDict(module);
   if (!d) return NULL;
   SWIG_Python_SetConstant(d, "CS_RGB",SWIG_From_int((int)(1)));
+  return SWIG_Py_Void();
+}
+
+
+SWIGINTERN PyObject *CS_GRAY_swigconstant(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *module;
+  PyObject *d;
+  if (!PyArg_ParseTuple(args,(char*)"O:swigconstant", &module)) return NULL;
+  d = PyModule_GetDict(module);
+  if (!d) return NULL;
+  SWIG_Python_SetConstant(d, "CS_GRAY",SWIG_From_int((int)(2)));
+  return SWIG_Py_Void();
+}
+
+
+SWIGINTERN PyObject *CS_CMYK_swigconstant(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *module;
+  PyObject *d;
+  if (!PyArg_ParseTuple(args,(char*)"O:swigconstant", &module)) return NULL;
+  d = PyModule_GetDict(module);
+  if (!d) return NULL;
+  SWIG_Python_SetConstant(d, "CS_CMYK",SWIG_From_int((int)(3)));
   return SWIG_Py_Void();
 }
 
@@ -7716,6 +7746,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Pixmap__getSamples", _wrap_Pixmap__getSamples, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_swigregister", Pixmap_swigregister, METH_VARARGS, NULL},
 	 { (char *)"CS_RGB_swigconstant", CS_RGB_swigconstant, METH_VARARGS, NULL},
+	 { (char *)"CS_GRAY_swigconstant", CS_GRAY_swigconstant, METH_VARARGS, NULL},
+	 { (char *)"CS_CMYK_swigconstant", CS_CMYK_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"new_Colorspace", _wrap_new_Colorspace, METH_VARARGS, NULL},
 	 { (char *)"delete_Colorspace", _wrap_delete_Colorspace, METH_VARARGS, NULL},
 	 { (char *)"Colorspace_swigregister", Colorspace_swigregister, METH_VARARGS, NULL},
