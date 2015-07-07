@@ -40,7 +40,7 @@ Pixmaps represent a set of pixels for a 2 dimensional region. Each pixel consist
 
    .. attribute:: samples
 
-      The color and transparency values for all pixels. Samples is a memory area of size ``width * height * n`` bytes. The first n bytes are components 0 to n-1 for the pixel at point (x,y). Each successive n bytes gives another pixel in scanline order. Subsequent scanlines follow each other with no padding. E.g. for an RGBA colorspace this means, ``samples`` is a bytearray like ``..., R, G, B, A, ...``, and the four byte values R, G, B, A describe one pixel (RGBA is the only supported colorspace at this time).
+      The color and transparency values for all pixels. Samples is a memory area of size ``width * height * n`` bytes. The first n bytes are components 0 to n-1 for the pixel at point (x,y). Each successive n bytes gives another pixel in scanline order. Subsequent scanlines follow each other with no padding. E.g. for an RGBA colorspace this means, ``samples`` is a bytearray like ``..., R, G, B, A, ...``, and the four byte values R, G, B, A describe one pixel.
 
       :rtype: bytearray
 
@@ -70,7 +70,7 @@ Pixmaps represent a set of pixels for a 2 dimensional region. Each pixel consist
 
    .. attribute:: n
 
-      Number of components per pixel. Will always be 4 because we always have an RGBA pixmap.
+      Number of components per pixel. This number depends on the chosen colorspace: :data:`CS_GRAY` = 2, :data:`CS_RGB` = 4, :data:`CS_CMYK` = 5.
 
       :rtype: int
 

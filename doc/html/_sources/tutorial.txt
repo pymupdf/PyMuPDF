@@ -258,7 +258,9 @@ However, re-opening a previously closed file by a new :ref:`Document` is no prob
 
 Example: Dynamically cleaning up corrupt PDF documents
 ========================================================
-To demonstrate a potential use of PyMuPDF, here is an example to try and dynamically clean a problematic PDF file when processing it with ``pdfrw``:
+This shows a potential use of PyMuPDF with another Python PDF library (``pdfrw``).
+
+If a PDF is broken or needs to be decrypted, one could dynamically invoke PyMuPDF to recover from problems like so:
 ::
  import sys
  from pdfrw import PdfReader
@@ -291,4 +293,4 @@ To demonstrate a potential use of PyMuPDF, here is an example to try and dynamic
  print pdf.Info
  # do further processing
 
-With a command line utility like ``pdftk`` a similar result can be achieved, see `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. It even supports buffers for input **and** output. However you must invoke it via ``subprocess.Popen``, using stdin and stdout as communication vehicles.
+With the command line utility ``pdftk`` a similar result can be achieved, see `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. It even supports buffers for input **and** output. However you must invoke it via ``subprocess.Popen``, using stdin and stdout as communication vehicles.

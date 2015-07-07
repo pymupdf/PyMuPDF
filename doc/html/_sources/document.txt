@@ -8,7 +8,7 @@
 Document
 ================
 
-This class represents a document and is constructed by ``fitz.Document(...)``. See below for details.
+This class represents a document. It can be constructed from a file or from memory. See below for details.
 
 =============================== ================================
 **Method / Attribute**          **Short Description**
@@ -44,7 +44,7 @@ This class represents a document and is constructed by ``fitz.Document(...)``. S
 
       Constructs a ``Document`` object from memory data.
 
-      :param `filetype`: A string (UTF-8 or unicode) specifing the type of document contained in ``stream``. This may be either a file name like "x.pdf", in which case MuPDF will use the extension determine the type, or a mime type like ``application/pdf``.
+      :param `filetype`: A string specifying the type of document contained in ``stream``. This may be either something that looks like a filename (e.g. ``x.pdf``), in which case MuPDF uses the extension to determine the type, or a mime type like ``application/pdf``. Recommended is using the filename scheme, or even the name of the original file for documentation purposes.
       :type `filetype`: string
 
       :param `stream`: A string of data representing the content of a supported document type.
@@ -75,12 +75,12 @@ This class represents a document and is constructed by ``fitz.Document(...)``. S
 
       :rtype: :ref:`Page`
 
-    .. method:: save(filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0)
+    .. method:: save(outfile, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0)
 
-      Saves a copy of the document under ``filename`` (include path specifications as necessary). Internally the document may have changed. E.g. after a successfull ``authenticate``, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning of the document data will also have occurred, e.g. broken xref tables will have been corrected as far as possible.
+      Saves a copy of the document under ``outfile`` (include path specifications as necessary). Internally the document may have changed. E.g. after a successfull ``authenticate``, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning of the document data will also have occurred, e.g. broken xref tables will have been corrected as far as possible.
 
-      :param `filename`: The filename to save to. Must be different from the original file name or else a ValueError will be raised.
-      :type `filename`: string
+      :param `outfile`: The file name to save to. Must be different from the original ``filename`` / ``filetype`` value or else a ValueError will be raised.
+      :type `outfile`: string
 
       :param `garbage`: Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition compact xref tables, 3 = in addition merge duplicate objects.
       :type `garbage`: int
@@ -94,17 +94,17 @@ This class represents a document and is constructed by ``fitz.Document(...)``. S
       :param `incremental`: Only save change objects: 0 = False, 1 = True.
       :type `incremental`: int
 
-      :param `ascii`: Where possible make the output ascii: 0 = False, 1 = True.
+      :param `ascii`: Where possible make the output ASCII: 0 = False, 1 = True.
       :type `ascii`: int
 
-      :param `expand`: One byte bitfield to decompress content: 0 = none, 1 = images, 2 = fonts, 255 = all. This convenience option generates a decompressed file version that can be better read by some other programs.
+      :param `expand`: One byte bitfield to decompress contents: 0 = none, 1 = images, 2 = fonts, 255 = all. This convenience option generates a decompressed file version that can be better read by some other programs.
       :type `expand`: int
 
       :param `linear`: Save a linearised version of the document: 0 = False, 1 = True. This option creates a file format for improved performance when read via internet connections.
       :type `linear`: int
 
       :rtype: int
-      :returns: Count of errors occurred during save. Note: PyMuPDF will recover from many errors encountered in a PDF  and continue processing.
+      :returns: Count of errors that occurred during save. Note: PyMuPDF will recover from many errors encountered in a PDF and continue processing.
 
     .. method:: ToC()
 
@@ -114,7 +114,7 @@ This class represents a document and is constructed by ``fitz.Document(...)``. S
 
     .. method:: close()
 
-      Closes ``filename`` thus releasing control of it to the OS.
+      Releases space allocations associated with the document, and, if created from a file, closes ``filename`` thus releasing control of it to the OS.
 
     .. attribute:: outline
 
@@ -156,7 +156,7 @@ This class represents a document and is constructed by ``fitz.Document(...)``. S
 
     .. Attribute:: name
 
-      Contains the ``filename`` value with which ``Document`` was created.
+      Contains the ``filename`` or ``filetype`` value with which ``Document`` was created.
 
       :rtype: string
 

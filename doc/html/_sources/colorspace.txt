@@ -21,7 +21,7 @@ Represents the color space of a :ref:`Pixmap`.
 
    .. attribute:: colorspace
 
-      A number identifying the colorspace. Currently only RGBA is supported (``fitz.CS_RGB``).
+      A number identifying the colorspace. Supported colorspaces are :data:`CS_RGB`, :data:`CS_GRAY` and :data:`CS_CMYK`.
 
       :type: int
 
