@@ -516,6 +516,12 @@ Pixmap_swigregister(Pixmap)
 
 _fitz.CS_RGB_swigconstant(_fitz)
 CS_RGB = _fitz.CS_RGB
+
+_fitz.CS_GRAY_swigconstant(_fitz)
+CS_GRAY = _fitz.CS_GRAY
+
+_fitz.CS_CMYK_swigconstant(_fitz)
+CS_CMYK = _fitz.CS_CMYK
 class Colorspace(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Colorspace, name, value)

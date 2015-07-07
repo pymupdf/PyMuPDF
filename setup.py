@@ -5,7 +5,8 @@ import sys
 if sys.platform.startswith('linux'):
     module = Extension('fitz._fitz', # name of the module
                        ['fitz/fitz.i'], # SWIG source file
-                       include_dirs=['/usr/include/mupdf'], # we need the path of the MuPDF's headers
+                       include_dirs=['/usr/include/mupdf',
+                                     '/usr/local/include/mupdf'], # we need the path of the MuPDF's headers
                        libraries=['mupdf', 'mujs', 'crypto',
                                   'jbig2dec', 'openjp2', 'jpeg',
                                   'freetype'],                   # the libraries to link with
