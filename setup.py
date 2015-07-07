@@ -20,11 +20,13 @@ else:
 #===============================================================================
     module = Extension('fitz._fitz',
                        include_dirs=['./fitz',
+                                     './mupdf17/include/',
                                      './mupdf17/include/mupdf'],  # "./mupdf17" = top level mupdf source dir
                        libraries=[                                # only these 2 are needed in Windows
                                   'libmupdf',                        
                                   'libthirdparty',                    
                                  ],
+                       extra_link_args=['/NODEFAULTLIB:MSVCRT'],
                        library_dirs=['./LibWin32'],               # dir of libmupdf.lib / libthirdparty.lib
                        sources=['./fitz/fitz_wrap.c'])
 
