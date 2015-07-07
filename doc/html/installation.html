@@ -61,6 +61,15 @@
 <h2>Step 2: Download MuPDF 1.7a<a class="headerlink" href="#step-2-download-mupdf-1-7a" title="Permalink to this headline">¶</a></h2>
 <p>Download <a class="reference external" href="http://mupdf.com/downloads/">MuPDF version 1.7a source</a>, and unzip it. Let us call the resulting folder <code class="docutils literal"><span class="pre">mupdf17</span></code>.</p>
 <p>Put it inside <code class="docutils literal"><span class="pre">PyFitz</span></code> as a subdirectory, if you want to keep everything in one place.</p>
+<p>If your platform is <strong>not Linux and not Windows</strong>, you must <strong>generate MuPDF now</strong>. The download includes generation procedures / makefiles for numerous platforms.</p>
+<dl class="docutils">
+<dt>On Linux and on Windows, this is not necessary: MuPDF object code is pregenerated and put in special directories:</dt>
+<dd><ul class="first last simple">
+<li>LibLinux - for the Linux-generated MuPDF libraries</li>
+<li>LibWin32 - for the Windows-generated MuPDF libraries</li>
+</ul>
+</dd>
+</dl>
 </div>
 <div class="section" id="step-3-build-setup-pymupdf">
 <h2>Step 3: Build / Setup PyMuPDF<a class="headerlink" href="#step-3-build-setup-pymupdf" title="Permalink to this headline">¶</a></h2>
@@ -68,21 +77,15 @@
 <blockquote>
 <div><ul class="simple">
 <li>the include directory is correctly set in sync with your directory structure</li>
-</ul>
-</div></blockquote>
-<p>It is no longer necessary to generate MuPDF object code if your platform is either Windows or Linux.
-The required object libraries for these two platforms have been put into respective directories, and the setup script has been updated. These are the names of those directories:</p>
-<blockquote>
-<div><ul class="simple">
-<li>LibLinux - for the Linux-generated MuPDF libraries</li>
-<li>LibWin32 - for the Windows-generated MuPDF libraries</li>
+<li>the object code libraries are correctly defined</li>
 </ul>
 </div></blockquote>
 <p>Now perform a <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code></p>
 </div>
-<div class="section" id="note-on-using-upx-on-windows">
-<h2>Note on Using UPX on Windows<a class="headerlink" href="#note-on-using-upx-on-windows" title="Permalink to this headline">¶</a></h2>
-<p>In Windows systems, your PyMuPDF installation will end up with three files: <code class="docutils literal"><span class="pre">__init__.py</span></code>, <code class="docutils literal"><span class="pre">fitz.py</span></code> and <code class="docutils literal"><span class="pre">_fitz.pyd</span></code> in the <code class="docutils literal"><span class="pre">site-packages</span></code> directory. The PYD file is Python&#8217;s DLL version on Windows systems. <code class="docutils literal"><span class="pre">_fitz.pyd</span></code> has a size of 9.5 to 10 MB. You can reduce this by applying the compression utility UPX to it: <code class="docutils literal"><span class="pre">upx</span> <span class="pre">-9</span> <span class="pre">_fitz.pyd</span></code>. This will reduce the file to about 4.5 MB. This should reduce load times (<code class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></code> statement) while keeping it fully functional.</p>
+<div class="section" id="note-on-using-upx">
+<h2>Note on using UPX<a class="headerlink" href="#note-on-using-upx" title="Permalink to this headline">¶</a></h2>
+<p>In Windows systems, your PyMuPDF installation will end up with three files: <code class="docutils literal"><span class="pre">__init__.py</span></code>, <code class="docutils literal"><span class="pre">fitz.py</span></code> and <code class="docutils literal"><span class="pre">_fitz.pyd</span></code> in the <code class="docutils literal"><span class="pre">site-packages</span></code> directory. The PYD file is Python&#8217;s DLL version on Windows systems. <code class="docutils literal"><span class="pre">_fitz.pyd</span></code> has a size of 9.5 to 10 MB.</p>
+<p>You can reduce this by applying the compression utility UPX to it: <code class="docutils literal"><span class="pre">upx</span> <span class="pre">-9</span> <span class="pre">_fitz.pyd</span></code>. This will reduce the file to about 4.5 MB. This should reduce load times (<code class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></code> statement) while keeping it fully functional.</p>
 </div>
 </div>
 
@@ -98,7 +101,7 @@ The required object libraries for these two platforms have been put into respect
 <li><a class="reference internal" href="#step-1-download-pymupdf">Step 1: Download PyMuPDF</a></li>
 <li><a class="reference internal" href="#step-2-download-mupdf-1-7a">Step 2: Download MuPDF 1.7a</a></li>
 <li><a class="reference internal" href="#step-3-build-setup-pymupdf">Step 3: Build / Setup PyMuPDF</a></li>
-<li><a class="reference internal" href="#note-on-using-upx-on-windows">Note on Using UPX on Windows</a></li>
+<li><a class="reference internal" href="#note-on-using-upx">Note on using UPX</a></li>
 </ul>
 </li>
 </ul>
@@ -150,7 +153,7 @@ The required object libraries for these two platforms have been put into respect
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 05. Jul 2015.
+      Last updated on 06. Jul 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

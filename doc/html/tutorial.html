@@ -68,7 +68,9 @@
 <div class="highlight-python"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will create <code class="docutils literal"><span class="pre">doc</span></code> as a <a class="reference internal" href="document.html#document"><span>Document</span></a> object. <code class="docutils literal"><span class="pre">filename</span></code> must be a Python string or unicode object that specifies the name of an existing file (with or without a fully or partially qualified path). A <a class="reference internal" href="document.html#document"><span>Document</span></a> contains several attributes and functions. Among them are meta information (like &#8220;author&#8221; or &#8220;subject&#8221;), number of total pages, outline and encryption information.</p>
+<p>This will create <code class="docutils literal"><span class="pre">doc</span></code> as a <a class="reference internal" href="document.html#document"><span>Document</span></a> object. <code class="docutils literal"><span class="pre">filename</span></code> must be a Python string or unicode object that specifies the name of an existing file (with or without a fully or partially qualified path).</p>
+<p>It is also possible to construct a document from memory data, i.e. without using a file. See <a class="reference internal" href="document.html#document"><span>Document</span></a> for details.</p>
+<p>A <a class="reference internal" href="document.html#document"><span>Document</span></a> contains several attributes and functions. Among them are meta information (like &#8220;author&#8221; or &#8220;subject&#8221;), number of total pages, outline and encryption information.</p>
 </div>
 <div class="section" id="some-document-methods-and-attributes">
 <h2>Some <a class="reference internal" href="document.html#document"><span>Document</span></a> methods and attributes<a class="headerlink" href="#some-document-methods-and-attributes" title="Permalink to this headline">¶</a></h2>
@@ -129,7 +131,7 @@
 <dd></dd></dl>
 
 </td>
-<td>PDF format, e.g. &#8216;PDF 1.4&#8217;</td>
+<td>PDF format, e.g. &#8216;PDF-1.4&#8217;</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="encryption">
@@ -161,7 +163,7 @@
 <dd></dd></dl>
 
 </td>
-<td>Keywords (dictionary)</td>
+<td>Keywords</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="title">
@@ -304,7 +306,7 @@ At first, a page object must be created:</p>
 </div>
 <div class="section" id="render-a-page">
 <h3>Render a <a class="reference internal" href="page.html#page"><span>Page</span></a><a class="headerlink" href="#render-a-page" title="Permalink to this headline">¶</a></h3>
-<p>This example creates an image out a page&#8217;s content:</p>
+<p>This example creates an image out of a page&#8217;s content:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c">#-----------------------------------------------------------------------------------</span>
 <span class="c"># Get the page&#39;s rectangle</span>
 <span class="c">#-----------------------------------------------------------------------------------</span>
@@ -326,8 +328,8 @@ At first, a page object must be created:</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="store-the-page-image-in-a-file">
-<h3>Store the page image in a file<a class="headerlink" href="#store-the-page-image-in-a-file" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="save-the-page-image-in-a-file">
+<h3>Save the page image in a file<a class="headerlink" href="#save-the-page-image-in-a-file" title="Permalink to this headline">¶</a></h3>
 <p>We can simply store the image in a PNG file:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s">&quot;test.png&quot;</span><span class="p">)</span>
 </pre></div>
@@ -335,7 +337,7 @@ At first, a page object must be created:</p>
 </div>
 <div class="section" id="display-the-image-in-dialog-managers">
 <h3>Display the image in dialog managers<a class="headerlink" href="#display-the-image-in-dialog-managers" title="Permalink to this headline">¶</a></h3>
-<p>Or we convert the image into a bitmap usable by dialog managers. <a class="reference internal" href="pixmap.html#Pixmap.samples" title="Pixmap.samples"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.samples</span></code></a> represents the area of bytes of all the pixels in RGBA format as a Python bytearray. This area, or its <code class="docutils literal"><span class="pre">str()</span></code> version, is directly usable by presumably most dialog managers. Here are two examples.</p>
+<p>Or we convert the image into a bitmap usable by dialog managers. <a class="reference internal" href="pixmap.html#Pixmap.samples" title="Pixmap.samples"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.samples</span></code></a> represents the area of bytes of all the pixels in RGBA format as a Python bytearray. This area (or its <code class="docutils literal"><span class="pre">str()</span></code>-version), is directly usable by presumably most dialog managers. Here are two examples.</p>
 <p><strong>wxPython</strong>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">pix</span><span class="o">.</span><span class="n">samples</span>                   <span class="c"># data = bytearray of raw pixel data (RGBA)</span>
 <span class="n">bitmap</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BitmapFromBufferRGBA</span><span class="p">(</span><span class="n">irect</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
@@ -363,12 +365,12 @@ At first, a page object must be created:</p>
 <span class="n">text</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">extractText</span><span class="p">()</span>                  <span class="c"># remember: UTF-8 encoding!</span>
 </pre></div>
 </div>
-<p>If you want even more details you can determine, exactly where on a page a certain string appears:</p>
+<p>If you want even more details, you can determine, exactly where on a page a certain string appears:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># search for at most 4 page locations with specific contents</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;MuPDF&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The result <code class="docutils literal"><span class="pre">res</span></code> will now be <code class="docutils literal"><span class="pre">[]</span></code> or a list of no more than 4 <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> rectangles that contain the string &#8216;MuPDF&#8217;. The <code class="docutils literal"><span class="pre">maxhit</span></code> parameter (in our case set to 4) is optional defaulting to 16.</p>
+<p>The result <code class="docutils literal"><span class="pre">res</span></code> will now be <code class="docutils literal"><span class="pre">[]</span></code> or a list of no more than 4 <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> rectangles that contain the string &#8216;MuPDF&#8217;. The <code class="docutils literal"><span class="pre">maxhit</span></code> parameter (in our case set to 4) is optional (default is 16).</p>
 </div>
 </div>
 <div class="section" id="output">
@@ -376,8 +378,8 @@ At first, a page object must be created:</p>
 <p>Output capabilities of MuPDF (such as PDF generation) are currently very limited. However, a copy of the currently opened document can be created.</p>
 <p>We support this with the method <a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a>. If the document had been successfully decrypted before, <code class="docutils literal"><span class="pre">save()</span></code> will create a decrypted copy.</p>
 <p>In addition, this method will also perform some clean-up:</p>
-<p>If the document containes invalid or broken cross references, the saved version will have them corrected, which makes it readable by other Python PDF software, like <a class="reference external" href="https://github.com/pmaupin/pdfrw">pdfrw</a> and <a class="reference external" href="http://mstamy2.github.io/PyPDF2">PyPDF2</a>. In many cases, the saved version will also be smaller than the original.</p>
-<p><a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> now supports several options of MuPDF&#8217;s standalone utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>.</p>
+<p>If the document containes invalid or broken xrefs, the saved version will have them corrected, which makes it readable by other Python PDF software, like <a class="reference external" href="https://github.com/pmaupin/pdfrw">pdfrw</a> or <a class="reference external" href="http://mstamy2.github.io/PyPDF2">PyPDF2</a>. In many cases, the saved version will also be smaller than the original.</p>
+<p><a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> now supports all options of MuPDF&#8217;s standalone utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="29%" />
@@ -399,32 +401,83 @@ At first, a page object must be created:</p>
 <td>in addition to 2, merge duplicate objects</td>
 </tr>
 <tr class="row-odd"><td>clean = 1</td>
-<td>clean content streams (use with care)</td>
+<td>clean content streams (avoid / use with care)</td>
 </tr>
 <tr class="row-even"><td>deflate = 1</td>
 <td>deflate uncompressed streams</td>
 </tr>
+<tr class="row-odd"><td>ascii = 1</td>
+<td>convert data to ASCII format</td>
+</tr>
+<tr class="row-even"><td>linear = 1</td>
+<td>create a linearized document version</td>
+</tr>
+<tr class="row-odd"><td>expand = 1</td>
+<td>create a decompressed version</td>
+</tr>
+<tr class="row-even"><td>incremental = 1</td>
+<td>only save data that have changed</td>
+</tr>
 </tbody>
 </table>
-<p>Please note, that <a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a>, according to MuPDF&#8217;s documentation is still under development and therefore prone to future changes.</p>
-<p>Like with <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>, not all combinations of the above options may work for all documents - so use them with care.</p>
-<p>We have found, that the most stable combination seems to be <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span> <span class="pre">-ggg</span> <span class="pre">-z</span></code>, which corresponds to <code class="docutils literal"><span class="pre">doc.save(filename,garbage=3,deflate=1)</span></code>. This is also considerably faster than including the <code class="docutils literal"><span class="pre">clean=1</span></code> option.</p>
+<p>Please note, that <a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a>, according to MuPDF&#8217;s documentation, is still being further developed, so expect changes in the future here.</p>
+<p>Like with <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>, not all combinations of the above options may work for all documents - so be ready to experiment a little.</p>
+<p>We have found, that the fastest and very stable combination is <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span> <span class="pre">-ggg</span> <span class="pre">-z</span></code>, giving good compression results. In PyMuPDF this corresponds to <code class="docutils literal"><span class="pre">doc.save(filename,</span> <span class="pre">garbage=3,</span> <span class="pre">deflate=1)</span></code>.</p>
+<p>In some cases, best compression factors result, if <code class="docutils literal"><span class="pre">expand</span></code> and <code class="docutils literal"><span class="pre">deflate</span></code> are being used together, though they seem to be contradictory. This works because MuPDF is forced to expand and then re-compress all objects, which will correct poorly compressed content during document creation.</p>
 </div>
 <div class="section" id="close">
 <h2>Close<a class="headerlink" href="#close" title="Permalink to this headline">¶</a></h2>
-<p>In some situations it may be desirable to &#8220;close&#8221; a <a class="reference internal" href="document.html#document"><span>Document</span></a> such that it becomes fully available again to other tasks and / or the operating system. This can be achieved by the <a class="reference internal" href="document.html#Document.close" title="Document.close"><code class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></code></a> method.</p>
+<p>In some situations it is desirable to &#8220;close&#8221; a <a class="reference internal" href="document.html#document"><span>Document</span></a> such that it becomes fully available again to the OS while your program continues to run.</p>
+<p>This can be achieved by the <a class="reference internal" href="document.html#Document.close" title="Document.close"><code class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></code></a> method. Apart from closing the file, all buffer areas associated with the document will be freed. If the document has been created from memory data, no underlying file is opened by MuPDF, so only the buffer release will take place.</p>
 <p><strong>Caution:</strong></p>
-<p>After close, the document and all objects referencing it will be invalid  and <strong>must not be used anymore.</strong> This binding includes protection against most such invalid uses by disabling properties and methods of the <a class="reference internal" href="document.html#document"><span>Document</span></a> and any <a class="reference internal" href="document.html#Document.loadPage" title="Document.loadPage"><code class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></code></a> objects.</p>
+<p>After close, the document and all objects referencing it will be invalid  and <strong>must no longer be used</strong>. This binding protects against most such invalid uses by disabling properties and methods of the <a class="reference internal" href="document.html#document"><span>Document</span></a> and any associated <a class="reference internal" href="document.html#Document.loadPage" title="Document.loadPage"><code class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></code></a> objects.</p>
 <p>However, re-opening a previously closed file by a new <a class="reference internal" href="document.html#document"><span>Document</span></a> is no problem. Please also do have a look at the following valid example:</p>
-<div class="highlight-python"><div class="highlight"><pre>doc = fitz.Document(fold)            # open a document
+<div class="highlight-python"><div class="highlight"><pre>doc = fitz.Document(f_old)           # open a document
 &lt;... some statements ...&gt;            # e.g. decryption
 doc.save(fnew, garbage=3, deflate=1) # save a decrypted / compressed version
 doc.close()                          # close input file
-os.remove(fold)                      # remove it
-os.rename(fnew, fold)                # rename the decrypted / cleaned version
-doc = fitz.Document(fold)            # use it as input for MuPDF
+os.remove(f_old)                     # remove it
+os.rename(f_new, f_old)              # rename the decrypted / cleaned version
+doc = fitz.Document(f_old)           # use it as input for MuPDF
 </pre></div>
 </div>
+</div>
+<div class="section" id="example-dynamically-cleaning-up-corrupt-pdf-documents">
+<h2>Example: Dynamically cleaning up corrupt PDF documents<a class="headerlink" href="#example-dynamically-cleaning-up-corrupt-pdf-documents" title="Permalink to this headline">¶</a></h2>
+<p>To demonstrate a potential use of PyMuPDF, here is an example to try and dynamically clean a problematic PDF file when processing it with <code class="docutils literal"><span class="pre">pdfrw</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pdfrw</span> <span class="kn">import</span> <span class="n">PdfReader</span>
+<span class="kn">import</span> <span class="nn">fitz</span>
+<span class="kn">from</span> <span class="nn">cStringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="c">#---------------------------------------</span>
+<span class="c"># &#39;tolerant&#39; PDF reader</span>
+<span class="c">#---------------------------------------</span>
+<span class="k">def</span> <span class="nf">reader</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+    <span class="n">ifile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span>
+    <span class="n">idata</span> <span class="o">=</span> <span class="n">ifile</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>                <span class="c"># put in memory</span>
+    <span class="n">ifile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">ibuffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>           <span class="c"># convert to stream</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PdfReader</span><span class="p">(</span><span class="n">ibuffer</span><span class="p">)</span>       <span class="c"># let us try</span>
+    <span class="k">except</span><span class="p">:</span>                             <span class="c"># problem! see if PyMuPDF can heal it</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="s">&quot;application/pdf&quot;</span><span class="p">,</span>
+                            <span class="n">idata</span><span class="p">,</span>
+                            <span class="nb">len</span><span class="p">(</span><span class="n">idata</span><span class="p">))</span> <span class="c"># scan pdf data in memory</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;test.pdf&quot;</span><span class="p">,</span>            <span class="c"># may want to use a temp file</span>
+                 <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                 <span class="n">deflate</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>             <span class="c"># save a cleaned version</span>
+        <span class="n">ifile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;test.pdf&quot;</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span>  <span class="c"># open it</span>
+        <span class="n">idata</span> <span class="o">=</span> <span class="n">ifile</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>            <span class="c"># put in memory</span>
+        <span class="n">ifile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">ibuffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>       <span class="c"># convert to stream</span>
+        <span class="k">return</span> <span class="n">PdfReader</span><span class="p">(</span><span class="n">ibuffer</span><span class="p">)</span>       <span class="c"># now let pdfrw retry</span>
+<span class="c">#---------------------------------------</span>
+<span class="n">pdf</span> <span class="o">=</span> <span class="n">reader</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="k">print</span> <span class="n">pdf</span><span class="o">.</span><span class="n">Info</span>
+<span class="c"># do further processing</span>
+</pre></div>
+</div>
+<p>With a command line utility like <code class="docutils literal"><span class="pre">pdftk</span></code> a similar result can be achieved, see <a class="reference external" href="http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/">here</a>. It even supports buffers for input <strong>and</strong> output. However you must invoke it via <code class="docutils literal"><span class="pre">subprocess.Popen</span></code>, using stdin and stdout as communication vehicles.</p>
 </div>
 </div>
 
@@ -447,13 +500,14 @@ doc = fitz.Document(fold)            # use it as input for MuPDF
 <li><a class="reference internal" href="#work-with-pages">Work with Pages</a><ul>
 <li><a class="reference internal" href="#inspect-the-links-on-a-page">Inspect the links on a <code class="docutils literal"><span class="pre">Page</span></code></a></li>
 <li><a class="reference internal" href="#render-a-page">Render a <code class="docutils literal"><span class="pre">Page</span></code></a></li>
-<li><a class="reference internal" href="#store-the-page-image-in-a-file">Store the page image in a file</a></li>
+<li><a class="reference internal" href="#save-the-page-image-in-a-file">Save the page image in a file</a></li>
 <li><a class="reference internal" href="#display-the-image-in-dialog-managers">Display the image in dialog managers</a></li>
 <li><a class="reference internal" href="#extract-and-search-for-text-of-a-page">Extract and search for text of a <code class="docutils literal"><span class="pre">Page</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#output">Output</a></li>
 <li><a class="reference internal" href="#close">Close</a></li>
+<li><a class="reference internal" href="#example-dynamically-cleaning-up-corrupt-pdf-documents">Example: Dynamically cleaning up corrupt PDF documents</a></li>
 </ul>
 </li>
 </ul>
@@ -505,7 +559,7 @@ doc = fitz.Document(fold)            # use it as input for MuPDF
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 05. Jul 2015.
+      Last updated on 06. Jul 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

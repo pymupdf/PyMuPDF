@@ -8,7 +8,7 @@
 Document
 ================
 
-This class represents a document and is constructed by ``fitz.Document(filename)``. This will also **open** the document specified as ``filename``. Returns a ``Document`` object.
+This class represents a document and is constructed by ``fitz.Document(...)``. See below for details.
 
 =============================== ================================
 **Method / Attribute**          **Short Description**
@@ -29,6 +29,32 @@ This class represents a document and is constructed by ``fitz.Document(filename)
 **Class API**
 
 .. class:: Document
+
+    .. method:: __init__(self, filename)
+
+      Constructs a ``Document`` object from a file.
+
+      :param `filename`: A string (UTF-8 or unicode) containing the path / name of the document file to be used. The file will be opened and remain open until either explicitely closed (see below) or until end of program.
+      :type `filename`: string
+
+      :rtype: :ref:`Document`
+      :returns: A ``Document`` object.
+
+    .. method:: __init__(self, filetype, stream=data, streamlen=len(data))
+
+      Constructs a ``Document`` object from memory data.
+
+      :param `filetype`: A string (UTF-8 or unicode) specifing the type of document contained in ``stream``. This may be either a file name like "x.pdf", in which case MuPDF will use the extension determine the type, or a mime type like ``application/pdf``.
+      :type `filetype`: string
+
+      :param `stream`: A string of data representing the content of a supported document type.
+      :type `stream`: string
+
+      :param `streamlen`: An integer specifying the length of the stream.
+      :type `streamlen`: int
+
+      :rtype: :ref:`Document`
+      :returns: A ``Document`` object.
 
     .. method:: authenticate(password)
 

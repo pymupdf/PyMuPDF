@@ -35,7 +35,12 @@ struct fz_document_s {
                 return NULL;
             }
         }
-        %pythonprepend fz_document_s(const char *) %{
+        %pythonprepend fz_document_s(const char *filename, char *stream=NULL, int streamlen=0) %{
+            '''
+            filename or filetype: string specifying a file name or a MIME type
+            stream:               string containing document data
+            streamlen:            integer containing length of stream
+            '''
             if type(filename) == str:
                 pass
             elif type(filename) == unicode:
@@ -46,7 +51,7 @@ struct fz_document_s {
             self.isClosed = 0
 
         %}
-        %pythonappend fz_document_s(const char *) %{
+        %pythonappend fz_document_s(const char *filename, char *stream=NULL, int streamlen=0) %{
             #================================================================
             # Function: Table of Contents
             #================================================================
@@ -90,10 +95,17 @@ struct fz_document_s {
                 self.ToC = ToC
                 self.thisown = False
         %}
-        fz_document_s(const char *filename) {
+        fz_document_s(const char *filename, char *stream=NULL, int streamlen=0) {
             struct fz_document_s *doc = NULL;
+            fz_stream *data = NULL;
+            if (streamlen > 0)
+                data = fz_open_memory(gctx, stream, streamlen);
             fz_try(gctx)
-                doc = fz_open_document(gctx, filename);
+                if (streamlen == 0)
+                    doc = fz_open_document(gctx, filename);
+                else
+                    doc = fz_open_document_with_stream(gctx, filename, data);
+
             fz_catch(gctx)
                 ;
             return doc;

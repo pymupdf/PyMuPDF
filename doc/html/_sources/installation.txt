@@ -17,20 +17,23 @@ Download `MuPDF version 1.7a source <http://mupdf.com/downloads/>`_, and unzip i
 
 Put it inside ``PyFitz`` as a subdirectory, if you want to keep everything in one place.
 
+If your platform is **not Linux and not Windows**, you must **generate MuPDF now**. The download includes generation procedures / makefiles for numerous platforms.
+
+On Linux and on Windows, this is not necessary: MuPDF object code is pregenerated and put in special directories:
+	* LibLinux - for the Linux-generated MuPDF libraries
+	* LibWin32 - for the Windows-generated MuPDF libraries
+
 Step 3: Build / Setup PyMuPDF
 ----------------------------------
 If necessary, adjust the setup.py script now. E.g. make sure that
 
   * the include directory is correctly set in sync with your directory structure
-
-It is no longer necessary to generate MuPDF object code if your platform is either Windows or Linux.
-The required object libraries for these two platforms have been put into respective directories, and the setup script has been updated. These are the names of those directories:
-
-	* LibLinux - for the Linux-generated MuPDF libraries
-	* LibWin32 - for the Windows-generated MuPDF libraries
+  * the object code libraries are correctly defined
 
 Now perform a ``python setup.py install``
 
-Note on Using UPX on Windows
-------------------------------
-In Windows systems, your PyMuPDF installation will end up with three files: ``__init__.py``, ``fitz.py`` and ``_fitz.pyd`` in the ``site-packages`` directory. The PYD file is Python's DLL version on Windows systems. ``_fitz.pyd`` has a size of 9.5 to 10 MB. You can reduce this by applying the compression utility UPX to it: ``upx -9 _fitz.pyd``. This will reduce the file to about 4.5 MB. This should reduce load times (``import fitz`` statement) while keeping it fully functional.
+Note on using UPX
+------------------
+In Windows systems, your PyMuPDF installation will end up with three files: ``__init__.py``, ``fitz.py`` and ``_fitz.pyd`` in the ``site-packages`` directory. The PYD file is Python's DLL version on Windows systems. ``_fitz.pyd`` has a size of 9.5 to 10 MB.
+
+You can reduce this by applying the compression utility UPX to it: ``upx -9 _fitz.pyd``. This will reduce the file to about 4.5 MB. This should reduce load times (``import fitz`` statement) while keeping it fully functional.
