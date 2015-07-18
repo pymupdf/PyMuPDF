@@ -3568,7 +3568,10 @@ SWIGINTERN int fz_outline_s_saveText(struct fz_outline_s *self,char const *filen
             int res = 1;
             struct fz_output_s *text;
             fz_try(gctx) {
-                text = fz_new_output_to_filename(gctx, filename);
+                if (&filename == NULL)
+                    text = fz_new_output_with_file(gctx, stdout, 0);
+                else
+                    text = fz_new_output_to_filename(gctx, filename);
                 fz_print_outline(gctx, text, self);
                 fz_drop_output(gctx, text);
                 res = 0;
@@ -3696,14 +3699,47 @@ SWIGINTERN struct fz_rect_s *fz_text_page_s_search(struct fz_text_page_s *self,c
 
             return result;
         }
-SWIGINTERN struct fz_buffer_s *fz_text_page_s_extractText(struct fz_text_page_s *self){
+SWIGINTERN struct fz_buffer_s *fz_text_page_s_extractText(struct fz_text_page_s *self,int basic){
             struct fz_buffer_s *res = NULL;
             fz_output *out;
             fz_try(gctx) {
                 /* inital size for text */
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
-                fz_print_text_page(gctx, out, self);
+                if (basic == 1)
+                    fz_print_text_page(gctx, out, self);
+                else
+                    fz_print_text_page_xml(gctx, out, self);
+                fz_drop_output(gctx, out);
+            }
+            fz_catch(gctx) {
+                ;
+            }
+            return res;
+        }
+SWIGINTERN struct fz_buffer_s *fz_text_page_s_extractXML(struct fz_text_page_s *self){
+            struct fz_buffer_s *res = NULL;
+            fz_output *out;
+            fz_try(gctx) {
+                /* inital size for text */
+                res = fz_new_buffer(gctx, 1024);
+                out = fz_new_output_with_buffer(gctx, res);
+                fz_print_text_page_xml(gctx, out, self);
+                fz_drop_output(gctx, out);
+            }
+            fz_catch(gctx) {
+                ;
+            }
+            return res;
+        }
+SWIGINTERN struct fz_buffer_s *fz_text_page_s_extractHTML(struct fz_text_page_s *self){
+            struct fz_buffer_s *res = NULL;
+            fz_output *out;
+            fz_try(gctx) {
+                /* inital size for text */
+                res = fz_new_buffer(gctx, 1024);
+                out = fz_new_output_with_buffer(gctx, res);
+                fz_print_text_page_html(gctx, out, self);
                 fz_drop_output(gctx, out);
             }
             fz_catch(gctx) {
@@ -6571,7 +6607,7 @@ fail:
 SWIGINTERN PyObject *_wrap_Outline_saveText(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_outline_s *arg1 = (struct fz_outline_s *) 0 ;
-  char *arg2 = (char *) 0 ;
+  char *arg2 = (char *) NULL ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res2 ;
@@ -6581,17 +6617,19 @@ SWIGINTERN PyObject *_wrap_Outline_saveText(PyObject *SWIGUNUSEDPARM(self), PyOb
   PyObject * obj1 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:Outline_saveText",&obj0,&obj1)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O|O:Outline_saveText",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_outline_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Outline_saveText" "', argument " "1"" of type '" "struct fz_outline_s *""'"); 
   }
   arg1 = (struct fz_outline_s *)(argp1);
-  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Outline_saveText" "', argument " "2"" of type '" "char const *""'");
+  if (obj1) {
+    res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Outline_saveText" "', argument " "2"" of type '" "char const *""'");
+    }
+    arg2 = (char *)(buf2);
   }
-  arg2 = (char *)(buf2);
   {
     result = (int)fz_outline_s_saveText(arg1,(char const *)arg2);
     if(result) {
@@ -7644,21 +7682,94 @@ fail:
 SWIGINTERN PyObject *_wrap_TextPage_extractText(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_text_page_s *arg1 = (struct fz_text_page_s *) 0 ;
+  int arg2 = (int) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
   struct fz_buffer_s *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:TextPage_extractText",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O|O:TextPage_extractText",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_text_page_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TextPage_extractText" "', argument " "1"" of type '" "struct fz_text_page_s *""'"); 
   }
   arg1 = (struct fz_text_page_s *)(argp1);
+  if (obj1) {
+    ecode2 = SWIG_AsVal_int(obj1, &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "TextPage_extractText" "', argument " "2"" of type '" "int""'");
+    } 
+    arg2 = (int)(val2);
+  }
   {
-    result = (struct fz_buffer_s *)fz_text_page_s_extractText(arg1);
+    result = (struct fz_buffer_s *)fz_text_page_s_extractText(arg1,arg2);
     if(!result) {
       PyErr_SetString(PyExc_Exception, "cannot extract text");
+      return NULL;
+    }
+  }
+  {
+    resultobj = SWIG_FromCharPtr((const char *)result->data);
+    fz_drop_buffer(gctx, result);
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_TextPage_extractXML(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_text_page_s *arg1 = (struct fz_text_page_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  struct fz_buffer_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:TextPage_extractXML",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_text_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TextPage_extractXML" "', argument " "1"" of type '" "struct fz_text_page_s *""'"); 
+  }
+  arg1 = (struct fz_text_page_s *)(argp1);
+  {
+    result = (struct fz_buffer_s *)fz_text_page_s_extractXML(arg1);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, "cannot extract XML text");
+      return NULL;
+    }
+  }
+  {
+    resultobj = SWIG_FromCharPtr((const char *)result->data);
+    fz_drop_buffer(gctx, result);
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_TextPage_extractHTML(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_text_page_s *arg1 = (struct fz_text_page_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  struct fz_buffer_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:TextPage_extractHTML",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_text_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TextPage_extractHTML" "', argument " "1"" of type '" "struct fz_text_page_s *""'"); 
+  }
+  arg1 = (struct fz_text_page_s *)(argp1);
+  {
+    result = (struct fz_buffer_s *)fz_text_page_s_extractHTML(arg1);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, "cannot extract HTML text");
       return NULL;
     }
   }
@@ -7832,6 +7943,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"delete_TextPage", _wrap_delete_TextPage, METH_VARARGS, NULL},
 	 { (char *)"TextPage_search", _wrap_TextPage_search, METH_VARARGS, NULL},
 	 { (char *)"TextPage_extractText", _wrap_TextPage_extractText, METH_VARARGS, NULL},
+	 { (char *)"TextPage_extractXML", _wrap_TextPage_extractXML, METH_VARARGS, NULL},
+	 { (char *)"TextPage_extractHTML", _wrap_TextPage_extractHTML, METH_VARARGS, NULL},
 	 { (char *)"TextPage_swigregister", TextPage_swigregister, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
