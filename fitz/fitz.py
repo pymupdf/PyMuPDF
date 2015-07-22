@@ -320,13 +320,13 @@ class Page(_object):
         return val
 
 
-    def run(self, dev, m):
+    def run(self, dw, m):
 
         if self.parent.isClosed == 1:
             raise ValueError("page operation on closed document")
 
 
-        return _fitz.Page_run(self, dev, m)
+        return _fitz.Page_run(self, dw, m)
 
 
     def loadLinks(self):
@@ -866,8 +866,8 @@ class DisplayList(_object):
     __swig_destroy__ = _fitz.delete_DisplayList
     __del__ = lambda self: None
 
-    def run(self, dev, m, area):
-        return _fitz.DisplayList_run(self, dev, m, area)
+    def run(self, dw, m, area):
+        return _fitz.DisplayList_run(self, dw, m, area)
 DisplayList_swigregister = _fitz.DisplayList_swigregister
 DisplayList_swigregister(DisplayList)
 

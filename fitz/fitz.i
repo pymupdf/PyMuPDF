@@ -1,5 +1,4 @@
 %module fitz
-
 /*
 #define MEMDEBUG
 */
@@ -16,6 +15,11 @@
 %}
 %header %{
     fz_context *gctx;
+
+struct DeviceWrapper {
+    fz_device *device;
+    fz_display_list *list;
+};
 %}
 
 /* include version information */
@@ -123,7 +127,7 @@ struct fz_document_s {
         %}
         void close() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "free doc\n");
+            fprintf(stderr, "[DEBUG]free doc\n");
 #endif
             while($self->refs > 1) {
                 fz_drop_document(gctx, $self);
@@ -169,7 +173,7 @@ struct fz_document_s {
         %}
         void _dropOutline(struct fz_outline_s *ol) {
 #ifdef MEMDEBUG
-            fprintf(stderr, "free outline\n");
+            fprintf(stderr, "[DEBUG]free outline\n");
 #endif
             fz_drop_outline(gctx, ol);
         }
@@ -283,7 +287,7 @@ struct fz_page_s {
     %extend {
         ~fz_page_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "free page\n");
+            fprintf(stderr, "[DEBUG]free page\n");
 #endif
             fz_drop_page(gctx, $self);
         }
@@ -312,13 +316,13 @@ struct fz_page_s {
         /***********************************************************/
         /* Page.run()                                              */
         /***********************************************************/
-        %pythonprepend run(struct fz_device_s *dev, const struct fz_matrix_s *m) %{
+        %pythonprepend run(struct DeviceWrapper *dw, const struct fz_matrix_s *m) %{
             if self.parent.isClosed == 1:
                 raise ValueError("page operation on closed document")
         %}
-        int run(struct fz_device_s *dev, const struct fz_matrix_s *m) {
+        int run(struct DeviceWrapper *dw, const struct fz_matrix_s *m) {
             fz_try(gctx) {
-                fz_run_page(gctx, $self, dev, m, NULL);
+                fz_run_page(gctx, $self, dw->device, m, NULL);
             }
             fz_catch(gctx) {
                 return 1;
@@ -361,7 +365,7 @@ struct fz_rect_s
         }
 #ifdef MEMDEBUG
         ~fz_rect_s() {
-            fprintf(stderr, "free rect\n");
+            fprintf(stderr, "[DEBUG]free rect\n");
             free($self);
         }
 #endif
@@ -394,7 +398,7 @@ struct fz_irect_s
     %extend {
 #ifdef MEMDEBUG
         ~fz_irect_s() {
-            fprintf(stderr, "free irect\n");
+            fprintf(stderr, "[DEBUG]free irect\n");
             free($self);
         }
 #endif
@@ -437,7 +441,7 @@ struct fz_pixmap_s
 
         ~fz_pixmap_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "free pixmap\n");
+            fprintf(stderr, "[DEBUG]free pixmap\n");
 #endif
             fz_drop_pixmap(gctx, $self);
         }
@@ -510,7 +514,7 @@ struct fz_colorspace_s
         }
         ~fz_colorspace_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "free colorspace\n");
+            fprintf(stderr, "[DEBUG]free colorspace\n");
 #endif
             fz_drop_colorspace(gctx, $self);
         }
@@ -518,47 +522,63 @@ struct fz_colorspace_s
 };
 
 
-/* fz_device */
-%rename(Device) fz_device_s;
-struct fz_device_s
+/* fz_device wrapper */
+%rename(Device) DeviceWrapper;
+struct DeviceWrapper
 {
     %extend {
-        %exception fz_device_s {
+        %exception DeviceWrapper {
             $action
             if(!result) {
                 PyErr_SetString(PyExc_Exception, "cannot create Device");
                 return NULL;
             }
         }
-        fz_device_s(struct fz_pixmap_s *pm) {
-            struct fz_device_s *dv = NULL;
-            fz_try(gctx)
-                dv = fz_new_draw_device(gctx, pm);
+        DeviceWrapper(struct fz_pixmap_s *pm) {
+            struct DeviceWrapper *dw = NULL;
+            fz_try(gctx) {
+                dw = (struct DeviceWrapper *)calloc(1, sizeof(struct DeviceWrapper));
+                dw->device = fz_new_draw_device(gctx, pm);
+            }
             fz_catch(gctx)
                 ;
-            return dv;
+            return dw;
         }
-        fz_device_s(struct fz_display_list_s *dl) {
-            struct fz_device_s *dv = NULL;
-            fz_try(gctx)
-                dv = fz_new_list_device(gctx, dl);
+        DeviceWrapper(struct fz_display_list_s *dl) {
+            struct DeviceWrapper *dw = NULL;
+            fz_try(gctx) {
+                dw = (struct DeviceWrapper *)calloc(1, sizeof(struct DeviceWrapper));
+                dw->device = fz_new_list_device(gctx, dl);
+                dw->list = dl;
+                fz_keep_display_list(gctx, dl);
+            }
             fz_catch(gctx)
                 ;
-            return dv;
+            return dw;
         }
-        fz_device_s(struct fz_text_sheet_s *ts, struct fz_text_page_s *tp) {
-            struct fz_device_s *dv = NULL;
-            fz_try(gctx)
-                dv = fz_new_text_device(gctx, ts, tp);
+        DeviceWrapper(struct fz_text_sheet_s *ts, struct fz_text_page_s *tp) {
+            struct DeviceWrapper *dw = NULL;
+            fz_try(gctx) {
+                dw = (struct DeviceWrapper *)calloc(1, sizeof(struct DeviceWrapper));
+                dw->device = fz_new_text_device(gctx, ts, tp);
+            }
             fz_catch(gctx)
                 ;
-            return dv;
+            return dw;
         }
-        ~fz_device_s() {
+        ~DeviceWrapper() {
+            fz_display_list *list = $self->list;
 #ifdef MEMDEBUG
-            fprintf(stderr, "free device\n");
+            fprintf(stderr, "[DEBUG]free device\n");
 #endif
-            fz_drop_device(gctx, $self);
+            fz_drop_device(gctx, $self->device);
+            if(list) {
+#ifdef MEMDEBUG
+                fprintf(stderr, "[DEBUG]free display list after freeing device\n");
+#endif
+                fz_drop_display_list(gctx, list);
+            }
+
         }
     }
 };
@@ -579,7 +599,7 @@ struct fz_matrix_s
     %extend {
 #ifdef MEMDEBUG
         ~fz_matrix_s() {
-            fprintf(stderr, "free matrix\n");
+            fprintf(stderr, "[DEBUG]free matrix\n");
             free($self);
         }
 #endif
@@ -664,7 +684,7 @@ struct fz_outline_s {
     %extend {
         ~fz_outline_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "free outline\n");
+            fprintf(stderr, "[DEBUG]free outline\n");
 #endif
             fz_drop_outline(gctx, $self);
         }
@@ -787,7 +807,7 @@ struct fz_link_dest_s {
         }
         ~fz_link_dest_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "free link_dest\n");
+            fprintf(stderr, "[DEBUG]free link_dest\n");
 #endif
             fz_drop_link_dest(gctx, $self);
         }
@@ -819,7 +839,7 @@ struct fz_point_s
     %extend {
 #ifdef MEMDEBUG
         ~fz_point_s() {
-            fprintf(stderr, "free point\n");
+            fprintf(stderr, "[DEBUG]free point\n");
             free($self);
         }
 #endif
@@ -858,7 +878,7 @@ struct fz_link_s
     %extend {
         ~fz_link_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "free link\n");
+            fprintf(stderr, "[DEBUG]free link\n");
 #endif
             fz_drop_link(gctx, $self);
         }
@@ -901,7 +921,7 @@ struct fz_display_list_s {
 
         ~fz_display_list_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "free display list\n");
+            fprintf(stderr, "[DEBUG]free display list\n");
 #endif
             fz_drop_display_list(gctx, $self);
         }
@@ -912,9 +932,9 @@ struct fz_display_list_s {
                 return NULL;
             }
         }
-        int run(struct fz_device_s *dev, const struct fz_matrix_s *m, const struct fz_rect_s *area) {
+        int run(struct DeviceWrapper *dw, const struct fz_matrix_s *m, const struct fz_rect_s *area) {
             fz_try(gctx) {
-                fz_run_display_list(gctx, $self, dev, m, area, NULL);
+                fz_run_display_list(gctx, $self, dw->device, m, area, NULL);
             }
             fz_catch(gctx)
                 return 1;
@@ -946,7 +966,7 @@ struct fz_text_sheet_s {
 
         ~fz_text_sheet_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "free text sheet\n");
+            fprintf(stderr, "[DEBUG]free text sheet\n");
 #endif
             fz_drop_text_sheet(gctx, $self);
         }
@@ -992,7 +1012,7 @@ struct fz_text_page_s {
 
         ~fz_text_page_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "free text page\n");
+            fprintf(stderr, "[DEBUG]free text page\n");
 #endif
             fz_drop_text_page(gctx, $self);
         }
@@ -1000,14 +1020,14 @@ struct fz_text_page_s {
             fz_rect *result;
             int count;
             if(hit_max < 0) {
-                fprintf(stderr, "invalid hit max number %d\n", hit_max);
+                fprintf(stderr, "[DEBUG]invalid hit max number %d\n", hit_max);
                 return NULL;
             }
             result = (fz_rect *)malloc(sizeof(fz_rect)*(hit_max+1));
             count = fz_search_text_page(gctx, $self, needle, result, hit_max);
             result[count] = fz_empty_rect;
 #ifdef MEMDEBUG
-            fprintf(stderr, "count is %d, last one is (%g %g), (%g %g)\n", count, result[count].x0, result[count].y0, result[count].x1, result[count].y1);
+            fprintf(stderr, "[DEBUG]count is %d, last one is (%g %g), (%g %g)\n", count, result[count].x0, result[count].y0, result[count].x1, result[count].y1);
 #endif
             return result;
         }
