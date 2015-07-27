@@ -2,3 +2,4 @@
 *.so
 *.o
 *.swp
+build/
