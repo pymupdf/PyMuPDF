@@ -896,6 +896,10 @@ class TextPage(_object):
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, TextPage, name)
     __repr__ = _swig_repr
+    __swig_setmethods__["len"] = _fitz.TextPage_len_set
+    __swig_getmethods__["len"] = _fitz.TextPage_len_get
+    if _newclass:
+        len = _swig_property(_fitz.TextPage_len_get, _fitz.TextPage_len_set)
 
     def __init__(self):
         this = _fitz.new_TextPage()
@@ -1027,6 +1031,9 @@ class TextPage(_object):
 
     def extractHTML(self):
         return _fitz.TextPage_extractHTML(self)
+
+    def extractJSON(self):
+        return _fitz.TextPage_extractJSON(self)
 TextPage_swigregister = _fitz.TextPage_swigregister
 TextPage_swigregister(TextPage)
 

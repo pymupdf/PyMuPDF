@@ -3691,6 +3691,175 @@ SWIGINTERN void delete_fz_text_sheet_s(struct fz_text_sheet_s *self){
 
             fz_drop_text_sheet(gctx, self);
         }
+
+void
+fz_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox) {
+    fz_printf(ctx, out, "\"bbox\":[%f, %f, %f, %f],",
+                        bbox->x0, bbox->y0, bbox->x1, bbox->y1);
+}
+
+void
+fz_print_utf8(fz_context *ctx, fz_output *out, int rune) {
+    int i, n;
+    char utf[10];
+    n = fz_runetochar(utf, rune);
+    for (i = 0; i < n; i++) {
+        fz_printf(ctx, out, "%c", utf[i]);
+    }
+}
+
+void
+fz_print_span_text_json(fz_context *ctx, fz_output *out, fz_text_span *span) {
+    fz_text_char *ch;
+
+    for (ch = span->text; ch < span->text + span->len; ch++)
+    {
+        switch (ch->c)
+        {
+            case '\\': fz_printf(ctx, out, "\\\\"); break;
+            case '\'': fz_printf(ctx, out, "\\\'"); break;
+            case '"': fz_printf(ctx, out, "\\\""); break;
+            case '\b': fz_printf(ctx, out, "\\b"); break;
+            case '\f': fz_printf(ctx, out, "\\f"); break;
+            case '\n': fz_printf(ctx, out, "\\n"); break;
+            case '\r': fz_printf(ctx, out, "\\r"); break;
+            case '\t': fz_printf(ctx, out, "\\t"); break;
+            default:
+                if (ch->c >= 32 && ch->c <= 127) {
+                    fz_printf(ctx, out, "%c", ch->c);
+                } else {
+                    fz_printf(ctx, out, "\\u%04x", ch->c);
+                    //fz_print_utf8(ctx, out, ch->c);
+                }
+                break;
+        }
+    }
+}
+
+void
+fz_send_data_base64(fz_context *ctx, fz_output *out, fz_buffer *buffer)
+{
+	int i, len;
+	static const char set[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+	len = buffer->len/3;
+	for (i = 0; i < len; i++)
+	{
+		int c = buffer->data[3*i];
+		int d = buffer->data[3*i+1];
+		int e = buffer->data[3*i+2];
+		if ((i & 15) == 0)
+			fz_printf(ctx, out, "\n");
+		fz_printf(ctx, out, "%c%c%c%c", set[c>>2], set[((c&3)<<4)|(d>>4)], set[((d&15)<<2)|(e>>6)], set[e & 63]);
+	}
+	i *= 3;
+	switch (buffer->len-i)
+	{
+		case 2:
+		{
+			int c = buffer->data[i];
+			int d = buffer->data[i+1];
+			fz_printf(ctx, out, "%c%c%c=", set[c>>2], set[((c&3)<<4)|(d>>4)], set[((d&15)<<2)]);
+			break;
+		}
+	case 1:
+		{
+			int c = buffer->data[i];
+			fz_printf(ctx, out, "%c%c==", set[c>>2], set[(c&3)<<4]);
+			break;
+		}
+	default:
+	case 0:
+		break;
+	}
+}
+
+void
+fz_print_text_page_json(fz_context *ctx, fz_output *out, fz_text_page *page)
+{
+	int block_n;
+
+	fz_printf(ctx, out, "{\n \"len\":%d,\"width\":%g,\"height\":%g,\n \"blocks\":[\n",
+                        page->len,
+                        page->mediabox.x1 - page->mediabox.x0,
+		                page->mediabox.y1 - page->mediabox.y0);
+
+	for (block_n = 0; block_n < page->len; block_n++)
+	{
+	    fz_page_block * page_block = &(page->blocks[block_n]);
+
+	    fz_printf(ctx, out, "  {\"type\":%s,", page_block->type == FZ_PAGE_BLOCK_TEXT ? "\"text\"": "\"image\"");
+
+		switch (page->blocks[block_n].type)
+		{
+		    case FZ_PAGE_BLOCK_TEXT:
+            {
+                fz_text_block *block = page->blocks[block_n].u.text;
+                fz_text_line *line;
+
+                fz_print_rect_json(ctx, out, &(block->bbox));
+
+                fz_printf(ctx, out, "\n   \"lines\":[\n");
+
+                for (line = block->lines; line < block->lines + block->len; line++)
+                {
+                    fz_text_span *span;
+                    fz_printf(ctx, out, "      {");
+                    fz_print_rect_json(ctx, out, &(line->bbox));
+
+                    fz_printf(ctx, out, "\n       \"spans\":[\n");
+                    for (span = line->first_span; span; span = span->next)
+                    {
+                        fz_printf(ctx, out, "         {");
+                        fz_print_rect_json(ctx, out, &(span->bbox));
+                        fz_printf(ctx, out, "\n          \"text\":\"");
+
+                        fz_print_span_text_json(ctx, out, span);
+
+                        fz_printf(ctx, out, "\"\n         }");
+                        if (span && (span->next)) {
+                            fz_printf(ctx, out, ",\n");
+                        }
+                    }
+                    fz_printf(ctx, out, "\n       ]");  // spans end
+
+                    fz_printf(ctx, out, "\n      }");
+                    if (line < (block->lines + block->len - 1)) {
+                        fz_printf(ctx, out, ",\n");
+                    }
+                }
+                fz_printf(ctx, out, "\n   ]");      // lines end
+                break;
+            }
+		    case FZ_PAGE_BLOCK_IMAGE:
+            {
+                fz_image_block *image = page->blocks[block_n].u.image;
+
+                fz_print_rect_json(ctx, out, &(image->bbox));
+                fz_printf(ctx, out, "\"type\":%d,\"width\":%d,\"height\":%d",
+                                    image->image->buffer->params.type,
+                                    image->image->w,
+                                    image->image->h);
+                fz_printf(ctx, out, "\"image\":");
+                if (image->image->buffer == NULL) {
+                    fz_printf(ctx, out, "null");
+                } else {
+                    fz_printf(ctx, out, "\"");
+                    fz_send_data_base64(ctx, out, image->image->buffer->buffer);
+                    fz_printf(ctx, out, "\"");
+                }
+                break;
+            }
+		}
+
+		fz_printf(ctx, out, "\n  }");  // blocks end
+		if (block_n < (page->len - 1)) {
+		    fz_printf(ctx, out, ",\n");
+		}
+	}
+	fz_printf(ctx, out, "\n ]\n}");  // page end
+}
+
 SWIGINTERN struct fz_text_page_s *new_fz_text_page_s(void){
             struct fz_text_page_s *tp = NULL;
             fz_try(gctx)
@@ -3761,6 +3930,21 @@ SWIGINTERN struct fz_buffer_s *fz_text_page_s_extractHTML(struct fz_text_page_s 
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 fz_print_text_page_html(gctx, out, self);
+                fz_drop_output(gctx, out);
+            }
+            fz_catch(gctx) {
+                ;
+            }
+            return res;
+        }
+SWIGINTERN struct fz_buffer_s *fz_text_page_s_extractJSON(struct fz_text_page_s *self){
+            struct fz_buffer_s *res = NULL;
+            fz_output *out;
+            fz_try(gctx) {
+                /* inital size for text */
+                res = fz_new_buffer(gctx, 1024);
+                out = fz_new_output_with_buffer(gctx, res);
+                fz_print_text_page_json(gctx, out, self);
                 fz_drop_output(gctx, out);
             }
             fz_catch(gctx) {
@@ -7603,6 +7787,58 @@ SWIGINTERN PyObject *TextSheet_swigregister(PyObject *SWIGUNUSEDPARM(self), PyOb
   return SWIG_Py_Void();
 }
 
+SWIGINTERN PyObject *_wrap_TextPage_len_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_text_page_s *arg1 = (struct fz_text_page_s *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:TextPage_len_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_text_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TextPage_len_set" "', argument " "1"" of type '" "struct fz_text_page_s *""'"); 
+  }
+  arg1 = (struct fz_text_page_s *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "TextPage_len_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  if (arg1) (arg1)->len = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_TextPage_len_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_text_page_s *arg1 = (struct fz_text_page_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:TextPage_len_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_text_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TextPage_len_get" "', argument " "1"" of type '" "struct fz_text_page_s *""'"); 
+  }
+  arg1 = (struct fz_text_page_s *)(argp1);
+  result = (int) ((arg1)->len);
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_TextPage(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_text_page_s *result = 0 ;
@@ -7804,6 +8040,37 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_TextPage_extractJSON(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_text_page_s *arg1 = (struct fz_text_page_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  struct fz_buffer_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:TextPage_extractJSON",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_text_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TextPage_extractJSON" "', argument " "1"" of type '" "struct fz_text_page_s *""'"); 
+  }
+  arg1 = (struct fz_text_page_s *)(argp1);
+  {
+    result = (struct fz_buffer_s *)fz_text_page_s_extractJSON(arg1);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, "cannot extract JSON text");
+      return NULL;
+    }
+  }
+  {
+    resultobj = SWIG_FromCharPtr((const char *)result->data);
+    fz_drop_buffer(gctx, result);
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *TextPage_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
@@ -7960,12 +8227,15 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_TextSheet", _wrap_new_TextSheet, METH_VARARGS, NULL},
 	 { (char *)"delete_TextSheet", _wrap_delete_TextSheet, METH_VARARGS, NULL},
 	 { (char *)"TextSheet_swigregister", TextSheet_swigregister, METH_VARARGS, NULL},
+	 { (char *)"TextPage_len_set", _wrap_TextPage_len_set, METH_VARARGS, NULL},
+	 { (char *)"TextPage_len_get", _wrap_TextPage_len_get, METH_VARARGS, NULL},
 	 { (char *)"new_TextPage", _wrap_new_TextPage, METH_VARARGS, NULL},
 	 { (char *)"delete_TextPage", _wrap_delete_TextPage, METH_VARARGS, NULL},
 	 { (char *)"TextPage_search", _wrap_TextPage_search, METH_VARARGS, NULL},
 	 { (char *)"TextPage_extractText", _wrap_TextPage_extractText, METH_VARARGS, NULL},
 	 { (char *)"TextPage_extractXML", _wrap_TextPage_extractXML, METH_VARARGS, NULL},
 	 { (char *)"TextPage_extractHTML", _wrap_TextPage_extractHTML, METH_VARARGS, NULL},
+	 { (char *)"TextPage_extractJSON", _wrap_TextPage_extractJSON, METH_VARARGS, NULL},
 	 { (char *)"TextPage_swigregister", TextPage_swigregister, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
