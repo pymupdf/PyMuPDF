@@ -25,6 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.7.0 documentation" href="index.html" />
+    <link rel="next" title="Appendix" href="appendix.html" />
     <link rel="prev" title="TextSheet" href="textsheet.html" /> 
   </head>
   <body role="document">
@@ -34,6 +35,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="appendix.html" title="Appendix"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="textsheet.html" title="TextSheet"
              accesskey="P">previous</a> |</li>
@@ -54,6 +58,9 @@
   <h4>Previous topic</h4>
   <p class="topless"><a href="textsheet.html"
                         title="previous chapter">TextSheet</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="appendix.html"
+                        title="next chapter">Appendix</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -89,8 +96,8 @@
 <h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="41%" />
-<col width="59%" />
+<col width="38%" />
+<col width="63%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Constant</strong></th>
@@ -128,7 +135,7 @@
 <dd></dd></dl>
 
 </td>
-<td>&#8216;1.7.0&#8217; - Version of PyMuPDF</td>
+<td>&#8216;1.7.0&#8217; - Version of PyMuPDF (this binding)</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
 <dt id="VersionFitz">
@@ -136,14 +143,14 @@
 <dd></dd></dl>
 
 </td>
-<td>&#8216;1.7a&#8217; - Version of MuPDF</td>
+<td>&#8216;1.7a&#8217;  - Version of MuPDF</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="enumerations">
 <h2>Enumerations<a class="headerlink" href="#enumerations" title="Permalink to this headline">¶</a></h2>
-<p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> (link destination type). For details consult <a class="reference external" href="http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf">Adobe PDF Reference sixth edition 1.7 November 2006</a>.</p>
+<p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> (link destination type). For details consult <a class="reference external" href="http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf">Adobe PDF Reference sixth edition 1.7 November 2006</a>, chapter 8.2 on page 581 ff.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="40%" />
@@ -156,52 +163,52 @@
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><dl class="first last data">
-<dt id="FZ_LINK_NONE">
-<code class="descname">FZ_LINK_NONE</code><a class="headerlink" href="#FZ_LINK_NONE" title="Permalink to this definition">¶</a></dt>
+<dt id="LINK_NONE">
+<code class="descname">LINK_NONE</code><a class="headerlink" href="#LINK_NONE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </td>
 <td>0 - No destination</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
-<dt id="FZ_LINK_GOTO">
-<code class="descname">FZ_LINK_GOTO</code><a class="headerlink" href="#FZ_LINK_GOTO" title="Permalink to this definition">¶</a></dt>
+<dt id="LINK_GOTO">
+<code class="descname">LINK_GOTO</code><a class="headerlink" href="#LINK_GOTO" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </td>
 <td>1 - Points to a place in this document</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
-<dt id="FZ_LINK_URI">
-<code class="descname">FZ_LINK_URI</code><a class="headerlink" href="#FZ_LINK_URI" title="Permalink to this definition">¶</a></dt>
+<dt id="LINK_URI">
+<code class="descname">LINK_URI</code><a class="headerlink" href="#LINK_URI" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </td>
 <td>2 - Points to an URI</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
-<dt id="FZ_LINK_LAUNCH">
-<code class="descname">FZ_LINK_LAUNCH</code><a class="headerlink" href="#FZ_LINK_LAUNCH" title="Permalink to this definition">¶</a></dt>
+<dt id="LINK_LAUNCH">
+<code class="descname">LINK_LAUNCH</code><a class="headerlink" href="#LINK_LAUNCH" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </td>
-<td>3 - Launches (opens) a file</td>
+<td>3 - Launch (open) another document</td>
 </tr>
 <tr class="row-even"><td><dl class="first last data">
-<dt id="FZ_LINK_NAMED">
-<code class="descname">FZ_LINK_NAMED</code><a class="headerlink" href="#FZ_LINK_NAMED" title="Permalink to this definition">¶</a></dt>
+<dt id="LINK_NAMED">
+<code class="descname">LINK_NAMED</code><a class="headerlink" href="#LINK_NAMED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </td>
-<td>4 - Performs some action</td>
+<td>4 - Perform some action</td>
 </tr>
 <tr class="row-odd"><td><dl class="first last data">
-<dt id="FZ_LINK_GOTOR">
-<code class="descname">FZ_LINK_GOTOR</code><a class="headerlink" href="#FZ_LINK_GOTOR" title="Permalink to this definition">¶</a></dt>
+<dt id="LINK_GOTOR">
+<code class="descname">LINK_GOTOR</code><a class="headerlink" href="#LINK_GOTOR" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </td>
-<td>5 - Points to a place in another document</td>
+<td>5 - Points to another document</td>
 </tr>
 </tbody>
 </table>
@@ -291,6 +298,9 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
+          <a href="appendix.html" title="Appendix"
+             >next</a> |</li>
+        <li class="right" >
           <a href="textsheet.html" title="TextSheet"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.7.0 documentation</a> &raquo;</li> 
@@ -298,7 +308,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 07. Jul 2015.
+      Last updated on 27. Jul 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

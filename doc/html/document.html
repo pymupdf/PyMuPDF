@@ -225,7 +225,7 @@
 <li><strong>garbage</strong> (<em>int</em>) &#8211; Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition compact xref tables, 3 = in addition merge duplicate objects.</li>
 <li><strong>clean</strong> (<em>int</em>) &#8211; Clean content streams: 0 = False, 1 = True.</li>
 <li><strong>deflate</strong> (<em>int</em>) &#8211; Deflate uncompressed streams: 0 = False, 1 = True.</li>
-<li><strong>incremental</strong> (<em>int</em>) &#8211; Only save change objects: 0 = False, 1 = True.</li>
+<li><strong>incremental</strong> (<em>int</em>) &#8211; Only save changed objects: 0 = False, 1 = True.</li>
 <li><strong>ascii</strong> (<em>int</em>) &#8211; Where possible make the output ASCII: 0 = False, 1 = True.</li>
 <li><strong>expand</strong> (<em>int</em>) &#8211; One byte bitfield to decompress contents: 0 = none, 1 = images, 2 = fonts, 255 = all. This convenience option generates a decompressed file version that can be better read by some other programs.</li>
 <li><strong>linear</strong> (<em>int</em>) &#8211; Save a linearised version of the document: 0 = False, 1 = True. This option creates a file format for improved performance when read via internet connections.</li>
@@ -245,7 +245,7 @@
 <dl class="method">
 <dt id="Document.ToC">
 <code class="descname">ToC</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Document.ToC" title="Permalink to this definition">¶</a></dt>
-<dd><p>A convenience function that creates a table of contents from the <code class="docutils literal"><span class="pre">outline</span></code> entries. If none exist <code class="docutils literal"><span class="pre">[]</span></code> will be returned, otherwise a Python list <code class="docutils literal"><span class="pre">[[level,</span> <span class="pre">title,</span> <span class="pre">page],</span> <span class="pre">[...],</span> <span class="pre">...]</span></code>. Note that the title entries have already been decoded to unicode here.</p>
+<dd><p>A convenience function that creates a table of contents from the <code class="docutils literal"><span class="pre">outline</span></code> entries. If none exist <code class="docutils literal"><span class="pre">[]</span></code> will be returned, otherwise a Python list <code class="docutils literal"><span class="pre">[[level,</span> <span class="pre">title,</span> <span class="pre">page],</span> <span class="pre">[...],</span> <span class="pre">...]</span></code>. Note that the title entries have already been decoded to unicode here. Page numbers are 1-based, but zero if and only if the entry points to a place outside this document.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -381,7 +381,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 07. Jul 2015.
+      Last updated on 27. Jul 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

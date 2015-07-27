@@ -60,33 +60,28 @@ struct fz_document_s {
             # Function: Table of Contents
             #================================================================
             def ToC():
-                if not self._outline:              # contains no outline:
-                    return []                      # return empty list
-                lvl = 0                            # records current indent level
-                ltab = {}                          # last OutlineItem on this level
-                liste = []                         # will hold flattened outline
-                olItem = self._outline
-                while olItem:
-                    while olItem:                  # process one OutlineItem
-                        lvl += 1                   # its indent level
-                        zeile = [lvl,              # create one outline line
-                                 olItem.title.decode("UTF-8"),
-                                 olItem.dest.page]
-                        liste.append(zeile)        # append it
-                        ltab[lvl] = olItem         # record OutlineItem in level table
-                        olItem = olItem.down       # go to child OutlineItem
-                    olItem = ltab[lvl].next        # no more children, look for brothers
-                    if olItem:                     # have any?
-                        lvl -= 1                   # prep. proc.: decrease lvl recorder
-                        continue
-                    else:                          # no kids, no brothers, now what?
-                        while lvl > 1 and not olItem:
-                            lvl -= 1               # go look for uncles
-                            olItem = ltab[lvl].next
-                        if lvl < 1:                # out of relatives
-                            return liste           # return ToC
-                        lvl -= 1
-                return liste                       # return ToC
+
+                def recurse(olItem, liste, lvl):
+                    while olItem:
+                        if olItem.title:
+                            title = olItem.title.decode("utf-8")
+                        else:
+                            title = u" "
+                        if olItem.dest.kind == 1:
+                            page = olItem.dest.page + 1
+                        else:
+                            page = 0
+                        liste.append([lvl, title, page])
+                        if olItem.down:
+                            liste = recurse(olItem.down, liste, lvl+1)
+                        olItem = olItem.next
+                    return liste
+
+                olItem = self.outline
+                if not olItem: return []
+                lvl = 1
+                liste = []
+                return recurse(olItem, liste, lvl)
 
             if this:
                 self._outline = self._loadOutline()
@@ -694,7 +689,7 @@ struct fz_outline_s {
         %exception saveXML {
             $action
             if(result) {
-                PyErr_SetString(PyExc_Exception, "cannot printXML");
+                PyErr_SetString(PyExc_Exception, "saveXML failed");
                 return NULL;
             }
         }
@@ -722,27 +717,23 @@ struct fz_outline_s {
         %exception saveText {
             $action
             if(result) {
-                PyErr_SetString(PyExc_Exception, "cannot printText");
+                PyErr_SetString(PyExc_Exception, "saveText failed");
                 return NULL;
             }
         }
-        %pythonprepend saveText(const char *filename=NULL) %{
-            if filename:
-                if type(filename) == str:
-                    pass
-                elif type(filename) == unicode:
-                    filename = filename.encode('utf8')
-                else:
-                    raise TypeError("filename must be a string")
+        %pythonprepend saveText(const char *filename) %{
+            if type(filename) == str:
+                pass
+            elif type(filename) == unicode:
+                filename = filename.encode('utf8')
+            else:
+                raise TypeError("filename must be a string")
         %}
-        int saveText(const char *filename=NULL) {
+        int saveText(const char *filename) {
             int res = 1;
             struct fz_output_s *text;
             fz_try(gctx) {
-                if (&filename == NULL)
-                    text = fz_new_output_with_file(gctx, stdout, 0);
-                else
-                    text = fz_new_output_to_filename(gctx, filename);
+                text = fz_new_output_to_filename(gctx, filename);
                 fz_print_outline(gctx, text, $self);
                 fz_drop_output(gctx, text);
                 res = 0;

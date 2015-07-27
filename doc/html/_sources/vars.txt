@@ -10,29 +10,29 @@ Constants and enumerations of MuPDF as implemented by PyMuPDF. If your import st
 Constants
 =========
 
-=========================== =======================================
+=========================== =============================================
 **Constant**                **Description**
-=========================== =======================================
+=========================== =============================================
 .. data:: CS_RGB            1 - Type of :ref:`Colorspace` is RGBA
 .. data:: CS_GRAY           2 - Type of :ref:`Colorspace` is GRAY
 .. data:: CS_CMYK           3 - Type of :ref:`Colorspace` is CMYK
-.. data:: VersionBind       '1.7.0' - Version of PyMuPDF
-.. data:: VersionFitz       '1.7a' - Version of MuPDF
-=========================== =======================================
+.. data:: VersionBind       '1.7.0' - Version of PyMuPDF (this binding)
+.. data:: VersionFitz       '1.7a'  - Version of MuPDF
+=========================== =============================================
 
 Enumerations
 =============
-Possible values of :attr:`linkDest.kind` (link destination type). For details consult `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_.
+Possible values of :attr:`linkDest.kind` (link destination type). For details consult `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_, chapter 8.2 on page 581 ff.
 
 ============================ ==========================================
 **Value**                    **Description**
 ============================ ==========================================
-.. data:: FZ_LINK_NONE       0 - No destination
-.. data:: FZ_LINK_GOTO       1 - Points to a place in this document
-.. data:: FZ_LINK_URI        2 - Points to an URI
-.. data:: FZ_LINK_LAUNCH     3 - Launches (opens) a file
-.. data:: FZ_LINK_NAMED      4 - Performs some action
-.. data:: FZ_LINK_GOTOR      5 - Points to a place in another document
+.. data:: LINK_NONE          0 - No destination
+.. data:: LINK_GOTO          1 - Points to a place in this document
+.. data:: LINK_URI           2 - Points to an URI
+.. data:: LINK_LAUNCH        3 - Launch (open) another document
+.. data:: LINK_NAMED         4 - Perform some action
+.. data:: LINK_GOTOR         5 - Points to another document
 ============================ ==========================================
 
 Possible values of :attr:`linkDest.flags` (link destination flags). **Attention**: The rightmost byte of this integer is a bit field. The values represent boolean indicators showing whether the associated statement is ``True``.

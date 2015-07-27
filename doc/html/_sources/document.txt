@@ -91,7 +91,7 @@ This class represents a document. It can be constructed from a file or from memo
       :param `deflate`: Deflate uncompressed streams: 0 = False, 1 = True.
       :type `deflate`: int
 
-      :param `incremental`: Only save change objects: 0 = False, 1 = True.
+      :param `incremental`: Only save changed objects: 0 = False, 1 = True.
       :type `incremental`: int
 
       :param `ascii`: Where possible make the output ASCII: 0 = False, 1 = True.
@@ -108,7 +108,7 @@ This class represents a document. It can be constructed from a file or from memo
 
     .. method:: ToC()
 
-      A convenience function that creates a table of contents from the ``outline`` entries. If none exist ``[]`` will be returned, otherwise a Python list ``[[level, title, page], [...], ...]``. Note that the title entries have already been decoded to unicode here.
+      A convenience function that creates a table of contents from the ``outline`` entries. If none exist ``[]`` will be returned, otherwise a Python list ``[[level, title, page], [...], ...]``. Note that the title entries have already been decoded to unicode here. Page numbers are 1-based, but zero if and only if the entry points to a place outside this document.
 
       :rtype: list
 

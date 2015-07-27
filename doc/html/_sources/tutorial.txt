@@ -45,7 +45,7 @@ Some :ref:`Document` methods and attributes
 
 Access Meta Data
 ========================
-:attr:`Document.metadata` is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_. Some details can also be found in the chapter for :ref:`Document`. The meta data fields are of type string if not otherwise indicated and may be missing, in which case they contain ``None``.
+:attr:`Document.metadata` is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_. Further information can also be found in chapter :ref:`Document`. The meta data fields are of type string if not otherwise indicated and may be missing, in which case they contain ``None``.
 
 ======================== ==============================
 **Key**                  **Value**
@@ -80,7 +80,7 @@ Some :ref:`Outline` methods and attributes
 :meth:`Outline.saveXML`      Save table of contents as a quasi-XML file
 :attr:`Outline.next`         Next item of the same level
 :attr:`Outline.down`         Next item one level down
-:attr:`Outline.title`        Title of this item (UTF-8)
+:attr:`Outline.title`        Title of this item
 :attr:`Outline.dest`         Destination ('where does this entry point to?')
 ============================ =================================================
 
@@ -166,7 +166,7 @@ We can simply store the image in a PNG file:
 
 Display the image in dialog managers
 --------------------------------------
-Or we convert the image into a bitmap usable by dialog managers. :attr:`Pixmap.samples` represents the area of bytes of all the pixels in RGBA format as a Python bytearray. This area (or its ``str()``-version), is directly usable by presumably most dialog managers. Here are two examples.
+Or we convert the image into a bitmap usable by dialog managers. :attr:`Pixmap.samples` represents the area of bytes of all the pixels as a Python bytearray. This area (or its ``str()``-version), is directly usable by presumably most dialog managers. Here are two examples.
 
 **wxPython**:
 ::
@@ -181,26 +181,44 @@ Or we convert the image into a bitmap usable by dialog managers. :attr:`Pixmap.s
  photo = ImageTk.PhotoImage(img)
 
 
-Extract and search for text of a :ref:`Page`
----------------------------------------------
+Text extraction
+----------------
 We can also extract all text of a page in a big chunk of string:
 ::
  dl = fitz.DisplayList()                  # create a DisplayList
  ts = fitz.TextSheet()                    # create a TextSheet
  tp = fitz.TextPage()                     # create a TextPage
  dev = fitz.Device(ts, tp)                # create a text Device
- # now run the page through the created device
+ irect = page.bound()                     # the page's visible rectangle
+ page.run(dev, fitz.Identity)             # run the page on the device
+ # now run the display list with the page's data
  dl.run(dev, fitz.Identity, irect)
- # Extract the complete text of the page now contained in the TextPage.
- # Includes all whitespace (tabulation, end-of-line, etc.) characters, too.
- text = tp.extractText()                  # remember: UTF-8 encoding!
 
-If you want even more details, you can determine, exactly where on a page a certain string appears:
+ # 4 methods exist to extract the text now contained in the TextPage:
+
+ # (1) plain text: with line breaks, no formatting, no position info
+ text = tp.extractText()
+
+ # (2) html: line breaks, alignment, grouping, no formatting, no positioning
+ html = tp.extractHTML()
+
+ # (3) json: full formatting info (except colors and fonts) down to spans
+ xml = tp.extractJSON()
+
+ # (4) xml: full formatting info (except colors) down to individual characters
+ xml = tp.extractXML()
+
+
+To give you an idea about the output of these alternatives, we did extracts from this document's PDF version and several other examples. See the appendix for details about implications on processing times and space requirements.
+
+Text Searching
+---------------
+If you are interested in the occurence of parts of text, you can determine, exactly where on a page a certain string appears:
 ::
  # search for at most 4 page locations with specific contents
- res = tp.search('MuPDF', 4)
+ res = tp.search('MuPDF', hit_max = 4)
 
-The result ``res`` will now be ``[]`` or a list of no more than 4 :ref:`IRect` rectangles that contain the string 'MuPDF'. The ``maxhit`` parameter (in our case set to 4) is optional (default is 16).
+The result ``res`` will now be ``[]`` or a list of no more than 4 :ref:`Rect` rectangles that contain the string 'MuPDF'. The ``hit_max`` parameter (in our case set to 4) is optional (default is 16).
 
 Output
 =======
@@ -234,17 +252,17 @@ Like with ``mutool clean``, not all combinations of the above options may work f
 
 We have found, that the fastest and very stable combination is ``mutool clean -ggg -z``, giving good compression results. In PyMuPDF this corresponds to ``doc.save(filename, garbage=3, deflate=1)``.
 
-In some cases, best compression factors result, if ``expand`` and ``deflate`` are being used together, though they seem to be contradictory. This works because MuPDF is forced to expand and then re-compress all objects, which will correct poorly compressed content during document creation.
+In some cases, best compression factors result, if ``expand`` and ``deflate`` are used together, though they seem to be contradictory. This works, because MuPDF is forced to expand and then re-compress all objects, which will correct poor compressions during document creation.
 
 Close
 ======
-In some situations it is desirable to "close" a :ref:`Document` such that it becomes fully available again to the OS while your program continues to run.
+In some situations it is desirable to "close" a :ref:`Document` such that it becomes fully available again to the OS while your program is still running.
 
 This can be achieved by the :meth:`Document.close` method. Apart from closing the file, all buffer areas associated with the document will be freed. If the document has been created from memory data, no underlying file is opened by MuPDF, so only the buffer release will take place.
 
 **Caution:**
 
-After close, the document and all objects referencing it will be invalid  and **must no longer be used**. This binding protects against most such invalid uses by disabling properties and methods of the :ref:`Document` and any associated :meth:`Document.loadPage` objects.
+As with normal file objects, after close, the document and all objects referencing it will be invalid  and **must no longer be used**. This binding protects against most such invalid uses by disabling properties and methods of the :ref:`Document` and any associated :meth:`Document.loadPage` objects.
 
 However, re-opening a previously closed file by a new :ref:`Document` is no problem. Please also do have a look at the following valid example:
 ::
@@ -266,6 +284,7 @@ If a PDF is broken or needs to be decrypted, one could dynamically invoke PyMuPD
  from pdfrw import PdfReader
  import fitz
  from cStringIO import StringIO
+
  #---------------------------------------
  # 'tolerant' PDF reader
  #---------------------------------------
@@ -289,8 +308,9 @@ If a PDF is broken or needs to be decrypted, one could dynamically invoke PyMuPD
          ibuffer = StringIO(idata)       # convert to stream
          return PdfReader(ibuffer)       # now let pdfrw retry
  #---------------------------------------
+
  pdf = reader(sys.argv[1])
  print pdf.Info
  # do further processing
 
-With the command line utility ``pdftk`` a similar result can be achieved, see `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. It even supports buffers for input **and** output. However you must invoke it via ``subprocess.Popen``, using stdin and stdout as communication vehicles.
+With the command line utility ``pdftk`` a similar result can be achieved, see `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. It even supports buffers for input **and** output. However you must invoke it as a separate process via ``subprocess.Popen``, using stdin and stdout as communication vehicles.

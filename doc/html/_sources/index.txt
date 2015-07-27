@@ -14,3 +14,4 @@
    tutorial.txt
    class_index.txt
    vars.txt
+   appendix.txt

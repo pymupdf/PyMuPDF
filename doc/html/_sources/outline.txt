@@ -8,7 +8,7 @@
 Outline
 ================
 
-``outline`` is a property of ``Document``. If not ``None``, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in either "horizontal" direction by property ``.next`` to the next item of same level, or downwards with property ``.down`` to the next item one level lower. The full tree of all outline items for e.g. a conventional table of contents can be recovered by following these "pointers".
+``outline`` is a property of ``Document``. If not ``None``, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in "horizontal" direction by property ``Outline.next`` to the next item of same level, and "downwards" by property ``Outline.down`` to the next item one level lower. The full tree of all outline items for e.g. a conventional table of contents can be recovered by following these "pointers".
 
 
 ========================= ==================================================
@@ -17,7 +17,7 @@ Outline
 :attr:`Outline.down`      Next item downwards
 :attr:`Outline.next`      Next item same level
 :attr:`Outline.dest`      Link destination
-:attr:`Outline.title`     Title (UTF-8 string)
+:attr:`Outline.title`     Title
 :meth:`Outline.saveText`  Prints a conventional table of contents to a file
 :meth:`Outline.saveXML`   Prints an XML-like table of contents to a file
 ========================= ==================================================
@@ -46,20 +46,20 @@ Outline
 
    .. attribute:: title
 
-      The item's title as a UTF-8 string.
+      The item's title as a string or ``None``.
 
       :rtype: string
 
    .. method:: saveText
 
-      The chain of outline items is being processed and printed to a file ``filename`` as a conventional table of contents.
+      The chain of outline items is being processed and printed to the file ``filename`` as a conventional table of contents. Each line of this file has the format ``<tab>...<tab><title><tab><page#>``, where the number of leading tabs is (n-1), with n equal to the outline level of the entry. Page numbers are 1-based in this case, while ``page# = 0`` if and only if the outline entry points to a place outside this document. If no title was specified for this outline entry, it appears as a tab character in this file.
 
       :param `filename`: Name of the file to write to.
       :type `filename`: string
 
    .. method:: saveXML
 
-      The chain of outline items is being processed and printed to a file ``filename`` as an XML-like table of contents.
+      The chain of outline items is being processed and printed to a file ``filename`` as an XML-like table of contents. Each line of this file has the format ``<outline title="..." page="n"/>``, if the entry has no children. Otherwise the format is ``<outline title="..." page="n">``, and child entries will follow. The parent entry will be finished by a line containing ``</outline>``.
 
       :param `filename`: Name of the file to write to.
       :type `filename`: string

@@ -47,9 +47,8 @@ It should be noted, that
 
       Performs a clockwise rotation for positive ``deg`` degrees, else counterclockwise. This will change the matrix elements in the following way: ``a = cos(deg)``, ``b = sin(deg)``, ``c = -sin(deg)``, ``d = cos(deg)``.  ``e`` and ``f`` will remain unchanged.
 
-      :param `deg`: The rotation angle [float] in degrees (use conventional notation based on Pi = 180 degrees).
-
-      :type `right`: :ref:`Matrix`
+      :param `deg`: The rotation angle in degrees (use conventional notation based on Pi = 180 degrees).
+      :type `deg`: float
 
       :rtype: :ref:`Matrix`
 
@@ -57,9 +56,11 @@ It should be noted, that
 
       Scales by the zoom factors sx and sy. Has effects on attributes ``a`` and ``d`` only.
 
-      :param `sx`: Zoom factor [float] in X direction. For the effect see description of attribute ``a``.
+      :param `sx`: Zoom factor in X direction. For the effect see description of attribute ``a``.
+      :type `sx`: float
 
-      :param `sy`: Zoom factor [float] in Y direction. For the effect see description of attribute ``d``.
+      :param `sy`: Zoom factor in Y direction. For the effect see description of attribute ``d``.
+      :type `sy`: float
 
       :rtype: :ref:`Matrix`
 
@@ -67,9 +68,11 @@ It should be noted, that
 
       Performs shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has effects on attributes ``b`` and ``c`` only.
 
-      :param `sx`: Shearing effect [float] in X direction. See attribute ``c``.
+      :param `sx`: Shearing effect in X direction. See attribute ``c``.
+      :type `sx`: float
 
-      :param `sy`: Shearing effect [float] in Y direction. See attribute ``b``.
+      :param `sy`: Shearing effect in Y direction. See attribute ``b``.
+      :type `sy`: float
 
       :rtype: :ref:`Matrix`
 
@@ -113,7 +116,7 @@ It should be noted, that
 
 **Examples**
 
-Here are examples to illustrate some of the effects achievable with matrices. The following pictures start with a page of this help file. We show what will happen when a matrix is being applied (though always full pages are created, only parts are displayed here to save space).
+Here are examples to illustrate some of the effects achievable with matrices. The following pictures start with a page of the PDF version of this help file. We show what will happen when a matrix is being applied (though always full pages are created, only parts are displayed here to save space).
 
 This is the original page image
 

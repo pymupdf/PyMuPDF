@@ -3589,10 +3589,7 @@ SWIGINTERN int fz_outline_s_saveText(struct fz_outline_s *self,char const *filen
             int res = 1;
             struct fz_output_s *text;
             fz_try(gctx) {
-                if (&filename == NULL)
-                    text = fz_new_output_with_file(gctx, stdout, 0);
-                else
-                    text = fz_new_output_to_filename(gctx, filename);
+                text = fz_new_output_to_filename(gctx, filename);
                 fz_print_outline(gctx, text, self);
                 fz_drop_output(gctx, text);
                 res = 0;
@@ -6796,7 +6793,7 @@ SWIGINTERN PyObject *_wrap_Outline_saveXML(PyObject *SWIGUNUSEDPARM(self), PyObj
   {
     result = (int)fz_outline_s_saveXML(arg1,(char const *)arg2);
     if(result) {
-      PyErr_SetString(PyExc_Exception, "cannot printXML");
+      PyErr_SetString(PyExc_Exception, "saveXML failed");
       return NULL;
     }
   }
@@ -6812,7 +6809,7 @@ fail:
 SWIGINTERN PyObject *_wrap_Outline_saveText(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_outline_s *arg1 = (struct fz_outline_s *) 0 ;
-  char *arg2 = (char *) NULL ;
+  char *arg2 = (char *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res2 ;
@@ -6822,23 +6819,21 @@ SWIGINTERN PyObject *_wrap_Outline_saveText(PyObject *SWIGUNUSEDPARM(self), PyOb
   PyObject * obj1 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O|O:Outline_saveText",&obj0,&obj1)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO:Outline_saveText",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_outline_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Outline_saveText" "', argument " "1"" of type '" "struct fz_outline_s *""'"); 
   }
   arg1 = (struct fz_outline_s *)(argp1);
-  if (obj1) {
-    res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Outline_saveText" "', argument " "2"" of type '" "char const *""'");
-    }
-    arg2 = (char *)(buf2);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Outline_saveText" "', argument " "2"" of type '" "char const *""'");
   }
+  arg2 = (char *)(buf2);
   {
     result = (int)fz_outline_s_saveText(arg1,(char const *)arg2);
     if(result) {
-      PyErr_SetString(PyExc_Exception, "cannot printText");
+      PyErr_SetString(PyExc_Exception, "saveText failed");
       return NULL;
     }
   }
