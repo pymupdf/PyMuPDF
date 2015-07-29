@@ -14,15 +14,16 @@ This program extracts the text of an input PDF and writes it in a text file.
 The input file name is provided as a parameter to this script (sys.argv[1])
 The output file name is equal to input with the extension ".pdf" replaced by
 ".txt".
-Encoding of the PDF is assumed to be UTF-8. Change the ENCODING variable
-as required.
+Encoding of the text in the PDF is assumed to be UTF-8.
+Change the ENCODING variable as required.
 """
 
 import fitz
-import os, sys
+import sys
+
 ENCODING = "utf-8"
 
-def RunPage(pg):
+def GetPageText(pg):
     dl = fitz.DisplayList()
     dv = fitz.Device(dl)
     ts = fitz.TextSheet()
@@ -30,27 +31,21 @@ def RunPage(pg):
     pg.run(dv, fitz.Identity)
     rect = pg.bound()
     dl.run(fitz.Device(ts, tp), fitz.Identity, rect)
-    dv = None
     return tp.extractText()
 
 #==============================================================================
 # Main Program
 #==============================================================================
-f = sys.argv[1]
-idir, iname = os.path.split(f)
-print " dir ==>", idir
-print "file ==>", iname
-oname = iname.replace(".pdf",".txt")
-ofile = os.path.join(idir, oname)
-doc = fitz.Document(f)
-seiten = d.pageCount
+ifile = sys.argv[1]
+ofile = ifile.replace(".pdf",".txt")
+doc = fitz.Document(ifile)
+pages = doc.pageCount
 
 fout = open(ofile,"w")
-for i in range(seiten):
-    print "========== processing page", i, " =========="
+for i in range(pages):
+    print "========== processing page", i, "=========="
     pg = doc.loadPage(i)
-    text = RunPage(pg)
+    text = GetPageText(pg)
     fout.write(text.encode(ENCODING,"ignore"))
 
 fout.close()
-doc.close()
