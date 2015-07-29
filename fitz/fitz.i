@@ -1015,7 +1015,7 @@ fz_print_span_text_json(fz_context *ctx, fz_output *out, fz_text_span *span) {
         switch (ch->c)
         {
             case '\\': fz_printf(ctx, out, "\\\\"); break;
-            case '\'': fz_printf(ctx, out, "\\\'"); break;
+            case '\'': fz_printf(ctx, out, "\\u0027"); break;
             case '"': fz_printf(ctx, out, "\\\""); break;
             case '\b': fz_printf(ctx, out, "\\b"); break;
             case '\f': fz_printf(ctx, out, "\\f"); break;
