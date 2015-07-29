@@ -7,8 +7,8 @@ Appendix
 ===============================
 This chapter contains additional comments and examples.
 
-Example Output of Text Extraction Methods
-==========================================
+Example Outputs of Text Extraction Methods
+===========================================
 Text information contained in a :ref:`TextPage` adheres to the following hierarchy:
 ::
  <page> (width and height)
@@ -19,7 +19,10 @@ Text information contained in a :ref:`TextPage` adheres to the following hierarc
 
 A text page consists of blocks (= roughly paragraphs). A block consists of lines. A line consists of spans. A span consists of characters with the same properties. E.g. a different font will cause a new span.
 
-This is the output of method ``TextPage.extractText()`` of a page of this tutorial's PDF version:
+TextPage.extractText()
+-----------------------
+
+This is the output of a page of this tutorial's PDF version:
 ::
  Tutorial
 
@@ -29,8 +32,10 @@ This is the output of method ``TextPage.extractText()`` of a page of this tutori
  Nevertheless we will only talk about PDF files for the sake of brevity.
  ...
 
+TextPage.extractHTML()
+-----------------------
 
-The HTML version (``extractHTML()``) looks like this:
+The HTML version looks like this:
 ::
  <div class="page">
  <div class="block"><p>
@@ -45,7 +50,10 @@ The HTML version (``extractHTML()``) looks like this:
  </div></p></div>
  ...
 
-``extractJSON()`` output looks like so:
+TextPage.extractJSON()
+-----------------------
+
+JSON output looks like so:
 ::
  {
   "len":35,"width":595.2756,"height":841.8898,
@@ -75,7 +83,10 @@ The HTML version (``extractHTML()``) looks like this:
  ...
 
 
-Now the XML version (``extractXML()``):
+TextPage.extractXML()
+-----------------------
+
+Now the XML version:
 ::
  <page width="595.2756" height="841.8898">
  <block bbox="40.01575 53.730354 98.68775 76.08236">
@@ -116,13 +127,17 @@ We have run 10 examples PDFs through these methods and found the following infor
 
 As a low end example we took this manual's PDF version (45 pages, text oriented, 600 KB). The high end example was Adobe's PDF manual (1,310 pages, completely text based, 30 MB). The other eight examples are `Spektrum <http://www.spektrum.de/>`_ magazines January to August 2015 (the German version of Scientific American, 100+ pages each, text with lots of interspersed images, 12 to 22 MB).
 
-Processing Times
------------------
+Performance
+-------------
 Processing times of the extract methods roughly seem to follow this pattern, ``extractText(basic=True)`` being set to 1:
 
-``(Text : HTML : JSON : XML) = (1 : 2 : 145 : 4120)``
+``(Text : HTML : JSON : XML) ~ (1 : 2 : 145 : 4120)``
 
-On a higher level Win7 machine (8 processors, 8 GB RAM), the figure 4120 for ``extractXML()`` corresponds to anything between 0.2 and 0.5 seconds per page, which still means that you can extract XML text information of a complex 100-page magazine in less than a minute.
+On a higher level Win7 machine (8 processors at 4 GHz, 8 GB RAM), the figure 4120 for ``extractXML()`` corresponds to anything between 0.2 and 0.5 seconds per page. This still means that you can extract XML text information of a complex 100-page magazine in less than a minute. This is about 3 times faster than text extraction with other free PDF utilities, e.g. `Nitro 3 <https://www.gonitro.com/pdf-reader>`_.
+
+If you use ``PDF2Text.py`` from the examples library (a utility which converts PDFs into text files), you will see a performance based on ``extractXML()``.
+
+In the same directory you will also find a similar utility which is based on ``extractJSON()``. This one is again more than 20 times faster than ´´extractTest(basic=False)´´´(and thus 60+ times faster than Nitro)!
 
 These are the details of our findings:
 
@@ -133,7 +148,7 @@ Data Sizes
 -----------
 The sizes of the returned text strings follow this pattern, again ``extractText(basic=True)`` is set to 1:
 
-``(Text : HTML : JSON : XML) = (1 : 4 : 6 : 87)``
+``(Text : HTML : JSON : XML) ~ (1 : 4 : 6 : 87)``
 
 The number 87 for ``extractXML()`` corresponds to values between 200 and 400 KB per page. The details can be seen here:
 
@@ -142,7 +157,7 @@ The number 87 for ``extractXML()`` corresponds to values between 200 and 400 KB 
 
 Examples "PyMuPDF.pdf" and "Adobe PDF Reference 1-7.pdf"
 ---------------------------------------------------------
-Our low and high end examples (contained in the above) have the following detail data.
+Our low and high end examples (contained in the numbers of the previous chapter) have the following detail data.
 
 
 .. image:: pymupdf.png
