@@ -123,9 +123,9 @@ Resource Requirements of Text Extraction Methods
 ==================================================
 The four text extraction methods of a :ref:`TextPage` differ significantly, not only in terms of information they supply (see above). More information of course means that more processing is required and a higher data volume is generated.
 
-We have run 10 examples PDFs through these methods and found the following information. These data is of course not statistically secured in any way - just take it as an idea for what you should expect to see.
+For testing performance, we have run 10 examples PDFs through these methods and found the following information. The following data is of course not statistically secured in any way - just take it as an idea for what you should expect to see.
 
-As a low end example we took this manual's PDF version (45 pages, text oriented, 600 KB). The high end example was Adobe's PDF manual (1,310 pages, completely text based, 30 MB). The other eight examples are `Spektrum <http://www.spektrum.de/>`_ magazines January to August 2015 (the German version of Scientific American, 100+ pages each, text with lots of interspersed images, 12 to 22 MB).
+As a low end example we took this manual's PDF version (45+ pages, text oriented, 500 KB). The high end case was Adobe's PDF manual (1310 pages, completely text based, 32 MB). The other eight test cases were `Spektrum <http://www.spektrum.de/>`_ magazines January to August 2015 (the German version of Scientific American, 100+ pages, text with lots of interspersed images, 10 to 25 MB each).
 
 Performance
 -------------
@@ -137,7 +137,7 @@ On a higher level Win7 machine (8 processors at 4 GHz, 8 GB RAM), the figure 412
 
 If you use ``PDF2Text.py`` from the examples library (a utility which converts PDFs into text files), you will see a performance based on ``extractXML()``.
 
-In the same directory you will also find a similar utility which is based on ``extractJSON()``. This one is again more than 20 times faster than ´´extractTest(basic=False)´´´(and thus 60+ times faster than Nitro)!
+In the same directory you will also find a similar utility which is based on ``extractJSON()``. This one is more than 20 times faster than ``extractTest(basic=False)`` (and thus 60+ times faster than Nitro)!
 
 These are the details of our findings:
 

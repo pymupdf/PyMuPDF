@@ -32,7 +32,7 @@ else:
 
 setup(name = 'fitz',
       version = '1.7.0',
-      description = 'Python bindings for the MuPDF rendering library',
+      description = 'Python bindings for the PDF rendering library MuPDF',
       classifiers = ['Development Status :: 4 - Beta',
                      'Environment :: Console',
                      'Intended Audience :: Developers',
