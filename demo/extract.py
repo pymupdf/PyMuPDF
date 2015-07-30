@@ -8,7 +8,7 @@ if len(sys.argv) != 3:
 
 #get the page
 d = fitz.Document(sys.argv[1])
-pg = d.loadPage(0)
+pg = d.loadPage(int(sys.argv[2]))
 
 #setup the display list
 dl = fitz.DisplayList()
