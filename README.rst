@@ -32,7 +32,7 @@ Usage
 
 Please have a look at the basic `demos <https://github.com/rk700/PyMuPDF/tree/master/demo>`_ or the `examples <https://github.com/rk700/PyMuPDF/tree/master/examples>`_ which contain complete, working programs.
 
-You can also access the complete documentation as a `PDF <https://github.com/rk700/PyMuPDF/tree/master/doc/PyMuPDF.pdf>`_ or as a `Windows Help file <https://github.com/rk700/PyMuPDF/tree/master/doc/PyMuPDF.chm>`_.
+You can also access the complete documentation as a `PDF <https://github.com/rk700/PyMuPDF/tree/master/doc/PyMuPDF.pdf.zip>`_ or as a `Windows Help file <https://github.com/rk700/PyMuPDF/tree/master/doc/PyMuPDF.chm.zip>`_.
 
 License
 =======
