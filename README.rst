@@ -1,4 +1,4 @@
-PyMuPDF 1.7
+PyMuPDF 1.7.0
 
 Release date: June 15th, 2015
 
@@ -22,17 +22,17 @@ With PyMuPDF you therefore can also access files with extensions ``*.pdf``, ``*.
 Installation
 ============
 
-Normally it should be as easy as running ``python setup.py install`` once the MuPDF is in place.
+Normally it should be as easy as running ``python setup.py install`` once MuPDF is in place.
 
-Refer to the `document <https://github.com/rk700/python-fitz/blob/master/doc/html/installation.html>`_ for more details
+Refer to this `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
 
 
 Usage
 =====
 
-Some simple demos can be found in https://github.com/rk700/python-fitz/blob/master/demo, and https://github.com/rk700/python-fitz/blob/master/examples contains complete, working programs.
+Please have a look at the basic `demos <https://github.com/rk700/python-fitz/blob/master/demo>`_ or the `examples <https://github.com/rk700/python-fitz/blob/master/examples>`_ which contain complete, working programs.
 
-Also, You can access the complete API reference from here: `PDF <https://github.com/rk700/python-fitz/blob/master/doc/Python-Fitz.pdf>`_ or a `Windows Help <https://github.com/rk700/python-fitz/blob/master/doc/Python-Fitz.chm>`_ version.
+You can also access the complete documentation as a `PDF <https://github.com/rk700/PyMuPDF/tree/master/doc/PyMuPDF.pdf>`_ or as a `Windows Help file <https://github.com/rk700/PyMuPDF/tree/master/doc/PyMuPDF.chm>`_.
 
 License
 =======
