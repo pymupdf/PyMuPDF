@@ -15,6 +15,7 @@ This program joins PDF files into one output file. Its features include:
 * Optional rotation in steps of 90 degrees
 * Copying any table of contents to the output
 
+Please note that you need wxPython version of 3.x
 """
 
 import os
