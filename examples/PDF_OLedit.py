@@ -46,6 +46,7 @@ Layout of right sizer "ri_szr"
         | PDFBild: Bitmap image of pdf page       |
         +-----------------------------------------+
 
+Please note that you need a wxPython version 3.x for this to work.
 '''
 import os
 import tempfile
