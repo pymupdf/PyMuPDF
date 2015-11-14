@@ -11,6 +11,10 @@
 /* global context */
 %init %{
     gctx = fz_new_context(NULL, NULL, FZ_STORE_UNLIMITED);
+    if(!gctx) {
+        fprintf(stderr, "[ERROR]gctx is NULL\n");
+        exit(1);
+    }
     fz_register_document_handlers(gctx);
 %}
 %header %{
