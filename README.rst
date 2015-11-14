@@ -1,6 +1,6 @@
 PyMuPDF 1.8.0
 
-Release date: June 15th, 2015
+Release date: Nov 15th, 2015
 
 Authors
 =======
