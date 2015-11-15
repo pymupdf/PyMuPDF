@@ -1,7 +1,7 @@
 =============
 Introduction
 =============
-**PyMuPDF** (formerly known as python-fitz) is a Python binding for `MuPDF <http://www.mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
+**PyMuPDF** (formerly known as **python-fitz**) is a Python binding for `MuPDF <http://www.mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ (comic book) and EPUB (e-book) formats.
 
@@ -14,13 +14,13 @@ MuPDF stands out among all similar products for its top rendering capability and
 You can check this out yourself:
 Compare the various free PDF-viewers. In terms of speed and rendering quality `SumatraPDF <http://www.sumatrapdfreader.org/>`_ ranges at the top (apart from MuPDF's own standalone viewer) - and it is based on  MuPDF!
 
-While PyMuPDF has been available since several years for an earlier version of MuPDF (1.2), it was until only mid May 2015, that its creator and a few co-workers decided to elevate it to support the current release of MuPDF (1.7a).
+While PyMuPDF has been available since several years for an earlier version of MuPDF (1.2), it was until only mid May 2015, that its creator and a few co-workers decided to elevate it to support the current release of MuPDF (1.8).
 
 And we are determined to keep PyMuPDF current with future MuPDF changes!
 
 This work is now completed.
 
-PyMuPDF has been tested on Linux, Windows 7 and up, Python 2 and Python 3 (x86 versions). Other platforms should work too as long as MuPDF supports them.
+PyMuPDF has been tested on Linux, Windows 7, Windows 10, Python 2 and Python 3 (x86 versions). Other platforms should work too as long as MuPDF supports them.
 
 The main differences compared to version 1.2 are
 

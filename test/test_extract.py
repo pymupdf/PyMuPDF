@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 import fitz
-f="test.pdf"
+f="sdw_2015_06.pdf"
 d = fitz.Document(f)
 seiten = d.pageCount
 
-for seite in range(10,seiten):
+for seite in range(seiten):
     print "=============== processing page", seite, " ==============="
     pg = d.loadPage(seite)
     dl = fitz.DisplayList()

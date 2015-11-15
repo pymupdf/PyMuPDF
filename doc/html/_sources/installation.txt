@@ -11,13 +11,13 @@ Step 1: Download PyMuPDF
 -------------------------------
 Download this repository and unzip it. This will give you a folder, let us call it ``PyFitz``.
 
-Step 2: Download MuPDF 1.7a
----------------------------------
-Download `MuPDF version 1.7a source <http://mupdf.com/downloads/>`_, and unzip it. Let us call the resulting folder ``mupdf17``.
+Step 2: Download MuPDF 1.8
+----------------------------
+Download `MuPDF version 1.8 source <http://mupdf.com/downloads/>`_, and unzip it. Let us call the resulting folder ``mupdf18``.
 
 Put it inside ``PyFitz`` as a subdirectory, if you want to keep everything in one place.
 
-If your platform is **not Linux and not Windows**, you must **generate MuPDF now**. The download includes generation procedures / makefiles for numerous platforms.
+If your platform is **not Linux and not Windows**, you must **generate MuPDF now**. The MuPDF download includes generation procedures / makefiles for numerous platforms.
 
 On Linux and on Windows, this is not necessary: MuPDF object code is pregenerated and put in special directories:
 	* LibLinux - for the Linux-generated MuPDF libraries
