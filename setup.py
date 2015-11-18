@@ -10,7 +10,6 @@ if sys.platform.startswith('linux'):
                        libraries=['mupdf', 'mujs', 'crypto',
                                   'jbig2dec', 'openjp2', 'jpeg',
                                   'freetype'],                   # the libraries to link with
-                       library_dirs=['./LibLinux'],              # dir of the libraries
                       )
 else:
 #===============================================================================
@@ -20,18 +19,18 @@ else:
 #===============================================================================
     module = Extension('fitz._fitz',
                        include_dirs=['./fitz',
-                                     './mupdf17/include/',
-                                     './mupdf17/include/mupdf'],  # "./mupdf17" = top level mupdf source dir
+                                     './mupdf18/include/',
+                                     './mupdf18/include/mupdf'],  # "./mupdf18" = top level mupdf source dir
                        libraries=[                                # only these 2 are needed in Windows
                                   'libmupdf',                        
                                   'libthirdparty',                    
                                  ],
                        extra_link_args=['/NODEFAULTLIB:MSVCRT'],
-                       library_dirs=['./LibWin32'],               # dir of libmupdf.lib / libthirdparty.lib
+                       library_dirs=['./PyMuPDF-optional-material/LibWin32'],               # dir of libmupdf.lib / libthirdparty.lib
                        sources=['./fitz/fitz_wrap.c'])
 
 setup(name = 'fitz',
-      version = '1.7.0',
+      version = '1.8.0',
       description = 'Python bindings for the PDF rendering library MuPDF',
       classifiers = ['Development Status :: 4 - Beta',
                      'Environment :: Console',
