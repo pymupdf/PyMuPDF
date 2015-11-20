@@ -22,7 +22,7 @@ With PyMuPDF you therefore can also access files with extensions ``*.pdf``, ``*.
 Installation
 ============
 
-Normally it should be as easy as running ``python setup.py install`` once MuPDF is in place.
+Normally it should be as easy as running ``python setup.py install`` once MuPDF is in place (i.e. has been generated).
 
 For linux users, please make sure that the following libraries are available: ``libmupdf``, ``libmujs``, ``libcrypto``, ``libjbig2dec``, ``libopenjp2``, ``libjpeg``, ``libfreetype``.
 
@@ -34,7 +34,7 @@ Usage
 
 Please have a look at the basic `demos <https://github.com/rk700/PyMuPDF/tree/master/demo>`_ or the `examples <https://github.com/rk700/PyMuPDF/tree/master/examples>`_ which contain complete, working programs.
 
-You can also access the complete documentation as a `PDF <https://github.com/rk700/PyMuPDF/tree/master/doc/PyMuPDF.pdf.zip>`_ or as a `Windows Help file <https://github.com/rk700/PyMuPDF/tree/master/doc/PyMuPDF.chm.zip>`_.
+You can also access the complete documentation as a `PDF <https://github.com/rk700/PyMuPDF/tree/master/doc/PyMuPDF.pdf>`_ or as a `Windows compiled html <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm>`_.
 
 Legacy Support
 ==============
