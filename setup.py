@@ -10,7 +10,6 @@ if sys.platform.startswith('linux'):
                        libraries=['mupdf', 'mujs', 'crypto',
                                   'jbig2dec', 'openjp2', 'jpeg',
                                   'freetype'],                   # the libraries to link with
-                       library_dirs=['./LibLinux'],              # dir of the libraries
                       )
 else:
 #===============================================================================
@@ -27,7 +26,7 @@ else:
                                   'libthirdparty',                    
                                  ],
                        extra_link_args=['/NODEFAULTLIB:MSVCRT'],
-                       library_dirs=['./LibWin32'],               # dir of libmupdf.lib / libthirdparty.lib
+                       library_dirs=['./PyMuPDF-optional-material/LibWin32'],               # dir of libmupdf.lib / libthirdparty.lib
                        sources=['./fitz/fitz_wrap.c'])
 
 setup(name = 'fitz',

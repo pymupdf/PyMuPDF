@@ -1,0 +1,3 @@
+[submodule "PyMuPDF-optional-material"]
+	path = PyMuPDF-optional-material
+	url = https://github.com/JorjMcKie/PyMuPDF-optional-material
