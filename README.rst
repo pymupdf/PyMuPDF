@@ -24,6 +24,8 @@ Installation
 
 Normally it should be as easy as running ``python setup.py install`` once MuPDF is in place.
 
+For linux users, please make sure that the following libraries are available: ``libmupdf``, ``libmujs``, ``libcrypto``, ``libjbig2dec``, ``libopenjp2``, ``libjpeg``, ``libfreetype``.
+
 Refer to this `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
 
 
