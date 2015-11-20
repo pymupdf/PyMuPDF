@@ -96,18 +96,18 @@
 <p>This describes how to install PyMuPDF.</p>
 <div class="section" id="step-1-download-pymupdf">
 <h2>Step 1: Download PyMuPDF<a class="headerlink" href="#step-1-download-pymupdf" title="Permalink to this headline">¶</a></h2>
-<p>Download this repository and unzip it. This will give you a folder, let us call it <code class="docutils literal"><span class="pre">PyFitz</span></code>.</p>
+<p>Download this repository and unzip / decompress it. This will give you a folder, let us call it <code class="docutils literal"><span class="pre">PyFitz</span></code>.</p>
 </div>
 <div class="section" id="step-2-download-mupdf-1-8">
 <h2>Step 2: Download MuPDF 1.8<a class="headerlink" href="#step-2-download-mupdf-1-8" title="Permalink to this headline">¶</a></h2>
-<p>Download <a class="reference external" href="http://mupdf.com/downloads/">MuPDF version 1.8 source</a>, and unzip it. Let us call the resulting folder <code class="docutils literal"><span class="pre">mupdf18</span></code>.</p>
+<p>Download <code class="docutils literal"><span class="pre">mupdf-1.8-source.tar.gz</span></code> from <a class="reference external" href="http://mupdf.com/downloads/">MuPDF version 1.8 source</a>, and unzip / decompress it. Let us call the resulting folder <code class="docutils literal"><span class="pre">mupdf18</span></code>.</p>
 <p>Put it inside <code class="docutils literal"><span class="pre">PyFitz</span></code> as a subdirectory, if you want to keep everything in one place.</p>
-<p>If your platform is <strong>not Linux and not Windows</strong>, you must <strong>generate MuPDF now</strong>. The MuPDF download includes generation procedures / makefiles for numerous platforms.</p>
+<p>If your platform is <strong>not Windows</strong>, you must <strong>generate MuPDF now</strong>. The MuPDF download includes generation procedures / makefiles for numerous platforms.</p>
 <dl class="docutils">
-<dt>On Linux and on Windows, this is not necessary: MuPDF object code is pregenerated and put in special directories:</dt>
+<dt>On Windows, you have two options:</dt>
 <dd><ul class="first last simple">
-<li>LibLinux - for the Linux-generated MuPDF libraries</li>
-<li>LibWin32 - for the Windows-generated MuPDF libraries</li>
+<li>if you <strong>have installed MS Visual Studio</strong>, generate MuPDF <code class="docutils literal"><span class="pre">lib</span></code> files now. The respective VS project files are contained in <code class="docutils literal"><span class="pre">./PyFitz/mupdf18/platform/win32</span></code>. If that worked fine, the <code class="docutils literal"><span class="pre">lib</span></code> files are now in <code class="docutils literal"><span class="pre">./PyFitz/mupdf18/platform/win32/Release</span></code>. Update <code class="docutils literal"><span class="pre">setup.py</span></code> to reference this directory as <code class="docutils literal"><span class="pre">library_dirs=['./mupdf18/platform/win32/Release']</span></code>.</li>
+<li>if you have not installed Visual Studio or if you do not want to generate MuPDF, you must download <a class="reference external" href="https://github.com/JorjMcKie/PyMuPDF-optional-material/">PyMuPDF Optional Material</a> now and unzip / decompress its content in directory <code class="docutils literal"><span class="pre">./PyFitz/PyMuPDF-optional-material</span></code>. This optional material contains the <code class="docutils literal"><span class="pre">lib</span></code> files needed for PyMuPDF generation.</li>
 </ul>
 </dd>
 </dl>
@@ -153,7 +153,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 04. Nov 2015.
+      Last updated on 20. Nov 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

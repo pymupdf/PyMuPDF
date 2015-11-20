@@ -6,6 +6,6 @@ Instead it should contain complete, working programs, or at least snippets of wo
 Licensing:
 ==========
 Please only include code for which the same licensing applies as for the rest of this repository:
-GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
+GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007, or later.
 
 See the COPYING file.

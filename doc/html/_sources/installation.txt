@@ -9,19 +9,19 @@ This describes how to install PyMuPDF.
 
 Step 1: Download PyMuPDF
 -------------------------------
-Download this repository and unzip it. This will give you a folder, let us call it ``PyFitz``.
+Download this repository and unzip / decompress it. This will give you a folder, let us call it ``PyFitz``.
 
 Step 2: Download MuPDF 1.8
 ----------------------------
-Download `MuPDF version 1.8 source <http://mupdf.com/downloads/>`_, and unzip it. Let us call the resulting folder ``mupdf18``.
+Download ``mupdf-1.8-source.tar.gz`` from `MuPDF version 1.8 source <http://mupdf.com/downloads/>`_, and unzip / decompress it. Let us call the resulting folder ``mupdf18``.
 
 Put it inside ``PyFitz`` as a subdirectory, if you want to keep everything in one place.
 
-If your platform is **not Linux and not Windows**, you must **generate MuPDF now**. The MuPDF download includes generation procedures / makefiles for numerous platforms.
+If your platform is **not Windows**, you must **generate MuPDF now**. The MuPDF download includes generation procedures / makefiles for numerous platforms.
 
-On Linux and on Windows, this is not necessary: MuPDF object code is pregenerated and put in special directories:
-	* LibLinux - for the Linux-generated MuPDF libraries
-	* LibWin32 - for the Windows-generated MuPDF libraries
+On Windows, you have two options:
+  * if you **have installed MS Visual Studio**, generate MuPDF ``lib`` files now. The respective VS project files are contained in ``./PyFitz/mupdf18/platform/win32``. If that worked fine, the ``lib`` files are now in ``./PyFitz/mupdf18/platform/win32/Release``. Update ``setup.py`` to reference this directory as ``library_dirs=['./mupdf18/platform/win32/Release']``.
+  * if you have not installed Visual Studio or if you do not want to generate MuPDF, you must download `PyMuPDF Optional Material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_ now and unzip / decompress its content in directory ``./PyFitz/PyMuPDF-optional-material``. This optional material contains the ``lib`` files needed for PyMuPDF generation.
 
 Step 3: Build / Setup PyMuPDF
 ----------------------------------

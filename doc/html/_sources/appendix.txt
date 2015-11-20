@@ -121,28 +121,27 @@ Now the XML version:
 
 Resource Requirements of Text Extraction Methods
 ==================================================
-The four text extraction methods of a :ref:`TextPage` differ significantly, not only in terms of information they supply (see above). More information of course means that more processing is required and a higher data volume is generated.
+The four text extraction methods of a :ref:`TextPage` differ significantly: in terms of information they supply (see above), and in terms of resource requirements. More information of course means that more processing is required and a higher data volume is generated.
 
-For testing performance, we have run 10 examples PDFs through these methods and found the following information. The following data is of course not statistically secured in any way - just take it as an idea for what you should expect to see.
+For testing performance, we have run several example PDFs through these methods and found the following information. This  data is not statistically secured in any way - just take it as an idea for what you should expect to see.
 
-As a low end example we took this manual's PDF version (45+ pages, text oriented, 500 KB). The high end case was Adobe's PDF manual (1310 pages, completely text based, 32 MB). The other eight test cases were `Spektrum <http://www.spektrum.de/>`_ magazines January to August 2015 (the German version of Scientific American, 100+ pages, text with lots of interspersed images, 10 to 25 MB each).
+As a low end example we took this manual's PDF version (45+ pages, text oriented, 500 KB). The high end case was Adobe's PDF manual (1310 pages, text oriented, 32 MB). The other test cases were `Spektrum <http://www.spektrum.de/>`_ magazines of the year 2015 (the German version of Scientific American, 100+ pages, text with lots of complex interspersed images, 10 to 25 MB each).
 
 Performance
 -------------
-Processing times of the extract methods roughly seem to follow this pattern, ``extractText(basic=True)`` being set to 1:
+Performance of text extraction has improved significantly in MuPDF 1.8! As of updating this documentation (mid November 2015), data hint at an improvement factor greater than 2. Especially the complex extraction methods have a much lower effort penalty.
 
-``(Text : HTML : JSON : XML) ~ (1 : 2 : 145 : 4120)``
+If we set the simplest extraction method, ``extractText(basic=True)`` to 1, the old relationship was
 
-On a higher level Win7 machine (8 processors at 4 GHz, 8 GB RAM), the figure 4120 for ``extractXML()`` corresponds to anything between 0.2 and 0.5 seconds per page. This still means that you can extract XML text information of a complex 100-page magazine in less than a minute. This is about 3 times faster than text extraction with other free PDF utilities, e.g. `Nitro 3 <https://www.gonitro.com/pdf-reader>`_.
+**MuPDF 1.7:** ``(Text : HTML : JSON : XML) ~ (1 : 2 : 145 : 4120)``
 
-If you use ``PDF2Text.py`` from the examples library (a utility which converts PDFs into text files), you will see a performance based on ``extractXML()``.
+We now observe
 
-In the same directory you will also find a similar utility which is based on ``extractJSON()``. This one is more than 20 times faster than ``extractTest(basic=False)`` (and thus 60+ times faster than Nitro)!
+**MuPDF 1.8:** ``(Text : HTML : JSON : XML) ~ (1 : 1 : 3 : 52)``
 
-These are the details of our findings:
+On a higher level Win10 machine (8 processors at 4 GHz, 8 GB RAM), the figure for ``extractXML()`` corresponds to anything between 0.2 and 0.5 seconds per page. This still means that you can extract extremely detailed text information of a complex 100-page magazine in less than a minute. This is about 3 times faster than text extraction with other free PDF utilities, e.g. `Nitro 3 <https://www.gonitro.com/pdf-reader>`_.
 
-
-.. image:: timings.png
+If you use PDF2TextJS.py of the example directory, you have a text extraction utility which is more than 60 times faster than Nitro!
 
 Data Sizes
 -----------
@@ -150,19 +149,10 @@ The sizes of the returned text strings follow this pattern, again ``extractText(
 
 ``(Text : HTML : JSON : XML) ~ (1 : 4 : 6 : 87)``
 
-The number 87 for ``extractXML()`` corresponds to values between 200 and 400 KB per page. The details can be seen here:
+The number 87 for ``extractXML()`` corresponds to values between 200 and 400 KB per page.
 
 
-.. image:: sizes.png
-
-Examples "PyMuPDF.pdf" and "Adobe PDF Reference 1-7.pdf"
----------------------------------------------------------
-Our low and high end examples (contained in the numbers of the previous chapter) have the following detail data.
+The details can be seen here:
 
 
-.. image:: pymupdf.png
-
-
-.. image:: adobe.png
-
-
+.. image:: performance.png

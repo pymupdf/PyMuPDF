@@ -55,7 +55,6 @@
 <li><a class="reference internal" href="#resource-requirements-of-text-extraction-methods">Resource Requirements of Text Extraction Methods</a><ul>
 <li><a class="reference internal" href="#performance">Performance</a></li>
 <li><a class="reference internal" href="#data-sizes">Data Sizes</a></li>
-<li><a class="reference internal" href="#examples-pymupdf-pdf-and-adobe-pdf-reference-1-7-pdf">Examples &#8220;PyMuPDF.pdf&#8221; and &#8220;Adobe PDF Reference 1-7.pdf&#8221;</a></li>
 </ul>
 </li>
 </ul>
@@ -209,31 +208,26 @@ Nevertheless we will only talk about PDF files for the sake of brevity.
 </div>
 <div class="section" id="resource-requirements-of-text-extraction-methods">
 <h2>Resource Requirements of Text Extraction Methods<a class="headerlink" href="#resource-requirements-of-text-extraction-methods" title="Permalink to this headline">¶</a></h2>
-<p>The four text extraction methods of a <a class="reference internal" href="textpage.html#textpage"><span>TextPage</span></a> differ significantly, not only in terms of information they supply (see above). More information of course means that more processing is required and a higher data volume is generated.</p>
-<p>For testing performance, we have run 10 examples PDFs through these methods and found the following information. The following data is of course not statistically secured in any way - just take it as an idea for what you should expect to see.</p>
-<p>As a low end example we took this manual&#8217;s PDF version (45+ pages, text oriented, 500 KB). The high end case was Adobe&#8217;s PDF manual (1310 pages, completely text based, 32 MB). The other eight test cases were <a class="reference external" href="http://www.spektrum.de/">Spektrum</a> magazines January to August 2015 (the German version of Scientific American, 100+ pages, text with lots of interspersed images, 10 to 25 MB each).</p>
+<p>The four text extraction methods of a <a class="reference internal" href="textpage.html#textpage"><span>TextPage</span></a> differ significantly: in terms of information they supply (see above), and in terms of resource requirements. More information of course means that more processing is required and a higher data volume is generated.</p>
+<p>For testing performance, we have run several example PDFs through these methods and found the following information. This  data is not statistically secured in any way - just take it as an idea for what you should expect to see.</p>
+<p>As a low end example we took this manual&#8217;s PDF version (45+ pages, text oriented, 500 KB). The high end case was Adobe&#8217;s PDF manual (1310 pages, text oriented, 32 MB). The other test cases were <a class="reference external" href="http://www.spektrum.de/">Spektrum</a> magazines of the year 2015 (the German version of Scientific American, 100+ pages, text with lots of complex interspersed images, 10 to 25 MB each).</p>
 <div class="section" id="performance">
 <h3>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h3>
-<p>Processing times of the extract methods roughly seem to follow this pattern, <code class="docutils literal"><span class="pre">extractText(basic=True)</span></code> being set to 1:</p>
-<p><code class="docutils literal"><span class="pre">(Text</span> <span class="pre">:</span> <span class="pre">HTML</span> <span class="pre">:</span> <span class="pre">JSON</span> <span class="pre">:</span> <span class="pre">XML)</span> <span class="pre">~</span> <span class="pre">(1</span> <span class="pre">:</span> <span class="pre">2</span> <span class="pre">:</span> <span class="pre">145</span> <span class="pre">:</span> <span class="pre">4120)</span></code></p>
-<p>On a higher level Win7 machine (8 processors at 4 GHz, 8 GB RAM), the figure 4120 for <code class="docutils literal"><span class="pre">extractXML()</span></code> corresponds to anything between 0.2 and 0.5 seconds per page. This still means that you can extract XML text information of a complex 100-page magazine in less than a minute. This is about 3 times faster than text extraction with other free PDF utilities, e.g. <a class="reference external" href="https://www.gonitro.com/pdf-reader">Nitro 3</a>.</p>
-<p>If you use <code class="docutils literal"><span class="pre">PDF2Text.py</span></code> from the examples library (a utility which converts PDFs into text files), you will see a performance based on <code class="docutils literal"><span class="pre">extractXML()</span></code>.</p>
-<p>In the same directory you will also find a similar utility which is based on <code class="docutils literal"><span class="pre">extractJSON()</span></code>. This one is more than 20 times faster than <code class="docutils literal"><span class="pre">extractTest(basic=False)</span></code> (and thus 60+ times faster than Nitro)!</p>
-<p>These are the details of our findings:</p>
-<img alt="_images/timings.png" src="_images/timings.png" />
+<p>Performance of text extraction has improved significantly in MuPDF 1.8! As of updating this documentation (mid November 2015), data hint at an improvement factor greater than 2. Especially the complex extraction methods have a much lower effort penalty.</p>
+<p>If we set the simplest extraction method, <code class="docutils literal"><span class="pre">extractText(basic=True)</span></code> to 1, the old relationship was</p>
+<p><strong>MuPDF 1.7:</strong> <code class="docutils literal"><span class="pre">(Text</span> <span class="pre">:</span> <span class="pre">HTML</span> <span class="pre">:</span> <span class="pre">JSON</span> <span class="pre">:</span> <span class="pre">XML)</span> <span class="pre">~</span> <span class="pre">(1</span> <span class="pre">:</span> <span class="pre">2</span> <span class="pre">:</span> <span class="pre">145</span> <span class="pre">:</span> <span class="pre">4120)</span></code></p>
+<p>We now observe</p>
+<p><strong>MuPDF 1.8:</strong> <code class="docutils literal"><span class="pre">(Text</span> <span class="pre">:</span> <span class="pre">HTML</span> <span class="pre">:</span> <span class="pre">JSON</span> <span class="pre">:</span> <span class="pre">XML)</span> <span class="pre">~</span> <span class="pre">(1</span> <span class="pre">:</span> <span class="pre">1</span> <span class="pre">:</span> <span class="pre">3</span> <span class="pre">:</span> <span class="pre">52)</span></code></p>
+<p>On a higher level Win10 machine (8 processors at 4 GHz, 8 GB RAM), the figure for <code class="docutils literal"><span class="pre">extractXML()</span></code> corresponds to anything between 0.2 and 0.5 seconds per page. This still means that you can extract extremely detailed text information of a complex 100-page magazine in less than a minute. This is about 3 times faster than text extraction with other free PDF utilities, e.g. <a class="reference external" href="https://www.gonitro.com/pdf-reader">Nitro 3</a>.</p>
+<p>If you use PDF2TextJS.py of the example directory, you have a text extraction utility which is more than 60 times faster than Nitro!</p>
 </div>
 <div class="section" id="data-sizes">
 <h3>Data Sizes<a class="headerlink" href="#data-sizes" title="Permalink to this headline">¶</a></h3>
 <p>The sizes of the returned text strings follow this pattern, again <code class="docutils literal"><span class="pre">extractText(basic=True)</span></code> is set to 1:</p>
 <p><code class="docutils literal"><span class="pre">(Text</span> <span class="pre">:</span> <span class="pre">HTML</span> <span class="pre">:</span> <span class="pre">JSON</span> <span class="pre">:</span> <span class="pre">XML)</span> <span class="pre">~</span> <span class="pre">(1</span> <span class="pre">:</span> <span class="pre">4</span> <span class="pre">:</span> <span class="pre">6</span> <span class="pre">:</span> <span class="pre">87)</span></code></p>
-<p>The number 87 for <code class="docutils literal"><span class="pre">extractXML()</span></code> corresponds to values between 200 and 400 KB per page. The details can be seen here:</p>
-<img alt="_images/sizes.png" src="_images/sizes.png" />
-</div>
-<div class="section" id="examples-pymupdf-pdf-and-adobe-pdf-reference-1-7-pdf">
-<h3>Examples &#8220;PyMuPDF.pdf&#8221; and &#8220;Adobe PDF Reference 1-7.pdf&#8221;<a class="headerlink" href="#examples-pymupdf-pdf-and-adobe-pdf-reference-1-7-pdf" title="Permalink to this headline">¶</a></h3>
-<p>Our low and high end examples (contained in the numbers of the previous chapter) have the following detail data.</p>
-<img alt="_images/pymupdf.png" src="_images/pymupdf.png" />
-<img alt="_images/adobe.png" src="_images/adobe.png" />
+<p>The number 87 for <code class="docutils literal"><span class="pre">extractXML()</span></code> corresponds to values between 200 and 400 KB per page.</p>
+<p>The details can be seen here:</p>
+<img alt="_images/performance.png" src="_images/performance.png" />
 </div>
 </div>
 </div>
@@ -258,7 +252,7 @@ Nevertheless we will only talk about PDF files for the sake of brevity.
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 04. Nov 2015.
+      Last updated on 20. Nov 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

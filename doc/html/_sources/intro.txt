@@ -14,7 +14,7 @@ MuPDF stands out among all similar products for its top rendering capability and
 You can check this out yourself:
 Compare the various free PDF-viewers. In terms of speed and rendering quality `SumatraPDF <http://www.sumatrapdfreader.org/>`_ ranges at the top (apart from MuPDF's own standalone viewer) - and it is based on  MuPDF!
 
-While PyMuPDF has been available since several years for an earlier version of MuPDF (1.2), it was until only mid May 2015, that its creator and a few co-workers decided to elevate it to support the current release of MuPDF (1.8).
+While PyMuPDF has been available since several years for an earlier version of MuPDF (1.2), it was until only mid May 2015, that its creator and a few co-workers decided to elevate it to support the current release of MuPDF (first 1,7a  and, since November 2015, 1.8).
 
 And we are determined to keep PyMuPDF current with future MuPDF changes!
 
