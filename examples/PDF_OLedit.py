@@ -125,10 +125,10 @@ class PDFTable(gridlib.PyGridTableBase):
         self.data = [[PDFcfg.inhalt[i][0],          # indentation level
                       " "*(PDFcfg.inhalt[i][0] -1) + \
                       PDFcfg.inhalt[i][1],
-                      PDFcfg.inhalt[i][2] + 1, ""] \
+                      PDFcfg.inhalt[i][2], ""] \
                               for i in range(len(PDFcfg.inhalt))]
         if not PDFcfg.inhalt:
-            self.data = [[0, "*** contains no outline ***", 0, "1"]]
+            self.data = [[0, "*** no outline ***", 0, "1"]]
         # used for correctly placing new lines. insert at end = -1
         self.cur_row = -1
 
