@@ -164,7 +164,15 @@ struct fz_document_s {
                 raise ValueError("operation on closed document")
         %}
         struct fz_outline_s *_loadOutline() {
-            return fz_load_outline(gctx, $self);
+            /*
+            if the doc is encrypted, we won't init the outline until it is decrypted
+            */
+            if(!fz_needs_password(gctx, $self)) {
+                return fz_load_outline(gctx, $self);
+            }
+            else {
+                return NULL;
+            }
         }
         %pythonprepend _dropOutline(struct fz_outline_s *ol) %{
             if self.isClosed == 1:
@@ -212,8 +220,12 @@ struct fz_document_s {
             if self.isClosed == 1:
                 raise ValueError("operation on closed document")
         %}
+        %pythonappend authenticate(const char *pass) %{
+            if val: # the doc is decrypted successfully and we init the outline
+                self._outline = self._loadOutline()
+        %}
         int authenticate(const char *pass) {
-            return !fz_authenticate_password(gctx, $self, pass);
+            return fz_authenticate_password(gctx, $self, pass);
         }
         /****************************************************************/
         /* save(filename, garbage=0, clean=0, deflate=0)                */
@@ -673,7 +685,7 @@ struct fz_outline_s {
     0
 
     I do not like to change struct of fz_document, so I decide
-    to delegate the outline destructin work to fz_document. That is,
+    to delegate the outline destruction work to fz_document. That is,
     when the Document is created, its outline is loaded in advance.
     The outline will only be freed when the doc is destroyed, which means
     in the python code, we must keep ref to doc if we still want to use outline

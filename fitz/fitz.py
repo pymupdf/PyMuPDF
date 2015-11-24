@@ -91,8 +91,8 @@ except AttributeError:
 
 
 
-VersionFitz = "1.7a"
-VersionBind = "1.7.0"
+VersionFitz = "1.8"
+VersionBind = "1.8.0"
 
 class Document(_object):
     __swig_setmethods__ = {}
@@ -249,7 +249,13 @@ class Document(_object):
             raise ValueError("operation on closed document")
 
 
-        return _fitz.Document_authenticate(self, arg2)
+        val = _fitz.Document_authenticate(self, arg2)
+
+        if val: # the doc is decrypted successfully and we init the outline
+            self._outline = self._loadOutline()
+
+
+        return val
 
 
     def save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0):
@@ -261,7 +267,7 @@ class Document(_object):
         deflate:      deflate uncompressed streams, 0 = False, 1 = True
         incremental:  write just the changed objects, 0 = False, 1 = True
         ascii:        where possible make the output ascii, 0 = False, 1 = True
-        expand:       one bytpe bitfield to decompress content, 0 = none, 1 = images, 2 = fonts, 255 = all
+        expand:       one byte bitfield to decompress content, 0 = none, 1 = images, 2 = fonts, 255 = all
         linear:       write linearised, 0 = False, 1 = True
         '''
         if self.isClosed == 1:

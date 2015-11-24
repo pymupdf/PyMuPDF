@@ -3274,7 +3274,15 @@ SWIGINTERN struct fz_page_s *fz_document_s_loadPage(struct fz_document_s *self,i
             return page;
         }
 SWIGINTERN struct fz_outline_s *fz_document_s__loadOutline(struct fz_document_s *self){
-            return fz_load_outline(gctx, self);
+            /*
+            if the doc is encrypted, we won't init the outline until it is decrypted
+            */
+            if(!fz_needs_password(gctx, self)) {
+                return fz_load_outline(gctx, self);
+            }
+            else {
+                return NULL;
+            }
         }
 SWIGINTERN void fz_document_s__dropOutline(struct fz_document_s *self,struct fz_outline_s *ol){
 
@@ -3340,7 +3348,7 @@ SWIGINTERN int fz_document_s__needsPass(struct fz_document_s *self){
             return fz_needs_password(gctx, self);
         }
 SWIGINTERN int fz_document_s_authenticate(struct fz_document_s *self,char const *pass){
-            return !fz_authenticate_password(gctx, self, pass);
+            return fz_authenticate_password(gctx, self, pass);
         }
 SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename,int garbage,int clean,int deflate,int incremental,int ascii,int expand,int linear){
             int have_opts = garbage + clean + deflate + incremental + ascii + expand + linear;

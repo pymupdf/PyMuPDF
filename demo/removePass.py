@@ -17,7 +17,7 @@ assert doc.needsPass
 
 #decrypt the document
 #return non-zero if failed
-if doc.authenticate(sys.argv[2]):
+if not doc.authenticate(sys.argv[2]):
     print('cannot decrypt %s with password %s' % (sys.argv[1], sys.argv[2]))
     exit(1)
 
