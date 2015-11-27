@@ -60,42 +60,9 @@ struct fz_document_s {
 
         %}
         %pythonappend fz_document_s(const char *filename, char *stream=NULL, int streamlen=0) %{
-            #================================================================
-            # Function: Table of Contents
-            #================================================================
-            def ToC():
-
-                def recurse(olItem, liste, lvl):
-                    while olItem:
-                        if olItem.title:
-                            title = olItem.title.decode("utf-8")
-                        else:
-                            title = u" "
-                        if olItem.dest.kind == 1:
-                            page = olItem.dest.page + 1
-                        else:
-                            page = 0
-                        liste.append([lvl, title, page])
-                        if olItem.down:
-                            liste = recurse(olItem.down, liste, lvl+1)
-                        olItem = olItem.next
-                    return liste
-
-                olItem = self.outline
-                if not olItem: return []
-                lvl = 1
-                liste = []
-                return recurse(olItem, liste, lvl)
-
-            if this:
-                self._outline = self._loadOutline()
-                self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format','title':'info:Title',
-                                                                           'author':'info:Author','subject':'info:Subject',
-                                                                           'keywords':'info:Keywords','creator':'info:Creator',
-                                                                           'producer':'info:Producer','creationDate':'info:CreationDate',
-                                                                           'modDate':'info:ModDate'}.items()])
-                self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
-                self.ToC = ToC
+            # we won't init encrypted doc until it is decrypted 
+            if this and not self.needsPass:
+                self.initData()
                 self.thisown = False
         %}
         fz_document_s(const char *filename, char *stream=NULL, int streamlen=0) {
@@ -164,15 +131,7 @@ struct fz_document_s {
                 raise ValueError("operation on closed document")
         %}
         struct fz_outline_s *_loadOutline() {
-            /*
-            if the doc is encrypted, we won't init the outline until it is decrypted
-            */
-            if(!fz_needs_password(gctx, $self)) {
-                return fz_load_outline(gctx, $self);
-            }
-            else {
-                return NULL;
-            }
+            return fz_load_outline(gctx, $self);
         }
         %pythonprepend _dropOutline(struct fz_outline_s *ol) %{
             if self.isClosed == 1:
@@ -222,7 +181,7 @@ struct fz_document_s {
         %}
         %pythonappend authenticate(const char *pass) %{
             if val: # the doc is decrypted successfully and we init the outline
-                self._outline = self._loadOutline()
+                self.initData()
         %}
         int authenticate(const char *pass) {
             return fz_authenticate_password(gctx, $self, pass);
@@ -283,6 +242,43 @@ struct fz_document_s {
         }
 
         %pythoncode %{
+            #================================================================
+            # Function: Table of Contents
+            #================================================================
+            def getToC(self):
+
+                def recurse(olItem, liste, lvl):
+                    while olItem:
+                        if olItem.title:
+                            title = olItem.title.decode("utf-8")
+                        else:
+                            title = u" "
+                        if olItem.dest.kind == 1:
+                            page = olItem.dest.page + 1
+                        else:
+                            page = 0
+                        liste.append([lvl, title, page])
+                        if olItem.down:
+                            liste = recurse(olItem.down, liste, lvl+1)
+                        olItem = olItem.next
+                    return liste
+
+                olItem = self.outline
+                if not olItem: return []
+                lvl = 1
+                liste = []
+                return recurse(olItem, liste, lvl)
+
+            def initData(self):
+                self._outline = self._loadOutline()
+                self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format','title':'info:Title',
+                                                                           'author':'info:Author','subject':'info:Subject',
+                                                                           'keywords':'info:Keywords','creator':'info:Creator',
+                                                                           'producer':'info:Producer','creationDate':'info:CreationDate',
+                                                                           'modDate':'info:ModDate'}.items()])
+                self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
+                self.ToC = self.getToC()
+
             pageCount = property(lambda self: self._getPageCount())
             outline = property(lambda self: self._outline)
             needsPass = property(lambda self: self._needsPass())

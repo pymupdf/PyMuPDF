@@ -3274,15 +3274,7 @@ SWIGINTERN struct fz_page_s *fz_document_s_loadPage(struct fz_document_s *self,i
             return page;
         }
 SWIGINTERN struct fz_outline_s *fz_document_s__loadOutline(struct fz_document_s *self){
-            /*
-            if the doc is encrypted, we won't init the outline until it is decrypted
-            */
-            if(!fz_needs_password(gctx, self)) {
-                return fz_load_outline(gctx, self);
-            }
-            else {
-                return NULL;
-            }
+            return fz_load_outline(gctx, self);
         }
 SWIGINTERN void fz_document_s__dropOutline(struct fz_document_s *self,struct fz_outline_s *ol){
 

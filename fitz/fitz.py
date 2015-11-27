@@ -125,42 +125,9 @@ class Document(_object):
         except:
             self.this = this
 
-                    #================================================================
-                    # Function: Table of Contents
-                    #================================================================
-        def ToC():
-
-            def recurse(olItem, liste, lvl):
-                while olItem:
-                    if olItem.title:
-                        title = olItem.title.decode("utf-8")
-                    else:
-                        title = u" "
-                    if olItem.dest.kind == 1:
-                        page = olItem.dest.page + 1
-                    else:
-                        page = 0
-                    liste.append([lvl, title, page])
-                    if olItem.down:
-                        liste = recurse(olItem.down, liste, lvl+1)
-                    olItem = olItem.next
-                return liste
-
-            olItem = self.outline
-            if not olItem: return []
-            lvl = 1
-            liste = []
-            return recurse(olItem, liste, lvl)
-
-        if this:
-            self._outline = self._loadOutline()
-            self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format','title':'info:Title',
-                                                                       'author':'info:Author','subject':'info:Subject',
-                                                                       'keywords':'info:Keywords','creator':'info:Creator',
-                                                                       'producer':'info:Producer','creationDate':'info:CreationDate',
-                                                                       'modDate':'info:ModDate'}.items()])
-            self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
-            self.ToC = ToC
+                    # we won't init encrypted doc until it is decrypted 
+        if this and not self.needsPass:
+            self.initData()
             self.thisown = False
 
 
@@ -252,7 +219,7 @@ class Document(_object):
         val = _fitz.Document_authenticate(self, arg2)
 
         if val: # the doc is decrypted successfully and we init the outline
-            self._outline = self._loadOutline()
+            self.initData()
 
 
         return val
@@ -284,6 +251,43 @@ class Document(_object):
 
         return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear)
 
+
+                #================================================================
+                # Function: Table of Contents
+                #================================================================
+    def getToC(self):
+
+        def recurse(olItem, liste, lvl):
+            while olItem:
+                if olItem.title:
+                    title = olItem.title.decode("utf-8")
+                else:
+                    title = u" "
+                if olItem.dest.kind == 1:
+                    page = olItem.dest.page + 1
+                else:
+                    page = 0
+                liste.append([lvl, title, page])
+                if olItem.down:
+                    liste = recurse(olItem.down, liste, lvl+1)
+                olItem = olItem.next
+            return liste
+
+        olItem = self.outline
+        if not olItem: return []
+        lvl = 1
+        liste = []
+        return recurse(olItem, liste, lvl)
+
+    def initData(self):
+        self._outline = self._loadOutline()
+        self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format','title':'info:Title',
+                                                                   'author':'info:Author','subject':'info:Subject',
+                                                                   'keywords':'info:Keywords','creator':'info:Creator',
+                                                                   'producer':'info:Producer','creationDate':'info:CreationDate',
+                                                                   'modDate':'info:ModDate'}.items()])
+        self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
+        self.ToC = self.getToC()
 
     pageCount = property(lambda self: self._getPageCount())
     outline = property(lambda self: self._outline)
