@@ -16,12 +16,13 @@ This class represents a document. It can be constructed from a file or from memo
 :meth:`Document.authenticate`   Decrypts the document
 :meth:`Document.loadPage`       Reads a page
 :meth:`Document.save`           Saves a copy of the document
-:meth:`Document.ToC`            Creates a table of contents
+:meth:`Document.getToC`         Creates a table of contents
 :meth:`Document.close`          Closes the document
 :attr:`Document.isClosed`       Has document been closed?
 :attr:`Document.outline`        First `Outline` item
 :attr:`Document.name`           filename of document
-:attr:`Document.needsPass`      Is document is encrypted?
+:attr:`Document.needsPass`      Require password to access data?
+:attr:`Document.isEncrypted`    Is document still encrypted?
 :attr:`Document.pageCount`      The document's number of pages
 :attr:`Document.metadata`       The document's meta data
 =============================== ================================
@@ -58,7 +59,7 @@ This class represents a document. It can be constructed from a file or from memo
 
     .. method:: authenticate(password)
 
-      Decrypts the document with the string ``password``. If successfull, the document's data can be accessed (e.g. for rendering).
+      Decrypts the document with the string ``password``. If successfull, all of the document's data can be accessed (e.g. for rendering).
 
       :param `password`: The password to be used.
       :type `password`: string
@@ -106,9 +107,9 @@ This class represents a document. It can be constructed from a file or from memo
       :rtype: int
       :returns: Count of errors that occurred during save. Note: PyMuPDF will recover from many errors encountered in a PDF and continue processing.
 
-    .. method:: ToC()
+    .. method:: getToC()
 
-      A convenience function that creates a table of contents from the ``outline`` entries. If none exist ``[]`` will be returned, otherwise a Python list ``[[level, title, page], [...], ...]``. Note that the title entries have already been decoded to unicode here. Page numbers are 1-based, but zero if and only if the entry points to a place outside this document.
+      A convenience function that creates a table of contents from the ``outline`` entries. If none exist ``[]`` will be returned, otherwise a Python list ``[[level, title, page], [...], ...]``. Note that the title entries have already been decoded to unicode here. Page numbers are 1-based, but zero if and only if the entry points to a place outside this document. If invoked for an encrypted, not yet authenticated document, a ``ValueError`` exception will be raised.
 
       :rtype: list
 
@@ -118,7 +119,7 @@ This class represents a document. It can be constructed from a file or from memo
 
     .. attribute:: outline
 
-      Contains either ``None`` or the first :ref:`Outline` entry of the document. Can be used as a starting point to walk through all outline items.
+      Contains either ``None`` or the first :ref:`Outline` entry of the document. Can be used as a starting point to walk through all outline items. If an encrypted document has not yet been authenticated, an ``AttributeError`` exception will be raised, when this attribute is being accessed.
 
       :rtype: :ref:`Outline`
 
@@ -130,19 +131,25 @@ This class represents a document. It can be constructed from a file or from memo
 
     .. attribute:: needsPass
 
-      Contains an indicator showing whether the document is encrypted (``True = 1``) or not (``False = 0``).
+      Contains an indicator showing whether the document is encrypted (``True = 1``) or not (``False = 0``). This indicator remains unchanged - even after the document has been authenticated.
+
+      :rtype: bool
+
+    .. attribute:: isEncrypted
+
+      This indicator initially equals the value of ``needsPass``. After a successfull authentification, it is set to ``False = 0`` to reflect the situation.
 
       :rtype: bool
 
     .. Attribute:: metadata
 
-      Contains the document's meta data as a Python dictionary. Its keys are ``format``, ``encryption``, ``title``, ``author``, ``subject``, ``keywords``, ``creator``, ``producer``, ``creationDate``, ``modDate``. All item values are strings or ``None``.
+      Contains the document's meta data as a Python dictionary or ``None`` if the document is encrypted. Its keys are ``format``, ``encryption``, ``title``, ``author``, ``subject``, ``keywords``, ``creator``, ``producer``, ``creationDate``, ``modDate``. All item values are strings or ``None``.
 
       Except ``format`` and ``encryption``, the key names correspond in an obvious way to a PDF's "official" meta data fields ``/Creator``, ``/Producer``, ``/CreationDate``, ``/ModDate``, ``/Title``, ``/Author``, ``/Subject``, ``/Keywords`` respectively.
 
       The value of ``format`` contains the version of the PDF format (e.g. 'PDF-1.6').
 
-      The value of ``encryption`` either contains ``None`` (not encrypted), or a string naming the used encryption method (e.g. ``'Standard V4 R4 128-bit RC4'``). Note that if the document is encrypted, the other meta data values may be encrypted, too.
+      The value of ``encryption`` either contains ``None`` (not encrypted), or a string naming the used encryption method (e.g. ``'Standard V4 R4 128-bit RC4'``).
 
       If the date fields contain meaningfull data (which need not be the case), they are strings in the PDF-internal timestamp format "D:<TS><TZ>", where
 

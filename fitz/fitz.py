@@ -116,6 +116,8 @@ class Document(_object):
             raise TypeError("filename must be a string")
         self.name = filename
         self.isClosed = 0
+        self.isEncrypted = 0
+        self.metadata = None
 
 
 
@@ -125,7 +127,9 @@ class Document(_object):
         except:
             self.this = this
 
-                    # we won't init encrypted doc until it is decrypted 
+        if this and self.needsPass:
+            self.isEncrypted = 1
+        # we won't init encrypted doc until it is decrypted
         if this and not self.needsPass:
             self.initData()
             self.thisown = False
@@ -141,7 +145,6 @@ class Document(_object):
             self._dropOutline(self._outline)
             self._outline = None
         self.metadata = None
-        self.ToC = None
         self.isClosed = 1
 
 
@@ -219,6 +222,7 @@ class Document(_object):
         val = _fitz.Document_authenticate(self, arg2)
 
         if val: # the doc is decrypted successfully and we init the outline
+            self.isEncrypted = 0
             self.initData()
 
 
@@ -273,13 +277,18 @@ class Document(_object):
                 olItem = olItem.next
             return liste
 
-        olItem = self.outline
+        if hasattr(self, "outline"):
+            olItem = self.outline
+        else:
+            raise ValueError("document is still encrypted")
         if not olItem: return []
         lvl = 1
         liste = []
         return recurse(olItem, liste, lvl)
 
     def initData(self):
+        if self.isEncrypted:
+            raise ValueError("cannot initData - document is still encrypted")
         self._outline = self._loadOutline()
         self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format','title':'info:Title',
                                                                    'author':'info:Author','subject':'info:Subject',
@@ -287,10 +296,9 @@ class Document(_object):
                                                                    'producer':'info:Producer','creationDate':'info:CreationDate',
                                                                    'modDate':'info:ModDate'}.items()])
         self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
-        self.ToC = self.getToC()
 
-    pageCount = property(lambda self: self._getPageCount())
     outline = property(lambda self: self._outline)
+    pageCount = property(lambda self: self._getPageCount())
     needsPass = property(lambda self: self._needsPass())
 
     __swig_destroy__ = _fitz.delete_Document

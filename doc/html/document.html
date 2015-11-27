@@ -105,7 +105,7 @@
 <tr class="row-even"><td><a class="reference internal" href="#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a></td>
 <td>Saves a copy of the document</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.ToC" title="Document.ToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.ToC()</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.getToC" title="Document.getToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.getToC()</span></code></a></td>
 <td>Creates a table of contents</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.close" title="Document.close"><code class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></code></a></td>
@@ -121,12 +121,15 @@
 <td>filename of document</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
-<td>Is document is encrypted?</td>
+<td>Require password to access data?</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.isEncrypted" title="Document.isEncrypted"><code class="xref py py-attr docutils literal"><span class="pre">Document.isEncrypted</span></code></a></td>
+<td>Is document still encrypted?</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
 <td>The document&#8217;s number of pages</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
 <td>The document&#8217;s meta data</td>
 </tr>
 </tbody>
@@ -181,7 +184,7 @@
 <dl class="method">
 <dt id="Document.authenticate">
 <code class="descname">authenticate</code><span class="sig-paren">(</span><em>password</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.authenticate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Decrypts the document with the string <code class="docutils literal"><span class="pre">password</span></code>. If successfull, the document&#8217;s data can be accessed (e.g. for rendering).</p>
+<dd><p>Decrypts the document with the string <code class="docutils literal"><span class="pre">password</span></code>. If successfull, all of the document&#8217;s data can be accessed (e.g. for rendering).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -243,9 +246,9 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="Document.ToC">
-<code class="descname">ToC</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Document.ToC" title="Permalink to this definition">¶</a></dt>
-<dd><p>A convenience function that creates a table of contents from the <code class="docutils literal"><span class="pre">outline</span></code> entries. If none exist <code class="docutils literal"><span class="pre">[]</span></code> will be returned, otherwise a Python list <code class="docutils literal"><span class="pre">[[level,</span> <span class="pre">title,</span> <span class="pre">page],</span> <span class="pre">[...],</span> <span class="pre">...]</span></code>. Note that the title entries have already been decoded to unicode here. Page numbers are 1-based, but zero if and only if the entry points to a place outside this document.</p>
+<dt id="Document.getToC">
+<code class="descname">getToC</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Document.getToC" title="Permalink to this definition">¶</a></dt>
+<dd><p>A convenience function that creates a table of contents from the <code class="docutils literal"><span class="pre">outline</span></code> entries. If none exist <code class="docutils literal"><span class="pre">[]</span></code> will be returned, otherwise a Python list <code class="docutils literal"><span class="pre">[[level,</span> <span class="pre">title,</span> <span class="pre">page],</span> <span class="pre">[...],</span> <span class="pre">...]</span></code>. Note that the title entries have already been decoded to unicode here. Page numbers are 1-based, but zero if and only if the entry points to a place outside this document. If invoked for an encrypted, not yet authenticated document, a <code class="docutils literal"><span class="pre">ValueError</span></code> exception will be raised.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -265,7 +268,7 @@
 <dl class="attribute">
 <dt id="Document.outline">
 <code class="descname">outline</code><a class="headerlink" href="#Document.outline" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains either <code class="docutils literal"><span class="pre">None</span></code> or the first <a class="reference internal" href="outline.html#outline"><span>Outline</span></a> entry of the document. Can be used as a starting point to walk through all outline items.</p>
+<dd><p>Contains either <code class="docutils literal"><span class="pre">None</span></code> or the first <a class="reference internal" href="outline.html#outline"><span>Outline</span></a> entry of the document. Can be used as a starting point to walk through all outline items. If an encrypted document has not yet been authenticated, an <code class="docutils literal"><span class="pre">AttributeError</span></code> exception will be raised, when this attribute is being accessed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -293,7 +296,21 @@
 <dl class="attribute">
 <dt id="Document.needsPass">
 <code class="descname">needsPass</code><a class="headerlink" href="#Document.needsPass" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains an indicator showing whether the document is encrypted (<code class="docutils literal"><span class="pre">True</span> <span class="pre">=</span> <span class="pre">1</span></code>) or not (<code class="docutils literal"><span class="pre">False</span> <span class="pre">=</span> <span class="pre">0</span></code>).</p>
+<dd><p>Contains an indicator showing whether the document is encrypted (<code class="docutils literal"><span class="pre">True</span> <span class="pre">=</span> <span class="pre">1</span></code>) or not (<code class="docutils literal"><span class="pre">False</span> <span class="pre">=</span> <span class="pre">0</span></code>). This indicator remains unchanged - even after the document has been authenticated.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Document.isEncrypted">
+<code class="descname">isEncrypted</code><a class="headerlink" href="#Document.isEncrypted" title="Permalink to this definition">¶</a></dt>
+<dd><p>This indicator initially equals the value of <code class="docutils literal"><span class="pre">needsPass</span></code>. After a successfull authentification, it is set to <code class="docutils literal"><span class="pre">False</span> <span class="pre">=</span> <span class="pre">0</span></code> to reflect the situation.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -307,10 +324,10 @@
 <dl class="attribute">
 <dt id="Document.metadata">
 <code class="descname">metadata</code><a class="headerlink" href="#Document.metadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the document&#8217;s meta data as a Python dictionary. Its keys are <code class="docutils literal"><span class="pre">format</span></code>, <code class="docutils literal"><span class="pre">encryption</span></code>, <code class="docutils literal"><span class="pre">title</span></code>, <code class="docutils literal"><span class="pre">author</span></code>, <code class="docutils literal"><span class="pre">subject</span></code>, <code class="docutils literal"><span class="pre">keywords</span></code>, <code class="docutils literal"><span class="pre">creator</span></code>, <code class="docutils literal"><span class="pre">producer</span></code>, <code class="docutils literal"><span class="pre">creationDate</span></code>, <code class="docutils literal"><span class="pre">modDate</span></code>. All item values are strings or <code class="docutils literal"><span class="pre">None</span></code>.</p>
+<dd><p>Contains the document&#8217;s meta data as a Python dictionary or <code class="docutils literal"><span class="pre">None</span></code> if the document is encrypted. Its keys are <code class="docutils literal"><span class="pre">format</span></code>, <code class="docutils literal"><span class="pre">encryption</span></code>, <code class="docutils literal"><span class="pre">title</span></code>, <code class="docutils literal"><span class="pre">author</span></code>, <code class="docutils literal"><span class="pre">subject</span></code>, <code class="docutils literal"><span class="pre">keywords</span></code>, <code class="docutils literal"><span class="pre">creator</span></code>, <code class="docutils literal"><span class="pre">producer</span></code>, <code class="docutils literal"><span class="pre">creationDate</span></code>, <code class="docutils literal"><span class="pre">modDate</span></code>. All item values are strings or <code class="docutils literal"><span class="pre">None</span></code>.</p>
 <p>Except <code class="docutils literal"><span class="pre">format</span></code> and <code class="docutils literal"><span class="pre">encryption</span></code>, the key names correspond in an obvious way to a PDF&#8217;s &#8220;official&#8221; meta data fields <code class="docutils literal"><span class="pre">/Creator</span></code>, <code class="docutils literal"><span class="pre">/Producer</span></code>, <code class="docutils literal"><span class="pre">/CreationDate</span></code>, <code class="docutils literal"><span class="pre">/ModDate</span></code>, <code class="docutils literal"><span class="pre">/Title</span></code>, <code class="docutils literal"><span class="pre">/Author</span></code>, <code class="docutils literal"><span class="pre">/Subject</span></code>, <code class="docutils literal"><span class="pre">/Keywords</span></code> respectively.</p>
 <p>The value of <code class="docutils literal"><span class="pre">format</span></code> contains the version of the PDF format (e.g. &#8216;PDF-1.6&#8217;).</p>
-<p>The value of <code class="docutils literal"><span class="pre">encryption</span></code> either contains <code class="docutils literal"><span class="pre">None</span></code> (not encrypted), or a string naming the used encryption method (e.g. <code class="docutils literal"><span class="pre">'Standard</span> <span class="pre">V4</span> <span class="pre">R4</span> <span class="pre">128-bit</span> <span class="pre">RC4'</span></code>). Note that if the document is encrypted, the other meta data values may be encrypted, too.</p>
+<p>The value of <code class="docutils literal"><span class="pre">encryption</span></code> either contains <code class="docutils literal"><span class="pre">None</span></code> (not encrypted), or a string naming the used encryption method (e.g. <code class="docutils literal"><span class="pre">'Standard</span> <span class="pre">V4</span> <span class="pre">R4</span> <span class="pre">128-bit</span> <span class="pre">RC4'</span></code>).</p>
 <p>If the date fields contain meaningfull data (which need not be the case), they are strings in the PDF-internal timestamp format &#8220;D:&lt;TS&gt;&lt;TZ&gt;&#8221;, where</p>
 <p>&lt;TS&gt; is the 12 character ISO timestamp <code class="docutils literal"><span class="pre">YYYMMDDhhmmss</span></code> (<code class="docutils literal"><span class="pre">YYYY</span></code> - year, <code class="docutils literal"><span class="pre">MM</span></code> - month, <code class="docutils literal"><span class="pre">DD</span></code> - day, <code class="docutils literal"><span class="pre">hh</span></code> - hour, <code class="docutils literal"><span class="pre">mm</span></code> - minute, <code class="docutils literal"><span class="pre">ss</span></code> - second), and</p>
 <p>&lt;TZ&gt; is a time zone value (time intervall relative to GMT) containing a sign (&#8216;+&#8217; or &#8216;-&#8216;), the hour (<code class="docutils literal"><span class="pre">hh</span></code>), and the minute (<code class="docutils literal"><span class="pre">'mm'</span></code>, attention: enclose in apostrophies!).</p>
@@ -381,7 +398,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 20. Nov 2015.
+      Last updated on 27. Nov 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

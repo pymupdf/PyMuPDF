@@ -39,7 +39,7 @@ Some :ref:`Document` methods and attributes
 :attr:`Document.pageCount`  Number of pages of ``filename`` (integer).
 :attr:`Document.metadata`   Metadata of the ``Document`` (dictionary).
 :attr:`Document.outline`    First outline entry of ``Document``
-:meth:`Document.ToC`        Table of contents of ``Document`` (list).
+:meth:`Document.getToC`     Table of contents of ``Document`` (list).
 :meth:`Document.loadPage`   Create a ``Page`` object.
 =========================== ==========================================
 
@@ -99,7 +99,7 @@ MuPDF also supports outline destinations to other files and to URIs. See :ref:`O
 
 In order to get a document's table of contents as a Python list, use the following function:
 ::
- toc = doc.ToC()       # [[level, title, page], ...], or []
+ toc = doc.getToC()       # [[level, title, page], ...], or []
 
 
 Work with Pages
