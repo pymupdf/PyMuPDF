@@ -26,6 +26,8 @@ information than extractXML(), but sufficient to reconstruct a text
 version of a PDF.
 The benefit of it is a vastly higher performance: expect to see an improvement
 by a factor of 20 or more!
+Encoding of the text in the PDF is assumed to be UTF-8.
+Change the ENCODING variable as required.
 -------------------------------------------------------------------------------
 """
 import fitz
@@ -37,7 +39,7 @@ def SortBlocks(blocks):
     '''
     Sort the blocks of a TextPage in ascending vertical pixel order,
     then in ascending horizontal pixel order.
-    This ensures sequencing the text in a more readable form, at least by
+    This should sequence the text in a more readable form, at least by
     convention of the Western hemisphere: from top-left to bottom-right.
     If you need something else, change the sortkey variable accordingly ...
     '''

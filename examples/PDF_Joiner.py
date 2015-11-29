@@ -465,7 +465,7 @@ def make_pdf(dlg):
         
         parents[1] = bm_main           # lvl 1 bookmark is infile's title
 
-        toc = doc.ToC()                # get infile's table of contents
+        toc = doc.getToC()             # get infile's table of contents
         bm_lst = []                    # prepare the relevant sub-ToC
         for t in toc:                  
             if t[2] >= von and t[2] <= bis:      # relevant page range only

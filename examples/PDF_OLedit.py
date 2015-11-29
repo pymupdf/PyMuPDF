@@ -700,7 +700,7 @@ def DisableOK():
 #==============================================================================
 def getPDFinfo():
     PDFcfg.doc = fitz.Document(PDFcfg.file)
-    PDFcfg.inhalt = PDFcfg.doc.ToC()
+    PDFcfg.inhalt = PDFcfg.doc.getToC()
     PDFcfg.seiten = PDFcfg.doc.pageCount
     PDFmeta = {"author":"", "title":"", "subject":""}
     for key in PDFcfg.doc.metadata:
@@ -716,9 +716,6 @@ def getPDFinfo():
 # Write the changed PDF file
 #============================================================================
 def make_pdf(dlg):
-    # if outline table contains nothing interesting: do nothing!
-    if len(dlg.szr20.Table.data) < 1:
-        return
     # create a PDF compatible timestamp
     cdate = wx.DateTime.Now().Format("D:%Y%m%d%H%M%S-04'30'") 
     # free MuPDF resources, because the input must be closed if overwritten
@@ -752,7 +749,10 @@ def make_pdf(dlg):
 #==============================================================================
 # lvl_tab stores last bookmark of indent level corresponding to index - 1
 #==============================================================================
-    lvl_tab = [0] * max([int(z[0]) for z in dlg.szr20.Table.data])
+    try:
+        lvl_tab = [0] * max([int(z[0]) for z in dlg.szr20.Table.data])
+    except:
+        lvl_tab = []
 #==============================================================================
 # store our outline entries as bookmarks
 #==============================================================================
