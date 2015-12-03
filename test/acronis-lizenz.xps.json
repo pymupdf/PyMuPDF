@@ -1,0 +1,591 @@
+{
+ "len":38,"width":594.75,"height":841.5,
+ "blocks":[
+  {"type":"text","bbox":[452.27997, 44.96178, 456.22452, 53.00584],
+   "lines":[
+      {"bbox":[452.27997, 44.96178, 456.22452, 53.00584],
+       "spans":[
+         {"bbox":[452.27997, 44.96178, 456.22452, 53.00584],
+          "text":"  "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[20.28, 69.66904, 169.17975, 80.394455],
+   "lines":[
+      {"bbox":[20.28, 69.66904, 169.17975, 80.394455],
+       "spans":[
+         {"bbox":[20.28, 69.66904, 169.17975, 80.394455],
+          "text":"Vielen Dank f\u00fcr Ihre Bestellung. "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[20.28, 128.67133, 342.16156, 141.90437],
+   "lines":[
+      {"bbox":[20.28, 128.67133, 342.16156, 134.70438],
+       "spans":[
+         {"bbox":[20.28, 128.67133, 342.16156, 134.70438],
+          "text":"Anbei finden Sie Ihre cleverbridge Referenznummer. Um unverz\u00fcglichen und sorgf\u00e4ltigen Kundenservice zu erhalten, geben Sie diese "
+         }
+       ]
+      },
+      {"bbox":[20.28, 135.87132, 245.09401, 141.90437],
+       "spans":[
+         {"bbox":[20.28, 135.87132, 245.09401, 141.90437],
+          "text":"Referenznummer bitte immer in jeglicher Kommunikation bez\u00fcglich Ihres Auftrags mit uns an. "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[134.28, 157.11133, 249.28737, 163.14438],
+   "lines":[
+      {"bbox":[134.28, 157.11133, 249.28737, 163.14438],
+       "spans":[
+         {"bbox":[134.28, 157.11133, 249.28737, 163.14438],
+          "text":"Ihre cleverbridge Referenznummer: 5665274 "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[25.199999, 180.67679, 92.8119, 187.24611],
+   "lines":[
+      {"bbox":[25.199999, 180.67679, 92.8119, 187.24611],
+       "spans":[
+         {"bbox":[25.199999, 180.67679, 92.8119, 187.24611],
+          "text":"Zahlungsinformationen "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[29.64, 199.35133, 167.82751, 205.38438],
+   "lines":[
+      {"bbox":[29.64, 199.35133, 167.82751, 205.38438],
+       "spans":[
+         {"bbox":[29.64, 199.35133, 167.82751, 205.38438],
+          "text":"Der Gesamtbetrag wird von Ihrem Bankkonto abgebucht. "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[25.199999, 227.47678, 65.133736, 234.0461],
+   "lines":[
+      {"bbox":[25.199999, 227.47678, 65.133736, 234.0461],
+       "spans":[
+         {"bbox":[25.199999, 227.47678, 65.133736, 234.0461],
+          "text":"Ihre Produkte "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[25.199999, 461.4768, 68.48053, 468.0461],
+   "lines":[
+      {"bbox":[25.199999, 461.4768, 68.48053, 468.0461],
+       "spans":[
+         {"bbox":[25.199999, 461.4768, 68.48053, 468.0461],
+          "text":"Ihre Rechnung "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[29.64, 480.1513, 218.81181, 486.18436],
+   "lines":[
+      {"bbox":[29.64, 480.1513, 218.81181, 486.18436],
+       "spans":[
+         {"bbox":[29.64, 480.1513, 218.81181, 486.18436],
+          "text":"Bitte verwenden Sie den folgenden Link, um Ihre Rechnung herunter zu laden: "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[177.12, 512.55133, 214.88445, 518.5844],
+   "lines":[
+      {"bbox":[177.12, 512.55133, 214.88445, 518.5844],
+       "spans":[
+         {"bbox":[177.12, 512.55133, 214.88445, 518.5844],
+          "text":"Ihre Rechnung"
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[245.63998, 525.03766, 318.68692, 529.73004],
+   "lines":[
+      {"bbox":[245.63998, 525.03766, 318.68692, 529.73004],
+       "spans":[
+         {"bbox":[245.63998, 525.03766, 318.68692, 529.73004],
+          "text":"Klicken Sie hier, um eine elektronisch "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[261.48, 532.2377, 318.68692, 536.93005],
+   "lines":[
+      {"bbox":[261.48, 532.2377, 318.68692, 536.93005],
+       "spans":[
+         {"bbox":[261.48, 532.2377, 318.68692, 536.93005],
+          "text":"signierte Version zu erhalten. "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[20.28, 559.83136, 355.51108, 573.0644],
+   "lines":[
+      {"bbox":[20.28, 559.83136, 355.51108, 565.86444],
+       "spans":[
+         {"bbox":[20.28, 559.83136, 355.51108, 565.86444],
+          "text":"Zum \u00d6ffnen des PDFs ben\u00f6tigen Sie den \"Adobe Acrobat Reader\". Falls Sie diesen nicht installiert haben, erhalten Sie hier eine kostenlose "
+         }
+       ]
+      },
+      {"bbox":[20.28, 567.0313, 41.569275, 573.0644],
+       "spans":[
+         {"bbox":[20.28, 567.0313, 41.569275, 573.0644],
+          "text":"Version: "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[25.199999, 602.8368, 101.47847, 609.4061],
+   "lines":[
+      {"bbox":[25.199999, 602.8368, 101.47847, 609.4061],
+       "spans":[
+         {"bbox":[25.199999, 602.8368, 101.47847, 609.4061],
+          "text":"Fragen oder Anregungen? "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[29.64, 623.7913, 259.3864, 629.8244],
+   "lines":[
+      {"bbox":[29.64, 623.7913, 259.3864, 629.8244],
+       "spans":[
+         {"bbox":[29.64, 623.7913, 259.3864, 629.8244],
+          "text":"Wenn Sie noch Fragen oder Anregungen haben, kontaktieren Sie bitte unseren Kundenservice. "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[29.64, 633.1513, 339.77917, 646.3844],
+   "lines":[
+      {"bbox":[29.64, 633.1513, 339.77917, 639.1844],
+       "spans":[
+         {"bbox":[29.64, 633.1513, 339.77917, 639.1844],
+          "text":"Achtung: Wir k\u00f6nnen keine technischen Fragen zu Produkten beantworten. Wenn Sie inhaltliche oder technische Fragen haben, "
+         }
+       ]
+      },
+      {"bbox":[29.64, 640.3513, 168.07367, 646.3844],
+       "spans":[
+         {"bbox":[29.64, 640.3513, 168.07367, 646.3844],
+          "text":"verwenden Sie dazu bitte folgende Kontaktinformationen: "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[29.64, 649.83136, 51.316357, 655.86444],
+   "lines":[
+      {"bbox":[29.64, 649.83136, 51.316357, 655.86444],
+       "spans":[
+         {"bbox":[29.64, 649.83136, 51.316357, 655.86444],
+          "text":"Acronis "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[29.64, 659.3113, 346.62344, 680.2244],
+   "lines":[
+      {"bbox":[29.64, 659.3113, 235.37837, 665.34436],
+       "spans":[
+         {"bbox":[29.64, 659.3113, 235.37837, 665.34436],
+          "text":"Produkt(e): Acronis True Image Home 2009 (Deutsch), Pixelnet Fotobuch-Gutschein  "
+         }
+       ]
+      },
+      {"bbox":[29.64, 666.51135, 130.14035, 672.54443],
+       "spans":[
+         {"bbox":[29.64, 666.51135, 130.14035, 672.54443],
+          "text":"Webseite: http://www.acronis.de/support/ "
+         }
+       ]
+      },
+      {"bbox":[29.64, 674.19135, 346.62344, 680.2244],
+       "spans":[
+         {"bbox":[29.64, 674.19135, 346.62344, 680.2244],
+          "text":"Bitte verwalten Sie in Ihrem Konto Ihre Abonnement-Einstellungen, um immer die aktuellsten Informationen von Acronis zu erhalten. "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[29.64, 683.55133, 51.316357, 689.5844],
+   "lines":[
+      {"bbox":[29.64, 683.55133, 51.316357, 689.5844],
+       "spans":[
+         {"bbox":[29.64, 683.55133, 51.316357, 689.5844],
+          "text":"Acronis "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[29.64, 693.0313, 346.62344, 713.94446],
+   "lines":[
+      {"bbox":[29.64, 693.0313, 161.58257, 699.0644],
+       "spans":[
+         {"bbox":[29.64, 693.0313, 161.58257, 699.0644],
+          "text":"Produkt(e): Acronis True Image Home 2009 (Deutsch) "
+         }
+       ]
+      },
+      {"bbox":[29.64, 700.2313, 130.14035, 706.2644],
+       "spans":[
+         {"bbox":[29.64, 700.2313, 130.14035, 706.2644],
+          "text":"Webseite: http://www.acronis.de/support/ "
+         }
+       ]
+      },
+      {"bbox":[29.64, 707.9114, 346.62344, 713.94446],
+       "spans":[
+         {"bbox":[29.64, 707.9114, 346.62344, 713.94446],
+          "text":"Bitte verwalten Sie in Ihrem Konto Ihre Abonnement-Einstellungen, um immer die aktuellsten Informationen von Acronis zu erhalten. "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[110.64, 732.99133, 112.14035, 739.0244],
+   "lines":[
+      {"bbox":[110.64, 732.99133, 112.14035, 739.0244],
+       "spans":[
+         {"bbox":[110.64, 732.99133, 112.14035, 739.0244],
+          "text":" "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[112.200005, 726.27136, 113.700356, 732.30444],
+   "lines":[
+      {"bbox":[112.200005, 726.27136, 113.700356, 732.30444],
+       "spans":[
+         {"bbox":[112.200005, 726.27136, 113.700356, 732.30444],
+          "text":" "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[51.72, 90.51133, 353.92746, 110.944374],
+   "lines":[
+      {"bbox":[51.72, 90.51133, 353.92746, 96.54437],
+       "spans":[
+         {"bbox":[51.72, 90.51133, 353.92746, 96.54437],
+          "text":"Sollten Sie keine Best\u00e4tigungs-E-Mail von uns erhalten, schauen Sie bitte in Ihrem Spam, Bulk oder Junk Mail Ordner "
+         }
+       ]
+      },
+      {"bbox":[51.72, 97.71134, 342.1729, 103.744385],
+       "spans":[
+         {"bbox":[51.72, 97.71134, 342.1729, 103.744385],
+          "text":"nach. Wenn Sie die E-Mail dort finden, wird sie entweder von Ihrem Provider oder von Ihrem eigenen Spam-Filter "
+         }
+       ]
+      },
+      {"bbox":[51.72, 104.91133, 82.62618, 110.944374],
+       "spans":[
+         {"bbox":[51.72, 104.91133, 82.62618, 110.944374],
+          "text":"aussortiert. "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[29.64, 247.81358, 164.8717, 261.29724],
+   "lines":[
+      {"bbox":[29.64, 247.81358, 164.8717, 255.05325],
+       "spans":[
+         {"bbox":[29.64, 248.43134, 32.643337, 254.46439],
+          "text":"1"
+         },
+         {"bbox":[36.72, 247.81358, 164.8717, 255.05325],
+          "text":"Acronis True Image Home 2009 (Deutsch)"
+         }
+       ]
+      },
+      {"bbox":[36.72, 255.93451, 96.74315, 261.29724],
+       "spans":[
+         {"bbox":[36.72, 255.93451, 96.74315, 261.29724],
+          "text":"inkl. Fotobuch-Gutschein "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[61.56, 276.27133, 281.4586, 289.5044],
+   "lines":[
+      {"bbox":[61.56, 276.27133, 281.4586, 282.30438],
+       "spans":[
+         {"bbox":[61.56, 276.27133, 281.4586, 282.30438],
+          "text":"Bitte nutzen Sie folgende Fotobuch-Gutscheinnummer f\u00fcr Ihr Pixelnet Hardcover-Fotobuch: "
+         }
+       ]
+      },
+      {"bbox":[163.92, 283.47134, 219.66035, 289.5044],
+       "spans":[
+         {"bbox":[163.92, 283.47134, 219.66035, 289.5044],
+          "text":"bnmp-bPln-anko-fujq "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[61.56, 309.63132, 318.78018, 322.86438],
+   "lines":[
+      {"bbox":[61.56, 309.63132, 318.78018, 315.66437],
+       "spans":[
+         {"bbox":[61.56, 309.63132, 318.78018, 315.66437],
+          "text":"Die Fotobuch-Software von Pixelnet kann auf der Webseite http://www.pixelnet.de/acronis heruntergeladen "
+         }
+       ]
+      },
+      {"bbox":[61.56, 316.83133, 82.27224, 322.86438],
+       "spans":[
+         {"bbox":[61.56, 316.83133, 82.27224, 322.86438],
+          "text":"werden. "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[61.56, 342.0313, 310.50037, 355.26437],
+   "lines":[
+      {"bbox":[61.56, 342.0313, 261.66443, 348.06436],
+       "spans":[
+         {"bbox":[61.56, 342.0313, 261.66443, 348.06436],
+          "text":"Bitte nutzen Sie die folgende(n) Seriennummer(n) zur Freischaltung Ihrer Software: "
+         }
+       ]
+      },
+      {"bbox":[73.08, 349.23132, 310.50037, 355.26437],
+       "spans":[
+         {"bbox":[73.08, 349.23132, 310.50037, 355.26437],
+          "text":"C37C74JP-3BL2HYCA-G3L6LRP3-NEHQDQH7-M2VFEZJX-YLT8D428-7ZA3CMP2-8JUMF7TQ "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[61.56, 387.87134, 156.05377, 401.1044],
+   "lines":[
+      {"bbox":[61.56, 387.87134, 109.8556, 393.9044],
+       "spans":[
+         {"bbox":[61.56, 387.87134, 109.8556, 393.9044],
+          "text":"Dateigr\u00f6\u00dfe: 88 MB. "
+         }
+       ]
+      },
+      {"bbox":[61.56, 395.07135, 156.05377, 401.1044],
+       "spans":[
+         {"bbox":[61.56, 395.07135, 156.05377, 401.1044],
+          "text":"Ihr Download ist g\u00fcltig bis: 10.05.2009. "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[173.88, 377.55133, 208.0746, 383.58438],
+   "lines":[
+      {"bbox":[173.88, 377.55133, 208.0746, 383.58438],
+       "spans":[
+         {"bbox":[173.88, 377.55133, 208.0746, 383.58438],
+          "text":"Herunterladen"
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[61.56, 421.23132, 313.68246, 441.66437],
+   "lines":[
+      {"bbox":[61.56, 421.23132, 313.6143, 427.26437],
+       "spans":[
+         {"bbox":[61.56, 421.23132, 313.6143, 427.26437],
+          "text":"Sie k\u00f6nnen die aktuellen Updates (Vollversionen) zu allen Ihren registrierten Acronis Software-Produkten "
+         }
+       ]
+      },
+      {"bbox":[61.56, 428.43134, 313.68246, 434.4644],
+       "spans":[
+         {"bbox":[61.56, 428.43134, 313.68246, 434.4644],
+          "text":"jederzeit auf unserer Website herunterladen, indem Sie sich unter Mein Konto anmelden. Eine Download-"
+         }
+       ]
+      },
+      {"bbox":[61.56, 435.63132, 222.64583, 441.66437],
+       "spans":[
+         {"bbox":[61.56, 435.63132, 222.64583, 441.66437],
+          "text":"M\u00f6glichkeit finden Sie dann in der Liste Ihrer registrierten Produkte."
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[432, 167.96178, 434.00046, 176.00583],
+   "lines":[
+      {"bbox":[432, 167.96178, 434.00046, 176.00583],
+       "spans":[
+         {"bbox":[432, 167.96178, 434.00046, 176.00583],
+          "text":" "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[439.68, 216.56178, 441.68045, 224.60583],
+   "lines":[
+      {"bbox":[439.68, 216.56178, 441.68045, 224.60583],
+       "spans":[
+         {"bbox":[439.68, 216.56178, 441.68045, 224.60583],
+          "text":" "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[112.92, 755.29364, 362.28043, 762.53326],
+   "lines":[
+      {"bbox":[112.92, 755.29364, 362.28043, 762.53326],
+       "spans":[
+         {"bbox":[112.92, 757.14044, 122.35459, 762.10095],
+          "text":"AGB"
+         },
+         {"bbox":[131.52, 755.29364, 136.80418, 762.53326],
+          "text":" | "
+         },
+         {"bbox":[145.79999, 757.14044, 161.09189, 762.10095],
+          "text":"Kontakt"
+         },
+         {"bbox":[170.16, 755.29364, 175.44418, 762.53326],
+          "text":" | "
+         },
+         {"bbox":[184.44, 757.14044, 213.7147, 762.10095],
+          "text":"Widerrufsrecht"
+         },
+         {"bbox":[222.84, 755.29364, 228.1242, 762.53326],
+          "text":" | "
+         },
+         {"bbox":[237.12, 757.14044, 257.20358, 762.10095],
+          "text":"Sicherheit"
+         },
+         {"bbox":[266.28, 755.29364, 271.5642, 762.53326],
+          "text":" | "
+         },
+         {"bbox":[280.56, 757.14044, 302.82883, 762.10095],
+          "text":"Impressum"
+         },
+         {"bbox":[312, 755.29364, 317.2842, 762.53326],
+          "text":" | "
+         },
+         {"bbox":[326.28, 757.14044, 351.3055, 762.10095],
+          "text":"Datenschutz"
+         },
+         {"bbox":[360.48, 755.29364, 362.28043, 762.53326],
+          "text":" "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[232.20001, 756.6136, 234.00043, 763.8532],
+   "lines":[
+      {"bbox":[232.20001, 756.6136, 234.00043, 763.8532],
+       "spans":[
+         {"bbox":[232.20001, 756.6136, 234.00043, 763.8532],
+          "text":" "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[101.28, 776.1004, 364.3726, 791.14087],
+   "lines":[
+      {"bbox":[101.28, 776.1004, 364.3726, 781.0609],
+       "spans":[
+         {"bbox":[101.28, 776.1004, 364.3726, 781.0609],
+          "text":"Sie befinden sich im Acronis Online Shop, der von cleverbridge AG betrieben wird. Durch Absenden Ihrer Bestellung schlie\u00dfen Sie "
+         }
+       ]
+      },
+      {"bbox":[159.84, 781.14044, 305.77414, 786.10095],
+       "spans":[
+         {"bbox":[159.84, 781.14044, 305.77414, 786.10095],
+          "text":"einen Kaufvertrag mit der cleverbridge AG mit Sitz in K\u00f6ln, Deutschland. "
+         }
+       ]
+      },
+      {"bbox":[118.56, 786.18036, 347.0681, 791.14087],
+       "spans":[
+         {"bbox":[118.56, 786.18036, 347.0681, 791.14087],
+          "text":"Unser Vertriebspartner cleverbridge AG steht Ihnen gerne f\u00fcr R\u00fcckfragen rund um Ihre Bestellung zur Verf\u00fcgung. "
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[428.52, 796.3804, 476.7976, 801.3409],
+   "lines":[
+      {"bbox":[428.52, 796.3804, 476.7976, 801.3409],
+       "spans":[
+         {"bbox":[428.52, 796.3804, 476.7976, 801.3409],
+          "text":"\u00a9 cleverbridge AG 2009"
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[11.28, -.013760567, 582.7203, 13.275801],
+   "lines":[
+      {"bbox":[11.28, -.013760567, 582.7203, 13.275801],
+       "spans":[
+         {"bbox":[519.72003, -.013760567, 582.7203, 13.275801],
+          "text":"Seite 1 von 1"
+         },
+         {"bbox":[11.28, -.013760567, 119.522385, 13.275801],
+          "text":"Acronis - Online Shop"
+         }
+       ]
+      }
+   ]
+  },
+  {"type":"text","bbox":[11.28, 828.22626, 582.72205, 841.6358],
+   "lines":[
+      {"bbox":[11.28, 828.22626, 582.72205, 841.6358],
+       "spans":[
+         {"bbox":[528.72003, 828.22626, 582.72205, 841.51587],
+          "text":"26.04.2009"
+         },
+         {"bbox":[11.28, 828.22626, 516.6003, 841.6358],
+          "text":"https://acronis.cleverbridge.com/117/?scope=confirmation&transaction=cIKvzNExdu&id=NmPgPv3Q..."
+         }
+       ]
+      }
+   ]
+  }
+ ]
+}

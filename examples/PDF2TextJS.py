@@ -66,7 +66,10 @@ def GetPageText(pg):
 # Main Program
 #==============================================================================
 ifile = sys.argv[1]
-ofile = ifile.replace(".pdf",".txt")
+if not ifile.endswith(".pdf"):
+    ofile = ifile + ".txt"
+else:
+    ofile = ifile.replace(".pdf",".txt")
 doc = fitz.Document(ifile)
 pages = doc.pageCount
 fout = open(ofile,"w")
