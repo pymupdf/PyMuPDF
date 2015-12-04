@@ -3691,8 +3691,25 @@ SWIGINTERN void delete_fz_text_sheet_s(struct fz_text_sheet_s *self){
 
 void
 fz_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox) {
+    float x0, y0, x1, y1;
+    x0 = 0.0;
+    x1 = 0.0;
+    y0 = 0.0;
+    y1 = 0.0;
+    if (bbox->x0 > 0.0) {
+        x0 = bbox->x0;
+        }
+    if (bbox->x1 > 0.0) {
+        x1 = bbox->x1;
+        }
+    if (bbox->y0 > 0.0) {
+        y0 = bbox->y0;
+        }
+    if (bbox->y1 > 0.0) {
+        y1 = bbox->y1;
+        }
     fz_printf(ctx, out, "\"bbox\":[%f, %f, %f, %f],",
-                        bbox->x0, bbox->y0, bbox->x1, bbox->y1);
+                        x0, y0, x1, y1);
 }
 
 void
