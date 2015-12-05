@@ -12,8 +12,7 @@ This is an example for using the Python binding PyMuPDF of MuPDF.
 
 This program extracts the text of an input PDF and writes it in a text file.
 The input file name is provided as a parameter to this script (sys.argv[1])
-The output file name is equal to input with the extension ".pdf" replaced by
-".txt".
+The output file name is input-filename + ".txt".
 Encoding of the text in the PDF is assumed to be UTF-8.
 Change the ENCODING variable as required.
 """
@@ -37,10 +36,8 @@ def GetPageText(pg):
 # Main Program
 #==============================================================================
 ifile = sys.argv[1]
-if not ifile.endswith(".pdf"):
-    ofile = ifile + ".txt"
-else:
-    ofile = ifile.replace(".pdf",".txt")
+ofile = ifile + ".txt"
+
 doc = fitz.Document(ifile)
 pages = doc.pageCount
 
