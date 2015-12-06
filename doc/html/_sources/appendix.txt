@@ -7,8 +7,107 @@ Appendix
 ===============================
 This chapter contains additional comments and examples.
 
+A Glimpse on PyMuPDF's Performance Part 1
+==========================================
+We have tried to get an impression on PyMuPDF's performance. While we know this is very hard and a fair comparison is almost impossible, we feel that at least some quantitative information should be provided to justify our bold comments on MuPDF's "top performance".
+
+We therefore address the question: How fast are the most basic functions (opening and parsing a document, then saving it back to disk as a new PDF file)?
+
+We chose a variety of tools and a set of different files to test against.
+
+These were the tools
+---------------------
+All tools are either platform independant, or at least can run on Windows and Unix / Linux (pdftk).
+
+**Poppler** is missing here, because it specifically is a Linux tool set, although we know there exist Windows ports (created with considerable effort apparently). Technically, it is a C/C++ library, for which a Python binding exists - in so far it is somewhat comparable to PyMuPDF. But Poppler in contrast is tightly coupled to **Qt** and **Cairo**. We may still include it in future, when a more handy Windows installation is available. We have seen however some `analysis  <http://hzqtc.github.io/2012/04/poppler-vs-mupdf.html>`_, that hints at a much lower performance than MuPDF. Our comparison of text extraction speeds also show a much lower performance of Poppler's PDF code base **Xpdf**.
+
+========= =====================================================================
+Tool      Description
+========= =====================================================================
+PyMuPDF   tool of this manual, appearing as "fitz" in reports
+pdfrw     a pure Python tool, can be used as frontend to ReportLab and rst2pdf
+PyPDF2    a pure Python tool with a very complete function set
+pdftk     a command line utility with numerous functions
+========= =====================================================================
+
+This is how each of the tools is being used with the test:
+
+* **PyMuPDF:** each file is opend with ``fitz.Document(in_pdf)`` and then saved by ``save(out_pdf)``
+* **pdfrw:** each file is opend with ``PdfWriter().trailer = PdfReader(in_pdf)`` and then saved by ``PdfWriter().write(out_pdf)``
+* **PyPDF2:** each file is opend with ``PyPDF2.PdfFileMerger().append(in_pdf)`` and save by ``PyPDF2.PdfFileMerger().write(out_pdf)``
+* **pdftk:** each file is processed by the command line ``pdftk in_pdf output out_pdf``
+
+These were the PDF files
+-------------------------
+We have chosen a set of mostly "challenging" PDF files. Among them are a complete year of `Spektrum <http://www.spektrum.de>`_, the German version of Scientific American, Adobe's PDF manual, and also the PDF version of this manual.
+
+The scientific magazines are of sizes between 10 and 25 MB, each with mixture of text and lots of images.
+
+Adobe manual is the largest with more than 30 MB, mostly text and it is a linearized (!) PDF. This special property will yield interesting implications in the data following.
+
+Our own manual with just about half a MB is here to stand for "the most simple case".
+
+These are our run time findings (in **seconds**, please note the European number convention: decimal point is comma):
+
+.. image:: runtimes.png
+
+Here is an overview of the output sizes under this simple copy operation:
+
+.. image:: filesizes.png
+
+
+Obersations
+------------
+PyMuPDF is by far the fastest: on average 3 times faster than the second best (the pure Python tool pdfrw, **chapeau pdfrw!**), and 12 times faster than the command line tool pdftk.
+
+Where PyMuPDF only requires less than 19 seconds to process all files, pdftk affords itself almost 4 minutes.
+
+By far the slowest tool is PyPDF2 - it is about 20 times slower than PyMuPDF and 5 times slower than pdfrw! The main reason for PyPDF2's bad look comes from the Adobe manual. Here, PyMuPDF and pdfrw are 85 and 34 times faster, respectively. PyPDF2 obviously is slowed down by the linear file structure and the immense amount of bookmarks of this file.
+
+If we look at the output PDFs, there is only one surprise:
+
+Each tool created a PDF of similar size as the original. Apart from the Adobe case, PyMuPDF always created the smallest output. Adobe's manual is an exception:
+
+The pure Python tools **reduced** its size by more than 20%!
+
+PyMuPDF and pdftk in contrast **drastically increased** the size by 40% to about 50 MB.
+
+So far we have no explanation of what is happening here.
+
+
+A Glimpse on PyMuPDF's Performance Part 2
+==========================================
+We also have compared text extraction speed with other tools.
+
+The following table shows a run time comparison of several tools. PyMuPDF's methods appear as "fitz (TEXT)" and "fitz (JSON)" respectively. The tool ``pdftotxt.exe`` of the `Xpdf <http://www.foolabs.com/xpdf/>`_ toolset appears as "xpdf".
+
+* **extractText(basic = True):** basic text extraction without layout re-arrangement
+* **pdftotxt:** a command line tool of the **Xpdf** toolset (which also is the basis of `Poppler's library <http://poppler.freedesktop.org/>`_)
+* **extractJSON():** text extraction with layout information
+* **pdfminer:** a pure Python PDF tool specialized on text extraction tasks
+
+All tools have been used with their most basic, fanciless functionality - no layout re-arrangements, etc.
+
+Here are the results using the same test files as above (again: decimal is comma):
+
+.. image:: textperformance.png
+
+Again, (Py-) MuPDF is the fastest around - at least with basic functionality. It is more than two times faster than xpdf and about 2.7 times faster than the JSON method.
+
+``pdfminer``, as a pure Python solution of course is comparatively slow: MuPDF is 70 (25) times faster and xpdf is 30 times faster. These observations in order of magnitude coincide with the statements on this `web site <http://www.unixuser.org/~euske/python/pdfminer/>`_.
+
+
 Example Outputs of Text Extraction Methods
 ===========================================
+This chapter provides background on the text extraction methods of PyMuPDF.
+
+Information of interest are
+
+* what do they provide?
+* what do they imply (processing time / data sizes)?
+
+General structure of :ref:`TextPage`
+--------------------------------------
 Text information contained in a :ref:`TextPage` adheres to the following hierarchy:
 ::
  <page> (width and height)
@@ -17,7 +116,13 @@ Text information contained in a :ref:`TextPage` adheres to the following hierarc
 		     <span> (its rectangle and font information)
 			     <char> (its rectangle, (x, y) coordinates and value)
 
-A text page consists of blocks (= roughly paragraphs). A block consists of lines. A line consists of spans. A span consists of characters with the same properties. E.g. a different font will cause a new span.
+A text page consists of blocks (= roughly paragraphs).
+
+A block consists of lines.
+
+A line consists of spans.
+
+A span consists of characters with the same properties. E.g. a different font will cause a new span.
 
 TextPage.extractText()
 -----------------------
@@ -29,6 +134,7 @@ This is the output of a page of this tutorial's PDF version:
  This tutorial will show you the use of MuPDF in Python step by step.
 
  Because MuPDF supports not only PDF, but also XPS, OpenXPS and EPUB formats, so does PyMuPDF.
+
  Nevertheless we will only talk about PDF files for the sake of brevity.
  ...
 
@@ -129,19 +235,11 @@ As a low end example we took this manual's PDF version (45+ pages, text oriented
 
 Performance
 -------------
-Performance of text extraction has improved significantly in MuPDF 1.8! As of updating this documentation (mid November 2015), data hint at an improvement factor greater than 2. Especially the complex extraction methods have a much lower effort penalty.
+Performance of text extraction has improved significantly in MuPDF 1.8! As of updating this documentation (mid November 2015), data hint at an improvement factor greater than 2. Especially the complex extraction methods now have a much lower effort penalty.
 
-If we set the simplest extraction method, ``extractText(basic=True)`` to 1, the old relationship was
+On a higher level Win10 machine (8 processors at 4 GHz, 8 GB RAM), ``extractXML()`` needs anything between 0.2 and 0.5 seconds per page. This means that you can extract extremely detailed text information of a complex 100-page magazine in less than a minute. This is faster than some other free text extraction tools like e.g. `Nitro 3 <https://www.gonitro.com/pdf-reader>`_.
 
-**MuPDF 1.7:** ``(Text : HTML : JSON : XML) ~ (1 : 2 : 145 : 4120)``
-
-We now observe
-
-**MuPDF 1.8:** ``(Text : HTML : JSON : XML) ~ (1 : 1 : 3 : 52)``
-
-On a higher level Win10 machine (8 processors at 4 GHz, 8 GB RAM), the figure for ``extractXML()`` corresponds to anything between 0.2 and 0.5 seconds per page. This still means that you can extract extremely detailed text information of a complex 100-page magazine in less than a minute. This is about 3 times faster than text extraction with other free PDF utilities, e.g. `Nitro 3 <https://www.gonitro.com/pdf-reader>`_.
-
-If you use PDF2TextJS.py of the example directory, you have a text extraction utility which is more than 60 times faster than Nitro!
+With ``PDF2TextJS.py`` of the example directory, you have a high performance text extraction utility with a high layout faithfulness!
 
 Data Sizes
 -----------
@@ -150,9 +248,3 @@ The sizes of the returned text strings follow this pattern, again ``extractText(
 ``(Text : HTML : JSON : XML) ~ (1 : 4 : 6 : 87)``
 
 The number 87 for ``extractXML()`` corresponds to values between 200 and 400 KB per page.
-
-
-The details can be seen here:
-
-
-.. image:: performance.png

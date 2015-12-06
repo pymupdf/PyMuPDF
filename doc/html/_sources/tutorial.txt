@@ -222,7 +222,7 @@ The result ``res`` will now be ``[]`` or a list of no more than 4 :ref:`Rect` re
 
 Output
 =======
-Output capabilities of MuPDF (such as PDF generation) are currently very limited. However, a copy of the currently opened document can be created.
+Output capabilities of MuPDF (such as PDF generation) are currently very limited. However, a copy of a currently opened document can be created (PDF only, no other file types).
 
 We support this with the method :meth:`Document.save`. If the document had been successfully decrypted before, ``save()`` will create a decrypted copy.
 

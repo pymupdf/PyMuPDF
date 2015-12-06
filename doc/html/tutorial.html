@@ -448,7 +448,7 @@ At first, a page object must be created:</p>
 </div>
 <div class="section" id="output">
 <h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
-<p>Output capabilities of MuPDF (such as PDF generation) are currently very limited. However, a copy of the currently opened document can be created.</p>
+<p>Output capabilities of MuPDF (such as PDF generation) are currently very limited. However, a copy of a currently opened document can be created (PDF only, no other file types).</p>
 <p>We support this with the method <a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a>. If the document had been successfully decrypted before, <code class="docutils literal"><span class="pre">save()</span></code> will create a decrypted copy.</p>
 <p>In addition, this method will also perform some clean-up:</p>
 <p>If the document containes invalid or broken xrefs, the saved version will have them corrected, which makes it readable by other Python PDF software, like <a class="reference external" href="https://github.com/pmaupin/pdfrw">pdfrw</a> or <a class="reference external" href="http://mstamy2.github.io/PyPDF2">PyPDF2</a>. In many cases, the saved version will also be smaller than the original.</p>
@@ -580,7 +580,7 @@ doc = fitz.Document(f_old)           # use it as input for MuPDF
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 27. Nov 2015.
+      Last updated on 06. Dec 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
