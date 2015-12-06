@@ -22,7 +22,7 @@ With PyMuPDF you therefore can also access files with extensions ``*.pdf``, ``*.
 Installation
 ============
 
-Normally it should be as easy as running ``python setup.py install`` once MuPDF is in place (i.e. has been generated).
+Normally it should be as easy as running ``python setup.py install`` once MuPDF is in place (i.e. its binaries have been built / generated).
 
 For linux users, please make sure that the following libraries are available: ``libmupdf``, ``libmujs``, ``libcrypto``, ``libjbig2dec``, ``libopenjp2``, ``libjpeg``, ``libfreetype``.
 
