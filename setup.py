@@ -4,7 +4,7 @@ import sys
 # check the platform
 if sys.platform.startswith('linux'):
     module = Extension('fitz._fitz', # name of the module
-                       ['fitz/fitz.i'], # SWIG source file
+                       ['fitz/fitz_wrap.c'], # C source file
                        include_dirs=['/usr/include/mupdf',
                                      '/usr/local/include/mupdf'], # we need the path of the MuPDF's headers
                        libraries=['mupdf', 'mujs', 'crypto',
