@@ -3691,9 +3691,12 @@ SWIGINTERN void delete_fz_text_sheet_s(struct fz_text_sheet_s *self){
 
 void
 fz_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox) {
-
-    fz_printf(ctx, out, "\"bbox\":[%f, %f, %f, %f],",
+    char buf[128];
+    /* no buffer overflow! */
+    snprintf(buf, sizeof(buf), "\"bbox\":[%g, %g, %g, %g],",
                         bbox->x0, bbox->y0, bbox->x1, bbox->y1);
+
+    fz_printf(ctx, out, "%s", buf);
 }
 
 void
@@ -3727,7 +3730,7 @@ fz_print_span_text_json(fz_context *ctx, fz_output *out, fz_text_span *span) {
                     fz_printf(ctx, out, "%c", ch->c);
                 } else {
                     fz_printf(ctx, out, "\\u%04x", ch->c);
-                    //fz_print_utf8(ctx, out, ch->c);
+                    /*fz_print_utf8(ctx, out, ch->c);*/
                 }
                 break;
         }
@@ -3737,60 +3740,60 @@ fz_print_span_text_json(fz_context *ctx, fz_output *out, fz_text_span *span) {
 void
 fz_send_data_base64(fz_context *ctx, fz_output *out, fz_buffer *buffer)
 {
-	int i, len;
-	static const char set[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    int i, len;
+    static const char set[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-	len = buffer->len/3;
-	for (i = 0; i < len; i++)
-	{
-		int c = buffer->data[3*i];
-		int d = buffer->data[3*i+1];
-		int e = buffer->data[3*i+2];
-		if ((i & 15) == 0)
-			fz_printf(ctx, out, "\n");
-		fz_printf(ctx, out, "%c%c%c%c", set[c>>2], set[((c&3)<<4)|(d>>4)], set[((d&15)<<2)|(e>>6)], set[e & 63]);
-	}
-	i *= 3;
-	switch (buffer->len-i)
-	{
-		case 2:
-		{
-			int c = buffer->data[i];
-			int d = buffer->data[i+1];
-			fz_printf(ctx, out, "%c%c%c=", set[c>>2], set[((c&3)<<4)|(d>>4)], set[((d&15)<<2)]);
-			break;
-		}
-	case 1:
-		{
-			int c = buffer->data[i];
-			fz_printf(ctx, out, "%c%c==", set[c>>2], set[(c&3)<<4]);
-			break;
-		}
-	default:
-	case 0:
-		break;
-	}
+    len = buffer->len/3;
+    for (i = 0; i < len; i++)
+    {
+        int c = buffer->data[3*i];
+        int d = buffer->data[3*i+1];
+        int e = buffer->data[3*i+2];
+        if ((i & 15) == 0)
+            fz_printf(ctx, out, "\n");
+        fz_printf(ctx, out, "%c%c%c%c", set[c>>2], set[((c&3)<<4)|(d>>4)], set[((d&15)<<2)|(e>>6)], set[e & 63]);
+    }
+    i *= 3;
+    switch (buffer->len-i)
+    {
+        case 2:
+        {
+            int c = buffer->data[i];
+            int d = buffer->data[i+1];
+            fz_printf(ctx, out, "%c%c%c=", set[c>>2], set[((c&3)<<4)|(d>>4)], set[((d&15)<<2)]);
+            break;
+        }
+    case 1:
+        {
+            int c = buffer->data[i];
+            fz_printf(ctx, out, "%c%c==", set[c>>2], set[(c&3)<<4]);
+            break;
+        }
+    default:
+    case 0:
+        break;
+    }
 }
 
 void
 fz_print_text_page_json(fz_context *ctx, fz_output *out, fz_text_page *page)
 {
-	int block_n;
+    int block_n;
 
-	fz_printf(ctx, out, "{\n \"len\":%d,\"width\":%g,\"height\":%g,\n \"blocks\":[\n",
+    fz_printf(ctx, out, "{\n \"len\":%d,\"width\":%g,\"height\":%g,\n \"blocks\":[\n",
                         page->len,
                         page->mediabox.x1 - page->mediabox.x0,
-		                page->mediabox.y1 - page->mediabox.y0);
+                        page->mediabox.y1 - page->mediabox.y0);
 
-	for (block_n = 0; block_n < page->len; block_n++)
-	{
-	    fz_page_block * page_block = &(page->blocks[block_n]);
+    for (block_n = 0; block_n < page->len; block_n++)
+    {
+        fz_page_block * page_block = &(page->blocks[block_n]);
 
-	    fz_printf(ctx, out, "  {\"type\":%s,", page_block->type == FZ_PAGE_BLOCK_TEXT ? "\"text\"": "\"image\"");
+        fz_printf(ctx, out, "  {\"type\":%s,", page_block->type == FZ_PAGE_BLOCK_TEXT ? "\"text\"": "\"image\"");
 
-		switch (page->blocks[block_n].type)
-		{
-		    case FZ_PAGE_BLOCK_TEXT:
+        switch (page->blocks[block_n].type)
+        {
+            case FZ_PAGE_BLOCK_TEXT:
             {
                 fz_text_block *block = page->blocks[block_n].u.text;
                 fz_text_line *line;
@@ -3819,17 +3822,17 @@ fz_print_text_page_json(fz_context *ctx, fz_output *out, fz_text_page *page)
                             fz_printf(ctx, out, ",\n");
                         }
                     }
-                    fz_printf(ctx, out, "\n       ]");  // spans end
+                    fz_printf(ctx, out, "\n       ]");  /* spans end */
 
                     fz_printf(ctx, out, "\n      }");
                     if (line < (block->lines + block->len - 1)) {
                         fz_printf(ctx, out, ",\n");
                     }
                 }
-                fz_printf(ctx, out, "\n   ]");      // lines end
+                fz_printf(ctx, out, "\n   ]");      /* lines end */
                 break;
             }
-		    case FZ_PAGE_BLOCK_IMAGE:
+            case FZ_PAGE_BLOCK_IMAGE:
             {
                 fz_image_block *image = page->blocks[block_n].u.image;
 
@@ -3848,14 +3851,14 @@ fz_print_text_page_json(fz_context *ctx, fz_output *out, fz_text_page *page)
                 }
                 break;
             }
-		}
+        }
 
-		fz_printf(ctx, out, "\n  }");  // blocks end
-		if (block_n < (page->len - 1)) {
-		    fz_printf(ctx, out, ",\n");
-		}
-	}
-	fz_printf(ctx, out, "\n ]\n}");  // page end
+        fz_printf(ctx, out, "\n  }");  /* blocks end */
+        if (block_n < (page->len - 1)) {
+            fz_printf(ctx, out, ",\n");
+        }
+    }
+    fz_printf(ctx, out, "\n ]\n}");  /* page end */
 }
 
 SWIGINTERN struct fz_text_page_s *new_fz_text_page_s(void){
