@@ -100,7 +100,7 @@
 <td>The Page&#8217;s rectangle</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Page.loadLinks" title="Page.loadLinks"><code class="xref py py-meth docutils literal"><span class="pre">Page.loadLinks()</span></code></a></td>
-<td>Get all the links in a page</td>
+<td>Get the first link of a page</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Page.run" title="Page.run"><code class="xref py py-meth docutils literal"><span class="pre">Page.run()</span></code></a></td>
 <td>Run a page through a device</td>
@@ -131,14 +131,14 @@
 <dl class="method">
 <dt id="Page.loadLinks">
 <code class="descname">loadLinks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Page.loadLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all the links in a page.</p>
+<dd><p>Get the first links of a page.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A python list of <a class="reference internal" href="link.html#link"><span>Link</span></a>. An empty list is returned if there&#8217;s no link in the page.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A <a class="reference internal" href="link.html#link"><span>Link</span></a> or <code class="docutils literal"><span class="pre">None</span></code> if the page has no links.</td>
 </tr>
 </tbody>
 </table>
@@ -204,7 +204,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 06. Dec 2015.
+      Last updated on 13. Dec 2015.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

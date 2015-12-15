@@ -251,6 +251,8 @@ class Document(_object):
             raise TypeError("filename must be a string")
         if filename == self.name:
             raise ValueError("cannot save to input file")
+        if not self.name.lower().endswith(("/pdf", ".pdf")):
+            raise ValueError("can only save PDF files")
 
 
         return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear)

@@ -19,7 +19,7 @@ These were the tools
 ---------------------
 All tools are either platform independant, or at least can run on Windows and Unix / Linux (pdftk).
 
-**Poppler** is missing here, because it specifically is a Linux tool set, although we know there exist Windows ports (created with considerable effort apparently). Technically, it is a C/C++ library, for which a Python binding exists - in so far it is somewhat comparable to PyMuPDF. But Poppler in contrast is tightly coupled to **Qt** and **Cairo**. We may still include it in future, when a more handy Windows installation is available. We have seen however some `analysis  <http://hzqtc.github.io/2012/04/poppler-vs-mupdf.html>`_, that hints at a much lower performance than MuPDF. Our comparison of text extraction speeds also show a much lower performance of Poppler's PDF code base **Xpdf**.
+**Poppler** is missing here, because it specifically is a Linux tool set, although we know there exist Windows ports (created with considerable effort apparently). Technically, it is a C/C++ library, for which a Python binding exists - in so far it is somewhat comparable to PyMuPDF. But Poppler in contrast is tightly coupled to **Qt** and **Cairo**. We may still include it in future, when a more handy Windows installation is available. We have seen however some `analysis  <http://hzqtc.github.io/2012/04/poppler-vs-mupdf.html>`_, that hints at a much lower performance than MuPDF. Our comparison of text extraction speeds also show a much lower performance of Poppler's PDF code base **Xpdf**. Image rendering of MuPDF also is about three times faster than the one of Xpdf when comparing the command line tools ``mudraw`` of MuPDF and ``pdftopng`` of Xpdf - see section three of this chapter.
 
 ========= =====================================================================
 Tool      Description
@@ -32,10 +32,29 @@ pdftk     a command line utility with numerous functions
 
 This is how each of the tools is being used with the test:
 
-* **PyMuPDF:** each file is opend with ``fitz.Document(in_pdf)`` and then saved by ``save(out_pdf)``
-* **pdfrw:** each file is opend with ``PdfWriter().trailer = PdfReader(in_pdf)`` and then saved by ``PdfWriter().write(out_pdf)``
-* **PyPDF2:** each file is opend with ``PyPDF2.PdfFileMerger().append(in_pdf)`` and save by ``PyPDF2.PdfFileMerger().write(out_pdf)``
-* **pdftk:** each file is processed by the command line ``pdftk in_pdf output out_pdf``
+**PyMuPDF**:
+::
+ doc = fitz.Document("input.pdf")
+ doc.save("output.pdf")
+
+**pdfrw**:
+::
+ doc = PdfReader("input.pdf")
+ writer = PdfWriter()
+ writer.trailer = doc
+ writer.write("output.pdf")
+
+**PyPDF2**:
+::
+ pdfmerge = PyPDF2.PdfFileMerger()
+ pdfmerge.append("input.pdf")
+ pdfmerge.write("output.pdf")
+ pdfmerge.close()
+
+**pdftk**:
+::
+ pdftk input.pdf output output.pdf
+
 
 These were the PDF files
 -------------------------
@@ -47,7 +66,7 @@ Adobe manual is the largest with more than 30 MB, mostly text and it is a linear
 
 Our own manual with just about half a MB is here to stand for "the most simple case".
 
-These are our run time findings (in **seconds**, please note the European number convention: decimal point is comma):
+These are our run time findings (in **seconds**, please note the European number convention: decimal point and comma are reversed):
 
 .. image:: runtimes.png
 
@@ -56,7 +75,7 @@ Here is an overview of the output sizes under this simple copy operation:
 .. image:: filesizes.png
 
 
-Obersations
+Observations
 ------------
 PyMuPDF is by far the fastest: on average 3 times faster than the second best (the pure Python tool pdfrw, **chapeau pdfrw!**), and 12 times faster than the command line tool pdftk.
 
@@ -68,27 +87,31 @@ If we look at the output PDFs, there is only one surprise:
 
 Each tool created a PDF of similar size as the original. Apart from the Adobe case, PyMuPDF always created the smallest output. Adobe's manual is an exception:
 
-The pure Python tools **reduced** its size by more than 20%!
+The pure Python tools **reduced** its size by more than 20% (and no longer linearized)!
 
-PyMuPDF and pdftk in contrast **drastically increased** the size by 40% to about 50 MB.
+PyMuPDF and pdftk in contrast **drastically increased** the size by 40% to about 50 MB (and no longer linearized).
 
-So far we have no explanation of what is happening here.
+So far, we have no explanation of what is happening here.
 
+
+.. raw:: pdf
+
+    PageBreak
 
 A Glimpse on PyMuPDF's Performance Part 2
 ==========================================
 We also have compared text extraction speed with other tools.
 
-The following table shows a run time comparison of several tools. PyMuPDF's methods appear as "fitz (TEXT)" and "fitz (JSON)" respectively. The tool ``pdftotxt.exe`` of the `Xpdf <http://www.foolabs.com/xpdf/>`_ toolset appears as "xpdf".
+The following table shows a run time comparison of several tools. PyMuPDF's methods appear as "fitz (TEXT)" and "fitz (JSON)" respectively. The tool ``pdftotext.exe`` of the `Xpdf <http://www.foolabs.com/xpdf/>`_ toolset appears as "xpdf".
 
 * **extractText(basic = True):** basic text extraction without layout re-arrangement
-* **pdftotxt:** a command line tool of the **Xpdf** toolset (which also is the basis of `Poppler's library <http://poppler.freedesktop.org/>`_)
+* **pdftotext:** a command line tool of the **Xpdf** toolset (which also is the basis of `Poppler's library <http://poppler.freedesktop.org/>`_)
 * **extractJSON():** text extraction with layout information
 * **pdfminer:** a pure Python PDF tool specialized on text extraction tasks
 
 All tools have been used with their most basic, fanciless functionality - no layout re-arrangements, etc.
 
-Here are the results using the same test files as above (again: decimal is comma):
+Here are the results using the same test files as above (again: decimal point and comma reversed):
 
 .. image:: textperformance.png
 
@@ -96,6 +119,34 @@ Again, (Py-) MuPDF is the fastest around - at least with basic functionality. It
 
 ``pdfminer``, as a pure Python solution of course is comparatively slow: MuPDF is 70 (25) times faster and xpdf is 30 times faster. These observations in order of magnitude coincide with the statements on this `web site <http://www.unixuser.org/~euske/python/pdfminer/>`_.
 
+
+.. raw:: pdf
+
+    PageBreak
+
+A Glimpse on PyMuPDF's Performance Part 3
+==========================================
+We have tested rendering speed of MuPDF against the ``pdftopng.exe``, a command lind tool of the **Xpdf** toolset, which is the PDF code basis of **Poppler**.
+
+MuPDF invocation:
+::
+ mutool draw -o t%d.png -r 150 file.pdf
+
+
+Xpdf invocation:
+::
+ pdftopng.exe file.pdf ./
+
+The resulting runtimes can be found here (again: decimal point and comma reversed):
+
+.. image:: render_speed.png
+
+MuPDF is between 2.7 and 4.7 (on average 3.0) times faster than Xpdf.
+
+
+.. raw:: pdf
+
+    PageBreak
 
 Example Outputs of Text Extraction Methods
 ===========================================

@@ -15,7 +15,7 @@ Page interface, created by :meth:`Document.loadPage`.
 **Method / Attribute**   **Short Description**
 ======================== ================================
 :meth:`Page.bound`       The Page's rectangle
-:meth:`Page.loadLinks`   Get all the links in a page
+:meth:`Page.loadLinks`   Get the first link of a page
 :meth:`Page.run`         Run a page through a device
 :attr:`Page.number`      Page number
 ======================== ================================
@@ -32,10 +32,10 @@ Page interface, created by :meth:`Document.loadPage`.
 
    .. method:: loadLinks()
 
-      Get all the links in a page.
+      Get the first links of a page.
 
       :rtype: list
-      :returns: A python list of :ref:`Link`. An empty list is returned if there's no link in the page.
+      :returns: A :ref:`Link` or ``None`` if the page has no links.
 
    .. method:: run(dev, transform)
 
