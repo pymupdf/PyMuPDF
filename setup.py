@@ -8,7 +8,8 @@ if sys.platform.startswith('linux'):
                        include_dirs=['/usr/include/mupdf',
                                      '/usr/local/include/mupdf'], # we need the path of the MuPDF's headers
                        #library_dirs=['<mupdf_and_3rd_party_libraries_dir>'],
-                       libraries=['mupdf', 'mujs', 'crypto',
+                       libraries=['mupdf', 'mujs', 
+                                  'crypto', #openssl is required by mupdf on archlinux
                                   'jbig2dec', 'openjp2', 'jpeg',
                                   'freetype'],                   # the libraries to link with
                       )

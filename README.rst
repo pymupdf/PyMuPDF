@@ -24,9 +24,17 @@ Installation
 
 Normally it should be as easy as running ``python setup.py install`` once MuPDF is in place (i.e. its binaries have been built / generated).
 
-For linux users, please make sure that the following libraries are available: ``libmupdf``, ``libmujs``, ``libcrypto``, ``libjbig2dec``, ``libopenjp2``, ``libjpeg``, ``libfreetype``.
-
 Refer to this `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
+
+Arch Linux
+----------
+AUR: https://aur.archlinux.org/packages/python2-pymupdf/
+
+Ubuntu
+------
+Since MuPDF v1.8 is not available yet in the official repo, you need to first build it from source. Make sure to add '-fPIC' to CFLAGS when compiling.
+
+When MuPDF is ready, edit `setup.py` in PyMuPDF and comment out the line of `library_dirs=[]` to specify the directory which contains `libmupdf.a` and other 3rd party libraries. Also remove `crypto` in `libraries` in `setup.py` since it is just required by Arch Linux.
 
 
 Usage
