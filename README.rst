@@ -22,7 +22,7 @@ With PyMuPDF you therefore can also access files with extensions ``*.pdf``, ``*.
 Installation
 ============
 
-Normally it should be as easy as running ``python setup.py install`` once MuPDF is in place (i.e. its binaries have been built / generated).
+Normally it should be as easy as running ``python setup.py install`` once MuPDF is in place (i.e. its binaries have been built / generated or have been made available otherwise).
 
 Refer to this `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
 
