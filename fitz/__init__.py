@@ -19,7 +19,9 @@ def SearchFor(*arg, **kw):
         hit_max = 16
         
     if not getattr(page, "parent", None):
-        raise ValueError("invalid page object provided to GetText")
+        raise ValueError("invalid page object provided to SearchFor")
+    if page.parent.isClosed:
+        raise ValueError("page operation on closed document")
 
     # reuse an existing fitz.DisplayList for this page if possible
     try:
@@ -59,6 +61,8 @@ def GetText(*arg, **kw):
         output = "text"
     if not getattr(page, "parent", None):
         raise ValueError("invalid page object provided to GetText")
+    if page.parent.isClosed:
+        raise ValueError("page operation on closed document")
 
     # reuse an existing fitz.DisplayList for this page if possible
     try:
@@ -111,6 +115,8 @@ def GetPixmap(*arg, **kw):
     # check if called with a valid page
     if not getattr(page, "parent", None):
         raise ValueError("invalid page object provided to GetPixmap")
+    if page.parent.isClosed:
+        raise ValueError("page operation on closed document")
     
     # determine required colorspace
     if colorspace.upper() == "GRAY":
@@ -155,8 +161,9 @@ def GetLinks(*arg, **kw):
     
     # check if called with a valid page
     if not getattr(page, "parent", None):
-        raise UserWarning("invalid page object provided to GetLinks")
-
+        raise ValueError("invalid page object provided to GetLinks")
+    if page.parent.isClosed:
+        raise ValueError("page operation on closed document")
     ln = page.loadLinks()
     links = []
     while ln:
@@ -251,6 +258,9 @@ def GetToC(*arg, **kw):
         olItem = doc.outline
     else:
         raise ValueError("document invalid or still encrypted")
+    if doc.isClosed:
+        raise ValueError("operation on closed document")
+        
     if not olItem: return []
     lvl = 1
     liste = []
