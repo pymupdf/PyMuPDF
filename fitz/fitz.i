@@ -1005,7 +1005,7 @@ struct fz_text_sheet_s {
     free($1);
 }
 %typemap(out) struct fz_buffer_s * {
-    $result = SWIG_FromCharPtr((const char *)$1->data);
+    $result = SWIG_FromCharPtrAndSize((const char *)$1->data, $1->len);
     fz_drop_buffer(gctx, $1);
 }
 
