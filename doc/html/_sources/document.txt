@@ -16,7 +16,7 @@ This class represents a document. It can be constructed from a file or from memo
 :meth:`Document.authenticate`   Decrypts the document
 :meth:`Document.loadPage`       Reads a page
 :meth:`Document.save`           Saves a copy of the document
-:meth:`Document.getToC`         Creates a table of contents
+:meth:`Document.getToC`         Create a table of contents
 :meth:`Document.close`          Closes the document
 :attr:`Document.isClosed`       Has document been closed?
 :attr:`Document.outline`        First `Outline` item
@@ -76,6 +76,15 @@ This class represents a document. It can be constructed from a file or from memo
 
       :rtype: :ref:`Page`
 
+    .. method:: getToC(simple = True)
+
+      Creates a table of contents out of the document's outline chain.
+
+      :param `simple`: Indicates whether a detailed ToC is required. If ``simple = False`` is specified, each entry of the list also contains a dictionary with :ref:`Link` details for each outline entry. For details, please have a look at :ref:`GetLinks` and :ref:`GetToC`.
+      :type `simple`: boolean
+
+      :rtype: list
+
     .. method:: save(outfile, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0)
 
       Saves a copy of the document under the name ``outfile``. Include path specifications as necessary. Only PDF documents are supported by this function. Internally the document may have changed. E.g. after a successfull ``authenticate``, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning of the document data could also have occurred, e.g. broken xref tables have been corrected and incremental changes have been resolved.
@@ -106,12 +115,6 @@ This class represents a document. It can be constructed from a file or from memo
 
       :rtype: int
       :returns: Count of errors that occurred during save. Note: PyMuPDF will recover from many errors encountered in a PDF and continue processing.
-
-    .. method:: getToC()
-
-      A convenience function that creates a table of contents from the ``outline`` entries. If none exist ``[]`` will be returned, otherwise a Python list ``[[level, title, page], [...], ...]``. Note that the title entries have already been decoded to unicode here. Page numbers are 1-based, but zero if and only if the entry points to a place outside this document. If invoked for an encrypted, not yet authenticated document, a ``ValueError`` exception will be raised.
-
-      :rtype: list
 
     .. method:: close()
 

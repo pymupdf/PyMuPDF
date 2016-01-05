@@ -17,8 +17,8 @@ Pixmaps represent a set of pixels for a 2 dimensional region. Each pixel consist
 :meth:`Pixmap.writePNG`      Saves a pixmap as a png file
 :meth:`Pixmap.invertIRect`   Invert the pixels of a given bounding box
 :attr:`Pixmap.samples`       The components data for all pixels
-:attr:`Pixmap.h`             Height of the region in pixels
-:attr:`Pixmap.w`             Width of the region in pixels
+:attr:`Pixmap.height`        Height of the region in pixels
+:attr:`Pixmap.width`         Width of the region in pixels
 :attr:`Pixmap.x`             X-coordinate of top-left corner of pixmap
 :attr:`Pixmap.y`             Y-coordinate of top-left corner of pixmap
 :attr:`Pixmap.n`             Number of components per pixel
@@ -44,13 +44,13 @@ Pixmaps represent a set of pixels for a 2 dimensional region. Each pixel consist
 
       :rtype: bytearray
 
-   .. attribute:: w
+   .. attribute:: width
 
       The width of the region in pixels.
 
       :rtype: int
 
-   .. attribute:: h
+   .. attribute:: height
 
       The height of the region in pixels.
 
@@ -76,19 +76,19 @@ Pixmaps represent a set of pixels for a 2 dimensional region. Each pixel consist
 
    .. attribute:: xres
 
-      Horizontal resolution in pixels per inch.
+      Horizontal resolution in dots per inch.
 
       :rtype: int
 
    .. attribute:: yres
 
-      Vertical resolution in pixels per inch
+      Vertical resolution in dots per inch
 
       :rtype: int
 
    .. method:: invertIRect(self, irect)
 
-      Invert all pixels in :ref:`IRect`. All components except alpha are inverted.
+      Invert the color of all pixels in :ref:`IRect`. All components except alpha are inverted.
 
       :param `irect`: Invert all the pixels in the irect. If omitted, the whole pixmap will be inverted.
       :type `IRect`: :ref:`IRect`

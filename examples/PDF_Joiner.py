@@ -1,45 +1,52 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 """
 Created on Sun Jun 07 06:57:08 2015
 
 @author: Jorj McKie
 Copyright (c) 2015 Jorj X. McKie
 
-The license of this program is governed by the GNU GENERAL PUBLIC LICENSE 
+The license of this program is governed by the GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007. See the "COPYING" file of this repository.
 
-This is an example for using the Python binding python-fitz of MuPDF.
+This is an example for using the Python binding PyMuPDF for MuPDF.
 
 This program joins PDF files into one output file. Its features include:
 * Selection of page ranges
 * Optional rotation in steps of 90 degrees
-* Copying any table of contents to the output
+* Copy any table of contents to the output (default - can be switched off)
+* Editable PDF metadata
 
-Please note that you need wxPython version of 3.x
+Dependencies:
+wxPython 3.x, PyPDF2, PyMuPDF
 """
 
-import os
+import os, sys
 import wx
 import wx.grid as gridlib
 import wx.lib.gridmovers as gridmovers
 import PyPDF2                          # only used for output (make_pdf)
 import fitz
+from icons import ico_pdf
+
+# some abbreviations
+DefPos  = wx.DefaultPosition
+DefSize = wx.DefaultSize
 
 class PDFTable(gridlib.PyGridTableBase):
     def __init__(self):
         gridlib.PyGridTableBase.__init__(self)
 
-        self.colLabels = ['File','Pages','from','to','rotate','del?']
+        self.colLabels = ['File','Pages','from','to','rotate']
         self.dataTypes = [gridlib.GRID_VALUE_STRING,
                           gridlib.GRID_VALUE_NUMBER,
                           gridlib.GRID_VALUE_NUMBER,
                           gridlib.GRID_VALUE_NUMBER,
                           gridlib.GRID_VALUE_CHOICE + ':0, 90, 180, 270',
-                          gridlib.GRID_VALUE_BOOL
                           ]
 
-        self.data = [["Delete: check the box and right-click cell",
-                      '', '', '', '', u"1"]]
+        self.data = []
 
 #==============================================================================
 # Methods for the wxPyGridTableBase interface (mostly mandatory)
@@ -56,7 +63,7 @@ class PDFTable(gridlib.PyGridTableBase):
             return not self.data[row][col]
         except IndexError:
             return True
-            
+
     def GetValue(self, row, col):
         return self.data[row][col]
 
@@ -129,27 +136,26 @@ class PDFTable(gridlib.PyGridTableBase):
         if grid:
             zeile = [self.data[row][0], self.data[row][1],
                      self.data[row][2], self.data[row][3],
-                     self.data[row][4], self.data[row][5],]
+                     self.data[row][4]]
             self.data.insert(row, zeile)
             grid.BeginBatch()
             msg = gridlib.GridTableMessage(
                     self, gridlib.GRIDTABLE_NOTIFY_ROWS_INSERTED, row, 1)
             grid.ProcessTableMessage(msg)
             grid.EndBatch()
-            
+
 #==============================================================================
 # Remove a row
 #==============================================================================
-    def DeleteRow(self, row, col):
+    def DeleteRow(self, row):
         grid = self.GetView()
         if grid:
-            if self.data[row][col]:
-                del self.data[row]
-                grid.BeginBatch()
-                msg = gridlib.GridTableMessage(self,
-                        gridlib.GRIDTABLE_NOTIFY_ROWS_DELETED, row, 1)
-                grid.ProcessTableMessage(msg)
-                grid.EndBatch()           
+            del self.data[row]
+            grid.BeginBatch()
+            msg = gridlib.GridTableMessage(self,
+                    gridlib.GRIDTABLE_NOTIFY_ROWS_DELETED, row, 1)
+            grid.ProcessTableMessage(msg)
+            grid.EndBatch()
 
 #==============================================================================
 # Define the grid
@@ -181,7 +187,7 @@ class MyGrid(gridlib.Grid):
 # Enable Row moving
 #==============================================================================
         gridmovers.GridRowMover(self)
-        
+
 #==============================================================================
 # Bind: move a row
 #==============================================================================
@@ -189,7 +195,7 @@ class MyGrid(gridlib.Grid):
 #==============================================================================
 # Bind: delete a row
 #==============================================================================
-        self.Bind(gridlib.EVT_GRID_CELL_RIGHT_CLICK, self.OnRowDel, self)
+        self.Bind(gridlib.EVT_GRID_LABEL_RIGHT_DCLICK, self.OnRowDel, self)
 #==============================================================================
 # Bind: duplicate a row
 #==============================================================================
@@ -202,14 +208,13 @@ class MyGrid(gridlib.Grid):
         frm = evt.GetMoveRow()          # Row being moved
         to = evt.GetBeforeRow()         # Before which row to insert
         self.GetTable().MoveRow(frm,to)
-        
+
 #==============================================================================
 # Event Method: delete a row
 #==============================================================================
     def OnRowDel(self, evt):
         row = evt.GetRow()
-        col = evt.GetCol()
-        self.GetTable().DeleteRow(row, col)
+        self.GetTable().DeleteRow(row)
 
 #==============================================================================
 # Event Method: duplicate a row
@@ -223,14 +228,14 @@ class MyGrid(gridlib.Grid):
 
 #==============================================================================
 #
-# Define the dialog   
+# Define the dialog
 #
 #==============================================================================
-class PDFDialog (wx.Dialog):    
+class PDFDialog (wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__ (self, parent, id = wx.ID_ANY,
                              title = u"Join PDF files",
-                             pos = wx.Point(-1, -1),
+                             pos = DefPos,
                              size = wx.Size(900,710),
                              style = wx.CAPTION|
                                      wx.CLOSE_BOX|
@@ -238,29 +243,30 @@ class PDFDialog (wx.Dialog):
                                      wx.MAXIMIZE_BOX|
                                      wx.MINIMIZE_BOX|
                                      wx.RESIZE_BORDER)
-        
-        self.SetSizeHintsSz(wx.Size(-1, -1), wx.Size(-1, -1))
+
+        self.SetSizeHintsSz(DefSize, DefSize)
         self.FileList = {}
+        self.SetIcon(ico_pdf.img.GetIcon())
 #==============================================================================
 # Create Sizer 01 (browse button and explaining text)
 #==============================================================================
         szr01 = wx.BoxSizer(wx.HORIZONTAL)
-        
+
         self.btn_neu = wx.FilePickerCtrl(self, wx.ID_ANY,
                         wx.EmptyString,
                         u"Select a PDF file",
                         u"*.pdf",
-                        wx.Point(-1, -1), wx.Size(-1, -1),
+                        DefPos, DefSize,
                         wx.FLP_CHANGE_DIR|wx.FLP_FILE_MUST_EXIST|wx.FLP_SMALL,
                         )
         szr01.Add(self.btn_neu, 0, wx.ALIGN_TOP|wx.ALL, 5)
- 
-        msg_txt ="""ADD files with this button. Path and total page number will be appended to the table below.\nDUPLICATE row: double-click its number. MOVE row: drag it with the mouse. DELETE row: check the box and right-click its cell."""
+
+        msg_txt ="""ADD files with this button. Path and total page number will be appended to the table below.\nDUPLICATE row: double-click its number. MOVE row: drag its number with the mouse. DELETE row: right-double-click its number."""
         msg = wx.StaticText(self, wx.ID_ANY, msg_txt,
-                    wx.Point(-1, -1), wx.Size(-1, 50), wx.ALIGN_LEFT)
+                    DefPos, wx.Size(-1, 50), wx.ALIGN_LEFT)
         msg.Wrap(-1)
         msg.SetFont(wx.Font(10, 74, 90, 90, False, "Arial"))
-        
+
         szr01.Add(msg, 0, wx.ALIGN_TOP|wx.ALL, 5)
 
 #==============================================================================
@@ -272,65 +278,73 @@ class PDFDialog (wx.Dialog):
         self.szr02.SetColSize(2, 45)
         self.szr02.SetColSize(3, 45)
         self.szr02.SetColSize(4, 45)
-        self.szr02.AutoSizeColumn(5)
         self.szr02.SetRowLabelSize(30)
         # Columns 1 and 2 are read only
         attr_ro = gridlib.GridCellAttr()
         attr_ro.SetReadOnly(True)
         self.szr02.SetColAttr(0, attr_ro)
         self.szr02.SetColAttr(1, attr_ro)
-          
+
 #==============================================================================
 # Create Sizer 03 (output parameters)
 #==============================================================================
-        szr03 = wx.FlexGridSizer( 4, 2, 0, 0 )   # 4 rows, 2 cols, gap sizes 0
+        szr03 = wx.FlexGridSizer( 5, 2, 0, 0 )   # 4 rows, 2 cols, gap sizes 0
         szr03.SetFlexibleDirection( wx.BOTH )
         szr03.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
-        
+
         tx_ausdat = wx.StaticText(self, wx.ID_ANY, u"Output:",
-                            wx.Point(-1, -1), wx.Size(-1, -1), 0)
+                            DefPos, DefSize, 0)
         tx_ausdat.Wrap(-1)
         szr03.Add(tx_ausdat, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-        
+
         self.btn_aus = wx.FilePickerCtrl(self, wx.ID_ANY,
                         os.path.join(os.path.expanduser('~'), "joined.pdf"),
                         u"Specify output file",
                         u"*.pdf",
-                        wx.Point(-1, -1), wx.Size(480,-1),
+                        DefPos, wx.Size(480,-1),
                         wx.FLP_OVERWRITE_PROMPT|
                         wx.FLP_SAVE|wx.FLP_SMALL|
                         wx.FLP_USE_TEXTCTRL)
         szr03.Add(self.btn_aus, 0, wx.ALL, 5)
         tx_autor = wx.StaticText( self, wx.ID_ANY, u"Author:",
-                         wx.DefaultPosition, wx.DefaultSize, 0 )
+                         DefPos, DefSize, 0 )
         tx_autor.Wrap( -1 )
         szr03.Add( tx_autor, 0, wx.ALL, 5 )
-        
+
         self.ausaut = wx.TextCtrl( self, wx.ID_ANY,
                        os.path.basename(os.path.expanduser('~')),
-                       wx.DefaultPosition, wx.Size(480, -1), 0)
+                       DefPos, wx.Size(480, -1), 0)
         szr03.Add( self.ausaut, 0, wx.ALL, 5 )
-        
+
         pdf_titel = wx.StaticText( self, wx.ID_ANY, u"Title:",
-                          wx.DefaultPosition, wx.DefaultSize, 0 )
+                          DefPos, DefSize, 0 )
         pdf_titel.Wrap( -1 )
         szr03.Add( pdf_titel, 0, wx.ALL, 5 )
-        
+
         self.austit = wx.TextCtrl( self, wx.ID_ANY,
                        u"Joined PDF files",
-                       wx.DefaultPosition, wx.Size(480, -1), 0 )
+                       DefPos, wx.Size(480, -1), 0 )
         szr03.Add( self.austit, 0, wx.ALL, 5 )
-        
+
         tx_subject = wx.StaticText( self, wx.ID_ANY, u"Subject:",
-                           wx.DefaultPosition, wx.DefaultSize, 0 )
+                           DefPos, DefSize, wx.ALIGN_RIGHT)
         tx_subject.Wrap( -1 )
         szr03.Add( tx_subject, 0, wx.ALL, 5 )
-        
+
         self.aussub = wx.TextCtrl( self, wx.ID_ANY,
                        u"Joined PDF files",
-                       wx.DefaultPosition, wx.Size(480, -1), 0 )
+                       DefPos, wx.Size(480, -1), 0 )
         szr03.Add( self.aussub, 0, wx.ALL, 5 )
-            
+        tx_blank = wx.StaticText( self, wx.ID_ANY, u" ",
+                           DefPos, DefSize, wx.ALIGN_RIGHT)
+        tx_blank.Wrap( -1 )
+        szr03.Add( tx_blank, 0, wx.ALL, 5 )
+        self.noToC = wx.CheckBox( self, wx.ID_ANY,
+                           u"check if no table of contents wanted",
+                           DefPos, DefSize, wx.ALIGN_LEFT)
+        szr03.Add( self.noToC, 0, wx.ALL, 5 )
+
+
 #==============================================================================
 # Create Sizer 04 (OK / Cancel buttons)
 #==============================================================================
@@ -345,11 +359,11 @@ class PDFDialog (wx.Dialog):
 # 3 horizontal lines (decoration only)
 #==============================================================================
         linie1 = wx.StaticLine(self, wx.ID_ANY,
-                       wx.Point(-1, -1), wx.Size(-1, -1), wx.LI_HORIZONTAL)
+                       DefPos, DefSize, wx.LI_HORIZONTAL)
         linie2 = wx.StaticLine(self, wx.ID_ANY,
-                       wx.Point(-1, -1), wx.Size(-1, -1), wx.LI_HORIZONTAL)
+                       DefPos, DefSize, wx.LI_HORIZONTAL)
         linie3 = wx.StaticLine(self, wx.ID_ANY,
-                       wx.Point(-1, -1), wx.Size(-1, -1), wx.LI_HORIZONTAL)
+                       DefPos, DefSize, wx.LI_HORIZONTAL)
 
         mainszr = wx.BoxSizer(wx.VERTICAL)
         mainszr.Add(szr01, 0, wx.EXPAND, 5)
@@ -359,21 +373,21 @@ class PDFDialog (wx.Dialog):
         mainszr.Add(szr03, 0, wx.EXPAND, 5)
         mainszr.Add(linie3, 0, wx.EXPAND |wx.ALL, 5)
         mainszr.Add(szr04, 0, wx.ALIGN_TOP|wx.ALIGN_CENTER_HORIZONTAL, 5)
-        
+
         self.SetSizer(mainszr)
         self.Layout()
-        
+
         self.Centre(wx.BOTH)
 
 #==============================================================================
-# Define event handler for the buttons
+# Define event handlers for the buttons
 #==============================================================================
         self.btn_neu.Bind(wx.EVT_FILEPICKER_CHANGED, self.NewFile)
         self.btn_aus.Bind(wx.EVT_FILEPICKER_CHANGED, self.AusgabeDatei)
-    
+
     def __del__(self):
         pass
-    
+
 #==============================================================================
 # "NewFile" - Event Handler for including new files
 #==============================================================================
@@ -390,7 +404,7 @@ class PDFDialog (wx.Dialog):
         else:
             doc = self.FileList[dat]
         seiten = doc.pageCount
-        zeile = [dat, str(seiten), 1, str(seiten), 0, ""]
+        zeile = [dat, str(seiten), 1, str(seiten), 0]
         self.szr02.Table.NewRow(zeile)
         self.szr02.AutoSizeColumn(0)
         self.Layout()
@@ -408,17 +422,15 @@ class PDFDialog (wx.Dialog):
 def make_pdf(dlg):
     # no file selected: treat like "Cancel"
     if not len(dlg.szr02.Table.data):       # no files there
-        return
-    # also do nothing if all entries are marked for delete
-    if min([z[5] for z in dlg.szr02.Table.data]) == "1":
-        return
+        return None
+
     cdate = wx.DateTime.Now().Format("D:%Y%m%d%H%M%S-04'30'")
     ausgabe = dlg.btn_aus.GetPath()
     pdf_fle_out = open(ausgabe,"wb")
     pdf_out = PyPDF2.PdfFileWriter()
     aus_nr = 0                              # current page number in output
     pdf_dict = {"/Creator":"PDF-Joiner",
-                "/Producer":"python-fitz, PyPDF2",
+                "/Producer":"PyMuPDF, PyPDF2",
                 "/CreationDate": cdate,
                 "/ModDate": cdate,
                 "/Title": dlg.austit.Value,
@@ -430,8 +442,6 @@ def make_pdf(dlg):
 # process one input file
 #==============================================================================
     for zeile in dlg.szr02.Table.data:
-        if zeile[5] == "1":                 # this is a deleted row
-            continue
         dateiname = zeile[0]
         doc = dlg.FileList[dateiname]
         max_seiten = int(zeile[1])
@@ -453,28 +463,30 @@ def make_pdf(dlg):
             if rot > 0:
                 pdf_page.rotateClockwise(rot)  # rotate the page
             pdf_out.addPage(pdf_page)          # output the page
-        
+
         # title = "infile [from-to (max.pages)]"
+        if dlg.noToC.Value:                # no ToC wanted
+            continue
         bm_main_title = "%s [%s-%s (%s)]" % \
-              (os.path.basename(dateiname[:-4]).encode("cp1252"), von + 1,
+              (os.path.basename(dateiname[:-4]).encode("latin-1"), von + 1,
                bis + 1, max_seiten)
-              
+
         bm_main = pdf_out.addBookmark(bm_main_title, aus_nr,
                None, None, False, False, "/Fit")
         print 1, bm_main_title, aus_nr
-        
+
         parents[1] = bm_main           # lvl 1 bookmark is infile's title
 
-        toc = doc.getToC()             # get infile's table of contents
+        toc = fitz.GetToC(doc)         # get infile's table of contents
         bm_lst = []                    # prepare the relevant sub-ToC
-        for t in toc:                  
-            if t[2] >= von and t[2] <= bis:      # relevant page range only
-                bm_lst.append([t[0] + 1,         # indent increased 1 level 
+        for t in toc:
+            if t[2] > von and t[2] <= bis + 1:   # relevant page range only
+                bm_lst.append([t[0] + 1,         # indent increased 1 level
                                t[1],             # the title
-                               t[2] + aus_nr - von])  # new page number
+                               t[2] + aus_nr - von - 1])  # new page number
 
         aus_nr += (bis - von + 1)      # increase output counter
-        
+
         if bm_lst == []:               # do we have a sub-ToC?
             continue                   # no, next infile
         # while indent gap is too large, prepend "filler" bookmarks to bm_lst
@@ -483,22 +495,30 @@ def make_pdf(dlg):
             bm_lst.insert(0, zeile)
         # now add infile's bookmarks
         for b in bm_lst:
-            bm = pdf_out.addBookmark(b[1].encode("cp1252"), b[2],
+            bm = pdf_out.addBookmark(b[1].encode("latin-1"), b[2],
                     parents[b[0]-1], None, False, False, "/Fit")
             parents[b[0]] = bm
+
 #==============================================================================
 # all input files processed
 #==============================================================================
     pdf_out.write(pdf_fle_out)
     pdf_fle_out.close()
+    return ausgabe
 
 #==============================================================================
 #
 # Main program
 #
 #==============================================================================
+if wx.VERSION[0] >= 3:
+    pass
+else:
+    print "wx Version needs to be at least 3"
+    sys.exit(1)
 app = None
 app = wx.App()
+this_dir = os.getcwd()
 
 #==============================================================================
 # create dialog
@@ -514,6 +534,6 @@ rc = dlg.ShowModal()
 # if OK pressed, create output PDF
 #==============================================================================
 if rc == wx.ID_OK:
-    make_pdf(dlg)
+    ausgabe = make_pdf(dlg)
 dlg.Destroy()
 app = None

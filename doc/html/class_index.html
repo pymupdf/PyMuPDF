@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Classes &mdash; PyMuPDF 1.8.0 documentation</title>
+    <title>Classes and Methods &mdash; PyMuPDF 1.8.0 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -80,67 +80,82 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="classes">
-<span id="fitz"></span><h1>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h1>
-<p>The list of PyMuPDF classes, accessible via the prefix <code class="docutils literal"><span class="pre">fitz.</span></code> if your import statement was <code class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></code></p>
+  <div class="section" id="classes-and-methods">
+<span id="fitz"></span><h1>Classes and Methods<a class="headerlink" href="#classes-and-methods" title="Permalink to this headline">¶</a></h1>
+<p>A list of PyMuPDF classes and methods, accessible via <code class="docutils literal"><span class="pre">fitz.&lt;name&gt;</span></code> if your import statement was <code class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></code>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="28%" />
 <col width="72%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head"><strong>Class</strong></th>
+<tr class="row-odd"><th class="head"><strong>Class / Method</strong></th>
 <th class="head"><strong>Short Description</strong></th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><a class="reference internal" href="colorspace.html#colorspace"><span>Colorspace</span></a></td>
-<td>Define the color space of a <a class="reference internal" href="pixmap.html#pixmap"><span>Pixmap</span></a>.</td>
+<td>define the color space of a <a class="reference internal" href="pixmap.html#pixmap"><span>Pixmap</span></a>.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="device.html#device"><span>Device</span></a></td>
-<td>Target object for rendering or text extraction.</td>
+<td>target object for rendering or text extraction.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="displaylist.html#displaylist"><span>DisplayList</span></a></td>
-<td>A list containing drawing commands.</td>
+<td>a list containing drawing commands.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="document.html#document"><span>Document</span></a></td>
-<td>Basic class for dealing with files.</td>
+<td>basic class for dealing with files.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="identity.html#identity"><span>Identity</span></a></td>
-<td>The do-nothing <a class="reference internal" href="matrix.html#matrix"><span>Matrix</span></a></td>
+<td>the do-nothing <a class="reference internal" href="matrix.html#matrix"><span>Matrix</span></a></td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="irect.html#irect"><span>IRect</span></a></td>
-<td>A rectangle (pixel coordinates).</td>
+<td>a rectangle (pixel coordinates).</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="link.html#link"><span>Link</span></a></td>
-<td>A destination</td>
+<td>a destination</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="linkdest.html#linkdest"><span>linkDest</span></a></td>
-<td>The destination of an outline entry</td>
+<td>the destination of an outline entry</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="matrix.html#matrix"><span>Matrix</span></a></td>
-<td>A 3x3 matrix used for transformations.</td>
+<td>a 3x3 matrix used for transformations.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="outline.html#outline"><span>Outline</span></a></td>
-<td>Outline element (a.k.a. bookmark).</td>
+<td>outline element (a.k.a. bookmark).</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="page.html#page"><span>Page</span></a></td>
-<td>A document page.</td>
+<td>a document page.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="pixmap.html#pixmap"><span>Pixmap</span></a></td>
-<td>A pixel map (for rendering).</td>
+<td>a pixel map (for rendering).</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="point.html#point"><span>Point</span></a></td>
-<td>Represents a point in the plane.</td>
+<td>represents a point in the plane.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="rect.html#rect"><span>Rect</span></a></td>
-<td>A rectangle (float coordinates).</td>
+<td>a rectangle (float coordinates).</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="textpage.html#textpage"><span>TextPage</span></a></td>
-<td>Text content of a page.</td>
+<td>text content of a page.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="textsheet.html#textsheet"><span>TextSheet</span></a></td>
-<td>A list of text styles used in a page.</td>
+<td>a list of text styles used in a page.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="GetToC.html#gettoc"><span>GetToC</span></a></td>
+<td>returns a list of bookmarks in table of contents format</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="GetLinks.html#getlinks"><span>GetLinks</span></a></td>
+<td>returns a list of all links on a given page</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="GetText.html#gettext"><span>GetText</span></a></td>
+<td>returns a page&#8217;s text as a string</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="GetPixmap.html#getpixmap"><span>GetPixmap</span></a></td>
+<td>returns a page&#8217;s text as a string</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="SearchFor.html#searchfor"><span>SearchFor</span></a></td>
+<td>searches for a string on a page</td>
 </tr>
 </tbody>
 </table>
@@ -171,7 +186,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 13. Dec 2015.
+      Last updated on 05. Jan 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

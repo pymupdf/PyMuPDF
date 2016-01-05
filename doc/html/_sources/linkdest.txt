@@ -87,7 +87,7 @@ Class representing the `dest` property of an outline entry.
 
    .. attribute:: page
 
-      The page number (in this document) this destination points to.
+      The page number (in this or the target document) this destination points to.
 
       :rtype: int
 

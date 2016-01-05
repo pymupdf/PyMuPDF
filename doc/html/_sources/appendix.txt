@@ -7,8 +7,8 @@ Appendix
 ===============================
 This chapter contains additional comments and examples.
 
-A Glimpse on PyMuPDF's Performance Part 1
-==========================================
+A Glimpse on PyMuPDF's Performance Part 1: Parsing
+===================================================
 We have tried to get an impression on PyMuPDF's performance. While we know this is very hard and a fair comparison is almost impossible, we feel that at least some quantitative information should be provided to justify our bold comments on MuPDF's "top performance".
 
 We therefore address the question: How fast are the most basic functions (opening and parsing a document, then saving it back to disk as a new PDF file)?
@@ -19,7 +19,11 @@ These were the tools
 ---------------------
 All tools are either platform independant, or at least can run on Windows and Unix / Linux (pdftk).
 
-**Poppler** is missing here, because it specifically is a Linux tool set, although we know there exist Windows ports (created with considerable effort apparently). Technically, it is a C/C++ library, for which a Python binding exists - in so far it is somewhat comparable to PyMuPDF. But Poppler in contrast is tightly coupled to **Qt** and **Cairo**. We may still include it in future, when a more handy Windows installation is available. We have seen however some `analysis  <http://hzqtc.github.io/2012/04/poppler-vs-mupdf.html>`_, that hints at a much lower performance than MuPDF. Our comparison of text extraction speeds also show a much lower performance of Poppler's PDF code base **Xpdf**. Image rendering of MuPDF also is about three times faster than the one of Xpdf when comparing the command line tools ``mudraw`` of MuPDF and ``pdftopng`` of Xpdf - see section three of this chapter.
+**Poppler** is missing here, because it specifically is a Linux tool set, although we know there exist Windows ports (created with considerable effort apparently). Technically, it is a C/C++ library, for which a Python binding exists - in so far it is somewhat comparable to PyMuPDF. But Poppler in contrast is tightly coupled to **Qt** and **Cairo**. We may still include it in future, when a more handy Windows installation is available. We have seen however some `analysis  <http://hzqtc.github.io/2012/04/poppler-vs-mupdf.html>`_, that hints at a much lower performance than MuPDF. Our comparison of text extraction speeds also show a much lower performance of Poppler's PDF code base **Xpdf**.
+
+Image rendering of MuPDF also is about three times faster than the one of Xpdf when comparing the command line tools ``mudraw`` of MuPDF and ``pdftopng`` of Xpdf - see part 3 of this chapter.
+
+The sheer parsing performance cannot directly be compared, because some are batch utilities that can execute a requested task only in one go, front to end. ``pdfrw`` too, has a ``lazy`` strategy for parsing, meaning it only parses those parts of a document that are required in any moment.
 
 ========= =====================================================================
 Tool      Description
@@ -60,36 +64,39 @@ These were the PDF files
 -------------------------
 We have chosen a set of mostly "challenging" PDF files. Among them are a complete year of `Spektrum <http://www.spektrum.de>`_, the German version of Scientific American, Adobe's PDF manual, and also the PDF version of this manual.
 
-The scientific magazines are of sizes between 10 and 25 MB, each with mixture of text and lots of images.
+The scientific magazines are of sizes between 10 and 25 MB, each with mixture of text and lots of images. Each of it has 100 to 110 pages.
 
 Adobe manual is the largest with more than 30 MB, mostly text and it is a linearized (!) PDF. This special property will yield interesting implications in the data following.
 
 Our own manual with just about half a MB is here to stand for "the most simple case".
 
-These are our run time findings (in **seconds**, please note the European number convention: decimal point and comma are reversed):
-
-.. image:: runtimes.png
-
 Here is an overview of the output sizes under this simple copy operation:
 
 .. image:: filesizes.png
 
+These are our run time findings (in **seconds**, please note the European number convention: meaning of decimal point and comma is reversed):
+
+.. image:: copy_speed_1.png
+
+If we leave out the Adobe manual, this table looks like
+
+.. image:: copy_speed_2.png
 
 Observations
 ------------
-PyMuPDF is by far the fastest: on average 3 times faster than the second best (the pure Python tool pdfrw, **chapeau pdfrw!**), and 12 times faster than the command line tool pdftk.
+PyMuPDF is by far the fastest: on average 2.4 times faster than the second best (the pure Python tool pdfrw, **chapeau pdfrw!**), and 10 times faster than the command line tool pdftk.
 
-Where PyMuPDF only requires less than 19 seconds to process all files, pdftk affords itself almost 4 minutes.
+Where PyMuPDF only requires less than 24 seconds to process all files, pdftk affords itself almost 4 minutes.
 
-By far the slowest tool is PyPDF2 - it is about 20 times slower than PyMuPDF and 5 times slower than pdfrw! The main reason for PyPDF2's bad look comes from the Adobe manual. Here, PyMuPDF and pdfrw are 85 and 34 times faster, respectively. PyPDF2 obviously is slowed down by the linear file structure and the immense amount of bookmarks of this file.
+By far the slowest tool is PyPDF2 - it is more than 35 times slower than PyMuPDF and 15 times slower than pdfrw! The main reason for PyPDF2's bad look comes from the Adobe manual. It obviously is slowed down by the linear file structure and the immense amount of bookmarks of this file. If we take out this special case, then PyPDF2 is 10.5 times slower than PyMuPDF, 4.4 times slower than pdfrw and 1.2 times slower than pdftk.
 
-If we look at the output PDFs, there is only one surprise:
+If we look at the output PDFs, there is one surprise:
 
 Each tool created a PDF of similar size as the original. Apart from the Adobe case, PyMuPDF always created the smallest output. Adobe's manual is an exception:
 
-The pure Python tools **reduced** its size by more than 20% (and no longer linearized)!
+The pure Python tools **reduced** its size by more than 20% (and yielded a document which is no longer linearized)!
 
-PyMuPDF and pdftk in contrast **drastically increased** the size by 40% to about 50 MB (and no longer linearized).
+PyMuPDF and pdftk in contrast **drastically increased** the size by 40% to about 50 MB (also no longer linearized).
 
 So far, we have no explanation of what is happening here.
 
@@ -98,37 +105,41 @@ So far, we have no explanation of what is happening here.
 
     PageBreak
 
-A Glimpse on PyMuPDF's Performance Part 2
-==========================================
+A Glimpse on PyMuPDF's Performance Part 2: Text Extraction
+==========================================================
 We also have compared text extraction speed with other tools.
 
-The following table shows a run time comparison of several tools. PyMuPDF's methods appear as "fitz (TEXT)" and "fitz (JSON)" respectively. The tool ``pdftotext.exe`` of the `Xpdf <http://www.foolabs.com/xpdf/>`_ toolset appears as "xpdf".
+The following table shows a run time comparison. PyMuPDF's methods appear as "fitz (TEXT)" and "fitz (JSON)" respectively. The tool ``pdftotext.exe`` of the `Xpdf <http://www.foolabs.com/xpdf/>`_ toolset appears as "xpdf".
 
-* **extractText(basic = True):** basic text extraction without layout re-arrangement
+* **extractText():** basic text extraction without layout re-arrangement (using ``GetText(..., output = "text")``)
 * **pdftotext:** a command line tool of the **Xpdf** toolset (which also is the basis of `Poppler's library <http://poppler.freedesktop.org/>`_)
-* **extractJSON():** text extraction with layout information
+* **extractJSON():** text extraction with layout information (using ``GetText(..., output = "json")``)
 * **pdfminer:** a pure Python PDF tool specialized on text extraction tasks
 
 All tools have been used with their most basic, fanciless functionality - no layout re-arrangements, etc.
+
+For demonstration purposes, we have included a version of ``GetText(doc, output = "json")``, that also re-arranges the output according to occurrence on the page.
 
 Here are the results using the same test files as above (again: decimal point and comma reversed):
 
 .. image:: textperformance.png
 
-Again, (Py-) MuPDF is the fastest around - at least with basic functionality. It is more than two times faster than xpdf and about 2.7 times faster than the JSON method.
+Again, (Py-) MuPDF is the fastest around. It is two times faster than xpdf.
 
-``pdfminer``, as a pure Python solution of course is comparatively slow: MuPDF is 70 (25) times faster and xpdf is 30 times faster. These observations in order of magnitude coincide with the statements on this `web site <http://www.unixuser.org/~euske/python/pdfminer/>`_.
+JSON output is 1.7 times faster than xpdf, and even the "re-arranging" version is 1.6 times faster.
+
+``pdfminer``, as a pure Python solution, of course is comparatively slow: MuPDF is 75 (64, 58) times faster and xpdf is 37 times faster. These observations in order of magnitude coincide with the statements on this `web site <http://www.unixuser.org/~euske/python/pdfminer/>`_.
 
 
 .. raw:: pdf
 
     PageBreak
 
-A Glimpse on PyMuPDF's Performance Part 3
-==========================================
+A Glimpse on PyMuPDF's Performance Part 3: Image Rendering
+===========================================================
 We have tested rendering speed of MuPDF against the ``pdftopng.exe``, a command lind tool of the **Xpdf** toolset, which is the PDF code basis of **Poppler**.
 
-MuPDF invocation:
+MuPDF invocation using a resolution of 150 pixels (Xpdf default):
 ::
  mutool draw -o t%d.png -r 150 file.pdf
 
@@ -137,7 +148,7 @@ Xpdf invocation:
 ::
  pdftopng.exe file.pdf ./
 
-The resulting runtimes can be found here (again: decimal point and comma reversed):
+The resulting runtimes can be found here (again: meaning of decimal point and comma reversed):
 
 .. image:: render_speed.png
 
@@ -157,15 +168,15 @@ Information of interest are
 * what do they provide?
 * what do they imply (processing time / data sizes)?
 
-General structure of :ref:`TextPage`
+General structure of a TextPage
 --------------------------------------
 Text information contained in a :ref:`TextPage` adheres to the following hierarchy:
 ::
  <page> (width and height)
      <block> (its rectangle)
-	     <line> (its rectangle)
-		     <span> (its rectangle and font information)
-			     <char> (its rectangle, (x, y) coordinates and value)
+          <line> (its rectangle)
+               <span> (its rectangle and font information)
+                    <char> (its rectangle, (x, y) coordinates and value)
 
 A text page consists of blocks (= roughly paragraphs).
 
@@ -175,8 +186,8 @@ A line consists of spans.
 
 A span consists of characters with the same properties. E.g. a different font will cause a new span.
 
-TextPage.extractText()
------------------------
+GetText(page, output = "text")
+-------------------------------
 
 This is the output of a page of this tutorial's PDF version:
 ::
@@ -189,8 +200,8 @@ This is the output of a page of this tutorial's PDF version:
  Nevertheless we will only talk about PDF files for the sake of brevity.
  ...
 
-TextPage.extractHTML()
------------------------
+GetText(page, output = "html")
+-------------------------------
 
 The HTML version looks like this:
 ::
@@ -207,8 +218,8 @@ The HTML version looks like this:
  </div></p></div>
  ...
 
-TextPage.extractJSON()
------------------------
+GetText(page, output = "json")
+-------------------------------
 
 JSON output looks like so:
 ::
@@ -240,8 +251,8 @@ JSON output looks like so:
  ...
 
 
-TextPage.extractXML()
------------------------
+GetText(page, output = "xml")
+------------------------------
 
 Now the XML version:
 ::
@@ -294,7 +305,7 @@ With ``PDF2TextJS.py`` of the example directory, you have a high performance tex
 
 Data Sizes
 -----------
-The sizes of the returned text strings follow this pattern, again ``extractText(basic=True)`` is set to 1:
+The sizes of the returned text strings follow this pattern (``extractText()`` is set to 1):
 
 ``(Text : HTML : JSON : XML) ~ (1 : 4 : 6 : 87)``
 

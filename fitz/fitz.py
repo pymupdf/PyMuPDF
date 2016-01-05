@@ -258,36 +258,6 @@ class Document(_object):
         return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear)
 
 
-                #================================================================
-                # Function: Table of Contents
-                #================================================================
-    def getToC(self):
-
-        def recurse(olItem, liste, lvl):
-            while olItem:
-                if olItem.title:
-                    title = olItem.title.decode("utf-8")
-                else:
-                    title = u" "
-                if olItem.dest.kind == 1:
-                    page = olItem.dest.page + 1
-                else:
-                    page = 0
-                liste.append([lvl, title, page])
-                if olItem.down:
-                    liste = recurse(olItem.down, liste, lvl+1)
-                olItem = olItem.next
-            return liste
-
-        if hasattr(self, "outline"):
-            olItem = self.outline
-        else:
-            raise ValueError("document is still encrypted")
-        if not olItem: return []
-        lvl = 1
-        liste = []
-        return recurse(olItem, liste, lvl)
-
     def initData(self):
         if self.isEncrypted:
             raise ValueError("cannot initData - document is still encrypted")
@@ -524,6 +494,8 @@ class Pixmap(_object):
         return _fitz.Pixmap__getSamples(self)
 
     samples = property(lambda self: self._getSamples())
+    width  = w
+    height = h
 
 Pixmap_swigregister = _fitz.Pixmap_swigregister
 Pixmap_swigregister(Pixmap)
@@ -928,117 +900,7 @@ class TextPage(_object):
         return _fitz.TextPage_search(self, needle, hit_max)
 
     def extractText(self, basic=0):
-        val = _fitz.TextPage_extractText(self, basic)
-
-        if not val:
-           return None
-        if basic == 1: # no XML-based re-ordering required
-            return val
-
-        def TrueText(xml):
-            '''
-            Converts MuPDF TextPage.extractXML() output (parameter) into plain text.
-            This is an alternative to the extractText() method with the following
-            advantages:
-            1) Encoding is unicode, making it easier to print in appropriate locales
-            2) It is re-arranged according to normal reading sequence by sorting the
-               page blocks according to their top-left (Y || X) coordinates
-            '''
-            spec_chars = {"&amp;":"&",
-                      "&lt;":"<",
-                      "&gt;":">",
-                      "&quot;":'"',
-                      "&apos;":"'",
-                      "&tilde;":"~",
-                      "&#x8;":" ",                  # backspace becomes space!
-                      }
-            fin_lines = xml.split("\n")             # split string into lines
-            out_blocks = []                         # initialize my list of page blocks
-            old_srt = "........"                    # initialize block sort field
-            for i in range(len(fin_lines)):
-                z = fin_lines[i]                    # z contains 1 line
-                if z.startswith("<page "):          # should be first line
-                    continue
-                if z.startswith("<block "):         # a new page block
-                    p0 = z.find("bbox=")            # extract top-left point from it
-                    p0 = p0 + 6                     # start of x0 behind '"'
-                    p1 = z.find(" ", p0)            # end of x0
-                    x0 = int(float(z[p0:p1]) + 0.99999)  # calc pixel value
-                    p0 = p1 + 1                     # start of y0
-                    p1 = z.find(" ", p0)            # end of y0
-                    y0 = int(float(z[p0:p1]) + 0.99999)  # calc pixel value
-                    x0 = str(x0).rjust(4,'0')       # make it a 4-digit string
-                    y0 = str(y0).rjust(4,'0')       # make it a 4-digit string
-                    b_srt = y0 + x0                 # sort field of the block
-        # check if we rather should extend the previous block.
-        # can only be true if y is greater and x is equal
-                    if b_srt >= old_srt and \
-                        b_srt[4:] == old_srt[4:]:   # equal x coords: extends prev block
-                        old_block = out_blocks[-1]  # get last block's entry
-                        del out_blocks[-1]          # delete it from the list
-                        b_srt = old_srt             # retain old sort field
-                        b_lines = old_block[1]      # get the lines buffer for extension
-                    else:
-                        old_srt = b_srt             # really a new block
-                        b_lines = []                # initialize list of block lines
-                    continue
-                if z.startswith("<line "):          # a new line
-                    out_buff = ""                   # init char buffer
-                    last_x = 0.0                    # init char's x coord
-                    last_y = 0.0                    # init char's y coord
-                    continue
-                if z.startswith("<span "):          # a new span (sequence of char's)
-                    continue
-                if z.startswith("<char "):          # a new character
-                    p0 = z.find(" x=")              # find its x coordinate
-                    p0 = p0 + 4                     # step behind the "
-                    p1 = z.find('"', p0)            # end of x value
-                    neu_x = float(z[p0:p1])         # this is the x coordinate
-                    p0 = z.find("y=",p1) + 3        # find y coord
-                    p1 = z.find('"',p0)             # end of coord
-                    neu_y = float(z[p0:p1])         # this is the y coordinate
-                    p0 = z.find('c="', p1)          # find char value
-                    p0 += 3                         # step behind the "
-                    p1 = z.find('"', p0)            # end of char value
-                    c = z[p0:p1]                    # this is the char value
-                    if c in spec_chars:             # handle special characters
-                        c = spec_chars[c]           # get rid of '&amp;' etc.
-                    if c.startswith("&#x"):         # handle hex unicodes
-                        c = unichr(int("0" + c[2:-1], base = 16))  # this is the unicode
-                    if c.startswith("&#"):          # handle dec unicodes
-                        c = unichr(int(c[2:-1]))
-                    if neu_x != last_x or \
-                        neu_y != last_y:            # char coords != last ones?
-                        out_buff += unicode(c)      # normal append
-                        last_x = neu_x              # save as last x coord
-                        last_y = neu_y              # save as last y coord
-                    else:
-                        out_buff = out_buff[:-1] + unicode(c)  # no pesky spaces
-                    continue
-                if z.startswith("</span>"):         # end of span
-                    out_buff += u" "
-                    continue
-                if z.startswith("</line>"):         # end of line
-                    b_lines.append(out_buff)        # append line to block line buffer
-                    continue
-                if z.startswith("</block>"):        # end of block
-                    out_blocks.append([b_srt, b_lines]) # append lines to block buffer
-                    continue
-                if z.startswith("</page>"):         # should be last line
-                    continue
-            out_blocks.sort()                       # sort blocks by top-left coord
-            big_string = u""                        # initialize final output
-            for b in out_blocks:                    # for each block ...
-                for z in b[1]:                      # ... take each line ...
-                    big_string += unicode(z) + u"\n"  # and append it to final output
-                big_string += u"\n"                 # add a line break after the block
-            return big_string                       # done
-
-        val = TrueText(val)
-
-
-        return val
-
+        return _fitz.TextPage_extractText(self, basic)
 
     def extractXML(self):
         return _fitz.TextPage_extractXML(self)

@@ -15,23 +15,12 @@ The input file name is provided as a parameter to this script (sys.argv[1])
 The output file name is input-filename appended with ".txt".
 Encoding of the text in the PDF is assumed to be UTF-8.
 Change the ENCODING variable as required.
-
--------------------------------------------------------------------------------
-The result of this program is similar to that of PDF2Text.py -- the difference
-is an internal one:
-
-This program uses method extractJSON() of text page which delivers less
-information than extractXML(), but sufficient to reconstruct a text
-version of a PDF.
-The benefit of it is a vastly higher performance: expect to see an improvement
-by a factor of 20 or more!
-
 -------------------------------------------------------------------------------
 """
 import fitz
 import sys, json
 
-ENCODING = "cp1252"
+ENCODING = "UTF-8"
 
 def SortBlocks(blocks):
     '''
@@ -73,17 +62,6 @@ def SortSpans(spans):
     sspans.sort()
     return [s[1] for s in sspans]
 
-
-def GetPageText(pg):
-    dl = fitz.DisplayList()
-    dv = fitz.Device(dl)
-    pg.run(dv, fitz.Identity)
-    ts = fitz.TextSheet()
-    tp = fitz.TextPage()
-    rect = pg.bound()
-    dl.run(fitz.Device(ts, tp), fitz.Identity, rect)
-    return tp.extractJSON()
-
 #==============================================================================
 # Main Program
 #==============================================================================
@@ -96,22 +74,23 @@ fout = open(ofile,"w")
 
 for i in range(pages):
     print "========== processing page", i, "=========="
-    pg_text = ""                  # initialize page text buffer
-    pg = doc.loadPage(i)
-    text = GetPageText(pg)
-    pgdict = json.loads(text)
-    blocks = SortBlocks(pgdict["blocks"])
+    pg_text = ""                                 # initialize page text buffer
+    pg = doc.loadPage(i)                         # load page number i
+    text = pg.getText(output = 'json')           # get its text in JSON format
+    pgdict = json.loads(text)                    # create a dict out of it
+    blocks = SortBlocks(pgdict["blocks"])        # now re-arrange ... blocks
     for b in blocks:
-        lines = SortLines(b["lines"])
+        lines = SortLines(b["lines"])            # ... lines
         for l in lines:
-            spans = SortSpans(l["spans"])
+            spans = SortSpans(l["spans"])        # ... spans
             for s in spans:
                 # ensure that spans are separated by at least 1 blank
+                # (should make sense in most cases)
                 if pg_text.endswith(" ") or s["text"].startswith(" "):
                     pg_text += unicode(s["text"])
                 else:
                     pg_text += u" " + unicode(s["text"])
-            pg_text += "\n"
+            pg_text += "\n"                      # separate lines by newline
 
     pg_text = pg_text.encode(ENCODING, "ignore")
     fout.write(pg_text)

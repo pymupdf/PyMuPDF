@@ -1,0 +1,31 @@
+.. raw:: pdf
+
+    PageBreak
+
+.. _SearchFor:
+
+=====================
+SearchFor
+=====================
+Perform a search for a text string on a page.
+
+This method is identical to class method :meth:`Page.searchFor`.
+
+.. method:: SearchFor(page, text, hit_max = 16)
+
+  :param `page`: A page created by :meth:`Document.loadPage`.
+
+  :type `page`: :ref:`Page`
+
+  :param `text`: A string to be searched for.
+
+  :type `text`: string
+
+  :param `hit_max`: The maximum number of occurrences to be searched for.
+
+  :type `hit_max`: int
+
+  :rtype: list
+
+  :returns: A Python list of :ref:`Rect` rectangles of which each surrounds one occurrence of the string.
+

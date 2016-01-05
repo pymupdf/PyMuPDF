@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.8.0 documentation" href="index.html" />
-    <link rel="next" title="Classes" href="class_index.html" />
+    <link rel="next" title="Classes and Methods" href="class_index.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
   </head>
   <body role="document">
@@ -36,7 +36,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="class_index.html" title="Classes"
+          <a href="class_index.html" title="Classes and Methods"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="installation.html" title="Installation"
@@ -54,8 +54,6 @@
 <li><a class="reference internal" href="#some-document-methods-and-attributes">Some <code class="docutils literal"><span class="pre">Document</span></code> methods and attributes</a></li>
 <li><a class="reference internal" href="#access-meta-data">Access Meta Data</a></li>
 <li><a class="reference internal" href="#work-with-outlines">Work with Outlines</a></li>
-<li><a class="reference internal" href="#some-outline-methods-and-attributes">Some <code class="docutils literal"><span class="pre">Outline</span></code> methods and attributes</a></li>
-<li><a class="reference internal" href="#some-outline-dest-attributes">Some <code class="docutils literal"><span class="pre">Outline.dest</span></code> attributes</a></li>
 <li><a class="reference internal" href="#work-with-pages">Work with Pages</a><ul>
 <li><a class="reference internal" href="#inspect-the-links-on-a-page">Inspect the links on a <code class="docutils literal"><span class="pre">Page</span></code></a></li>
 <li><a class="reference internal" href="#render-a-page">Render a <code class="docutils literal"><span class="pre">Page</span></code></a></li>
@@ -77,7 +75,7 @@
                         title="previous chapter">Installation</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="class_index.html"
-                        title="next chapter">Classes</a></p>
+                        title="next chapter">Classes and Methods</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -258,128 +256,45 @@
 </div>
 <div class="section" id="work-with-outlines">
 <h2>Work with Outlines<a class="headerlink" href="#work-with-outlines" title="Permalink to this headline">¶</a></h2>
-<p>Entering the documents outline tree works like this:</p>
+<p>The easiest way to get all outlines of a document, is creating a table of contents:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">toc</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getToC</span><span class="p">(</span><span class="n">simple</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>       <span class="c"># the simple form, if False, link information is included</span>
+</pre></div>
+</div>
+<p>This will return a Python list <code class="docutils literal"><span class="pre">[[level,</span> <span class="pre">title,</span> <span class="pre">page,</span> <span class="pre">link],</span> <span class="pre">...]</span></code> (or <code class="docutils literal"><span class="pre">[]</span></code>).</p>
+<p><code class="docutils literal"><span class="pre">level</span></code> is the hierarchy level of the entry (starting from 1), <code class="docutils literal"><span class="pre">title</span></code> is the entry&#8217;s title (unicode), and <code class="docutils literal"><span class="pre">page</span></code> the page number (1-based). <code class="docutils literal"><span class="pre">link</span></code> is present if <code class="docutils literal"><span class="pre">simple</span> <span class="pre">=</span> <span class="pre">False</span></code> is specified. Its meaning can be look up under <a class="reference internal" href="GetLinks.html#getlinks"><span>GetLinks</span></a>.</p>
+<p>If you want a more detailed control of what you get, enter the document&#8217;s outline tree like this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">olItem</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">outline</span>    <span class="c"># the document&#39;s first outline item</span>
 </pre></div>
 </div>
-<p>This creates olItem as an <a class="reference internal" href="outline.html#outline"><span>Outline</span></a> object.</p>
-</div>
-<div class="section" id="some-outline-methods-and-attributes">
-<h2>Some <a class="reference internal" href="outline.html#outline"><span>Outline</span></a> methods and attributes<a class="headerlink" href="#some-outline-methods-and-attributes" title="Permalink to this headline">¶</a></h2>
-<table border="1" class="docutils">
-<colgroup>
-<col width="36%" />
-<col width="64%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head"><strong>Method / Attribute</strong></th>
-<th class="head"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td><a class="reference internal" href="outline.html#Outline.saveText" title="Outline.saveText"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveText()</span></code></a></td>
-<td>Save table of contents as a text file</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="outline.html#Outline.saveXML" title="Outline.saveXML"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveXML()</span></code></a></td>
-<td>Save table of contents as a quasi-XML file</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="outline.html#Outline.next" title="Outline.next"><code class="xref py py-attr docutils literal"><span class="pre">Outline.next</span></code></a></td>
-<td>Next item of the same level</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="outline.html#Outline.down" title="Outline.down"><code class="xref py py-attr docutils literal"><span class="pre">Outline.down</span></code></a></td>
-<td>Next item one level down</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="outline.html#Outline.title" title="Outline.title"><code class="xref py py-attr docutils literal"><span class="pre">Outline.title</span></code></a></td>
-<td>Title of this item</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="outline.html#Outline.dest" title="Outline.dest"><code class="xref py py-attr docutils literal"><span class="pre">Outline.dest</span></code></a></td>
-<td>Destination (&#8216;where does this entry point to?&#8217;)</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="some-outline-dest-attributes">
-<h2>Some <a class="reference internal" href="outline.html#Outline.dest" title="Outline.dest"><code class="xref py py-attr docutils literal"><span class="pre">Outline.dest</span></code></a> attributes<a class="headerlink" href="#some-outline-dest-attributes" title="Permalink to this headline">¶</a></h2>
-<table border="1" class="docutils">
-<colgroup>
-<col width="40%" />
-<col width="60%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head"><strong>Attribute</strong></th>
-<th class="head"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td><code class="xref py py-attr docutils literal"><span class="pre">Outline.dest.page</span></code></td>
-<td>Target page number</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-attr docutils literal"><span class="pre">Outline.dest.lt</span></code></td>
-<td>Top-left corner of target rectangle</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-attr docutils literal"><span class="pre">Outline.dest.rb</span></code></td>
-<td>Bottem-right corner of target rectangle</td>
-</tr>
-</tbody>
-</table>
-<p>MuPDF also supports outline destinations to other files and to URIs. See <a class="reference internal" href="outline.html#outline"><span>Outline</span></a>.</p>
-<p>In order to get a document&#8217;s table of contents as a Python list, use the following function:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">toc</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getToC</span><span class="p">()</span>       <span class="c"># [[level, title, page], ...], or []</span>
-</pre></div>
-</div>
+<p>This creates olItem as an <a class="reference internal" href="outline.html#outline"><span>Outline</span></a> object. Look there for further details.</p>
 </div>
 <div class="section" id="work-with-pages">
 <h2>Work with Pages<a class="headerlink" href="#work-with-pages" title="Permalink to this headline">¶</a></h2>
 <p>Tasks that can be performed with a <a class="reference internal" href="page.html#page"><span>Page</span></a> are at the core of MuPDF&#8217;s functionality.
 Among other things, you can render a <a class="reference internal" href="page.html#page"><span>Page</span></a>, optionally zooming, rotating or shearing it.
-You can write it&#8217;s image to files (in PNG format), extract text from it or perform searches for text elements.
+You can write it&#8217;s image to files (in PNG format), extract text from it or search for text strings.
 At first, a page object must be created:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">page</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">loadPage</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>        <span class="c"># represents page n of the document</span>
 </pre></div>
 </div>
-<p>Here are some typical uses of <a class="reference internal" href="page.html#page"><span>Page</span></a> objects:</p>
+<p>Some typical uses of <a class="reference internal" href="page.html#page"><span>Page</span></a> objects follow:</p>
 <div class="section" id="inspect-the-links-on-a-page">
 <h3>Inspect the links on a <a class="reference internal" href="page.html#page"><span>Page</span></a><a class="headerlink" href="#inspect-the-links-on-a-page" title="Permalink to this headline">¶</a></h3>
-<p>Here is an example that displays all links and their types:</p>
+<p>Here is how to get all links and their types:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c">#-----------------------------------------------------------------------------------</span>
 <span class="c"># Get all links of the current page</span>
 <span class="c">#-----------------------------------------------------------------------------------</span>
-<span class="n">ln</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">loadLinks</span><span class="p">()</span>
-<span class="c">#-----------------------------------------------------------------------------------</span>
-<span class="c"># Links are organized as a single linked list. We need to check each occurrence</span>
-<span class="c"># to see what info we can get</span>
-<span class="c">#-----------------------------------------------------------------------------------</span>
-<span class="k">while</span> <span class="n">ln</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">ln</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">fitz</span><span class="o">.</span><span class="n">LINK_URI</span><span class="p">:</span>
-            <span class="k">print</span> <span class="s">&#39;[LINK]URI: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">ln</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">uri</span>
-    <span class="k">elif</span> <span class="n">ln</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">fitz</span><span class="o">.</span><span class="n">LINK_GOTO</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s">&#39;[LINK]jump to page </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">ln</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">page</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="n">ln</span> <span class="o">=</span> <span class="n">ln</span><span class="o">.</span><span class="n">next</span>
+<span class="n">links</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">getLinks</span><span class="p">()</span>
 </pre></div>
 </div>
+<p><code class="docutils literal"><span class="pre">links</span></code> is a Python list containing Python dictionaries as entries. For details see <a class="reference internal" href="GetLinks.html#getlinks"><span>GetLinks</span></a>.</p>
 </div>
 <div class="section" id="render-a-page">
 <h3>Render a <a class="reference internal" href="page.html#page"><span>Page</span></a><a class="headerlink" href="#render-a-page" title="Permalink to this headline">¶</a></h3>
 <p>This example creates an image out of a page&#8217;s content:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#-----------------------------------------------------------------------------------</span>
-<span class="c"># Get the page&#39;s rectangle</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">pix</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">getPixmap</span><span class="p">(</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Identity</span><span class="p">,</span> <span class="n">colorspace</span> <span class="o">=</span> <span class="s">&quot;RGB&quot;</span><span class="p">)</span>
 <span class="c">#-----------------------------------------------------------------------------------</span>
-<span class="n">rect</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">bound</span><span class="p">()</span>
-<span class="c">#-----------------------------------------------------------------------------------</span>
-<span class="c"># create the smallest pixel area containing the rectangle</span>
-<span class="c">#-----------------------------------------------------------------------------------</span>
-<span class="n">irect</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
-<span class="c">#-----------------------------------------------------------------------------------</span>
-<span class="c"># create an empty RGBA pixel map of the pixel area&#39;s size</span>
-<span class="c">#-----------------------------------------------------------------------------------</span>
-<span class="n">pix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">Colorspace</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">CS_RGB</span><span class="p">),</span> <span class="n">irect</span><span class="p">)</span>
-<span class="n">pix</span><span class="o">.</span><span class="n">clearWith</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span>             <span class="c"># Initialize with color &quot;white&quot; and &quot;no transparency&quot;</span>
-<span class="n">dev</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Device</span><span class="p">(</span><span class="n">pix</span><span class="p">)</span>         <span class="c"># Create a draw device for the pixel map</span>
-<span class="n">page</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Identity</span><span class="p">)</span>   <span class="c"># finally render the page with no changes</span>
-<span class="c">#-----------------------------------------------------------------------------------</span>
-<span class="c"># now pix contains an image of the page, ready to be used</span>
+<span class="c"># now pix contains an RGB image of the page, ready to be used</span>
 <span class="c">#-----------------------------------------------------------------------------------</span>
 </pre></div>
 </div>
@@ -393,109 +308,116 @@ At first, a page object must be created:</p>
 </div>
 <div class="section" id="display-the-image-in-dialog-managers">
 <h3>Display the image in dialog managers<a class="headerlink" href="#display-the-image-in-dialog-managers" title="Permalink to this headline">¶</a></h3>
-<p>Or we convert the image into a bitmap usable by dialog managers. <a class="reference internal" href="pixmap.html#Pixmap.samples" title="Pixmap.samples"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.samples</span></code></a> represents the area of bytes of all the pixels as a Python bytearray. This area (or its <code class="docutils literal"><span class="pre">str()</span></code>-version), is directly usable by presumably most dialog managers. Here are two examples.</p>
+<p>We can also use the image in a dialog. <a class="reference internal" href="pixmap.html#Pixmap.samples" title="Pixmap.samples"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.samples</span></code></a> represents the area of bytes of all the pixels as a Python bytearray. This area (or its <code class="docutils literal"><span class="pre">str()</span></code>-version), is directly usable by presumably most dialog managers. Here are two examples. Please also have a look at the examples directory of this repository.</p>
 <p><strong>wxPython</strong>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">pix</span><span class="o">.</span><span class="n">samples</span>                   <span class="c"># data = bytearray of raw pixel data (RGBA)</span>
-<span class="n">bitmap</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BitmapFromBufferRGBA</span><span class="p">(</span><span class="n">irect</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
-            <span class="n">irect</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">))</span> <span class="c"># wxPython only accepts strings, no bytearrays</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">pix</span><span class="o">.</span><span class="n">samples</span>                          <span class="c"># data = bytearray of raw pixel data (RGBA)</span>
+<span class="n">bitmap</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BitmapFromBufferRGBA</span><span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="c"># image width</span>
+            <span class="n">pix</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>                     <span class="c"># image height</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>                      <span class="c"># wxPython only accepts strings, no bytearrays</span>
 </pre></div>
 </div>
 <p><strong>Tkinter</strong>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">pix</span><span class="o">.</span><span class="n">samples</span>
-<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="s">&quot;RGBA&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">irect</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">irect</span><span class="o">.</span><span class="n">height</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="s">&quot;RGBA&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">pix</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">pix</span><span class="o">.</span><span class="n">height</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 <span class="n">photo</span> <span class="o">=</span> <span class="n">ImageTk</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="text-extraction">
 <h3>Text extraction<a class="headerlink" href="#text-extraction" title="Permalink to this headline">¶</a></h3>
-<p>We can also extract all text of a page in a big chunk of string:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">dl</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">DisplayList</span><span class="p">()</span>                  <span class="c"># create a DisplayList</span>
-<span class="n">ts</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">TextSheet</span><span class="p">()</span>                    <span class="c"># create a TextSheet</span>
-<span class="n">tp</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">TextPage</span><span class="p">()</span>                     <span class="c"># create a TextPage</span>
-<span class="n">dev</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Device</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">tp</span><span class="p">)</span>                <span class="c"># create a text Device</span>
-<span class="n">irect</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">bound</span><span class="p">()</span>                     <span class="c"># the page&#39;s visible rectangle</span>
-<span class="n">page</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Identity</span><span class="p">)</span>             <span class="c"># run the page on the device</span>
-<span class="c"># now run the display list with the page&#39;s data</span>
-<span class="n">dl</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Identity</span><span class="p">,</span> <span class="n">irect</span><span class="p">)</span>
-
-<span class="c"># 4 methods exist to extract the text now contained in the TextPage:</span>
-
-<span class="c"># (1) plain text: with line breaks, no formatting, no position info</span>
-<span class="n">text</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">extractText</span><span class="p">()</span>
-
-<span class="c"># (2) html: line breaks, alignment, grouping, no formatting, no positioning</span>
-<span class="n">html</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">extractHTML</span><span class="p">()</span>
-
-<span class="c"># (3) json: full formatting info (except colors and fonts) down to spans</span>
-<span class="n">xml</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">extractJSON</span><span class="p">()</span>
-
-<span class="c"># (4) xml: full formatting info (except colors) down to individual characters</span>
-<span class="n">xml</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">extractXML</span><span class="p">()</span>
+<p>We can also extract all text of a page in one chunk of string:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">text</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">getText</span><span class="p">(</span><span class="n">output</span> <span class="o">=</span> <span class="s">&quot;text&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>To give you an idea about the output of these alternatives, we did extracts from this document&#8217;s PDF version and several other examples. See the appendix for details about implications on processing times and space requirements.</p>
+<p>For the <code class="docutils literal"><span class="pre">output</span></code> parameter, the following values can be specified:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">text</span></code>: plain text with line breaks. No format and no position info.</li>
+<li><code class="docutils literal"><span class="pre">html</span></code>: line breaks, alignment, grouping. No format and no position info</li>
+<li><code class="docutils literal"><span class="pre">json</span></code>: full formatting info (except colors and fonts) down to spans (see appendix)</li>
+<li><code class="docutils literal"><span class="pre">xml</span></code>: full formatting info (except colors) down to individual characters</li>
+</ul>
+<p>To give you an idea about the output of these alternatives, we did text extracts from this document&#8217;s PDF version and several other examples. See the appendix for details about implications on processing times and space requirements.</p>
 </div>
 <div class="section" id="text-searching">
 <h3>Text Searching<a class="headerlink" href="#text-searching" title="Permalink to this headline">¶</a></h3>
-<p>If you are interested in the occurence of parts of text, you can determine, exactly where on a page a certain string appears:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># search for at most 4 page locations with specific contents</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;MuPDF&#39;</span><span class="p">,</span> <span class="n">hit_max</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+<p>You can find out, exactly where on a page a certain string appears like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">areas</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">searchFor</span><span class="p">(</span><span class="s">&quot;mupdf&quot;</span><span class="p">,</span> <span class="n">hit_max</span> <span class="o">=</span> <span class="mi">32</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The result <code class="docutils literal"><span class="pre">res</span></code> will now be <code class="docutils literal"><span class="pre">[]</span></code> or a list of no more than 4 <a class="reference internal" href="rect.html#rect"><span>Rect</span></a> rectangles that contain the string &#8216;MuPDF&#8217;. The <code class="docutils literal"><span class="pre">hit_max</span></code> parameter (in our case set to 4) is optional (default is 16).</p>
+<p>The variable <code class="docutils literal"><span class="pre">areas</span></code> will now contain a list of up to 32 <a class="reference internal" href="rect.html#rect"><span>Rect</span></a> rectangles which surround each occurrence of string &#8220;mupdf&#8221; (not case sensitive).</p>
+<p>Please also do have a look at the demonstration program <code class="docutils literal"><span class="pre">demo.py</span></code>. Among others it contains details on how the <a class="reference internal" href="textpage.html#textpage"><span>TextPage</span></a>, <a class="reference internal" href="textsheet.html#textsheet"><span>TextSheet</span></a>, <a class="reference internal" href="device.html#device"><span>Device</span></a> and <a class="reference internal" href="displaylist.html#displaylist"><span>DisplayList</span></a> classes can be used for a more direct control, e.g. when performance considerations require it.</p>
 </div>
 </div>
 <div class="section" id="output">
 <h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
-<p>Output capabilities of MuPDF (such as PDF generation) are currently very limited. However, a copy of a currently opened document can be created (PDF only, no other file types).</p>
-<p>We support this with the method <a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a>. If the document had been successfully decrypted before, <code class="docutils literal"><span class="pre">save()</span></code> will create a decrypted copy.</p>
+<p>Output capabilities of MuPDF (such as PDF generation) are currently very limited. However, a copy of a currently opened document can be created (PDF only, none of the other file types).</p>
+<p>We support this with the method <a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a>.</p>
+<p>If the document had been successfully decrypted before, <code class="docutils literal"><span class="pre">save()</span></code> will automatically create a decrypted copy.</p>
 <p>In addition, this method will also perform some clean-up:</p>
-<p>If the document containes invalid or broken xrefs, the saved version will have them corrected, which makes it readable by other Python PDF software, like <a class="reference external" href="https://github.com/pmaupin/pdfrw">pdfrw</a> or <a class="reference external" href="http://mstamy2.github.io/PyPDF2">PyPDF2</a>. In many cases, the saved version will also be smaller than the original.</p>
-<p><a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> now supports all options of MuPDF&#8217;s standalone utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>.</p>
+<p>If the document containes invalid or broken xrefs, the saved version will have them automatically corrected, which makes it readable by other Python PDF software, like <a class="reference external" href="https://github.com/pmaupin/pdfrw">pdfrw</a> or <a class="reference external" href="http://mstamy2.github.io/PyPDF2">PyPDF2</a>. In many cases, the saved version will also be smaller than the original.</p>
+<p><a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> now also supports all options of MuPDF&#8217;s command line utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>, see below (mutool clean option = &#8220;MCO&#8221;).</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="29%" />
-<col width="71%" />
+<col width="24%" />
+<col width="9%" />
+<col width="67%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Option</strong></th>
+<th class="head"><strong>MCO</strong></th>
 <th class="head"><strong>Effect</strong></th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>garbage = 1</td>
+<td>-g</td>
 <td>garbage collect unused objects</td>
 </tr>
 <tr class="row-odd"><td>garbage = 2</td>
+<td>-gg</td>
 <td>in addition to 1, compact xref tables</td>
 </tr>
 <tr class="row-even"><td>garbage = 3</td>
+<td>-ggg</td>
 <td>in addition to 2, merge duplicate objects</td>
 </tr>
 <tr class="row-odd"><td>clean = 1</td>
-<td>clean content streams (avoid / use with care)</td>
+<td>-s</td>
+<td>clean content streams (avoid or use with care!)</td>
 </tr>
 <tr class="row-even"><td>deflate = 1</td>
+<td>-z</td>
 <td>deflate uncompressed streams</td>
 </tr>
 <tr class="row-odd"><td>ascii = 1</td>
+<td>-a</td>
 <td>convert data to ASCII format</td>
 </tr>
 <tr class="row-even"><td>linear = 1</td>
-<td>create a linearized document version</td>
+<td>-l</td>
+<td>create a linearized version (do not use yet)</td>
 </tr>
 <tr class="row-odd"><td>expand = 1</td>
-<td>create a decompressed version</td>
+<td>-i</td>
+<td>decompress images</td>
+</tr>
+<tr class="row-even"><td>expand = 2</td>
+<td>-f</td>
+<td>decompress fonts</td>
+</tr>
+<tr class="row-odd"><td>expand = 255</td>
+<td>-d</td>
+<td>decompress all</td>
 </tr>
 <tr class="row-even"><td>incremental = 1</td>
-<td>only save data that have changed</td>
+<td>n/a</td>
+<td>only save data that have changed (do not use yet)</td>
 </tr>
 </tbody>
 </table>
-<p>Please note, that <a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a>, according to MuPDF&#8217;s documentation, is still being further developed, so expect changes in the future here.</p>
+<p>Please note, that <a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a>, according to MuPDF&#8217;s documentation, is still being further developed, so expect changes in the future here. Also observe our remarks in the above table.</p>
 <p>Like with <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>, not all combinations of the above options may work for all documents - so be ready to experiment a little.</p>
-<p>We have found, that the fastest and very stable combination is <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span> <span class="pre">-ggg</span> <span class="pre">-z</span></code>, giving good compression results. In PyMuPDF this corresponds to <code class="docutils literal"><span class="pre">doc.save(filename,</span> <span class="pre">garbage=3,</span> <span class="pre">deflate=1)</span></code>.</p>
+<p>We have found, that the fastest, yet very stable combination is <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span> <span class="pre">-ggg</span> <span class="pre">-z</span></code>, giving good compression results. In PyMuPDF this corresponds to <code class="docutils literal"><span class="pre">doc.save(filename,</span> <span class="pre">garbage=3,</span> <span class="pre">deflate=1)</span></code>.</p>
 <p>In some cases, best compression factors result, if <code class="docutils literal"><span class="pre">expand</span></code> and <code class="docutils literal"><span class="pre">deflate</span></code> are used together, though they seem to be contradictory. This works, because MuPDF is forced to expand and then re-compress all objects, which will correct poor compressions during document creation.</p>
 </div>
 <div class="section" id="close">
@@ -570,7 +492,7 @@ doc = fitz.Document(f_old)           # use it as input for MuPDF
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="class_index.html" title="Classes"
+          <a href="class_index.html" title="Classes and Methods"
              >next</a> |</li>
         <li class="right" >
           <a href="installation.html" title="Installation"
@@ -580,7 +502,7 @@ doc = fitz.Document(f_old)           # use it as input for MuPDF
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 06. Dec 2015.
+      Last updated on 05. Jan 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

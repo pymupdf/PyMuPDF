@@ -1,0 +1,27 @@
+.. raw:: pdf
+
+    PageBreak
+
+.. _GetLinks:
+
+=========
+GetLinks
+=========
+Returns a Python list of all the links contained in a page. Each entry in this list is one of the following dictionaries:
+
+* ``{"type": "uri", "kind": <dest.kind>, "uri": <dest.uri>}`` - the link destination is a uri
+* ``{"type": "goto", "kind": <dest.kind>, "page":<dest.page>, "file": None}`` - the link destination is a page (zero-based) in this document
+* ``{"type": "gotor", "kind": <dest.kind>, "file":<dest.fileSpec>, "page": <dest.page>}`` - the link destination is a page in document ``dest.fileSpec``
+* ``{"type": "launch", "kind": <dest.kind>, "file":<dest.fileSpec>}`` - perform action open document ``dest.fileSpec``
+* ``{"type": "named", "kind": <dest.kind>, "name":<dest.named>}`` - a "named resource" should be accessed. Normally, this an indirect reference to yet another link.
+* ``{"type": "none", "kind": <dest.kind>, "page":<dest.page>, "file": None}`` - none of the above, will be further detailed as information becomes available.
+
+This method is identical to class method :meth:`Page.getLinks`.
+
+.. method:: GetLinks(page)
+
+  :param `page`: A page object previously created by :meth:`Document.loadPage`.
+
+  :type `page`: :ref:`Page`
+
+  :rtype: list

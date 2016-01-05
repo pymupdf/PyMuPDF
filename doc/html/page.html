@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.8.0 documentation" href="index.html" />
-    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="up" title="Classes and Methods" href="class_index.html" />
     <link rel="next" title="Pixmap" href="pixmap.html" />
     <link rel="prev" title="Outline" href="outline.html" /> 
   </head>
@@ -43,7 +43,7 @@
           <a href="outline.html" title="Outline"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes and Methods</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -87,8 +87,8 @@
 <p>Page interface, created by <a class="reference internal" href="document.html#Document.loadPage" title="Document.loadPage"><code class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></code></a>.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="43%" />
-<col width="57%" />
+<col width="40%" />
+<col width="60%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Method / Attribute</strong></th>
@@ -97,16 +97,28 @@
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><a class="reference internal" href="#Page.bound" title="Page.bound"><code class="xref py py-meth docutils literal"><span class="pre">Page.bound()</span></code></a></td>
-<td>The Page&#8217;s rectangle</td>
+<td>the page&#8217;s rectangle</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Page.loadLinks" title="Page.loadLinks"><code class="xref py py-meth docutils literal"><span class="pre">Page.loadLinks()</span></code></a></td>
-<td>Get the first link of a page</td>
+<td>get the first link of a page</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Page.getLinks" title="Page.getLinks"><code class="xref py py-meth docutils literal"><span class="pre">Page.getLinks()</span></code></a></td>
+<td>get all links of a page</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Page.getText" title="Page.getText"><code class="xref py py-meth docutils literal"><span class="pre">Page.getText()</span></code></a></td>
+<td>extract the text of a page</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Page.getPixmap" title="Page.getPixmap"><code class="xref py py-meth docutils literal"><span class="pre">Page.getPixmap()</span></code></a></td>
+<td>create a <code class="docutils literal"><span class="pre">Pixmap</span></code> for the page</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Page.searchFor" title="Page.searchFor"><code class="xref py py-meth docutils literal"><span class="pre">Page.searchFor()</span></code></a></td>
+<td>search for a string on a page</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Page.run" title="Page.run"><code class="xref py py-meth docutils literal"><span class="pre">Page.run()</span></code></a></td>
-<td>Run a page through a device</td>
+<td>run a page through a device</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Page.number" title="Page.number"><code class="xref py py-attr docutils literal"><span class="pre">Page.number</span></code></a></td>
-<td>Page number</td>
+<td>page number</td>
 </tr>
 </tbody>
 </table>
@@ -131,14 +143,78 @@
 <dl class="method">
 <dt id="Page.loadLinks">
 <code class="descname">loadLinks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Page.loadLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the first links of a page.</p>
+<dd><p>Get the first link of a page.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="link.html#link"><span>Link</span></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A <a class="reference internal" href="link.html#link"><span>Link</span></a> or <code class="docutils literal"><span class="pre">None</span></code> if the page has no links.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Page.getLinks">
+<code class="descname">getLinks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Page.getLinks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves <strong>all</strong> links of a page. This is the same as the standalone version <a class="reference internal" href="GetLinks.html#getlinks"><span>GetLinks</span></a>, please look there for details.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A <a class="reference internal" href="link.html#link"><span>Link</span></a> or <code class="docutils literal"><span class="pre">None</span></code> if the page has no links.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of dictionaries or <code class="docutils literal"><span class="pre">[]</span></code>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Page.getText">
+<code class="descname">getText</code><span class="sig-paren">(</span><em>output = 'text'</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.getText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the text of a page. Depending on the output parameter, the results of the <a class="reference internal" href="textpage.html#textpage"><span>TextPage</span></a> extract methods are returned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The page&#8217;s text as one string. For details, please look at the standalone version <a class="reference internal" href="GetText.html#gettext"><span>GetText</span></a>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Page.getPixmap">
+<code class="descname">getPixmap</code><span class="sig-paren">(</span><em>matrix = fitz.Identity</em>, <em>colorspace = &quot;RGB&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.getPixmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a <a class="reference internal" href="pixmap.html#pixmap"><span>Pixmap</span></a> image of the page. For details, please look at the standalone version <a class="reference internal" href="GetPixmap.html#getpixmap"><span>GetPixmap</span></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="pixmap.html#pixmap"><span>Pixmap</span></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The <code class="docutils literal"><span class="pre">Pixmap</span></code> for the page.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Page.searchFor">
+<code class="descname">searchFor</code><span class="sig-paren">(</span><em>text</em>, <em>hit_max = 16</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.searchFor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searches for <code class="docutils literal"><span class="pre">text</span></code> on a page. For details, please look at the standalone version <a class="reference internal" href="SearchFor.html#searchfor"><span>SearchFor</span></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of rectangles <a class="reference internal" href="rect.html#rect"><span>Rect</span></a> each of which surrounds one occurrence of <code class="docutils literal"><span class="pre">text</span></code>.</td>
 </tr>
 </tbody>
 </table>
@@ -199,12 +275,12 @@
           <a href="outline.html" title="Outline"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes and Methods</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 13. Dec 2015.
+      Last updated on 05. Jan 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

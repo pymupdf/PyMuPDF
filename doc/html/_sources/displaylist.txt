@@ -43,4 +43,4 @@ A ``DisplayList`` is populated with objects from a page by running :meth:`Page.r
       :type `ctm`: :ref:`Matrix`
 
       :param `area`: Only the part of the contents of the display list visible within this area will be considered when the list is run through the device. This does not imply for tile objects contained in the display list.
-      :type `area`: :ref:`IRect`
+      :type `area`: :ref:`Rect`

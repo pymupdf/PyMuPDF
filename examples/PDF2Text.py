@@ -22,16 +22,6 @@ import sys
 
 ENCODING = "utf-8"
 
-def GetPageText(pg):
-    dl = fitz.DisplayList()
-    dv = fitz.Device(dl)
-    ts = fitz.TextSheet()
-    tp = fitz.TextPage()
-    pg.run(dv, fitz.Identity)
-    rect = pg.bound()
-    dl.run(fitz.Device(ts, tp), fitz.Identity, rect)
-    return tp.extractText()
-
 #==============================================================================
 # Main Program
 #==============================================================================
@@ -45,7 +35,7 @@ fout = open(ofile,"w")
 for i in range(pages):
     print "========== processing page", i, "=========="
     pg = doc.loadPage(i)
-    text = GetPageText(pg)
+    text = pg.getText()
     fout.write(text.encode(ENCODING,"ignore"))
 
 fout.close()

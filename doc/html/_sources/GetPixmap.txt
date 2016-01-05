@@ -1,0 +1,31 @@
+.. raw:: pdf
+
+    PageBreak
+
+.. _GetPixmap:
+
+=====================
+GetPixmap
+=====================
+Creates a Pixmap from a given page. The  method will automatically create or reuse a :ref:`DisplayList` for the page and also create the required drawing :ref:`Device`.
+
+This method is identical to class method :meth:`Page.getPixmap`.
+
+.. method:: GetPixmap(page, matrix = fitz.Identity, colorspace = "RGB")
+
+  :param `page`: A page object created by a previous ``loadPage()`` method.
+
+  :type `page`: :ref:`Page`
+
+  :param `matrix`: A :ref:`Matrix` object. Default is the :ref:`Identity` matrix.
+
+  :type `matrix`: :ref:`Matrix`
+
+  :param `colorspace`: Defines the required colorspace, one of ``GRAY``, ``CMYK`` or ``RGB`` (default).
+
+  :type `colorspace`: string
+
+  :rtype: :ref:`Pixmap`
+
+  :returns: Pixmap of the page.
+

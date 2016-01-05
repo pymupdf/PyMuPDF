@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 """
 @created: 2015-10-23 13:40:00
 
@@ -21,6 +22,7 @@ Changes in PyMuPDF 1.8.0
 - minor cosmetic changes
 - adjust the scaling matrix in function pdf_show as you like it.
 """
+
 import fitz
 import wx
 import os
@@ -63,28 +65,43 @@ img = PyEmbeddedImage(
     "39+fsiwrCcSklEYppS3L0lJKE4ahBnAcZ0PyGpRSQmstbNuWYRjKaqm11sVoNFo6c+ZMYb1X"
     "ce0FLGh4atcW1lQ21xshNihr4VorP8D7HP8Bc8sM8DYGFFQAAAAASUVORK5CYII=")
 
-#==============================================================================
-# define the dialog
-#==============================================================================
 # first abbreviations to get rid of those long pesky names ...
 defPos = wx.DefaultPosition
 defSiz = wx.DefaultSize
+
+#==============================================================================
+# Define our dialog as a subclass of wx.Dialog.
+# Only special thing is, that we are being invoked with a filename ...
+#==============================================================================
 class PDFdisplay (wx.Dialog):
 
     def __init__(self, parent, filename):
         wx.Dialog.__init__ (self, parent, id = wx.ID_ANY,
-            title = u"PDF Display with MuPDF: ",
+            title = u"PDF Display with PyMuPDF: ",
             pos = defPos, size = defSiz,
             style = wx.CAPTION|wx.CLOSE_BOX|wx.DEFAULT_DIALOG_STYLE|
                     wx.DIALOG_NO_PARENT|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|
                     wx.RESIZE_BORDER)
 
-        # display an icon top left of dialog
+        #======================================================================
+        # display an icon top left of dialog, append filename to title
+        #======================================================================
         self.SetIcon(img.GetIcon())
-
-        self.doc = fitz.Document(filename)
         self.SetTitle(self.Title + filename)
+
+        #======================================================================
+        # open the document with MuPDF when dialog gets created
+        #======================================================================
+        self.doc = fitz.Document(filename)
+
+        #======================================================================
+        # define zooming matrix for displaying PDF page images
+        # we increase images by 20%, so take 1.2 as scale factors
+        #======================================================================
+        self.matrix = fitz.Matrix(1, 1).preScale(1.2, 1.2)
+
         '''
+        =======================================================================
         Overall Dialog Structure:
         -------------------------
         szr10 (main sizer for the whole dialog - vertical orientation)
@@ -94,52 +111,75 @@ class PDFdisplay (wx.Dialog):
           +-> field for page number to jump to
           +-> field displaying total pages
         +-> PDF image area
+        =======================================================================
         '''
 
+        #======================================================================
         # the main sizer of the dialog
+        #======================================================================
         self.szr10 = wx.BoxSizer(wx.VERTICAL)
 
-        # this sizer will contain scrolling buttons, etc.
+        #======================================================================
+        # this sizer will contain scrolling buttons, page numbers etc.
+        #======================================================================
         szr20 = wx.BoxSizer(wx.HORIZONTAL)
 
+        #======================================================================
         # forward button
+        #======================================================================
         self.ButtonNext = wx.Button(self, wx.ID_ANY, u"forw",
                            defPos, defSiz, 0)
         szr20.Add(self.ButtonNext, 0, wx.ALL, 5)
 
+        #======================================================================
         # backward button
+        #======================================================================
         self.ButtonPrevious = wx.Button(self, wx.ID_ANY, u"back",
                            defPos, defSiz, 0)
         szr20.Add(self.ButtonPrevious, 0, wx.ALL, 5)
 
+        #======================================================================
         # text field for entering a target page. wx.TE_PROCESS_ENTER is
-        # required to get data entry fired as event.
+        # required to get data entry fired as events.
+        #======================================================================
         self.TextToPage = wx.TextCtrl(self, wx.ID_ANY, u"1", defPos, defSiz,
                              wx.TE_PROCESS_ENTER)
         szr20.Add(self.TextToPage, 0, wx.ALL, 5)
 
+        #======================================================================
         # displays total pages
+        #======================================================================
         self.statPageMax = wx.StaticText(self, wx.ID_ANY,
                               str(self.doc.pageCount), defPos, defSiz, 0)
         szr20.Add(self.statPageMax, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
 
+        #======================================================================
         # sizer ready, represents top dialog line
+        #======================================================================
         self.szr10.Add(szr20, 0, wx.EXPAND, 5)
 
+        #======================================================================
         # define the area for page images and load page 1 for primary display
+        #======================================================================
         self.PDFimage = wx.StaticBitmap(self, wx.ID_ANY, self.pdf_show(1),
                            defPos, defSiz, wx.NO_BORDER)
         self.szr10.Add(self.PDFimage, 0, wx.ALL, 0)
 
-        # main sizer ready - request size & layout adjustments
+        #======================================================================
+        # main sizer now ready - request final size & layout adjustments
+        #======================================================================
         self.szr10.Fit(self)
         self.SetSizer(self.szr10)
         self.Layout()
 
+        #======================================================================
         # center dialog on screen
+        #======================================================================
         self.Centre(wx.BOTH)
 
+        #======================================================================
         # Bind buttons and fields to event handlers
+        #======================================================================
         self.ButtonNext.Bind(wx.EVT_BUTTON, self.NextPage)
         self.ButtonPrevious.Bind(wx.EVT_BUTTON, self.PreviousPage)
         self.TextToPage.Bind(wx.EVT_TEXT_ENTER, self.GotoPage)
@@ -151,25 +191,25 @@ class PDFdisplay (wx.Dialog):
 # Button handlers
 #==============================================================================
     def NextPage(self, event):                   # means: page forward
-        page = int(self.TextToPage.Value) + 1 # current page + 1
+        page = int(self.TextToPage.Value) + 1    # current page + 1
         page = min(page, self.doc.pageCount)     # cannot go beyond last page
-        self.TextToPage.Value = str(page)     # put target page# in screen
+        self.TextToPage.Value = str(page)        # put target page# in screen
         self.bitmap = self.pdf_show(page)        # get page image
-        self.NeuesImage(page)                     # refresh the layout
+        self.NeuesImage(page)                    # refresh the layout
         event.Skip()
 
     def PreviousPage(self, event):               # means: page back
-        page = int(self.TextToPage.Value) - 1 # current page - 1
+        page = int(self.TextToPage.Value) - 1    # current page - 1
         page = max(page, 1)                      # cannot go before page 1
-        self.TextToPage.Value = str(page)     # put target page# in screen
+        self.TextToPage.Value = str(page)        # put target page# in screen
         self.NeuesImage(page)
         event.Skip()
 
-    def GotoPage(self, event):                   # means: go to page #
-        page = int(self.TextToPage.Value)     # get page# from screen
+    def GotoPage(self, event):                   # means: go to page number
+        page = int(self.TextToPage.Value)        # get page# from screen
         page = min(page, self.doc.pageCount)     # cannot go beyond last page
         page = max(page, 1)                      # cannot go before page 1
-        self.TextToPage.Value = str(page)     # make sure it's on the screen
+        self.TextToPage.Value = str(page)        # make sure it's on the screen
         self.NeuesImage(page)
         event.Skip()
 
@@ -186,22 +226,18 @@ class PDFdisplay (wx.Dialog):
         return
 
     def pdf_show(self, pg_nr):
-        page = self.doc.loadPage(int(pg_nr) - 1)            # load the page
-        scaling = fitz.Matrix(1, 1).preScale(1.2, 1.2) # zoom factor 120%
-        rect = page.bound().transform(scaling)         # scale page boundaries
-        irect = rect.round()                         # surrounding integer rectangle
-        pix = fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), irect)  # empty RGB pixmap
-        pix.clearWith(255)                           # clear it with color "white"
-        dev = fitz.Device(pix)                       # create a "draw" device
-        page.run(dev, scaling)                       # render the page
-        data = str(pix.samples)                      # point to pixel area
+        page = self.doc.loadPage(int(pg_nr) - 1) # load the page & get Pixmap
+        pix = page.getPixmap(matrix = self.matrix,
+                             colorspace = 'RGB')
+        data = str(pix.samples)                  # point to pixel area
 
-        #bitmap = wx.BitmapFromBufferRGBA(irect.width, irect.height, data)
+        #bitmap = wx.BitmapFromBufferRGBA(pix.width, pix.height, data)
 
         # If you experience issues with this function, try the following code.
         # It will use "wx.BitmapFromBuffer" and thus ignore the transparency (alpha).
         data2 = "".join([data[4*i:4*i+3] for i in range(len(data)/4)])
-        bitmap = wx.BitmapFromBuffer(irect.width, irect.height, data2)
+        bitmap = wx.BitmapFromBuffer(pix.width, pix.height, data2)
+
         return bitmap
 
 #==============================================================================
@@ -212,23 +248,38 @@ app = wx.App()
 #==============================================================================
 # Show a FileSelect dialog to choose a file for display
 #==============================================================================
-# Wildcard: offer all supported filetypes
+
+# Wildcard: offer all supported filetypes for display
 wild = "supported files|*.pdf;*.xps;*.oxps;*.epub"
-# Show the dialog
+
+#==============================================================================
+# define the file selection dialog
+#==============================================================================
 dlg = wx.FileDialog(None, message = "Choose a file to display",
-                    defaultDir = os.path.expanduser("~"), defaultFile = "",
+                    defaultDir = os.path.expanduser("~"),
+                    defaultFile = "",
                     wildcard = wild, style=wx.OPEN|wx.CHANGE_DIR)
+
+#==============================================================================
+# give an icon before we display it
+#==============================================================================
 dlg.SetIcon(img.GetIcon())
+
+#==============================================================================
+# now display and ask for return code in one go
+#==============================================================================
 # We got a file only when one was selected and OK pressed
 if dlg.ShowModal() == wx.ID_OK:
     # This returns a Python list of selected files (we only have one though)
     filename = dlg.GetPaths()[0]
 else:
     filename = None
+
 # destroy this dialog
 dlg.Destroy()
+
 if filename:
-    if not os.path.exists(filename):
+    if not os.path.exists(filename):   # should not happen actually
         filename = None
 #==============================================================================
 # only continue if we have a filename

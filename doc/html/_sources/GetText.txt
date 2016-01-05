@@ -1,0 +1,32 @@
+.. raw:: pdf
+
+    PageBreak
+
+.. _GetText:
+
+=====================
+GetText
+=====================
+
+Returns the text of a page. Internally, the respective :ref:`TextPage` methods are being used, so the output is exactly equal to what they provide.
+
+This method is identical to class method :meth:`Page.getText`.
+
+The required objects :ref:`TextSheet`, :ref:`DisplayList`, :ref:`Device` and :ref:`TextPage` are automatically created / reused.
+
+If ``output = 'text'`` is specified, the text is returned in the order as specified during PDF creation (which is not necessarily the normal reading order). As this may not always look like expected, consider using the example program ``PDF2TextJS.py``. It is based on ``extractJSON()`` output and rearranges text according to the Western reading layout convention "from top-left to bottom-right".
+
+In an earlier version, we provided a different taste of :meth:`TextPage.extractText` (parameter ``basic=False``), which did a similar job. However, the example program mentioned above is more than 50 times faster, so we deleted this option.
+
+.. method:: GetText(page, output = 'text')
+
+
+    :param `page`: A page object previously created by :meth:`Document.loadPage`.
+
+    :type `page`: :ref:`Page`
+
+    :param `output`: A string indicating the requested text format, one of ``text`` (default), ``html``, ``json``, or ``xml``.
+
+    :type `output`: string
+
+    :rtype: string

@@ -64,97 +64,50 @@ Access Meta Data
 
 Work with Outlines
 =========================
-Entering the documents outline tree works like this:
+The easiest way to get all outlines of a document, is creating a table of contents:
+::
+ toc = doc.getToC(simple = True)       # the simple form, if False, link information is included
+
+This will return a Python list ``[[level, title, page, link], ...]`` (or ``[]``).
+
+``level`` is the hierarchy level of the entry (starting from 1), ``title`` is the entry's title (unicode), and ``page`` the page number (1-based). ``link`` is present if ``simple = False`` is specified. Its meaning can be look up under :ref:`GetLinks`.
+
+If you want a more detailed control of what you get, enter the document's outline tree like this:
 ::
  olItem = doc.outline    # the document's first outline item
 
-This creates olItem as an :ref:`Outline` object.
-
-Some :ref:`Outline` methods and attributes
-===================================================
-
-============================ =================================================
-**Method / Attribute**       **Description**
-============================ =================================================
-:meth:`Outline.saveText`     Save table of contents as a text file
-:meth:`Outline.saveXML`      Save table of contents as a quasi-XML file
-:attr:`Outline.next`         Next item of the same level
-:attr:`Outline.down`         Next item one level down
-:attr:`Outline.title`        Title of this item
-:attr:`Outline.dest`         Destination ('where does this entry point to?')
-============================ =================================================
-
-Some :attr:`Outline.dest` attributes
-=====================================
-
-=========================== ========================================
-**Attribute**               **Description**
-=========================== ========================================
-:attr:`Outline.dest.page`   Target page number
-:attr:`Outline.dest.lt`     Top-left corner of target rectangle
-:attr:`Outline.dest.rb`     Bottem-right corner of target rectangle
-=========================== ========================================
-
-MuPDF also supports outline destinations to other files and to URIs. See :ref:`Outline`.
-
-In order to get a document's table of contents as a Python list, use the following function:
-::
- toc = doc.getToC()       # [[level, title, page], ...], or []
+This creates olItem as an :ref:`Outline` object. Look there for further details.
 
 
 Work with Pages
 ======================
 Tasks that can be performed with a :ref:`Page` are at the core of MuPDF's functionality.
 Among other things, you can render a :ref:`Page`, optionally zooming, rotating or shearing it.
-You can write it's image to files (in PNG format), extract text from it or perform searches for text elements.
+You can write it's image to files (in PNG format), extract text from it or search for text strings.
 At first, a page object must be created:
 ::
  page = doc.loadPage(n)        # represents page n of the document
 
-Here are some typical uses of :ref:`Page` objects:
+Some typical uses of :ref:`Page` objects follow:
 
 Inspect the links on a :ref:`Page`
 ------------------------------------
-Here is an example that displays all links and their types:
+Here is how to get all links and their types:
 ::
  #-----------------------------------------------------------------------------------
  # Get all links of the current page
  #-----------------------------------------------------------------------------------
- ln = page.loadLinks()
- #-----------------------------------------------------------------------------------
- # Links are organized as a single linked list. We need to check each occurrence
- # to see what info we can get
- #-----------------------------------------------------------------------------------
- while ln:
-     if ln.dest.kind == fitz.LINK_URI:
-	     print '[LINK]URI: %s' % ln.dest.uri
-     elif ln.dest.kind == fitz.LINK_GOTO:
-         print '[LINK]jump to page %d' % ln.dest.page
-     else:
-         pass
-     ln = ln.next
+ links = page.getLinks()
+
+``links`` is a Python list containing Python dictionaries as entries. For details see :ref:`GetLinks`.
 
 Render a :ref:`Page`
 -----------------------
 This example creates an image out of a page's content:
 ::
+ pix = page.getPixmap(matrix = fitz.Identity, colorspace = "RGB")
  #-----------------------------------------------------------------------------------
- # Get the page's rectangle
- #-----------------------------------------------------------------------------------
- rect = page.bound()
- #-----------------------------------------------------------------------------------
- # create the smallest pixel area containing the rectangle
- #-----------------------------------------------------------------------------------
- irect = rect.round()
- #-----------------------------------------------------------------------------------
- # create an empty RGBA pixel map of the pixel area's size
- #-----------------------------------------------------------------------------------
- pix = fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), irect)
- pix.clearWith(255)             # Initialize with color "white" and "no transparency"
- dev = fitz.Device(pix)         # Create a draw device for the pixel map
- page.run(dev, fitz.Identity)   # finally render the page with no changes
- #-----------------------------------------------------------------------------------
- # now pix contains an image of the page, ready to be used
+ # now pix contains an RGB image of the page, ready to be used
  #-----------------------------------------------------------------------------------
 
 Save the page image in a file
@@ -166,91 +119,87 @@ We can simply store the image in a PNG file:
 
 Display the image in dialog managers
 --------------------------------------
-Or we convert the image into a bitmap usable by dialog managers. :attr:`Pixmap.samples` represents the area of bytes of all the pixels as a Python bytearray. This area (or its ``str()``-version), is directly usable by presumably most dialog managers. Here are two examples.
+We can also use the image in a dialog. :attr:`Pixmap.samples` represents the area of bytes of all the pixels as a Python bytearray. This area (or its ``str()``-version), is directly usable by presumably most dialog managers. Here are two examples. Please also have a look at the examples directory of this repository.
 
 **wxPython**:
 ::
- data = pix.samples                   # data = bytearray of raw pixel data (RGBA)
- bitmap = wx.BitmapFromBufferRGBA(irect.width,
-             irect.height, str(data)) # wxPython only accepts strings, no bytearrays
+ data = pix.samples                          # data = bytearray of raw pixel data (RGBA)
+ bitmap = wx.BitmapFromBufferRGBA(pix.width, # image width
+             pix.height,                     # image height
+             str(data))                      # wxPython only accepts strings, no bytearrays
 
 **Tkinter**:
 ::
  data = pix.samples
- img = Image.frombytes("RGBA", [irect.width, irect.height], str(data))
+ img = Image.frombytes("RGBA", [pix.width, pix.height], str(data))
  photo = ImageTk.PhotoImage(img)
 
 
 Text extraction
 ----------------
-We can also extract all text of a page in a big chunk of string:
+We can also extract all text of a page in one chunk of string:
 ::
- dl = fitz.DisplayList()                  # create a DisplayList
- ts = fitz.TextSheet()                    # create a TextSheet
- tp = fitz.TextPage()                     # create a TextPage
- dev = fitz.Device(ts, tp)                # create a text Device
- irect = page.bound()                     # the page's visible rectangle
- page.run(dev, fitz.Identity)             # run the page on the device
- # now run the display list with the page's data
- dl.run(dev, fitz.Identity, irect)
+ text = page.getText(output = "text")
 
- # 4 methods exist to extract the text now contained in the TextPage:
+For the ``output`` parameter, the following values can be specified:
 
- # (1) plain text: with line breaks, no formatting, no position info
- text = tp.extractText()
+* ``text``: plain text with line breaks. No format and no position info.
 
- # (2) html: line breaks, alignment, grouping, no formatting, no positioning
- html = tp.extractHTML()
+* ``html``: line breaks, alignment, grouping. No format and no position info
 
- # (3) json: full formatting info (except colors and fonts) down to spans
- xml = tp.extractJSON()
+* ``json``: full formatting info (except colors and fonts) down to spans (see appendix)
 
- # (4) xml: full formatting info (except colors) down to individual characters
- xml = tp.extractXML()
+* ``xml``: full formatting info (except colors) down to individual characters
 
-
-To give you an idea about the output of these alternatives, we did extracts from this document's PDF version and several other examples. See the appendix for details about implications on processing times and space requirements.
+To give you an idea about the output of these alternatives, we did text extracts from this document's PDF version and several other examples. See the appendix for details about implications on processing times and space requirements.
 
 Text Searching
 ---------------
-If you are interested in the occurence of parts of text, you can determine, exactly where on a page a certain string appears:
+You can find out, exactly where on a page a certain string appears like this:
 ::
- # search for at most 4 page locations with specific contents
- res = tp.search('MuPDF', hit_max = 4)
+ areas = page.searchFor("mupdf", hit_max = 32)
 
-The result ``res`` will now be ``[]`` or a list of no more than 4 :ref:`Rect` rectangles that contain the string 'MuPDF'. The ``hit_max`` parameter (in our case set to 4) is optional (default is 16).
+
+The variable ``areas`` will now contain a list of up to 32 :ref:`Rect` rectangles which surround each occurrence of string "mupdf" (not case sensitive).
+
+Please also do have a look at the demonstration program ``demo.py``. Among others it contains details on how the :ref:`TextPage`, :ref:`TextSheet`, :ref:`Device` and :ref:`DisplayList` classes can be used for a more direct control, e.g. when performance considerations require it.
+
 
 Output
 =======
-Output capabilities of MuPDF (such as PDF generation) are currently very limited. However, a copy of a currently opened document can be created (PDF only, no other file types).
+Output capabilities of MuPDF (such as PDF generation) are currently very limited. However, a copy of a currently opened document can be created (PDF only, none of the other file types).
 
-We support this with the method :meth:`Document.save`. If the document had been successfully decrypted before, ``save()`` will create a decrypted copy.
+We support this with the method :meth:`Document.save`.
+
+If the document had been successfully decrypted before, ``save()`` will automatically create a decrypted copy.
 
 In addition, this method will also perform some clean-up:
 
-If the document containes invalid or broken xrefs, the saved version will have them corrected, which makes it readable by other Python PDF software, like `pdfrw <https://github.com/pmaupin/pdfrw>`_ or `PyPDF2 <http://mstamy2.github.io/PyPDF2>`_. In many cases, the saved version will also be smaller than the original.
+If the document containes invalid or broken xrefs, the saved version will have them automatically corrected, which makes it readable by other Python PDF software, like `pdfrw <https://github.com/pmaupin/pdfrw>`_ or `PyPDF2 <http://mstamy2.github.io/PyPDF2>`_. In many cases, the saved version will also be smaller than the original.
 
-:meth:`Document.save` now supports all options of MuPDF's standalone utility ``mutool clean``.
+:meth:`Document.save` now also supports all options of MuPDF's command line utility ``mutool clean``, see below (mutool clean option = "MCO").
 
-================== ============================================
-**Option**         **Effect**
-================== ============================================
-garbage = 1        garbage collect unused objects
-garbage = 2        in addition to 1, compact xref tables
-garbage = 3        in addition to 2, merge duplicate objects
-clean = 1          clean content streams (avoid / use with care)
-deflate = 1        deflate uncompressed streams
-ascii = 1          convert data to ASCII format
-linear = 1         create a linearized document version
-expand = 1         create a decompressed version
-incremental = 1    only save data that have changed
-================== ============================================
+================== ======= ==================================================
+**Option**         **MCO** **Effect**
+================== ======= ==================================================
+garbage = 1          -g    garbage collect unused objects
+garbage = 2         -gg    in addition to 1, compact xref tables
+garbage = 3         -ggg   in addition to 2, merge duplicate objects
+clean = 1            -s    clean content streams (avoid or use with care!)
+deflate = 1          -z    deflate uncompressed streams
+ascii = 1            -a    convert data to ASCII format
+linear = 1           -l    create a linearized version (do not use yet)
+expand = 1           -i    decompress images
+expand = 2           -f    decompress fonts
+expand = 255         -d    decompress all
+incremental = 1      n/a   only save data that have changed (do not use yet)
+================== ======= ==================================================
 
-Please note, that :meth:`Document.save`, according to MuPDF's documentation, is still being further developed, so expect changes in the future here.
+Please note, that :meth:`Document.save`, according to MuPDF's documentation, is still being further developed, so expect changes in the future here. Also observe our remarks in the above table.
 
 Like with ``mutool clean``, not all combinations of the above options may work for all documents - so be ready to experiment a little.
 
-We have found, that the fastest and very stable combination is ``mutool clean -ggg -z``, giving good compression results. In PyMuPDF this corresponds to ``doc.save(filename, garbage=3, deflate=1)``.
+We have found, that the fastest, yet very stable combination is ``mutool clean -ggg -z``, giving good compression results. In PyMuPDF this corresponds to ``doc.save(filename, garbage=3, deflate=1)``.
 
 In some cases, best compression factors result, if ``expand`` and ``deflate`` are used together, though they seem to be contradictory. This works, because MuPDF is forced to expand and then re-compress all objects, which will correct poor compressions during document creation.
 

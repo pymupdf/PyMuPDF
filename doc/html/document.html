@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.8.0 documentation" href="index.html" />
-    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="up" title="Classes and Methods" href="class_index.html" />
     <link rel="next" title="Identity" href="identity.html" />
     <link rel="prev" title="DisplayList" href="displaylist.html" /> 
   </head>
@@ -43,7 +43,7 @@
           <a href="displaylist.html" title="DisplayList"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes and Methods</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -106,7 +106,7 @@
 <td>Saves a copy of the document</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.getToC" title="Document.getToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.getToC()</span></code></a></td>
-<td>Creates a table of contents</td>
+<td>Create a table of contents</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.close" title="Document.close"><code class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></code></a></td>
 <td>Closes the document</td>
@@ -216,6 +216,22 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="Document.getToC">
+<code class="descname">getToC</code><span class="sig-paren">(</span><em>simple = True</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.getToC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a table of contents out of the document&#8217;s outline chain.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>simple</strong> (<em>boolean</em>) &#8211; Indicates whether a detailed ToC is required. If <code class="docutils literal"><span class="pre">simple</span> <span class="pre">=</span> <span class="pre">False</span></code> is specified, each entry of the list also contains a dictionary with <a class="reference internal" href="link.html#link"><span>Link</span></a> details for each outline entry. For details, please have a look at <a class="reference internal" href="GetLinks.html#getlinks"><span>GetLinks</span></a> and <a class="reference internal" href="GetToC.html#gettoc"><span>GetToC</span></a>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="Document.save">
 <code class="descname">save</code><span class="sig-paren">(</span><em>outfile</em>, <em>garbage=0</em>, <em>clean=0</em>, <em>deflate=0</em>, <em>incremental=0</em>, <em>ascii=0</em>, <em>expand=0</em>, <em>linear=0</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves a copy of the document under the name <code class="docutils literal"><span class="pre">outfile</span></code>. Include path specifications as necessary. Only PDF documents are supported by this function. Internally the document may have changed. E.g. after a successfull <code class="docutils literal"><span class="pre">authenticate</span></code>, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning of the document data could also have occurred, e.g. broken xref tables have been corrected and incremental changes have been resolved.</p>
@@ -240,20 +256,6 @@
 </tr>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Count of errors that occurred during save. Note: PyMuPDF will recover from many errors encountered in a PDF and continue processing.</p>
 </td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="Document.getToC">
-<code class="descname">getToC</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Document.getToC" title="Permalink to this definition">¶</a></dt>
-<dd><p>A convenience function that creates a table of contents from the <code class="docutils literal"><span class="pre">outline</span></code> entries. If none exist <code class="docutils literal"><span class="pre">[]</span></code> will be returned, otherwise a Python list <code class="docutils literal"><span class="pre">[[level,</span> <span class="pre">title,</span> <span class="pre">page],</span> <span class="pre">[...],</span> <span class="pre">...]</span></code>. Note that the title entries have already been decoded to unicode here. Page numbers are 1-based, but zero if and only if the entry points to a place outside this document. If invoked for an encrypted, not yet authenticated document, a <code class="docutils literal"><span class="pre">ValueError</span></code> exception will be raised.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
 </tbody>
 </table>
@@ -393,12 +395,12 @@
           <a href="displaylist.html" title="DisplayList"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes and Methods</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 06. Dec 2015.
+      Last updated on 05. Jan 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

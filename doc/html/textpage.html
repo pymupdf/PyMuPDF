@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.8.0 documentation" href="index.html" />
-    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="up" title="Classes and Method" href="class_index.html" />
     <link rel="next" title="TextSheet" href="textsheet.html" />
     <link rel="prev" title="Rect" href="rect.html" /> 
   </head>
@@ -43,7 +43,7 @@
           <a href="rect.html" title="Rect"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes and Method</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -119,20 +119,8 @@
 <em class="property">class </em><code class="descname">TextPage</code><a class="headerlink" href="#TextPage" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="TextPage.extractText">
-<code class="descname">extractText</code><span class="sig-paren">(</span><em>basic=0</em><span class="sig-paren">)</span><a class="headerlink" href="#TextPage.extractText" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract the text from a <code class="docutils literal"><span class="pre">TextPage</span></code> object. Returns a string of the page&#8217;s complete text. If the default value 0 for <code class="docutils literal"><span class="pre">basic</span></code> is used, the text is returned as close as possible to its natural reading order (top-left to bottom-right), and <strong>unicode</strong> encoded. This is based on the output of <code class="docutils literal"><span class="pre">extractXML</span></code>, see below. Usage of <code class="docutils literal"><span class="pre">basic=1</span></code> is provided primarily for debugging purposes. In this case no attempt is being made to adhere to a natutal reading sequence, instead the text is returned in the same sequence as the PDF creator specified it. In addition, in this case, the text string is UTF-8 encoded (as it is an original MuPDF value).</p>
-<blockquote>
-<div><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">param <code class="docutils literal"><span class="pre">basic</span></code>:</th><td class="field-body">An integer specifying whether basic (<code class="docutils literal"><span class="pre">1</span> <span class="pre">(True)</span></code>) or advanced text output (the default) should be provided.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">type <code class="docutils literal"><span class="pre">basic</span></code>:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
-</div></blockquote>
+<code class="descname">extractText</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TextPage.extractText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the text from a <code class="docutils literal"><span class="pre">TextPage</span></code> object. Returns a string of the page&#8217;s complete text. No attempt is being made to adhere to a natural reading sequence: the text is returned UTF-8 encoded and in the same sequence as the PDF creator specified it. If this looks awkward for your PDF file, consider using program that re-arranges the text according to a more familiar layout, e.g. <code class="docutils literal"><span class="pre">PDF2TextJS.py</span></code> in the examples directory.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -160,7 +148,7 @@
 <dl class="method">
 <dt id="TextPage.extractJSON">
 <code class="descname">extractJSON</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TextPage.extractJSON" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract the text from a <code class="docutils literal"><span class="pre">TextPage</span></code> object in JSON format. This version contains significantly more formatting information about how the text is being dislayed on the page. It is almost as complete as the <code class="docutils literal"><span class="pre">extractXML</span></code> version, except that positioning information is detailed down to the span level, not a single character. See the tutorial chapter for an example.</p>
+<dd><p>Extract the text from a <code class="docutils literal"><span class="pre">TextPage</span></code> object in JSON format. This version contains significantly more formatting information about how the text is being dislayed on the page. It is almost as complete as the <code class="docutils literal"><span class="pre">extractXML</span></code> version, except that positioning information is detailed down to the span level, not to a single character. See the tutorial chapter for an example. To process the returned JSON text use one of the json modules like <code class="docutils literal"><span class="pre">json</span></code>, <code class="docutils literal"><span class="pre">simplejson</span></code>, <code class="docutils literal"><span class="pre">ujson</span></code>, <code class="docutils literal"><span class="pre">cjson</span></code>, etc. See example program <code class="docutils literal"><span class="pre">PDF2TextJS.py</span></code> for how to do that.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -232,12 +220,12 @@
           <a href="rect.html" title="Rect"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes and Method</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 06. Dec 2015.
+      Last updated on 03. Jan 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

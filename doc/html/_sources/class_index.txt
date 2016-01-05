@@ -5,30 +5,37 @@
 .. _fitz:
 
 ===============================
-Classes
+Classes and Methods
 ===============================
-The list of PyMuPDF classes, accessible via the prefix ``fitz.`` if your import statement was ``import fitz``
+A list of PyMuPDF classes and methods, accessible via ``fitz.<name>`` if your import statement was ``import fitz``.
 
-================== ===============================================
-**Class**          **Short Description**
-================== ===============================================
-:ref:`Colorspace`  Define the color space of a :ref:`Pixmap`.
-:ref:`Device`      Target object for rendering or text extraction.
-:ref:`DisplayList` A list containing drawing commands.
-:ref:`Document`    Basic class for dealing with files.
-:ref:`Identity`    The do-nothing :ref:`Matrix`
-:ref:`IRect`       A rectangle (pixel coordinates).
-:ref:`Link`        A destination
-:ref:`linkDest`    The destination of an outline entry
-:ref:`Matrix`      A 3x3 matrix used for transformations.
-:ref:`Outline`     Outline element (a.k.a. bookmark).
-:ref:`Page`        A document page.
-:ref:`Pixmap`      A pixel map (for rendering).
-:ref:`Point`       Represents a point in the plane.
-:ref:`Rect`        A rectangle (float coordinates).
-:ref:`TextPage`    Text content of a page.
-:ref:`TextSheet`   A list of text styles used in a page.
-================== ===============================================
+====================== =========================================================
+**Class / Method**     **Short Description**
+====================== =========================================================
+:ref:`Colorspace`      define the color space of a :ref:`Pixmap`.
+:ref:`Device`          target object for rendering or text extraction.
+:ref:`DisplayList`     a list containing drawing commands.
+:ref:`Document`        basic class for dealing with files.
+:ref:`Identity`        the do-nothing :ref:`Matrix`
+:ref:`IRect`           a rectangle (pixel coordinates).
+:ref:`Link`            a destination
+:ref:`linkDest`        the destination of an outline entry
+:ref:`Matrix`          a 3x3 matrix used for transformations.
+:ref:`Outline`         outline element (a.k.a. bookmark).
+:ref:`Page`            a document page.
+:ref:`Pixmap`          a pixel map (for rendering).
+:ref:`Point`           represents a point in the plane.
+:ref:`Rect`            a rectangle (float coordinates).
+:ref:`TextPage`        text content of a page.
+:ref:`TextSheet`       a list of text styles used in a page.
+:ref:`GetToC`          returns a list of bookmarks in table of contents format
+:ref:`GetLinks`        returns a list of all links on a given page
+:ref:`GetText`         returns a page's text as a string
+:ref:`GetPixmap`       returns a page's text as a string
+:ref:`SearchFor`       searches for a string on a page
+====================== =========================================================
+
+
 
 .. toctree::
    :maxdepth: 1
@@ -50,3 +57,8 @@ The list of PyMuPDF classes, accessible via the prefix ``fitz.`` if your import 
    rect.txt
    textpage.txt
    textsheet.txt
+   GetToC.txt
+   GetLinks.txt
+   GetPixmap.txt
+   GetText.txt
+   SearchFor.txt

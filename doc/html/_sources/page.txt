@@ -11,14 +11,18 @@ Page
 Page interface, created by :meth:`Document.loadPage`.
 
 
-======================== ================================
+======================== ====================================
 **Method / Attribute**   **Short Description**
-======================== ================================
-:meth:`Page.bound`       The Page's rectangle
-:meth:`Page.loadLinks`   Get the first link of a page
-:meth:`Page.run`         Run a page through a device
-:attr:`Page.number`      Page number
-======================== ================================
+======================== ====================================
+:meth:`Page.bound`       the page's rectangle
+:meth:`Page.loadLinks`   get the first link of a page
+:meth:`Page.getLinks`    get all links of a page
+:meth:`Page.getText`     extract the text of a page
+:meth:`Page.getPixmap`   create a ``Pixmap`` for the page
+:meth:`Page.searchFor`   search for a string on a page
+:meth:`Page.run`         run a page through a device
+:attr:`Page.number`      page number
+======================== ====================================
 
 **Class API**
 
@@ -32,10 +36,38 @@ Page interface, created by :meth:`Document.loadPage`.
 
    .. method:: loadLinks()
 
-      Get the first links of a page.
+      Get the first link of a page.
+
+      :rtype: :ref:`Link`
+      :returns: A :ref:`Link` or ``None`` if the page has no links.
+
+   .. method:: getLinks()
+
+      Retrieves **all** links of a page. This is the same as the standalone version :ref:`GetLinks`, please look there for details.
 
       :rtype: list
-      :returns: A :ref:`Link` or ``None`` if the page has no links.
+      :returns: A list of dictionaries or ``[]``.
+
+   .. method:: getText(output = 'text')
+
+      Retrieves the text of a page. Depending on the output parameter, the results of the :ref:`TextPage` extract methods are returned.
+
+      :rtype: string
+      :returns: The page's text as one string. For details, please look at the standalone version :ref:`GetText`.
+
+   .. method:: getPixmap(matrix = fitz.Identity, colorspace = "RGB")
+
+      Creates a :ref:`Pixmap` image of the page. For details, please look at the standalone version :ref:`GetPixmap`.
+
+      :rtype: :ref:`Pixmap`
+      :returns: The ``Pixmap`` for the page.
+
+   .. method:: searchFor(text, hit_max = 16)
+
+      Searches for ``text`` on a page. For details, please look at the standalone version :ref:`SearchFor`.
+
+      :rtype: list
+      :returns: A list of rectangles :ref:`Rect` each of which surrounds one occurrence of ``text``.
 
    .. method:: run(dev, transform)
 
