@@ -15,18 +15,10 @@ Represents the color space of a :ref:`Pixmap`.
 
 .. class:: Colorspace
 
-   .. method:: __init__(self, colorspace, irect)
+   .. method:: __init__(self, colorspace)
 
       Constructor
 
-   .. attribute:: colorspace
+      :param `colorspace`: A number identifying the colorspace. Supported colorspacevalues are :data:`CS_RGB`, :data:`CS_GRAY` and :data:`CS_CMYK`.
 
-      A number identifying the colorspace. Supported colorspaces are :data:`CS_RGB`, :data:`CS_GRAY` and :data:`CS_CMYK`.
-
-      :type: int
-
-   .. attribute:: irect
-
-      A :ref:`IRect` object representing the area of the image.
-
-      :type: instance
+      :type `colorspace`: int

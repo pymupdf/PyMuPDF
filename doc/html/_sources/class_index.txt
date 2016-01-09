@@ -28,11 +28,6 @@ A list of PyMuPDF classes and methods, accessible via ``fitz.<name>`` if your im
 :ref:`Rect`            a rectangle (float coordinates).
 :ref:`TextPage`        text content of a page.
 :ref:`TextSheet`       a list of text styles used in a page.
-:ref:`GetToC`          returns a list of bookmarks in table of contents format
-:ref:`GetLinks`        returns a list of all links on a given page
-:ref:`GetText`         returns a page's text as a string
-:ref:`GetPixmap`       returns a page's text as a string
-:ref:`SearchFor`       searches for a string on a page
 ====================== =========================================================
 
 
@@ -57,8 +52,3 @@ A list of PyMuPDF classes and methods, accessible via ``fitz.<name>`` if your im
    rect.txt
    textpage.txt
    textsheet.txt
-   GetToC.txt
-   GetLinks.txt
-   GetPixmap.txt
-   GetText.txt
-   SearchFor.txt

@@ -70,7 +70,7 @@ The easiest way to get all outlines of a document, is creating a table of conten
 
 This will return a Python list ``[[level, title, page, link], ...]`` (or ``[]``).
 
-``level`` is the hierarchy level of the entry (starting from 1), ``title`` is the entry's title (unicode), and ``page`` the page number (1-based). ``link`` is present if ``simple = False`` is specified. Its meaning can be look up under :ref:`GetLinks`.
+``level`` is the hierarchy level of the entry (starting from 1), ``title`` is the entry's title (unicode), and ``page`` the page number (1-based). ``link`` is present if ``simple = False`` is specified. Its meaning can be look up under :meth:`Page.getLinks`.
 
 If you want a more detailed control of what you get, enter the document's outline tree like this:
 ::
@@ -99,7 +99,7 @@ Here is how to get all links and their types:
  #-----------------------------------------------------------------------------------
  links = page.getLinks()
 
-``links`` is a Python list containing Python dictionaries as entries. For details see :ref:`GetLinks`.
+``links`` is a Python list containing Python dictionaries as entries. For details see :meth:`Page.getLinks`.
 
 Render a :ref:`Page`
 -----------------------
@@ -182,17 +182,17 @@ If the document containes invalid or broken xrefs, the saved version will have t
 ================== ======= ==================================================
 **Option**         **MCO** **Effect**
 ================== ======= ==================================================
-garbage = 1          -g    garbage collect unused objects
+garbage = 1         -g     garbage collect unused objects
 garbage = 2         -gg    in addition to 1, compact xref tables
 garbage = 3         -ggg   in addition to 2, merge duplicate objects
-clean = 1            -s    clean content streams (avoid or use with care!)
-deflate = 1          -z    deflate uncompressed streams
-ascii = 1            -a    convert data to ASCII format
-linear = 1           -l    create a linearized version (do not use yet)
-expand = 1           -i    decompress images
-expand = 2           -f    decompress fonts
-expand = 255         -d    decompress all
-incremental = 1      n/a   only save data that have changed (do not use yet)
+clean = 1           -s     clean content streams (avoid or use with care!)
+deflate = 1         -z     deflate uncompressed streams
+ascii = 1           -a     convert data to ASCII format
+linear = 1          -l     create a linearized version (do not use yet)
+expand = 1          -i     decompress images
+expand = 2          -f     decompress fonts
+expand = 255        -d     decompress all
+incremental = 1     n/a    only save data that have changed (do not use yet)
 ================== ======= ==================================================
 
 Please note, that :meth:`Document.save`, according to MuPDF's documentation, is still being further developed, so expect changes in the future here. Also observe our remarks in the above table.

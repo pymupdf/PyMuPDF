@@ -377,6 +377,10 @@ class Rect(_object):
     def transform(self, m):
         _fitz._fz_transform_rect(self, m)
         return self
+
+    def __repr__(self):
+        return str((self.x0, self.y0, self.x1, self.y1))
+
     width = property(lambda self: self.x1-self.x0)
     height = property(lambda self: self.y1-self.y0)
 
@@ -417,6 +421,9 @@ class IRect(_object):
 
     width = property(lambda self: self.x1-self.x0)
     height = property(lambda self: self.y1-self.y0)
+
+    def __repr__(self):
+        return str((self.x0, self.y0, self.x1, self.y1))
 
     __swig_destroy__ = _fitz.delete_IRect
     __del__ = lambda self: None
@@ -462,8 +469,8 @@ class Pixmap(_object):
     if _newclass:
         yres = _swig_property(_fitz.Pixmap_yres_get, _fitz.Pixmap_yres_set)
 
-    def __init__(self, cs, bbox):
-        this = _fitz.new_Pixmap(cs, bbox)
+    def __init__(self, *args):
+        this = _fitz.new_Pixmap(*args)
         try:
             self.this.append(this)
         except Exception:
@@ -473,6 +480,15 @@ class Pixmap(_object):
 
     def clearWith(self, value):
         return _fitz.Pixmap_clearWith(self, value)
+
+    def clearRectWith(self, value, bbox):
+        return _fitz.Pixmap_clearRectWith(self, value, bbox)
+
+    def copyPixmap(self, src, bbox):
+        return _fitz.Pixmap_copyPixmap(self, src, bbox)
+
+    def getSize(self):
+        return _fitz.Pixmap_getSize(self)
 
     def writePNG(self, filename, savealpha=0):
 
@@ -494,6 +510,7 @@ class Pixmap(_object):
         return _fitz.Pixmap__getSamples(self)
 
     samples = property(lambda self: self._getSamples())
+    __len__ = getSize
     width  = w
     height = h
 
@@ -777,6 +794,9 @@ class Point(_object):
     def transform(self, m):
         _fitz._fz_transform_point(self, m)
         return self
+
+    def __repr__(self):
+        return str((self.x, self.y))
 
     __swig_destroy__ = _fitz.delete_Point
     __del__ = lambda self: None

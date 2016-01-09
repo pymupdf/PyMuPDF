@@ -21,14 +21,25 @@ Point
 
 .. class:: Point
 
-   .. method:: __init__(self, x=0, y=0)
+   .. method:: __init__(self, x, y)
 
-      Constructor, defaulting to "top left".
+      Constructor, without parameters defaulting to ``Point(0.0, 0.0)`` ("top left"). Also see the example below.
 
-   .. attribute:: x
+     :param `x`: X coordinate of the point
 
-      :type: float
+     :type `x`: float
 
-   .. attribute:: y
+     :param `y`: Y coordinate of the point
 
-      :type: float
+     :type `y`: float
+
+
+**Example:**
+::
+ Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
+ Type "copyright", "credits" or "license()" for more information.
+ >>> import fitz
+ >>> point = fitz.Point(25, 30)
+ >>> point
+ (25.0, 30.0)
+ >>>

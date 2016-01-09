@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.8.0 documentation" href="index.html" />
-    <link rel="up" title="Classes and Method" href="class_index.html" />
+    <link rel="up" title="Classes and Methods" href="class_index.html" />
     <link rel="next" title="Rect" href="rect.html" />
     <link rel="prev" title="Pixmap" href="pixmap.html" /> 
   </head>
@@ -43,7 +43,7 @@
           <a href="pixmap.html" title="Pixmap"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes and Method</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes and Methods</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -96,10 +96,10 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><a class="reference internal" href="#Point.x" title="Point.x"><code class="xref py py-attr docutils literal"><span class="pre">Point.x</span></code></a></td>
+<tr class="row-even"><td><code class="xref py py-attr docutils literal"><span class="pre">Point.x</span></code></td>
 <td>The X-coordinate</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Point.y" title="Point.y"><code class="xref py py-attr docutils literal"><span class="pre">Point.y</span></code></a></td>
+<tr class="row-odd"><td><code class="xref py py-attr docutils literal"><span class="pre">Point.y</span></code></td>
 <td>The Y-coordinate</td>
 </tr>
 </tbody>
@@ -110,31 +110,18 @@
 <em class="property">class </em><code class="descname">Point</code><a class="headerlink" href="#Point" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="Point.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>x=0</em>, <em>y=0</em><span class="sig-paren">)</span><a class="headerlink" href="#Point.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor, defaulting to &#8220;top left&#8221;.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="Point.x">
-<code class="descname">x</code><a class="headerlink" href="#Point.x" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#Point.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>Constructor, without parameters defaulting to <code class="docutils literal"><span class="pre">Point(0.0,</span> <span class="pre">0.0)</span></code> (&#8220;top left&#8221;). Also see the example below.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="Point.y">
-<code class="descname">y</code><a class="headerlink" href="#Point.y" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> (<em>float</em>) &#8211; X coordinate of the point</li>
+<li><strong>y</strong> (<em>float</em>) &#8211; Y coordinate of the point</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -142,6 +129,16 @@
 
 </dd></dl>
 
+<p><strong>Example:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre>Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
+Type &quot;copyright&quot;, &quot;credits&quot; or &quot;license()&quot; for more information.
+&gt;&gt;&gt; import fitz
+&gt;&gt;&gt; point = fitz.Point(25, 30)
+&gt;&gt;&gt; point
+(25.0, 30.0)
+&gt;&gt;&gt;
+</pre></div>
+</div>
 </div>
 
 
@@ -163,12 +160,12 @@
           <a href="pixmap.html" title="Pixmap"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes and Method</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes and Methods</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 28. Dec 2015.
+      Last updated on 08. Jan 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

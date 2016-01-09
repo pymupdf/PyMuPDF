@@ -350,6 +350,25 @@ struct fz_rect_s
             *r = *s;
             return r;
         }
+
+        fz_rect_s(const struct fz_point_s *lt, const struct fz_point_s *rb) {
+            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            r->x0 = lt->x;
+            r->y0 = lt->y;
+            r->x1 = rb->x;
+            r->y1 = rb->y;
+            return r;
+        }
+
+        fz_rect_s(float x0, float y0, float x1, float y1) {
+            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            r->x0 = x0;
+            r->y0 = y0;
+            r->x1 = x1;
+            r->y1 = y1;
+            return r;
+        }
+
 #ifdef MEMDEBUG
         ~fz_rect_s() {
             fprintf(stderr, "[DEBUG]free rect\n");
@@ -368,6 +387,10 @@ struct fz_rect_s
             def transform(self, m):
                 _fitz._fz_transform_rect(self, m)
                 return self
+
+            def __repr__(self):
+                return str((self.x0, self.y0, self.x1, self.y1))
+
             width = property(lambda self: self.x1-self.x0)
             height = property(lambda self: self.y1-self.y0)
         %}
@@ -394,15 +417,29 @@ struct fz_irect_s
             *r = *s;
             return r;
         }
+
+        fz_irect_s(int x0, int y0, int x1, int y1) {
+            fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
+            r->x0 = x0;
+            r->y0 = y0;
+            r->x1 = x1;
+            r->y1 = y1;
+            return r;
+        }
+
         %pythoncode %{
             width = property(lambda self: self.x1-self.x0)
             height = property(lambda self: self.y1-self.y0)
+
+            def __repr__(self):
+                return str((self.x0, self.y0, self.x1, self.y1))
         %}
     }
 };
 
-
+/*************/
 /* fz_pixmap */
+/*************/
 %rename(Pixmap) fz_pixmap_s;
 struct fz_pixmap_s
 {
@@ -417,10 +454,24 @@ struct fz_pixmap_s
                 return NULL;
             }
         }
+        /***********************************************************/
+        /* create empty pixmap with colorspace and IRect specified */
+        /***********************************************************/
         fz_pixmap_s(struct fz_colorspace_s *cs, const struct fz_irect_s *bbox) {
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
                 pm = fz_new_pixmap_with_bbox(gctx, cs, bbox);
+            fz_catch(gctx)
+                ;
+            return pm;
+        }
+        /*******************************************/
+        /* create a pixmap from PNG-formatted data */
+        /*******************************************/
+        fz_pixmap_s(char *data, int size) {
+            struct fz_pixmap_s *pm = NULL;
+            fz_try(gctx)
+                pm = fz_load_png(gctx, data, size);
             fz_catch(gctx)
                 ;
             return pm;
@@ -432,10 +483,37 @@ struct fz_pixmap_s
 #endif
             fz_drop_pixmap(gctx, $self);
         }
+        /***************************/
+        /* clear pixmap with value */
+        /***************************/
         void clearWith(int value) {
             fz_clear_pixmap_with_value(gctx, $self, value);
         }
 
+        /***********************************/
+        /* clear pixmap subrect with value */
+        /***********************************/
+        void clearRectWith(int value, const struct fz_irect_s *bbox) {
+            fz_clear_pixmap_rect_with_value(gctx, $self, value, bbox);
+        }
+
+        /***********************************/
+        /* copy pixmaps                    */
+        /***********************************/
+        void copyPixmap(struct fz_pixmap_s *src, const struct fz_irect_s *bbox) {
+            fz_copy_pixmap_rect(gctx, $self, src, bbox);
+        }
+
+        /**********************/
+        /* get size of pixmap */
+        /**********************/
+        int getSize() {
+            return fz_pixmap_size(gctx, $self);
+        }
+
+        /**********************/
+        /* writePNG           */
+        /**********************/
         %exception writePNG {
             $action
             if(result) {
@@ -459,6 +537,9 @@ struct fz_pixmap_s
                 return 1;
             return 0;
         }
+        /*************************/
+        /* invertIRect           */
+        /*************************/
         void invertIRect(const struct fz_irect_s *irect) {
             fz_invert_pixmap_rect(gctx, $self, irect);
         }
@@ -467,6 +548,7 @@ struct fz_pixmap_s
         }
         %pythoncode %{
             samples = property(lambda self: self._getSamples())
+            __len__ = getSize
             width  = w
             height = h
         %}
@@ -837,10 +919,21 @@ struct fz_point_s
             *p = *q;
             return p;
         }
+
+        fz_point_s(float x, float y) {
+            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            p->x = x;
+            p->y = y;
+            return p;
+        }
+
         %pythoncode %{
             def transform(self, m):
                 _fitz._fz_transform_point(self, m)
                 return self
+
+            def __repr__(self):
+                return str((self.x, self.y))
         %}
     }
 };

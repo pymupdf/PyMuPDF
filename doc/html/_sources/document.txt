@@ -80,7 +80,8 @@ This class represents a document. It can be constructed from a file or from memo
 
       Creates a table of contents out of the document's outline chain.
 
-      :param `simple`: Indicates whether a detailed ToC is required. If ``simple = False`` is specified, each entry of the list also contains a dictionary with :ref:`Link` details for each outline entry. For details, please have a look at :ref:`GetLinks` and :ref:`GetToC`.
+      :param `simple`: Indicates whether a detailed ToC is required. If ``simple = False`` is specified, each entry of the list also contains a dictionary with :ref:`Link` details for each outline entry.
+
       :type `simple`: boolean
 
       :rtype: list

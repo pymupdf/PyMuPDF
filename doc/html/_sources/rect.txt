@@ -8,7 +8,7 @@
 Rect
 ==========
 
-``Rect`` represents a rectangle defined by its top left and its bottom right :ref:`Point` objects, in coordinates: ((x0, y0), (x1, y1)).
+``Rect`` represents a rectangle defined by its top left and its bottom right :ref:`Point` objects, in coordinates: ((x0, y0), (x1, y1)). Respectively, a rectangle can be defined in one of the two ways: either as a pair of :ref:`Point` objects, or as a tuple of four coordinates.
 
 Rectangle borders are always in parallel with the respective X- and Y-axes.
 A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite".
@@ -31,14 +31,17 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
 
 .. class:: Rect
 
-   .. method:: __init__(self, x0=0, y0=0, x1=0, y1=0)
+   .. method:: __init__(self, x0, y0, x1, y1)
 
-      Constructor. The default values will create an empty rectangle.
+      Constructor. Without parameters will create the empty rectangle ``Rect(0.0, 0.0, 0.0, 0.0)``.
 
+   .. method:: __init__(self, p1, p2)
+
+      Constructor. This will create a rectangle from two :ref:`Point` objects: ``p1`` will be taken as the top-left and ``p2`` as the bottom-right point of the rectangle. See the example below.
 
    .. method:: round()
 
-      Creates the smallest :ref:`IRect` that contains ``Rect``.
+      Creates the smallest :ref:`IRect` that contains ``Rect``. This is **not** simply the same as rounding each of the rectangle's coordinates!. Look at the example below.
 
       :rtype: :ref:`IRect`
 
@@ -85,3 +88,32 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
 
       :type: float
 
+
+**Example 1:**
+::
+ Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
+ Type "copyright", "credits" or "license()" for more information.
+ >>> import fitz
+ >>> p1 = fitz.Point(10, 10)
+ >>> p2 = fitz.Point(300, 450)
+ >>> rect1 = fitz.Rect(p1, p2)
+ >>> rect1
+ (10.0, 10.0, 300.0, 450.0)
+ >>> rect2 = fitz.Rect(0, 0, 250, 380)
+ >>> rect2
+ (0.0, 0.0, 250.0, 380.0)
+ >>>
+
+**Example 2:**
+::
+ Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
+ Type "copyright", "credits" or "license()" for more information.
+ >>> import fitz
+ >>> r = fitz.Rect(0.5, -0.01, 123.88, 455.123456)
+ >>> r
+ (0.5, -0.009999999776482582, 123.87999725341797, 455.1234436035156)
+ >>> r.round()
+ (0, -1, 124, 456)
+ >>>
+
+As can be seen, ``r.round().x0 = int(math.floor(r.x0))``, ``r.round().y0 = int(math.floor(r.y0))``, ``r.round().x1 = int(math.ceil(r.x1))`` and ``r.round().y1 = int(math.ceil(r.y1))``.

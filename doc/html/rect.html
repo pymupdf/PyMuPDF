@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.8.0 documentation" href="index.html" />
-    <link rel="up" title="Classes and Method" href="class_index.html" />
+    <link rel="up" title="Classes and Methods" href="class_index.html" />
     <link rel="next" title="TextPage" href="textpage.html" />
     <link rel="prev" title="Point" href="point.html" /> 
   </head>
@@ -43,7 +43,7 @@
           <a href="point.html" title="Point"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes and Method</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes and Methods</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -84,7 +84,7 @@
             
   <div class="section" id="rect">
 <span id="id1"></span><h1>Rect<a class="headerlink" href="#rect" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal"><span class="pre">Rect</span></code> represents a rectangle defined by its top left and its bottom right <a class="reference internal" href="point.html#point"><span>Point</span></a> objects, in coordinates: ((x0, y0), (x1, y1)).</p>
+<p><code class="docutils literal"><span class="pre">Rect</span></code> represents a rectangle defined by its top left and its bottom right <a class="reference internal" href="point.html#point"><span>Point</span></a> objects, in coordinates: ((x0, y0), (x1, y1)). Respectively, a rectangle can be defined in one of the two ways: either as a pair of <a class="reference internal" href="point.html#point"><span>Point</span></a> objects, or as a tuple of four coordinates.</p>
 <p>Rectangle borders are always in parallel with the respective X- and Y-axes.
 A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is true, else &#8220;infinite&#8221;.</p>
 <table border="1" class="docutils">
@@ -130,14 +130,20 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
 <em class="property">class </em><code class="descname">Rect</code><a class="headerlink" href="#Rect" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="Rect.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>x0=0</em>, <em>y0=0</em>, <em>x1=0</em>, <em>y1=0</em><span class="sig-paren">)</span><a class="headerlink" href="#Rect.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor. The default values will create an empty rectangle.</p>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>x0</em>, <em>y0</em>, <em>x1</em>, <em>y1</em><span class="sig-paren">)</span><a class="headerlink" href="#Rect.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor. Without parameters will create the empty rectangle <code class="docutils literal"><span class="pre">Rect(0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0)</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>p1</em>, <em>p2</em><span class="sig-paren">)</span></dt>
+<dd><p>Constructor. This will create a rectangle from two <a class="reference internal" href="point.html#point"><span>Point</span></a> objects: <code class="docutils literal"><span class="pre">p1</span></code> will be taken as the top-left and <code class="docutils literal"><span class="pre">p2</span></code> as the bottom-right point of the rectangle. See the example below.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="Rect.round">
 <code class="descname">round</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Rect.round" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates the smallest <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> that contains <code class="docutils literal"><span class="pre">Rect</span></code>.</p>
+<dd><p>Creates the smallest <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> that contains <code class="docutils literal"><span class="pre">Rect</span></code>. This is <strong>not</strong> simply the same as rounding each of the rectangle&#8217;s coordinates!. Look at the example below.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -250,6 +256,34 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
 
 </dd></dl>
 
+<p><strong>Example 1:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre>Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
+Type &quot;copyright&quot;, &quot;credits&quot; or &quot;license()&quot; for more information.
+&gt;&gt;&gt; import fitz
+&gt;&gt;&gt; p1 = fitz.Point(10, 10)
+&gt;&gt;&gt; p2 = fitz.Point(300, 450)
+&gt;&gt;&gt; rect1 = fitz.Rect(p1, p2)
+&gt;&gt;&gt; rect1
+(10.0, 10.0, 300.0, 450.0)
+&gt;&gt;&gt; rect2 = fitz.Rect(0, 0, 250, 380)
+&gt;&gt;&gt; rect2
+(0.0, 0.0, 250.0, 380.0)
+&gt;&gt;&gt;
+</pre></div>
+</div>
+<p><strong>Example 2:</strong></p>
+<div class="highlight-python"><div class="highlight"><pre>Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
+Type &quot;copyright&quot;, &quot;credits&quot; or &quot;license()&quot; for more information.
+&gt;&gt;&gt; import fitz
+&gt;&gt;&gt; r = fitz.Rect(0.5, -0.01, 123.88, 455.123456)
+&gt;&gt;&gt; r
+(0.5, -0.009999999776482582, 123.87999725341797, 455.1234436035156)
+&gt;&gt;&gt; r.round()
+(0, -1, 124, 456)
+&gt;&gt;&gt;
+</pre></div>
+</div>
+<p>As can be seen, <code class="docutils literal"><span class="pre">r.round().x0</span> <span class="pre">=</span> <span class="pre">int(math.floor(r.x0))</span></code>, <code class="docutils literal"><span class="pre">r.round().y0</span> <span class="pre">=</span> <span class="pre">int(math.floor(r.y0))</span></code>, <code class="docutils literal"><span class="pre">r.round().x1</span> <span class="pre">=</span> <span class="pre">int(math.ceil(r.x1))</span></code> and <code class="docutils literal"><span class="pre">r.round().y1</span> <span class="pre">=</span> <span class="pre">int(math.ceil(r.y1))</span></code>.</p>
 </div>
 
 
@@ -271,12 +305,12 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
           <a href="point.html" title="Point"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes and Method</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes and Methods</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 28. Dec 2015.
+      Last updated on 08. Jan 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

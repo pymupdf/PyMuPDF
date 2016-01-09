@@ -3507,6 +3507,22 @@ SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_1(struct fz_rect_s const *s){
             *r = *s;
             return r;
         }
+SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_2(struct fz_point_s const *lt,struct fz_point_s const *rb){
+            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            r->x0 = lt->x;
+            r->y0 = lt->y;
+            r->x1 = rb->x;
+            r->y1 = rb->y;
+            return r;
+        }
+SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_3(float x0,float y0,float x1,float y1){
+            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            r->x0 = x0;
+            r->y0 = y0;
+            r->x1 = x1;
+            r->y1 = y1;
+            return r;
+        }
 SWIGINTERN struct fz_irect_s *fz_rect_s_round(struct fz_rect_s *self){
             fz_irect *irect = (fz_irect *)malloc(sizeof(fz_irect));
             fz_round_rect(irect, self);
@@ -3517,10 +3533,26 @@ SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_1(struct fz_irect_s const *s)
             *r = *s;
             return r;
         }
-SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s(struct fz_colorspace_s *cs,struct fz_irect_s const *bbox){
+SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_2(int x0,int y0,int x1,int y1){
+            fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
+            r->x0 = x0;
+            r->y0 = y0;
+            r->x1 = x1;
+            r->y1 = y1;
+            return r;
+        }
+SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_0(struct fz_colorspace_s *cs,struct fz_irect_s const *bbox){
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
                 pm = fz_new_pixmap_with_bbox(gctx, cs, bbox);
+            fz_catch(gctx)
+                ;
+            return pm;
+        }
+SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_1(char *data,int size){
+            struct fz_pixmap_s *pm = NULL;
+            fz_try(gctx)
+                pm = fz_load_png(gctx, data, size);
             fz_catch(gctx)
                 ;
             return pm;
@@ -3533,6 +3565,15 @@ SWIGINTERN void delete_fz_pixmap_s(struct fz_pixmap_s *self){
         }
 SWIGINTERN void fz_pixmap_s_clearWith(struct fz_pixmap_s *self,int value){
             fz_clear_pixmap_with_value(gctx, self, value);
+        }
+SWIGINTERN void fz_pixmap_s_clearRectWith(struct fz_pixmap_s *self,int value,struct fz_irect_s const *bbox){
+            fz_clear_pixmap_rect_with_value(gctx, self, value, bbox);
+        }
+SWIGINTERN void fz_pixmap_s_copyPixmap(struct fz_pixmap_s *self,struct fz_pixmap_s *src,struct fz_irect_s const *bbox){
+            fz_copy_pixmap_rect(gctx, self, src, bbox);
+        }
+SWIGINTERN int fz_pixmap_s_getSize(struct fz_pixmap_s *self){
+            return fz_pixmap_size(gctx, self);
         }
 SWIGINTERN int fz_pixmap_s_writePNG(struct fz_pixmap_s *self,char *filename,int savealpha){
             fz_try(gctx) {
@@ -3708,6 +3749,12 @@ SWIGINTERN void delete_fz_link_dest_s(struct fz_link_dest_s *self){
 SWIGINTERN struct fz_point_s *new_fz_point_s__SWIG_1(struct fz_point_s const *q){
             fz_point *p = (fz_point *)malloc(sizeof(fz_point));
             *p = *q;
+            return p;
+        }
+SWIGINTERN struct fz_point_s *new_fz_point_s__SWIG_2(float x,float y){
+            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            p->x = x;
+            p->y = y;
             return p;
         }
 SWIGINTERN void delete_fz_link_s(struct fz_link_s *self){
@@ -4839,16 +4886,96 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_new_Rect__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_point_s *arg1 = (struct fz_point_s *) 0 ;
+  struct fz_point_s *arg2 = (struct fz_point_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  struct fz_rect_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_Rect",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_point_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Rect" "', argument " "1"" of type '" "struct fz_point_s const *""'"); 
+  }
+  arg1 = (struct fz_point_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_point_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_Rect" "', argument " "2"" of type '" "struct fz_point_s const *""'"); 
+  }
+  arg2 = (struct fz_point_s *)(argp2);
+  result = (struct fz_rect_s *)new_fz_rect_s__SWIG_2((struct fz_point_s const *)arg1,(struct fz_point_s const *)arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_Rect__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float arg1 ;
+  float arg2 ;
+  float arg3 ;
+  float arg4 ;
+  float val1 ;
+  int ecode1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  float val3 ;
+  int ecode3 = 0 ;
+  float val4 ;
+  int ecode4 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  struct fz_rect_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:new_Rect",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  ecode1 = SWIG_AsVal_float(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_Rect" "', argument " "1"" of type '" "float""'");
+  } 
+  arg1 = (float)(val1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_Rect" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  ecode3 = SWIG_AsVal_float(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_Rect" "', argument " "3"" of type '" "float""'");
+  } 
+  arg3 = (float)(val3);
+  ecode4 = SWIG_AsVal_float(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "new_Rect" "', argument " "4"" of type '" "float""'");
+  } 
+  arg4 = (float)(val4);
+  result = (struct fz_rect_s *)new_fz_rect_s__SWIG_3(arg1,arg2,arg3,arg4);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_Rect(PyObject *self, PyObject *args) {
   Py_ssize_t argc;
-  PyObject *argv[2] = {
+  PyObject *argv[5] = {
     0
   };
   Py_ssize_t ii;
   
   if (!PyTuple_Check(args)) SWIG_fail;
   argc = args ? PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 1) && (ii < argc); ii++) {
+  for (ii = 0; (ii < 4) && (ii < argc); ii++) {
     argv[ii] = PyTuple_GET_ITEM(args,ii);
   }
   if (argc == 0) {
@@ -4863,12 +4990,56 @@ SWIGINTERN PyObject *_wrap_new_Rect(PyObject *self, PyObject *args) {
       return _wrap_new_Rect__SWIG_1(self, args);
     }
   }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_point_s, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_fz_point_s, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_Rect__SWIG_2(self, args);
+      }
+    }
+  }
+  if (argc == 4) {
+    int _v;
+    {
+      int res = SWIG_AsVal_float(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      {
+        int res = SWIG_AsVal_float(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_float(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          {
+            int res = SWIG_AsVal_float(argv[3], NULL);
+            _v = SWIG_CheckState(res);
+          }
+          if (_v) {
+            return _wrap_new_Rect__SWIG_3(self, args);
+          }
+        }
+      }
+    }
+  }
   
 fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_Rect'.\n"
     "  Possible C/C++ prototypes are:\n"
     "    fz_rect_s::fz_rect_s()\n"
-    "    fz_rect_s::fz_rect_s(struct fz_rect_s const *)\n");
+    "    fz_rect_s::fz_rect_s(struct fz_rect_s const *)\n"
+    "    fz_rect_s::fz_rect_s(struct fz_point_s const *,struct fz_point_s const *)\n"
+    "    fz_rect_s::fz_rect_s(float,float,float,float)\n");
   return 0;
 }
 
@@ -5166,16 +5337,65 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_new_IRect__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  int arg1 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  struct fz_irect_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:new_IRect",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  ecode1 = SWIG_AsVal_int(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_IRect" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_IRect" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_IRect" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = (int)(val3);
+  ecode4 = SWIG_AsVal_int(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "new_IRect" "', argument " "4"" of type '" "int""'");
+  } 
+  arg4 = (int)(val4);
+  result = (struct fz_irect_s *)new_fz_irect_s__SWIG_2(arg1,arg2,arg3,arg4);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_irect_s, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_IRect(PyObject *self, PyObject *args) {
   Py_ssize_t argc;
-  PyObject *argv[2] = {
+  PyObject *argv[5] = {
     0
   };
   Py_ssize_t ii;
   
   if (!PyTuple_Check(args)) SWIG_fail;
   argc = args ? PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 1) && (ii < argc); ii++) {
+  for (ii = 0; (ii < 4) && (ii < argc); ii++) {
     argv[ii] = PyTuple_GET_ITEM(args,ii);
   }
   if (argc == 0) {
@@ -5190,12 +5410,41 @@ SWIGINTERN PyObject *_wrap_new_IRect(PyObject *self, PyObject *args) {
       return _wrap_new_IRect__SWIG_1(self, args);
     }
   }
+  if (argc == 4) {
+    int _v;
+    {
+      int res = SWIG_AsVal_int(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_int(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          {
+            int res = SWIG_AsVal_int(argv[3], NULL);
+            _v = SWIG_CheckState(res);
+          }
+          if (_v) {
+            return _wrap_new_IRect__SWIG_2(self, args);
+          }
+        }
+      }
+    }
+  }
   
 fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_IRect'.\n"
     "  Possible C/C++ prototypes are:\n"
     "    fz_irect_s::fz_irect_s()\n"
-    "    fz_irect_s::fz_irect_s(struct fz_irect_s const *)\n");
+    "    fz_irect_s::fz_irect_s(struct fz_irect_s const *)\n"
+    "    fz_irect_s::fz_irect_s(int,int,int,int)\n");
   return 0;
 }
 
@@ -5644,7 +5893,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_new_Pixmap(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_colorspace_s *arg1 = (struct fz_colorspace_s *) 0 ;
   struct fz_irect_s *arg2 = (struct fz_irect_s *) 0 ;
@@ -5668,7 +5917,7 @@ SWIGINTERN PyObject *_wrap_new_Pixmap(PyObject *SWIGUNUSEDPARM(self), PyObject *
   }
   arg2 = (struct fz_irect_s *)(argp2);
   {
-    result = (struct fz_pixmap_s *)new_fz_pixmap_s(arg1,(struct fz_irect_s const *)arg2);
+    result = (struct fz_pixmap_s *)new_fz_pixmap_s__SWIG_0(arg1,(struct fz_irect_s const *)arg2);
     if(!result) {
       PyErr_SetString(PyExc_Exception, "cannot create Pixmap");
       return NULL;
@@ -5678,6 +5927,96 @@ SWIGINTERN PyObject *_wrap_new_Pixmap(PyObject *SWIGUNUSEDPARM(self), PyObject *
   return resultobj;
 fail:
   return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  struct fz_pixmap_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_Pixmap",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Pixmap" "', argument " "1"" of type '" "char *""'");
+  }
+  arg1 = (char *)(buf1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_Pixmap" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  {
+    result = (struct fz_pixmap_s *)new_fz_pixmap_s__SWIG_1(arg1,arg2);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, "cannot create Pixmap");
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_pixmap_s, SWIG_POINTER_NEW |  0 );
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_Pixmap(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  Py_ssize_t ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 2) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_colorspace_s, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_fz_irect_s, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_Pixmap__SWIG_0(self, args);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    int res = SWIG_AsCharPtrAndSize(argv[0], 0, NULL, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_new_Pixmap__SWIG_1(self, args);
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_Pixmap'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    fz_pixmap_s::fz_pixmap_s(struct fz_colorspace_s *,struct fz_irect_s const *)\n"
+    "    fz_pixmap_s::fz_pixmap_s(char *,int)\n");
+  return 0;
 }
 
 
@@ -5726,6 +6065,106 @@ SWIGINTERN PyObject *_wrap_Pixmap_clearWith(PyObject *SWIGUNUSEDPARM(self), PyOb
   arg2 = (int)(val2);
   fz_pixmap_s_clearWith(arg1,arg2);
   resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pixmap_clearRectWith(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  int arg2 ;
+  struct fz_irect_s *arg3 = (struct fz_irect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Pixmap_clearRectWith",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_clearRectWith" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Pixmap_clearRectWith" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_fz_irect_s, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Pixmap_clearRectWith" "', argument " "3"" of type '" "struct fz_irect_s const *""'"); 
+  }
+  arg3 = (struct fz_irect_s *)(argp3);
+  fz_pixmap_s_clearRectWith(arg1,arg2,(struct fz_irect_s const *)arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pixmap_copyPixmap(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  struct fz_pixmap_s *arg2 = (struct fz_pixmap_s *) 0 ;
+  struct fz_irect_s *arg3 = (struct fz_irect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Pixmap_copyPixmap",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_copyPixmap" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Pixmap_copyPixmap" "', argument " "2"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg2 = (struct fz_pixmap_s *)(argp2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_fz_irect_s, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Pixmap_copyPixmap" "', argument " "3"" of type '" "struct fz_irect_s const *""'"); 
+  }
+  arg3 = (struct fz_irect_s *)(argp3);
+  fz_pixmap_s_copyPixmap(arg1,arg2,(struct fz_irect_s const *)arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pixmap_getSize(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Pixmap_getSize",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_getSize" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  result = (int)fz_pixmap_s_getSize(arg1);
+  resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
   return NULL;
@@ -7482,16 +7921,47 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_new_Point__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float arg1 ;
+  float arg2 ;
+  float val1 ;
+  int ecode1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  struct fz_point_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_Point",&obj0,&obj1)) SWIG_fail;
+  ecode1 = SWIG_AsVal_float(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_Point" "', argument " "1"" of type '" "float""'");
+  } 
+  arg1 = (float)(val1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_Point" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  result = (struct fz_point_s *)new_fz_point_s__SWIG_2(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_point_s, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_Point(PyObject *self, PyObject *args) {
   Py_ssize_t argc;
-  PyObject *argv[2] = {
+  PyObject *argv[3] = {
     0
   };
   Py_ssize_t ii;
   
   if (!PyTuple_Check(args)) SWIG_fail;
   argc = args ? PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 1) && (ii < argc); ii++) {
+  for (ii = 0; (ii < 2) && (ii < argc); ii++) {
     argv[ii] = PyTuple_GET_ITEM(args,ii);
   }
   if (argc == 0) {
@@ -7506,12 +7976,29 @@ SWIGINTERN PyObject *_wrap_new_Point(PyObject *self, PyObject *args) {
       return _wrap_new_Point__SWIG_1(self, args);
     }
   }
+  if (argc == 2) {
+    int _v;
+    {
+      int res = SWIG_AsVal_float(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      {
+        int res = SWIG_AsVal_float(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_new_Point__SWIG_2(self, args);
+      }
+    }
+  }
   
 fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_Point'.\n"
     "  Possible C/C++ prototypes are:\n"
     "    fz_point_s::fz_point_s()\n"
-    "    fz_point_s::fz_point_s(struct fz_point_s const *)\n");
+    "    fz_point_s::fz_point_s(struct fz_point_s const *)\n"
+    "    fz_point_s::fz_point_s(float,float)\n");
   return 0;
 }
 
@@ -8217,6 +8704,9 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_Pixmap", _wrap_new_Pixmap, METH_VARARGS, NULL},
 	 { (char *)"delete_Pixmap", _wrap_delete_Pixmap, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_clearWith", _wrap_Pixmap_clearWith, METH_VARARGS, NULL},
+	 { (char *)"Pixmap_clearRectWith", _wrap_Pixmap_clearRectWith, METH_VARARGS, NULL},
+	 { (char *)"Pixmap_copyPixmap", _wrap_Pixmap_copyPixmap, METH_VARARGS, NULL},
+	 { (char *)"Pixmap_getSize", _wrap_Pixmap_getSize, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_writePNG", _wrap_Pixmap_writePNG, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_invertIRect", _wrap_Pixmap_invertIRect, METH_VARARGS, NULL},
 	 { (char *)"Pixmap__getSamples", _wrap_Pixmap__getSamples, METH_VARARGS, NULL},

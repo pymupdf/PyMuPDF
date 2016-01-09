@@ -159,14 +159,14 @@
 <dl class="method">
 <dt id="Page.getLinks">
 <code class="descname">getLinks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Page.getLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves <strong>all</strong> links of a page. This is the same as the standalone version <a class="reference internal" href="GetLinks.html#getlinks"><span>GetLinks</span></a>, please look there for details.</p>
+<dd><p>Retrieves <strong>all</strong> links of a page.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of dictionaries or <code class="docutils literal"><span class="pre">[]</span></code>.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of dictionaries or <code class="docutils literal"><span class="pre">[]</span></code>. Please note that the links are in the order as specified during PDF generation, not necessarily in any &#8220;natural&#8221; reading order.</td>
 </tr>
 </tbody>
 </table>
@@ -175,14 +175,18 @@
 <dl class="method">
 <dt id="Page.getText">
 <code class="descname">getText</code><span class="sig-paren">(</span><em>output = 'text'</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.getText" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves the text of a page. Depending on the output parameter, the results of the <a class="reference internal" href="textpage.html#textpage"><span>TextPage</span></a> extract methods are returned.</p>
+<dd><p>Retrieves the text of a page. Depending on the output parameter, the results of the <a class="reference internal" href="textpage.html#textpage"><span>TextPage</span></a> extract methods are returned. The required objects <a class="reference internal" href="textsheet.html#textsheet"><span>TextSheet</span></a>, <a class="reference internal" href="displaylist.html#displaylist"><span>DisplayList</span></a>, <a class="reference internal" href="device.html#device"><span>Device</span></a> and <a class="reference internal" href="textpage.html#textpage"><span>TextPage</span></a> are automatically created or reused if present.</p>
+<p>If <code class="docutils literal"><span class="pre">output</span> <span class="pre">=</span> <span class="pre">'text'</span></code> is specified, the text is returned in the order as specified during PDF creation (which is not necessarily the normal reading order). As this may not always look like expected, consider using the example program <code class="docutils literal"><span class="pre">PDF2TextJS.py</span></code>. It is based on <code class="docutils literal"><span class="pre">extractJSON()</span></code> output and re-arranges text according to the Western reading layout convention &#8220;from top-left to bottom-right&#8221;.</p>
+<p>In an earlier version, we provided a different taste of <a class="reference internal" href="textpage.html#TextPage.extractText" title="TextPage.extractText"><code class="xref py py-meth docutils literal"><span class="pre">TextPage.extractText()</span></code></a> (parameter <code class="docutils literal"><span class="pre">basic=False</span></code>), which did a similar job. However, the example program mentioned above is more than 50 times faster, so we deleted this option.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>output</strong> (<em>string</em>) &#8211; A string indicating the requested text format, one of <code class="docutils literal"><span class="pre">text</span></code> (default), <code class="docutils literal"><span class="pre">html</span></code>, <code class="docutils literal"><span class="pre">json</span></code>, or <code class="docutils literal"><span class="pre">xml</span></code>.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The page&#8217;s text as one string. For details, please look at the standalone version <a class="reference internal" href="GetText.html#gettext"><span>GetText</span></a>.</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The page&#8217;s text as one string.</td>
 </tr>
 </tbody>
 </table>
@@ -191,14 +195,22 @@
 <dl class="method">
 <dt id="Page.getPixmap">
 <code class="descname">getPixmap</code><span class="sig-paren">(</span><em>matrix = fitz.Identity</em>, <em>colorspace = &quot;RGB&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.getPixmap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a <a class="reference internal" href="pixmap.html#pixmap"><span>Pixmap</span></a> image of the page. For details, please look at the standalone version <a class="reference internal" href="GetPixmap.html#getpixmap"><span>GetPixmap</span></a>.</p>
+<dd><p>Creates a Pixmap from a given page. The  method will automatically create or reuse a <a class="reference internal" href="displaylist.html#displaylist"><span>DisplayList</span></a> for the page and also create the required drawing <a class="reference internal" href="device.html#device"><span>Device</span></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="pixmap.html#pixmap"><span>Pixmap</span></a></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>matrix</strong> (<a class="reference internal" href="matrix.html#matrix"><span>Matrix</span></a>) &#8211; A <a class="reference internal" href="matrix.html#matrix"><span>Matrix</span></a> object. Default is the <a class="reference internal" href="identity.html#identity"><span>Identity</span></a> matrix.</li>
+<li><strong>colorspace</strong> (<em>string</em>) &#8211; Defines the required colorspace, one of <code class="docutils literal"><span class="pre">GRAY</span></code>, <code class="docutils literal"><span class="pre">CMYK</span></code> or <code class="docutils literal"><span class="pre">RGB</span></code> (default).</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The <code class="docutils literal"><span class="pre">Pixmap</span></code> for the page.</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="pixmap.html#pixmap"><span>Pixmap</span></a></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Pixmap of the page.</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -207,14 +219,14 @@
 <dl class="method">
 <dt id="Page.searchFor">
 <code class="descname">searchFor</code><span class="sig-paren">(</span><em>text</em>, <em>hit_max = 16</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.searchFor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Searches for <code class="docutils literal"><span class="pre">text</span></code> on a page. For details, please look at the standalone version <a class="reference internal" href="SearchFor.html#searchfor"><span>SearchFor</span></a>.</p>
+<dd><p>Searches for <code class="docutils literal"><span class="pre">text</span></code> on a page. Identical to <a class="reference internal" href="textpage.html#TextPage.search" title="TextPage.search"><code class="xref py py-meth docutils literal"><span class="pre">TextPage.search()</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of rectangles <a class="reference internal" href="rect.html#rect"><span>Rect</span></a> each of which surrounds one occurrence of <code class="docutils literal"><span class="pre">text</span></code>.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of <a class="reference internal" href="rect.html#rect"><span>Rect</span></a> rectangles each of which surrounds one occurrence of <code class="docutils literal"><span class="pre">text</span></code>.</td>
 </tr>
 </tbody>
 </table>
@@ -280,7 +292,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 05. Jan 2016.
+      Last updated on 08. Jan 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
