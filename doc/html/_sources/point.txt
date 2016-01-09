@@ -41,5 +41,5 @@ Point
  >>> import fitz
  >>> point = fitz.Point(25, 30)
  >>> point
- (25.0, 30.0)
+ fitz.Point(25.0, 30.0)
  >>>

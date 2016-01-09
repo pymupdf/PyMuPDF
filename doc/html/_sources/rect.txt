@@ -98,10 +98,10 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
  >>> p2 = fitz.Point(300, 450)
  >>> rect1 = fitz.Rect(p1, p2)
  >>> rect1
- (10.0, 10.0, 300.0, 450.0)
+ fitz.Rect(10.0, 10.0, 300.0, 450.0)
  >>> rect2 = fitz.Rect(0, 0, 250, 380)
  >>> rect2
- (0.0, 0.0, 250.0, 380.0)
+ fitz.Rect(0.0, 0.0, 250.0, 380.0)
  >>>
 
 **Example 2:**
@@ -111,9 +111,9 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
  >>> import fitz
  >>> r = fitz.Rect(0.5, -0.01, 123.88, 455.123456)
  >>> r
- (0.5, -0.009999999776482582, 123.87999725341797, 455.1234436035156)
+ fitz.Rect(0.5, -0.009999999776482582, 123.87999725341797, 455.1234436035156)
  >>> r.round()
- (0, -1, 124, 456)
+ fitz.IRect(0, -1, 124, 456)
  >>>
 
 As can be seen, ``r.round().x0 = int(math.floor(r.x0))``, ``r.round().y0 = int(math.floor(r.y0))``, ``r.round().x1 = int(math.ceil(r.x1))`` and ``r.round().y1 = int(math.ceil(r.y1))``.
