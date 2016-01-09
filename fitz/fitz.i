@@ -56,6 +56,7 @@ struct fz_document_s {
             else:
                 raise TypeError("filename must be a string")
             self.name = filename
+            self.streamlen = streamlen
             self.isClosed = 0
             self.isEncrypted = 0
             self.metadata = None
@@ -262,6 +263,12 @@ struct fz_document_s {
             outline = property(lambda self: self._outline)
             pageCount = property(lambda self: self._getPageCount())
             needsPass = property(lambda self: self._needsPass())
+
+            def __repr__(self):
+                if self.streamlen == 0:
+                    return "fitz.Document('%s')" % (self.name,)
+                return "fitz.Document('%s', stream = <data>, streamlen = %s)" % (self.name, self.streamlen)
+
         %}
     }
 };
@@ -330,6 +337,10 @@ struct fz_page_s {
         struct fz_link_s *loadLinks() {
             return fz_load_links(gctx, $self);
         }
+        %pythoncode %{
+        def __repr__(self):
+            return repr(self.parent) + ".loadPage(" + str(self.number) + ")"
+        %}
     }
 };
 %clearnodefaultctor;
@@ -389,7 +400,7 @@ struct fz_rect_s
                 return self
 
             def __repr__(self):
-                return str((self.x0, self.y0, self.x1, self.y1))
+                return "fitz.Rect" + str((self.x0, self.y0, self.x1, self.y1))
 
             width = property(lambda self: self.x1-self.x0)
             height = property(lambda self: self.y1-self.y0)
@@ -432,7 +443,7 @@ struct fz_irect_s
             height = property(lambda self: self.y1-self.y0)
 
             def __repr__(self):
-                return str((self.x0, self.y0, self.x1, self.y1))
+                return "fitz.IRect" + str((self.x0, self.y0, self.x1, self.y1))
         %}
     }
 };
@@ -493,7 +504,7 @@ struct fz_pixmap_s
         /***********************************/
         /* clear pixmap subrect with value */
         /***********************************/
-        void clearRectWith(int value, const struct fz_irect_s *bbox) {
+        void clearIRectWith(int value, const struct fz_irect_s *bbox) {
             fz_clear_pixmap_rect_with_value(gctx, $self, value, bbox);
         }
 
@@ -551,6 +562,11 @@ struct fz_pixmap_s
             __len__ = getSize
             width  = w
             height = h
+
+            def __repr__(self):
+                cs = {2:"fitz.CS_GRAY", 4:"fitz.CS_RGB", 5:"fitz.CS_CMYK"}
+                return "fitz.Pixmap(fitz.Colorspace(%s), fitz.IRect(%s, %s, %s, %s))" % (cs[self.n], self.x, self.y, self.x + self.width, self.y + self.height)
+
         %}
     }
 };
@@ -705,6 +721,9 @@ struct fz_matrix_s
             def preRotate(self, degree):
                 _fitz._fz_pre_rotate(self, degree)
                 return self
+
+            def __repr__(self):
+                return "fitz.Matrix(%s, %s, %s, %s, %s, %s)" % (self.a, self.b, self.c, self.d, self.e, self.f)
         %}
     }
 };
@@ -933,7 +952,7 @@ struct fz_point_s
                 return self
 
             def __repr__(self):
-                return str((self.x, self.y))
+                return "fitz.Point" + str((self.x, self.y))
         %}
     }
 };

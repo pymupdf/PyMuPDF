@@ -115,6 +115,7 @@ class Document(_object):
         else:
             raise TypeError("filename must be a string")
         self.name = filename
+        self.streamlen = streamlen
         self.isClosed = 0
         self.isEncrypted = 0
         self.metadata = None
@@ -273,6 +274,12 @@ class Document(_object):
     pageCount = property(lambda self: self._getPageCount())
     needsPass = property(lambda self: self._needsPass())
 
+    def __repr__(self):
+        if self.streamlen == 0:
+            return "fitz.Document('%s')" % (self.name,)
+        return "fitz.Document('%s', stream = <data>, streamlen = %s)" % (self.name, self.streamlen)
+
+
     __swig_destroy__ = _fitz.delete_Document
     __del__ = lambda self: None
 Document_swigregister = _fitz.Document_swigregister
@@ -328,6 +335,10 @@ class Page(_object):
 
         return val
 
+
+    def __repr__(self):
+        return repr(self.parent) + ".loadPage(" + str(self.number) + ")"
+
 Page_swigregister = _fitz.Page_swigregister
 Page_swigregister(Page)
 
@@ -379,7 +390,7 @@ class Rect(_object):
         return self
 
     def __repr__(self):
-        return str((self.x0, self.y0, self.x1, self.y1))
+        return "fitz.Rect" + str((self.x0, self.y0, self.x1, self.y1))
 
     width = property(lambda self: self.x1-self.x0)
     height = property(lambda self: self.y1-self.y0)
@@ -423,7 +434,7 @@ class IRect(_object):
     height = property(lambda self: self.y1-self.y0)
 
     def __repr__(self):
-        return str((self.x0, self.y0, self.x1, self.y1))
+        return "fitz.IRect" + str((self.x0, self.y0, self.x1, self.y1))
 
     __swig_destroy__ = _fitz.delete_IRect
     __del__ = lambda self: None
@@ -481,8 +492,8 @@ class Pixmap(_object):
     def clearWith(self, value):
         return _fitz.Pixmap_clearWith(self, value)
 
-    def clearRectWith(self, value, bbox):
-        return _fitz.Pixmap_clearRectWith(self, value, bbox)
+    def clearIRectWith(self, value, bbox):
+        return _fitz.Pixmap_clearIRectWith(self, value, bbox)
 
     def copyPixmap(self, src, bbox):
         return _fitz.Pixmap_copyPixmap(self, src, bbox)
@@ -513,6 +524,11 @@ class Pixmap(_object):
     __len__ = getSize
     width  = w
     height = h
+
+    def __repr__(self):
+        cs = {2:"fitz.CS_GRAY", 4:"fitz.CS_RGB", 5:"fitz.CS_CMYK"}
+        return "fitz.Pixmap(fitz.Colorspace(%s), fitz.IRect(%s, %s, %s, %s))" % (cs[self.n], self.x, self.y, self.x + self.width, self.y + self.height)
+
 
 Pixmap_swigregister = _fitz.Pixmap_swigregister
 Pixmap_swigregister(Pixmap)
@@ -621,6 +637,9 @@ class Matrix(_object):
     def preRotate(self, degree):
         _fitz._fz_pre_rotate(self, degree)
         return self
+
+    def __repr__(self):
+        return "fitz.Matrix(%s, %s, %s, %s, %s, %s)" % (self.a, self.b, self.c, self.d, self.e, self.f)
 
     __swig_destroy__ = _fitz.delete_Matrix
     __del__ = lambda self: None
@@ -796,7 +815,7 @@ class Point(_object):
         return self
 
     def __repr__(self):
-        return str((self.x, self.y))
+        return "fitz.Point" + str((self.x, self.y))
 
     __swig_destroy__ = _fitz.delete_Point
     __del__ = lambda self: None

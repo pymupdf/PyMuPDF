@@ -3566,7 +3566,7 @@ SWIGINTERN void delete_fz_pixmap_s(struct fz_pixmap_s *self){
 SWIGINTERN void fz_pixmap_s_clearWith(struct fz_pixmap_s *self,int value){
             fz_clear_pixmap_with_value(gctx, self, value);
         }
-SWIGINTERN void fz_pixmap_s_clearRectWith(struct fz_pixmap_s *self,int value,struct fz_irect_s const *bbox){
+SWIGINTERN void fz_pixmap_s_clearIRectWith(struct fz_pixmap_s *self,int value,struct fz_irect_s const *bbox){
             fz_clear_pixmap_rect_with_value(gctx, self, value, bbox);
         }
 SWIGINTERN void fz_pixmap_s_copyPixmap(struct fz_pixmap_s *self,struct fz_pixmap_s *src,struct fz_irect_s const *bbox){
@@ -6071,7 +6071,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Pixmap_clearRectWith(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_Pixmap_clearIRectWith(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
   int arg2 ;
@@ -6086,23 +6086,23 @@ SWIGINTERN PyObject *_wrap_Pixmap_clearRectWith(PyObject *SWIGUNUSEDPARM(self), 
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO:Pixmap_clearRectWith",&obj0,&obj1,&obj2)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Pixmap_clearIRectWith",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_clearRectWith" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_clearIRectWith" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
   }
   arg1 = (struct fz_pixmap_s *)(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Pixmap_clearRectWith" "', argument " "2"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Pixmap_clearIRectWith" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = (int)(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_fz_irect_s, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Pixmap_clearRectWith" "', argument " "3"" of type '" "struct fz_irect_s const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Pixmap_clearIRectWith" "', argument " "3"" of type '" "struct fz_irect_s const *""'"); 
   }
   arg3 = (struct fz_irect_s *)(argp3);
-  fz_pixmap_s_clearRectWith(arg1,arg2,(struct fz_irect_s const *)arg3);
+  fz_pixmap_s_clearIRectWith(arg1,arg2,(struct fz_irect_s const *)arg3);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -8704,7 +8704,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_Pixmap", _wrap_new_Pixmap, METH_VARARGS, NULL},
 	 { (char *)"delete_Pixmap", _wrap_delete_Pixmap, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_clearWith", _wrap_Pixmap_clearWith, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_clearRectWith", _wrap_Pixmap_clearRectWith, METH_VARARGS, NULL},
+	 { (char *)"Pixmap_clearIRectWith", _wrap_Pixmap_clearIRectWith, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_copyPixmap", _wrap_Pixmap_copyPixmap, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_getSize", _wrap_Pixmap_getSize, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_writePNG", _wrap_Pixmap_writePNG, METH_VARARGS, NULL},
