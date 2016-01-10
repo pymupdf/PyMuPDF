@@ -489,8 +489,21 @@ class Pixmap(_object):
     __swig_destroy__ = _fitz.delete_Pixmap
     __del__ = lambda self: None
 
-    def clearWith(self, value):
-        return _fitz.Pixmap_clearWith(self, value)
+    def gammaWith(self, gamma):
+        return _fitz.Pixmap_gammaWith(self, gamma)
+
+    def tintWith(self, red, green, blue):
+
+                    # only GRAY and RGB pixmaps allowed
+        if self.n not in (2, 4):
+            raise TypeError("only gray and rgb pixmaps can be tinted")
+
+
+        return _fitz.Pixmap_tintWith(self, red, green, blue)
+
+
+    def clearWith(self, *args):
+        return _fitz.Pixmap_clearWith(self, *args)
 
     def clearIRectWith(self, value, bbox):
         return _fitz.Pixmap_clearIRectWith(self, value, bbox)
@@ -514,8 +527,8 @@ class Pixmap(_object):
         return _fitz.Pixmap_writePNG(self, filename, savealpha)
 
 
-    def invertIRect(self, irect):
-        return _fitz.Pixmap_invertIRect(self, irect)
+    def invertIRect(self, *args):
+        return _fitz.Pixmap_invertIRect(self, *args)
 
     def _getSamples(self):
         return _fitz.Pixmap__getSamples(self)
@@ -938,8 +951,8 @@ class TextPage(_object):
     def search(self, needle, hit_max=16):
         return _fitz.TextPage_search(self, needle, hit_max)
 
-    def extractText(self, basic=0):
-        return _fitz.TextPage_extractText(self, basic)
+    def extractText(self):
+        return _fitz.TextPage_extractText(self)
 
     def extractXML(self):
         return _fitz.TextPage_extractXML(self)

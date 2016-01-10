@@ -85,7 +85,12 @@
   <div class="section" id="pixmap">
 <span id="id1"></span><h1>Pixmap<a class="headerlink" href="#pixmap" title="Permalink to this headline">¶</a></h1>
 <p>Pixmaps represent a rectangular set of pixels in a 2 dimensional region. Each pixel is described by a number of bytes (&#8220;components&#8221;) plus an alpha (transparency) byte. The data is in premultiplied alpha when rendering, but non-premultiplied for colorspace conversions and rescaling.</p>
-<p>There are two ways to construct pixmaps: either an empty one based on <a class="reference internal" href="colorspace.html#colorspace"><span>Colorspace</span></a> and <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> information, or one containing an image from some source (e.g. a file), based on the image data area and its length.</p>
+<p>There are three ways to construct pixmaps:</p>
+<ul class="simple">
+<li>an empty pixmap based on <a class="reference internal" href="colorspace.html#colorspace"><span>Colorspace</span></a> and <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> information,</li>
+<li>a pixmap from a memory area in PNG format (e.g. obtained from a file),</li>
+<li>a pixmap from a memory area in plain pixels (like contained in <code class="docutils literal"><span class="pre">pixmap.samples</span></code> - see below).</li>
+</ul>
 <p>Please have a look at the <strong>example</strong> to see some pixmap usage &#8220;at work&#8221;.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -99,54 +104,57 @@
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><a class="reference internal" href="#Pixmap.clearWith" title="Pixmap.clearWith"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.clearWith()</span></code></a></td>
-<td>clears a pixmap</td>
+<td>clears (parts of) a pixmap</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.clearIRectWith" title="Pixmap.clearIRectWith"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.clearIRectWith()</span></code></a></td>
-<td>clears parts of a pixmap</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.tintWith" title="Pixmap.tintWith"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.tintWith()</span></code></a></td>
+<td>tints a pixmap with a color</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.writePNG" title="Pixmap.writePNG"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.writePNG()</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.gammaWith" title="Pixmap.gammaWith"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.gammaWith()</span></code></a></td>
+<td>applies a gamma factor to the pixmap</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.writePNG" title="Pixmap.writePNG"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.writePNG()</span></code></a></td>
 <td>saves a pixmap as a PNG file</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.copyPixmap" title="Pixmap.copyPixmap"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.copyPixmap()</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.copyPixmap" title="Pixmap.copyPixmap"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.copyPixmap()</span></code></a></td>
 <td>copy parts of another pixmap</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.getSize" title="Pixmap.getSize"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.getSize()</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.getSize" title="Pixmap.getSize"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.getSize()</span></code></a></td>
 <td>returns the pixmap&#8217;s total length</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.getColorspace" title="Pixmap.getColorspace"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.getColorspace()</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.getColorspace" title="Pixmap.getColorspace"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.getColorspace()</span></code></a></td>
 <td>returns the <a class="reference internal" href="colorspace.html#colorspace"><span>Colorspace</span></a> used</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.getIRect" title="Pixmap.getIRect"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.getIRect()</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.getIRect" title="Pixmap.getIRect"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.getIRect()</span></code></a></td>
 <td>returns the <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> used</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.invertIRect" title="Pixmap.invertIRect"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.invertIRect()</span></code></a></td>
-<td>invert the pixels of a given bounding box</td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.invertIRect" title="Pixmap.invertIRect"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.invertIRect()</span></code></a></td>
+<td>invert the pixels of a given area</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.samples" title="Pixmap.samples"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.samples</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.samples" title="Pixmap.samples"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.samples</span></code></a></td>
 <td>the components data for all pixels</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.height" title="Pixmap.height"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.height</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.height" title="Pixmap.height"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.height</span></code></a></td>
 <td>height of the region in pixels</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.width" title="Pixmap.width"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.width</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.width" title="Pixmap.width"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.width</span></code></a></td>
 <td>width of the region in pixels</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.x" title="Pixmap.x"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.x</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.x" title="Pixmap.x"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.x</span></code></a></td>
 <td>X-coordinate of top-left corner of pixmap</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.y" title="Pixmap.y"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.y</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.y" title="Pixmap.y"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.y</span></code></a></td>
 <td>Y-coordinate of top-left corner of pixmap</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.n" title="Pixmap.n"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.n</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.n" title="Pixmap.n"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.n</span></code></a></td>
 <td>number of bytes per pixel</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.xres" title="Pixmap.xres"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.xres</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.xres" title="Pixmap.xres"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.xres</span></code></a></td>
 <td>resolution in X-direction</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.yres" title="Pixmap.yres"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.yres</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.yres" title="Pixmap.yres"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.yres</span></code></a></td>
 <td>resolution in Y-direction</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.interpolate" title="Pixmap.interpolate"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.interpolate</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.interpolate" title="Pixmap.interpolate"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.interpolate</span></code></a></td>
 <td>interpolation method indicator</td>
 </tr>
 </tbody>
@@ -182,7 +190,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (<em>string</em>) &#8211; Data containing a complete, valid image in PNG format. E.g. this may have been obtained from a statement like <code class="docutils literal"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">open('somepic.png',</span> <span class="pre">'rb').read()</span></code>.</li>
+<li><strong>data</strong> (<em>string</em>) &#8211; Data containing a complete, valid image in PNG format. E.g. this may have been obtained from a statement like <code class="docutils literal"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">open('somepic.png',</span> <span class="pre">'rb').read()</span></code>. The origin of the resulting pixmap is (0,0).</li>
 <li><strong>len</strong> (<em>int</em>) &#8211; An integer specifying the length of <code class="docutils literal"><span class="pre">data</span></code>.</li>
 </ul>
 </td>
@@ -192,29 +200,35 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="Pixmap.clearWith">
-<code class="descname">clearWith</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.clearWith" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clears a pixmap.</p>
+<dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>colorspace</em>, <em>width</em>, <em>height</em>, <em>samples</em><span class="sig-paren">)</span></dt>
+<dd><p>This constructor creates a (non-empty) pixmap from <code class="docutils literal"><span class="pre">samples</span></code>, which is assumed to contain an image in &#8220;plain pixel&#8221; format. This means that each pixel is represented by n bytes (as controlled by the <code class="docutils literal"><span class="pre">colorspace</span></code> parameter). The origin of the resulting pixmap is (0,0). This method may be usefull to create a full copy of a given pixmap, or when some program needs a way to store its generated data as a PNG file with high performance.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>int</em>) &#8211; Values from 0 to 255 are valid. Each color byte of each pixel will be set to this value, while alpha will always be set to 255 (non-transparent). Default is 0 (black).</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>colorspace</strong> (<a class="reference internal" href="colorspace.html#colorspace"><span>Colorspace</span></a>) &#8211; Colorspace of the image. This crucial parameter controls the interpretation of the <code class="docutils literal"><span class="pre">samples</span></code> area: for <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a>, <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a> and <a class="reference internal" href="vars.html#CS_CMYK" title="CS_CMYK"><code class="xref py py-data docutils literal"><span class="pre">CS_CMYK</span></code></a>, 2, 4 or 5 bytes in samples will be assumed to define one pixel, respectively.</li>
+<li><strong>width</strong> (<em>int</em>) &#8211; Width of the image</li>
+<li><strong>height</strong> (<em>int</em>) &#8211; Height of the image</li>
+<li><strong>samples</strong> (<em>string</em>) &#8211; A string containing consecutive bytes describing all pixels of the image.</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="Pixmap.clearIRectWith">
-<code class="descname">clearIRectWith</code><span class="sig-paren">(</span><em>value</em>, <em>irect</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.clearIRectWith" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clears an area within a pixmap.</p>
+<dt id="Pixmap.clearWith">
+<code class="descname">clearWith</code><span class="sig-paren">(</span><em>value</em><span class="optional">[</span>, <em>irect</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.clearWith" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears an area specified by the <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> <code class="docutils literal"><span class="pre">irect</span></code> within a pixmap. To clear the whole pixmap omit <code class="docutils literal"><span class="pre">irect</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>value</strong> (<em>int</em>) &#8211; Values from 0 to 255 are valid. Each color byte of each pixel of the area will be set to this value, while alpha will always be set to 255 (non-transparent). Default is 0 (black).</li>
+<li><strong>value</strong> (<em>int</em>) &#8211; Values from 0 to 255 are valid. Each color byte of each pixel will be set to this value, while alpha will always be set to 255 (non-transparent). Default is 0 (black).</li>
 <li><strong>irect</strong> (<a class="reference internal" href="irect.html#irect"><span>IRect</span></a>) &#8211; An IRect object specifying the area to be cleared.</li>
 </ul>
 </td>
@@ -224,9 +238,58 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="Pixmap.tintWith">
+<code class="descname">tintWith</code><span class="sig-paren">(</span><em>red</em>, <em>green</em>, <em>blue</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.tintWith" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colorizes (tints) a pixmap with a color provided as a value triple (red, green, blue). Use this method only for <code class="docutils literal"><span class="pre">GRAY</span></code> or <code class="docutils literal"><span class="pre">RGB</span></code> colorspaces. A <code class="docutils literal"><span class="pre">TypeError</span></code> exception will otherwise be raised.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>red</strong> (<em>int</em>) &#8211; The <code class="docutils literal"><span class="pre">red</span></code> component. Values from 0 to 255 are valid.</li>
+<li><strong>green</strong> (<em>int</em>) &#8211; The <code class="docutils literal"><span class="pre">green</span></code> component. Values from 0 to 255 are valid.</li>
+<li><strong>blue</strong> (<em>int</em>) &#8211; The <code class="docutils literal"><span class="pre">blue</span></code> component. Values from 0 to 255 are valid.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.gammaWith">
+<code class="descname">gammaWith</code><span class="sig-paren">(</span><em>gamma</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.gammaWith" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies a gamma factor to a pixmap, i.e. lightens or darkens it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>gamma</strong> (<em>float</em>) &#8211; <code class="docutils literal"><span class="pre">gamma</span> <span class="pre">=</span> <span class="pre">1.0</span></code> does nothing, <code class="docutils literal"><span class="pre">gamma</span> <span class="pre">&lt;</span> <span class="pre">1.0</span></code> lightens, <code class="docutils literal"><span class="pre">gamma</span> <span class="pre">&gt;</span> <span class="pre">1.0</span></code> darkens the image.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.invertIRect">
+<code class="descname">invertIRect</code><span class="sig-paren">(</span><span class="optional">[</span><em>irect</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.invertIRect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invert the color of all pixels in an area specified by <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> <code class="docutils literal"><span class="pre">irect</span></code>. To invert everything, omit this parameter.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>irect</strong> (<a class="reference internal" href="irect.html#irect"><span>IRect</span></a>) &#8211; The <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> to be inverted.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="Pixmap.copyPixmap">
 <code class="descname">copyPixmap</code><span class="sig-paren">(</span><em>source</em>, <em>irect</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.copyPixmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies the <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> part of the <code class="docutils literal"><span class="pre">source</span></code> pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and different colorspaces. The copy mechanism automatically adjusts to any discrepancies between source and target pixmap.</p>
+<blockquote>
+<div>If you want your <code class="docutils literal"><span class="pre">source</span></code> pixmap image to land at a specific position of the destination, modify its <code class="docutils literal"><span class="pre">x</span></code> and <code class="docutils literal"><span class="pre">y</span></code> attributes accordingly before copying. See the example below for how that works.</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -278,6 +341,24 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="irect.html#irect"><span>IRect</span></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.writePNG">
+<code class="descname">writePNG</code><span class="sig-paren">(</span><em>filename</em>, <em>savealpha=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.writePNG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a pixmap as a png file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> (<em>string</em>) &#8211; The filename to save as (the extension <code class="docutils literal"><span class="pre">png</span></code> must be specified).</li>
+<li><strong>savealpha</strong> (<em>bool</em>) &#8211; Save alpha or not.</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -356,7 +437,7 @@
 <dl class="attribute">
 <dt id="Pixmap.n">
 <code class="descname">n</code><a class="headerlink" href="#Pixmap.n" title="Permalink to this definition">¶</a></dt>
-<dd><p>Number of components per pixel. This number depends on and identifies the chosen colorspace: <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> = 2, <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a> = 4, <a class="reference internal" href="vars.html#CS_CMYK" title="CS_CMYK"><code class="xref py py-data docutils literal"><span class="pre">CS_CMYK</span></code></a> = 5.</p>
+<dd><p>Number of components per pixel. This number depends on (and identifies) the chosen colorspace: <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> = 2, <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a> = 4, <a class="reference internal" href="vars.html#CS_CMYK" title="CS_CMYK"><code class="xref py py-data docutils literal"><span class="pre">CS_CMYK</span></code></a> = 5.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -395,42 +476,10 @@
 </table>
 </dd></dl>
 
-<dl class="method">
-<dt id="Pixmap.invertIRect">
-<code class="descname">invertIRect</code><span class="sig-paren">(</span><em>irect</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.invertIRect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Invert the color of all pixels in <a class="reference internal" href="irect.html#irect"><span>IRect</span></a>. All components except alpha are inverted.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>irect</strong> &#8211; Invert all the pixels in the irect. If omitted, the whole pixmap will be inverted.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="Pixmap.writePNG">
-<code class="descname">writePNG</code><span class="sig-paren">(</span><em>filename</em>, <em>savealpha=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.writePNG" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save a pixmap as a png file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>filename</strong> (<em>string</em>) &#8211; The filename to save as (the extension <code class="docutils literal"><span class="pre">png</span></code> must be specified).</li>
-<li><strong>savealpha</strong> (<em>bool</em>) &#8211; Save alpha or not.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 <dl class="attribute">
 <dt id="Pixmap.interpolate">
 <code class="descname">interpolate</code><a class="headerlink" href="#Pixmap.interpolate" title="Permalink to this definition">¶</a></dt>
-<dd><p>An information-only boolean flag set to <code class="docutils literal"><span class="pre">True</span></code> if the image will be drawn using linear interpolation, or set to <code class="docutils literal"><span class="pre">False</span></code> if image is created using nearest neighbour sampling.</p>
+<dd><p>An information-only boolean flag set to <code class="docutils literal"><span class="pre">True</span></code> if the image will be drawn using &#8220;linear interpolation&#8221;. If <code class="docutils literal"><span class="pre">False</span></code> &#8220;nearest neighbour sampling&#8221; will be used.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -444,14 +493,15 @@
 </dd></dl>
 
 <p><strong>Example</strong></p>
-<p>This shows how pixmaps can be used for purely graphical, non-PDF purposes:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># read in picture image and create a pixmap of it</span>
+<p>This shows how pixmaps can be used for purely graphical, non-PDF purposes. The script reads a PNG file and creates a new PNG file which consist of 3 * 4 tiles of the original one:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="c"># read in picture image and create a pixmap of it</span>
 <span class="n">pic</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;editra.png&quot;</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="n">pix0</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">pic</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pic</span><span class="p">))</span>
 
 <span class="c"># calculate target pixmap dimensions and create it</span>
-<span class="n">tar_width</span>  <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="mi">3</span>
-<span class="n">tar_height</span> <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mi">4</span>
+<span class="n">tar_width</span>  <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="mi">3</span>              <span class="c"># 3 tiles per row</span>
+<span class="n">tar_height</span> <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mi">4</span>             <span class="c"># 4 tiles per column</span>
 <span class="n">tar_irect</span>  <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">IRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tar_width</span><span class="p">,</span> <span class="n">tar_height</span><span class="p">)</span>
 <span class="n">tar_pix</span>    <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">Colorspace</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">CS_RGB</span><span class="p">),</span> <span class="n">tar_irect</span><span class="p">)</span>
 <span class="n">tar_pix</span><span class="o">.</span><span class="n">clearWith</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>        <span class="c"># clear target with a lively gray :-)</span>
@@ -469,7 +519,7 @@
 </div>
 <p>This is the input picture <code class="docutils literal"><span class="pre">editra.png</span></code> (taken from the wxPython directory <code class="docutils literal"><span class="pre">/tools/Editra/pixmaps</span></code>):</p>
 <img alt="_images/editra.png" src="_images/editra.png" />
-<p>Some intermediate picture and the result:</p>
+<p>Here is the output, showing some intermediate picture and the result:</p>
 <img alt="_images/target-11.png" src="_images/target-11.png" />
 <img alt="_images/target-32.png" src="_images/target-32.png" />
 </div>
@@ -498,7 +548,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 09. Jan 2016.
+      Last updated on 10. Jan 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

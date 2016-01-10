@@ -10,21 +10,28 @@ Pixmap
 
 Pixmaps represent a rectangular set of pixels in a 2 dimensional region. Each pixel is described by a number of bytes ("components") plus an alpha (transparency) byte. The data is in premultiplied alpha when rendering, but non-premultiplied for colorspace conversions and rescaling.
 
-There are two ways to construct pixmaps: either an empty one based on :ref:`Colorspace` and :ref:`IRect` information, or one containing an image from some source (e.g. a file), based on the image data area and its length.
+There are three ways to construct pixmaps:
+
+* an empty pixmap based on :ref:`Colorspace` and :ref:`IRect` information,
+
+* a pixmap from a memory area in PNG format (e.g. obtained from a file),
+
+* a pixmap from a memory area in plain pixels (like contained in ``pixmap.samples`` - see below).
 
 Please have a look at the **example** to see some pixmap usage "at work".
 
 ============================= ==============================================
 **Method / Attribute**        **Short Description**
 ============================= ==============================================
-:meth:`Pixmap.clearWith`      clears a pixmap
-:meth:`Pixmap.clearIRectWith` clears parts of a pixmap
+:meth:`Pixmap.clearWith`      clears (parts of) a pixmap
+:meth:`Pixmap.tintWith`       tints a pixmap with a color
+:meth:`Pixmap.gammaWith`      applies a gamma factor to the pixmap
 :meth:`Pixmap.writePNG`       saves a pixmap as a PNG file
 :meth:`Pixmap.copyPixmap`     copy parts of another pixmap
 :meth:`Pixmap.getSize`        returns the pixmap's total length
 :meth:`Pixmap.getColorspace`  returns the :ref:`Colorspace` used
 :meth:`Pixmap.getIRect`       returns the :ref:`IRect` used
-:meth:`Pixmap.invertIRect`    invert the pixels of a given bounding box
+:meth:`Pixmap.invertIRect`    invert the pixels of a given area
 :attr:`Pixmap.samples`        the components data for all pixels
 :attr:`Pixmap.height`         height of the region in pixels
 :attr:`Pixmap.width`          width of the region in pixels
@@ -54,32 +61,70 @@ Please have a look at the **example** to see some pixmap usage "at work".
 
       This constructor creates a (non-empty) pixmap from ``data``, which is assumed to contain a PNG image and which is ``len`` bytes long.
 
-      :param `data`: Data containing a complete, valid image in PNG format. E.g. this may have been obtained from a statement like ``data = open('somepic.png', 'rb').read()``.
+      :param `data`: Data containing a complete, valid image in PNG format. E.g. this may have been obtained from a statement like ``data = open('somepic.png', 'rb').read()``. The origin of the resulting pixmap is (0,0).
       :type `data`: string
 
       :param `len`: An integer specifying the length of ``data``.
       :type `len`: int
 
-   .. method:: clearWith(value)
+   .. method:: __init__(self, colorspace, width, height, samples)
 
-      Clears a pixmap.
+      This constructor creates a (non-empty) pixmap from ``samples``, which is assumed to contain an image in "plain pixel" format. This means that each pixel is represented by n bytes (as controlled by the ``colorspace`` parameter). The origin of the resulting pixmap is (0,0). This method may be usefull to create a full copy of a given pixmap, or when some program needs a way to store its generated data as a PNG file with high performance.
+
+      :param `colorspace`: Colorspace of the image. This crucial parameter controls the interpretation of the ``samples`` area: for :data:`CS_GRAY`, :data:`CS_RGB` and :data:`CS_CMYK`, 2, 4 or 5 bytes in samples will be assumed to define one pixel, respectively.
+      :type `colorspace`: :ref:`Colorspace`
+
+      :param `width`: Width of the image
+      :type `width`: int
+
+      :param `height`: Height of the image
+      :type `height`: int
+
+      :param `samples`: A string containing consecutive bytes describing all pixels of the image.
+      :type `samples`: string
+
+   .. method:: clearWith(value [, irect])
+
+      Clears an area specified by the :ref:`IRect` ``irect`` within a pixmap. To clear the whole pixmap omit ``irect``.
 
       :param `value`: Values from 0 to 255 are valid. Each color byte of each pixel will be set to this value, while alpha will always be set to 255 (non-transparent). Default is 0 (black).
-      :type `value`: int
-
-   .. method:: clearIRectWith(value, irect)
-
-      Clears an area within a pixmap.
-
-      :param `value`: Values from 0 to 255 are valid. Each color byte of each pixel of the area will be set to this value, while alpha will always be set to 255 (non-transparent). Default is 0 (black).
       :type `value`: int
 
       :param `irect`: An IRect object specifying the area to be cleared.
       :type `irect`: :ref:`IRect`
 
+   .. method:: tintWith(red, green, blue)
+
+      Colorizes (tints) a pixmap with a color provided as a value triple (red, green, blue). Use this method only for ``GRAY`` or ``RGB`` colorspaces. A ``TypeError`` exception will otherwise be raised.
+
+      :param `red`: The ``red`` component. Values from 0 to 255 are valid.
+      :type `red`: int
+
+      :param `green`: The ``green`` component. Values from 0 to 255 are valid.
+      :type `green`: int
+
+      :param `blue`: The ``blue`` component. Values from 0 to 255 are valid.
+      :type `blue`: int
+
+   .. method:: gammaWith(gamma)
+
+      Applies a gamma factor to a pixmap, i.e. lightens or darkens it.
+
+      :param `gamma`: ``gamma = 1.0`` does nothing, ``gamma < 1.0`` lightens, ``gamma > 1.0`` darkens the image.
+      :type `gamma`: float
+
+   .. method:: invertIRect([irect])
+
+      Invert the color of all pixels in an area specified by :ref:`IRect` ``irect``. To invert everything, omit this parameter.
+
+      :param `irect`: The :ref:`IRect` to be inverted.
+      :type `irect`: :ref:`IRect`
+
    .. method:: copyPixmap(source, irect)
 
       Copies the :ref:`IRect` part of the ``source`` pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and different colorspaces. The copy mechanism automatically adjusts to any discrepancies between source and target pixmap.
+
+	  If you want your ``source`` pixmap image to land at a specific position of the destination, modify its ``x`` and ``y`` attributes accordingly before copying. See the example below for how that works.
 
       :param `source`: The pixmap from where to copy.
       :type `source`: A pixmap
@@ -104,6 +149,16 @@ Please have a look at the **example** to see some pixmap usage "at work".
       Returns the :ref:`IRect` used for constructing the pixmap. Usefull when the pixmap has been created from an image area.
 
       :rtype: :ref:`IRect`
+
+   .. method:: writePNG(filename, savealpha=False)
+
+      Save a pixmap as a png file.
+
+      :param `filename`: The filename to save as (the extension ``png`` must be specified).
+      :type `filename`: string
+
+      :param `savealpha`: Save alpha or not.
+      :type `savealpha`: bool
 
    .. attribute:: samples
 
@@ -137,7 +192,7 @@ Please have a look at the **example** to see some pixmap usage "at work".
 
    .. attribute:: n
 
-      Number of components per pixel. This number depends on and identifies the chosen colorspace: :data:`CS_GRAY` = 2, :data:`CS_RGB` = 4, :data:`CS_CMYK` = 5.
+      Number of components per pixel. This number depends on (and identifies) the chosen colorspace: :data:`CS_GRAY` = 2, :data:`CS_RGB` = 4, :data:`CS_CMYK` = 5.
 
       :rtype: int
 
@@ -153,40 +208,24 @@ Please have a look at the **example** to see some pixmap usage "at work".
 
       :rtype: int
 
-   .. method:: invertIRect(irect)
-
-      Invert the color of all pixels in :ref:`IRect`. All components except alpha are inverted.
-
-      :param `irect`: Invert all the pixels in the irect. If omitted, the whole pixmap will be inverted.
-      :type `IRect`: :ref:`IRect`
-
-   .. method:: writePNG(filename, savealpha=False)
-
-      Save a pixmap as a png file.
-
-      :param `filename`: The filename to save as (the extension ``png`` must be specified).
-      :type `filename`: string
-
-      :param `savealpha`: Save alpha or not.
-      :type `savealpha`: bool
-
    .. attribute:: interpolate
 
-      An information-only boolean flag set to ``True`` if the image will be drawn using linear interpolation, or set to ``False`` if image is created using nearest neighbour sampling.
+      An information-only boolean flag set to ``True`` if the image will be drawn using "linear interpolation". If ``False`` "nearest neighbour sampling" will be used.
 
       :rtype: bool
 
 **Example**
 
-This shows how pixmaps can be used for purely graphical, non-PDF purposes:
+This shows how pixmaps can be used for purely graphical, non-PDF purposes. The script reads a PNG file and creates a new PNG file which consist of 3 * 4 tiles of the original one:
 ::
+ import fitz
  # read in picture image and create a pixmap of it
  pic = open("editra.png", "rb").read()
  pix0 = fitz.Pixmap(pic, len(pic))
 
  # calculate target pixmap dimensions and create it
- tar_width  = pix0.width * 3
- tar_height = pix0.height * 4
+ tar_width  = pix0.width * 3              # 3 tiles per row
+ tar_height = pix0.height * 4             # 4 tiles per column
  tar_irect  = fitz.IRect(0, 0, tar_width, tar_height)
  tar_pix    = fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), tar_irect)
  tar_pix.clearWith(50)        # clear target with a lively gray :-)
@@ -206,7 +245,7 @@ This is the input picture ``editra.png`` (taken from the wxPython directory ``/t
 
 .. image:: editra.png
 
-Some intermediate picture and the result:
+Here is the output, showing some intermediate picture and the result:
 
 .. image:: target-11.png
 

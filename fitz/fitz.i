@@ -476,6 +476,19 @@ struct fz_pixmap_s
                 ;
             return pm;
         }
+
+        /***********************************************************/
+        /* create a pixmap from samples data                       */
+        /***********************************************************/
+        fz_pixmap_s(struct fz_colorspace_s *cs, int w, int h, char *samples) {
+            struct fz_pixmap_s *pm = NULL;
+            fz_try(gctx)
+                pm = fz_new_pixmap_with_data(gctx, cs, w, h, samples);
+            fz_catch(gctx)
+                ;
+            return pm;
+        }
+
         /*******************************************/
         /* create a pixmap from PNG-formatted data */
         /*******************************************/
@@ -495,10 +508,36 @@ struct fz_pixmap_s
             fz_drop_pixmap(gctx, $self);
         }
         /***************************/
+        /* apply gamma correction  */
+        /***************************/
+        void gammaWith(float gamma) {
+            fz_gamma_pixmap(gctx, $self, gamma);
+        }
+
+        /***************************/
+        /* tint pixmap with color  */
+        /***************************/
+        %pythonprepend tintWith(int red, int green, int blue) %{
+            # only GRAY and RGB pixmaps allowed
+            if self.n not in (2, 4):
+                raise TypeError("only gray and rgb pixmaps can be tinted")
+        %}
+        void tintWith(int red, int green, int blue) {
+            fz_tint_pixmap(gctx, $self, red, green, blue);
+        }
+
+        /***************************/
         /* clear pixmap with value */
         /***************************/
         void clearWith(int value) {
             fz_clear_pixmap_with_value(gctx, $self, value);
+        }
+
+        /***************************/
+        /* clear pixmap with value */
+        /***************************/
+        void clearWith(int value, const struct fz_irect_s *bbox) {
+            fz_clear_pixmap_rect_with_value(gctx, $self, value, bbox);
         }
 
         /***********************************/
@@ -551,9 +590,16 @@ struct fz_pixmap_s
         /*************************/
         /* invertIRect           */
         /*************************/
+        void invertIRect() {
+            fz_invert_pixmap(gctx, $self);
+        }
+        /*************************/
+        /* invertIRect           */
+        /*************************/
         void invertIRect(const struct fz_irect_s *irect) {
             fz_invert_pixmap_rect(gctx, $self, irect);
         }
+
         PyObject *_getSamples() {
             return PyByteArray_FromStringAndSize((const char *)$self->samples, ($self->w)*($self->h)*($self->n));
         }
@@ -1320,23 +1366,14 @@ struct fz_text_page_s {
                 return NULL;
             }
         }
-        %pythonappend extractText() %{
-            if not val:
-               return None
-            return val
-
-        %}
-        struct fz_buffer_s *extractText(int basic=0) {
+        struct fz_buffer_s *extractText() {
             struct fz_buffer_s *res = NULL;
             fz_output *out;
             fz_try(gctx) {
                 /* inital size for text */
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
-                if (basic == 1)
-                    fz_print_text_page(gctx, out, $self);
-                else
-                    fz_print_text_page_xml(gctx, out, $self);
+                fz_print_text_page(gctx, out, $self);
                 fz_drop_output(gctx, out);
             }
             fz_catch(gctx) {
