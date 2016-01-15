@@ -184,7 +184,7 @@
 <dl class="method">
 <dt>
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>data</em>, <em>len</em><span class="sig-paren">)</span></dt>
-<dd><p>This constructor creates a (non-empty) pixmap from <code class="docutils literal"><span class="pre">data</span></code>, which is assumed to contain a PNG image and which is <code class="docutils literal"><span class="pre">len</span></code> bytes long.</p>
+<dd><p>This constructor creates a (non-empty) pixmap from <code class="docutils literal"><span class="pre">data</span></code>, which is assumed to contain a PNG image of <code class="docutils literal"><span class="pre">len</span></code> bytes length. See example below.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -202,7 +202,7 @@
 <dl class="method">
 <dt>
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>colorspace</em>, <em>width</em>, <em>height</em>, <em>samples</em><span class="sig-paren">)</span></dt>
-<dd><p>This constructor creates a (non-empty) pixmap from <code class="docutils literal"><span class="pre">samples</span></code>, which is assumed to contain an image in &#8220;plain pixel&#8221; format. This means that each pixel is represented by n bytes (as controlled by the <code class="docutils literal"><span class="pre">colorspace</span></code> parameter). The origin of the resulting pixmap is (0,0). This method may be usefull to create a full copy of a given pixmap, or when some program needs a way to store its generated data as a PNG file with high performance.</p>
+<dd><p>This constructor creates a (non-empty) pixmap from <code class="docutils literal"><span class="pre">samples</span></code>, which is assumed to contain an image in &#8220;plain pixel&#8221; format. This means that each pixel is represented by n bytes (as controlled by the <code class="docutils literal"><span class="pre">colorspace</span></code> parameter). The origin of the resulting pixmap is (0,0). This method may be usefull to create a full copy of a given pixmap, or when some program needs a way to store its generated data as a PNG file with a very high performance (more than 2 times faster than <code class="docutils literal"><span class="pre">PIL</span> <span class="pre">/</span> <span class="pre">Pillow</span></code> and more than 10 times faster than pure Python modules like <code class="docutils literal"><span class="pre">pypng</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -240,7 +240,9 @@
 <dl class="method">
 <dt id="Pixmap.tintWith">
 <code class="descname">tintWith</code><span class="sig-paren">(</span><em>red</em>, <em>green</em>, <em>blue</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.tintWith" title="Permalink to this definition">¶</a></dt>
-<dd><p>Colorizes (tints) a pixmap with a color provided as a value triple (red, green, blue). Use this method only for <code class="docutils literal"><span class="pre">GRAY</span></code> or <code class="docutils literal"><span class="pre">RGB</span></code> colorspaces. A <code class="docutils literal"><span class="pre">TypeError</span></code> exception will otherwise be raised.</p>
+<dd><p>Colorizes (tints) a pixmap with a color provided as a value triple (red, green, blue). Use this method only for <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> or <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a> colorspaces. A <code class="docutils literal"><span class="pre">TypeError</span></code> exception will otherwise be raised.</p>
+<blockquote>
+<div>If the colorspace is <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a>, <code class="docutils literal"><span class="pre">(red</span> <span class="pre">+</span> <span class="pre">green</span> <span class="pre">+</span> <span class="pre">blue)/3</span></code> will be taken as the tinting value.</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -289,13 +291,13 @@
 <code class="descname">copyPixmap</code><span class="sig-paren">(</span><em>source</em>, <em>irect</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.copyPixmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies the <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> part of the <code class="docutils literal"><span class="pre">source</span></code> pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and different colorspaces. The copy mechanism automatically adjusts to any discrepancies between source and target pixmap.</p>
 <blockquote>
-<div>If you want your <code class="docutils literal"><span class="pre">source</span></code> pixmap image to land at a specific position of the destination, modify its <code class="docutils literal"><span class="pre">x</span></code> and <code class="docutils literal"><span class="pre">y</span></code> attributes accordingly before copying. See the example below for how that works.</div></blockquote>
+<div>If you want your <code class="docutils literal"><span class="pre">source</span></code> pixmap image to land at a specific position of the destination, modify its <code class="docutils literal"><span class="pre">x</span></code> and <code class="docutils literal"><span class="pre">y</span></code> attributes accordingly before copying. See the example below for how this works.</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>source</strong> (<em>A pixmap</em>) &#8211; The pixmap from where to copy.</li>
+<li><strong>source</strong> (<a class="reference internal" href="#pixmap"><span>Pixmap</span></a>) &#8211; The pixmap from where to copy.</li>
 <li><strong>irect</strong> (<a class="reference internal" href="irect.html#irect"><span>IRect</span></a>) &#8211; An IRect object specifying the area to be copied.</li>
 </ul>
 </td>
@@ -367,7 +369,8 @@
 <dl class="attribute">
 <dt id="Pixmap.samples">
 <code class="descname">samples</code><a class="headerlink" href="#Pixmap.samples" title="Permalink to this definition">¶</a></dt>
-<dd><p>The color and transparency values for all pixels. <code class="docutils literal"><span class="pre">samples</span></code> is a memory area of size <code class="docutils literal"><span class="pre">width</span> <span class="pre">*</span> <span class="pre">height</span> <span class="pre">*</span> <span class="pre">n</span></code> bytes. Each n bytes define one pixel. Each successive n bytes yield another pixel in scanline order. Subsequent scanlines follow each other with no padding. E.g. for an RGBA colorspace (i.e. <code class="docutils literal"><span class="pre">n</span> <span class="pre">=</span> <span class="pre">4</span></code>) this means, <code class="docutils literal"><span class="pre">samples</span></code> is a bytearray like <code class="docutils literal"><span class="pre">...,</span> <span class="pre">R,</span> <span class="pre">G,</span> <span class="pre">B,</span> <span class="pre">A,</span> <span class="pre">...</span></code>, and the four byte values R, G, B, A describe one pixel.</p>
+<dd><p>The color and transparency values for all pixels. <code class="docutils literal"><span class="pre">samples</span></code> is a memory area of size <code class="docutils literal"><span class="pre">width</span> <span class="pre">*</span> <span class="pre">height</span> <span class="pre">*</span> <span class="pre">n</span></code> bytes. Each n bytes define one pixel. Each successive n bytes yield another pixel in scanline order. Subsequent scanlines follow each other with no padding. E.g. for an RGBA colorspace (i.e. <code class="docutils literal"><span class="pre">n</span> <span class="pre">=</span> <span class="pre">4</span></code>) this means, <code class="docutils literal"><span class="pre">samples</span></code> is a bytearray like <code class="docutils literal"><span class="pre">...,</span> <span class="pre">R,</span> <span class="pre">G,</span> <span class="pre">B,</span> <span class="pre">A,</span> <span class="pre">...</span></code>, and the four byte values R, G, B, A define one pixel.</p>
+<p>This area can also be used by other image processing libraries like PIL (Python Imaging Library) to do additional processing. See example 3.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -381,7 +384,7 @@
 <dl class="attribute">
 <dt id="Pixmap.width">
 <code class="descname">width</code><a class="headerlink" href="#Pixmap.width" title="Permalink to this definition">¶</a></dt>
-<dd><p>The width of the region in pixels.</p>
+<dd><p>The width of the region in pixels. For compatibility reasons, <code class="docutils literal"><span class="pre">w</span></code> is also supported.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -395,7 +398,7 @@
 <dl class="attribute">
 <dt id="Pixmap.height">
 <code class="descname">height</code><a class="headerlink" href="#Pixmap.height" title="Permalink to this definition">¶</a></dt>
-<dd><p>The height of the region in pixels.</p>
+<dd><p>The height of the region in pixels. For compatibility reasons, <code class="docutils literal"><span class="pre">h</span></code> is also supported.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -492,7 +495,7 @@
 
 </dd></dl>
 
-<p><strong>Example</strong></p>
+<p><strong>Example 1</strong></p>
 <p>This shows how pixmaps can be used for purely graphical, non-PDF purposes. The script reads a PNG file and creates a new PNG file which consist of 3 * 4 tiles of the original one:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="c"># read in picture image and create a pixmap of it</span>
@@ -504,7 +507,7 @@
 <span class="n">tar_height</span> <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mi">4</span>             <span class="c"># 4 tiles per column</span>
 <span class="n">tar_irect</span>  <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">IRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tar_width</span><span class="p">,</span> <span class="n">tar_height</span><span class="p">)</span>
 <span class="n">tar_pix</span>    <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">Colorspace</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">CS_RGB</span><span class="p">),</span> <span class="n">tar_irect</span><span class="p">)</span>
-<span class="n">tar_pix</span><span class="o">.</span><span class="n">clearWith</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>        <span class="c"># clear target with a lively gray :-)</span>
+<span class="n">tar_pix</span><span class="o">.</span><span class="n">clearWith</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>        <span class="c"># clear target with a lively gray :-)</span>
 
 <span class="c"># now fill target with 3 * 4 tiles of input picture</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)):</span>
@@ -519,9 +522,40 @@
 </div>
 <p>This is the input picture <code class="docutils literal"><span class="pre">editra.png</span></code> (taken from the wxPython directory <code class="docutils literal"><span class="pre">/tools/Editra/pixmaps</span></code>):</p>
 <img alt="_images/editra.png" src="_images/editra.png" />
-<p>Here is the output, showing some intermediate picture and the result:</p>
+<p>Here is the output, showing some intermediate picture and the final result:</p>
 <img alt="_images/target-11.png" src="_images/target-11.png" />
 <img alt="_images/target-32.png" src="_images/target-32.png" />
+<p><strong>Example 2</strong></p>
+<p>This shows how to create a PNG file from a numpy array - about two times faster than doing the same thing with <code class="docutils literal"><span class="pre">PIL</span> <span class="pre">/</span> <span class="pre">Pillow</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">fitz</span>
+<span class="c">#==============================================================================</span>
+<span class="c"># create a uni-color width * height PNG with fitz and numpy</span>
+<span class="c">#==============================================================================</span>
+<span class="n">height</span> <span class="o">=</span> <span class="mi">150</span>
+<span class="n">width</span>  <span class="o">=</span> <span class="mi">100</span>
+<span class="n">bild</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">height</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">width</span><span class="p">):</span>
+            <span class="c"># one pixel (some fun coloring)</span>
+        <span class="n">bild</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">)</span><span class="o">%</span><span class="mi">256</span><span class="p">,</span> <span class="n">i</span><span class="o">%</span><span class="mi">256</span><span class="p">,</span> <span class="n">j</span><span class="o">%</span><span class="mi">256</span><span class="p">,</span> <span class="mi">255</span><span class="p">]</span>
+
+<span class="n">samples</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">bytearray</span><span class="p">(</span><span class="n">bild</span><span class="p">))</span>       <span class="c"># get plain pixel data from numpy array</span>
+<span class="n">pix</span><span class="o">=</span><span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">Colorspace</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">CS_RGB</span><span class="p">),</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">samples</span><span class="p">)</span>
+<span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s">&quot;test.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Example 3</strong></p>
+<p>This shows how to interface with <code class="docutils literal"><span class="pre">PIL</span> <span class="pre">/</span> <span class="pre">Pillow</span></code> (the Python Imaging Library):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="o">...</span> <span class="c"># some code here</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="s">&quot;RGBA&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">pix</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">pix</span><span class="o">.</span><span class="n">height</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">samples</span><span class="p">))</span>
+<span class="o">...</span> <span class="c"># some PIL code here, including writing any</span>
+<span class="o">...</span> <span class="c"># results back to Pixmap.samples</span>
+</pre></div>
+</div>
 </div>
 
 
@@ -548,7 +582,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 10. Jan 2016.
+      Last updated on 15. Jan 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

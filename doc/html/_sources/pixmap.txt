@@ -59,7 +59,7 @@ Please have a look at the **example** to see some pixmap usage "at work".
 
    .. method:: __init__(self, data, len)
 
-      This constructor creates a (non-empty) pixmap from ``data``, which is assumed to contain a PNG image and which is ``len`` bytes long.
+      This constructor creates a (non-empty) pixmap from ``data``, which is assumed to contain a PNG image of ``len`` bytes length. See example below.
 
       :param `data`: Data containing a complete, valid image in PNG format. E.g. this may have been obtained from a statement like ``data = open('somepic.png', 'rb').read()``. The origin of the resulting pixmap is (0,0).
       :type `data`: string
@@ -69,7 +69,7 @@ Please have a look at the **example** to see some pixmap usage "at work".
 
    .. method:: __init__(self, colorspace, width, height, samples)
 
-      This constructor creates a (non-empty) pixmap from ``samples``, which is assumed to contain an image in "plain pixel" format. This means that each pixel is represented by n bytes (as controlled by the ``colorspace`` parameter). The origin of the resulting pixmap is (0,0). This method may be usefull to create a full copy of a given pixmap, or when some program needs a way to store its generated data as a PNG file with high performance.
+      This constructor creates a (non-empty) pixmap from ``samples``, which is assumed to contain an image in "plain pixel" format. This means that each pixel is represented by n bytes (as controlled by the ``colorspace`` parameter). The origin of the resulting pixmap is (0,0). This method may be usefull to create a full copy of a given pixmap, or when some program needs a way to store its generated data as a PNG file with a very high performance (more than 2 times faster than ``PIL / Pillow`` and more than 10 times faster than pure Python modules like ``pypng``.
 
       :param `colorspace`: Colorspace of the image. This crucial parameter controls the interpretation of the ``samples`` area: for :data:`CS_GRAY`, :data:`CS_RGB` and :data:`CS_CMYK`, 2, 4 or 5 bytes in samples will be assumed to define one pixel, respectively.
       :type `colorspace`: :ref:`Colorspace`
@@ -95,7 +95,9 @@ Please have a look at the **example** to see some pixmap usage "at work".
 
    .. method:: tintWith(red, green, blue)
 
-      Colorizes (tints) a pixmap with a color provided as a value triple (red, green, blue). Use this method only for ``GRAY`` or ``RGB`` colorspaces. A ``TypeError`` exception will otherwise be raised.
+      Colorizes (tints) a pixmap with a color provided as a value triple (red, green, blue). Use this method only for :data:`CS_GRAY` or :data:`CS_RGB` colorspaces. A ``TypeError`` exception will otherwise be raised.
+
+	  If the colorspace is :data:`CS_GRAY`, ``(red + green + blue)/3`` will be taken as the tinting value.
 
       :param `red`: The ``red`` component. Values from 0 to 255 are valid.
       :type `red`: int
@@ -124,10 +126,10 @@ Please have a look at the **example** to see some pixmap usage "at work".
 
       Copies the :ref:`IRect` part of the ``source`` pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and different colorspaces. The copy mechanism automatically adjusts to any discrepancies between source and target pixmap.
 
-	  If you want your ``source`` pixmap image to land at a specific position of the destination, modify its ``x`` and ``y`` attributes accordingly before copying. See the example below for how that works.
+	  If you want your ``source`` pixmap image to land at a specific position of the destination, modify its ``x`` and ``y`` attributes accordingly before copying. See the example below for how this works.
 
       :param `source`: The pixmap from where to copy.
-      :type `source`: A pixmap
+      :type `source`: :ref:`Pixmap`
 
       :param `irect`: An IRect object specifying the area to be copied.
       :type `irect`: :ref:`IRect`
@@ -162,19 +164,21 @@ Please have a look at the **example** to see some pixmap usage "at work".
 
    .. attribute:: samples
 
-      The color and transparency values for all pixels. ``samples`` is a memory area of size ``width * height * n`` bytes. Each n bytes define one pixel. Each successive n bytes yield another pixel in scanline order. Subsequent scanlines follow each other with no padding. E.g. for an RGBA colorspace (i.e. ``n = 4``) this means, ``samples`` is a bytearray like ``..., R, G, B, A, ...``, and the four byte values R, G, B, A describe one pixel.
+      The color and transparency values for all pixels. ``samples`` is a memory area of size ``width * height * n`` bytes. Each n bytes define one pixel. Each successive n bytes yield another pixel in scanline order. Subsequent scanlines follow each other with no padding. E.g. for an RGBA colorspace (i.e. ``n = 4``) this means, ``samples`` is a bytearray like ``..., R, G, B, A, ...``, and the four byte values R, G, B, A define one pixel.
+
+      This area can also be used by other image processing libraries like PIL (Python Imaging Library) to do additional processing. See example 3.
 
       :rtype: bytearray
 
    .. attribute:: width
 
-      The width of the region in pixels.
+      The width of the region in pixels. For compatibility reasons, ``w`` is also supported.
 
       :rtype: int
 
    .. attribute:: height
 
-      The height of the region in pixels.
+      The height of the region in pixels. For compatibility reasons, ``h`` is also supported.
 
       :rtype: int
 
@@ -214,7 +218,7 @@ Please have a look at the **example** to see some pixmap usage "at work".
 
       :rtype: bool
 
-**Example**
+**Example 1**
 
 This shows how pixmaps can be used for purely graphical, non-PDF purposes. The script reads a PNG file and creates a new PNG file which consist of 3 * 4 tiles of the original one:
 ::
@@ -228,7 +232,7 @@ This shows how pixmaps can be used for purely graphical, non-PDF purposes. The s
  tar_height = pix0.height * 4             # 4 tiles per column
  tar_irect  = fitz.IRect(0, 0, tar_width, tar_height)
  tar_pix    = fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), tar_irect)
- tar_pix.clearWith(50)        # clear target with a lively gray :-)
+ tar_pix.clearWith(90)        # clear target with a lively gray :-)
 
  # now fill target with 3 * 4 tiles of input picture
  for i in list(range(4)):
@@ -245,8 +249,42 @@ This is the input picture ``editra.png`` (taken from the wxPython directory ``/t
 
 .. image:: editra.png
 
-Here is the output, showing some intermediate picture and the result:
+Here is the output, showing some intermediate picture and the final result:
 
 .. image:: target-11.png
 
 .. image:: target-32.png
+
+**Example 2**
+
+This shows how to create a PNG file from a numpy array - about two times faster than doing the same thing with ``PIL / Pillow``:
+::
+ import numpy as np
+ import fitz
+ #==============================================================================
+ # create a uni-color width * height PNG with fitz and numpy
+ #==============================================================================
+ height = 150
+ width  = 100
+ bild=np.ndarray((height, width, 4), dtype=np.uint8)
+
+ for i in range(height):
+     for j in range(width):
+	     # one pixel (some fun coloring)
+         bild[i][j] = [(i+j)%256, i%256, j%256, 255]
+
+ samples = str(bytearray(bild))       # get plain pixel data from numpy array
+ pix=fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), width, height, samples)
+ pix.writePNG("test.png")
+
+
+**Example 3**
+
+This shows how to interface with ``PIL / Pillow`` (the Python Imaging Library):
+::
+ import fitz
+ from PIL import Image
+ ... # some code here
+ img = Image.frombytes("RGBA", [pix.width, pix.height], str(pix.samples))
+ ... # some PIL code here, including writing any
+ ... # results back to Pixmap.samples

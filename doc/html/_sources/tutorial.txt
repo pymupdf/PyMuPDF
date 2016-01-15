@@ -131,6 +131,7 @@ We can also use the image in a dialog. :attr:`Pixmap.samples` represents the are
 **Tkinter**:
 ::
  data = pix.samples
+ # the following requires: "from PIL import Image"
  img = Image.frombytes("RGBA", [pix.width, pix.height], str(data))
  photo = ImageTk.PhotoImage(img)
 
