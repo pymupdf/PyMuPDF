@@ -12,7 +12,9 @@ PyMuPDF
 License:
  GNU GPL 3.x
  
-On a machine with 4.0 GHz, run time should be well below 0.5 sec for d = 729.
+On a machine with 4.0 GHz, run time should be well below 0.5 sec for d = 729 (= 3**6).
+For each additional power of 3 the runtime grows by a factor of 8, i.e. about 4 seconds for
+d = 3**7, etc. in our case.
 """
 
 import fitz, time
