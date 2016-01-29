@@ -15,8 +15,8 @@ image  = np.ndarray((height, width, 4), dtype=np.uint8)
 
 for i in range(height):
     for j in range(width):
-        # choose color components as you like it
-        bild[i, j] = np.array([i%256, j%256, 200, 255], dtype=np.uint8)
+        # choose color components as you like them
+        image[i, j] = np.array([i%256, j%256, 200, 255], dtype=np.uint8)
 
 # create a string from the array and output the picture
 samples = bild.tostring()

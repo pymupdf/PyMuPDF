@@ -14,4 +14,5 @@
    tutorial.txt
    class_index.txt
    vars.txt
-   appendix.txt
+   app1.txt
+   app2.txt

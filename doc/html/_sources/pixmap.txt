@@ -8,17 +8,19 @@
 Pixmap
 ================
 
-Pixmaps represent a rectangular set of pixels in a 2 dimensional region. Each pixel is described by a number of bytes ("components") plus an alpha (transparency) byte. The data is in premultiplied alpha when rendering, but non-premultiplied for colorspace conversions and rescaling.
+Pixmaps ("pixel maps") are objects at the heart of MuPDF's rendering capabilities. They represent plane rectangular sets of pixels. Each pixel is described by a number of bytes ("components") plus an alpha (transparency) byte.
 
-There are three ways to construct pixmaps:
+In PyMuPDF, there exist several ways to create a pixmap:
 
-* an empty pixmap based on :ref:`Colorspace` and :ref:`IRect` information,
+* create an empty pixmap based on :ref:`Colorspace` and :ref:`IRect` information which can then be fille with e.g. the image of a PDF page,
 
-* a pixmap from a memory area in PNG format (e.g. obtained from a file),
+* create a pixmap from a memory area that contains data in PNG format (e.g. obtained from a file),
 
-* a pixmap from a memory area in plain pixels (like contained in ``pixmap.samples`` - see below).
+* create a pixmap from a memory area that contains plain pixels,
 
-Please have a look at the **example** to see some pixmap usage "at work".
+* directly create a pixmap from a PDF page via methods :meth:`Page.getPixmap` or :meth:`Document.getPagePixmap`.
+
+Please have a look at the **example** section to see some pixmap usage "at work".
 
 ============================= ==============================================
 **Method / Attribute**        **Short Description**
@@ -27,6 +29,7 @@ Please have a look at the **example** to see some pixmap usage "at work".
 :meth:`Pixmap.tintWith`       tints a pixmap with a color
 :meth:`Pixmap.gammaWith`      applies a gamma factor to the pixmap
 :meth:`Pixmap.writePNG`       saves a pixmap as a PNG file
+:meth:`Pixmap.writeImage`     saves a pixmap in a variety of image formats
 :meth:`Pixmap.copyPixmap`     copy parts of another pixmap
 :meth:`Pixmap.getSize`        returns the pixmap's total length
 :meth:`Pixmap.getColorspace`  returns the :ref:`Colorspace` used
@@ -69,7 +72,7 @@ Please have a look at the **example** to see some pixmap usage "at work".
 
    .. method:: __init__(self, colorspace, width, height, samples)
 
-      This constructor creates a (non-empty) pixmap from ``samples``, which is assumed to contain an image in "plain pixel" format. This means that each pixel is represented by n bytes (as controlled by the ``colorspace`` parameter). The origin of the resulting pixmap is (0,0). This method may be usefull to create a full copy of a given pixmap, or when some program needs a way to store its generated data as a PNG file with a very high performance (more than 2 times faster than ``PIL / Pillow`` and more than 10 times faster than pure Python modules like ``pypng``.
+      This constructor creates a (non-empty) pixmap from ``samples``, which is assumed to contain an image in "plain pixel" format. This means that each pixel is represented by n bytes (as controlled by the ``colorspace`` parameter). The origin of the resulting pixmap is (0,0). This method may be usefull to create a full copy of a given pixmap, or when raw image data are being provided by some other program - see examples below.
 
       :param `colorspace`: Colorspace of the image. This crucial parameter controls the interpretation of the ``samples`` area: for :data:`CS_GRAY`, :data:`CS_RGB` and :data:`CS_CMYK`, 2, 4 or 5 bytes in samples will be assumed to define one pixel, respectively.
       :type `colorspace`: :ref:`Colorspace`
@@ -115,7 +118,7 @@ Please have a look at the **example** to see some pixmap usage "at work".
       :param `gamma`: ``gamma = 1.0`` does nothing, ``gamma < 1.0`` lightens, ``gamma > 1.0`` darkens the image.
       :type `gamma`: float
 
-   .. method:: invertIRect([irect])
+   .. method:: invertIRect(irect)
 
       Invert the color of all pixels in an area specified by :ref:`IRect` ``irect``. To invert everything, omit this parameter.
 
@@ -124,9 +127,13 @@ Please have a look at the **example** to see some pixmap usage "at work".
 
    .. method:: copyPixmap(source, irect)
 
-      Copies the :ref:`IRect` part of the ``source`` pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and different colorspaces. The copy mechanism automatically adjusts to any discrepancies between source and target pixmap.
+      Copies the :ref:`IRect` part of the ``source`` pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and different colorspaces (provided each is either :data:`CS_GRAY` or :data:`CS_RGB`). The copy mechanism automatically adjusts to any discrepancies between source and target pixmap like so:
 
-	  If you want your ``source`` pixmap image to land at a specific position of the destination, modify its ``x`` and ``y`` attributes accordingly before copying. See the example below for how this works.
+	  If copying from :data:`CS_GRAY` to :data:`CS_RGB`, the source gray-shade value will be put into each of the three rgb component bytes. If the other way round, (r + g + b) / 3 will be taken as the gray-shade value of the target.
+
+	  Between the specified ``irect`` and the target pixmap's :ref:`Irect`, an "intersection" rectangle is first being calculated. Then the corresponding data of this intersection are being copied. If the intersection is empty, nothing will happen.
+
+	  If you want your ``source`` pixmap image to land at a specific position of the target, modify its ``x`` and ``y`` attributes accordingly before copying. See the example below for how this works.
 
       :param `source`: The pixmap from where to copy.
       :type `source`: :ref:`Pixmap`
@@ -154,19 +161,32 @@ Please have a look at the **example** to see some pixmap usage "at work".
 
    .. method:: writePNG(filename, savealpha=False)
 
-      Save a pixmap as a png file.
+      Saves a pixmap as a PNG file. Please note that only grayscale and RGB colorspaces can be saved in PNG format (this is not a PyMuPDF restriction).
 
       :param `filename`: The filename to save as (the extension ``png`` must be specified).
       :type `filename`: string
 
-      :param `savealpha`: Save alpha or not.
+      :param `savealpha`: Save the alpha channel (``True``) or not (``False`` - the default).
+      :type `savealpha`: bool
+
+   .. method:: writeImage(filename, output="png", savealpha=False)
+
+      Saves a pixmap as an image file. This method is an extension to ``writePNG()``. Depending on the output chosen, some or all colorspaces are supported and different file extensions can be chosen. Please see the table below.
+
+      :param `filename`: The filename to save to. Depending on the chosen output format, possible file extensions are ``.pam``, ``.pbm``, ``.pgm``, ``ppm``, ``.pnm``, ``.png`` and ``.tga``.
+      :type `filename`: string
+
+      :param `output`: The requested image format. The default is ``png`` for which this function is equivalent to ``writePNG()``. Other possible values are ``pam``, ``pnm`` and ``tga``.
+      :type `output`: string
+
+      :param `savealpha`: Save the alpha channel (``True``) or not (``False`` - the default).
       :type `savealpha`: bool
 
    .. attribute:: samples
 
       The color and transparency values for all pixels. ``samples`` is a memory area of size ``width * height * n`` bytes. Each n bytes define one pixel. Each successive n bytes yield another pixel in scanline order. Subsequent scanlines follow each other with no padding. E.g. for an RGBA colorspace (i.e. ``n = 4``) this means, ``samples`` is a bytearray like ``..., R, G, B, A, ...``, and the four byte values R, G, B, A define one pixel.
 
-      This area can also be used by other image processing libraries like PIL (Python Imaging Library) to do additional processing. See example 3.
+      This area can also be used by other graphics libraries like PIL (Python Imaging Library) to do additional processing like saving the pixmap in additional image formats. See example 3.
 
       :rtype: bytearray
 
@@ -218,9 +238,22 @@ Please have a look at the **example** to see some pixmap usage "at work".
 
       :rtype: bool
 
+
+Details on Saving Images with ``writeImage()``
+-----------------------------------------------
+
+The following table shows possible combinations of file extensions, output formats and colorspaces of method ``writeImage()``.
+
+.. image:: writeimage.png
+
+
+
+Pixmap Example Code Snippets
+-----------------------------
+
 **Example 1**
 
-This shows how pixmaps can be used for purely graphical, non-PDF purposes. The script reads a PNG file and creates a new PNG file which consist of 3 * 4 tiles of the original one:
+This shows how pixmaps can be used for purely graphical, non-PDF purposes. The script reads a PNG picture and creates a new PNG file which consist of 3 * 4 tiles of the original one:
 ::
  import fitz
  # read in picture image and create a pixmap of it
@@ -257,12 +290,12 @@ Here is the output, showing some intermediate picture and the final result:
 
 **Example 2**
 
-This shows how to create a PNG file from a numpy array - about two times faster than doing the same thing with ``PIL / Pillow``:
+This shows how to create a PNG file from a numpy array (several times faster than most other methods):
 ::
  import numpy as np
  import fitz
  #==============================================================================
- # create a uni-color width * height PNG with fitz and numpy
+ # create a fun-colored width * height PNG with fitz and numpy
  #==============================================================================
  height = 150
  width  = 100
@@ -270,21 +303,30 @@ This shows how to create a PNG file from a numpy array - about two times faster 
 
  for i in range(height):
      for j in range(width):
-	     # one pixel (some fun coloring)
-         bild[i][j] = [(i+j)%256, i%256, j%256, 255]
+         # one pixel (some fun coloring)
+         bild[i, j] = [(i+j)%256, i%256, j%256, 255]
 
- samples = str(bytearray(bild))       # get plain pixel data from numpy array
+ samples = bild.tostring()       # get plain pixel data from numpy array
  pix=fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), width, height, samples)
  pix.writePNG("test.png")
 
 
 **Example 3**
 
-This shows how to interface with ``PIL / Pillow`` (the Python Imaging Library):
+This shows how to interface with ``PIL / Pillow`` (the Python Imaging Library), thereby extending the reach of image files that can be processed:
 ::
  import fitz
  from PIL import Image
- ... # some code here
+
+ pix = fitz.Pixmap(fitz.csRGB, ...)
+ ... # any code here
+ # create and save a PIL image
  img = Image.frombytes("RGBA", [pix.width, pix.height], str(pix.samples))
- ... # some PIL code here, including writing any
- ... # results back to Pixmap.samples
+ img.save(filename, 'jpeg')
+
+ # an example for the opposite direction
+ # create a pixmap from any PIL-supported image file "some_image.xxx"
+
+ img = Image.open("some_image.xxx").convert("RGBA")
+ samples = img.tobytes()
+ pix = fitz.Pixmap(fitz.csRGB, img.size[0], img.size[1], samples)

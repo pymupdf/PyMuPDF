@@ -91,6 +91,7 @@ except AttributeError:
 
 
 
+import os
 VersionFitz = "1.8"
 VersionBind = "1.8.0"
 
@@ -114,6 +115,8 @@ class Document(_object):
             filename = filename.encode('utf8')
         else:
             raise TypeError("filename must be a string")
+        if not os.path.exists(filename) and streamlen == 0:
+            raise IOError("no such file: '%s'" % (filename,))
         self.name = filename
         self.streamlen = streamlen
         self.isClosed = 0
@@ -433,6 +436,9 @@ class IRect(_object):
     width = property(lambda self: self.x1-self.x0)
     height = property(lambda self: self.y1-self.y0)
 
+    def getRect(self):
+        return Rect(self.x0, self.y0, self.x1, self.y1)
+
     def __repr__(self):
         return "fitz.IRect" + str((self.x0, self.y0, self.x1, self.y1))
 
@@ -505,9 +511,6 @@ class Pixmap(_object):
     def clearWith(self, *args):
         return _fitz.Pixmap_clearWith(self, *args)
 
-    def clearIRectWith(self, value, bbox):
-        return _fitz.Pixmap_clearIRectWith(self, value, bbox)
-
     def copyPixmap(self, src, bbox):
         return _fitz.Pixmap_copyPixmap(self, src, bbox)
 
@@ -522,10 +525,15 @@ class Pixmap(_object):
             filename = filename.encode('utf8')
         else:
             raise TypeError("filename must be a string")
+        if not filename.lower().endswith(".png"):
+            raise ValueError("filename must end with '.png'")
 
 
         return _fitz.Pixmap_writePNG(self, filename, savealpha)
 
+
+    def writeIMG(self, filename, format, savealpha=0):
+        return _fitz.Pixmap_writeIMG(self, filename, format, savealpha)
 
     def invertIRect(self, *args):
         return _fitz.Pixmap_invertIRect(self, *args)
@@ -539,8 +547,8 @@ class Pixmap(_object):
     height = h
 
     def __repr__(self):
-        cs = {2:"fitz.CS_GRAY", 4:"fitz.CS_RGB", 5:"fitz.CS_CMYK"}
-        return "fitz.Pixmap(fitz.Colorspace(%s), fitz.IRect(%s, %s, %s, %s))" % (cs[self.n], self.x, self.y, self.x + self.width, self.y + self.height)
+        cs = {2:"GRAY", 4:"RGB", 5:"CMYK"}
+        return "fitz.Pixmap(fitz.cs%s, fitz.IRect(%s, %s, %s, %s))" % (cs[self.n], self.x, self.y, self.x + self.width, self.y + self.height)
 
 
 Pixmap_swigregister = _fitz.Pixmap_swigregister

@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Appendix 2: Details on Text Extraction &mdash; PyMuPDF 1.8.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.8.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="PyMuPDF 1.8.0 documentation" href="index.html" />
+    <link rel="prev" title="Appendix 1: Performance" href="app1.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="app1.html" title="Appendix 1: Performance"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Appendix 2: Details on Text Extraction</a><ul>
+<li><a class="reference internal" href="#general-structure-of-a-textpage">General structure of a TextPage</a></li>
+<li><a class="reference internal" href="#output-of-gettext-output-text">Output of <code class="docutils literal"><span class="pre">getText(output=&quot;text&quot;)</span></code></a></li>
+<li><a class="reference internal" href="#output-of-gettext-output-html">Output of <code class="docutils literal"><span class="pre">getText(output=&quot;html&quot;)</span></code></a></li>
+<li><a class="reference internal" href="#output-of-gettext-output-json">Output of <code class="docutils literal"><span class="pre">getText(output=&quot;json&quot;)</span></code></a></li>
+<li><a class="reference internal" href="#output-of-gettext-output-xml">Output of <code class="docutils literal"><span class="pre">getText(output=&quot;xml&quot;)</span></code></a></li>
+<li><a class="reference internal" href="#resource-requirements">Resource Requirements</a></li>
+<li><a class="reference internal" href="#performance">Performance</a></li>
+<li><a class="reference internal" href="#data-sizes">Data Sizes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="app1.html"
+                        title="previous chapter">Appendix 1: Performance</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/app2.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="appendix-2-details-on-text-extraction">
+<h1>Appendix 2: Details on Text Extraction<a class="headerlink" href="#appendix-2-details-on-text-extraction" title="Permalink to this headline">¶</a></h1>
+<p>This chapter provides background on the text extraction methods of PyMuPDF.</p>
+<p>Information of interest are</p>
+<ul class="simple">
+<li>what do they provide?</li>
+<li>what do they imply (processing time / data sizes)?</li>
+</ul>
+<div class="section" id="general-structure-of-a-textpage">
+<h2>General structure of a TextPage<a class="headerlink" href="#general-structure-of-a-textpage" title="Permalink to this headline">¶</a></h2>
+<p>Text information contained in a <a class="reference internal" href="textpage.html#textpage"><span>TextPage</span></a> adheres to the following hierarchy:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;page&gt; (width and height)
+    &lt;block&gt; (its rectangle)
+        &lt;line&gt; (its rectangle)
+            &lt;span&gt; (its rectangle and font information)
+                &lt;char&gt; (its rectangle, (x, y) coordinates and value)
+</pre></div>
+</div>
+<p>A <strong>text page</strong> consists of blocks (= roughly paragraphs).</p>
+<p>A <strong>block</strong> consists of lines.</p>
+<p>A <strong>line</strong> consists of spans.</p>
+<p>A <strong>span</strong> consists of characters with the same properties. E.g. a different font will cause a new span.</p>
+</div>
+<div class="section" id="output-of-gettext-output-text">
+<h2>Output of <code class="docutils literal"><span class="pre">getText(output=&quot;text&quot;)</span></code><a class="headerlink" href="#output-of-gettext-output-text" title="Permalink to this headline">¶</a></h2>
+<p>This is the plain text output of a page of this tutorial&#8217;s PDF version:</p>
+<div class="highlight-python"><div class="highlight"><pre>Tutorial
+
+This tutorial will show you the use of MuPDF in Python step by step.
+
+Because MuPDF supports not only PDF, but also XPS, OpenXPS and EPUB formats, so does PyMuPDF.
+
+Nevertheless we will only talk about PDF files for the sake of brevity.
+...
+</pre></div>
+</div>
+</div>
+<div class="section" id="output-of-gettext-output-html">
+<h2>Output of <code class="docutils literal"><span class="pre">getText(output=&quot;html&quot;)</span></code><a class="headerlink" href="#output-of-gettext-output-html" title="Permalink to this headline">¶</a></h2>
+<p>The HTML version looks like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;div class=&quot;page&quot;&gt;
+&lt;div class=&quot;block&quot;&gt;&lt;p&gt;
+&lt;div class=&quot;metaline&quot;&gt;&lt;div class=&quot;line&quot;&gt;&lt;div class=&quot;cell&quot; style=&quot;width:0%;align:left&quot;&gt;&lt;span class=&quot;s0&quot;&gt;Tutorial&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/p&gt;&lt;/div&gt;
+&lt;div class=&quot;block&quot;&gt;&lt;p&gt;
+&lt;div class=&quot;line&quot;&gt;&lt;div class=&quot;cell&quot; style=&quot;width:0%;align:left&quot;&gt;&lt;span class=&quot;s1&quot;&gt;This tutorial will show you the use of MuPDF in Python step by step.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/p&gt;&lt;/div&gt;
+&lt;div class=&quot;block&quot;&gt;&lt;p&gt;
+&lt;div class=&quot;line&quot;&gt;&lt;div class=&quot;cell&quot; style=&quot;width:0%;align:left&quot;&gt;&lt;span class=&quot;s1&quot;&gt;Because MuPDF supports not only PDF, but also XPS, OpenXPS and EPUB formats, so does PyMuPDF.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;line&quot;&gt;&lt;div class=&quot;cell&quot; style=&quot;width:0%;align:left&quot;&gt;&lt;span class=&quot;s1&quot;&gt;Nevertheless we will only talk about PDF files for the sake of brevity.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/p&gt;&lt;/div&gt;
+...
+</pre></div>
+</div>
+</div>
+<div class="section" id="output-of-gettext-output-json">
+<h2>Output of <code class="docutils literal"><span class="pre">getText(output=&quot;json&quot;)</span></code><a class="headerlink" href="#output-of-gettext-output-json" title="Permalink to this headline">¶</a></h2>
+<p>JSON output looks like so:</p>
+<div class="highlight-python"><div class="highlight"><pre>{
+ &quot;len&quot;:35,&quot;width&quot;:595.2756,&quot;height&quot;:841.8898,
+ &quot;blocks&quot;:[
+  {&quot;type&quot;:&quot;text&quot;,&quot;bbox&quot;:[40.01575, 53.730354, 98.68775, 76.08236],
+   &quot;lines&quot;:[
+      {&quot;bbox&quot;:[40.01575, 53.730354, 98.68775, 76.08236],
+       &quot;spans&quot;:[
+         {&quot;bbox&quot;:[40.01575, 53.730354, 98.68775, 76.08236],
+          &quot;text&quot;:&quot;Tutorial&quot;
+         }
+       ]
+      }
+   ]
+  },
+  {&quot;type&quot;:&quot;text&quot;,&quot;bbox&quot;:[40.01575, 79.300354, 340.6957, 93.04035],
+   &quot;lines&quot;:[
+      {&quot;bbox&quot;:[40.01575, 79.300354, 340.6957, 93.04035],
+       &quot;spans&quot;:[
+         {&quot;bbox&quot;:[40.01575, 79.300354, 340.6957, 93.04035],
+          &quot;text&quot;:&quot;This tutorial will show you the use of MuPDF in Python step by step.&quot;
+         }
+       ]
+      }
+   ]
+  },
+...
+</pre></div>
+</div>
+</div>
+<div class="section" id="output-of-gettext-output-xml">
+<h2>Output of <code class="docutils literal"><span class="pre">getText(output=&quot;xml&quot;)</span></code><a class="headerlink" href="#output-of-gettext-output-xml" title="Permalink to this headline">¶</a></h2>
+<p>Now the XML version:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;page width=&quot;595.2756&quot; height=&quot;841.8898&quot;&gt;
+&lt;block bbox=&quot;40.01575 53.730354 98.68775 76.08236&quot;&gt;
+&lt;line bbox=&quot;40.01575 53.730354 98.68775 76.08236&quot;&gt;
+&lt;span bbox=&quot;40.01575 53.730354 98.68775 76.08236&quot; font=&quot;Helvetica-Bold&quot; size=&quot;16&quot;&gt;
+&lt;char bbox=&quot;40.01575 53.730354 49.79175 76.08236&quot; x=&quot;40.01575&quot; y=&quot;70.85036&quot; c=&quot;T&quot;/&gt;
+&lt;char bbox=&quot;49.79175 53.730354 59.56775 76.08236&quot; x=&quot;49.79175&quot; y=&quot;70.85036&quot; c=&quot;u&quot;/&gt;
+&lt;char bbox=&quot;59.56775 53.730354 64.89575 76.08236&quot; x=&quot;59.56775&quot; y=&quot;70.85036&quot; c=&quot;t&quot;/&gt;
+&lt;char bbox=&quot;64.89575 53.730354 74.67175 76.08236&quot; x=&quot;64.89575&quot; y=&quot;70.85036&quot; c=&quot;o&quot;/&gt;
+&lt;char bbox=&quot;74.67175 53.730354 80.89575 76.08236&quot; x=&quot;74.67175&quot; y=&quot;70.85036&quot; c=&quot;r&quot;/&gt;
+&lt;char bbox=&quot;80.89575 53.730354 85.34375 76.08236&quot; x=&quot;80.89575&quot; y=&quot;70.85036&quot; c=&quot;i&quot;/&gt;
+&lt;char bbox=&quot;85.34375 53.730354 94.23975 76.08236&quot; x=&quot;85.34375&quot; y=&quot;70.85036&quot; c=&quot;a&quot;/&gt;
+&lt;char bbox=&quot;94.23975 53.730354 98.68775 76.08236&quot; x=&quot;94.23975&quot; y=&quot;70.85036&quot; c=&quot;l&quot;/&gt;
+&lt;/span&gt;
+&lt;/line&gt;
+&lt;/block&gt;
+&lt;block bbox=&quot;40.01575 79.300354 340.6957 93.04035&quot;&gt;
+&lt;line bbox=&quot;40.01575 79.300354 340.6957 93.04035&quot;&gt;
+&lt;span bbox=&quot;40.01575 79.300354 340.6957 93.04035&quot; font=&quot;Helvetica&quot; size=&quot;10&quot;&gt;
+&lt;char bbox=&quot;40.01575 79.300354 46.12575 93.04035&quot; x=&quot;40.01575&quot; y=&quot;90.050354&quot; c=&quot;T&quot;/&gt;
+&lt;char bbox=&quot;46.12575 79.300354 51.685753 93.04035&quot; x=&quot;46.12575&quot; y=&quot;90.050354&quot; c=&quot;h&quot;/&gt;
+&lt;char bbox=&quot;51.685753 79.300354 53.90575 93.04035&quot; x=&quot;51.685753&quot; y=&quot;90.050354&quot; c=&quot;i&quot;/&gt;
+&lt;char bbox=&quot;53.90575 79.300354 58.90575 93.04035&quot; x=&quot;53.90575&quot; y=&quot;90.050354&quot; c=&quot;s&quot;/&gt;
+&lt;char bbox=&quot;58.90575 79.300354 61.685753 93.04035&quot; x=&quot;58.90575&quot; y=&quot;90.050354&quot; c=&quot; &quot;/&gt;
+&lt;char bbox=&quot;61.685753 79.300354 64.46575 93.04035&quot; x=&quot;61.685753&quot; y=&quot;90.050354&quot; c=&quot;t&quot;/&gt;
+&lt;char bbox=&quot;64.46575 79.300354 70.02576 93.04035&quot; x=&quot;64.46575&quot; y=&quot;90.050354&quot; c=&quot;u&quot;/&gt;
+&lt;char bbox=&quot;70.02576 79.300354 72.805756 93.04035&quot; x=&quot;70.02576&quot; y=&quot;90.050354&quot; c=&quot;t&quot;/&gt;
+&lt;char bbox=&quot;72.805756 79.300354 78.36575 93.04035&quot; x=&quot;72.805756&quot; y=&quot;90.050354&quot; c=&quot;o&quot;/&gt;
+&lt;char bbox=&quot;78.36575 79.300354 81.695755 93.04035&quot; x=&quot;78.36575&quot; y=&quot;90.050354&quot; c=&quot;r&quot;/&gt;
+&lt;char bbox=&quot;81.695755 79.300354 83.91576 93.04035&quot; x=&quot;81.695755&quot; y=&quot;90.050354&quot; c=&quot;i&quot;/&gt;
+...
+</pre></div>
+</div>
+</div>
+<div class="section" id="resource-requirements">
+<h2>Resource Requirements<a class="headerlink" href="#resource-requirements" title="Permalink to this headline">¶</a></h2>
+<p>The four text extraction methods of a <a class="reference internal" href="textpage.html#textpage"><span>TextPage</span></a> differ significantly: in terms of information they supply (see above), and in terms of resource requirements. More information of course means that more processing is required and a higher data volume is generated.</p>
+<p>For testing performance, we have run several example PDFs through these methods and found the following information. This  data is not statistically secured in any way - just take it as an idea for what you should expect to see.</p>
+<p>As a low end example we took this manual&#8217;s PDF version (45+ pages, text oriented, 500 KB). The high end case was Adobe&#8217;s PDF manual (1310 pages, text oriented, 32 MB). The other test cases were <a class="reference external" href="http://www.spektrum.de/">Spektrum</a> magazines of the year 2015 (the German version of Scientific American, 100+ pages, text with lots of complex interspersed images, 10 to 25 MB each).</p>
+</div>
+<div class="section" id="performance">
+<h2>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
+<p>Performance of text extraction has improved significantly in MuPDF 1.8! As of updating this documentation (mid November 2015), data hint at an improvement factor greater than 2. Especially the complex extraction methods now have a much lower effort penalty.</p>
+<p>On a higher level Win10 machine (8 processors at 4 GHz, 8 GB RAM), <code class="docutils literal"><span class="pre">extractXML()</span></code> needs anything between 0.2 and 0.5 seconds per page. This means that you can extract extremely detailed text information of a complex 100-page magazine in less than a minute. This is faster than some other free text extraction tools like e.g. <a class="reference external" href="https://www.gonitro.com/pdf-reader">Nitro 3</a>.</p>
+<p>With <code class="docutils literal"><span class="pre">PDF2TextJS.py</span></code> of the example directory, you have a high performance text extraction utility with a high layout faithfulness!</p>
+</div>
+<div class="section" id="data-sizes">
+<h2>Data Sizes<a class="headerlink" href="#data-sizes" title="Permalink to this headline">¶</a></h2>
+<p>The sizes of the returned text strings follow this pattern (<code class="docutils literal"><span class="pre">extractText()</span></code> is set to 1):</p>
+<p><code class="docutils literal"><span class="pre">(Text</span> <span class="pre">:</span> <span class="pre">HTML</span> <span class="pre">:</span> <span class="pre">JSON</span> <span class="pre">:</span> <span class="pre">XML)</span> <span class="pre">~</span> <span class="pre">(1</span> <span class="pre">:</span> <span class="pre">4</span> <span class="pre">:</span> <span class="pre">6</span> <span class="pre">:</span> <span class="pre">87)</span></code></p>
+<p>The number 87 for <code class="docutils literal"><span class="pre">extractXML()</span></code> corresponds to values between 200 and 400 KB per page.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="app1.html" title="Appendix 1: Performance"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
+      Last updated on 25. Jan 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

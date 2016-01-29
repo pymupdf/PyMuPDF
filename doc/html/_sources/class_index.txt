@@ -2,39 +2,12 @@
 
     PageBreak
 
-.. _fitz:
-
-===============================
-Classes and Methods
-===============================
-A list of PyMuPDF classes and methods, accessible via ``fitz.<name>`` if your import statement was ``import fitz``.
-
-====================== =========================================================
-**Class / Method**     **Short Description**
-====================== =========================================================
-:ref:`Colorspace`      define the color space of a :ref:`Pixmap`.
-:ref:`Device`          target object for rendering or text extraction.
-:ref:`DisplayList`     a list containing drawing commands.
-:ref:`Document`        basic class for dealing with files.
-:ref:`Identity`        the do-nothing :ref:`Matrix`
-:ref:`IRect`           a rectangle (pixel coordinates).
-:ref:`Link`            a destination
-:ref:`linkDest`        the destination of an outline entry
-:ref:`Matrix`          a 3x3 matrix used for transformations.
-:ref:`Outline`         outline element (a.k.a. bookmark).
-:ref:`Page`            a document page.
-:ref:`Pixmap`          a pixel map (for rendering).
-:ref:`Point`           represents a point in the plane.
-:ref:`Rect`            a rectangle (float coordinates).
-:ref:`TextPage`        text content of a page.
-:ref:`TextSheet`       a list of text styles used in a page.
-====================== =========================================================
-
-
+============
+Classes
+============
 
 .. toctree::
    :maxdepth: 1
-   :hidden:
 
    colorspace.txt
    device.txt

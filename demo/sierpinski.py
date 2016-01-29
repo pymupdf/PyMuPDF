@@ -13,8 +13,7 @@ License:
  GNU GPL 3.x
  
 On a machine with 4.0 GHz, run time should be well below 0.5 sec for d = 729 (= 3**6).
-For each additional power of 3 the runtime grows by a factor of 8, i.e. about 4 seconds for
-d = 3**7, etc. in our case.
+For each additional power of 3, runtime grows by a factor of 8, i.e. about 4 seconds for d = 3**7, etc. in our case.
 """
 import fitz, time
 
@@ -29,7 +28,7 @@ def punch(pm, x00, y00, x03, y03):
     y01 = y00 + step
     y02 = y01 + step
     # we clear the middle square and recurse for the other 8
-    ir = fitz.IRect(x01, y01, x02, y02)
+    ir = fitz.IRect(x01, y01, x02, y02)  # rectangle of middle square
     punch(pm, x00, y00, x01, y01)      # top left
     punch(pm, x01, y00, x02, y01)      # top middle
     punch(pm, x02, y00, x03, y01)      # top right

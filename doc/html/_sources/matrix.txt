@@ -45,16 +45,16 @@ It should be noted, that
 
    .. method:: preRotate(deg)
 
-      Performs a clockwise rotation for positive ``deg`` degrees, else counterclockwise. This will change the matrix elements in the following way: ``a = cos(deg)``, ``b = sin(deg)``, ``c = -sin(deg)``, ``d = cos(deg)``.  ``e`` and ``f`` will remain unchanged.
+      Modify the matrix to perform a clockwise rotation for positive ``deg`` degrees, else counterclockwise. The matrix elements will change in the following way:
+
+	  ``[a,b,c,d,e,f] -> [cos(deg), sin(deg), -sin(deg), cos(deg), e, f]``.
 
       :param `deg`: The rotation angle in degrees (use conventional notation based on Pi = 180 degrees).
       :type `deg`: float
 
-      :rtype: :ref:`Matrix`
-
    .. method:: preScale(sx, sy)
 
-      Scales by the zoom factors sx and sy. Has effects on attributes ``a`` and ``d`` only.
+      Modify the matrix to scale by the zoom factors sx and sy. Has effects on attributes ``a`` and ``d`` only.
 
       :param `sx`: Zoom factor in X direction. For the effect see description of attribute ``a``.
       :type `sx`: float
@@ -62,11 +62,9 @@ It should be noted, that
       :param `sy`: Zoom factor in Y direction. For the effect see description of attribute ``d``.
       :type `sy`: float
 
-      :rtype: :ref:`Matrix`
-
    .. method:: preShear(sx, sy)
 
-      Performs shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has effects on attributes ``b`` and ``c`` only.
+      Modify the matrix to perform a shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has effects on attributes ``b`` and ``c`` only.
 
       :param `sx`: Shearing effect in X direction. See attribute ``c``.
       :type `sx`: float
@@ -74,12 +72,9 @@ It should be noted, that
       :param `sy`: Shearing effect in Y direction. See attribute ``b``.
       :type `sy`: float
 
-      :rtype: :ref:`Matrix`
-
-
    .. attribute:: a
 
-      Scaling in X-direction **(width)**. For example, a value of 0.5 performs a shrink of the **width** by a factor of 2. If a < 0, a (additional) vertical flip will occur, i.e. the rectangle's picture will be mirrored along the Y axis.
+      Scaling in X-direction **(width)**. For example, a value of 0.5 performs a shrink of the **width** by a factor of 2. If a < 0, a left-right flip will (additionally) occur.
 
       :type: float
 
@@ -97,19 +92,19 @@ It should be noted, that
 
    .. attribute:: d
 
-      Scaling in Y-direction **(height)**. For example, a value of 1.5 performs a stretch of the **height** by 50%. If d < 0, a (additional) horizontal flip will occur, i.e. the rectangle's picture will be mirrored along the X axis.
+      Scaling in Y-direction **(height)**. For example, a value of 1.5 performs a stretch of the **height** by 50%. If d < 0, an up-down flip will (additionally) occur.
 
       :type: float
 
    .. attribute:: e
 
-      Causes a horizontal shift effect: Each ``Point(x, y)`` will be shifted right to become ``Point(x + e, y)``. Note that negative values of ``e`` will shift left.
+      Causes a horizontal shift effect: Each ``Point(x, y)`` will become ``Point(x + e, y)``. Positive (negative) values of ``e`` will shift right (left).
 
       :type: float
 
    .. attribute:: f
 
-      Causes a vertical shift effect: Each ``Point(x, y)`` will be shifted down to become ``Point(x, y - f)``. Note that negative values of ``f`` will shift up.
+      Causes a vertical shift effect: Each ``Point(x, y)`` will become ``Point(x, y - f)``. Positive (negative) values of ``f`` will shift down (up).
 
       :type: float
 
@@ -137,12 +132,12 @@ Next we do a down shift by 100 pixels: ``f = 100``
 
 Flipping
 --------------
-Flip the page vertically (``a = -1``)
+Flip the page left-right (``a = -1``)
 
 .. image:: a_is_-1.png
 
 
-Flip horizontally (``d = -1``)
+Flip up-down (``d = -1``)
 
 .. image:: d_is_-1.png
 
@@ -159,6 +154,6 @@ Second a shear in X direction (``c = 0.5``)
 
 Rotating
 ---------
-Finally a rotation by 60 degrees
+Finally a rotation by 60 degrees (``preRotate(60)``)
 
 .. image:: rot_60.png

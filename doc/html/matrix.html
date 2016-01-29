@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.8.0 documentation" href="index.html" />
-    <link rel="up" title="Classes and Methods" href="class_index.html" />
+    <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="Outline" href="outline.html" />
     <link rel="prev" title="linkDest" href="linkdest.html" /> 
   </head>
@@ -43,7 +43,7 @@
           <a href="linkdest.html" title="linkDest"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes and Methods</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -161,14 +161,14 @@
 <dl class="method">
 <dt id="Matrix.preRotate">
 <code class="descname">preRotate</code><span class="sig-paren">(</span><em>deg</em><span class="sig-paren">)</span><a class="headerlink" href="#Matrix.preRotate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs a clockwise rotation for positive <code class="docutils literal"><span class="pre">deg</span></code> degrees, else counterclockwise. This will change the matrix elements in the following way: <code class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">cos(deg)</span></code>, <code class="docutils literal"><span class="pre">b</span> <span class="pre">=</span> <span class="pre">sin(deg)</span></code>, <code class="docutils literal"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">-sin(deg)</span></code>, <code class="docutils literal"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">cos(deg)</span></code>.  <code class="docutils literal"><span class="pre">e</span></code> and <code class="docutils literal"><span class="pre">f</span></code> will remain unchanged.</p>
+<dd><p>Modify the matrix to perform a clockwise rotation for positive <code class="docutils literal"><span class="pre">deg</span></code> degrees, else counterclockwise. The matrix elements will change in the following way:</p>
+<blockquote>
+<div><code class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span> <span class="pre">-&gt;</span> <span class="pre">[cos(deg),</span> <span class="pre">sin(deg),</span> <span class="pre">-sin(deg),</span> <span class="pre">cos(deg),</span> <span class="pre">e,</span> <span class="pre">f]</span></code>.</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deg</strong> (<em>float</em>) &#8211; The rotation angle in degrees (use conventional notation based on Pi = 180 degrees).</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#matrix"><span>Matrix</span></a></td>
 </tr>
 </tbody>
 </table>
@@ -177,18 +177,15 @@
 <dl class="method">
 <dt id="Matrix.preScale">
 <code class="descname">preScale</code><span class="sig-paren">(</span><em>sx</em>, <em>sy</em><span class="sig-paren">)</span><a class="headerlink" href="#Matrix.preScale" title="Permalink to this definition">¶</a></dt>
-<dd><p>Scales by the zoom factors sx and sy. Has effects on attributes <code class="docutils literal"><span class="pre">a</span></code> and <code class="docutils literal"><span class="pre">d</span></code> only.</p>
+<dd><p>Modify the matrix to scale by the zoom factors sx and sy. Has effects on attributes <code class="docutils literal"><span class="pre">a</span></code> and <code class="docutils literal"><span class="pre">d</span></code> only.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>sx</strong> (<em>float</em>) &#8211; Zoom factor in X direction. For the effect see description of attribute <code class="docutils literal"><span class="pre">a</span></code>.</li>
 <li><strong>sy</strong> (<em>float</em>) &#8211; Zoom factor in Y direction. For the effect see description of attribute <code class="docutils literal"><span class="pre">d</span></code>.</li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#matrix"><span>Matrix</span></a></p>
 </td>
 </tr>
 </tbody>
@@ -198,18 +195,15 @@
 <dl class="method">
 <dt id="Matrix.preShear">
 <code class="descname">preShear</code><span class="sig-paren">(</span><em>sx</em>, <em>sy</em><span class="sig-paren">)</span><a class="headerlink" href="#Matrix.preShear" title="Permalink to this definition">¶</a></dt>
-<dd><p>Performs shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has effects on attributes <code class="docutils literal"><span class="pre">b</span></code> and <code class="docutils literal"><span class="pre">c</span></code> only.</p>
+<dd><p>Modify the matrix to perform a shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has effects on attributes <code class="docutils literal"><span class="pre">b</span></code> and <code class="docutils literal"><span class="pre">c</span></code> only.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>sx</strong> (<em>float</em>) &#8211; Shearing effect in X direction. See attribute <code class="docutils literal"><span class="pre">c</span></code>.</li>
 <li><strong>sy</strong> (<em>float</em>) &#8211; Shearing effect in Y direction. See attribute <code class="docutils literal"><span class="pre">b</span></code>.</li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#matrix"><span>Matrix</span></a></p>
 </td>
 </tr>
 </tbody>
@@ -219,7 +213,7 @@
 <dl class="attribute">
 <dt id="Matrix.a">
 <code class="descname">a</code><a class="headerlink" href="#Matrix.a" title="Permalink to this definition">¶</a></dt>
-<dd><p>Scaling in X-direction <strong>(width)</strong>. For example, a value of 0.5 performs a shrink of the <strong>width</strong> by a factor of 2. If a &lt; 0, a (additional) vertical flip will occur, i.e. the rectangle&#8217;s picture will be mirrored along the Y axis.</p>
+<dd><p>Scaling in X-direction <strong>(width)</strong>. For example, a value of 0.5 performs a shrink of the <strong>width</strong> by a factor of 2. If a &lt; 0, a left-right flip will (additionally) occur.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -261,7 +255,7 @@
 <dl class="attribute">
 <dt id="Matrix.d">
 <code class="descname">d</code><a class="headerlink" href="#Matrix.d" title="Permalink to this definition">¶</a></dt>
-<dd><p>Scaling in Y-direction <strong>(height)</strong>. For example, a value of 1.5 performs a stretch of the <strong>height</strong> by 50%. If d &lt; 0, a (additional) horizontal flip will occur, i.e. the rectangle&#8217;s picture will be mirrored along the X axis.</p>
+<dd><p>Scaling in Y-direction <strong>(height)</strong>. For example, a value of 1.5 performs a stretch of the <strong>height</strong> by 50%. If d &lt; 0, an up-down flip will (additionally) occur.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -275,7 +269,7 @@
 <dl class="attribute">
 <dt id="Matrix.e">
 <code class="descname">e</code><a class="headerlink" href="#Matrix.e" title="Permalink to this definition">¶</a></dt>
-<dd><p>Causes a horizontal shift effect: Each <code class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y)</span></code> will be shifted right to become <code class="docutils literal"><span class="pre">Point(x</span> <span class="pre">+</span> <span class="pre">e,</span> <span class="pre">y)</span></code>. Note that negative values of <code class="docutils literal"><span class="pre">e</span></code> will shift left.</p>
+<dd><p>Causes a horizontal shift effect: Each <code class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y)</span></code> will become <code class="docutils literal"><span class="pre">Point(x</span> <span class="pre">+</span> <span class="pre">e,</span> <span class="pre">y)</span></code>. Positive (negative) values of <code class="docutils literal"><span class="pre">e</span></code> will shift right (left).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -289,7 +283,7 @@
 <dl class="attribute">
 <dt id="Matrix.f">
 <code class="descname">f</code><a class="headerlink" href="#Matrix.f" title="Permalink to this definition">¶</a></dt>
-<dd><p>Causes a vertical shift effect: Each <code class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y)</span></code> will be shifted down to become <code class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y</span> <span class="pre">-</span> <span class="pre">f)</span></code>. Note that negative values of <code class="docutils literal"><span class="pre">f</span></code> will shift up.</p>
+<dd><p>Causes a vertical shift effect: Each <code class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y)</span></code> will become <code class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y</span> <span class="pre">-</span> <span class="pre">f)</span></code>. Positive (negative) values of <code class="docutils literal"><span class="pre">f</span></code> will shift down (up).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -315,9 +309,9 @@
 </div>
 <div class="section" id="flipping">
 <h2>Flipping<a class="headerlink" href="#flipping" title="Permalink to this headline">¶</a></h2>
-<p>Flip the page vertically (<code class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">-1</span></code>)</p>
+<p>Flip the page left-right (<code class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">-1</span></code>)</p>
 <img alt="_images/a_is_-1.png" src="_images/a_is_-1.png" />
-<p>Flip horizontally (<code class="docutils literal"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">-1</span></code>)</p>
+<p>Flip up-down (<code class="docutils literal"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">-1</span></code>)</p>
 <img alt="_images/d_is_-1.png" src="_images/d_is_-1.png" />
 </div>
 <div class="section" id="shearing">
@@ -329,7 +323,7 @@
 </div>
 <div class="section" id="rotating">
 <h2>Rotating<a class="headerlink" href="#rotating" title="Permalink to this headline">¶</a></h2>
-<p>Finally a rotation by 60 degrees</p>
+<p>Finally a rotation by 60 degrees (<code class="docutils literal"><span class="pre">preRotate(60)</span></code>)</p>
 <img alt="_images/rot_60.png" src="_images/rot_60.png" />
 </div>
 </div>
@@ -353,12 +347,12 @@
           <a href="linkdest.html" title="linkDest"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes and Methods</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 15. Jan 2016.
+      Last updated on 25. Jan 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

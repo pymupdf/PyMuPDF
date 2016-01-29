@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.8.0 documentation" href="index.html" />
-    <link rel="up" title="Classes and Methods" href="class_index.html" />
+    <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="Link" href="link.html" />
     <link rel="prev" title="Identity" href="identity.html" /> 
   </head>
@@ -43,7 +43,7 @@
           <a href="identity.html" title="Identity"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes and Methods</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -91,27 +91,30 @@
 <col width="65%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head"><strong>Attribute</strong></th>
+<tr class="row-odd"><th class="head"><strong>Attribute / Method</strong></th>
 <th class="head"><strong>Short Description</strong></th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><a class="reference internal" href="#IRect.width" title="IRect.width"><code class="xref py py-attr docutils literal"><span class="pre">IRect.width</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#IRect.getRect" title="IRect.getRect"><code class="xref py py-meth docutils literal"><span class="pre">IRect.getRect()</span></code></a></td>
+<td>return arectangle with same coordinates</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#IRect.width" title="IRect.width"><code class="xref py py-attr docutils literal"><span class="pre">IRect.width</span></code></a></td>
 <td>Width of the bounding box</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#IRect.height" title="IRect.height"><code class="xref py py-attr docutils literal"><span class="pre">IRect.height</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#IRect.height" title="IRect.height"><code class="xref py py-attr docutils literal"><span class="pre">IRect.height</span></code></a></td>
 <td>Height of the bounding box</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#IRect.x0" title="IRect.x0"><code class="xref py py-attr docutils literal"><span class="pre">IRect.x0</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#IRect.x0" title="IRect.x0"><code class="xref py py-attr docutils literal"><span class="pre">IRect.x0</span></code></a></td>
 <td>X-coordinate of the top left corner</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#IRect.y0" title="IRect.y0"><code class="xref py py-attr docutils literal"><span class="pre">IRect.y0</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#IRect.y0" title="IRect.y0"><code class="xref py py-attr docutils literal"><span class="pre">IRect.y0</span></code></a></td>
 <td>Y-coordinate of the top left corner</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#IRect.x1" title="IRect.x1"><code class="xref py py-attr docutils literal"><span class="pre">IRect.x1</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#IRect.x1" title="IRect.x1"><code class="xref py py-attr docutils literal"><span class="pre">IRect.x1</span></code></a></td>
 <td>X-coordinate of the bottom right corner</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#IRect.y1" title="IRect.y1"><code class="xref py py-attr docutils literal"><span class="pre">IRect.y1</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#IRect.y1" title="IRect.y1"><code class="xref py py-attr docutils literal"><span class="pre">IRect.y1</span></code></a></td>
 <td>Y-coordinate of the bottom right corner</td>
 </tr>
 </tbody>
@@ -124,6 +127,12 @@
 <dt id="IRect.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>x0</em>, <em>y0</em>, <em>x1</em>, <em>y1</em><span class="sig-paren">)</span><a class="headerlink" href="#IRect.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor. Without parameters defaulting to <code class="docutils literal"><span class="pre">IRect(0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0)</span></code>, an empty rectangle. Also see the example below. Function <a class="reference internal" href="rect.html#Rect.round" title="Rect.round"><code class="xref py py-meth docutils literal"><span class="pre">Rect.round()</span></code></a> creates the smallest <code class="docutils literal"><span class="pre">IRect</span></code> containing <code class="docutils literal"><span class="pre">Rect</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="IRect.getRect">
+<code class="descname">getRect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#IRect.getRect" title="Permalink to this definition">¶</a></dt>
+<dd><p>A convenience function returning a <a class="reference internal" href="rect.html#rect"><span>Rect</span></a> with the same coordinates as floating point values.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -247,12 +256,12 @@ fitz.IRect(10, 10, 410, 610)
           <a href="identity.html" title="Identity"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes and Methods</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 15. Jan 2016.
+      Last updated on 25. Jan 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

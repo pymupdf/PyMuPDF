@@ -1,6 +1,3 @@
-.. raw:: pdf
-
-    PageBreak
 
 .. _Colorspace:
 
@@ -19,6 +16,6 @@ Represents the color space of a :ref:`Pixmap`.
 
       Constructor
 
-      :param `colorspace`: A number identifying the colorspace. Supported colorspacevalues are :data:`CS_RGB`, :data:`CS_GRAY` and :data:`CS_CMYK`.
+      :param `colorspace`: A number identifying the colorspace. Possible values are :data:`CS_RGB`, :data:`CS_GRAY` and :data:`CS_CMYK`.
 
       :type `colorspace`: int

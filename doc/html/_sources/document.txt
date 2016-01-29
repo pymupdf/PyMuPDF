@@ -10,22 +10,23 @@ Document
 
 This class represents a document. It can be constructed from a file or from memory. See below for details.
 
-=============================== ================================
+=============================== ================================================
 **Method / Attribute**          **Short Description**
-=============================== ================================
-:meth:`Document.authenticate`   Decrypts the document
-:meth:`Document.loadPage`       Reads a page
-:meth:`Document.save`           Saves a copy of the document
-:meth:`Document.getToC`         Create a table of contents
-:meth:`Document.close`          Closes the document
-:attr:`Document.isClosed`       Has document been closed?
-:attr:`Document.outline`        First `Outline` item
+=============================== ================================================
+:meth:`Document.authenticate`   decrypts the document
+:meth:`Document.loadPage`       reads a page
+:meth:`Document.save`           saves a copy of the document
+:meth:`Document.getToC`         create a table of contents
+:meth:`Document.getPagePixmap`  create a pixmap from a page by its number
+:meth:`Document.close`          closes the document
+:attr:`Document.isClosed`       has document been closed?
+:attr:`Document.outline`        first `Outline` item
 :attr:`Document.name`           filename of document
-:attr:`Document.needsPass`      Require password to access data?
-:attr:`Document.isEncrypted`    Is document still encrypted?
-:attr:`Document.pageCount`      The document's number of pages
-:attr:`Document.metadata`       The document's meta data
-=============================== ================================
+:attr:`Document.needsPass`      require password to access data?
+:attr:`Document.isEncrypted`    is document still encrypted?
+:attr:`Document.pageCount`      the document's number of pages
+:attr:`Document.metadata`       the document's meta data
+=============================== ================================================
 
 **Class API**
 
@@ -85,6 +86,24 @@ This class represents a document. It can be constructed from a file or from memo
       :type `simple`: boolean
 
       :rtype: list
+
+    .. method:: getPagePixmap(pno, matrix = fitz.Identity, colorspace = "rgb")
+
+      Creates a pixmap from one of the document's pages - identified by number ``pno``.
+
+      :param `pno`: Page number
+
+      :type `pno`: int
+
+      :param `matrix`: A transformation matrix - default is :ref:`Identity`.
+
+      :type `matrix`: Matrix
+
+      :param `colorspace`: A string specifying the requested colorspace - default is ``rgb``.
+
+      :type `colorspace`: string
+
+      :rtype: :ref:`Pixmap`
 
     .. method:: save(outfile, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0)
 

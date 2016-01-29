@@ -24,5 +24,3 @@ dl.run(fitz.Device(ts, tp), fitz.Identity, rect)
 #get the text content
 text = tp.extractText()
 print('%s' % text)
-
-#TODO: extract images from a page

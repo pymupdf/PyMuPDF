@@ -3583,9 +3583,6 @@ SWIGINTERN void fz_pixmap_s_clearWith__SWIG_0(struct fz_pixmap_s *self,int value
 SWIGINTERN void fz_pixmap_s_clearWith__SWIG_1(struct fz_pixmap_s *self,int value,struct fz_irect_s const *bbox){
             fz_clear_pixmap_rect_with_value(gctx, self, value, bbox);
         }
-SWIGINTERN void fz_pixmap_s_clearIRectWith(struct fz_pixmap_s *self,int value,struct fz_irect_s const *bbox){
-            fz_clear_pixmap_rect_with_value(gctx, self, value, bbox);
-        }
 SWIGINTERN void fz_pixmap_s_copyPixmap(struct fz_pixmap_s *self,struct fz_pixmap_s *src,struct fz_irect_s const *bbox){
             fz_copy_pixmap_rect(gctx, self, src, bbox);
         }
@@ -3595,6 +3592,28 @@ SWIGINTERN int fz_pixmap_s_getSize(struct fz_pixmap_s *self){
 SWIGINTERN int fz_pixmap_s_writePNG(struct fz_pixmap_s *self,char *filename,int savealpha){
             fz_try(gctx) {
                 fz_write_png(gctx, self, filename, savealpha);
+            }
+            fz_catch(gctx)
+                return 1;
+            return 0;
+        }
+SWIGINTERN int fz_pixmap_s_writeIMG(struct fz_pixmap_s *self,char *filename,int format,int savealpha){
+            fz_try(gctx) {
+                switch(format)
+                {
+                    case(1):
+                        fz_write_png(gctx, self, filename, savealpha);
+                        break;
+                    case(2):
+                        fz_write_pnm(gctx, self, filename);
+                        break;
+                    case(3):
+                        fz_write_pam(gctx, self, filename, savealpha);
+                        break;
+                    case(4):
+                        fz_write_tga(gctx, self, filename, savealpha);
+                        break;
+                }
             }
             fz_catch(gctx)
                 return 1;
@@ -6346,45 +6365,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Pixmap_clearIRectWith(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
-  int arg2 ;
-  struct fz_irect_s *arg3 = (struct fz_irect_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:Pixmap_clearIRectWith",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_clearIRectWith" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
-  }
-  arg1 = (struct fz_pixmap_s *)(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Pixmap_clearIRectWith" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = (int)(val2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_fz_irect_s, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Pixmap_clearIRectWith" "', argument " "3"" of type '" "struct fz_irect_s const *""'"); 
-  }
-  arg3 = (struct fz_irect_s *)(argp3);
-  fz_pixmap_s_clearIRectWith(arg1,arg2,(struct fz_irect_s const *)arg3);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_Pixmap_copyPixmap(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
@@ -6485,6 +6465,66 @@ SWIGINTERN PyObject *_wrap_Pixmap_writePNG(PyObject *SWIGUNUSEDPARM(self), PyObj
     result = (int)fz_pixmap_s_writePNG(arg1,arg2,arg3);
     if(result) {
       PyErr_SetString(PyExc_Exception, "cannot writePNG");
+      return NULL;
+    }
+  }
+  resultobj = SWIG_From_int((int)(result));
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pixmap_writeIMG(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int arg3 ;
+  int arg4 = (int) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO|O:Pixmap_writeIMG",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_writeIMG" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Pixmap_writeIMG" "', argument " "2"" of type '" "char *""'");
+  }
+  arg2 = (char *)(buf2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Pixmap_writeIMG" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = (int)(val3);
+  if (obj3) {
+    ecode4 = SWIG_AsVal_int(obj3, &val4);
+    if (!SWIG_IsOK(ecode4)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "Pixmap_writeIMG" "', argument " "4"" of type '" "int""'");
+    } 
+    arg4 = (int)(val4);
+  }
+  {
+    result = (int)fz_pixmap_s_writeIMG(arg1,arg2,arg3,arg4);
+    if(result) {
+      PyErr_SetString(PyExc_Exception, "cannot writeIMG");
       return NULL;
     }
   }
@@ -9036,10 +9076,10 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Pixmap_gammaWith", _wrap_Pixmap_gammaWith, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_tintWith", _wrap_Pixmap_tintWith, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_clearWith", _wrap_Pixmap_clearWith, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_clearIRectWith", _wrap_Pixmap_clearIRectWith, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_copyPixmap", _wrap_Pixmap_copyPixmap, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_getSize", _wrap_Pixmap_getSize, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_writePNG", _wrap_Pixmap_writePNG, METH_VARARGS, NULL},
+	 { (char *)"Pixmap_writeIMG", _wrap_Pixmap_writeIMG, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_invertIRect", _wrap_Pixmap_invertIRect, METH_VARARGS, NULL},
 	 { (char *)"Pixmap__getSamples", _wrap_Pixmap__getSamples, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_swigregister", Pixmap_swigregister, METH_VARARGS, NULL},

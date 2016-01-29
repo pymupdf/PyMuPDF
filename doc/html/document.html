@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.8.0 documentation" href="index.html" />
-    <link rel="up" title="Classes and Methods" href="class_index.html" />
+    <link rel="up" title="Classes" href="class_index.html" />
     <link rel="next" title="Identity" href="identity.html" />
     <link rel="prev" title="DisplayList" href="displaylist.html" /> 
   </head>
@@ -43,7 +43,7 @@
           <a href="displaylist.html" title="DisplayList"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes and Methods</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -87,8 +87,8 @@
 <p>This class represents a document. It can be constructed from a file or from memory. See below for details.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="49%" />
-<col width="51%" />
+<col width="39%" />
+<col width="61%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Method / Attribute</strong></th>
@@ -97,40 +97,43 @@
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><a class="reference internal" href="#Document.authenticate" title="Document.authenticate"><code class="xref py py-meth docutils literal"><span class="pre">Document.authenticate()</span></code></a></td>
-<td>Decrypts the document</td>
+<td>decrypts the document</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.loadPage" title="Document.loadPage"><code class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></code></a></td>
-<td>Reads a page</td>
+<td>reads a page</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a></td>
-<td>Saves a copy of the document</td>
+<td>saves a copy of the document</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.getToC" title="Document.getToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.getToC()</span></code></a></td>
-<td>Create a table of contents</td>
+<td>create a table of contents</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.close" title="Document.close"><code class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></code></a></td>
-<td>Closes the document</td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.getPagePixmap" title="Document.getPagePixmap"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPagePixmap()</span></code></a></td>
+<td>create a pixmap from a page by its number</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><code class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></code></a></td>
-<td>Has document been closed?</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.close" title="Document.close"><code class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></code></a></td>
+<td>closes the document</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><code class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></code></a></td>
-<td>First <cite>Outline</cite> item</td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><code class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></code></a></td>
+<td>has document been closed?</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.name" title="Document.name"><code class="xref py py-attr docutils literal"><span class="pre">Document.name</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><code class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></code></a></td>
+<td>first <cite>Outline</cite> item</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.name" title="Document.name"><code class="xref py py-attr docutils literal"><span class="pre">Document.name</span></code></a></td>
 <td>filename of document</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
-<td>Require password to access data?</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
+<td>require password to access data?</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.isEncrypted" title="Document.isEncrypted"><code class="xref py py-attr docutils literal"><span class="pre">Document.isEncrypted</span></code></a></td>
-<td>Is document still encrypted?</td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.isEncrypted" title="Document.isEncrypted"><code class="xref py py-attr docutils literal"><span class="pre">Document.isEncrypted</span></code></a></td>
+<td>is document still encrypted?</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
-<td>The document&#8217;s number of pages</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
+<td>the document&#8217;s number of pages</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
-<td>The document&#8217;s meta data</td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
+<td>the document&#8217;s meta data</td>
 </tr>
 </tbody>
 </table>
@@ -226,6 +229,28 @@
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>simple</strong> (<em>boolean</em>) &#8211; Indicates whether a detailed ToC is required. If <code class="docutils literal"><span class="pre">simple</span> <span class="pre">=</span> <span class="pre">False</span></code> is specified, each entry of the list also contains a dictionary with <a class="reference internal" href="link.html#link"><span>Link</span></a> details for each outline entry.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Document.getPagePixmap">
+<code class="descname">getPagePixmap</code><span class="sig-paren">(</span><em>pno</em>, <em>matrix = fitz.Identity</em>, <em>colorspace = &quot;rgb&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.getPagePixmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a pixmap from one of the document&#8217;s pages - identified by number <code class="docutils literal"><span class="pre">pno</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pno</strong> (<em>int</em>) &#8211; Page number</li>
+<li><strong>matrix</strong> (<a class="reference internal" href="matrix.html#Matrix" title="Matrix"><em>Matrix</em></a>) &#8211; A transformation matrix - default is <a class="reference internal" href="identity.html#identity"><span>Identity</span></a>.</li>
+<li><strong>colorspace</strong> (<em>string</em>) &#8211; A string specifying the requested colorspace - default is <code class="docutils literal"><span class="pre">rgb</span></code>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="pixmap.html#pixmap"><span>Pixmap</span></a></p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -395,12 +420,12 @@
           <a href="displaylist.html" title="DisplayList"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes and Methods</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 15. Jan 2016.
+      Last updated on 27. Jan 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

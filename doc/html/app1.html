@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Appendix 1: Performance &mdash; PyMuPDF 1.8.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.8.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="PyMuPDF 1.8.0 documentation" href="index.html" />
+    <link rel="next" title="Appendix 2: Details on Text Extraction" href="app2.html" />
+    <link rel="prev" title="Constants and Enumerations" href="vars.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="app2.html" title="Appendix 2: Details on Text Extraction"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="vars.html" title="Constants and Enumerations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Appendix 1: Performance</a><ul>
+<li><a class="reference internal" href="#part-1-parsing">Part 1: Parsing</a></li>
+<li><a class="reference internal" href="#part-2-text-extraction">Part 2: Text Extraction</a></li>
+<li><a class="reference internal" href="#part-3-image-rendering">Part 3: Image Rendering</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="vars.html"
+                        title="previous chapter">Constants and Enumerations</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="app2.html"
+                        title="next chapter">Appendix 2: Details on Text Extraction</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/app1.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="appendix-1-performance">
+<h1>Appendix 1: Performance<a class="headerlink" href="#appendix-1-performance" title="Permalink to this headline">¶</a></h1>
+<p>We have tried to get an impression on PyMuPDF&#8217;s performance. While we know this is very hard and a fair comparison is almost impossible, we feel that we at least should provide some quantitative information to justify our bold comments on MuPDF&#8217;s <strong>top performance</strong>.</p>
+<p>Following are three sections that deal with different aspects of performance:</p>
+<ul class="simple">
+<li>document parsing</li>
+<li>text extraction</li>
+<li>image rendering</li>
+</ul>
+<p>In each section, the same fixed set of PDF files is being processed by a set of tools. The set of tools varies - for reasons we will explain in the section.</p>
+<p>Here is the list of files we are using. Each file name is accompanied by further information: <strong>size</strong> in bytes, number of <strong>pages</strong>, number of bookmarks (<strong>toc</strong> entries), number of <strong>links</strong>, <strong>text</strong> size as a percentage of file size, <strong>KB</strong> per page, PDF <strong>version</strong> and remarks. <strong>text %</strong> and <strong>KB index</strong> are indicators for whether a file is text or graphics oriented: e.g. <code class="docutils literal"><span class="pre">Adobe.pdf</span></code> and <code class="docutils literal"><span class="pre">PyMuPDF.pdf</span></code> are clearly text oriented, all other files contain many more images.</p>
+<img alt="_images/filesizes.png" src="_images/filesizes.png" />
+<div class="section" id="part-1-parsing">
+<h2>Part 1: Parsing<a class="headerlink" href="#part-1-parsing" title="Permalink to this headline">¶</a></h2>
+<p>How fast is a PDF file read and its content parsed for further processing? The sheer parsing performance cannot directly be compared, because batch utilities always execute a requested task in one go, front to end. <code class="docutils literal"><span class="pre">pdfrw</span></code> too, has a <code class="docutils literal"><span class="pre">lazy</span></code> strategy for parsing, meaning it only parses those parts of a document that are required in any moment.</p>
+<p>We therefore measure the time to copy a PDF file to an output file, and doing nothing else.</p>
+<p><strong>These were the tools</strong></p>
+<p>All tools are either platform independant, or at least can run on Windows and Unix / Linux (pdftk).</p>
+<p><strong>Poppler</strong> is missing here, because it specifically is a Linux tool set, although we know there exist Windows ports (created with considerable effort apparently). Technically, it is a C/C++ library, for which a Python binding exists - in so far it is somewhat comparable to PyMuPDF. But Poppler in contrast is tightly coupled to <strong>Qt</strong> and <strong>Cairo</strong>. We may still include it in future, when a more handy Windows installation is available. We have seen however some <a class="reference external" href="http://hzqtc.github.io/2012/04/poppler-vs-mupdf.html">analysis</a>, that hints at a much lower performance than MuPDF. Our comparison of text extraction speeds also show a much lower performance of Poppler&#8217;s PDF code base <strong>Xpdf</strong>.</p>
+<p>Image rendering of MuPDF also is about three times faster than the one of Xpdf when comparing the command line tools <code class="docutils literal"><span class="pre">mudraw</span></code> of MuPDF and <code class="docutils literal"><span class="pre">pdftopng</span></code> of Xpdf - see part 3 of this chapter.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="88%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Tool</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>PyMuPDF</td>
+<td>tool of this manual, appearing as &#8220;fitz&#8221; in reports</td>
+</tr>
+<tr class="row-odd"><td>pdfrw</td>
+<td>a pure Python tool, can be used as frontend to ReportLab and rst2pdf</td>
+</tr>
+<tr class="row-even"><td>PyPDF2</td>
+<td>a pure Python tool with a very complete function set</td>
+</tr>
+<tr class="row-odd"><td>pdftk</td>
+<td>a command line utility with numerous functions</td>
+</tr>
+</tbody>
+</table>
+<p>This is how each of the tools is being used with the test:</p>
+<p><strong>PyMuPDF</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="s">&quot;input.pdf&quot;</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;output.pdf&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>pdfrw</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">PdfReader</span><span class="p">(</span><span class="s">&quot;input.pdf&quot;</span><span class="p">)</span>
+<span class="n">writer</span> <span class="o">=</span> <span class="n">PdfWriter</span><span class="p">()</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">trailer</span> <span class="o">=</span> <span class="n">doc</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;output.pdf&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>PyPDF2</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">pdfmerge</span> <span class="o">=</span> <span class="n">PyPDF2</span><span class="o">.</span><span class="n">PdfFileMerger</span><span class="p">()</span>
+<span class="n">pdfmerge</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;input.pdf&quot;</span><span class="p">)</span>
+<span class="n">pdfmerge</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;output.pdf&quot;</span><span class="p">)</span>
+<span class="n">pdfmerge</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>pdftk</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre>pdftk input.pdf output output.pdf
+</pre></div>
+</div>
+<p><strong>Observations</strong></p>
+<p>These are our run time findings (in <strong>seconds</strong>, please note the European number convention: meaning of decimal point and comma is reversed):</p>
+<img alt="_images/copy_speed_1.png" src="_images/copy_speed_1.png" />
+<p>If we leave out the Adobe manual, this table looks like</p>
+<img alt="_images/copy_speed_2.png" src="_images/copy_speed_2.png" />
+<p>PyMuPDF is by far the fastest: on average 2.4 times faster than the second best (the pure Python tool pdfrw, <strong>chapeau pdfrw!</strong>), and 10 times faster than the command line tool pdftk.</p>
+<p>Where PyMuPDF only requires less than 24 seconds to process all files, pdftk affords itself almost 4 minutes.</p>
+<p>By far the slowest tool is PyPDF2 - it is more than 35 times slower than PyMuPDF and 15 times slower than pdfrw! The main reason for PyPDF2&#8217;s bad look comes from the Adobe manual. It obviously is slowed down by the linear file structure and the immense amount of bookmarks of this file. If we take out this special case, then PyPDF2 is 10.5 times slower than PyMuPDF, 4.4 times slower than pdfrw and 1.2 times slower than pdftk.</p>
+<p>If we look at the output PDFs, there is one surprise:</p>
+<p>Each tool created a PDF of similar size as the original. Apart from the Adobe case, PyMuPDF always created the smallest output.</p>
+<p>Adobe&#8217;s manual is an exception: The pure Python tools <strong>reduced</strong> its size by more than 20% (and yielded a document which is no longer linearized)!</p>
+<p>PyMuPDF and pdftk in contrast <strong>drastically increased</strong> the size by 40% to about 50 MB (also no longer linearized).</p>
+<p>So far, we have no explanation of what is happening here.</p>
+</div>
+<div class="section" id="part-2-text-extraction">
+<h2>Part 2: Text Extraction<a class="headerlink" href="#part-2-text-extraction" title="Permalink to this headline">¶</a></h2>
+<p>We also have compared text extraction speed with other tools.</p>
+<p>The following table shows a run time comparison. PyMuPDF&#8217;s methods appear as &#8220;fitz (TEXT)&#8221; and &#8220;fitz (JSON)&#8221; respectively. The tool <code class="docutils literal"><span class="pre">pdftotext.exe</span></code> of the <a class="reference external" href="http://www.foolabs.com/xpdf/">Xpdf</a> toolset appears as &#8220;xpdf&#8221;.</p>
+<ul class="simple">
+<li><strong>extractText():</strong> basic text extraction without layout re-arrangement (using <code class="docutils literal"><span class="pre">GetText(...,</span> <span class="pre">output</span> <span class="pre">=</span> <span class="pre">&quot;text&quot;)</span></code>)</li>
+<li><strong>pdftotext:</strong> a command line tool of the <strong>Xpdf</strong> toolset (which also is the basis of <a class="reference external" href="http://poppler.freedesktop.org/">Poppler&#8217;s library</a>)</li>
+<li><strong>extractJSON():</strong> text extraction with layout information (using <code class="docutils literal"><span class="pre">GetText(...,</span> <span class="pre">output</span> <span class="pre">=</span> <span class="pre">&quot;json&quot;)</span></code>)</li>
+<li><strong>pdfminer:</strong> a pure Python PDF tool specialized on text extraction tasks</li>
+</ul>
+<p>All tools have been used with their most basic, fanciless functionality - no layout re-arrangements, etc.</p>
+<p>For demonstration purposes, we have included a version of <code class="docutils literal"><span class="pre">GetText(doc,</span> <span class="pre">output</span> <span class="pre">=</span> <span class="pre">&quot;json&quot;)</span></code>, that also re-arranges the output according to occurrence on the page.</p>
+<p>Here are the results using the same test files as above (again: decimal point and comma reversed):</p>
+<img alt="_images/textperformance.png" src="_images/textperformance.png" />
+<p>Again, (Py-) MuPDF is the fastest around. It is two times faster than xpdf.</p>
+<p>JSON output is 1.7 times faster than xpdf, and even the &#8220;re-arranging&#8221; version is 1.6 times faster.</p>
+<p><code class="docutils literal"><span class="pre">pdfminer</span></code>, as a pure Python solution, of course is comparatively slow: MuPDF is 75 (64, 58) times faster and xpdf is 37 times faster. These observations in order of magnitude coincide with the statements on this <a class="reference external" href="http://www.unixuser.org/~euske/python/pdfminer/">web site</a>.</p>
+</div>
+<div class="section" id="part-3-image-rendering">
+<h2>Part 3: Image Rendering<a class="headerlink" href="#part-3-image-rendering" title="Permalink to this headline">¶</a></h2>
+<p>We have tested rendering speed of MuPDF against the <code class="docutils literal"><span class="pre">pdftopng.exe</span></code>, a command lind tool of the <strong>Xpdf</strong> toolset, which is the PDF code basis of <strong>Poppler</strong>.</p>
+<p>MuPDF invocation using a resolution of 150 pixels (Xpdf default):</p>
+<div class="highlight-python"><div class="highlight"><pre>mutool draw -o t%d.png -r 150 file.pdf
+</pre></div>
+</div>
+<p>Xpdf invocation:</p>
+<div class="highlight-python"><div class="highlight"><pre>pdftopng.exe file.pdf ./
+</pre></div>
+</div>
+<p>The resulting runtimes can be found here (again: meaning of decimal point and comma reversed):</p>
+<img alt="_images/render_speed.png" src="_images/render_speed.png" />
+<p>MuPDF is between 2.7 and 4.7 (on average 3.0) times faster than Xpdf.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="app2.html" title="Appendix 2: Details on Text Extraction"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="vars.html" title="Constants and Enumerations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
+      Last updated on 25. Jan 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

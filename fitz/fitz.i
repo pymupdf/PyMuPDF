@@ -28,6 +28,7 @@ struct DeviceWrapper {
 
 /* include version information */
 %pythoncode %{
+import os
 VersionFitz = "1.8"
 VersionBind = "1.8.0"
 %}
@@ -55,6 +56,8 @@ struct fz_document_s {
                 filename = filename.encode('utf8')
             else:
                 raise TypeError("filename must be a string")
+            if not os.path.exists(filename) and streamlen == 0:
+                raise IOError("no such file: '%s'" % (filename,))
             self.name = filename
             self.streamlen = streamlen
             self.isClosed = 0
@@ -442,6 +445,9 @@ struct fz_irect_s
             width = property(lambda self: self.x1-self.x0)
             height = property(lambda self: self.y1-self.y0)
 
+            def getRect(self):
+                return Rect(self.x0, self.y0, self.x1, self.y1)
+
             def __repr__(self):
                 return "fitz.IRect" + str((self.x0, self.y0, self.x1, self.y1))
         %}
@@ -541,13 +547,6 @@ struct fz_pixmap_s
         }
 
         /***********************************/
-        /* clear pixmap subrect with value */
-        /***********************************/
-        void clearIRectWith(int value, const struct fz_irect_s *bbox) {
-            fz_clear_pixmap_rect_with_value(gctx, $self, value, bbox);
-        }
-
-        /***********************************/
         /* copy pixmaps                    */
         /***********************************/
         void copyPixmap(struct fz_pixmap_s *src, const struct fz_irect_s *bbox) {
@@ -571,13 +570,15 @@ struct fz_pixmap_s
                 return NULL;
             }
         }
-        %pythonprepend writePNG(char * filename, int savealpha) %{
+        %pythonprepend writePNG(char *filename, int savealpha) %{
             if type(filename) == str:
                 pass
             elif type(filename) == unicode:
                 filename = filename.encode('utf8')
             else:
                 raise TypeError("filename must be a string")
+            if not filename.lower().endswith(".png"):
+                raise ValueError("filename must end with '.png'")
         %}
         int writePNG(char *filename, int savealpha=0) {
             fz_try(gctx) {
@@ -587,6 +588,50 @@ struct fz_pixmap_s
                 return 1;
             return 0;
         }
+
+        /************************/
+        /* writeIMG           */
+        /************************/
+        %exception writeIMG {
+            $action
+            if(result) {
+                PyErr_SetString(PyExc_Exception, "cannot writeIMG");
+                return NULL;
+            }
+        }
+        %pythonprepend writeIMG(char *filename, char *format, int savealpha) %{
+            if type(filename) == str:
+                pass
+            elif type(filename) == unicode:
+                filename = filename.encode('utf8')
+            else:
+                raise TypeError("filename must be a string")
+
+
+        %}
+        int writeIMG(char *filename, int format, int savealpha=0) {
+            fz_try(gctx) {
+                switch(format)
+                {
+                    case(1):
+                        fz_write_png(gctx, $self, filename, savealpha);
+                        break;
+                    case(2):
+                        fz_write_pnm(gctx, $self, filename);
+                        break;
+                    case(3):
+                        fz_write_pam(gctx, $self, filename, savealpha);
+                        break;
+                    case(4):
+                        fz_write_tga(gctx, $self, filename, savealpha);
+                        break;
+                }
+            }
+            fz_catch(gctx)
+                return 1;
+            return 0;
+        }
+
         /*************************/
         /* invertIRect           */
         /*************************/
@@ -610,8 +655,8 @@ struct fz_pixmap_s
             height = h
 
             def __repr__(self):
-                cs = {2:"fitz.CS_GRAY", 4:"fitz.CS_RGB", 5:"fitz.CS_CMYK"}
-                return "fitz.Pixmap(fitz.Colorspace(%s), fitz.IRect(%s, %s, %s, %s))" % (cs[self.n], self.x, self.y, self.x + self.width, self.y + self.height)
+                cs = {2:"GRAY", 4:"RGB", 5:"CMYK"}
+                return "fitz.Pixmap(fitz.cs%s, fitz.IRect(%s, %s, %s, %s))" % (cs[self.n], self.x, self.y, self.x + self.width, self.y + self.height)
 
         %}
     }
@@ -1138,7 +1183,6 @@ struct fz_text_sheet_s {
     $result = SWIG_FromCharPtrAndSize((const char *)$1->data, $1->len);
     fz_drop_buffer(gctx, $1);
 }
-
 
 /* c helper functions for extractJSON */
 %{

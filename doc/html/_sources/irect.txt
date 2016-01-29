@@ -12,8 +12,9 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
 
 
 ====================== ========================================
-**Attribute**          **Short Description**
+**Attribute / Method**          **Short Description**
 ====================== ========================================
+:meth:`IRect.getRect`  return arectangle with same coordinates
 :attr:`IRect.width`    Width of the bounding box
 :attr:`IRect.height`   Height of the bounding box
 :attr:`IRect.x0`       X-coordinate of the top left corner
@@ -29,6 +30,10 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
    .. method:: __init__(self, x0, y0, x1, y1)
 
       Constructor. Without parameters defaulting to ``IRect(0, 0, 0, 0)``, an empty rectangle. Also see the example below. Function :meth:`Rect.round` creates the smallest ``IRect`` containing ``Rect``.
+
+   .. method:: getRect()
+
+      A convenience function returning a :ref:`Rect` with the same coordinates as floating point values.
 
    .. attribute:: width
 

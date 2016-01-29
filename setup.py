@@ -1,38 +1,41 @@
 from distutils.core import setup, Extension
-import sys
+import sys, os
 
 # check the platform
 if sys.platform.startswith('linux'):
     module = Extension('fitz._fitz', # name of the module
                        ['fitz/fitz_wrap.c'], # C source file
-                       include_dirs=['/usr/include/mupdf',
-                                     '/usr/local/include/mupdf'], # we need the path of the MuPDF's headers
+                       include_dirs=[  # we need the path of the MuPDF's headers
+                                     '/usr/include/mupdf',
+                                     '/usr/local/include/mupdf'
+                                    ],
                        #library_dirs=['<mupdf_and_3rd_party_libraries_dir>'],
                        libraries=['mupdf', 'mujs', 
                                   'crypto', #openssl is required by mupdf on archlinux
                                   'jbig2dec', 'openjp2', 'jpeg',
-                                  'freetype'],                   # the libraries to link with
+                                  'freetype'], # the libraries to link with
                       )
 else:
 #===============================================================================
-# This will build / setup python-fitz under Windows
-# There is a wiki page with detailed instructions on how to set up
-# python-fitz in Windows 7.
+# This will build / set up PyMuPDF under Windows.
+# For details consult the documentation.
 #===============================================================================
     module = Extension('fitz._fitz',
-                       include_dirs=['./fitz',
-                                     './mupdf18/include/',
-                                     './mupdf18/include/mupdf'],  # "./mupdf18" = top level mupdf source dir
-                       libraries=[                                # only these 2 are needed in Windows
+                       include_dirs=[ # we need the path of the MuPDF's headers
+                                     './mupdf/include',
+                                     './mupdf/include/mupdf',
+                                    ],
+                       libraries=[ # only these 2 are needed in Windows
                                   'libmupdf',                        
                                   'libthirdparty',                    
                                  ],
                        extra_link_args=['/NODEFAULTLIB:MSVCRT'],
-                       library_dirs=['./PyMuPDF-optional-material/LibWin32'],               # dir of libmupdf.lib / libthirdparty.lib
-                       sources=['./fitz/fitz_wrap.c'])
+                                     # dir of libmupdf.lib and libthirdparty.lib
+                       library_dirs=['./PyMuPDF-optional-material/LibWin32'],
+                       sources=['./fitz/fitz_wrap.c',])
 
 setup(name = 'fitz',
-      version = '1.8.0',
+      version = "1.8.0", 
       description = 'Python bindings for the PDF rendering library MuPDF',
       classifiers = ['Development Status :: 4 - Beta',
                      'Environment :: Console',
@@ -46,4 +49,4 @@ setup(name = 'fitz',
       author_email = 'lrk700@gmail.com',
       license = 'GPLv3+',
       ext_modules = [module],
-      py_modules = ['fitz.fitz'])
+      py_modules = ['fitz.fitz', 'fitz.utils'])
