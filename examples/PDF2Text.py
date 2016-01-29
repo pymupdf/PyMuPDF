@@ -32,10 +32,9 @@ doc = fitz.Document(ifile)
 pages = doc.pageCount
 
 fout = open(ofile,"w")
+
 for i in range(pages):
-    print "========== processing page", i, "=========="
-    pg = doc.loadPage(i)
-    text = pg.getText()
+    text = doc.getPageText(i)
     fout.write(text.encode(ENCODING,"ignore"))
 
 fout.close()
