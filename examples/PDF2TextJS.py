@@ -73,7 +73,6 @@ pages = doc.pageCount
 fout = open(ofile,"w")
 
 for i in range(pages):
-    print "========== processing page", i, "=========="
     pg_text = ""                                 # initialize page text buffer
     pg = doc.loadPage(i)                         # load page number i
     text = pg.getText(output = 'json')           # get its text in JSON format
