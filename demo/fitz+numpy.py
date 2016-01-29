@@ -19,6 +19,6 @@ for i in range(height):
         image[i, j] = np.array([i%256, j%256, 200, 255], dtype=np.uint8)
 
 # create a string from the array and output the picture
-samples = bild.tostring()
+samples = image.tostring()
 pix=fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), width, height, samples)
 pix.writePNG("test.png")
