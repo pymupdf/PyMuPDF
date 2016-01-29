@@ -10,7 +10,8 @@ Version 3, 29 June 2007. See the "COPYING" file of this repository.
 
 This is an example for using the Python binding PyMuPDF of MuPDF.
 
-This program extracts the text of an input PDF and writes it in a text file.
+This program extracts the text of an input PDF (or other supported file tye)
+and writes it in a text file.
 The input file name is provided as a parameter to this script (sys.argv[1])
 The output file name is input-filename + ".txt".
 Encoding of the text in the PDF is assumed to be UTF-8.
