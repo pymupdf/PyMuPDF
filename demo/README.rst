@@ -1,12 +1,12 @@
-=============================================================
-The following demo programs are contained in this directory
-=============================================================
+===========================
+Content of this directory
+===========================
 
 ===================== ===============================================================
 Program               Purpose
 ===================== ===============================================================
 demo.py               demonstrates a broad range of functions available with PyMuPDF
-extract.py            demonstrates text extraction methods
+extract.py            demonstrates text extraction methods technical details
 fitz+numpy.py         shows how pixmaps can be created from numpy arrays
 PDF_display.py        display a file using wxPython
 pixmap.py             use pixmap to create tiled copies of an image file
