@@ -8,8 +8,7 @@
 
 
 
-from sys import version_info, setdlopenflags
-setdlopenflags(0)
+from sys import version_info
 if version_info >= (2, 6, 0):
     def swig_import_helper():
         from os.path import dirname
@@ -31,7 +30,6 @@ if version_info >= (2, 6, 0):
 else:
     import _fitz
 del version_info
-del setdlopenflags
 try:
     _swig_property = property
 except NameError:

@@ -21,7 +21,7 @@ def punch(pm, x00, y00, x03, y03):
     step = x03 - x00                    
     if step < 3:                       # stop recursion if square < 3 x 3 
         return
-    step = step / 3
+    step = step // 3
     # define short names for square corner coordinates
     x01 = x00 + step
     x02 = x01 + step
@@ -59,5 +59,5 @@ punch(pm, 0, 0, d, d)
 t1 = time.clock()
 pm.writePNG("sierpinski-fitz.png")
 t2 = time.clock()
-print t1-t0, "sec to create fitz img"
-print t2-t1, "sec to save fitz img"
+print("%f sec to create fitz img" % (t1-t0))
+print("%f sec to save fitz img" % (t2-t1))

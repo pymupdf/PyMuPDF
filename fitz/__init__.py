@@ -1,4 +1,7 @@
 from __future__ import absolute_import
+import sys
+if sys.platform.startswith('darwin'):
+    sys.setdlopenflags(0)
 from fitz.fitz import *
 
 # define the usual colorspaces for convenience
