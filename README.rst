@@ -34,8 +34,19 @@ Ubuntu
 ------
 Since MuPDF v1.8 is not available yet in the official repo, you need to first build it from source. Make sure to add ``-fPIC`` to CFLAGS when compiling.
 
-When MuPDF is ready, edit ``setup.py`` in PyMuPDF and comment out the line of ``library_dirs=[]`` to specify the directory which contains ``libmupdf.a`` and other 3rd party libraries. Also remove ``crypto`` in ``libraries`` in ``setup.py`` since it is just required by Arch Linux.
+When MuPDF is ready, edit ``setup.py`` in PyMuPDF and comment out the line of ``library_dirs=[]`` to specify the directory which contains ``libmupdf.a`` and other 3rd party libraries. Remove ``crypto`` from ``libraries`` in ``setup.py`` if it complains.
 
+OSX
+---
+First please make sure that the dependencies are satisfied: ``brew install mupdf-tools jpeg jbig2dec freetype openssl``
+
+Then you might need to ``export ARCHFLAGS='-arch x86_64'`` since ``libmupdf.a`` is for x86_64 only.
+
+Finally, please double check ``setup.py`` before building. Update ``include_dirs`` and ``library_dirs`` if necessary.
+
+Windows
+-------
+Please refer to the `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
 
 Usage
 =====
