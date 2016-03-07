@@ -16,8 +16,11 @@ Constants
 .. data:: CS_RGB            1 - Type of :ref:`Colorspace` is RGBA
 .. data:: CS_GRAY           2 - Type of :ref:`Colorspace` is GRAY
 .. data:: CS_CMYK           3 - Type of :ref:`Colorspace` is CMYK
-.. data:: VersionBind       '1.8.0' - Version of PyMuPDF (this binding)
-.. data:: VersionFitz       '1.8'  - Version of MuPDF
+.. data:: csRGB             = fitz.Colorspace(fitz.CS_RGB)
+.. data:: csGRAY            = fitz.Colorspace(fitz.CS_GRAY)
+.. data:: csCMYK            = fitz.Colorspace(fitz.CS_CMYK)
+.. data:: VersionBind       '1.8.0' - string: version of PyMuPDF (this binding)
+.. data:: VersionFitz       '1.8' - string: version of MuPDF
 =========================== =============================================
 
 Enumerations

@@ -18,6 +18,7 @@ This class represents a document. It can be constructed from a file or from memo
 :meth:`Document.save`           saves a copy of the document
 :meth:`Document.getToC`         create a table of contents
 :meth:`Document.getPagePixmap`  create a pixmap from a page by its number
+:meth:`Document.getPageText`    extracts the text of a page by its number
 :meth:`Document.close`          closes the document
 :attr:`Document.isClosed`       has document been closed?
 :attr:`Document.outline`        first `Outline` item
@@ -89,9 +90,9 @@ This class represents a document. It can be constructed from a file or from memo
 
     .. method:: getPagePixmap(pno, matrix = fitz.Identity, colorspace = "rgb")
 
-      Creates a pixmap from one of the document's pages - identified by number ``pno``.
+      Creates a pixmap from one of the document's pages - identified by number ``pno`` (zero-based).
 
-      :param `pno`: Page number
+      :param `pno`: Page number, zero-based
 
       :type `pno`: int
 
@@ -104,6 +105,20 @@ This class represents a document. It can be constructed from a file or from memo
       :type `colorspace`: string
 
       :rtype: :ref:`Pixmap`
+
+    .. method:: getPageText(pno, output = "text")
+
+      Extracts the text of a page given its page number ``pno`` (zero-based).
+
+      :param `pno`: Page number, zero-based
+
+      :type `pno`: int
+
+      :param `output`: A string specifying the requested output format: text, html, json or xml. Default is ``text``.
+
+      :type `output`: string
+
+      :rtype: String
 
     .. method:: save(outfile, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0)
 

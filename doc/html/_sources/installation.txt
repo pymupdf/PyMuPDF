@@ -13,15 +13,17 @@ Download this repository and unzip / decompress it. This will give you a folder,
 
 Step 2: Download and Generate MuPDF 1.8
 ---------------------------------------
-If your platform is not Windows (or if it is and you absolutley want to generate MuPDF) download ``mupdf-1.8-source.tar.gz`` from `MuPDF version 1.8 source <http://mupdf.com/downloads/>`_, now and unzip / decompress it. Let us call the resulting folder ``mupdf``.
+If your platform is not Windows (or if it is and you want to generate MuPDF) download ``mupdf-1.8-source.tar.gz`` from `MuPDF version 1.8 source <http://mupdf.com/downloads/>`_, now and unzip / decompress it. Let us call the resulting folder ``mupdf``.
 
 Put it inside ``PyFitz`` as a subdirectory, if you want to keep everything in one place.
 
 If your platform is **not Windows**, you must **generate MuPDF now**. The MuPDF download includes generation procedures / makefiles for numerous platforms.
 
 On Windows, you have two options:
-  * if you **have installed MS Visual Studio**, generate the MuPDF ``lib`` files now. The respective VS project files are contained in ``./PyFitz/mupdf/platform/win32``. If that worked fine, the ``lib`` files are now in ``./PyFitz/mupdf/platform/win32/Release``. Update ``setup.py`` to reference this directory as ``library_dirs=['./mupdf/platform/win32/Release']``.
-  * if you have not installed Visual Studio or if you do not want to generate MuPDF, you must download `PyMuPDF Optional Material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_ now and unzip / decompress its content in directory ``./PyFitz/PyMuPDF-optional-material``. This optional material contains the ``lib`` files needed for PyMuPDF generation, and the MuPDF header files. Update ``setup.py``, parameter ``include_dirs``, to point to these header files.
+  * if you **have installed MS Visual Studio**, generate the MuPDF ``lib`` files now. The respective VS project files are contained in ``./PyFitz/mupdf/platform/win32``. If that worked fine, the ``lib`` files are now in ``./PyFitz/mupdf/platform/win32/Release``. Update ``setup.py`` to reference this directory as ``library_dirs=['./mupdf/platform/win32/Release']``. Please note that your VS version needs to use a C++ compiler compatible with the compiler that was used to generate your Python version. Generally, this is MSVC 9.0 (contained in VS2008 and ``Microsoft Visual C++ for Python``) for Python 2.7, or MSVC 10.0 (contained in VS2010, ``VS Community 2013`` and ``Microsoft Windows SDK for Windows 7 and .NET Framework 4 (ISO)``) for Python up to 3.4.
+  * if you have not installed Visual Studio or if you do not want to generate MuPDF, you must download `PyMuPDF Optional Material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_ now and unzip / decompress its content in directory ``./PyFitz/PyMuPDF-optional-material``. This optional material contains the ``lib`` files needed for generating PyMuPDF for your Python, and the MuPDF header files. Update your ``setupxy.py`` version, parameter ``include_dirs``, to point to these header files.
+
+Supporting Python 3.5 on Windows is still work in progress.
 
 Step 3: Build / Setup PyMuPDF
 ----------------------------------
@@ -34,6 +36,6 @@ Now perform a ``python setup.py install``
 
 Note on using UPX
 ------------------
-In Windows systems, your PyMuPDF installation will end up with three files: ``__init__.py``, ``fitz.py`` and ``_fitz.pyd`` in the ``site-packages`` directory. The PYD file is Python's DLL version on Windows systems. ``_fitz.pyd`` has a size of 9.5 to 10 MB.
+In Windows systems, your PyMuPDF installation will end up with three files: ``__init__.py``, ``fitz.py`` and ``_fitz.pyd`` in the ``site-packages`` directory (PYD files are Python's DLL version on Windows systems). ``_fitz.pyd`` has a size of 9.5 to 10 MB.
 
-You can reduce this by applying the compression utility UPX to it: ``upx -9 _fitz.pyd``. This will reduce the file to about 4.5 MB. This should reduce load times (``import fitz`` statement) while keeping it fully functional.
+You can reduce this by applying the compression utility UPX to it: ``upx -9 _fitz.pyd``. This will reduce the file size to about 4.5 MB. This should reduce load times (``import fitz`` statement) while keeping it fully functional.
