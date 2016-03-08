@@ -2,40 +2,57 @@
 
     PageBreak
 
-=============
 Installation
 =============
-This describes how to install PyMuPDF.
+This describes how to install PyMuPDF. For most platforms, this encompasses downloading and generating MuPDF, and then downloading and generating PyMuPDF.
 
-Step 1: Download PyMuPDF
--------------------------------
+If your operating system ist Windows 7 or higher (x86 or x64), you have two options.
+  * Option 1 is the same as for other plaforms, detailed out in the following steps 1 through 3.
+  * Option 2 means performing one of the binary setups. This process is **a lot faster** and requires no compiler, no Visual Studio, no download of MuPDF, no download of PyMuPDF. You only need to download PyMuPDF-optional-material.
+
+Option 1, Step 1: Download PyMuPDF
+-----------------------------------
 Download this repository and unzip / decompress it. This will give you a folder, let us call it ``PyFitz``.
 
-Step 2: Download and Generate MuPDF 1.8
----------------------------------------
-If your platform is not Windows (or if it is and you want to generate MuPDF) download ``mupdf-1.8-source.tar.gz`` from `MuPDF version 1.8 source <http://mupdf.com/downloads/>`_, now and unzip / decompress it. Let us call the resulting folder ``mupdf``.
+Option 1, Step 2: Download and Generate MuPDF 1.8
+--------------------------------------------------
+Download ``mupdf-1.8-source.tar.gz`` from `MuPDF version 1.8 source <http://mupdf.com/downloads/>`_, now and unzip / decompress it. Let us call the resulting folder ``mupdf``.
 
-Put it inside ``PyFitz`` as a subdirectory, if you want to keep everything in one place.
+Put it inside ``PyFitz`` as a subdirectory for keeping everything in one place.
 
-If your platform is **not Windows**, you must **generate MuPDF now**. The MuPDF download includes generation procedures / makefiles for numerous platforms.
+**Generate MuPDF now**. The MuPDF source includes generation procedures / makefiles for numerous platforms. For Windows platforms, Visual Studio solution and project definitions are provided.
 
-On Windows, you have two options:
-  * if you **have installed MS Visual Studio**, generate the MuPDF ``lib`` files now. The respective VS project files are contained in ``./PyFitz/mupdf/platform/win32``. If that worked fine, the ``lib`` files are now in ``./PyFitz/mupdf/platform/win32/Release``. Update ``setup.py`` to reference this directory as ``library_dirs=['./mupdf/platform/win32/Release']``. Please note that your VS version needs to use a C++ compiler compatible with the compiler that was used to generate your Python version. Generally, this is MSVC 9.0 (contained in VS2008 and ``Microsoft Visual C++ for Python``) for Python 2.7, or MSVC 10.0 (contained in VS2010, ``VS Community 2013`` and ``Microsoft Windows SDK for Windows 7 and .NET Framework 4 (ISO)``) for Python up to 3.4.
-  * if you have not installed Visual Studio or if you do not want to generate MuPDF, you must download `PyMuPDF Optional Material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_ now and unzip / decompress its content in directory ``./PyFitz/PyMuPDF-optional-material``. This optional material contains the ``lib`` files needed for generating PyMuPDF for your Python, and the MuPDF header files. Update your ``setupxy.py`` version, parameter ``include_dirs``, to point to these header files.
-
-Supporting Python 3.5 on Windows is still work in progress.
-
-Step 3: Build / Setup PyMuPDF
-----------------------------------
-If necessary, adjust the setup.py script now. E.g. make sure that
+Option 1, Step 3: Build / Setup PyMuPDF
+----------------------------------------
+Adjust the setup.py script as necessary. E.g. make sure that
 
   * the include directory is correctly set in sync with your directory structure
   * the object code libraries are correctly defined
 
 Now perform a ``python setup.py install``
 
-Note on using UPX
-------------------
-In Windows systems, your PyMuPDF installation will end up with three files: ``__init__.py``, ``fitz.py`` and ``_fitz.pyd`` in the ``site-packages`` directory (PYD files are Python's DLL version on Windows systems). ``_fitz.pyd`` has a size of 9.5 to 10 MB.
+Option 1, Note on using UPX
+----------------------------
+In Windows systems, your PyMuPDF installation will end up with four files: ``__init__.py``, ``fitz.py``, ``utils.py`` and ``_fitz.pyd`` in the ``site-packages`` directory (PYD files are Python's DLL version on Windows systems). ``_fitz.pyd`` has a size of 9.5 to 10 MB.
 
 You can reduce this by applying the compression utility UPX to it: ``upx -9 _fitz.pyd``. This will reduce the file size to about 4.5 MB. This should reduce load times (``import fitz`` statement) while keeping it fully functional.
+
+Option 2, Step 1: Download Optional Material
+---------------------------------------------
+Download `PyMuPDF-optional-material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_. From directory ``binary_setups`` select the zip file corresponding to your configuration and unzip it anywhere you like.
+
+Option 2, Step 2: Install PyMuPDF
+----------------------------------
+Open a command prompt at the unzipped folder's top level and enter ``python setup.py install``.
+
+Done.
+
+This process requires no compiler or Visual Studio and is **very** fast (just a couple of seconds). The only pre-requisite is, that your Python configuration matches the zip file as follows:
+
+``setup_XY_platform.zip`` is for you if you have installed Python X.Y for ``platform``. If you are not sure, open a command prompt and start the Python interpreter and you will see something like this:
+::
+ Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
+ Type "copyright", "credits" or "license()" for more information.
+ >>>
+
+In this example case choose ``setup_27_win32.zip`` to install PyMuPDF.
