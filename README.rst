@@ -46,7 +46,7 @@ Finally, please double check ``setup.py`` before building. Update ``include_dirs
 
 Windows
 -------
-You can download pre-generated binaries suitable for your Python version, and thereby avoid any compilation hassle. Please refer to this `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
+You can download pre-generated binaries `from here <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/binary_setups>`_ that are suitable for your Python version, and thereby avoid any compilation hassle. Please refer to this `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
 
 Usage
 =====
