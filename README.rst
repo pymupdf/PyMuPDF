@@ -46,7 +46,7 @@ Finally, please double check ``setup.py`` before building. Update ``include_dirs
 
 Windows
 -------
-Please refer to the `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
+You can download pre-generated binaries suitable for your Python version, and thereby avoid any compilation hassle. Please refer to this `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
 
 Usage
 =====
@@ -77,5 +77,5 @@ We invite you to join our efforts by contributing to the the wiki pages.
 Please submit comments or any issues either to this site or by sending an e-mail to the authors
 `Ruikai Liu`_, `Jorj X. McKie`_.
 
-.. _Ruikai Liu: lrk700@gmail.com 
+.. _Ruikai Liu: lrk700@gmail.com
 .. _Jorj X. McKie: jorj.x.mckie@outlook.de

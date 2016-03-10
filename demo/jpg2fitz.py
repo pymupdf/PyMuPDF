@@ -3,6 +3,7 @@
 import fitz
 from PIL import Image
 import sys
+from __future__ import print_function
 '''
 demonstrates how to input a JPEG image to PyMuPDF using PIL / Pillow
 '''
@@ -12,7 +13,7 @@ else:
     pic_fn = None
 
 if pic_fn:
-    print pic_fn
+    print(pic_fn)
     pic_f = open(pic_fn, "rb")
     img = Image.open(pic_f).convert("RGBA")
     samples = img.tobytes()

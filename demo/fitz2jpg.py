@@ -3,6 +3,7 @@
 import fitz
 from PIL import Image
 import sys
+from __future__ import print_function
 '''
 demonstrates how to output a JPEG image from PyMuPDF using PIL / Pillow
 '''
@@ -12,7 +13,7 @@ else:
     pic_fn = None
 
 if pic_fn:
-    print pic_fn
+    print(pic_fn)
     pic = open(pic_fn, "rb").read()
 
     pix = fitz.Pixmap(pic, len(pic))
