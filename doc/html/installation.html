@@ -49,12 +49,19 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
-<li><a class="reference internal" href="#option-1-step-1-download-pymupdf">Option 1, Step 1: Download PyMuPDF</a></li>
-<li><a class="reference internal" href="#option-1-step-2-download-and-generate-mupdf-1-8">Option 1, Step 2: Download and Generate MuPDF 1.8</a></li>
-<li><a class="reference internal" href="#option-1-step-3-build-setup-pymupdf">Option 1, Step 3: Build / Setup PyMuPDF</a></li>
-<li><a class="reference internal" href="#option-1-note-on-using-upx">Option 1, Note on using UPX</a></li>
-<li><a class="reference internal" href="#option-2-step-1-download-optional-material">Option 2, Step 1: Download Optional Material</a></li>
-<li><a class="reference internal" href="#option-2-step-2-install-pymupdf">Option 2, Step 2: Install PyMuPDF</a></li>
+<li><a class="reference internal" href="#option-1-install-from-sources">Option 1: Install from Sources</a><ul>
+<li><a class="reference internal" href="#step-1-download-pymupdf">Step 1: Download PyMuPDF</a></li>
+<li><a class="reference internal" href="#step-2-download-and-generate-mupdf-1-8">Step 2: Download and Generate MuPDF 1.8</a></li>
+<li><a class="reference internal" href="#step-3-build-setup-pymupdf">Step 3: Build / Setup PyMuPDF</a></li>
+<li><a class="reference internal" href="#note-on-using-upx">Note on using UPX</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#option-2-install-from-binaries">Option 2: Install from Binaries</a><ul>
+<li><a class="reference internal" href="#step-1-download-optional-material">Step 1: Download Optional Material</a></li>
+<li><a class="reference internal" href="#step-2-install-pymupdf">Step 2: Install PyMuPDF</a></li>
+<li><a class="reference internal" href="#targeting-parallel-python-installations">Targeting Parallel Python Installations</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -95,57 +102,75 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>This describes how to install PyMuPDF. For most platforms, this encompasses downloading and generating MuPDF, and then downloading and generating PyMuPDF.</p>
-<dl class="docutils">
-<dt>If your operating system ist Windows 7 or higher (x86 or x64), you have two options.</dt>
-<dd><ul class="first last simple">
-<li>Option 1 is the same as for other plaforms, detailed out in the following steps 1 through 3.</li>
-<li>Option 2 means performing one of the binary setups. This process is <strong>a lot faster</strong> and requires no compiler, no Visual Studio, no download of MuPDF, no download of PyMuPDF. You only need to download PyMuPDF-optional-material.</li>
-</ul>
-</dd>
-</dl>
-<div class="section" id="option-1-step-1-download-pymupdf">
-<h2>Option 1, Step 1: Download PyMuPDF<a class="headerlink" href="#option-1-step-1-download-pymupdf" title="Permalink to this headline">¶</a></h2>
+<p>Installation generally encompasses downloading and generating PyMuPDF and MuPDF from sources.</p>
+<p>This process consists of three steps described below under <strong>&#8220;Option 1&#8221;</strong>.</p>
+<p>If your operating system is Windows 7 or higher (x86 or x64), you can perform a binary setup, detailed out under <strong>&#8220;Option 2&#8221;</strong>. This process is <strong>a lot faster</strong> and requires no compiler, no Visual Studio, no download of MuPDF, no download of PyMuPDF. You only need to download PyMuPDF-optional-material.</p>
+<div class="section" id="option-1-install-from-sources">
+<h2>Option 1: Install from Sources<a class="headerlink" href="#option-1-install-from-sources" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="step-1-download-pymupdf">
+<h3>Step 1: Download PyMuPDF<a class="headerlink" href="#step-1-download-pymupdf" title="Permalink to this headline">¶</a></h3>
 <p>Download this repository and unzip / decompress it. This will give you a folder, let us call it <code class="docutils literal"><span class="pre">PyFitz</span></code>.</p>
 </div>
-<div class="section" id="option-1-step-2-download-and-generate-mupdf-1-8">
-<h2>Option 1, Step 2: Download and Generate MuPDF 1.8<a class="headerlink" href="#option-1-step-2-download-and-generate-mupdf-1-8" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="step-2-download-and-generate-mupdf-1-8">
+<h3>Step 2: Download and Generate MuPDF 1.8<a class="headerlink" href="#step-2-download-and-generate-mupdf-1-8" title="Permalink to this headline">¶</a></h3>
 <p>Download <code class="docutils literal"><span class="pre">mupdf-1.8-source.tar.gz</span></code> from <a class="reference external" href="http://mupdf.com/downloads/">MuPDF version 1.8 source</a>, now and unzip / decompress it. Let us call the resulting folder <code class="docutils literal"><span class="pre">mupdf</span></code>.</p>
 <p>Put it inside <code class="docutils literal"><span class="pre">PyFitz</span></code> as a subdirectory for keeping everything in one place.</p>
 <p><strong>Generate MuPDF now</strong>. The MuPDF source includes generation procedures / makefiles for numerous platforms. For Windows platforms, Visual Studio solution and project definitions are provided.</p>
+<p>You may want to consult additional installation hints on PyMuPDF&#8217;s <a class="reference external" href="https://github.com/rk700/PyMuPDF/">main page</a> on Github.com.</p>
 </div>
-<div class="section" id="option-1-step-3-build-setup-pymupdf">
-<h2>Option 1, Step 3: Build / Setup PyMuPDF<a class="headerlink" href="#option-1-step-3-build-setup-pymupdf" title="Permalink to this headline">¶</a></h2>
-<p>Adjust the setup.py script as necessary. E.g. make sure that</p>
-<blockquote>
-<div><ul class="simple">
+<div class="section" id="step-3-build-setup-pymupdf">
+<h3>Step 3: Build / Setup PyMuPDF<a class="headerlink" href="#step-3-build-setup-pymupdf" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>Adjust the setup.py script as necessary. E.g. make sure that</dt>
+<dd><ul class="first last simple">
 <li>the include directory is correctly set in sync with your directory structure</li>
 <li>the object code libraries are correctly defined</li>
 </ul>
-</div></blockquote>
-<p>Now perform a <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code></p>
+</dd>
+</dl>
+<p>Now perform a <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code>.</p>
 </div>
-<div class="section" id="option-1-note-on-using-upx">
-<h2>Option 1, Note on using UPX<a class="headerlink" href="#option-1-note-on-using-upx" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="note-on-using-upx">
+<h3>Note on using UPX<a class="headerlink" href="#note-on-using-upx" title="Permalink to this headline">¶</a></h3>
 <p>In Windows systems, your PyMuPDF installation will end up with four files: <code class="docutils literal"><span class="pre">__init__.py</span></code>, <code class="docutils literal"><span class="pre">fitz.py</span></code>, <code class="docutils literal"><span class="pre">utils.py</span></code> and <code class="docutils literal"><span class="pre">_fitz.pyd</span></code> in the <code class="docutils literal"><span class="pre">site-packages</span></code> directory (PYD files are Python&#8217;s DLL version on Windows systems). <code class="docutils literal"><span class="pre">_fitz.pyd</span></code> has a size of 9.5 to 10 MB.</p>
 <p>You can reduce this by applying the compression utility UPX to it: <code class="docutils literal"><span class="pre">upx</span> <span class="pre">-9</span> <span class="pre">_fitz.pyd</span></code>. This will reduce the file size to about 4.5 MB. This should reduce load times (<code class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></code> statement) while keeping it fully functional.</p>
 </div>
-<div class="section" id="option-2-step-1-download-optional-material">
-<h2>Option 2, Step 1: Download Optional Material<a class="headerlink" href="#option-2-step-1-download-optional-material" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="option-2-install-from-binaries">
+<h2>Option 2: Install from Binaries<a class="headerlink" href="#option-2-install-from-binaries" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="step-1-download-optional-material">
+<h3>Step 1: Download Optional Material<a class="headerlink" href="#step-1-download-optional-material" title="Permalink to this headline">¶</a></h3>
 <p>Download <a class="reference external" href="https://github.com/JorjMcKie/PyMuPDF-optional-material/">PyMuPDF-optional-material</a>. From directory <code class="docutils literal"><span class="pre">binary_setups</span></code> select the zip file corresponding to your configuration and unzip it anywhere you like.</p>
 </div>
-<div class="section" id="option-2-step-2-install-pymupdf">
-<h2>Option 2, Step 2: Install PyMuPDF<a class="headerlink" href="#option-2-step-2-install-pymupdf" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="step-2-install-pymupdf">
+<h3>Step 2: Install PyMuPDF<a class="headerlink" href="#step-2-install-pymupdf" title="Permalink to this headline">¶</a></h3>
 <p>Open a command prompt at the unzipped folder&#8217;s top level and enter <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code>.</p>
 <p>Done.</p>
 <p>This process requires no compiler or Visual Studio and is <strong>very</strong> fast (just a couple of seconds). The only pre-requisite is, that your Python configuration matches the zip file as follows:</p>
-<p><code class="docutils literal"><span class="pre">setup_XY_platform.zip</span></code> is for you if you have installed Python X.Y for <code class="docutils literal"><span class="pre">platform</span></code>. If you are not sure, open a command prompt and start the Python interpreter and you will see something like this:</p>
+<p><code class="docutils literal"><span class="pre">setup_XY_platform.zip</span></code> is for you if you have installed Python X.Y for <code class="docutils literal"><span class="pre">platform</span></code>.</p>
+<p>If you are not sure, open a command prompt and start the Python interpreter to see something like this:</p>
 <div class="highlight-python"><div class="highlight"><pre>Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
 Type &quot;copyright&quot;, &quot;credits&quot; or &quot;license()&quot; for more information.
 &gt;&gt;&gt;
 </pre></div>
 </div>
-<p>In this example case choose <code class="docutils literal"><span class="pre">setup_27_win32.zip</span></code> to install PyMuPDF.</p>
+<p>The <code class="docutils literal"><span class="pre">32</span> <span class="pre">bit</span></code> keyword is the relevant information, so in this example, choose <code class="docutils literal"><span class="pre">setup_27_win32.zip</span></code> to install PyMuPDF.</p>
+<p>If you see something like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>Python 3.5.1 (v3.5.1:37a07cee5969, Dec  6 2015, 01:54:25) [MSC v.1900 64 bit (AMD64)] on win32
+Type &quot;copyright&quot;, &quot;credits&quot; or &quot;license()&quot; for more information.
+&gt;&gt;&gt;
+</pre></div>
+</div>
+<p>choose <code class="docutils literal"><span class="pre">setup_35_win64.zip</span></code>.</p>
+</div>
+<div class="section" id="targeting-parallel-python-installations">
+<h3>Targeting Parallel Python Installations<a class="headerlink" href="#targeting-parallel-python-installations" title="Permalink to this headline">¶</a></h3>
+<p>Setup scripts for binary install support the Python launcher <code class="docutils literal"><span class="pre">py.exe</span></code> introduced with version 3.3.</p>
+<p>They contain shebang lines specifying the intended Python version and additional checks for detecting error situations.</p>
+<p>This can be used to target the right Python version if you have several installed in parallel (and of course the Python launcher, too). Use the following statement to set up PyMuPDF correctly:</p>
+<p><code class="docutils literal"><span class="pre">py</span> <span class="pre">setup.py</span> <span class="pre">install</span></code></p>
+<p>The shebang line of <code class="docutils literal"><span class="pre">setup.py</span></code> will be interpreted by <code class="docutils literal"><span class="pre">py.exe</span></code> to automatically find the right Python, and the internal checks will make sure that version and bitness are as they sould be.</p>
+</div>
 </div>
 </div>
 
@@ -172,7 +197,7 @@ Type &quot;copyright&quot;, &quot;credits&quot; or &quot;license()&quot; for mor
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 08. Mar 2016.
+      Last updated on 15. Mar 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

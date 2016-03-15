@@ -4,55 +4,83 @@
 
 Installation
 =============
-This describes how to install PyMuPDF. For most platforms, this encompasses downloading and generating MuPDF, and then downloading and generating PyMuPDF.
+Installation generally encompasses downloading and generating PyMuPDF and MuPDF from sources.
 
-If your operating system ist Windows 7 or higher (x86 or x64), you have two options.
-  * Option 1 is the same as for other plaforms, detailed out in the following steps 1 through 3.
-  * Option 2 means performing one of the binary setups. This process is **a lot faster** and requires no compiler, no Visual Studio, no download of MuPDF, no download of PyMuPDF. You only need to download PyMuPDF-optional-material.
+This process consists of three steps described below under **"Option 1"**.
 
-Option 1, Step 1: Download PyMuPDF
------------------------------------
+If your operating system is Windows 7 or higher (x86 or x64), you can perform a binary setup, detailed out under **"Option 2"**. This process is **a lot faster** and requires no compiler, no Visual Studio, no download of MuPDF, no download of PyMuPDF. You only need to download PyMuPDF-optional-material.
+
+Option 1: Install from Sources
+-------------------------------
+
+Step 1: Download PyMuPDF
+~~~~~~~~~~~~~~~~~~~~~~~~~
 Download this repository and unzip / decompress it. This will give you a folder, let us call it ``PyFitz``.
 
-Option 1, Step 2: Download and Generate MuPDF 1.8
---------------------------------------------------
+Step 2: Download and Generate MuPDF 1.8
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Download ``mupdf-1.8-source.tar.gz`` from `MuPDF version 1.8 source <http://mupdf.com/downloads/>`_, now and unzip / decompress it. Let us call the resulting folder ``mupdf``.
 
 Put it inside ``PyFitz`` as a subdirectory for keeping everything in one place.
 
 **Generate MuPDF now**. The MuPDF source includes generation procedures / makefiles for numerous platforms. For Windows platforms, Visual Studio solution and project definitions are provided.
 
-Option 1, Step 3: Build / Setup PyMuPDF
-----------------------------------------
-Adjust the setup.py script as necessary. E.g. make sure that
+You may want to consult additional installation hints on PyMuPDF's `main page <https://github.com/rk700/PyMuPDF/>`_ on Github.com.
 
+Step 3: Build / Setup PyMuPDF
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Adjust the setup.py script as necessary. E.g. make sure that
   * the include directory is correctly set in sync with your directory structure
   * the object code libraries are correctly defined
 
-Now perform a ``python setup.py install``
+Now perform a ``python setup.py install``.
 
-Option 1, Note on using UPX
-----------------------------
+Note on using UPX
+~~~~~~~~~~~~~~~~~~
 In Windows systems, your PyMuPDF installation will end up with four files: ``__init__.py``, ``fitz.py``, ``utils.py`` and ``_fitz.pyd`` in the ``site-packages`` directory (PYD files are Python's DLL version on Windows systems). ``_fitz.pyd`` has a size of 9.5 to 10 MB.
 
 You can reduce this by applying the compression utility UPX to it: ``upx -9 _fitz.pyd``. This will reduce the file size to about 4.5 MB. This should reduce load times (``import fitz`` statement) while keeping it fully functional.
 
-Option 2, Step 1: Download Optional Material
----------------------------------------------
+Option 2: Install from Binaries
+--------------------------------
+Step 1: Download Optional Material
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Download `PyMuPDF-optional-material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_. From directory ``binary_setups`` select the zip file corresponding to your configuration and unzip it anywhere you like.
 
-Option 2, Step 2: Install PyMuPDF
-----------------------------------
+Step 2: Install PyMuPDF
+~~~~~~~~~~~~~~~~~~~~~~~~
 Open a command prompt at the unzipped folder's top level and enter ``python setup.py install``.
 
 Done.
 
 This process requires no compiler or Visual Studio and is **very** fast (just a couple of seconds). The only pre-requisite is, that your Python configuration matches the zip file as follows:
 
-``setup_XY_platform.zip`` is for you if you have installed Python X.Y for ``platform``. If you are not sure, open a command prompt and start the Python interpreter and you will see something like this:
+``setup_XY_platform.zip`` is for you if you have installed Python X.Y for ``platform``.
+
+If you are not sure, open a command prompt and start the Python interpreter to see something like this:
 ::
  Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
  Type "copyright", "credits" or "license()" for more information.
  >>>
 
-In this example case choose ``setup_27_win32.zip`` to install PyMuPDF.
+The ``32 bit`` keyword is the relevant information, so in this example, choose ``setup_27_win32.zip`` to install PyMuPDF.
+
+If you see something like this:
+::
+ Python 3.5.1 (v3.5.1:37a07cee5969, Dec  6 2015, 01:54:25) [MSC v.1900 64 bit (AMD64)] on win32
+ Type "copyright", "credits" or "license()" for more information.
+ >>>
+
+choose ``setup_35_win64.zip``.
+
+Targeting Parallel Python Installations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Setup scripts for binary install support the Python launcher ``py.exe`` introduced with version 3.3.
+
+They contain shebang lines specifying the intended Python version and additional checks for detecting error situations.
+
+This can be used to target the right Python version if you have several installed in parallel (and of course the Python launcher, too). Use the following statement to set up PyMuPDF correctly:
+
+``py setup.py install``
+
+The shebang line of ``setup.py`` will be interpreted by ``py.exe`` to automatically find the right Python, and the internal checks will make sure that version and bitness are as they sould be.
