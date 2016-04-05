@@ -20,7 +20,7 @@ Change the ENCODING variable as required.
 import fitz
 import sys, json
 
-ENCODING = "UTF-8"
+ENCODING = "latin-1"
 
 def SortBlocks(blocks):
     '''
@@ -33,8 +33,8 @@ def SortBlocks(blocks):
 
     sblocks = []
     for b in blocks:
-        x0 = str(int(b["bbox"][0]+0.99999)).rjust(4,"0") # x coord in pixels
-        y0 = str(int(b["bbox"][1]+0.99999)).rjust(4,"0") # y coord in pixels
+        x0 = str(int(round(b["bbox"][0],0))).rjust(4,"0") # x coord in pixels
+        y0 = str(int(round(b["bbox"][1],0))).rjust(4,"0") # y coord in pixels
         sortkey = y0 + x0                                # = "yx"
         sblocks.append([sortkey, b])
     sblocks.sort()
@@ -46,7 +46,10 @@ def SortLines(lines):
     '''
     slines = []
     for l in lines:
-        y0 = str(int(l["bbox"][1] + 0.99999)).rjust(4,"0")
+        if l["bbox"][3] > l["bbox"][1]: # text was rotated 90 degrees left
+            y0 = l["bbox"][3]
+        else:
+            y0 = l["bbox"][1]
         slines.append([y0, l])
     slines.sort()
     return [l[1] for l in slines]
@@ -57,8 +60,7 @@ def SortSpans(spans):
     '''
     sspans = []
     for s in spans:
-        x0 = str(int(s["bbox"][0] + 0.99999)).rjust(4,"0")
-        sspans.append([x0, s])
+        sspans.append([s["bbox"][0], s])
     sspans.sort()
     return [s[1] for s in sspans]
 
@@ -86,9 +88,9 @@ for i in range(pages):
                 # ensure that spans are separated by at least 1 blank
                 # (should make sense in most cases)
                 if pg_text.endswith(" ") or s["text"].startswith(" "):
-                    pg_text += unicode(s["text"])
+                    pg_text += str(s["text"])
                 else:
-                    pg_text += u" " + unicode(s["text"])
+                    pg_text += " " + str(s["text"])
             pg_text += "\n"                      # separate lines by newline
 
     pg_text = pg_text.encode(ENCODING, "ignore")
