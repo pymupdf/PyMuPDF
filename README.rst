@@ -18,6 +18,8 @@ MuPDF can access files in PDF, XPS, OpenXPS and EPUB (e-book) formats, and it is
 
 With PyMuPDF you therefore can also access files with extensions ``*.pdf``, ``*.xps``, ``*.oxps`` or ``*.epub`` from your Python scripts.
 
+See the `Wiki <https://github.com/rk700/PyMuPDF/wiki>`_ for more info/news/release notes/etc.
+
 
 Installation
 ============
