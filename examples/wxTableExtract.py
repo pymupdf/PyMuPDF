@@ -21,12 +21,11 @@ Changes in PyMuPDF 1.8.0
 - minor cosmetic changes
 
 """
-
+from __future__ import print_function
 import fitz
 import wx
 import os
 from ParseTab import ParseTab
-import itertools as it
 from wx.lib.embeddedimage import PyEmbeddedImage
 #==============================================================================
 # The following data has been created by the wxPython tool img2py.py
@@ -311,8 +310,10 @@ class PDFdisplay (wx.Dialog):
         self.BtnNewCol.Disable()
         self.col_coords = {}
         self.CtrlCols.Value = 0
+        self.ColList.Clear()
         self.col_selected = None
         self.adding_column = False
+        self.set_rectangle = False
         return
 
     def enable_fields(self):
@@ -330,7 +331,8 @@ class PDFdisplay (wx.Dialog):
             self.rect_y = pos.y
             self.rect_w = 0
             self.rect_h = 0
-            self.ColListChoices = []
+            self.col_coords = {}
+            self.ColList.Clear()
             return
         elif not self.adding_column:
             return
@@ -345,7 +347,6 @@ class PDFdisplay (wx.Dialog):
         self.CtrlCols.Value = pos.x
         self.adding_column = False
         self.DrawColumn(pos.x)
-        self.PDFimage.SetCursor(wx.StockCursor(wx.CURSOR_DEFAULT))
         return
 
     def OnLeftUp(self, evt):
@@ -365,31 +366,32 @@ class PDFdisplay (wx.Dialog):
         return
 
     def OnMoving(self, evt):
-        if not evt.LeftIsDown():
+        if not evt.LeftIsDown():            # do nothing if mouse not down
             return
-        if not self.set_rectangle:
+        if not self.set_rectangle:          # has rect button been pressed?
             return
         pos = evt.GetPosition()
         tolerance = 2
         w = abs(pos.x - self.rect_x)
         h = abs(pos.y - self.rect_y)
-        if not w > tolerance and h > tolerance:
+        if not (w > tolerance and h > tolerance): # wait a little  with drawing
             return
-        x = self.rect_x
-        if pos.x < x:
-            x = pos.x
-        y = self.rect_y
-        if pos.y < y:
-            y = pos.y
+        x = self.rect_x                     # adjust coordinates ...
+        if pos.x < x:                       # if not ...
+            x = pos.x                       # moving from ...
+        y = self.rect_y                     # top-left to ...
+        if pos.y < y:                       # bottom right ...
+            y = pos.y                       # direction
         self.CtrlHeight.Value = h
         self.CtrlWidth.Value  = w
         self.CtrlLeft.Value   = x
         self.CtrlTop.Value    = y
-        self.DrawRect(x, y, w, h)
+        self.DrawRect(x, y, w, h)           # draw rectangle
         return
 
     def UpdateCol(self, evt):
-        if not self.col_selected:
+        # react to changes of the spin control field
+        if not self.col_selected:           # only if a column is selected
             return
         v = self.CtrlCols.Value
         x = self.rect_x
@@ -397,37 +399,39 @@ class PDFdisplay (wx.Dialog):
         w = self.rect_w
         h = self.rect_h
         self.col_coords[self.col_selected] = v
-        if v <= x or v >= x + w:
-            self.UpdateRect(evt)
+        if v <= x or v >= x + w:            # if col coord outside rectangle
+            self.UpdateRect(evt)            # delete the column
             self.ColList.SetFocus()
             return
-        self.DrawRect(x, y, w, h)
+        self.DrawRect(x, y, w, h)           # else redraw everything we have
         for k in self.col_coords:
             self.DrawColumn(self.col_coords[k])
 
     def DrawColumn(self, x):
         # draw a vertical line
-        dc = wx.ClientDC(self.PDFimage)
+        dc = wx.ClientDC(self.PDFimage)     # make a device control out of img
         dc.SetPen(wx.Pen("RED"))
-        dc.SetBrush(wx.Brush("RED", style=wx.BRUSHSTYLE_TRANSPARENT))
+        # only draw inside rectangle
         dc.DrawLine(x, self.rect_y, x, self.rect_y + self.rect_h)
+        self.PDFimage.SetCursor(wx.StockCursor(wx.CURSOR_DEFAULT))
 
     def DrawRect(self, x, y, w, h):
         # Draw a rectangle
-        dc = wx.ClientDC(self.PDFimage)
+        dc = wx.ClientDC(self.PDFimage)     # make a device control out of img
         dc.SetPen(wx.Pen("RED"))
         dc.SetBrush(wx.Brush("RED", style=wx.BRUSHSTYLE_TRANSPARENT))
         self.PDFimage.SetBitmap(self.bitmap)
         dc.DrawRectangle(x, y, w, h)
 
     def upd_collist(self):
-        self.ColList.Clear()
-        self.CtrlCols.Disable()
+        # update list of columns
+        self.ColList.Clear()                # clear drop down list
+        self.CtrlCols.Disable()             # disable spin control
         vlist = self.col_coords.values()
-        if not vlist:
+        if not vlist:                       # no columns left?
             self.ColList.Disable()
             return
-        self.ColList.Enable()
+        self.ColList.Enable()               # else recreate column dict
         self.col_coords = {}
         vlist.sort()
         i = 1
@@ -446,20 +450,21 @@ class PDFdisplay (wx.Dialog):
         h = self.CtrlHeight.Value
         xmax = self.PDFimage.Size[0]
         ymax = self.PDFimage.Size[1]
+        # move no rectangle part outside
         if not (x > 0 and (x + w) < xmax and y > 0 and (y + h) < ymax):
             return
         self.rect_x = x
         self.rect_y = y
         self.rect_h = h
         self.rect_w = w
-        self.DrawRect(x, y, w, h)
-        self.ColList.Clear()
+        self.DrawRect(x, y, w, h)           # redraw rectangle
+        self.ColList.Clear()                # re-adjust column controls
         self.ColList.Disable()
         self.CtrlCols.Disable()
         self.CtrlCols.Value = 0
         self.col_selected = None
         self.upd_collist()
-        for k in self.col_coords:
+        for k in self.col_coords:           # also redraw all columns
             self.DrawColumn(self.col_coords[k])
 
     def GetMatrix(self, evt):
@@ -471,16 +476,19 @@ class PDFdisplay (wx.Dialog):
         x1 = x0 + self.CtrlWidth.Value
         y1 = y0 + self.CtrlHeight.Value
         cols = self.col_coords.values()
+        pg = int(self.TextToPage.Value) - 1
         if not cols:
-            self.parsed_table = ParseTab(self.doc,
-                                         int(self.TextToPage.Value) - 1,
-                                         [x0, y0, x1, y1])
+            self.parsed_table = ParseTab(self.doc, pg, [x0, y0, x1, y1])
         else:
             cols.sort()
-            self.parsed_table = ParseTab(self.doc,
-                                         int(self.TextToPage.Value) - 1,
-                                         [x0, y0, x1, y1],
+            self.parsed_table = ParseTab(self.doc, pg, [x0, y0, x1, y1],
                                          columns = cols)
+        if self.parsed_table:
+            print("\nContents of table at (%s, %s) on page %s" % (x0, y0, pg + 1))
+            for t in self.parsed_table:
+                print(t)
+        else:
+            print("\nNo table found in rectangle")
 
     def ActivateRect(self, evt):
         # Draw a rectangle
