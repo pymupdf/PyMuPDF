@@ -10,7 +10,7 @@ Then the document's first page will displayed in another dialog. A number of con
 
 * You can browse forward and backward in the document.
 * You can jump to a specific page.
-* You can paint a rectangle on a page's displayed image using the ``New Rect`` button. You can correct your selection by using the spin controls. Pressing the ``Rect`` button again will destroy any previous rectangles and associated columns. The same is true if you leave the page, e.g. by browsing through the document.
+* You can paint a rectangle on a page's displayed image using the ``New Rect`` button. You can correct your selection by using the spin controls. Pressing the ``New Rect`` button again will destroy any previous rectangles and associated columns. The same is true if you leave the page by browsing.
 * After a rectangle has been painted, you can paint columns on the picture by button ``New Col``. Columns are shown as vertical lines within the rectangle. You can correct your selection by the respective spin control. Several columns can be painted. They can be selected using the choice box. A column can be deleted by entering a "0" in the spin control (after having selected it via the choice box) or by changing its value to something outside the rectangle's left / right borders.
 * You can change a rectangle via its 4 spin controls also after columns have been painted. Columns will not be affected in any way if you shrink / stretch / relocate the rectangle. However, if this causes a column to go outside the rectangle area, it will be deleted.
-* Anytime after a rectangle has been painted, you can parse its contained text by pressing button ``Get Table``. The current script just prints the table if you do this - see the included screen prints.
+* Anytime after a rectangle has been painted, you can parse its contained text by pressing button ``Get Table``. The current script just prints the table if you do this - see the included example screens.
