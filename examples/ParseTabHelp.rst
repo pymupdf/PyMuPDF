@@ -70,8 +70,7 @@ All encountered spans will now be distributed according to their left x coordina
 
 Notes
 ------
-Any differences in fonts, point sizes, changes between bold and italic, etc. will be ignored, and normal plain text will result.
-
-The example program ``TableExtract.py`` shows how all this works together by extracting a certain table in Adobe's PDF manual.
-
-Best use of this method can be made when it is combined with a graphical document viewer. This gives you the chance to graphically determine a table's rectangle and its columns. An example for this is ``wxTableExtract.py`` in this directory.
+* Any differences in fonts, point sizes, changes between bold and italic, etc. will be ignored, and normal plain text will result.
+* This method does not directly support parsing tables that are spread over more than one page. You must use your own logic to combine sub tables from single pages.
+* The example program ``TableExtract.py`` shows how all this works together by extracting a certain table in Adobe's PDF manual.
+* Best use of this method can be made when it is combined with a graphical document viewer. This gives you the chance to graphically determine a table's rectangle and its columns. An example for this is ``wxTableExtract.py`` in this directory.
