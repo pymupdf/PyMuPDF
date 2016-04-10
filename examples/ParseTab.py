@@ -36,7 +36,7 @@ def ParseTab(doc, page, bbox, columns = None):
     cur.execute("CREATE TABLE `spans` (`x0` REAL,`y0` REAL, `text` TEXT)")
 
 #==============================================================================
-#   Function spanout - store a table entry in database
+#   Function spanout - store a span in database
 #==============================================================================
     def spanout(s, y0):
         x0  = s["bbox"][0]
@@ -59,7 +59,7 @@ def ParseTab(doc, page, bbox, columns = None):
                 spans.sort()                # sort them
             else:
                 continue
-            # concatenate spans that are close to each other
+            # concatenate spans close to each other
             for i, s in enumerate(spans):
                 span = s[1]
                 if i == 0:
@@ -98,7 +98,7 @@ def ParseTab(doc, page, bbox, columns = None):
     try:
         y0 = alltxt[0][1]                   # y-coord of first line
     except IndexError:                      # nothing there:
-        print("Warning: no text found within rectangle!")
+        print("Warning: no text found in rectangle!")
         return []
 
     zeile = [""] * len(coltab)

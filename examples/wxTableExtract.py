@@ -2,23 +2,17 @@
 # -*- coding: utf-8 -*-
 
 """
-@created: 2015-10-23 13:40:00
+@created: 2016-04-07 07:00:00
 
 @author: Jorj X. McKie
 
-Let the user select a PDF file and then scroll through it.
+Display and parse tables of a document.
 
 Dependencies:
 PyMuPDF, wxPython 3.x, json, sqlite3
 
 License:
- GNU GPL 3.x
-
-Changes in PyMuPDF 1.8.0
-------------------------
-- display a fancy icon on the dialogs, defined as inline code in base64 format
-- dynamically resize dialog to reflect each page's image size / orientation
-- minor cosmetic changes
+ GNU GPL V3
 
 """
 from __future__ import print_function
@@ -30,7 +24,7 @@ from wx.lib.embeddedimage import PyEmbeddedImage
 #==============================================================================
 # The following data has been created by the wxPython tool img2py.py
 # It contains SumatraPDF's icon (only for demonstration purposes) as a base64
-# version (like PyMuPDF, SumatraPDF software is licensed under GNU GPL 3.x).
+# version (like PyMuPDF, SumatraPDF software is licensed under GNU GPL V3).
 #==============================================================================
 img = PyEmbeddedImage(
     "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAABjpJ"
@@ -68,7 +62,7 @@ img = PyEmbeddedImage(
 # some abbreviations to get rid of those long pesky names ...
 defPos = wx.DefaultPosition
 defSiz = wx.DefaultSize
-
+khaki  = wx.Colour(240, 230, 140)
 #==============================================================================
 # Define our dialog as a subclass of wx.Dialog.
 # Only special thing is, that we are being invoked with a filename ...
@@ -77,7 +71,7 @@ class PDFdisplay (wx.Dialog):
 
     def __init__(self, parent, filename):
         wx.Dialog.__init__ (self, parent, id = wx.ID_ANY,
-            title = u"Parse Tables from ",
+            title = u"Parse Tables in ",
             pos = defPos, size = defSiz,
             style = wx.CAPTION|wx.CLOSE_BOX|wx.DEFAULT_DIALOG_STYLE)
 
@@ -85,18 +79,15 @@ class PDFdisplay (wx.Dialog):
         # display an icon top left of dialog, append filename to title
         #======================================================================
         self.SetIcon(img.GetIcon())
+        self.SetBackgroundColour(khaki)
         self.SetTitle(self.Title + filename)
         self.set_rectangle = False
+
         #======================================================================
         # open the document with MuPDF when dialog gets created
         #======================================================================
         self.doc = fitz.Document(filename)
-
-        #======================================================================
-        # define zooming matrix for displaying PDF page images
-        # we increase images by 20%, so take 1.2 as scale factors
-        #======================================================================
-        self.matrix = fitz.Matrix(1, 1).preScale(1.0, 1.0)
+        self.bitmap = self.pdf_show(1)
         '''
         =======================================================================
         Overall Dialog Structure:
@@ -116,26 +107,21 @@ class PDFdisplay (wx.Dialog):
         =======================================================================
         '''
         #======================================================================
-        # the main sizer of the dialog
+        # sizers
         #======================================================================
-        szr10 = wx.BoxSizer(wx.VERTICAL)
-        #======================================================================
-        # this sizer will contain scrolling buttons, page numbers etc.
-        #======================================================================
-        szr20 = wx.BoxSizer(wx.HORIZONTAL)
-        #======================================================================
-        # this sizer will contain table column information
-        #======================================================================
-        szr30 = wx.BoxSizer(wx.HORIZONTAL)
+        szr10 = wx.BoxSizer(wx.VERTICAL)         # main sizer
+        szr20 = wx.BoxSizer(wx.HORIZONTAL)       # paging controls
+        szr30 = wx.BoxSizer(wx.HORIZONTAL)       # rect & col controls & image
+        szr40 = wx.BoxSizer(wx.VERTICAL)         # rect & col controls
         #======================================================================
         # forward button
         #======================================================================
-        self.BtnNext = wx.Button(self, wx.ID_ANY, u"forw",
+        self.BtnNext = wx.Button(self, wx.ID_ANY, u"Forward",
                            defPos, defSiz, wx.BU_EXACTFIT)
         #======================================================================
         # backward button
         #======================================================================
-        self.BtnPrev = wx.Button(self, wx.ID_ANY, u"back",
+        self.BtnPrev = wx.Button(self, wx.ID_ANY, u"Backward",
                            defPos, defSiz, wx.BU_EXACTFIT)
         #======================================================================
         # text field for entering a target page. wx.TE_PROCESS_ENTER is
@@ -147,18 +133,18 @@ class PDFdisplay (wx.Dialog):
         # displays total pages
         #======================================================================
         self.statPageMax = wx.StaticText(self, wx.ID_ANY,
-                              str(self.doc.pageCount), defPos,
-                              wx.Size(40, -1), 0)
+                              "of " + str(self.doc.pageCount) + " pages",
+                              defPos, defSiz, 0)
         #======================================================================
         # activate rectangle drawing
         #======================================================================
-        self.BtnRect = wx.Button(self, wx.ID_ANY, u"rect",
+        self.BtnRect = wx.Button(self, wx.ID_ANY, u"New Rect",
                            defPos, defSiz, wx.BU_EXACTFIT)
         #======================================================================
         # "Left" literal
         #======================================================================
         self.statLeft = wx.StaticText(self, wx.ID_ANY,
-                              u"L:", defPos, wx.Size(15, -1), 0)
+                              u"Left:", defPos, wx.Size(50, -1), 0)
         #======================================================================
         # modify rectangle left
         #======================================================================
@@ -167,8 +153,8 @@ class PDFdisplay (wx.Dialog):
         #======================================================================
         # "Top" literal
         #======================================================================
-        self.statTop = wx.StaticText(self, wx.ID_ANY, u"T:", defPos,
-                              wx.Size(15, -1), 0)
+        self.statTop = wx.StaticText(self, wx.ID_ANY, u"Top:", defPos,
+                              wx.Size(50, -1), 0)
         #======================================================================
         # modify rectangle top
         #======================================================================
@@ -177,8 +163,8 @@ class PDFdisplay (wx.Dialog):
         #======================================================================
         # "Height" literal
         #======================================================================
-        self.statHeight = wx.StaticText(self, wx.ID_ANY, u"H:", defPos,
-                              wx.Size(15, -1), 0)
+        self.statHeight = wx.StaticText(self, wx.ID_ANY, u"Height:", defPos,
+                              wx.Size(50, -1), 0)
         #======================================================================
         # modify rectangle Height
         #======================================================================
@@ -187,8 +173,8 @@ class PDFdisplay (wx.Dialog):
         #======================================================================
         # "Width" literal
         #======================================================================
-        self.statWidth = wx.StaticText(self, wx.ID_ANY, u"W:", defPos,
-                              wx.Size(15, -1), 0)
+        self.statWidth = wx.StaticText(self, wx.ID_ANY, u"Width:", defPos,
+                              wx.Size(50, -1), 0)
         #======================================================================
         # modify rectangle Width
         #======================================================================
@@ -200,51 +186,64 @@ class PDFdisplay (wx.Dialog):
         self.BtnMatrix = wx.Button(self, wx.ID_ANY, u"Get Table",
                            defPos, defSiz, wx.BU_EXACTFIT)
         #======================================================================
-        # add a column
+        # column controls
         #======================================================================
         self.BtnNewCol = wx.Button(self, wx.ID_ANY, u"New Col",
                            defPos, defSiz, wx.BU_EXACTFIT)
         self.col_coords = {}
-        self.ColList = wx.Choice( self, wx.ID_ANY, defPos, defSiz,
-                           [], 0 )
+        self.ColList = wx.Choice( self, wx.ID_ANY, defPos, wx.Size(50, -1))
         self.CtrlCols = wx.SpinCtrl( self, wx.ID_ANY, u"0", defPos,
                            wx.Size(50, -1), wx.SP_ARROW_KEYS, 0, 999, 0)
         #======================================================================
-        # sizers ready, compose them and add them to main sizer
+        # image of document page
+        #======================================================================
+        self.PDFimage = wx.StaticBitmap(self, wx.ID_ANY, self.bitmap,
+                           defPos, self.bitmap.Size, wx.NO_BORDER)
+        #======================================================================
+        # horizonzal lines
+        #======================================================================
+        l1 = wx.StaticLine(self, wx.ID_ANY, defPos, defSiz, wx.LI_HORIZONTAL)
+        l2 = wx.StaticLine(self, wx.ID_ANY, defPos, defSiz, wx.LI_HORIZONTAL)
+        l3 = wx.StaticLine(self, wx.ID_ANY, defPos, defSiz, wx.LI_HORIZONTAL)
+        #======================================================================
+        # items ready, fill the sizers
         #======================================================================
         szr20.Add(self.BtnNext, 0, wx.ALL, 5)
         szr20.Add(self.BtnPrev, 0, wx.ALL, 5)
         szr20.Add(self.TextToPage, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
         szr20.Add(self.statPageMax, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-        szr20.Add(self.BtnRect, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-        szr20.Add(self.statLeft, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-        szr20.Add(self.CtrlLeft, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-        szr20.Add(self.statTop, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-        szr20.Add(self.CtrlTop, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-        szr20.Add(self.statHeight, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-        szr20.Add(self.CtrlHeight, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-        szr20.Add(self.statWidth, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-        szr20.Add(self.CtrlWidth, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
         szr20.Fit(self)
-        szr10.Add(szr20, 0, wx.EXPAND, 5)
 
         #======================================================================
-        # sizer szr30 ready, represents column information
+        # szr40:
         #======================================================================
-        szr30.Add(self.BtnNewCol, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-        szr30.Add(self.ColList, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-        szr30.Add(self.CtrlCols, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-        szr30.Add(self.BtnMatrix, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-        szr30.Fit(self)
-        szr10.Add(szr30, 0, wx.EXPAND, 5)
+        szr40.Add(self.BtnRect, 0,wx.ALL, 5)
+        szr40.Add(self.statLeft, 0, wx.ALL, 5)
+        szr40.Add(self.CtrlLeft, 0, wx.ALL, 5)
+        szr40.Add(self.statTop, 0, wx.ALL, 5)
+        szr40.Add(self.CtrlTop, 0, wx.ALL, 5)
+        szr40.Add(self.statHeight, 0, wx.ALL, 5)
+        szr40.Add(self.CtrlHeight, 0, wx.ALL, 5)
+        szr40.Add(self.statWidth, 0, wx.ALL, 5)
+        szr40.Add(self.CtrlWidth, 0, wx.ALL, 5)
+        szr40.Add(l2, 0, wx.EXPAND|wx.ALL, 5)
+        szr40.Add(self.BtnNewCol, 0, wx.ALL, 5)
+        szr40.Add(self.ColList, 0, wx.ALL, 5)
+        szr40.Add(self.CtrlCols, 0, wx.ALL, 5)
+        szr40.Add(l3, 0, wx.EXPAND|wx.ALL, 5)
+        szr40.Add(self.BtnMatrix, 0, wx.ALL, 5)
+        szr40.Fit(self)
 
         #======================================================================
         # define the area for page images and load page 1 for display
         #======================================================================
-        self.bitmap = self.pdf_show(1)
-        self.PDFimage = wx.StaticBitmap(self, wx.ID_ANY, self.bitmap,
-                           defPos, self.bitmap.Size, wx.NO_BORDER)
-        szr10.Add(self.PDFimage, 0, wx.ALL, 0)
+        szr30.Add(szr40, 0, wx.EXPAND, 5)
+        szr30.Add(self.PDFimage, 0, wx.ALL, 5)
+        szr30.Fit(self)
+
+        szr10.Add(szr20, 0, wx.EXPAND, 5)
+        szr10.Add(l1, 0, wx.EXPAND|wx.ALL, 5)
+        szr10.Add(szr30, 0, wx.EXPAND, 5)
 
         #======================================================================
         # main sizer now ready - request final size & layout adjustments
@@ -267,11 +266,11 @@ class PDFdisplay (wx.Dialog):
         self.TextToPage.Bind(wx.EVT_TEXT_ENTER, self.GotoPage)
         self.BtnRect.Bind(wx.EVT_BUTTON, self.ActivateRect)
         self.BtnMatrix.Bind(wx.EVT_BUTTON, self.GetMatrix)
-        self.CtrlTop.Bind( wx.EVT_SPINCTRL, self.UpdateRect)
-        self.CtrlHeight.Bind( wx.EVT_SPINCTRL, self.UpdateRect )
-        self.CtrlLeft.Bind( wx.EVT_SPINCTRL, self.UpdateRect )
-        self.CtrlWidth.Bind( wx.EVT_SPINCTRL, self.UpdateRect )
-        self.CtrlCols.Bind( wx.EVT_SPINCTRL, self.UpdateCol)
+        self.CtrlTop.Bind(wx.EVT_SPINCTRL, self.UpdateRect)
+        self.CtrlHeight.Bind(wx.EVT_SPINCTRL, self.UpdateRect)
+        self.CtrlLeft.Bind(wx.EVT_SPINCTRL, self.UpdateRect)
+        self.CtrlWidth.Bind(wx.EVT_SPINCTRL, self.UpdateRect)
+        self.CtrlCols.Bind(wx.EVT_SPINCTRL, self.UpdateCol)
         self.ColList.Bind(wx.EVT_CHOICE, self.OnColSelect)
         self.PDFimage.Bind(wx.EVT_LEFT_DOWN, self.OnLeftDown)
         self.PDFimage.Bind(wx.EVT_LEFT_UP, self.OnLeftUp)
@@ -285,21 +284,24 @@ class PDFdisplay (wx.Dialog):
 # Event handlers and other subroutines
 #==============================================================================
     def OnColSelect(self, evt):
-        col = evt.GetString()
-        self.CtrlCols.Value = self.col_coords[col]
-        self.CtrlCols.Enable()
-        self.col_selected = col
+        # a column from the drop down box was selected
+        col = evt.GetString()               # selected item
+        self.CtrlCols.Value = self.col_coords[col]    # get its coord
+        self.CtrlCols.Enable()                        # enable spin control
+        self.col_selected = col                       # store selected string
 
     def AddCol(self, evt):
+        # insert new column into rectangle
+        # change cursor to up-down image
         self.PDFimage.SetCursor(wx.StockCursor(wx.CURSOR_SIZENS))
-        self.adding_column = True
-        self.BtnNewCol.Enable()
-        self.ColList.Enable()
-        self.CtrlCols.Disable()
-        self.col_selected = None
+        self.adding_column = True           # store state: adding column
+        self.ColList.Enable()               # enable drop-down list
+        self.CtrlCols.Disable()             # disable spin control
+        self.col_selected = None            # state: no column selected
         return
 
     def disable_fields(self):
+        # reset all fields / buttons (e.g. b/o page scrolling)
         self.CtrlHeight.Disable()
         self.CtrlTop.Disable()
         self.CtrlLeft.Disable()
@@ -308,15 +310,25 @@ class PDFdisplay (wx.Dialog):
         self.CtrlCols.Disable()
         self.BtnMatrix.Disable()
         self.BtnNewCol.Disable()
-        self.col_coords = {}
-        self.CtrlCols.Value = 0
+        self.CtrlCols.Value   = 0
+        self.CtrlTop.Value    = 0
+        self.CtrlLeft.Value   = 0
+        self.CtrlHeight.Value = 0
+        self.CtrlWidth.Value  = 0
+        self.set_rectangle    = False
+        self.col_selected     = None
+        self.adding_column    = False
+        self.col_coords       = {}
+        self.rect_x           = 0
+        self.rect_y           = 0
+        self.rect_w           = 0
+        self.rect_h           = 0
         self.ColList.Clear()
-        self.col_selected = None
-        self.adding_column = False
-        self.set_rectangle = False
+        self.PDFimage.SetCursor(wx.StockCursor(wx.CURSOR_DEFAULT))
         return
 
     def enable_fields(self):
+        # enable fields (after rectangle was made)
         self.BtnMatrix.Enable()
         self.CtrlHeight.Enable()
         self.CtrlTop.Enable()
@@ -325,7 +337,8 @@ class PDFdisplay (wx.Dialog):
         return
 
     def OnLeftDown(self, evt):
-        if self.set_rectangle:
+        # left mouse button down
+        if self.set_rectangle:              # either about to make rectangle,
             pos = evt.GetPosition()
             self.rect_x = pos.x
             self.rect_y = pos.y
@@ -334,44 +347,49 @@ class PDFdisplay (wx.Dialog):
             self.col_coords = {}
             self.ColList.Clear()
             return
-        elif not self.adding_column:
+        elif not self.adding_column:        # exit if not making column
             return
+        # making a column
         pos = evt.GetPosition()
+        # horizontal coord should be within rectangle
         if pos.x >= self.rect_x + self.rect_w or\
            pos.x <= self.rect_x:
             return
+        # store new column info
         n = self.ColList.Count + 1
         col_name = "Col" + str(n)
         self.col_coords[col_name] = pos.x
         self.ColList.Append("Col" + str(n))
         self.CtrlCols.Value = pos.x
-        self.adding_column = False
-        self.DrawColumn(pos.x)
+        self.adding_column = False          # reset state: not adding column
+        self.DrawColumn(pos.x)              # draw the column
         return
 
     def OnLeftUp(self, evt):
-        if not self.set_rectangle:
+        if not self.set_rectangle:          # only handle making rectangle
             return
         pos = evt.GetPosition()
         self.rect_w = abs(pos.x - self.rect_x)
         self.rect_h = abs(pos.y - self.rect_y)
         if self.rect_x > pos.x:
-            self.rect_x = pos.x
+            self.rect_x = pos.x             # recover from not painting ...
         if self.rect_y > pos.y:
-            self.rect_y = pos.y
-        self.enable_fields()
+            self.rect_y = pos.y             # top-left
+        self.enable_fields()                # enable fields
+        # reset cursor to normal
         self.PDFimage.SetCursor(wx.StockCursor(wx.CURSOR_DEFAULT))
-        self.set_rectangle = False
-        self.BtnNewCol.Enable()
+        self.set_rectangle = False          # reset state: no more make rect
+        self.BtnNewCol.Enable()             # making columns now possible
         return
 
     def OnMoving(self, evt):
-        if not evt.LeftIsDown():            # do nothing if mouse not down
+        # handle moving mouse
+        if not evt.LeftIsDown():            # do nothing if left button not down
             return
-        if not self.set_rectangle:          # has rect button been pressed?
+        if not self.set_rectangle:          # do nothing if not making rectangle
             return
         pos = evt.GetPosition()
-        tolerance = 2
+        tolerance = 2                       # drawing only after 2 pixel move
         w = abs(pos.x - self.rect_x)
         h = abs(pos.y - self.rect_y)
         if not (w > tolerance and h > tolerance): # wait a little  with drawing
@@ -380,47 +398,47 @@ class PDFdisplay (wx.Dialog):
         if pos.x < x:                       # if not ...
             x = pos.x                       # moving from ...
         y = self.rect_y                     # top-left to ...
-        if pos.y < y:                       # bottom right ...
+        if pos.y < y:                       # bottom-right ...
             y = pos.y                       # direction
-        self.CtrlHeight.Value = h
-        self.CtrlWidth.Value  = w
-        self.CtrlLeft.Value   = x
+        self.CtrlHeight.Value = h           # update ...
+        self.CtrlWidth.Value  = w           # ... spin ...
+        self.CtrlLeft.Value   = x           # ... controls
         self.CtrlTop.Value    = y
         self.DrawRect(x, y, w, h)           # draw rectangle
         return
 
     def UpdateCol(self, evt):
-        # react to changes of the spin control field
+        # handle changes to spin control
         if not self.col_selected:           # only if a column is selected
             return
-        v = self.CtrlCols.Value
-        x = self.rect_x
+        v = self.CtrlCols.Value             # position of column
+        x = self.rect_x                     # rectangle coord's
         y = self.rect_y
         w = self.rect_w
         h = self.rect_h
-        self.col_coords[self.col_selected] = v
+        self.col_coords[self.col_selected] = v   # store col coord in dict
         if v <= x or v >= x + w:            # if col coord outside rectangle
             self.UpdateRect(evt)            # delete the column
-            self.ColList.SetFocus()
-            return
+            self.ColList.SetFocus()         # focus to next col selection
+            return                          # and return
         self.DrawRect(x, y, w, h)           # else redraw everything we have
-        for k in self.col_coords:
+        for k in self.col_coords:           # redraw all columns
             self.DrawColumn(self.col_coords[k])
 
     def DrawColumn(self, x):
         # draw a vertical line
         dc = wx.ClientDC(self.PDFimage)     # make a device control out of img
         dc.SetPen(wx.Pen("RED"))
-        # only draw inside rectangle
+        # only draw inside the rectangle
         dc.DrawLine(x, self.rect_y, x, self.rect_y + self.rect_h)
         self.PDFimage.SetCursor(wx.StockCursor(wx.CURSOR_DEFAULT))
 
     def DrawRect(self, x, y, w, h):
-        # Draw a rectangle
+        # Draw a rectangle (red border, transparent interior)
         dc = wx.ClientDC(self.PDFimage)     # make a device control out of img
         dc.SetPen(wx.Pen("RED"))
         dc.SetBrush(wx.Brush("RED", style=wx.BRUSHSTYLE_TRANSPARENT))
-        self.PDFimage.SetBitmap(self.bitmap)
+        self.redraw_bitmap()
         dc.DrawRectangle(x, y, w, h)
 
     def upd_collist(self):
@@ -450,7 +468,7 @@ class PDFdisplay (wx.Dialog):
         h = self.CtrlHeight.Value
         xmax = self.PDFimage.Size[0]
         ymax = self.PDFimage.Size[1]
-        # move no rectangle part outside
+        # move no rectangle part outside page image
         if not (x > 0 and (x + w) < xmax and y > 0 and (y + h) < ymax):
             return
         self.rect_x = x
@@ -468,7 +486,7 @@ class PDFdisplay (wx.Dialog):
             self.DrawColumn(self.col_coords[k])
 
     def GetMatrix(self, evt):
-        # parse table within rectangle
+        # parse table contained in rectangle
         # currently, the table is just stored away as a matrix:
         # add functionality as desired
         x0 = self.CtrlLeft.Value
@@ -476,30 +494,40 @@ class PDFdisplay (wx.Dialog):
         x1 = x0 + self.CtrlWidth.Value
         y1 = y0 + self.CtrlHeight.Value
         cols = self.col_coords.values()
+        cols.sort()
         pg = int(self.TextToPage.Value) - 1
-        if not cols:
-            self.parsed_table = ParseTab(self.doc, pg, [x0, y0, x1, y1])
-        else:
-            cols.sort()
-            self.parsed_table = ParseTab(self.doc, pg, [x0, y0, x1, y1],
-                                         columns = cols)
+        self.parsed_table = ParseTab(self.doc, pg, [x0, y0, x1, y1],
+                                     columns = cols)
         if self.parsed_table:
-            print("\nContents of table at (%s, %s) on page %s" % (x0, y0, pg + 1))
+            r = len(self.parsed_table)
+            c = len(self.parsed_table[0])
+            t = "\nContents of (%s x %s) table at [%s,%s] on page %s"
+            print(t % (r, c, x0, y0, pg + 1))
             for t in self.parsed_table:
                 print(t)
         else:
-            print("\nNo table found in rectangle")
+            print("No text found in rectangle")
+
+    def redraw_bitmap(self):
+        bmw = self.bitmap.Size[0]
+        bmh = self.bitmap.Size[1]
+        rect = wx.Rect(0, 0, bmw, bmh)
+        bm = self.bitmap.GetSubBitmap(rect)
+        dc = wx.ClientDC(self.PDFimage)     # make a device control out of img
+        dc.DrawBitmap(bm, 0, 0)             # refresh bitmap before draw
+        return
 
     def ActivateRect(self, evt):
         # Draw a rectangle
         self.set_rectangle = True
-        self.PDFimage.SetBitmap(self.bitmap)
+        self.redraw_bitmap()
         self.PDFimage.SetCursor(wx.StockCursor(wx.CURSOR_CROSS))
         self.col_coords = {}
         self.CtrlCols.Value = 0
         self.BtnNewCol.Disable()
         self.CtrlCols.Disable()
         self.ColList.Disable()
+        self.ColList.Clear()
 
     def NextPage(self, event):                   # means: page forward
         page = int(self.TextToPage.Value) + 1    # current page + 1
@@ -528,24 +556,17 @@ class PDFdisplay (wx.Dialog):
 # Read / render a PDF page. Parameters are: pdf = document, page = page#
 #==============================================================================
     def NeuesImage(self, page):
-        self.CtrlTop.Value    = 0
-        self.CtrlLeft.Value   = 0
-        self.CtrlHeight.Value = 0
-        self.CtrlWidth.Value  = 0
-        self.set_rectangle = False
         self.disable_fields()
-        self.PDFimage.SetCursor(wx.StockCursor(wx.CURSOR_DEFAULT))
         self.bitmap = self.pdf_show(page)        # read page image
         self.PDFimage.SetSize(self.bitmap.Size)  # adjust screen to image size
-        self.PDFimage.SetBitmap(self.bitmap)     # put it in screen
+        self.PDFimage.SetBitmap(self.bitmap)    # put it in screen
         return
 
     def pdf_show(self, pg_nr):
-        page = self.doc.loadPage(int(pg_nr) - 1) # load the page & get Pixmap
-        pix = page.getPixmap(matrix = self.matrix,
-                             colorspace = 'RGB')
-        a = str(pix.samples)                          # point to pixel area
-        a2 = "".join([a[4*i:4*i+3] for i in range(len(a)/4)])
+        # get Pixmap of a page
+        pix = self.doc.getPagePixmap(int(pg_nr) - 1)
+        a = str(pix.samples)                     # string version of pixel area
+        a2 = "".join([a[4*i:4*i+3] for i in range(len(a)/4)]) # RGBA -> RGB
         bitmap = wx.BitmapFromBuffer(pix.width, pix.height, a2)
         return bitmap
 
