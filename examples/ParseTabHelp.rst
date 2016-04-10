@@ -26,26 +26,37 @@ Usage
 ------
 A simple example:
 
-    import fitz
-    from ParseTab import ParseTab
-    doc = fitz.Document("example.pdf")
-    table = ParseTab(doc, 20, [0, 0, 500, 700])
+    ``import fitz``
+    
+    ``from ParseTab import ParseTab``
+    
+    ``doc = fitz.Document("example.pdf")``
+    
+    ``table = ParseTab(doc, 20, [0, 0, 500, 700])``
 
 If you do more work with this page 20, you can invoke the parsing with a slightly better performance like this:
 
-    import fitz
-    from ParseTab import ParseTab
-    doc = fitz.Document("example.pdf")
-    page = doc.loadPage(20)
-    table = ParseTab(None, page, [0, 0, 500, 700])
+    ``import fitz``
+    
+    ``from ParseTab import ParseTab``
+    
+    ``doc = fitz.Document("example.pdf")``
+    
+    ``page = doc.loadPage(20)``
+    
+    ``table = ParseTab(None, page, [0, 0, 500, 700])``
 
 In both cases, you somehow need to know, that the rectangle actually contains the wanted table. If you don't, but you do know certain keywords above and below your table, you can let PyMuPDF help you like this:
 
-    rl1 = page.searchFor("above", hit_max = 1)
-    y_above = rl1[0].y1                       # bottom of hit rectangle 1
-    rl2 = page.searchFor("below", hit_max = 1)
-    y_below = rl2[0].y0                       # top of hit rectangle 1
-    table = ParseTab(None, page, [0, y_above, 9999, y_below])
+    ``rl1 = page.searchFor("above", hit_max = 1)``
+    
+    ``y_above = rl1[0].y1                       # bottom of hit rectangle 1``
+    
+    ``rl2 = page.searchFor("below", hit_max = 1)``
+    
+    ``y_below = rl2[0].y0                       # top of hit rectangle 1``
+    
+    ``table = ParseTab(None, page, [0, y_above, 9999, y_below])``
 
 ``rl1`` and ``rl2`` will be lists of rectangles surrounding the respective search strings. Because we have limited the searches to 1 occurrence, at most one rectangle will be contained in each.
 
@@ -60,18 +71,3 @@ All encountered spans will then be distributed according to their left x coordin
 Notes
 ------
 Any differences in fonts, point sizes, changes between bold and italic, etc. will be ignored, and normal plain text will result.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Because no ``columns`` parameter is specified, columns are detected automatically
