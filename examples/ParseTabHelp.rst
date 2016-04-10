@@ -74,4 +74,4 @@ Any differences in fonts, point sizes, changes between bold and italic, etc. wil
 
 The example program ``TableExtract.py`` shows how all this works together by extracting a certain table in Adobe's PDF manual.
 
-Best use of this method can be made when it is combined with a graphical document viewer. This gives you the chance to graphically determine a table's rectangle and its columns. An example for this is ``wxParseRect.py`` in this directory.
+Best use of this method can be made when it is combined with a graphical document viewer. This gives you the chance to graphically determine a table's rectangle and its columns. An example for this is ``wxTableExtract.py`` in this directory.
