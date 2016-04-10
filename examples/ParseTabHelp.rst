@@ -27,35 +27,35 @@ Usage
 A simple example:
 
     ``import fitz``
-    
+
     ``from ParseTab import ParseTab``
-    
+
     ``doc = fitz.Document("example.pdf")``
-    
+
     ``table = ParseTab(doc, 20, [0, 0, 500, 700])``
 
 If you do other work with this page, you can invoke the parsing with a slightly better performance like this:
 
     ``import fitz``
-    
+
     ``from ParseTab import ParseTab``
-    
+
     ``doc = fitz.Document("example.pdf")``
-    
+
     ``page = doc.loadPage(20)``
-    
+
     ``table = ParseTab(None, page, [0, 0, 500, 700])``
 
 In both cases, you somehow need to know, that the rectangle actually contains the wanted table. If you don't, but you do know certain keywords above and below your table, you can let PyMuPDF help you like this:
 
     ``rl1 = page.searchFor("above", hit_max = 1)``
-    
+
     ``y_above = rl1[0].y1                       # bottom of hit rectangle 1``
-    
+
     ``rl2 = page.searchFor("below", hit_max = 1)``
-    
+
     ``y_below = rl2[0].y0                       # top of hit rectangle 2``
-    
+
     ``table = ParseTab(None, page, [0, y_above, 9999, y_below])``
 
 ``rl1`` and ``rl2`` are lists of rectangles surrounding the respective search strings. Because we have limited both searches to 1 occurrence, at most one rectangle will be contained in each.
@@ -74,3 +74,4 @@ Notes
 * This method does not directly support parsing tables that are spread over more than one page. You must use your own logic to combine sub tables from single pages.
 * The example program ``TableExtract.py`` shows how all this works together by extracting a certain table in Adobe's PDF manual.
 * Best use of this method can be made when it is combined with a graphical document viewer. This gives you the chance to graphically determine a table's rectangle and its columns. An example for this is ``wxTableExtract.py`` in this directory.
+* This is **not** an OCR program. It cannot detect text that is contained in images.
