@@ -66,8 +66,12 @@ Because no ``columns`` were specified, they will be detected automatically. This
 
 In many cases, this logic may be sufficient - even though several unnecessary columns will usually result. If you do not like this behaviour (and if you do know where your columns start), supply a ``columns = [c1, c2, ...]``. If the parsed rectangle's top-left x coordinate x0 is smaller than c1, the tuple ``[x0, c1, c2, ...]`` will be used.
 
-All encountered spans will then be distributed according to their left x coordinate, e.g. if ``c1 <= x < c2``, the text will land in column 1. If this is also the case for other spans in the same line, they will be concatenated to whatever is already there.
+All encountered spans will then be distributed according to their left x coordinate, e.g. if ``c1 <= x < c2``, the text will land in column 1. If this is also the case for other spans in the same line, they will be concatenated to x.
 
 Notes
 ------
 Any differences in fonts, point sizes, changes between bold and italic, etc. will be ignored, and normal plain text will result.
+
+The example program ``TableExtract.py`` shows how all this works together.
+
+Best use of this method can be made when combined with a GUI document viewer. This gives you the chance to graphically determine a table's rectangle and its columns. An example for this is ``wxParseRect.py`` in this directory.
