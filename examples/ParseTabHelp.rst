@@ -12,7 +12,7 @@ Parameters and Returns
 * **page:** specifies a page in the document. This can be either a number, in which case it must be 0-based, or a PyMuPDF page object (created with the ``loadPage()`` method). If a page object is specified, the ``doc`` will not be used and can be specified as ``None``.
 * **rect:** specifies the rectangle to be parsed. Must be specified as a 4-tuple (or list) of numbers, e.g. ``[x0, y0, x1, y1]``, where x0 and y0 define the upper left corner of the rectangle, and x1, y1 the bottom right corner. The numbers must be specified as pixel values. They may be floats or integers.
 * **columns:** an optional list of horizontal pixel values which shall be used as delimiting columns. If omitted, columns are detected automatically, see below.
-* **table:** contains a list of lists of strings upon return. If the parsing was not successfull for any reason,``table`` will be an empty list. If successfull, ``len(table)`` will equal the number of lines, and ``len(table[0])`` will be the number of columns.
+* **table:** contains a list of lists of strings upon return. If the parsing was not successfull for any reason, ``table`` will be an empty list. If successfull, ``len(table)`` will equal the number of lines, and ``len(table[0])`` will be the number of columns.
 
 Dependencies
 ------------
@@ -27,25 +27,25 @@ Usage
 A simple example:
 
     import fitz
-	from ParseTab import ParseTab
-	doc = fitz.Document("example.pdf")
-	table = ParseTab(doc, 20, [0, 0, 500, 700])
+    from ParseTab import ParseTab
+    doc = fitz.Document("example.pdf")
+    table = ParseTab(doc, 20, [0, 0, 500, 700])
 
 If you do more work with this page 20, you can invoke the parsing with a slightly better performance like this:
 
     import fitz
-	from ParseTab import ParseTab
-	doc = fitz.Document("example.pdf")
-	page = doc.loadPage(20)
-	table = ParseTab(None, page, [0, 0, 500, 700])
+    from ParseTab import ParseTab
+    doc = fitz.Document("example.pdf")
+    page = doc.loadPage(20)
+    table = ParseTab(None, page, [0, 0, 500, 700])
 
 In both cases, you somehow need to know, that the rectangle actually contains the wanted table. If you don't, but you do know certain keywords above and below your table, you can let PyMuPDF help you like this:
 
     rl1 = page.searchFor("above", hit_max = 1)
-	y_above = rl1[0].y1                       # bottom of hit rectangle 1
-	rl2 = page.searchFor("below", hit_max = 1)
-	y_below = rl2[0].y0                       # top of hit rectangle 1
-	table = ParseTab(None, page, [0, y_above, 9999, y_below])
+    y_above = rl1[0].y1                       # bottom of hit rectangle 1
+    rl2 = page.searchFor("below", hit_max = 1)
+    y_below = rl2[0].y0                       # top of hit rectangle 1
+    table = ParseTab(None, page, [0, y_above, 9999, y_below])
 
 ``rl1`` and ``rl2`` will be lists of rectangles surrounding the respective search strings. Because we have limited the searches to 1 occurrence, at most one rectangle will be contained in each.
 
