@@ -54,24 +54,24 @@ In both cases, you somehow need to know, that the rectangle actually contains th
     
     ``rl2 = page.searchFor("below", hit_max = 1)``
     
-    ``y_below = rl2[0].y0                       # top of hit rectangle 1``
+    ``y_below = rl2[0].y0                       # top of hit rectangle 2``
     
     ``table = ParseTab(None, page, [0, y_above, 9999, y_below])``
 
-``rl1`` and ``rl2`` will be lists of rectangles surrounding the respective search strings. Because we have limited the searches to 1 occurrence, at most one rectangle will be contained in each.
+``rl1`` and ``rl2`` are lists of rectangles surrounding the respective search strings. Because we have limited both searches to 1 occurrence, at most one rectangle will be contained in each.
 
-The rectangles' properties ``y0`` and ``y1`` denote the top and the bottom, respectively. Here we used this information together with x values specifying the full breadth of the page.
+The rectangles' properties ``y0`` and ``y1`` denote the top and the bottom, respectively. Here we used this information together with x values, that just mean "the whole width is valid".
 
-Because no ``columns`` were specified, they will be detected automatically. This is done by collecting the left coordinates of all text pieces ("spans") in the rectangle.
+Because no ``columns`` were specified, columns will be detected automatically. This is done by collecting all different left coordinates of all text pieces (so-called "spans") in the parsed rectangle.
 
-In many cases, this logic may be sufficient - even though several unnecessary columns will usually result. If you do not like this behaviour (and if you do know where your columns start), supply a ``columns = [c1, c2, ...]``. If the parsed rectangle's top-left x coordinate x0 is smaller than c1, the tuple ``[x0, c1, c2, ...]`` will be used.
+In many cases, this logic may be sufficient - even though several unnecessary columns will usually result. If you do not like this behaviour (and if you do know where your real columns start!), supply a ``columns = [c1, c2, ...]`` parameter. If the parsed rectangle's top-left x coordinate x0 is smaller than c1, the tuple ``[x0, c1, c2, ...]`` will be used.
 
-All encountered spans will then be distributed according to their left x coordinate, e.g. if ``c1 <= x < c2``, the text will land in column 1. If this is also the case for other spans in the same line, they will be concatenated to x.
+All encountered spans will now be distributed according to their left x coordinate. E.g. if ``c1 <= x < c2``, the correspondin text will land in column 1. If this is also the case for more spans in the same line, they will be concatenated to x.
 
 Notes
 ------
 Any differences in fonts, point sizes, changes between bold and italic, etc. will be ignored, and normal plain text will result.
 
-The example program ``TableExtract.py`` shows how all this works together.
+The example program ``TableExtract.py`` shows how all this works together by extracting a certain table in Adobe's PDF manual.
 
-Best use of this method can be made when combined with a GUI document viewer. This gives you the chance to graphically determine a table's rectangle and its columns. An example for this is ``wxParseRect.py`` in this directory.
+Best use of this method can be made when it is combined with a graphical document viewer. This gives you the chance to graphically determine a table's rectangle and its columns. An example for this is ``wxParseRect.py`` in this directory.
