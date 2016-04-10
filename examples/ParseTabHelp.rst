@@ -34,7 +34,7 @@ A simple example:
     
     ``table = ParseTab(doc, 20, [0, 0, 500, 700])``
 
-If you do more work with this page 20, you can invoke the parsing with a slightly better performance like this:
+If you do other work with this page, you can invoke the parsing with a slightly better performance like this:
 
     ``import fitz``
     
