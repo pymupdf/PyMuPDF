@@ -65,7 +65,19 @@ img = PyEmbeddedImage(
     "39+fsiwrCcSklEYppS3L0lJKE4ahBnAcZ0PyGpRSQmstbNuWYRjKaqm11sVoNFo6c+ZMYb1X"
     "ce0FLGh4atcW1lQ21xshNihr4VorP8D7HP8Bc8sM8DYGFFQAAAAASUVORK5CYII=")
 
-# first abbreviations to get rid of those long pesky names ...
+
+import types
+def getint(v):
+    # extract digits from a string to form an integer
+    a = "0"
+    if not isinstance(v, types.StringTypes):
+        return a
+    for d in v:
+        if d in "0123456789":
+            a += d
+    return int(a)        
+    
+# abbreviations to get rid of those long pesky names ...
 defPos = wx.DefaultPosition
 defSiz = wx.DefaultSize
 
@@ -127,14 +139,14 @@ class PDFdisplay (wx.Dialog):
         #======================================================================
         # forward button
         #======================================================================
-        self.ButtonNext = wx.Button(self, wx.ID_ANY, u"forw",
+        self.ButtonNext = wx.Button(self, wx.ID_ANY, u"Forward",
                            defPos, defSiz, 0)
         szr20.Add(self.ButtonNext, 0, wx.ALL, 5)
 
         #======================================================================
         # backward button
         #======================================================================
-        self.ButtonPrevious = wx.Button(self, wx.ID_ANY, u"back",
+        self.ButtonPrevious = wx.Button(self, wx.ID_ANY, u"Backward",
                            defPos, defSiz, 0)
         szr20.Add(self.ButtonPrevious, 0, wx.ALL, 5)
 
@@ -143,7 +155,7 @@ class PDFdisplay (wx.Dialog):
         # required to get data entry fired as events.
         #======================================================================
         self.TextToPage = wx.TextCtrl(self, wx.ID_ANY, u"1", defPos, defSiz,
-                             wx.TE_PROCESS_ENTER)
+                             wx.TE_PROCESS_ENTER|wx.TE_RIGHT)
         szr20.Add(self.TextToPage, 0, wx.ALL, 5)
 
         #======================================================================
@@ -183,6 +195,7 @@ class PDFdisplay (wx.Dialog):
         self.ButtonNext.Bind(wx.EVT_BUTTON, self.NextPage)
         self.ButtonPrevious.Bind(wx.EVT_BUTTON, self.PreviousPage)
         self.TextToPage.Bind(wx.EVT_TEXT_ENTER, self.GotoPage)
+        self.PDFimage.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
 
     def __del__(self):
         pass
@@ -190,8 +203,16 @@ class PDFdisplay (wx.Dialog):
 #==============================================================================
 # Button handlers
 #==============================================================================
+    def OnMouseWheel(self, evt):
+        d = evt.GetWheelRotation()
+        if d < 0:
+            self.NextPage(evt)
+        elif d > 0:
+            self.PreviousPage(evt)
+        return
+
     def NextPage(self, event):                   # means: page forward
-        page = int(self.TextToPage.Value) + 1    # current page + 1
+        page = getint(self.TextToPage.Value) + 1 # current page + 1
         page = min(page, self.doc.pageCount)     # cannot go beyond last page
         self.TextToPage.Value = str(page)        # put target page# in screen
         self.bitmap = self.pdf_show(page)        # get page image
@@ -199,14 +220,14 @@ class PDFdisplay (wx.Dialog):
         event.Skip()
 
     def PreviousPage(self, event):               # means: page back
-        page = int(self.TextToPage.Value) - 1    # current page - 1
+        page = getint(self.TextToPage.Value) - 1 # current page - 1
         page = max(page, 1)                      # cannot go before page 1
         self.TextToPage.Value = str(page)        # put target page# in screen
         self.NeuesImage(page)
         event.Skip()
 
     def GotoPage(self, event):                   # means: go to page number
-        page = int(self.TextToPage.Value)        # get page# from screen
+        page = getint(self.TextToPage.Value)     # get page# from screen
         page = min(page, self.doc.pageCount)     # cannot go beyond last page
         page = max(page, 1)                      # cannot go before page 1
         self.TextToPage.Value = str(page)        # make sure it's on the screen
