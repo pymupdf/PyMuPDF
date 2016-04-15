@@ -20,6 +20,7 @@ import fitz
 import wx
 import os
 from ParseTab import ParseTab
+from PageFormat import PageFormat
 from wx.lib.embeddedimage import PyEmbeddedImage
 #==============================================================================
 # The following data has been created by the wxPython tool img2py.py
@@ -59,8 +60,8 @@ img = PyEmbeddedImage(
     "39+fsiwrCcSklEYppS3L0lJKE4ahBnAcZ0PyGpRSQmstbNuWYRjKaqm11sVoNFo6c+ZMYb1X"
     "ce0FLGh4atcW1lQ21xshNihr4VorP8D7HP8Bc8sM8DYGFFQAAAAASUVORK5CYII=")
 
-import types
 def getint(v):
+    import types
     # extract digits from a string to form an integer
     try:
         return int(v)
@@ -106,32 +107,11 @@ class PDFdisplay (wx.Dialog):
         # open the document with MuPDF when dialog gets created
         #======================================================================
         self.doc = fitz.Document(filename)
-        self.bitmap = self.pdf_show(1)
-        '''
-        =======================================================================
-        Overall Dialog Structure:
-        -------------------------
-        szr10 (main sizer for the whole dialog - vertical orientation)
-        +-> szr20 (sizer for buttons etc. - horizontal orientation)
-          +-> button forward
-          +-> button backward
-          +-> field for page number to jump to
-          +-> field displaying total pages
-          +-> fields for controlling the rectangle
-        +-> szr30 (sizer for columns)
-          +-> button "New Column"
-          +-> fields for controlling a column
-          +-> button to extract selected table
-        +-> PDF image area
-        =======================================================================
-        '''
-        #======================================================================
-        # sizers
-        #======================================================================
-        szr10 = wx.BoxSizer(wx.VERTICAL)         # main sizer
-        szr20 = wx.BoxSizer(wx.HORIZONTAL)       # paging controls
-        szr30 = wx.BoxSizer(wx.HORIZONTAL)       # rect & col controls & image
-        szr40 = wx.BoxSizer(wx.VERTICAL)         # rect & col controls
+        if self.doc.needsPass:
+            self.decrypt_doc()
+        if self.doc.isEncrypted:
+            self.Destroy()
+            return
         #======================================================================
         # forward button
         #======================================================================
@@ -152,8 +132,13 @@ class PDFdisplay (wx.Dialog):
         # displays total pages
         #======================================================================
         self.statPageMax = wx.StaticText(self, wx.ID_ANY,
-                              "of " + str(self.doc.pageCount) + " pages",
+                              "of " + str(self.doc.pageCount) + " pages.",
                               defPos, defSiz, 0)
+        #======================================================================
+        # displays page format
+        #======================================================================
+        self.paperform = wx.StaticText(self, wx.ID_ANY,
+                              "", defPos, defSiz, 0)
         #======================================================================
         # activate rectangle drawing
         #======================================================================
@@ -221,6 +206,7 @@ class PDFdisplay (wx.Dialog):
         #======================================================================
         # image of document page
         #======================================================================
+        self.bitmap = self.pdf_show(1)
         self.PDFimage = wx.StaticBitmap(self, wx.ID_ANY, self.bitmap,
                            defPos, self.bitmap.Size, wx.NO_BORDER)
         #======================================================================
@@ -229,14 +215,39 @@ class PDFdisplay (wx.Dialog):
         l1 = wx.StaticLine(self, wx.ID_ANY, defPos, defSiz, wx.LI_HORIZONTAL)
         l2 = wx.StaticLine(self, wx.ID_ANY, defPos, defSiz, wx.LI_HORIZONTAL)
         l3 = wx.StaticLine(self, wx.ID_ANY, defPos, defSiz, wx.LI_HORIZONTAL)
+
+        '''
+        =======================================================================
+        Overall Dialog Structure:
+        -------------------------
+        szr10 (main sizer for the whole dialog - vertical orientation)
+        +-> szr20 (sizer for buttons etc. - horizontal orientation)
+          +-> button forward
+          +-> button backward
+          +-> field for page number to jump to
+          +-> field displaying total pages
+          +-> fields for controlling the rectangle
+        +-> szr30 (sizer for columns)
+          +-> button "New Column"
+          +-> fields for controlling a column
+          +-> button to extract selected table
+        +-> PDF image area
+        =======================================================================
+        '''
         #======================================================================
-        # items ready, fill the sizers
+        # sizers
         #======================================================================
+        szr10 = wx.BoxSizer(wx.VERTICAL)         # main sizer
+        szr20 = wx.BoxSizer(wx.HORIZONTAL)       # paging controls
+        szr30 = wx.BoxSizer(wx.HORIZONTAL)       # rect & col controls & image
+        szr40 = wx.BoxSizer(wx.VERTICAL)         # rect & col controls
+
         # szr20: navigation controls
         szr20.Add(self.BtnNext, 0, wx.ALL, 5)
         szr20.Add(self.BtnPrev, 0, wx.ALL, 5)
         szr20.Add(self.TextToPage, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
         szr20.Add(self.statPageMax, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
+        szr20.Add(self.paperform, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
         szr20.Fit(self)
 
         # szr40: rectangle & column controls
@@ -270,9 +281,6 @@ class PDFdisplay (wx.Dialog):
         self.SetSizer(szr10)
         self.Layout()
 
-        #======================================================================
-        # center dialog on screen
-        #======================================================================
         self.Centre(wx.BOTH)
 
         #======================================================================
@@ -377,6 +385,10 @@ class PDFdisplay (wx.Dialog):
 
     def resize_rect(self, evt):
         # change rectangle shape via spin controls
+        if self.CtrlWidth.Value < 5:
+            self.CtrlWidth.Value = 5
+        if self.CtrlHeight.Value < 5:
+            self.CtrlHeight.Value = 5
         x = self.CtrlLeft.Value
         y = self.CtrlTop.Value
         w = self.CtrlWidth.Value
@@ -400,7 +412,7 @@ class PDFdisplay (wx.Dialog):
         self.col_selected = None
         self.upd_collist()
         for k in self.col_coords:           # also redraw all columns
-            self.DrawColumn(self.col_coords[k])
+            self.DrawColumn(self.col_coords[k], "RED")
 
     def move_rect(self, x, y, w, h):
         # move rectangle around with mouse
@@ -417,7 +429,7 @@ class PDFdisplay (wx.Dialog):
         self.col_selected = None
         for k in self.col_coords:           # also redraw all columns after
             self.col_coords[k] += dx        # repositioning them
-            self.DrawColumn(self.col_coords[k])
+            self.DrawColumn(self.col_coords[k], "RED")
 
     def OnMouseWheel(self, evt):
         # process wheel as paging operations
@@ -435,6 +447,11 @@ class PDFdisplay (wx.Dialog):
         self.CtrlCols.Value = self.col_coords[col]    # get its coord
         self.CtrlCols.Enable()                        # enable spin control
         self.col_selected = col                       # store selected string
+        for k in self.col_coords:
+            if k == col:
+                self.DrawColumn(self.col_coords[k], "BLUE")
+            else:
+                self.DrawColumn(self.col_coords[k], "RED")
 
     def AddCol(self, evt):
         # insert new column into rectangle
@@ -464,7 +481,7 @@ class PDFdisplay (wx.Dialog):
             self.ColList.Append("Col" + str(n))
             self.CtrlCols.Value = pos.x
             self.adding_column = False      # reset state: not adding column
-            self.DrawColumn(pos.x)          # draw the column
+            self.DrawColumn(pos.x, "RED")          # draw the column
             return
         # potentially a rectangle drag request
         if self.cursor_in_rect(pos):
@@ -501,8 +518,11 @@ class PDFdisplay (wx.Dialog):
                 self.PDFimage.SetCursor(self.cursor_hand)
             else:
                 self.PDFimage.SetCursor(self.cursor_norm)
-        if self.adding_column and self.cursor_in_rect(pos):
-            self.PDFimage.SetCursor(self.cursor_vert)
+        if self.adding_column:
+            if self.cursor_in_rect(pos):
+                self.PDFimage.SetCursor(self.cursor_vert)
+            else:
+                self.PDFimage.SetCursor(self.cursor_norm)
             return
         if self.set_rectangle and evt.LeftIsDown():   # if making a rectangle
             w = abs(pos.x - self.rect_x)
@@ -550,12 +570,16 @@ class PDFdisplay (wx.Dialog):
             return                          # and return
         self.DrawRect(x, y, w, h)           # else redraw everything we have
         for k in self.col_coords:           # redraw all columns
-            self.DrawColumn(self.col_coords[k])
+            if k == self.col_selected:
+                c = "BLUE"
+            else:
+                c = "RED"
+            self.DrawColumn(self.col_coords[k], c)
 
-    def DrawColumn(self, x):
+    def DrawColumn(self, x, c):
         # draw a vertical line
         dc = wx.ClientDC(self.PDFimage)     # make a device control out of img
-        dc.SetPen(wx.Pen("RED"))
+        dc.SetPen(wx.Pen(c))
         # only draw inside the rectangle
         dc.DrawLine(x, self.rect_y, x, self.rect_y + self.rect_h)
         self.adding_column = False
@@ -572,10 +596,10 @@ class PDFdisplay (wx.Dialog):
         # parse table contained in rectangle
         # currently, the table is just stored away as a matrix:
         # add functionality as desired
-        x0 = self.CtrlLeft.Value
-        y0 = self.CtrlTop.Value
-        x1 = x0 + self.CtrlWidth.Value
-        y1 = y0 + self.CtrlHeight.Value
+        x0 = self.rect_x
+        y0 = self.rect_y
+        x1 = x0 + self.rect_w
+        y1 = y0 + self.rect_h
         cols = self.col_coords.values()
         cols.sort()
         pg = getint(self.TextToPage.Value) - 1
@@ -592,32 +616,26 @@ class PDFdisplay (wx.Dialog):
             print("No text found in rectangle")
 
     def redraw_bitmap(self):
-        bmw = self.bitmap.Size[0]
-        bmh = self.bitmap.Size[1]
-        rect = wx.Rect(0, 0, bmw, bmh)
+        w = self.bitmap.Size[0]
+        h = self.bitmap.Size[1]
+        x = y = 0
+        rect = wx.Rect(x, y, w, h)
         bm = self.bitmap.GetSubBitmap(rect)
         dc = wx.ClientDC(self.PDFimage)     # make a device control out of img
-        dc.DrawBitmap(bm, 0, 0)             # refresh bitmap before draw
+        dc.DrawBitmap(bm, x, y)             # refresh bitmap before draw
         return
 
     def ActivateRect(self, evt):
         # Start drawing a rectangle
+        self.disable_fields()
         self.set_rectangle = True
-        self.redraw_bitmap()                # erase any previous drawing info
         self.PDFimage.SetCursor(self.cursor_cross)
-        self.col_coords = {}
-        self.CtrlCols.Value = 0
-        self.rect_h = 0
-        self.rect_w = 0
-        self.rect_x = 0
-        self.rect_y = 0
-        self.BtnNewCol.Disable()
-        self.CtrlCols.Disable()
-        self.ColList.Disable()
-        self.ColList.Clear()
+
 
     def NextPage(self, event):                   # means: page forward
         page = getint(self.TextToPage.Value) + 1 # current page + 1
+        if page > self.doc.pageCount:
+            return
         page = min(page, self.doc.pageCount)     # cannot go beyond last page
         self.TextToPage.Value = str(page)        # put target page# in screen
         self.bitmap = self.pdf_show(page)        # get page image
@@ -626,6 +644,8 @@ class PDFdisplay (wx.Dialog):
 
     def PreviousPage(self, event):               # means: page back
         page = getint(self.TextToPage.Value) - 1 # current page - 1
+        if page < 1:
+            return
         page = max(page, 1)                      # cannot go before page 1
         self.TextToPage.Value = str(page)        # put target page# in screen
         self.NeuesImage(page)
@@ -651,11 +671,31 @@ class PDFdisplay (wx.Dialog):
 
     def pdf_show(self, pg_nr):
         # get Pixmap of a page
-        pix = self.doc.getPagePixmap(pg_nr - 1)
+        p = self.doc.loadPage(pg_nr - 1)
+        pix = p.getPixmap()
         a = str(pix.samples)                     # string version of pixel area
         a2 = "".join([a[4*i:4*i+3] for i in range(len(a)/4)]) # RGBA -> RGB
         bitmap = wx.BitmapFromBuffer(pix.width, pix.height, a2)
+        self.paperform.Label = "Paper format: " + PageFormat(None, p)
         return bitmap
+
+    def decrypt_doc(self):
+        # let user enter document password
+        pw = None
+        dlg = wx.TextEntryDialog(self, 'Please enter password below:',
+                 'Document needs password to open', '',
+                 style = wx.TextEntryDialogStyle|wx.TE_PASSWORD)
+        while pw is None:
+            rc = dlg.ShowModal()
+            if rc == wx.ID_OK:
+                pw = str(dlg.GetValue().encode("utf-8"))
+                self.doc.authenticate(pw)
+            else:
+                return
+            if self.doc.isEncrypted:
+                pw = None
+                dlg.SetTitle("Wrong password, enter correct password or cancel")
+        return
 
 #==============================================================================
 # main program
@@ -668,7 +708,7 @@ app = wx.App()
 #==============================================================================
 
 # Wildcard: offer all supported filetypes
-wild = "supported files|*.pdf;*.xps;*.oxps;*.epub"
+wild = "supported files|*.pdf;*.xps;*.oxps;*.epub;*.cbz"
 
 #==============================================================================
 # define the file selection dialog

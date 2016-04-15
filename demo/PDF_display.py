@@ -66,20 +66,25 @@ img = PyEmbeddedImage(
     "ce0FLGh4atcW1lQ21xshNihr4VorP8D7HP8Bc8sM8DYGFFQAAAAASUVORK5CYII=")
 
 
-import types
 def getint(v):
+    import types
     # extract digits from a string to form an integer
+    try:
+        return int(v)
+    except ValueError:
+        pass
     a = "0"
     if not isinstance(v, types.StringTypes):
         return a
     for d in v:
         if d in "0123456789":
             a += d
-    return int(a)        
-    
+    return int(a)
+
 # abbreviations to get rid of those long pesky names ...
 defPos = wx.DefaultPosition
 defSiz = wx.DefaultSize
+khaki  = wx.Colour(240, 230, 140)
 
 #==============================================================================
 # Define our dialog as a subclass of wx.Dialog.
@@ -100,11 +105,17 @@ class PDFdisplay (wx.Dialog):
         #======================================================================
         self.SetIcon(img.GetIcon())
         self.SetTitle(self.Title + filename)
+        self.SetBackgroundColour(khaki)
 
         #======================================================================
         # open the document with MuPDF when dialog gets created
         #======================================================================
         self.doc = fitz.Document(filename)
+        if self.doc.needsPass:
+            self.decrypt_doc()
+        if self.doc.isEncrypted:
+            self.Destroy()
+            return
 
         #======================================================================
         # define zooming matrix for displaying PDF page images
@@ -248,18 +259,30 @@ class PDFdisplay (wx.Dialog):
 
     def pdf_show(self, pg_nr):
         page = self.doc.loadPage(int(pg_nr) - 1) # load the page & get Pixmap
-        pix = page.getPixmap(matrix = self.matrix,
-                             colorspace = 'RGB')
-        data = str(pix.samples)                  # point to pixel area
-
-        #bitmap = wx.BitmapFromBufferRGBA(pix.width, pix.height, data)
-
-        # If you experience issues with this function, try the following code.
-        # It will use "wx.BitmapFromBuffer" and thus ignore the transparency (alpha).
-        data2 = "".join([data[4*i:4*i+3] for i in range(len(data)/4)])
-        bitmap = wx.BitmapFromBuffer(pix.width, pix.height, data2)
-
+        pix = page.getPixmap(matrix = self.matrix)
+        a = str(pix.samples)                     # point to pixel area
+        # get the RGB sub area (without alpha)
+        a2 = "".join([a[4*i:4*i+3] for i in range(len(a)/4)])
+        bitmap = wx.BitmapFromBuffer(pix.width, pix.height, a2)
         return bitmap
+
+    def decrypt_doc(self):
+        # let user enter document password
+        pw = None
+        dlg = wx.TextEntryDialog(self, 'Please enter password below:',
+                 'Document needs password to open', '',
+                 style = wx.TextEntryDialogStyle|wx.TE_PASSWORD)
+        while pw is None:
+            rc = dlg.ShowModal()
+            if rc == wx.ID_OK:
+                pw = str(dlg.GetValue().encode("utf-8"))
+                self.doc.authenticate(pw)
+            else:
+                return
+            if self.doc.isEncrypted:
+                pw = None
+                dlg.SetTitle("Wrong password, enter correct password or cancel")
+        return
 
 #==============================================================================
 # main program
