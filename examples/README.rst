@@ -22,6 +22,7 @@ PDF_OLedit.py           a program to edit a PDF's table of contents
 PDF2Text.py             a program to extract all text of a PDF
 PDF2TextJS.py           a program to extract all text of a PDF preserving normal reading sequence
 ParseTab.py             a function to parse tables within documents
+PageFormat.py           function returns a page's paper format
 TableExtract.py         example CLI program using ParseTab
 wxTableExtract.py       full-featured GUI using ParseTab. Supports automatic and manual column definitions
 ======================= ====================================================================================
