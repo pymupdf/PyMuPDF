@@ -39,8 +39,7 @@ def searchFor(*arg, **kw):
         ts = fitz.TextSheet()                    # create TextSheet
         tp = fitz.TextPage()                     # create TextPage
         rect = page.bound()                      # the page's rectangle
-        dv = fitz.Device(ts, tp)                 # create device
-        dl.run(dv, fitz.Identity, rect)          # run the page
+        dl.run(fitz.Device(ts, tp), fitz.Identity, rect)   # run the page
         page.TextPage = tp                       # save TextPage pointer
 
     # return list of hitting reactangles
@@ -79,8 +78,7 @@ def getText(*arg, **kw):
         ts = fitz.TextSheet()                    # create TextSheet
         tp = fitz.TextPage()                     # create TextPage
         rect = page.bound()                      # the page's rectangle
-        dv = fitz.Device(ts, tp)                 # create device
-        dl.run(dv, fitz.Identity, rect)          # run the page
+        dl.run(fitz.Device(ts, tp), fitz.Identity, rect)   # run the page
         page.TextPage = tp                       # save TextPage pointer
 
     # return requested text format
@@ -124,8 +122,7 @@ def getPageText(*arg, **kw):
     ts = fitz.TextSheet()                    # create TextSheet
     tp = fitz.TextPage()                     # create TextPage
     rect = page.bound()                      # the page's rectangle
-    dv = fitz.Device(ts, tp)                 # create device
-    dl.run(dv, fitz.Identity, rect)          # run the page
+    dl.run(fitz.Device(ts, tp), fitz.Identity, rect)  # run the page
 
     # return requested text format
     if output.lower() == "json":
@@ -395,7 +392,8 @@ def getColorspace(*arg, **kw):
         raise ValueError("unsupported colorspace in pixmap")
 
 def RectArea(rect, unit = "pt"):
-    '''Calculates the area of a rectangle in points or square millimeters. Parameters:\nrect: a fitz.IRect or fitz.Rect\nunit: a string, 'pt' means points, "mm" means millimeters.\nreturns a float containing the area.
+    '''Calculates the area of a rectangle in points or square millimeters.
+    Parameters:\nrect: a fitz.IRect or fitz.Rect\nunit: a string, 'pt' means points, "mm" means millimeters.\nreturns a float containing the area.
     '''
     if rect.x1 <= rect.x0 or rect.y1 <= rect.y0:
         return 0.0
@@ -409,7 +407,8 @@ def RectArea(rect, unit = "pt"):
         return area * 0.1244521605
 
 def PointDistance(p1, p2, unit = "pt"):
-    '''Calculates the distance between two points in points or millimeters. Parameters:\np1, p2: two fitz.Point objects\nunit: a string, 'pt' means points, "mm" means millimeters.\returns a float containing the distance.
+    '''Calculates the distance between two points in points or millimeters.
+    Parameters:\np1, p2: two fitz.Point objects\nunit: a string, 'pt' means points, "mm" means millimeters.\returns a float containing the distance.
     '''
     a = float(p2.x - p1.x)
     b = float(p2.y - p1.y)

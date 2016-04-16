@@ -92,8 +92,8 @@ except AttributeError:
 
 
 import os
-VersionFitz = "1.8"
-VersionBind = "1.8.0"
+VersionFitz = "1.9"
+VersionBind = "1.9.0"
 
 class Document(_object):
     __swig_setmethods__ = {}

@@ -6,6 +6,7 @@
 %{
 #define SWIG_FILE_WITH_INIT
 #include <fitz.h>
+#include <pdf.h>
 %}
 
 /* global context */
@@ -29,8 +30,8 @@ struct DeviceWrapper {
 /* include version information */
 %pythoncode %{
 import os
-VersionFitz = "1.8"
-VersionBind = "1.8.0"
+VersionFitz = "1.9"
+VersionBind = "1.9.0"
 %}
 
 /* fz_document */
@@ -195,7 +196,7 @@ struct fz_document_s {
             return fz_authenticate_password(gctx, $self, pass);
         }
         /****************************************************************/
-        /* save(filename, garbage=0, clean=0, deflate=0)                */
+        /* save(filename, ...)                                          */
         /****************************************************************/
         %pythonprepend save(char *filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) %{
             '''
@@ -229,9 +230,9 @@ struct fz_document_s {
             }
         }
         int save(char *filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) {
-            int have_opts = garbage + clean + deflate + incremental + ascii + expand + linear;
+            pdf_document *pdf = pdf_specifics(gctx, $self);
             int errors = 0;
-            fz_write_options opts;
+            pdf_write_options opts;
             opts.do_incremental = incremental;
             opts.do_ascii = ascii;
             opts.do_deflate = deflate;
@@ -242,10 +243,7 @@ struct fz_document_s {
             opts.continue_on_error = 1;
             opts.errors = &errors;
             fz_try(gctx)
-                if (have_opts == 0)
-                    fz_write_document(gctx, $self, filename, NULL);
-                else
-                    fz_write_document(gctx, $self, filename, &opts);
+                pdf_save_document(gctx, pdf, filename, &opts);
             fz_catch(gctx)
                 return -1;
             return errors;
@@ -340,6 +338,11 @@ struct fz_page_s {
         struct fz_link_s *loadLinks() {
             return fz_load_links(gctx, $self);
         }
+
+
+        /***********************************************************/
+        /* Page.__repr__()                                         */
+        /***********************************************************/
         %pythoncode %{
         def __repr__(self):
             return repr(self.parent) + ".loadPage(" + str(self.number) + ")"
@@ -371,6 +374,24 @@ struct fz_rect_s
             r->y0 = lt->y;
             r->x1 = rb->x;
             r->y1 = rb->y;
+            return r;
+        }
+
+        fz_rect_s(float x0, float y0, const struct fz_point_s *rb) {
+            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            r->x0 = x0;
+            r->y0 = y0;
+            r->x1 = rb->x;
+            r->y1 = rb->y;
+            return r;
+        }
+
+        fz_rect_s(const struct fz_point_s *lt, float x1, float y1) {
+            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            r->x0 = lt->x;
+            r->y0 = lt->y;
+            r->x1 = x1;
+            r->y1 = y1;
             return r;
         }
 
@@ -582,7 +603,7 @@ struct fz_pixmap_s
         %}
         int writePNG(char *filename, int savealpha=0) {
             fz_try(gctx) {
-                fz_write_png(gctx, $self, filename, savealpha);
+                fz_save_pixmap_as_png(gctx, $self, filename, savealpha);
             }
             fz_catch(gctx)
                 return 1;
@@ -614,16 +635,16 @@ struct fz_pixmap_s
                 switch(format)
                 {
                     case(1):
-                        fz_write_png(gctx, $self, filename, savealpha);
+                        fz_save_pixmap_as_png(gctx, $self, filename, savealpha);
                         break;
                     case(2):
-                        fz_write_pnm(gctx, $self, filename);
+                        fz_save_pixmap_as_pnm(gctx, $self, filename);
                         break;
                     case(3):
-                        fz_write_pam(gctx, $self, filename, savealpha);
+                        fz_save_pixmap_as_pam(gctx, $self, filename, savealpha);
                         break;
                     case(4):
-                        fz_write_tga(gctx, $self, filename, savealpha);
+                        fz_save_pixmap_as_tga(gctx, $self, filename, savealpha);
                         break;
                 }
             }
@@ -734,11 +755,11 @@ struct DeviceWrapper
                 ;
             return dw;
         }
-        DeviceWrapper(struct fz_text_sheet_s *ts, struct fz_text_page_s *tp) {
+        DeviceWrapper(struct fz_stext_sheet_s *ts, struct fz_stext_page_s *tp) {
             struct DeviceWrapper *dw = NULL;
             fz_try(gctx) {
                 dw = (struct DeviceWrapper *)calloc(1, sizeof(struct DeviceWrapper));
-                dw->device = fz_new_text_device(gctx, ts, tp);
+                dw->device = fz_new_stext_device(gctx, ts, tp);
             }
             fz_catch(gctx)
                 ;
@@ -891,7 +912,7 @@ struct fz_outline_s {
             int res = 1;
             struct fz_output_s *xml;
             fz_try(gctx) {
-                xml = fz_new_output_to_filename(gctx, filename);
+                xml = fz_new_output_with_path(gctx, filename, 0);
                 fz_print_outline_xml(gctx, xml, $self);
                 fz_drop_output(gctx, xml);
                 res = 0;
@@ -919,7 +940,7 @@ struct fz_outline_s {
             int res = 1;
             struct fz_output_s *text;
             fz_try(gctx) {
-                text = fz_new_output_to_filename(gctx, filename);
+                text = fz_new_output_with_path(gctx, filename, 0);
                 fz_print_outline(gctx, text, $self);
                 fz_drop_output(gctx, text);
                 res = 0;
@@ -1136,36 +1157,36 @@ struct fz_display_list_s {
 };
 
 
-/* fz_text_sheet */
-%rename(TextSheet) fz_text_sheet_s;
-struct fz_text_sheet_s {
+/* fz_stext_sheet */
+%rename(TextSheet) fz_stext_sheet_s;
+struct fz_stext_sheet_s {
     %extend {
-        %exception fz_text_sheet_s {
+        %exception fz_stext_sheet_s {
             $action
             if(!result) {
                 PyErr_SetString(PyExc_Exception, "cannot create TextSheet");
                 return NULL;
             }
         }
-        fz_text_sheet_s() {
-            struct fz_text_sheet_s *ts = NULL;
+        fz_stext_sheet_s() {
+            struct fz_stext_sheet_s *ts = NULL;
             fz_try(gctx)
-                ts = fz_new_text_sheet(gctx);
+                ts = fz_new_stext_sheet(gctx);
             fz_catch(gctx)
                 ;
             return ts;
         }
 
-        ~fz_text_sheet_s() {
+        ~fz_stext_sheet_s() {
 #ifdef MEMDEBUG
             fprintf(stderr, "[DEBUG]free text sheet\n");
 #endif
-            fz_drop_text_sheet(gctx, $self);
+            fz_drop_stext_sheet(gctx, $self);
         }
     }
 };
 
-/* fz_text_page */
+/* fz_stext_page */
 %typemap(out) struct fz_rect_s * {
     PyObject *pyRect;
     struct fz_rect_s *rect;
@@ -1207,8 +1228,8 @@ fz_print_utf8(fz_context *ctx, fz_output *out, int rune) {
 }
 
 void
-fz_print_span_text_json(fz_context *ctx, fz_output *out, fz_text_span *span) {
-    fz_text_char *ch;
+fz_print_span_stext_json(fz_context *ctx, fz_output *out, fz_stext_span *span) {
+    fz_stext_char *ch;
 
     for (ch = span->text; ch < span->text + span->len; ch++)
     {
@@ -1273,7 +1294,7 @@ fz_send_data_base64(fz_context *ctx, fz_output *out, fz_buffer *buffer)
 }
 
 void
-fz_print_text_page_json(fz_context *ctx, fz_output *out, fz_text_page *page)
+fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page)
 {
     int block_n;
 
@@ -1292,8 +1313,8 @@ fz_print_text_page_json(fz_context *ctx, fz_output *out, fz_text_page *page)
         {
             case FZ_PAGE_BLOCK_TEXT:
             {
-                fz_text_block *block = page->blocks[block_n].u.text;
-                fz_text_line *line;
+                fz_stext_block *block = page->blocks[block_n].u.text;
+                fz_stext_line *line;
 
                 fz_print_rect_json(ctx, out, &(block->bbox));
 
@@ -1301,7 +1322,7 @@ fz_print_text_page_json(fz_context *ctx, fz_output *out, fz_text_page *page)
 
                 for (line = block->lines; line < block->lines + block->len; line++)
                 {
-                    fz_text_span *span;
+                    fz_stext_span *span;
                     fz_printf(ctx, out, "      {");
                     fz_print_rect_json(ctx, out, &(line->bbox));
 
@@ -1312,7 +1333,7 @@ fz_print_text_page_json(fz_context *ctx, fz_output *out, fz_text_page *page)
                         fz_print_rect_json(ctx, out, &(span->bbox));
                         fz_printf(ctx, out, "\n          \"text\":\"");
 
-                        fz_print_span_text_json(ctx, out, span);
+                        fz_print_span_stext_json(ctx, out, span);
 
                         fz_printf(ctx, out, "\"\n         }");
                         if (span && (span->next)) {
@@ -1359,31 +1380,31 @@ fz_print_text_page_json(fz_context *ctx, fz_output *out, fz_text_page *page)
 }
 %}
 
-%rename(TextPage) fz_text_page_s;
-struct fz_text_page_s {
+%rename(TextPage) fz_stext_page_s;
+struct fz_stext_page_s {
     int len;
     %extend {
-        %exception fz_text_page_s {
+        %exception fz_stext_page_s {
             $action
             if(!result) {
                 PyErr_SetString(PyExc_Exception, "cannot create TextPage");
                 return NULL;
             }
         }
-        fz_text_page_s() {
-            struct fz_text_page_s *tp = NULL;
+        fz_stext_page_s() {
+            struct fz_stext_page_s *tp = NULL;
             fz_try(gctx)
-                tp = fz_new_text_page(gctx);
+                tp = fz_new_stext_page(gctx);
             fz_catch(gctx)
                 ;
             return tp;
         }
 
-        ~fz_text_page_s() {
+        ~fz_stext_page_s() {
 #ifdef MEMDEBUG
             fprintf(stderr, "[DEBUG]free text page\n");
 #endif
-            fz_drop_text_page(gctx, $self);
+            fz_drop_stext_page(gctx, $self);
         }
         struct fz_rect_s *search(const char *needle, int hit_max=16) {
             fz_rect *result;
@@ -1393,7 +1414,7 @@ struct fz_text_page_s {
                 return NULL;
             }
             result = (fz_rect *)malloc(sizeof(fz_rect)*(hit_max+1));
-            count = fz_search_text_page(gctx, $self, needle, result, hit_max);
+            count = fz_search_stext_page(gctx, $self, needle, result, hit_max);
             result[count] = fz_empty_rect;
 #ifdef MEMDEBUG
             fprintf(stderr, "[DEBUG]count is %d, last one is (%g %g), (%g %g)\n", count, result[count].x0, result[count].y0, result[count].x1, result[count].y1);
@@ -1417,7 +1438,7 @@ struct fz_text_page_s {
                 /* inital size for text */
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
-                fz_print_text_page(gctx, out, $self);
+                fz_print_stext_page(gctx, out, $self);
                 fz_drop_output(gctx, out);
             }
             fz_catch(gctx) {
@@ -1442,7 +1463,7 @@ struct fz_text_page_s {
                 /* inital size for text */
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
-                fz_print_text_page_xml(gctx, out, $self);
+                fz_print_stext_page_xml(gctx, out, $self);
                 fz_drop_output(gctx, out);
             }
             fz_catch(gctx) {
@@ -1467,7 +1488,7 @@ struct fz_text_page_s {
                 /* inital size for text */
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
-                fz_print_text_page_html(gctx, out, $self);
+                fz_print_stext_page_html(gctx, out, $self);
                 fz_drop_output(gctx, out);
             }
             fz_catch(gctx) {
@@ -1492,7 +1513,7 @@ struct fz_text_page_s {
                 /* inital size for text */
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
-                fz_print_text_page_json(gctx, out, $self);
+                fz_print_stext_page_json(gctx, out, $self);
                 fz_drop_output(gctx, out);
             }
             fz_catch(gctx) {
