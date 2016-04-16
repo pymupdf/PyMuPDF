@@ -12,7 +12,7 @@ PyMuPDF demo program
 --------------------
 Demonstrates some of MuPDF's non-PDF graphic capabilities.
 
-Read a PNG image and create a new one consisting of 3 * 4 tiles of it.
+Read an image and create a new one consisting of 3 * 4 tiles of it.
 ===============================================================================
 '''
 # create pixmap from file
