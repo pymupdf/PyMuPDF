@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
+import types
 PaperSizes = {
             'A0':'2384x3370',
             'A1':'1684x2384',
@@ -68,7 +68,16 @@ PaperForms = {
             }
 
 def PageFormat(doc, page):
-    r = page.bound()
+    ''' Returns the paper format of a given document page.
+    Parameters:
+    doc:  a fitz.Document object or None
+    page: a fitz.Page object or an integer. If integer, doc must be a document object
+    '''
+    if isinstance(page, numbers.Number):
+        pg = doc.loadPage(page)
+        r = pg.bound()
+    else:
+        r = page.bound()
     o = "-P"
     w = int(round(r.width,0))
     h = int(round(r.height,0))
