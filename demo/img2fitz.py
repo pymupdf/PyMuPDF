@@ -5,7 +5,7 @@ from PIL import Image
 import sys
 from __future__ import print_function
 '''
-demonstrates how to input a JPEG image to PyMuPDF using PIL / Pillow
+Create a Pixmap from any PIL / Pillow supported filetype
 '''
 if len(sys.argv) == 2:
     pic_fn = sys.argv[1]
