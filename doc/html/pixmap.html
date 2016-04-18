@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Pixmap &mdash; PyMuPDF 1.8.0 documentation</title>
+    <title>Pixmap &mdash; PyMuPDF 1.9.0 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.8.0',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PyMuPDF 1.8.0 documentation" href="index.html" />
-    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
+    <link rel="up" title="Classes" href="classes.html" />
     <link rel="next" title="Point" href="point.html" />
     <link rel="prev" title="Page" href="page.html" /> 
   </head>
@@ -42,8 +42,8 @@
         <li class="right" >
           <a href="page.html" title="Page"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="classes.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -51,6 +51,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Pixmap</a><ul>
+<li><a class="reference internal" href="#supported-pixmap-image-types">Supported Pixmap Image Types</a></li>
 <li><a class="reference internal" href="#details-on-saving-images-with-writeimage">Details on Saving Images with <code class="docutils literal"><span class="pre">writeImage()</span></code></a></li>
 <li><a class="reference internal" href="#pixmap-example-code-snippets">Pixmap Example Code Snippets</a></li>
 </ul>
@@ -96,12 +97,14 @@
 <p>Pixmaps (&#8220;pixel maps&#8221;) are objects at the heart of MuPDF&#8217;s rendering capabilities. They represent plane rectangular sets of pixels. Each pixel is described by a number of bytes (&#8220;components&#8221;) plus an alpha (transparency) byte.</p>
 <p>In PyMuPDF, there exist several ways to create a pixmap:</p>
 <ul class="simple">
-<li>create an empty pixmap based on <a class="reference internal" href="colorspace.html#colorspace"><span>Colorspace</span></a> and <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> information which can then be fille with e.g. the image of a PDF page,</li>
-<li>create a pixmap from a memory area that contains data in PNG format (e.g. obtained from a file),</li>
+<li>create an empty pixmap based on <a class="reference internal" href="colorspace.html#colorspace"><span>Colorspace</span></a> and <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> information,</li>
+<li>create a pixmap from an in-memory image,</li>
 <li>create a pixmap from a memory area that contains plain pixels,</li>
-<li>directly create a pixmap from a PDF page via methods <a class="reference internal" href="page.html#Page.getPixmap" title="Page.getPixmap"><code class="xref py py-meth docutils literal"><span class="pre">Page.getPixmap()</span></code></a> or <a class="reference internal" href="document.html#Document.getPagePixmap" title="Document.getPagePixmap"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPagePixmap()</span></code></a>.</li>
+<li>create a pixmap from a document page (via methods <a class="reference internal" href="page.html#Page.getPixmap" title="Page.getPixmap"><code class="xref py py-meth docutils literal"><span class="pre">Page.getPixmap()</span></code></a> or <a class="reference internal" href="document.html#Document.getPagePixmap" title="Document.getPagePixmap"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPagePixmap()</span></code></a>),</li>
+<li>create a pixmap from a file.</li>
 </ul>
-<p>Please have a look at the <strong>example</strong> section to see some pixmap usage &#8220;at work&#8221;.</p>
+<p>For supported image types using the file or in-memory constructors, see section below.
+Please have a look at the <strong>example</strong> section to see some pixmap usage &#8220;at work&#8221;.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="39%" />
@@ -179,13 +182,13 @@
 <dd><dl class="method">
 <dt id="Pixmap.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>colorspace</em>, <em>irect</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>This constructor creates an empty pixmap of a size and an origin specified by the irect object. So for a <code class="docutils literal"><span class="pre">fitz.IRect(x0,</span> <span class="pre">y0,</span> <span class="pre">x1,</span> <span class="pre">y1)</span></code>, <code class="docutils literal"><span class="pre">fitz.Point(x0,</span> <span class="pre">y0)</span></code> will designate the top left corner of the pixmap.</p>
+<dd><p>This constructor creates an empty pixmap of a size and an origin specified by the irect object. So for a <code class="docutils literal"><span class="pre">fitz.IRect(x0,</span> <span class="pre">y0,</span> <span class="pre">x1,</span> <span class="pre">y1)</span></code>, <code class="docutils literal"><span class="pre">fitz.Point(x0,</span> <span class="pre">y0)</span></code> designates the top left corner of the pixmap.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>colorspace</strong> (<a class="reference internal" href="colorspace.html#colorspace"><span>Colorspace</span></a>) &#8211; The required colorspace of the pixmap.</li>
+<li><strong>colorspace</strong> (<a class="reference internal" href="colorspace.html#colorspace"><span>Colorspace</span></a>) &#8211; The colorspace of the pixmap.</li>
 <li><strong>irect</strong> (<a class="reference internal" href="irect.html#irect"><span>IRect</span></a>) &#8211; Specifies the pixmap&#8217;s area and its location.</li>
 </ul>
 </td>
@@ -196,14 +199,28 @@
 
 <dl class="method">
 <dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>filename</em><span class="sig-paren">)</span></dt>
+<dd><p>This constructor creates a (non-empty) pixmap from file <code class="docutils literal"><span class="pre">filename</span></code>, which is assumed to contain a supported image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> &#8211; Path / name of the file. The origin of the resulting pixmap is (0,0).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>data</em>, <em>len</em><span class="sig-paren">)</span></dt>
-<dd><p>This constructor creates a (non-empty) pixmap from <code class="docutils literal"><span class="pre">data</span></code>, which is assumed to contain a PNG image of <code class="docutils literal"><span class="pre">len</span></code> bytes length. See example below.</p>
+<dd><p>This constructor creates a (non-empty) pixmap from <code class="docutils literal"><span class="pre">data</span></code>, which is assumed to contain a supported image of <code class="docutils literal"><span class="pre">len</span></code> bytes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (<em>string</em>) &#8211; Data containing a complete, valid image in PNG format. E.g. this may have been obtained from a statement like <code class="docutils literal"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">open('somepic.png',</span> <span class="pre">'rb').read()</span></code>. The origin of the resulting pixmap is (0,0).</li>
+<li><strong>data</strong> (<em>string</em>) &#8211; Data containing a complete, valid image in the specified format. E.g. this may have been obtained from a statement like <code class="docutils literal"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">open('somepic.png',</span> <span class="pre">'rb').read()</span></code>. The origin of the resulting pixmap is (0,0).</li>
 <li><strong>len</strong> (<em>int</em>) &#8211; An integer specifying the length of <code class="docutils literal"><span class="pre">data</span></code>.</li>
 </ul>
 </td>
@@ -254,8 +271,7 @@
 <dt id="Pixmap.tintWith">
 <code class="descname">tintWith</code><span class="sig-paren">(</span><em>red</em>, <em>green</em>, <em>blue</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.tintWith" title="Permalink to this definition">¶</a></dt>
 <dd><p>Colorizes (tints) a pixmap with a color provided as a value triple (red, green, blue). Use this method only for <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> or <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a> colorspaces. A <code class="docutils literal"><span class="pre">TypeError</span></code> exception will otherwise be raised.</p>
-<blockquote>
-<div>If the colorspace is <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a>, <code class="docutils literal"><span class="pre">(red</span> <span class="pre">+</span> <span class="pre">green</span> <span class="pre">+</span> <span class="pre">blue)/3</span></code> will be taken as the tinting value.</div></blockquote>
+<p>If the colorspace is <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a>, <code class="docutils literal"><span class="pre">(red</span> <span class="pre">+</span> <span class="pre">green</span> <span class="pre">+</span> <span class="pre">blue)/3</span></code> will be taken as the tinting value.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -303,11 +319,9 @@
 <dt id="Pixmap.copyPixmap">
 <code class="descname">copyPixmap</code><span class="sig-paren">(</span><em>source</em>, <em>irect</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.copyPixmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies the <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> part of the <code class="docutils literal"><span class="pre">source</span></code> pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and different colorspaces (provided each is either <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> or <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a>). The copy mechanism automatically adjusts to any discrepancies between source and target pixmap like so:</p>
-<blockquote>
-<div><p>If copying from <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> to <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a>, the source gray-shade value will be put into each of the three rgb component bytes. If the other way round, (r + g + b) / 3 will be taken as the gray-shade value of the target.</p>
+<p>If copying from <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> to <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a>, the source gray-shade value will be put into each of the three rgb component bytes. If the other way round, (r + g + b) / 3 will be taken as the gray-shade value of the target.</p>
 <p>Between the specified <code class="docutils literal"><span class="pre">irect</span></code> and the target pixmap&#8217;s <a class="reference internal" href="irect.html#irect"><span>IRect</span></a>, an &#8220;intersection&#8221; rectangle is first being calculated. Then the corresponding data of this intersection are being copied. If the intersection is empty, nothing will happen.</p>
 <p>If you want your <code class="docutils literal"><span class="pre">source</span></code> pixmap image to land at a specific position of the target, modify its <code class="docutils literal"><span class="pre">x</span></code> and <code class="docutils literal"><span class="pre">y</span></code> attributes accordingly before copying. See the example below for how this works.</p>
-</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -530,6 +544,10 @@
 
 </dd></dl>
 
+<div class="section" id="supported-pixmap-image-types">
+<h2>Supported Pixmap Image Types<a class="headerlink" href="#supported-pixmap-image-types" title="Permalink to this headline">¶</a></h2>
+<p>Support includes the following file types: BMP, JPEG, GIF, TIFF, JXR, and PNG.</p>
+</div>
 <div class="section" id="details-on-saving-images-with-writeimage">
 <h2>Details on Saving Images with <code class="docutils literal"><span class="pre">writeImage()</span></code><a class="headerlink" href="#details-on-saving-images-with-writeimage" title="Permalink to this headline">¶</a></h2>
 <p>The following table shows possible combinations of file extensions, output formats and colorspaces of method <code class="docutils literal"><span class="pre">writeImage()</span></code>.</p>
@@ -541,14 +559,17 @@
 <p>This shows how pixmaps can be used for purely graphical, non-PDF purposes. The script reads a PNG picture and creates a new PNG file which consist of 3 * 4 tiles of the original one:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="c"># read in picture image and create a pixmap of it</span>
-<span class="n">pic</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;editra.png&quot;</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="n">pix0</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">pic</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pic</span><span class="p">))</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">pix0</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="s">&quot;editra.png&quot;</span><span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;file does not exist or has invalid format&quot;</span><span class="p">)</span>
 
-<span class="c"># calculate target pixmap dimensions and create it</span>
+<span class="c"># calculate target colorspace and pixmap dimensions and create it</span>
+<span class="n">tar_cs</span>     <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">getColorspace</span><span class="p">()</span>        <span class="c"># use colorspace of input</span>
 <span class="n">tar_width</span>  <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="mi">3</span>              <span class="c"># 3 tiles per row</span>
 <span class="n">tar_height</span> <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mi">4</span>             <span class="c"># 4 tiles per column</span>
 <span class="n">tar_irect</span>  <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">IRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tar_width</span><span class="p">,</span> <span class="n">tar_height</span><span class="p">)</span>
-<span class="n">tar_pix</span>    <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">Colorspace</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">CS_RGB</span><span class="p">),</span> <span class="n">tar_irect</span><span class="p">)</span>
+<span class="n">tar_pix</span>    <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">tar_cs</span><span class="p">,</span> <span class="n">tar_irect</span><span class="p">)</span>
 <span class="n">tar_pix</span><span class="o">.</span><span class="n">clearWith</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>        <span class="c"># clear target with a lively gray :-)</span>
 
 <span class="c"># now fill target with 3 * 4 tiles of input picture</span>
@@ -593,7 +614,7 @@
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 
-<span class="n">pix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">csRGB</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">pix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="o">...</span> <span class="c"># any code here</span>
 <span class="c"># create and save a PIL image</span>
 <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="s">&quot;RGBA&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">pix</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">pix</span><span class="o">.</span><span class="n">height</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">samples</span><span class="p">))</span>
@@ -628,13 +649,13 @@
         <li class="right" >
           <a href="page.html" title="Page"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="classes.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 27. Jan 2016.
+      Last updated on 18. Apr 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

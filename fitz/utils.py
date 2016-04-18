@@ -11,7 +11,9 @@ The following is a collection of commodity functions to simplify the use of PyMu
 #==============================================================================
 #def searchFor(page, text, hit_max = 16):
 def searchFor(*arg, **kw):
-    '''searchFor(text, hit_max=16)\nSearch for a string on a page. Parameters:\ntext: string to be searched for\nhit_max: maximum hits.\nOutput will be a list of rectangles, each of which surrounds a found occurrence.
+    '''searchFor(text, hit_max=16)\nSearch for a string on a page.
+Parameters:\ntext: string to be searched for\nhit_max: maximum hits.\n
+Returns a list of rectangles, each of which surrounds a found occurrence.
     '''
     page = arg[0]
     text = arg[1]
@@ -50,7 +52,11 @@ def searchFor(*arg, **kw):
 #==============================================================================
 #def getText(page, output = "text"):
 def getText(*arg, **kw):
-    '''getText(output='text')\nExtracts a PDF page's text. Parameters:\noutput option: text, html, json or xml.\nOutput will be a string representing the output of the TextPage extraction methods extractText, extractHTML, extractJSON, or etractXML respectively. Default and silent choice in case of spec errors is "text".
+    '''getText(output='text')\nExtracts a PDF page's text.
+Parameters:\noutput option: text, html, json or xml.\n
+Returns a string representing the output of the TextPage extraction
+methods extractText, extractHTML, extractJSON, or etractXML respectively.
+Default and misspelling choice is "text".
     '''
     # determine parameters. Using generalized arguments, so we can become a
     # method of the Page class
@@ -74,7 +80,7 @@ def getText(*arg, **kw):
 
     # reuse an existing fitz.TextPage for this page if possible
     tp = getattr(page, "TextPage", None)         # reuse TextPage from before
-    if not tp:
+    if tp is None:
         ts = fitz.TextSheet()                    # create TextSheet
         tp = fitz.TextPage()                     # create TextPage
         rect = page.bound()                      # the page's rectangle
@@ -95,7 +101,12 @@ def getText(*arg, **kw):
 #==============================================================================
 #def getPageText(pno, output = "text"):
 def getPageText(*arg, **kw):
-    '''getPageText(pno, output='text')\nExtracts a PDF page's text by page number.\nParameters:\npno: page number\noutput option: text, html, json or xml.\nOutput will be a string representing the output of the TextPage extraction methods extractText, extractHTML, extractJSON, or etractXML respectively. Default and silent choice in case of spec errors is "text".
+    '''getPageText(pno, output='text')
+Extracts a PDF page's text by page number.
+Parameters:\npno: page number\noutput option: text, html, json or xml.\n
+Returns a string representing the output of the TextPage extraction
+methods extractText, extractHTML, extractJSON, or etractXML respectively.
+Default and misspelling choice is "text".
     '''
     # determine parameters. Using generics, so we can become a
     # method of the Document class
@@ -139,7 +150,12 @@ def getPageText(*arg, **kw):
 #==============================================================================
 #def getPixmap(matrix = fitz.Identity, colorspace = "RGB"):
 def getPixmap(*arg, **kw):
-    '''getPixmap(matrix=fitz.Identity, colorspace='rgb')\nCreates a fitz.Pixmap of a PDF page. Parameters:\nmatrix: a fitz.Matrix instance to specify required transformations. Defaults to fitz.Identity (no transformation).\ncolorspace: text string to specify required colour space (RGB, CMYK or GRAY). Default and misspelling choice is "RGB".
+    '''getPixmap(matrix=fitz.Identity, colorspace='rgb')
+Creates a fitz.Pixmap of a PDF page.
+Parameters:\nmatrix: a fitz.Matrix instance to specify required transformations.
+Defaults to fitz.Identity (no transformation).
+colorspace: text string to specify required colour space (RGB, CMYK, GRAY - upper or lower case).
+Default and misspelling choice is "RGB".
     '''
     # get parameters
     if len(arg) != 1:
@@ -192,7 +208,13 @@ def getPixmap(*arg, **kw):
 #==============================================================================
 #def getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = "RGB"):
 def getPagePixmap(*arg, **kw):
-    '''getPagePixmap(pno, matrix=fitz.Identity, colorspace="rgb")\nCreates a fitz.Pixmap object for a PDF page number. Parameters:\npno: page number (int)\nmatrix: a fitz.Matrix instance to specify required transformations. Defaults to fitz.Identity (no transformation).\ncolorspace: text string to specify the required colour space (RGB, CMYK or GRAY). Default and misspelling choice is "RGB".
+    '''getPagePixmap(pno, matrix=fitz.Identity, colorspace="rgb")
+Creates a fitz.Pixmap object for a PDF page number.
+Parameters:\npno: page number (int)
+matrix: a fitz.Matrix instance to specify required transformations.
+Defaults to fitz.Identity (no transformation).
+colorspace: text string to specify the required colour space (RGB, CMYK, GRAY - upper or lower case).
+Default and misspelling choice is "RGB".
     '''
     # get parameters
     doc = arg[0]
@@ -237,7 +259,11 @@ def getPagePixmap(*arg, **kw):
 #==============================================================================
 #def getLinks(page):
 def getLinks(*arg, **kw):
-    '''getLinks()\nCreates a list of all links contained in a PDF page. Parameters: none\nThe returned list contains a Python dictionary for every link item found. Every dictionary contains the keys "type" and "kind" to specify the link type / kind. The presence of other keys depends on this kind - see PyMuPDF's ducmentation for details.'''
+    '''getLinks()
+Creates a list of all links contained in a PDF page.
+Parameters: none\nThe returned list contains a Python dictionary for every link item found.
+Every dictionary contains the keys "type" and "kind" to specify the link type / kind.
+The presence of other keys depends on this kind - see PyMuPDF's ducmentation for details.'''
     # get parameters
     page = arg[0]
 
@@ -291,7 +317,11 @@ def getLinks(*arg, **kw):
 #==============================================================================
 #def GetToC(doc, simple = True):
 def getToC(*arg, **kw):
-    '''getToC(simple=True)\nCreates a table of contents for a given PDF document. Parameters:\nsimple: a boolean indicator to control the output\nOutput is a Python list, where each entry consists of outline level, title, page number and link destination (if simple = False). For details see PyMuPDF's documentation.'''
+    '''getToC(simple=True)
+Creates a table of contents for a given PDF document.
+Parameters:\nsimple: a boolean indicator to control the output
+Returns a Python list, where each entry consists of outline level, title, page number
+and link destination (if simple = False). For details see PyMuPDF's documentation.'''
     # get parameters
     doc = arg[0]
     if "simple" in kw:
@@ -303,9 +333,9 @@ def getToC(*arg, **kw):
         '''Recursively follow the outline item chain and record item information in a list.'''
         while olItem:
             if olItem.title:
-                title = olItem.title.decode("latin-1")
+                title = olItem.title
             else:
-                title = u" "
+                title = " "
             page = olItem.dest.page + 1
             if not simple:
                 link = {"kind": olItem.dest.kind}
@@ -391,9 +421,12 @@ def getColorspace(*arg, **kw):
     else:
         raise ValueError("unsupported colorspace in pixmap")
 
-def RectArea(rect, unit = "pt"):
-    '''Calculates the area of a rectangle in points or square millimeters.
-    Parameters:\nrect: a fitz.IRect or fitz.Rect\nunit: a string, 'pt' means points, "mm" means millimeters.\nreturns a float containing the area.
+def getRectArea(rect, unit = "pt"):
+    '''Calculates the area of a rectangle in square points or millimeters.
+Parameters:\nrect: a fitz.IRect or fitz.Rect\nunit: a string, 'pt' means points (default),
+"mm" means millimeters.
+Returns a float containing the area.
+Infinite rectangles (MuPDF definition) have an area of zero.
     '''
     if rect.x1 <= rect.x0 or rect.y1 <= rect.y0:
         return 0.0
@@ -406,9 +439,11 @@ def RectArea(rect, unit = "pt"):
         # square mm = pt * (25.4/72)**2
         return area * 0.1244521605
 
-def PointDistance(p1, p2, unit = "pt"):
+def getPointDistance(p1, p2, unit = "pt"):
     '''Calculates the distance between two points in points or millimeters.
-    Parameters:\np1, p2: two fitz.Point objects\nunit: a string, 'pt' means points, "mm" means millimeters.\returns a float containing the distance.
+Parameters:\np1, p2: two fitz.Point objects\nunit: a string, 'pt' means points,
+"mm" means millimeters.
+Returns a float containing the distance.
     '''
     a = float(p2.x - p1.x)
     b = float(p2.y - p1.y)
@@ -420,7 +455,11 @@ def PointDistance(p1, p2, unit = "pt"):
 
 #def writeImage(filename, output = "png", savealpha = False):
 def writeImage(*arg, **kw):
-    '''writeImage(filename, output="png", savealpha=False)\nSaves a pixmap to an image. Parameters:\nfilename: image filename\noutput: requested output format (one of png, pam, pnm, tga)\nsavealpha: whether to save the alpha channel.
+    '''writeImage(filename, output="png", savealpha=False)
+Saves a pixmap to an image.
+Parameters:\nfilename: image filename\noutput: requested output format
+(one of png, pam, pnm, tga)
+savealpha: whether to save the alpha channel
     '''
     pix = arg[0]
     filename = arg[1]

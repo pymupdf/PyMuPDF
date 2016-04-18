@@ -16,7 +16,7 @@ Read an image and create a new one consisting of 3 * 4 tiles of it.
 ===============================================================================
 '''
 # create pixmap from file
-pix0 = fitz.getPixmapFromFile("editra.png")
+pix0 = fitz.Pixmap("editra.png")
 # calculate target pixmap colorspace and dimensions and then create it
 tar_cs     = pix0.getColorspace()
 tar_width  = pix0.width * 3

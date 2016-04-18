@@ -19,8 +19,8 @@ Constants
 .. data:: csRGB             = fitz.Colorspace(fitz.CS_RGB)
 .. data:: csGRAY            = fitz.Colorspace(fitz.CS_GRAY)
 .. data:: csCMYK            = fitz.Colorspace(fitz.CS_CMYK)
-.. data:: VersionBind       '1.8.0' - string: version of PyMuPDF (this binding)
-.. data:: VersionFitz       '1.8' - string: version of MuPDF
+.. data:: VersionBind       '1.9.0' - string: version of PyMuPDF (this binding)
+.. data:: VersionFitz       '1.9' - string: version of MuPDF / fitz
 =========================== =============================================
 
 Enumerations

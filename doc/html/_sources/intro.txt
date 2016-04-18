@@ -3,7 +3,7 @@ Introduction
 =============
 **PyMuPDF** (formerly known as **python-fitz**) is a Python binding for `MuPDF <http://www.mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
 
-MuPDF can access files in PDF, XPS, OpenXPS, CBZ (comic book) and EPUB (e-book) formats.
+MuPDF can access files in PDF, XPS, OpenXPS, CBZ (comic book archive) and EPUB (e-book) formats.
 
 These are files with extensions ``*.pdf``, ``*.xps``, ``*.oxps``, ``*.cbz`` or ``*.epub`` (so in essence, with this binding you can develop **e-book viewers in Python** ...)
 
@@ -14,17 +14,15 @@ MuPDF stands out among all similar products for its top rendering capability and
 You can check this out yourself:
 Compare the various free PDF-viewers. In terms of speed and rendering quality `SumatraPDF <http://www.sumatrapdfreader.org/>`_ ranges at the top (apart from MuPDF's own standalone viewer) - and it is based on  MuPDF!
 
-While PyMuPDF has been available since several years for an earlier version of MuPDF (1.2), it was until only mid May 2015, that its creator and a few co-workers decided to elevate it to support the current release of MuPDF (first 1,7a  and, since November 2015, 1.8).
+While PyMuPDF has been available since several years for an earlier version of MuPDF (1.2), it was until only mid May 2015, that its creator and a few co-workers decided to elevate it to support the current release of MuPDF (first 1,7a  and, since April 2016, 1.9).
 
-And we are determined to keep PyMuPDF current with future MuPDF changes!
+And we are determined to keep PyMuPDF also current with future MuPDF versions!
 
-This work is now completed.
-
-PyMuPDF has been tested on Linux, Windows 7, Windows 10, Python 2 and Python 3 (x86 versions). Other platforms should work too as long as MuPDF supports them.
+PyMuPDF runs and has been tested on Mac, Linux, Windows 7, Windows 10, Python 2 and Python 3 (x86 and x64 versions). Other platforms should work too as long as MuPDF and Python support them.
 
 The main differences compared to version 1.2 are
 
-* A greatly simplified installation procedure: For Windows and Linux platforms it should come down to running the ``python setup.py install`` command.
+* A greatly simplified installation procedure: For Windows and Linux platforms it should come down to running the ``python setup.py install`` command once MuPDF has been installed. On Windows there exist pre-generated binary versions, which simplify and speed up installation even more.
 
 * The API has changed: it is now simpler and a lot less cryptic.
 

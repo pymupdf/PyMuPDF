@@ -19,6 +19,7 @@ This class represents a document. It can be constructed from a file or from memo
 :meth:`Document.getToC`         create a table of contents
 :meth:`Document.getPagePixmap`  create a pixmap from a page by its number
 :meth:`Document.getPageText`    extracts the text of a page by its number
+:meth:`Document.getPermits`     show permissions to access the document
 :meth:`Document.close`          closes the document
 :attr:`Document.isClosed`       has document been closed?
 :attr:`Document.outline`        first `Outline` item
@@ -119,6 +120,18 @@ This class represents a document. It can be constructed from a file or from memo
       :type `output`: string
 
       :rtype: String
+
+    .. method:: getPermits()
+
+      Shows the permissions to access the document. Returns a dictionary likes this:
+      ::
+       >>> doc.getPermits()
+       {'print': True, 'edit': True, 'note': True, 'copy': True}
+       >>>
+
+      The keys have the obvious meaning of permissions to print, change, annotate and copy the document, respectively.
+
+      :rtype: dict
 
     .. method:: save(outfile, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0)
 

@@ -8,7 +8,7 @@
 Rect
 ==========
 
-``Rect`` represents a rectangle defined by its top left and its bottom right :ref:`Point` objects, in coordinates: ((x0, y0), (x1, y1)). Respectively, a rectangle can be defined in one of the two ways: either as a pair of :ref:`Point` objects, or as a tuple of four coordinates.
+``Rect`` represents a rectangle defined by its top left and its bottom right :ref:`Point` objects, in coordinates: ((x0, y0), (x1, y1)). Respectively, a rectangle can be defined in one of the four ways: as a pair of :ref:`Point` objects, as a tuple of four coordinates, or as an arbitrary combination of these.
 
 Rectangle borders are always in parallel with the respective X- and Y-axes.
 A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite".
@@ -37,7 +37,11 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
 
    .. method:: __init__(self, p1, p2)
 
-      Constructor. This will create a rectangle from two :ref:`Point` objects: ``p1`` will be taken as the top-left and ``p2`` as the bottom-right point of the rectangle. See the example below.
+   .. method:: __init__(self, p1, x1, y1)
+
+   .. method:: __init__(self, x0, y0, p2)
+
+      Overloaded constructors: p1, p2 stand for :ref:`Point` objects, while the other parameters mean float coordinates.
 
    .. method:: round()
 
@@ -96,12 +100,14 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
  >>> import fitz
  >>> p1 = fitz.Point(10, 10)
  >>> p2 = fitz.Point(300, 450)
- >>> rect1 = fitz.Rect(p1, p2)
- >>> rect1
+ >>> fitz.Rect(p1, p2)
  fitz.Rect(10.0, 10.0, 300.0, 450.0)
- >>> rect2 = fitz.Rect(0, 0, 250, 380)
- >>> rect2
- fitz.Rect(0.0, 0.0, 250.0, 380.0)
+ >>> fitz.Rect(10, 10, 300, 450)
+ fitz.Rect(10.0, 10.0, 300.0, 450.0)
+ >>> fitz.Rect(10, 10, p2)
+ fitz.Rect(10.0, 10.0, 300.0, 450.0)
+ >>> fitz.Rect(p1, 300, 450)
+ fitz.Rect(10.0, 10.0, 300.0, 450.0)
  >>>
 
 **Example 2:**
@@ -116,4 +122,4 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
  fitz.IRect(0, -1, 124, 456)
  >>>
 
-As can be seen, ``r.round().x0 = int(math.floor(r.x0))``, ``r.round().y0 = int(math.floor(r.y0))``, ``r.round().x1 = int(math.ceil(r.x1))`` and ``r.round().y1 = int(math.ceil(r.y1))``.
+As can be seen, all of the following evaluate to ``True``: ``r.round().x0 == int(math.floor(r.x0))``, ``r.round().y0 == int(math.floor(r.y0))``, ``r.round().x1 == int(math.ceil(r.x1))`` and ``r.round().y1 == int(math.ceil(r.y1))``.

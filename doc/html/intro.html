@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Introduction &mdash; PyMuPDF 1.8.0 documentation</title>
+    <title>Introduction &mdash; PyMuPDF 1.9.0 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.8.0',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PyMuPDF 1.8.0 documentation" href="index.html" />
-    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
+    <link rel="next" title="Changes in Version 1.9.0" href="changes.html" />
     <link rel="prev" title="The PyMuPDF Documentation" href="index.html" /> 
   </head>
   <body role="document">
@@ -36,12 +36,12 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="installation.html" title="Installation"
+          <a href="changes.html" title="Changes in Version 1.9.0"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="The PyMuPDF Documentation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -58,8 +58,8 @@
   <p class="topless"><a href="index.html"
                         title="previous chapter"><strong>The PyMuPDF Documentation</strong></a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="installation.html"
-                        title="next chapter">Installation</a></p>
+  <p class="topless"><a href="changes.html"
+                        title="next chapter">Changes in Version 1.9.0</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -91,19 +91,18 @@
   <div class="section" id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <p><strong>PyMuPDF</strong> (formerly known as <strong>python-fitz</strong>) is a Python binding for <a class="reference external" href="http://www.mupdf.com/">MuPDF</a> - &#8220;a lightweight PDF and XPS viewer&#8221;.</p>
-<p>MuPDF can access files in PDF, XPS, OpenXPS, CBZ (comic book) and EPUB (e-book) formats.</p>
+<p>MuPDF can access files in PDF, XPS, OpenXPS, CBZ (comic book archive) and EPUB (e-book) formats.</p>
 <p>These are files with extensions <code class="docutils literal"><span class="pre">*.pdf</span></code>, <code class="docutils literal"><span class="pre">*.xps</span></code>, <code class="docutils literal"><span class="pre">*.oxps</span></code>, <code class="docutils literal"><span class="pre">*.cbz</span></code> or <code class="docutils literal"><span class="pre">*.epub</span></code> (so in essence, with this binding you can develop <strong>e-book viewers in Python</strong> ...)</p>
 <p>PyMuPDF provides access to all important functions of MuPDF from within a Python environment. Nevertheless, we are continuously expanding this function set.</p>
 <p>MuPDF stands out among all similar products for its top rendering capability and unsurpassed processing speed.</p>
 <p>You can check this out yourself:
 Compare the various free PDF-viewers. In terms of speed and rendering quality <a class="reference external" href="http://www.sumatrapdfreader.org/">SumatraPDF</a> ranges at the top (apart from MuPDF&#8217;s own standalone viewer) - and it is based on  MuPDF!</p>
-<p>While PyMuPDF has been available since several years for an earlier version of MuPDF (1.2), it was until only mid May 2015, that its creator and a few co-workers decided to elevate it to support the current release of MuPDF (first 1,7a  and, since November 2015, 1.8).</p>
-<p>And we are determined to keep PyMuPDF current with future MuPDF changes!</p>
-<p>This work is now completed.</p>
-<p>PyMuPDF has been tested on Linux, Windows 7, Windows 10, Python 2 and Python 3 (x86 versions). Other platforms should work too as long as MuPDF supports them.</p>
+<p>While PyMuPDF has been available since several years for an earlier version of MuPDF (1.2), it was until only mid May 2015, that its creator and a few co-workers decided to elevate it to support the current release of MuPDF (first 1,7a  and, since April 2016, 1.9).</p>
+<p>And we are determined to keep PyMuPDF also current with future MuPDF versions!</p>
+<p>PyMuPDF runs and has been tested on Mac, Linux, Windows 7, Windows 10, Python 2 and Python 3 (x86 and x64 versions). Other platforms should work too as long as MuPDF and Python support them.</p>
 <p>The main differences compared to version 1.2 are</p>
 <ul class="simple">
-<li>A greatly simplified installation procedure: For Windows and Linux platforms it should come down to running the <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> command.</li>
+<li>A greatly simplified installation procedure: For Windows and Linux platforms it should come down to running the <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> command once MuPDF has been installed. On Windows there exist pre-generated binary versions, which simplify and speed up installation even more.</li>
 <li>The API has changed: it is now simpler and a lot less cryptic.</li>
 <li>The supported function set has been significantly increased: apart from rendering, MuPDF&#8217;s traditional strength, we now also offer a wide range of text extraction options.</li>
 <li>Demo code has been extended, and an additional <code class="docutils literal"><span class="pre">examples</span></code> directory is there to contain working programs. Among them are an editor for a document&#8217;s table of contents, a full featured document joiner and a document-to-text conversion utility.</li>
@@ -129,17 +128,17 @@ Compare the various free PDF-viewers. In terms of speed and rendering quality <a
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="installation.html" title="Installation"
+          <a href="changes.html" title="Changes in Version 1.9.0"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="The PyMuPDF Documentation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 25. Jan 2016.
+      Last updated on 18. Apr 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

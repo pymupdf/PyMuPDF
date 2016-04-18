@@ -3430,6 +3430,14 @@ SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename,int 
                 return -1;
             return errors;
         }
+SWIGINTERN int fz_document_s_getPermits(struct fz_document_s *self){
+            int permit = 0;
+            if (fz_has_permission(gctx, self, FZ_PERMISSION_PRINT)) permit = permit + 4;
+            if (fz_has_permission(gctx, self, FZ_PERMISSION_EDIT)) permit = permit + 8;
+            if (fz_has_permission(gctx, self, FZ_PERMISSION_COPY)) permit = permit + 16;
+            if (fz_has_permission(gctx, self, FZ_PERMISSION_ANNOTATE)) permit = permit + 32;
+            return permit>>2;
+        }
 SWIGINTERN void delete_fz_page_s(struct fz_page_s *self){
 
 
@@ -3571,10 +3579,30 @@ SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_1(struct fz_colorspace_s *c
                 ;
             return pm;
         }
-SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_2(char *data,int size){
+SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_2(char *data){
+            struct fz_image_s *img = NULL;
+            fz_try(gctx)
+                img = fz_new_image_from_file(gctx, data);
+            fz_catch(gctx)
+                ;
+            struct fz_pixmap_s *pm = NULL;
+            int w = -1;
+            fz_try(gctx)
+                pm = fz_get_pixmap_from_image(gctx, img, w, w);
+            fz_catch(gctx)
+                ;
+            fz_drop_image(gctx, img);
+            return pm;
+        }
+SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_3(char *data,int size){
+            struct fz_image_s *img = NULL;
+            fz_try(gctx)
+                img = fz_new_image_from_data(gctx, data, size);
+            fz_catch(gctx)
+                ;
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
-                pm = fz_load_png(gctx, data, size);
+                pm = fz_get_pixmap_from_image(gctx, img, -1, -1);
             fz_catch(gctx)
                 ;
             return pm;
@@ -4512,6 +4540,28 @@ SWIGINTERN PyObject *_wrap_Document_save(PyObject *SWIGUNUSEDPARM(self), PyObjec
   return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document_getPermits(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Document_getPermits",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_getPermits" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  result = (int)fz_document_s_getPermits(arg1);
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
   return NULL;
 }
 
@@ -6165,6 +6215,37 @@ fail:
 SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  struct fz_pixmap_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_Pixmap",&obj0)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Pixmap" "', argument " "1"" of type '" "char *""'");
+  }
+  arg1 = (char *)(buf1);
+  {
+    result = (struct fz_pixmap_s *)new_fz_pixmap_s__SWIG_2(arg1);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, "cannot create Pixmap");
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_pixmap_s, SWIG_POINTER_NEW |  0 );
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
   int arg2 ;
   int res1 ;
   char *buf1 = 0 ;
@@ -6187,7 +6268,7 @@ SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_2(PyObject *SWIGUNUSEDPARM(self), Py
   } 
   arg2 = (int)(val2);
   {
-    result = (struct fz_pixmap_s *)new_fz_pixmap_s__SWIG_2(arg1,arg2);
+    result = (struct fz_pixmap_s *)new_fz_pixmap_s__SWIG_3(arg1,arg2);
     if(!result) {
       PyErr_SetString(PyExc_Exception, "cannot create Pixmap");
       return NULL;
@@ -6214,6 +6295,14 @@ SWIGINTERN PyObject *_wrap_new_Pixmap(PyObject *self, PyObject *args) {
   for (ii = 0; (ii < 4) && (ii < argc); ii++) {
     argv[ii] = PyTuple_GET_ITEM(args,ii);
   }
+  if (argc == 1) {
+    int _v;
+    int res = SWIG_AsCharPtrAndSize(argv[0], 0, NULL, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_Pixmap__SWIG_2(self, args);
+    }
+  }
   if (argc == 2) {
     int _v;
     void *vptr = 0;
@@ -6238,7 +6327,7 @@ SWIGINTERN PyObject *_wrap_new_Pixmap(PyObject *self, PyObject *args) {
         _v = SWIG_CheckState(res);
       }
       if (_v) {
-        return _wrap_new_Pixmap__SWIG_2(self, args);
+        return _wrap_new_Pixmap__SWIG_3(self, args);
       }
     }
   }
@@ -6273,6 +6362,7 @@ fail:
     "  Possible C/C++ prototypes are:\n"
     "    fz_pixmap_s::fz_pixmap_s(struct fz_colorspace_s *,struct fz_irect_s const *)\n"
     "    fz_pixmap_s::fz_pixmap_s(struct fz_colorspace_s *,int,int,char *)\n"
+    "    fz_pixmap_s::fz_pixmap_s(char *)\n"
     "    fz_pixmap_s::fz_pixmap_s(char *,int)\n");
   return 0;
 }
@@ -9152,110 +9242,930 @@ SWIGINTERN PyObject *TextPage_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObj
 
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
-	 { (char *)"new_Document", _wrap_new_Document, METH_VARARGS, NULL},
-	 { (char *)"Document_close", _wrap_Document_close, METH_VARARGS, NULL},
-	 { (char *)"Document_loadPage", _wrap_Document_loadPage, METH_VARARGS, NULL},
-	 { (char *)"Document__loadOutline", _wrap_Document__loadOutline, METH_VARARGS, NULL},
-	 { (char *)"Document__dropOutline", _wrap_Document__dropOutline, METH_VARARGS, NULL},
-	 { (char *)"Document__getPageCount", _wrap_Document__getPageCount, METH_VARARGS, NULL},
-	 { (char *)"Document__getMetadata", _wrap_Document__getMetadata, METH_VARARGS, NULL},
-	 { (char *)"Document__needsPass", _wrap_Document__needsPass, METH_VARARGS, NULL},
-	 { (char *)"Document_authenticate", _wrap_Document_authenticate, METH_VARARGS, NULL},
-	 { (char *)"Document_save", _wrap_Document_save, METH_VARARGS, NULL},
-	 { (char *)"delete_Document", _wrap_delete_Document, METH_VARARGS, NULL},
+	 { (char *)"new_Document", _wrap_new_Document, METH_VARARGS, (char *)"\n"
+		"new_Document(char const * filename, char * stream=None, int streamlen=0) -> Document\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"filename: char const *\n"
+		"stream: char *\n"
+		"streamlen: int\n"
+		"\n"
+		""},
+	 { (char *)"Document_close", _wrap_Document_close, METH_VARARGS, (char *)"\n"
+		"Document_close(Document self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_document_s *\n"
+		"\n"
+		""},
+	 { (char *)"Document_loadPage", _wrap_Document_loadPage, METH_VARARGS, (char *)"\n"
+		"Document_loadPage(Document self, int number) -> Page\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_document_s *\n"
+		"number: int\n"
+		"\n"
+		""},
+	 { (char *)"Document__loadOutline", _wrap_Document__loadOutline, METH_VARARGS, (char *)"\n"
+		"Document__loadOutline(Document self) -> Outline\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_document_s *\n"
+		"\n"
+		""},
+	 { (char *)"Document__dropOutline", _wrap_Document__dropOutline, METH_VARARGS, (char *)"\n"
+		"Document__dropOutline(Document self, Outline ol)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_document_s *\n"
+		"ol: struct fz_outline_s *\n"
+		"\n"
+		""},
+	 { (char *)"Document__getPageCount", _wrap_Document__getPageCount, METH_VARARGS, (char *)"\n"
+		"Document__getPageCount(Document self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_document_s *\n"
+		"\n"
+		""},
+	 { (char *)"Document__getMetadata", _wrap_Document__getMetadata, METH_VARARGS, (char *)"\n"
+		"Document__getMetadata(Document self, char const * key) -> char *\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_document_s *\n"
+		"key: char const *\n"
+		"\n"
+		""},
+	 { (char *)"Document__needsPass", _wrap_Document__needsPass, METH_VARARGS, (char *)"\n"
+		"Document__needsPass(Document self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_document_s *\n"
+		"\n"
+		""},
+	 { (char *)"Document_authenticate", _wrap_Document_authenticate, METH_VARARGS, (char *)"\n"
+		"Document_authenticate(Document self, char const * arg3) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_document_s *\n"
+		"pass: char const *\n"
+		"\n"
+		""},
+	 { (char *)"Document_save", _wrap_Document_save, METH_VARARGS, (char *)"\n"
+		"Document_save(Document self, char * filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_document_s *\n"
+		"filename: char *\n"
+		"garbage: int\n"
+		"clean: int\n"
+		"deflate: int\n"
+		"incremental: int\n"
+		"ascii: int\n"
+		"expand: int\n"
+		"linear: int\n"
+		"\n"
+		""},
+	 { (char *)"Document_getPermits", _wrap_Document_getPermits, METH_VARARGS, (char *)"\n"
+		"Document_getPermits(Document self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_document_s *\n"
+		"\n"
+		""},
+	 { (char *)"delete_Document", _wrap_delete_Document, METH_VARARGS, (char *)"\n"
+		"delete_Document(Document self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_document_s *\n"
+		"\n"
+		""},
 	 { (char *)"Document_swigregister", Document_swigregister, METH_VARARGS, NULL},
-	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, NULL},
-	 { (char *)"Page_bound", _wrap_Page_bound, METH_VARARGS, NULL},
-	 { (char *)"Page_run", _wrap_Page_run, METH_VARARGS, NULL},
-	 { (char *)"Page_loadLinks", _wrap_Page_loadLinks, METH_VARARGS, NULL},
+	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, (char *)"\n"
+		"delete_Page(Page self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_page_s *\n"
+		"\n"
+		""},
+	 { (char *)"Page_bound", _wrap_Page_bound, METH_VARARGS, (char *)"\n"
+		"Page_bound(Page self) -> Rect\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_page_s *\n"
+		"\n"
+		""},
+	 { (char *)"Page_run", _wrap_Page_run, METH_VARARGS, (char *)"\n"
+		"Page_run(Page self, Device dw, Matrix m) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_page_s *\n"
+		"dw: struct DeviceWrapper *\n"
+		"m: struct fz_matrix_s const *\n"
+		"\n"
+		""},
+	 { (char *)"Page_loadLinks", _wrap_Page_loadLinks, METH_VARARGS, (char *)"\n"
+		"Page_loadLinks(Page self) -> Link\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_page_s *\n"
+		"\n"
+		""},
 	 { (char *)"Page_swigregister", Page_swigregister, METH_VARARGS, NULL},
-	 { (char *)"_fz_transform_rect", _wrap__fz_transform_rect, METH_VARARGS, NULL},
-	 { (char *)"Rect_x0_set", _wrap_Rect_x0_set, METH_VARARGS, NULL},
-	 { (char *)"Rect_x0_get", _wrap_Rect_x0_get, METH_VARARGS, NULL},
-	 { (char *)"Rect_y0_set", _wrap_Rect_y0_set, METH_VARARGS, NULL},
-	 { (char *)"Rect_y0_get", _wrap_Rect_y0_get, METH_VARARGS, NULL},
-	 { (char *)"Rect_x1_set", _wrap_Rect_x1_set, METH_VARARGS, NULL},
-	 { (char *)"Rect_x1_get", _wrap_Rect_x1_get, METH_VARARGS, NULL},
-	 { (char *)"Rect_y1_set", _wrap_Rect_y1_set, METH_VARARGS, NULL},
-	 { (char *)"Rect_y1_get", _wrap_Rect_y1_get, METH_VARARGS, NULL},
-	 { (char *)"new_Rect", _wrap_new_Rect, METH_VARARGS, NULL},
-	 { (char *)"Rect_round", _wrap_Rect_round, METH_VARARGS, NULL},
-	 { (char *)"delete_Rect", _wrap_delete_Rect, METH_VARARGS, NULL},
+	 { (char *)"_fz_transform_rect", _wrap__fz_transform_rect, METH_VARARGS, (char *)"\n"
+		"_fz_transform_rect(Rect rect, Matrix transform) -> Rect\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"rect: struct fz_rect_s *\n"
+		"transform: struct fz_matrix_s const *\n"
+		"\n"
+		""},
+	 { (char *)"Rect_x0_set", _wrap_Rect_x0_set, METH_VARARGS, (char *)"\n"
+		"Rect_x0_set(Rect self, float x0)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_rect_s *\n"
+		"x0: float\n"
+		"\n"
+		""},
+	 { (char *)"Rect_x0_get", _wrap_Rect_x0_get, METH_VARARGS, (char *)"\n"
+		"Rect_x0_get(Rect self) -> float\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_rect_s *\n"
+		"\n"
+		""},
+	 { (char *)"Rect_y0_set", _wrap_Rect_y0_set, METH_VARARGS, (char *)"\n"
+		"Rect_y0_set(Rect self, float y0)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_rect_s *\n"
+		"y0: float\n"
+		"\n"
+		""},
+	 { (char *)"Rect_y0_get", _wrap_Rect_y0_get, METH_VARARGS, (char *)"\n"
+		"Rect_y0_get(Rect self) -> float\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_rect_s *\n"
+		"\n"
+		""},
+	 { (char *)"Rect_x1_set", _wrap_Rect_x1_set, METH_VARARGS, (char *)"\n"
+		"Rect_x1_set(Rect self, float x1)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_rect_s *\n"
+		"x1: float\n"
+		"\n"
+		""},
+	 { (char *)"Rect_x1_get", _wrap_Rect_x1_get, METH_VARARGS, (char *)"\n"
+		"Rect_x1_get(Rect self) -> float\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_rect_s *\n"
+		"\n"
+		""},
+	 { (char *)"Rect_y1_set", _wrap_Rect_y1_set, METH_VARARGS, (char *)"\n"
+		"Rect_y1_set(Rect self, float y1)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_rect_s *\n"
+		"y1: float\n"
+		"\n"
+		""},
+	 { (char *)"Rect_y1_get", _wrap_Rect_y1_get, METH_VARARGS, (char *)"\n"
+		"Rect_y1_get(Rect self) -> float\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_rect_s *\n"
+		"\n"
+		""},
+	 { (char *)"new_Rect", _wrap_new_Rect, METH_VARARGS, (char *)"\n"
+		"Rect()\n"
+		"Rect(Rect s)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"s: struct fz_rect_s const *\n"
+		"\n"
+		"Rect(Point lt, Point rb)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"lt: struct fz_point_s const *\n"
+		"rb: struct fz_point_s const *\n"
+		"\n"
+		"Rect(float x0, float y0, Point rb)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"x0: float\n"
+		"y0: float\n"
+		"rb: struct fz_point_s const *\n"
+		"\n"
+		"Rect(Point lt, float x1, float y1)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"lt: struct fz_point_s const *\n"
+		"x1: float\n"
+		"y1: float\n"
+		"\n"
+		"new_Rect(float x0, float y0, float x1, float y1) -> Rect\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"x0: float\n"
+		"y0: float\n"
+		"x1: float\n"
+		"y1: float\n"
+		"\n"
+		""},
+	 { (char *)"Rect_round", _wrap_Rect_round, METH_VARARGS, (char *)"\n"
+		"Rect_round(Rect self) -> IRect\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_rect_s *\n"
+		"\n"
+		""},
+	 { (char *)"delete_Rect", _wrap_delete_Rect, METH_VARARGS, (char *)"\n"
+		"delete_Rect(Rect self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_rect_s *\n"
+		"\n"
+		""},
 	 { (char *)"Rect_swigregister", Rect_swigregister, METH_VARARGS, NULL},
-	 { (char *)"IRect_x0_set", _wrap_IRect_x0_set, METH_VARARGS, NULL},
-	 { (char *)"IRect_x0_get", _wrap_IRect_x0_get, METH_VARARGS, NULL},
-	 { (char *)"IRect_y0_set", _wrap_IRect_y0_set, METH_VARARGS, NULL},
-	 { (char *)"IRect_y0_get", _wrap_IRect_y0_get, METH_VARARGS, NULL},
-	 { (char *)"IRect_x1_set", _wrap_IRect_x1_set, METH_VARARGS, NULL},
-	 { (char *)"IRect_x1_get", _wrap_IRect_x1_get, METH_VARARGS, NULL},
-	 { (char *)"IRect_y1_set", _wrap_IRect_y1_set, METH_VARARGS, NULL},
-	 { (char *)"IRect_y1_get", _wrap_IRect_y1_get, METH_VARARGS, NULL},
-	 { (char *)"new_IRect", _wrap_new_IRect, METH_VARARGS, NULL},
-	 { (char *)"delete_IRect", _wrap_delete_IRect, METH_VARARGS, NULL},
+	 { (char *)"IRect_x0_set", _wrap_IRect_x0_set, METH_VARARGS, (char *)"\n"
+		"IRect_x0_set(IRect self, int x0)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_irect_s *\n"
+		"x0: int\n"
+		"\n"
+		""},
+	 { (char *)"IRect_x0_get", _wrap_IRect_x0_get, METH_VARARGS, (char *)"\n"
+		"IRect_x0_get(IRect self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_irect_s *\n"
+		"\n"
+		""},
+	 { (char *)"IRect_y0_set", _wrap_IRect_y0_set, METH_VARARGS, (char *)"\n"
+		"IRect_y0_set(IRect self, int y0)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_irect_s *\n"
+		"y0: int\n"
+		"\n"
+		""},
+	 { (char *)"IRect_y0_get", _wrap_IRect_y0_get, METH_VARARGS, (char *)"\n"
+		"IRect_y0_get(IRect self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_irect_s *\n"
+		"\n"
+		""},
+	 { (char *)"IRect_x1_set", _wrap_IRect_x1_set, METH_VARARGS, (char *)"\n"
+		"IRect_x1_set(IRect self, int x1)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_irect_s *\n"
+		"x1: int\n"
+		"\n"
+		""},
+	 { (char *)"IRect_x1_get", _wrap_IRect_x1_get, METH_VARARGS, (char *)"\n"
+		"IRect_x1_get(IRect self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_irect_s *\n"
+		"\n"
+		""},
+	 { (char *)"IRect_y1_set", _wrap_IRect_y1_set, METH_VARARGS, (char *)"\n"
+		"IRect_y1_set(IRect self, int y1)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_irect_s *\n"
+		"y1: int\n"
+		"\n"
+		""},
+	 { (char *)"IRect_y1_get", _wrap_IRect_y1_get, METH_VARARGS, (char *)"\n"
+		"IRect_y1_get(IRect self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_irect_s *\n"
+		"\n"
+		""},
+	 { (char *)"new_IRect", _wrap_new_IRect, METH_VARARGS, (char *)"\n"
+		"IRect()\n"
+		"IRect(IRect s)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"s: struct fz_irect_s const *\n"
+		"\n"
+		"new_IRect(int x0, int y0, int x1, int y1) -> IRect\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"x0: int\n"
+		"y0: int\n"
+		"x1: int\n"
+		"y1: int\n"
+		"\n"
+		""},
+	 { (char *)"delete_IRect", _wrap_delete_IRect, METH_VARARGS, (char *)"\n"
+		"delete_IRect(IRect self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_irect_s *\n"
+		"\n"
+		""},
 	 { (char *)"IRect_swigregister", IRect_swigregister, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_x_set", _wrap_Pixmap_x_set, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_x_get", _wrap_Pixmap_x_get, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_y_set", _wrap_Pixmap_y_set, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_y_get", _wrap_Pixmap_y_get, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_w_set", _wrap_Pixmap_w_set, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_w_get", _wrap_Pixmap_w_get, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_h_set", _wrap_Pixmap_h_set, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_h_get", _wrap_Pixmap_h_get, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_n_set", _wrap_Pixmap_n_set, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_n_get", _wrap_Pixmap_n_get, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_interpolate_set", _wrap_Pixmap_interpolate_set, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_interpolate_get", _wrap_Pixmap_interpolate_get, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_xres_set", _wrap_Pixmap_xres_set, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_xres_get", _wrap_Pixmap_xres_get, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_yres_set", _wrap_Pixmap_yres_set, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_yres_get", _wrap_Pixmap_yres_get, METH_VARARGS, NULL},
-	 { (char *)"new_Pixmap", _wrap_new_Pixmap, METH_VARARGS, NULL},
-	 { (char *)"delete_Pixmap", _wrap_delete_Pixmap, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_gammaWith", _wrap_Pixmap_gammaWith, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_tintWith", _wrap_Pixmap_tintWith, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_clearWith", _wrap_Pixmap_clearWith, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_copyPixmap", _wrap_Pixmap_copyPixmap, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_getSize", _wrap_Pixmap_getSize, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_writePNG", _wrap_Pixmap_writePNG, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_writeIMG", _wrap_Pixmap_writeIMG, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_invertIRect", _wrap_Pixmap_invertIRect, METH_VARARGS, NULL},
-	 { (char *)"Pixmap__getSamples", _wrap_Pixmap__getSamples, METH_VARARGS, NULL},
+	 { (char *)"Pixmap_x_set", _wrap_Pixmap_x_set, METH_VARARGS, (char *)"\n"
+		"Pixmap_x_set(Pixmap self, int x)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"x: int\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_x_get", _wrap_Pixmap_x_get, METH_VARARGS, (char *)"\n"
+		"Pixmap_x_get(Pixmap self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_y_set", _wrap_Pixmap_y_set, METH_VARARGS, (char *)"\n"
+		"Pixmap_y_set(Pixmap self, int y)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"y: int\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_y_get", _wrap_Pixmap_y_get, METH_VARARGS, (char *)"\n"
+		"Pixmap_y_get(Pixmap self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_w_set", _wrap_Pixmap_w_set, METH_VARARGS, (char *)"\n"
+		"Pixmap_w_set(Pixmap self, int w)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"w: int\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_w_get", _wrap_Pixmap_w_get, METH_VARARGS, (char *)"\n"
+		"Pixmap_w_get(Pixmap self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_h_set", _wrap_Pixmap_h_set, METH_VARARGS, (char *)"\n"
+		"Pixmap_h_set(Pixmap self, int h)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"h: int\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_h_get", _wrap_Pixmap_h_get, METH_VARARGS, (char *)"\n"
+		"Pixmap_h_get(Pixmap self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_n_set", _wrap_Pixmap_n_set, METH_VARARGS, (char *)"\n"
+		"Pixmap_n_set(Pixmap self, int n)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"n: int\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_n_get", _wrap_Pixmap_n_get, METH_VARARGS, (char *)"\n"
+		"Pixmap_n_get(Pixmap self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_interpolate_set", _wrap_Pixmap_interpolate_set, METH_VARARGS, (char *)"\n"
+		"Pixmap_interpolate_set(Pixmap self, int interpolate)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"interpolate: int\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_interpolate_get", _wrap_Pixmap_interpolate_get, METH_VARARGS, (char *)"\n"
+		"Pixmap_interpolate_get(Pixmap self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_xres_set", _wrap_Pixmap_xres_set, METH_VARARGS, (char *)"\n"
+		"Pixmap_xres_set(Pixmap self, int xres)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"xres: int\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_xres_get", _wrap_Pixmap_xres_get, METH_VARARGS, (char *)"\n"
+		"Pixmap_xres_get(Pixmap self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_yres_set", _wrap_Pixmap_yres_set, METH_VARARGS, (char *)"\n"
+		"Pixmap_yres_set(Pixmap self, int yres)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"yres: int\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_yres_get", _wrap_Pixmap_yres_get, METH_VARARGS, (char *)"\n"
+		"Pixmap_yres_get(Pixmap self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"\n"
+		""},
+	 { (char *)"new_Pixmap", _wrap_new_Pixmap, METH_VARARGS, (char *)"\n"
+		"Pixmap(Colorspace cs, IRect bbox)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"cs: struct fz_colorspace_s *\n"
+		"bbox: struct fz_irect_s const *\n"
+		"\n"
+		"Pixmap(Colorspace cs, int w, int h, char * samples)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"cs: struct fz_colorspace_s *\n"
+		"w: int\n"
+		"h: int\n"
+		"samples: char *\n"
+		"\n"
+		"Pixmap(char * data)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"data: char *\n"
+		"\n"
+		"new_Pixmap(char * data, int size) -> Pixmap\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"data: char *\n"
+		"size: int\n"
+		"\n"
+		""},
+	 { (char *)"delete_Pixmap", _wrap_delete_Pixmap, METH_VARARGS, (char *)"\n"
+		"delete_Pixmap(Pixmap self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_gammaWith", _wrap_Pixmap_gammaWith, METH_VARARGS, (char *)"\n"
+		"Pixmap_gammaWith(Pixmap self, float gamma)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"gamma: float\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_tintWith", _wrap_Pixmap_tintWith, METH_VARARGS, (char *)"\n"
+		"Pixmap_tintWith(Pixmap self, int red, int green, int blue)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"red: int\n"
+		"green: int\n"
+		"blue: int\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_clearWith", _wrap_Pixmap_clearWith, METH_VARARGS, (char *)"\n"
+		"clearWith(int value)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"value: int\n"
+		"\n"
+		"Pixmap_clearWith(Pixmap self, int value, IRect bbox)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"value: int\n"
+		"bbox: struct fz_irect_s const *\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_copyPixmap", _wrap_Pixmap_copyPixmap, METH_VARARGS, (char *)"\n"
+		"Pixmap_copyPixmap(Pixmap self, Pixmap src, IRect bbox)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"src: struct fz_pixmap_s *\n"
+		"bbox: struct fz_irect_s const *\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_getSize", _wrap_Pixmap_getSize, METH_VARARGS, (char *)"\n"
+		"Pixmap_getSize(Pixmap self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_writePNG", _wrap_Pixmap_writePNG, METH_VARARGS, (char *)"\n"
+		"Pixmap_writePNG(Pixmap self, char * filename, int savealpha=0) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"filename: char *\n"
+		"savealpha: int\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_writeIMG", _wrap_Pixmap_writeIMG, METH_VARARGS, (char *)"\n"
+		"Pixmap_writeIMG(Pixmap self, char * filename, int format, int savealpha=0) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"filename: char *\n"
+		"format: int\n"
+		"savealpha: int\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap_invertIRect", _wrap_Pixmap_invertIRect, METH_VARARGS, (char *)"\n"
+		"invertIRect()\n"
+		"Pixmap_invertIRect(Pixmap self, IRect irect)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"irect: struct fz_irect_s const *\n"
+		"\n"
+		""},
+	 { (char *)"Pixmap__getSamples", _wrap_Pixmap__getSamples, METH_VARARGS, (char *)"\n"
+		"Pixmap__getSamples(Pixmap self) -> PyObject *\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_pixmap_s *\n"
+		"\n"
+		""},
 	 { (char *)"Pixmap_swigregister", Pixmap_swigregister, METH_VARARGS, NULL},
 	 { (char *)"CS_RGB_swigconstant", CS_RGB_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"CS_GRAY_swigconstant", CS_GRAY_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"CS_CMYK_swigconstant", CS_CMYK_swigconstant, METH_VARARGS, NULL},
-	 { (char *)"new_Colorspace", _wrap_new_Colorspace, METH_VARARGS, NULL},
-	 { (char *)"delete_Colorspace", _wrap_delete_Colorspace, METH_VARARGS, NULL},
+	 { (char *)"new_Colorspace", _wrap_new_Colorspace, METH_VARARGS, (char *)"\n"
+		"new_Colorspace(int type) -> Colorspace\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"type: int\n"
+		"\n"
+		""},
+	 { (char *)"delete_Colorspace", _wrap_delete_Colorspace, METH_VARARGS, (char *)"\n"
+		"delete_Colorspace(Colorspace self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_colorspace_s *\n"
+		"\n"
+		""},
 	 { (char *)"Colorspace_swigregister", Colorspace_swigregister, METH_VARARGS, NULL},
-	 { (char *)"new_Device", _wrap_new_Device, METH_VARARGS, NULL},
-	 { (char *)"delete_Device", _wrap_delete_Device, METH_VARARGS, NULL},
+	 { (char *)"new_Device", _wrap_new_Device, METH_VARARGS, (char *)"\n"
+		"Device(Pixmap pm)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"pm: struct fz_pixmap_s *\n"
+		"\n"
+		"Device(DisplayList dl)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"dl: struct fz_display_list_s *\n"
+		"\n"
+		"new_Device(TextSheet ts, TextPage tp) -> Device\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"ts: struct fz_stext_sheet_s *\n"
+		"tp: struct fz_stext_page_s *\n"
+		"\n"
+		""},
+	 { (char *)"delete_Device", _wrap_delete_Device, METH_VARARGS, (char *)"\n"
+		"delete_Device(Device self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct DeviceWrapper *\n"
+		"\n"
+		""},
 	 { (char *)"Device_swigregister", Device_swigregister, METH_VARARGS, NULL},
-	 { (char *)"_fz_pre_scale", _wrap__fz_pre_scale, METH_VARARGS, NULL},
-	 { (char *)"_fz_pre_shear", _wrap__fz_pre_shear, METH_VARARGS, NULL},
-	 { (char *)"_fz_pre_rotate", _wrap__fz_pre_rotate, METH_VARARGS, NULL},
-	 { (char *)"Matrix_a_set", _wrap_Matrix_a_set, METH_VARARGS, NULL},
-	 { (char *)"Matrix_a_get", _wrap_Matrix_a_get, METH_VARARGS, NULL},
-	 { (char *)"Matrix_b_set", _wrap_Matrix_b_set, METH_VARARGS, NULL},
-	 { (char *)"Matrix_b_get", _wrap_Matrix_b_get, METH_VARARGS, NULL},
-	 { (char *)"Matrix_c_set", _wrap_Matrix_c_set, METH_VARARGS, NULL},
-	 { (char *)"Matrix_c_get", _wrap_Matrix_c_get, METH_VARARGS, NULL},
-	 { (char *)"Matrix_d_set", _wrap_Matrix_d_set, METH_VARARGS, NULL},
-	 { (char *)"Matrix_d_get", _wrap_Matrix_d_get, METH_VARARGS, NULL},
-	 { (char *)"Matrix_e_set", _wrap_Matrix_e_set, METH_VARARGS, NULL},
-	 { (char *)"Matrix_e_get", _wrap_Matrix_e_get, METH_VARARGS, NULL},
-	 { (char *)"Matrix_f_set", _wrap_Matrix_f_set, METH_VARARGS, NULL},
-	 { (char *)"Matrix_f_get", _wrap_Matrix_f_get, METH_VARARGS, NULL},
-	 { (char *)"new_Matrix", _wrap_new_Matrix, METH_VARARGS, NULL},
-	 { (char *)"delete_Matrix", _wrap_delete_Matrix, METH_VARARGS, NULL},
+	 { (char *)"_fz_pre_scale", _wrap__fz_pre_scale, METH_VARARGS, (char *)"\n"
+		"_fz_pre_scale(Matrix m, float sx, float sy) -> Matrix\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"m: struct fz_matrix_s *\n"
+		"sx: float\n"
+		"sy: float\n"
+		"\n"
+		""},
+	 { (char *)"_fz_pre_shear", _wrap__fz_pre_shear, METH_VARARGS, (char *)"\n"
+		"_fz_pre_shear(Matrix m, float sx, float sy) -> Matrix\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"m: struct fz_matrix_s *\n"
+		"sx: float\n"
+		"sy: float\n"
+		"\n"
+		""},
+	 { (char *)"_fz_pre_rotate", _wrap__fz_pre_rotate, METH_VARARGS, (char *)"\n"
+		"_fz_pre_rotate(Matrix m, float degree) -> Matrix\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"m: struct fz_matrix_s *\n"
+		"degree: float\n"
+		"\n"
+		""},
+	 { (char *)"Matrix_a_set", _wrap_Matrix_a_set, METH_VARARGS, (char *)"\n"
+		"Matrix_a_set(Matrix self, float a)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_matrix_s *\n"
+		"a: float\n"
+		"\n"
+		""},
+	 { (char *)"Matrix_a_get", _wrap_Matrix_a_get, METH_VARARGS, (char *)"\n"
+		"Matrix_a_get(Matrix self) -> float\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_matrix_s *\n"
+		"\n"
+		""},
+	 { (char *)"Matrix_b_set", _wrap_Matrix_b_set, METH_VARARGS, (char *)"\n"
+		"Matrix_b_set(Matrix self, float b)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_matrix_s *\n"
+		"b: float\n"
+		"\n"
+		""},
+	 { (char *)"Matrix_b_get", _wrap_Matrix_b_get, METH_VARARGS, (char *)"\n"
+		"Matrix_b_get(Matrix self) -> float\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_matrix_s *\n"
+		"\n"
+		""},
+	 { (char *)"Matrix_c_set", _wrap_Matrix_c_set, METH_VARARGS, (char *)"\n"
+		"Matrix_c_set(Matrix self, float c)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_matrix_s *\n"
+		"c: float\n"
+		"\n"
+		""},
+	 { (char *)"Matrix_c_get", _wrap_Matrix_c_get, METH_VARARGS, (char *)"\n"
+		"Matrix_c_get(Matrix self) -> float\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_matrix_s *\n"
+		"\n"
+		""},
+	 { (char *)"Matrix_d_set", _wrap_Matrix_d_set, METH_VARARGS, (char *)"\n"
+		"Matrix_d_set(Matrix self, float d)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_matrix_s *\n"
+		"d: float\n"
+		"\n"
+		""},
+	 { (char *)"Matrix_d_get", _wrap_Matrix_d_get, METH_VARARGS, (char *)"\n"
+		"Matrix_d_get(Matrix self) -> float\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_matrix_s *\n"
+		"\n"
+		""},
+	 { (char *)"Matrix_e_set", _wrap_Matrix_e_set, METH_VARARGS, (char *)"\n"
+		"Matrix_e_set(Matrix self, float e)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_matrix_s *\n"
+		"e: float\n"
+		"\n"
+		""},
+	 { (char *)"Matrix_e_get", _wrap_Matrix_e_get, METH_VARARGS, (char *)"\n"
+		"Matrix_e_get(Matrix self) -> float\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_matrix_s *\n"
+		"\n"
+		""},
+	 { (char *)"Matrix_f_set", _wrap_Matrix_f_set, METH_VARARGS, (char *)"\n"
+		"Matrix_f_set(Matrix self, float f)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_matrix_s *\n"
+		"f: float\n"
+		"\n"
+		""},
+	 { (char *)"Matrix_f_get", _wrap_Matrix_f_get, METH_VARARGS, (char *)"\n"
+		"Matrix_f_get(Matrix self) -> float\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_matrix_s *\n"
+		"\n"
+		""},
+	 { (char *)"new_Matrix", _wrap_new_Matrix, METH_VARARGS, (char *)"\n"
+		"Matrix()\n"
+		"Matrix(Matrix n)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"n: struct fz_matrix_s const *\n"
+		"\n"
+		"Matrix(float sx, float sy, int shear=0)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"sx: float\n"
+		"sy: float\n"
+		"shear: int\n"
+		"\n"
+		"new_Matrix(float degree) -> Matrix\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"degree: float\n"
+		"\n"
+		""},
+	 { (char *)"delete_Matrix", _wrap_delete_Matrix, METH_VARARGS, (char *)"\n"
+		"delete_Matrix(Matrix self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_matrix_s *\n"
+		"\n"
+		""},
 	 { (char *)"Matrix_swigregister", Matrix_swigregister, METH_VARARGS, NULL},
-	 { (char *)"Outline_title_get", _wrap_Outline_title_get, METH_VARARGS, NULL},
-	 { (char *)"Outline_dest_get", _wrap_Outline_dest_get, METH_VARARGS, NULL},
-	 { (char *)"Outline_next_get", _wrap_Outline_next_get, METH_VARARGS, NULL},
-	 { (char *)"Outline_down_get", _wrap_Outline_down_get, METH_VARARGS, NULL},
-	 { (char *)"Outline_is_open_get", _wrap_Outline_is_open_get, METH_VARARGS, NULL},
-	 { (char *)"Outline_saveXML", _wrap_Outline_saveXML, METH_VARARGS, NULL},
-	 { (char *)"Outline_saveText", _wrap_Outline_saveText, METH_VARARGS, NULL},
-	 { (char *)"delete_Outline", _wrap_delete_Outline, METH_VARARGS, NULL},
+	 { (char *)"Outline_title_get", _wrap_Outline_title_get, METH_VARARGS, (char *)"\n"
+		"Outline_title_get(Outline self) -> char *\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_outline_s *\n"
+		"\n"
+		""},
+	 { (char *)"Outline_dest_get", _wrap_Outline_dest_get, METH_VARARGS, (char *)"\n"
+		"Outline_dest_get(Outline self) -> linkDest\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_outline_s *\n"
+		"\n"
+		""},
+	 { (char *)"Outline_next_get", _wrap_Outline_next_get, METH_VARARGS, (char *)"\n"
+		"Outline_next_get(Outline self) -> Outline\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_outline_s *\n"
+		"\n"
+		""},
+	 { (char *)"Outline_down_get", _wrap_Outline_down_get, METH_VARARGS, (char *)"\n"
+		"Outline_down_get(Outline self) -> Outline\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_outline_s *\n"
+		"\n"
+		""},
+	 { (char *)"Outline_is_open_get", _wrap_Outline_is_open_get, METH_VARARGS, (char *)"\n"
+		"Outline_is_open_get(Outline self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_outline_s *\n"
+		"\n"
+		""},
+	 { (char *)"Outline_saveXML", _wrap_Outline_saveXML, METH_VARARGS, (char *)"\n"
+		"Outline_saveXML(Outline self, char const * filename) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_outline_s *\n"
+		"filename: char const *\n"
+		"\n"
+		""},
+	 { (char *)"Outline_saveText", _wrap_Outline_saveText, METH_VARARGS, (char *)"\n"
+		"Outline_saveText(Outline self, char const * filename) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_outline_s *\n"
+		"filename: char const *\n"
+		"\n"
+		""},
+	 { (char *)"delete_Outline", _wrap_delete_Outline, METH_VARARGS, (char *)"\n"
+		"delete_Outline(Outline self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_outline_s *\n"
+		"\n"
+		""},
 	 { (char *)"Outline_swigregister", Outline_swigregister, METH_VARARGS, NULL},
 	 { (char *)"LINK_NONE_swigconstant", LINK_NONE_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"LINK_GOTO_swigconstant", LINK_GOTO_swigconstant, METH_VARARGS, NULL},
@@ -9263,27 +10173,178 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"LINK_LAUNCH_swigconstant", LINK_LAUNCH_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"LINK_NAMED_swigconstant", LINK_NAMED_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"LINK_GOTOR_swigconstant", LINK_GOTOR_swigconstant, METH_VARARGS, NULL},
-	 { (char *)"linkDest_kind_get", _wrap_linkDest_kind_get, METH_VARARGS, NULL},
-	 { (char *)"linkDest__getPage", _wrap_linkDest__getPage, METH_VARARGS, NULL},
-	 { (char *)"linkDest__getDest", _wrap_linkDest__getDest, METH_VARARGS, NULL},
-	 { (char *)"linkDest__getFlags", _wrap_linkDest__getFlags, METH_VARARGS, NULL},
-	 { (char *)"linkDest__getLt", _wrap_linkDest__getLt, METH_VARARGS, NULL},
-	 { (char *)"linkDest__getRb", _wrap_linkDest__getRb, METH_VARARGS, NULL},
-	 { (char *)"linkDest__getFileSpec", _wrap_linkDest__getFileSpec, METH_VARARGS, NULL},
-	 { (char *)"linkDest__getNewWindow", _wrap_linkDest__getNewWindow, METH_VARARGS, NULL},
-	 { (char *)"linkDest__getUri", _wrap_linkDest__getUri, METH_VARARGS, NULL},
-	 { (char *)"linkDest__getIsMap", _wrap_linkDest__getIsMap, METH_VARARGS, NULL},
-	 { (char *)"linkDest__getIsUri", _wrap_linkDest__getIsUri, METH_VARARGS, NULL},
-	 { (char *)"linkDest__getNamed", _wrap_linkDest__getNamed, METH_VARARGS, NULL},
-	 { (char *)"delete_linkDest", _wrap_delete_linkDest, METH_VARARGS, NULL},
+	 { (char *)"linkDest_kind_get", _wrap_linkDest_kind_get, METH_VARARGS, (char *)"\n"
+		"linkDest_kind_get(linkDest self) -> fz_link_kind\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_dest_s *\n"
+		"\n"
+		""},
+	 { (char *)"linkDest__getPage", _wrap_linkDest__getPage, METH_VARARGS, (char *)"\n"
+		"linkDest__getPage(linkDest self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_dest_s *\n"
+		"\n"
+		""},
+	 { (char *)"linkDest__getDest", _wrap_linkDest__getDest, METH_VARARGS, (char *)"\n"
+		"linkDest__getDest(linkDest self) -> char *\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_dest_s *\n"
+		"\n"
+		""},
+	 { (char *)"linkDest__getFlags", _wrap_linkDest__getFlags, METH_VARARGS, (char *)"\n"
+		"linkDest__getFlags(linkDest self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_dest_s *\n"
+		"\n"
+		""},
+	 { (char *)"linkDest__getLt", _wrap_linkDest__getLt, METH_VARARGS, (char *)"\n"
+		"linkDest__getLt(linkDest self) -> Point\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_dest_s *\n"
+		"\n"
+		""},
+	 { (char *)"linkDest__getRb", _wrap_linkDest__getRb, METH_VARARGS, (char *)"\n"
+		"linkDest__getRb(linkDest self) -> Point\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_dest_s *\n"
+		"\n"
+		""},
+	 { (char *)"linkDest__getFileSpec", _wrap_linkDest__getFileSpec, METH_VARARGS, (char *)"\n"
+		"linkDest__getFileSpec(linkDest self) -> char *\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_dest_s *\n"
+		"\n"
+		""},
+	 { (char *)"linkDest__getNewWindow", _wrap_linkDest__getNewWindow, METH_VARARGS, (char *)"\n"
+		"linkDest__getNewWindow(linkDest self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_dest_s *\n"
+		"\n"
+		""},
+	 { (char *)"linkDest__getUri", _wrap_linkDest__getUri, METH_VARARGS, (char *)"\n"
+		"linkDest__getUri(linkDest self) -> char *\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_dest_s *\n"
+		"\n"
+		""},
+	 { (char *)"linkDest__getIsMap", _wrap_linkDest__getIsMap, METH_VARARGS, (char *)"\n"
+		"linkDest__getIsMap(linkDest self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_dest_s *\n"
+		"\n"
+		""},
+	 { (char *)"linkDest__getIsUri", _wrap_linkDest__getIsUri, METH_VARARGS, (char *)"\n"
+		"linkDest__getIsUri(linkDest self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_dest_s *\n"
+		"\n"
+		""},
+	 { (char *)"linkDest__getNamed", _wrap_linkDest__getNamed, METH_VARARGS, (char *)"\n"
+		"linkDest__getNamed(linkDest self) -> char *\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_dest_s *\n"
+		"\n"
+		""},
+	 { (char *)"delete_linkDest", _wrap_delete_linkDest, METH_VARARGS, (char *)"\n"
+		"delete_linkDest(linkDest self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_dest_s *\n"
+		"\n"
+		""},
 	 { (char *)"linkDest_swigregister", linkDest_swigregister, METH_VARARGS, NULL},
-	 { (char *)"_fz_transform_point", _wrap__fz_transform_point, METH_VARARGS, NULL},
-	 { (char *)"Point_x_set", _wrap_Point_x_set, METH_VARARGS, NULL},
-	 { (char *)"Point_x_get", _wrap_Point_x_get, METH_VARARGS, NULL},
-	 { (char *)"Point_y_set", _wrap_Point_y_set, METH_VARARGS, NULL},
-	 { (char *)"Point_y_get", _wrap_Point_y_get, METH_VARARGS, NULL},
-	 { (char *)"new_Point", _wrap_new_Point, METH_VARARGS, NULL},
-	 { (char *)"delete_Point", _wrap_delete_Point, METH_VARARGS, NULL},
+	 { (char *)"_fz_transform_point", _wrap__fz_transform_point, METH_VARARGS, (char *)"\n"
+		"_fz_transform_point(Point point, Matrix transform) -> Point\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"point: struct fz_point_s *\n"
+		"transform: struct fz_matrix_s const *\n"
+		"\n"
+		""},
+	 { (char *)"Point_x_set", _wrap_Point_x_set, METH_VARARGS, (char *)"\n"
+		"Point_x_set(Point self, float x)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_point_s *\n"
+		"x: float\n"
+		"\n"
+		""},
+	 { (char *)"Point_x_get", _wrap_Point_x_get, METH_VARARGS, (char *)"\n"
+		"Point_x_get(Point self) -> float\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_point_s *\n"
+		"\n"
+		""},
+	 { (char *)"Point_y_set", _wrap_Point_y_set, METH_VARARGS, (char *)"\n"
+		"Point_y_set(Point self, float y)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_point_s *\n"
+		"y: float\n"
+		"\n"
+		""},
+	 { (char *)"Point_y_get", _wrap_Point_y_get, METH_VARARGS, (char *)"\n"
+		"Point_y_get(Point self) -> float\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_point_s *\n"
+		"\n"
+		""},
+	 { (char *)"new_Point", _wrap_new_Point, METH_VARARGS, (char *)"\n"
+		"Point()\n"
+		"Point(Point q)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"q: struct fz_point_s const *\n"
+		"\n"
+		"new_Point(float x, float y) -> Point\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"x: float\n"
+		"y: float\n"
+		"\n"
+		""},
+	 { (char *)"delete_Point", _wrap_delete_Point, METH_VARARGS, (char *)"\n"
+		"delete_Point(Point self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_point_s *\n"
+		"\n"
+		""},
 	 { (char *)"Point_swigregister", Point_swigregister, METH_VARARGS, NULL},
 	 { (char *)"LINK_FLAG_L_VALID_swigconstant", LINK_FLAG_L_VALID_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"LINK_FLAG_T_VALID_swigconstant", LINK_FLAG_T_VALID_swigconstant, METH_VARARGS, NULL},
@@ -9292,27 +10353,138 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"LINK_FLAG_FIT_H_swigconstant", LINK_FLAG_FIT_H_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"LINK_FLAG_FIT_V_swigconstant", LINK_FLAG_FIT_V_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"LINK_FLAG_R_IS_ZOOM_swigconstant", LINK_FLAG_R_IS_ZOOM_swigconstant, METH_VARARGS, NULL},
-	 { (char *)"Link_rect_get", _wrap_Link_rect_get, METH_VARARGS, NULL},
-	 { (char *)"Link_dest_get", _wrap_Link_dest_get, METH_VARARGS, NULL},
-	 { (char *)"delete_Link", _wrap_delete_Link, METH_VARARGS, NULL},
-	 { (char *)"Link__getNext", _wrap_Link__getNext, METH_VARARGS, NULL},
+	 { (char *)"Link_rect_get", _wrap_Link_rect_get, METH_VARARGS, (char *)"\n"
+		"Link_rect_get(Link self) -> Rect\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_s *\n"
+		"\n"
+		""},
+	 { (char *)"Link_dest_get", _wrap_Link_dest_get, METH_VARARGS, (char *)"\n"
+		"Link_dest_get(Link self) -> linkDest\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_s *\n"
+		"\n"
+		""},
+	 { (char *)"delete_Link", _wrap_delete_Link, METH_VARARGS, (char *)"\n"
+		"delete_Link(Link self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_s *\n"
+		"\n"
+		""},
+	 { (char *)"Link__getNext", _wrap_Link__getNext, METH_VARARGS, (char *)"\n"
+		"Link__getNext(Link self) -> Link\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_link_s *\n"
+		"\n"
+		""},
 	 { (char *)"Link_swigregister", Link_swigregister, METH_VARARGS, NULL},
-	 { (char *)"new_DisplayList", _wrap_new_DisplayList, METH_VARARGS, NULL},
-	 { (char *)"delete_DisplayList", _wrap_delete_DisplayList, METH_VARARGS, NULL},
-	 { (char *)"DisplayList_run", _wrap_DisplayList_run, METH_VARARGS, NULL},
+	 { (char *)"new_DisplayList", _wrap_new_DisplayList, METH_VARARGS, (char *)"new_DisplayList() -> DisplayList"},
+	 { (char *)"delete_DisplayList", _wrap_delete_DisplayList, METH_VARARGS, (char *)"\n"
+		"delete_DisplayList(DisplayList self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_display_list_s *\n"
+		"\n"
+		""},
+	 { (char *)"DisplayList_run", _wrap_DisplayList_run, METH_VARARGS, (char *)"\n"
+		"DisplayList_run(DisplayList self, Device dw, Matrix m, Rect area) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_display_list_s *\n"
+		"dw: struct DeviceWrapper *\n"
+		"m: struct fz_matrix_s const *\n"
+		"area: struct fz_rect_s const *\n"
+		"\n"
+		""},
 	 { (char *)"DisplayList_swigregister", DisplayList_swigregister, METH_VARARGS, NULL},
-	 { (char *)"new_TextSheet", _wrap_new_TextSheet, METH_VARARGS, NULL},
-	 { (char *)"delete_TextSheet", _wrap_delete_TextSheet, METH_VARARGS, NULL},
+	 { (char *)"new_TextSheet", _wrap_new_TextSheet, METH_VARARGS, (char *)"new_TextSheet() -> TextSheet"},
+	 { (char *)"delete_TextSheet", _wrap_delete_TextSheet, METH_VARARGS, (char *)"\n"
+		"delete_TextSheet(TextSheet self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_stext_sheet_s *\n"
+		"\n"
+		""},
 	 { (char *)"TextSheet_swigregister", TextSheet_swigregister, METH_VARARGS, NULL},
-	 { (char *)"TextPage_len_set", _wrap_TextPage_len_set, METH_VARARGS, NULL},
-	 { (char *)"TextPage_len_get", _wrap_TextPage_len_get, METH_VARARGS, NULL},
-	 { (char *)"new_TextPage", _wrap_new_TextPage, METH_VARARGS, NULL},
-	 { (char *)"delete_TextPage", _wrap_delete_TextPage, METH_VARARGS, NULL},
-	 { (char *)"TextPage_search", _wrap_TextPage_search, METH_VARARGS, NULL},
-	 { (char *)"TextPage_extractText", _wrap_TextPage_extractText, METH_VARARGS, NULL},
-	 { (char *)"TextPage_extractXML", _wrap_TextPage_extractXML, METH_VARARGS, NULL},
-	 { (char *)"TextPage_extractHTML", _wrap_TextPage_extractHTML, METH_VARARGS, NULL},
-	 { (char *)"TextPage_extractJSON", _wrap_TextPage_extractJSON, METH_VARARGS, NULL},
+	 { (char *)"TextPage_len_set", _wrap_TextPage_len_set, METH_VARARGS, (char *)"\n"
+		"TextPage_len_set(TextPage self, int len)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_stext_page_s *\n"
+		"len: int\n"
+		"\n"
+		""},
+	 { (char *)"TextPage_len_get", _wrap_TextPage_len_get, METH_VARARGS, (char *)"\n"
+		"TextPage_len_get(TextPage self) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_stext_page_s *\n"
+		"\n"
+		""},
+	 { (char *)"new_TextPage", _wrap_new_TextPage, METH_VARARGS, (char *)"new_TextPage() -> TextPage"},
+	 { (char *)"delete_TextPage", _wrap_delete_TextPage, METH_VARARGS, (char *)"\n"
+		"delete_TextPage(TextPage self)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_stext_page_s *\n"
+		"\n"
+		""},
+	 { (char *)"TextPage_search", _wrap_TextPage_search, METH_VARARGS, (char *)"\n"
+		"TextPage_search(TextPage self, char const * needle, int hit_max=16) -> Rect\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_stext_page_s *\n"
+		"needle: char const *\n"
+		"hit_max: int\n"
+		"\n"
+		""},
+	 { (char *)"TextPage_extractText", _wrap_TextPage_extractText, METH_VARARGS, (char *)"\n"
+		"TextPage_extractText(TextPage self) -> struct fz_buffer_s *\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_stext_page_s *\n"
+		"\n"
+		""},
+	 { (char *)"TextPage_extractXML", _wrap_TextPage_extractXML, METH_VARARGS, (char *)"\n"
+		"TextPage_extractXML(TextPage self) -> struct fz_buffer_s *\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_stext_page_s *\n"
+		"\n"
+		""},
+	 { (char *)"TextPage_extractHTML", _wrap_TextPage_extractHTML, METH_VARARGS, (char *)"\n"
+		"TextPage_extractHTML(TextPage self) -> struct fz_buffer_s *\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_stext_page_s *\n"
+		"\n"
+		""},
+	 { (char *)"TextPage_extractJSON", _wrap_TextPage_extractJSON, METH_VARARGS, (char *)"\n"
+		"TextPage_extractJSON(TextPage self) -> struct fz_buffer_s *\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"self: struct fz_stext_page_s *\n"
+		"\n"
+		""},
 	 { (char *)"TextPage_swigregister", TextPage_swigregister, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Document &mdash; PyMuPDF 1.8.0 documentation</title>
+    <title>Document &mdash; PyMuPDF 1.9.0 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.8.0',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PyMuPDF 1.8.0 documentation" href="index.html" />
-    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
+    <link rel="up" title="Classes" href="classes.html" />
     <link rel="next" title="Identity" href="identity.html" />
     <link rel="prev" title="DisplayList" href="displaylist.html" /> 
   </head>
@@ -42,8 +42,8 @@
         <li class="right" >
           <a href="displaylist.html" title="DisplayList"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="classes.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -114,28 +114,31 @@
 <tr class="row-odd"><td><a class="reference internal" href="#Document.getPageText" title="Document.getPageText"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPageText()</span></code></a></td>
 <td>extracts the text of a page by its number</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.close" title="Document.close"><code class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.getPermits" title="Document.getPermits"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPermits()</span></code></a></td>
+<td>show permissions to access the document</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.close" title="Document.close"><code class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></code></a></td>
 <td>closes the document</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><code class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><code class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></code></a></td>
 <td>has document been closed?</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><code class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><code class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></code></a></td>
 <td>first <cite>Outline</cite> item</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.name" title="Document.name"><code class="xref py py-attr docutils literal"><span class="pre">Document.name</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.name" title="Document.name"><code class="xref py py-attr docutils literal"><span class="pre">Document.name</span></code></a></td>
 <td>filename of document</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
 <td>require password to access data?</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.isEncrypted" title="Document.isEncrypted"><code class="xref py py-attr docutils literal"><span class="pre">Document.isEncrypted</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.isEncrypted" title="Document.isEncrypted"><code class="xref py py-attr docutils literal"><span class="pre">Document.isEncrypted</span></code></a></td>
 <td>is document still encrypted?</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
 <td>the document&#8217;s number of pages</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
 <td>the document&#8217;s meta data</td>
 </tr>
 </tbody>
@@ -275,6 +278,26 @@
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">String</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Document.getPermits">
+<code class="descname">getPermits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Document.getPermits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shows the permissions to access the document. Returns a dictionary likes this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">getPermits</span><span class="p">()</span>
+<span class="go">{&#39;print&#39;: True, &#39;edit&#39;: True, &#39;note&#39;: True, &#39;copy&#39;: True}</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>The keys have the obvious meaning of permissions to print, change, annotate and copy the document, respectively.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
 </tr>
 </tbody>
 </table>
@@ -443,13 +466,13 @@
         <li class="right" >
           <a href="displaylist.html" title="DisplayList"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="classes.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 29. Jan 2016.
+      Last updated on 18. Apr 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

@@ -96,6 +96,8 @@ VersionFitz = "1.9"
 VersionBind = "1.9.0"
 
 class Document(_object):
+    """Proxy of C fz_document_s struct."""
+
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Document, name, value)
     __swig_getmethods__ = {}
@@ -103,12 +105,17 @@ class Document(_object):
     __repr__ = _swig_repr
 
     def __init__(self, filename, stream=None, streamlen=0):
+        """
+        __init__(fz_document_s self, char const * filename, char * stream=None, int streamlen=0) -> Document
 
-        '''
-        filename or filetype: string specifying a file name or a MIME type
-        stream:               string containing document data
-        streamlen:            integer containing length of stream
-        '''
+        Parameters
+        ----------
+        filename: char const *
+        stream: char *
+        streamlen: int
+
+        """
+
         if type(filename) == str:
             pass
         elif type(filename) == unicode:
@@ -142,6 +149,14 @@ class Document(_object):
 
 
     def close(self):
+        """
+        close(Document self)
+
+        Parameters
+        ----------
+        self: struct fz_document_s *
+
+        """
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -156,6 +171,14 @@ class Document(_object):
 
 
     def loadPage(self, number):
+        """
+        loadPage(Document self, int number) -> Page
+
+        Parameters
+        ----------
+        number: int
+
+        """
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -173,6 +196,14 @@ class Document(_object):
 
 
     def _loadOutline(self):
+        """
+        _loadOutline(Document self) -> Outline
+
+        Parameters
+        ----------
+        self: struct fz_document_s *
+
+        """
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -182,6 +213,14 @@ class Document(_object):
 
 
     def _dropOutline(self, ol):
+        """
+        _dropOutline(Document self, Outline ol)
+
+        Parameters
+        ----------
+        ol: struct fz_outline_s *
+
+        """
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -191,6 +230,14 @@ class Document(_object):
 
 
     def _getPageCount(self):
+        """
+        _getPageCount(Document self) -> int
+
+        Parameters
+        ----------
+        self: struct fz_document_s *
+
+        """
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -200,6 +247,14 @@ class Document(_object):
 
 
     def _getMetadata(self, key):
+        """
+        _getMetadata(Document self, char const * key) -> char *
+
+        Parameters
+        ----------
+        key: char const *
+
+        """
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -209,6 +264,14 @@ class Document(_object):
 
 
     def _needsPass(self):
+        """
+        _needsPass(Document self) -> int
+
+        Parameters
+        ----------
+        self: struct fz_document_s *
+
+        """
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -218,6 +281,14 @@ class Document(_object):
 
 
     def authenticate(self, arg2):
+        """
+        authenticate(Document self, char const * arg2) -> int
+
+        Parameters
+        ----------
+        pass: char const *
+
+        """
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -234,17 +305,22 @@ class Document(_object):
 
 
     def save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0):
+        """
+        save(Document self, char * filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) -> int
 
-        '''
-        filename:     path / name of file to save to, must be unequal the document's filename
-        garbage:      level of garbage collection, 0 = none, 3 = all
-        clean:        clean content streams, 0 = False, 1 = True
-        deflate:      deflate uncompressed streams, 0 = False, 1 = True
-        incremental:  write just the changed objects, 0 = False, 1 = True
-        ascii:        where possible make the output ascii, 0 = False, 1 = True
-        expand:       one byte bitfield to decompress content, 0 = none, 1 = images, 2 = fonts, 255 = all
-        linear:       write linearised, 0 = False, 1 = True
-        '''
+        Parameters
+        ----------
+        filename: char *
+        garbage: int
+        clean: int
+        deflate: int
+        incremental: int
+        ascii: int
+        expand: int
+        linear: int
+
+        """
+
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
         if type(filename) == str:
@@ -260,6 +336,49 @@ class Document(_object):
 
 
         return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear)
+
+
+    def getPermits(self):
+        """
+        getPermits(Document self) -> int
+
+        Parameters
+        ----------
+        self: struct fz_document_s *
+
+        """
+
+        if self.isClosed == 1:
+            raise ValueError("operation on closed document")
+
+
+        val = _fitz.Document_getPermits(self)
+
+                    # transform bitfield response into dictionary
+        d = {}
+        if val % 2: # print permission?
+            d["print"] = True
+        else:
+            d["print"] = False
+        val = val >> 1
+        if val % 2: # edit permission?
+            d["edit"] = True
+        else:
+            d["edit"] = False
+        val = val >> 1
+        if val % 2: # copy permission?
+            d["copy"] = True
+        else:
+            d["copy"] = False
+        val = val >> 1
+        if val % 2: # annotate permission?
+            d["note"] = True
+        else:
+            d["note"] = False
+        val = d
+
+
+        return val
 
 
     def initData(self):
@@ -289,6 +408,8 @@ Document_swigregister = _fitz.Document_swigregister
 Document_swigregister(Document)
 
 class Page(_object):
+    """Proxy of C fz_page_s struct."""
+
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Page, name, value)
     __swig_getmethods__ = {}
@@ -301,6 +422,14 @@ class Page(_object):
     __del__ = lambda self: None
 
     def bound(self):
+        """
+        bound(Page self) -> Rect
+
+        Parameters
+        ----------
+        self: struct fz_page_s *
+
+        """
 
         if self.parent.isClosed == 1:
             raise ValueError("page operation on closed document")
@@ -316,6 +445,15 @@ class Page(_object):
 
 
     def run(self, dw, m):
+        """
+        run(Page self, Device dw, Matrix m) -> int
+
+        Parameters
+        ----------
+        dw: struct DeviceWrapper *
+        m: struct fz_matrix_s const *
+
+        """
 
         if self.parent.isClosed == 1:
             raise ValueError("page operation on closed document")
@@ -325,6 +463,14 @@ class Page(_object):
 
 
     def loadLinks(self):
+        """
+        loadLinks(Page self) -> Link
+
+        Parameters
+        ----------
+        self: struct fz_page_s *
+
+        """
 
         if self.parent.isClosed == 1:
             raise ValueError("page operation on closed document")
@@ -347,9 +493,19 @@ Page_swigregister(Page)
 
 
 def _fz_transform_rect(rect, transform):
+    """
+    _fz_transform_rect(Rect rect, Matrix transform) -> Rect
+
+    Parameters
+    ----------
+    rect: struct fz_rect_s *
+    transform: struct fz_matrix_s const *
+
+    """
     return _fitz._fz_transform_rect(rect, transform)
-_fz_transform_rect = _fitz._fz_transform_rect
 class Rect(_object):
+    """Proxy of C fz_rect_s struct."""
+
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Rect, name, value)
     __swig_getmethods__ = {}
@@ -373,6 +529,47 @@ class Rect(_object):
         y1 = _swig_property(_fitz.Rect_y1_get, _fitz.Rect_y1_set)
 
     def __init__(self, *args):
+        """
+        __init__(fz_rect_s self) -> Rect
+        __init__(fz_rect_s self, Rect s) -> Rect
+
+        Parameters
+        ----------
+        s: struct fz_rect_s const *
+
+        __init__(fz_rect_s self, Point lt, Point rb) -> Rect
+
+        Parameters
+        ----------
+        lt: struct fz_point_s const *
+        rb: struct fz_point_s const *
+
+        __init__(fz_rect_s self, float x0, float y0, Point rb) -> Rect
+
+        Parameters
+        ----------
+        x0: float
+        y0: float
+        rb: struct fz_point_s const *
+
+        __init__(fz_rect_s self, Point lt, float x1, float y1) -> Rect
+
+        Parameters
+        ----------
+        lt: struct fz_point_s const *
+        x1: float
+        y1: float
+
+        __init__(fz_rect_s self, float x0, float y0, float x1, float y1) -> Rect
+
+        Parameters
+        ----------
+        x0: float
+        y0: float
+        x1: float
+        y1: float
+
+        """
         this = _fitz.new_Rect(*args)
         try:
             self.this.append(this)
@@ -380,6 +577,14 @@ class Rect(_object):
             self.this = this
 
     def round(self):
+        """
+        round(Rect self) -> IRect
+
+        Parameters
+        ----------
+        self: struct fz_rect_s *
+
+        """
         val = _fitz.Rect_round(self)
 
         val.thisown = True
@@ -404,6 +609,8 @@ Rect_swigregister = _fitz.Rect_swigregister
 Rect_swigregister(Rect)
 
 class IRect(_object):
+    """Proxy of C fz_irect_s struct."""
+
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, IRect, name, value)
     __swig_getmethods__ = {}
@@ -427,6 +634,24 @@ class IRect(_object):
         y1 = _swig_property(_fitz.IRect_y1_get, _fitz.IRect_y1_set)
 
     def __init__(self, *args):
+        """
+        __init__(fz_irect_s self) -> IRect
+        __init__(fz_irect_s self, IRect s) -> IRect
+
+        Parameters
+        ----------
+        s: struct fz_irect_s const *
+
+        __init__(fz_irect_s self, int x0, int y0, int x1, int y1) -> IRect
+
+        Parameters
+        ----------
+        x0: int
+        y0: int
+        x1: int
+        y1: int
+
+        """
         this = _fitz.new_IRect(*args)
         try:
             self.this.append(this)
@@ -448,6 +673,8 @@ IRect_swigregister = _fitz.IRect_swigregister
 IRect_swigregister(IRect)
 
 class Pixmap(_object):
+    """Proxy of C fz_pixmap_s struct."""
+
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Pixmap, name, value)
     __swig_getmethods__ = {}
@@ -487,6 +714,37 @@ class Pixmap(_object):
         yres = _swig_property(_fitz.Pixmap_yres_get, _fitz.Pixmap_yres_set)
 
     def __init__(self, *args):
+        """
+        __init__(fz_pixmap_s self, Colorspace cs, IRect bbox) -> Pixmap
+
+        Parameters
+        ----------
+        cs: struct fz_colorspace_s *
+        bbox: struct fz_irect_s const *
+
+        __init__(fz_pixmap_s self, Colorspace cs, int w, int h, char * samples) -> Pixmap
+
+        Parameters
+        ----------
+        cs: struct fz_colorspace_s *
+        w: int
+        h: int
+        samples: char *
+
+        __init__(fz_pixmap_s self, char * data) -> Pixmap
+
+        Parameters
+        ----------
+        data: char *
+
+        __init__(fz_pixmap_s self, char * data, int size) -> Pixmap
+
+        Parameters
+        ----------
+        data: char *
+        size: int
+
+        """
         this = _fitz.new_Pixmap(*args)
         try:
             self.this.append(this)
@@ -496,9 +754,28 @@ class Pixmap(_object):
     __del__ = lambda self: None
 
     def gammaWith(self, gamma):
+        """
+        gammaWith(Pixmap self, float gamma)
+
+        Parameters
+        ----------
+        gamma: float
+
+        """
         return _fitz.Pixmap_gammaWith(self, gamma)
 
+
     def tintWith(self, red, green, blue):
+        """
+        tintWith(Pixmap self, int red, int green, int blue)
+
+        Parameters
+        ----------
+        red: int
+        green: int
+        blue: int
+
+        """
 
                     # only GRAY and RGB pixmaps allowed
         if self.n not in (2, 4):
@@ -509,15 +786,59 @@ class Pixmap(_object):
 
 
     def clearWith(self, *args):
+        """
+        clearWith(Pixmap self, int value)
+
+        Parameters
+        ----------
+        value: int
+
+        clearWith(Pixmap self, int value, IRect bbox)
+
+        Parameters
+        ----------
+        value: int
+        bbox: struct fz_irect_s const *
+
+        """
         return _fitz.Pixmap_clearWith(self, *args)
 
+
     def copyPixmap(self, src, bbox):
+        """
+        copyPixmap(Pixmap self, Pixmap src, IRect bbox)
+
+        Parameters
+        ----------
+        src: struct fz_pixmap_s *
+        bbox: struct fz_irect_s const *
+
+        """
         return _fitz.Pixmap_copyPixmap(self, src, bbox)
 
+
     def getSize(self):
+        """
+        getSize(Pixmap self) -> int
+
+        Parameters
+        ----------
+        self: struct fz_pixmap_s *
+
+        """
         return _fitz.Pixmap_getSize(self)
 
+
     def writePNG(self, filename, savealpha=0):
+        """
+        writePNG(Pixmap self, char * filename, int savealpha=0) -> int
+
+        Parameters
+        ----------
+        filename: char *
+        savealpha: int
+
+        """
 
         if type(filename) == str:
             pass
@@ -533,13 +854,43 @@ class Pixmap(_object):
 
 
     def writeIMG(self, filename, format, savealpha=0):
+        """
+        writeIMG(Pixmap self, char * filename, int format, int savealpha=0) -> int
+
+        Parameters
+        ----------
+        filename: char *
+        format: int
+        savealpha: int
+
+        """
         return _fitz.Pixmap_writeIMG(self, filename, format, savealpha)
 
+
     def invertIRect(self, *args):
+        """
+        invertIRect(Pixmap self)
+        invertIRect(Pixmap self, IRect irect)
+
+        Parameters
+        ----------
+        irect: struct fz_irect_s const *
+
+        """
         return _fitz.Pixmap_invertIRect(self, *args)
 
+
     def _getSamples(self):
+        """
+        _getSamples(Pixmap self) -> PyObject *
+
+        Parameters
+        ----------
+        self: struct fz_pixmap_s *
+
+        """
         return _fitz.Pixmap__getSamples(self)
+
 
     samples = property(lambda self: self._getSamples())
     __len__ = getSize
@@ -564,6 +915,8 @@ CS_GRAY = _fitz.CS_GRAY
 _fitz.CS_CMYK_swigconstant(_fitz)
 CS_CMYK = _fitz.CS_CMYK
 class Colorspace(_object):
+    """Proxy of C fz_colorspace_s struct."""
+
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Colorspace, name, value)
     __swig_getmethods__ = {}
@@ -571,6 +924,14 @@ class Colorspace(_object):
     __repr__ = _swig_repr
 
     def __init__(self, type):
+        """
+        __init__(fz_colorspace_s self, int type) -> Colorspace
+
+        Parameters
+        ----------
+        type: int
+
+        """
         this = _fitz.new_Colorspace(type)
         try:
             self.this.append(this)
@@ -582,6 +943,8 @@ Colorspace_swigregister = _fitz.Colorspace_swigregister
 Colorspace_swigregister(Colorspace)
 
 class Device(_object):
+    """Proxy of C DeviceWrapper struct."""
+
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Device, name, value)
     __swig_getmethods__ = {}
@@ -589,6 +952,27 @@ class Device(_object):
     __repr__ = _swig_repr
 
     def __init__(self, *args):
+        """
+        __init__(DeviceWrapper self, Pixmap pm) -> Device
+
+        Parameters
+        ----------
+        pm: struct fz_pixmap_s *
+
+        __init__(DeviceWrapper self, DisplayList dl) -> Device
+
+        Parameters
+        ----------
+        dl: struct fz_display_list_s *
+
+        __init__(DeviceWrapper self, TextSheet ts, TextPage tp) -> Device
+
+        Parameters
+        ----------
+        ts: struct fz_stext_sheet_s *
+        tp: struct fz_stext_page_s *
+
+        """
         this = _fitz.new_Device(*args)
         try:
             self.this.append(this)
@@ -601,17 +985,45 @@ Device_swigregister(Device)
 
 
 def _fz_pre_scale(m, sx, sy):
+    """
+    _fz_pre_scale(Matrix m, float sx, float sy) -> Matrix
+
+    Parameters
+    ----------
+    m: struct fz_matrix_s *
+    sx: float
+    sy: float
+
+    """
     return _fitz._fz_pre_scale(m, sx, sy)
-_fz_pre_scale = _fitz._fz_pre_scale
 
 def _fz_pre_shear(m, sx, sy):
+    """
+    _fz_pre_shear(Matrix m, float sx, float sy) -> Matrix
+
+    Parameters
+    ----------
+    m: struct fz_matrix_s *
+    sx: float
+    sy: float
+
+    """
     return _fitz._fz_pre_shear(m, sx, sy)
-_fz_pre_shear = _fitz._fz_pre_shear
 
 def _fz_pre_rotate(m, degree):
+    """
+    _fz_pre_rotate(Matrix m, float degree) -> Matrix
+
+    Parameters
+    ----------
+    m: struct fz_matrix_s *
+    degree: float
+
+    """
     return _fitz._fz_pre_rotate(m, degree)
-_fz_pre_rotate = _fitz._fz_pre_rotate
 class Matrix(_object):
+    """Proxy of C fz_matrix_s struct."""
+
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Matrix, name, value)
     __swig_getmethods__ = {}
@@ -643,6 +1055,29 @@ class Matrix(_object):
         f = _swig_property(_fitz.Matrix_f_get, _fitz.Matrix_f_set)
 
     def __init__(self, *args):
+        """
+        __init__(fz_matrix_s self) -> Matrix
+        __init__(fz_matrix_s self, Matrix n) -> Matrix
+
+        Parameters
+        ----------
+        n: struct fz_matrix_s const *
+
+        __init__(fz_matrix_s self, float sx, float sy, int shear=0) -> Matrix
+
+        Parameters
+        ----------
+        sx: float
+        sy: float
+        shear: int
+
+        __init__(fz_matrix_s self, float degree) -> Matrix
+
+        Parameters
+        ----------
+        degree: float
+
+        """
         this = _fitz.new_Matrix(*args)
         try:
             self.this.append(this)
@@ -668,6 +1103,8 @@ Matrix_swigregister = _fitz.Matrix_swigregister
 Matrix_swigregister(Matrix)
 
 class Outline(_object):
+    """Proxy of C fz_outline_s struct."""
+
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Outline, name, value)
     __swig_getmethods__ = {}
@@ -693,6 +1130,14 @@ class Outline(_object):
         is_open = _swig_property(_fitz.Outline_is_open_get)
 
     def saveXML(self, filename):
+        """
+        saveXML(Outline self, char const * filename) -> int
+
+        Parameters
+        ----------
+        filename: char const *
+
+        """
 
         if type(filename) == str:
             pass
@@ -706,6 +1151,14 @@ class Outline(_object):
 
 
     def saveText(self, filename):
+        """
+        saveText(Outline self, char const * filename) -> int
+
+        Parameters
+        ----------
+        filename: char const *
+
+        """
 
         if type(filename) == str:
             pass
@@ -743,6 +1196,8 @@ LINK_NAMED = _fitz.LINK_NAMED
 _fitz.LINK_GOTOR_swigconstant(_fitz)
 LINK_GOTOR = _fitz.LINK_GOTOR
 class linkDest(_object):
+    """Proxy of C fz_link_dest_s struct."""
+
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, linkDest, name, value)
     __swig_getmethods__ = {}
@@ -756,37 +1211,136 @@ class linkDest(_object):
         kind = _swig_property(_fitz.linkDest_kind_get)
 
     def _getPage(self):
+        """
+        _getPage(linkDest self) -> int
+
+        Parameters
+        ----------
+        self: struct fz_link_dest_s *
+
+        """
         return _fitz.linkDest__getPage(self)
 
+
     def _getDest(self):
+        """
+        _getDest(linkDest self) -> char *
+
+        Parameters
+        ----------
+        self: struct fz_link_dest_s *
+
+        """
         return _fitz.linkDest__getDest(self)
 
+
     def _getFlags(self):
+        """
+        _getFlags(linkDest self) -> int
+
+        Parameters
+        ----------
+        self: struct fz_link_dest_s *
+
+        """
         return _fitz.linkDest__getFlags(self)
 
+
     def _getLt(self):
+        """
+        _getLt(linkDest self) -> Point
+
+        Parameters
+        ----------
+        self: struct fz_link_dest_s *
+
+        """
         return _fitz.linkDest__getLt(self)
 
+
     def _getRb(self):
+        """
+        _getRb(linkDest self) -> Point
+
+        Parameters
+        ----------
+        self: struct fz_link_dest_s *
+
+        """
         return _fitz.linkDest__getRb(self)
 
+
     def _getFileSpec(self):
+        """
+        _getFileSpec(linkDest self) -> char *
+
+        Parameters
+        ----------
+        self: struct fz_link_dest_s *
+
+        """
         return _fitz.linkDest__getFileSpec(self)
 
+
     def _getNewWindow(self):
+        """
+        _getNewWindow(linkDest self) -> int
+
+        Parameters
+        ----------
+        self: struct fz_link_dest_s *
+
+        """
         return _fitz.linkDest__getNewWindow(self)
 
+
     def _getUri(self):
+        """
+        _getUri(linkDest self) -> char *
+
+        Parameters
+        ----------
+        self: struct fz_link_dest_s *
+
+        """
         return _fitz.linkDest__getUri(self)
 
+
     def _getIsMap(self):
+        """
+        _getIsMap(linkDest self) -> int
+
+        Parameters
+        ----------
+        self: struct fz_link_dest_s *
+
+        """
         return _fitz.linkDest__getIsMap(self)
 
+
     def _getIsUri(self):
+        """
+        _getIsUri(linkDest self) -> int
+
+        Parameters
+        ----------
+        self: struct fz_link_dest_s *
+
+        """
         return _fitz.linkDest__getIsUri(self)
 
+
     def _getNamed(self):
+        """
+        _getNamed(linkDest self) -> char *
+
+        Parameters
+        ----------
+        self: struct fz_link_dest_s *
+
+        """
         return _fitz.linkDest__getNamed(self)
+
     __swig_destroy__ = _fitz.delete_linkDest
     __del__ = lambda self: None
 
@@ -807,9 +1361,19 @@ linkDest_swigregister(linkDest)
 
 
 def _fz_transform_point(point, transform):
+    """
+    _fz_transform_point(Point point, Matrix transform) -> Point
+
+    Parameters
+    ----------
+    point: struct fz_point_s *
+    transform: struct fz_matrix_s const *
+
+    """
     return _fitz._fz_transform_point(point, transform)
-_fz_transform_point = _fitz._fz_transform_point
 class Point(_object):
+    """Proxy of C fz_point_s struct."""
+
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Point, name, value)
     __swig_getmethods__ = {}
@@ -825,6 +1389,22 @@ class Point(_object):
         y = _swig_property(_fitz.Point_y_get, _fitz.Point_y_set)
 
     def __init__(self, *args):
+        """
+        __init__(fz_point_s self) -> Point
+        __init__(fz_point_s self, Point q) -> Point
+
+        Parameters
+        ----------
+        q: struct fz_point_s const *
+
+        __init__(fz_point_s self, float x, float y) -> Point
+
+        Parameters
+        ----------
+        x: float
+        y: float
+
+        """
         this = _fitz.new_Point(*args)
         try:
             self.this.append(this)
@@ -865,6 +1445,8 @@ LINK_FLAG_FIT_V = _fitz.LINK_FLAG_FIT_V
 _fitz.LINK_FLAG_R_IS_ZOOM_swigconstant(_fitz)
 LINK_FLAG_R_IS_ZOOM = _fitz.LINK_FLAG_R_IS_ZOOM
 class Link(_object):
+    """Proxy of C fz_link_s struct."""
+
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Link, name, value)
     __swig_getmethods__ = {}
@@ -883,6 +1465,14 @@ class Link(_object):
     __del__ = lambda self: None
 
     def _getNext(self):
+        """
+        _getNext(Link self) -> Link
+
+        Parameters
+        ----------
+        self: struct fz_link_s *
+
+        """
         val = _fitz.Link__getNext(self)
 
         if val:
@@ -898,6 +1488,8 @@ Link_swigregister = _fitz.Link_swigregister
 Link_swigregister(Link)
 
 class DisplayList(_object):
+    """Proxy of C fz_display_list_s struct."""
+
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, DisplayList, name, value)
     __swig_getmethods__ = {}
@@ -905,6 +1497,7 @@ class DisplayList(_object):
     __repr__ = _swig_repr
 
     def __init__(self):
+        """__init__(fz_display_list_s self) -> DisplayList"""
         this = _fitz.new_DisplayList()
         try:
             self.this.append(this)
@@ -914,11 +1507,24 @@ class DisplayList(_object):
     __del__ = lambda self: None
 
     def run(self, dw, m, area):
+        """
+        run(DisplayList self, Device dw, Matrix m, Rect area) -> int
+
+        Parameters
+        ----------
+        dw: struct DeviceWrapper *
+        m: struct fz_matrix_s const *
+        area: struct fz_rect_s const *
+
+        """
         return _fitz.DisplayList_run(self, dw, m, area)
+
 DisplayList_swigregister = _fitz.DisplayList_swigregister
 DisplayList_swigregister(DisplayList)
 
 class TextSheet(_object):
+    """Proxy of C fz_stext_sheet_s struct."""
+
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, TextSheet, name, value)
     __swig_getmethods__ = {}
@@ -926,6 +1532,7 @@ class TextSheet(_object):
     __repr__ = _swig_repr
 
     def __init__(self):
+        """__init__(fz_stext_sheet_s self) -> TextSheet"""
         this = _fitz.new_TextSheet()
         try:
             self.this.append(this)
@@ -937,6 +1544,8 @@ TextSheet_swigregister = _fitz.TextSheet_swigregister
 TextSheet_swigregister(TextSheet)
 
 class TextPage(_object):
+    """Proxy of C fz_stext_page_s struct."""
+
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, TextPage, name, value)
     __swig_getmethods__ = {}
@@ -948,6 +1557,7 @@ class TextPage(_object):
         len = _swig_property(_fitz.TextPage_len_get, _fitz.TextPage_len_set)
 
     def __init__(self):
+        """__init__(fz_stext_page_s self) -> TextPage"""
         this = _fitz.new_TextPage()
         try:
             self.this.append(this)
@@ -957,19 +1567,65 @@ class TextPage(_object):
     __del__ = lambda self: None
 
     def search(self, needle, hit_max=16):
+        """
+        search(TextPage self, char const * needle, int hit_max=16) -> Rect
+
+        Parameters
+        ----------
+        needle: char const *
+        hit_max: int
+
+        """
         return _fitz.TextPage_search(self, needle, hit_max)
 
+
     def extractText(self):
+        """
+        extractText(TextPage self) -> struct fz_buffer_s *
+
+        Parameters
+        ----------
+        self: struct fz_stext_page_s *
+
+        """
         return _fitz.TextPage_extractText(self)
 
+
     def extractXML(self):
+        """
+        extractXML(TextPage self) -> struct fz_buffer_s *
+
+        Parameters
+        ----------
+        self: struct fz_stext_page_s *
+
+        """
         return _fitz.TextPage_extractXML(self)
 
+
     def extractHTML(self):
+        """
+        extractHTML(TextPage self) -> struct fz_buffer_s *
+
+        Parameters
+        ----------
+        self: struct fz_stext_page_s *
+
+        """
         return _fitz.TextPage_extractHTML(self)
 
+
     def extractJSON(self):
+        """
+        extractJSON(TextPage self) -> struct fz_buffer_s *
+
+        Parameters
+        ----------
+        self: struct fz_stext_page_s *
+
+        """
         return _fitz.TextPage_extractJSON(self)
+
 TextPage_swigregister = _fitz.TextPage_swigregister
 TextPage_swigregister(TextPage)
 

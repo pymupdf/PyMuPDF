@@ -2,7 +2,7 @@
 /*
 #define MEMDEBUG
 */
-
+%feature("autodoc","3");
 %{
 #define SWIG_FILE_WITH_INIT
 #include <fitz.h>
@@ -46,11 +46,6 @@ struct fz_document_s {
             }
         }
         %pythonprepend fz_document_s(const char *filename, char *stream=NULL, int streamlen=0) %{
-            '''
-            filename or filetype: string specifying a file name or a MIME type
-            stream:               string containing document data
-            streamlen:            integer containing length of stream
-            '''
             if type(filename) == str:
                 pass
             elif type(filename) == unicode:
@@ -199,16 +194,6 @@ struct fz_document_s {
         /* save(filename, ...)                                          */
         /****************************************************************/
         %pythonprepend save(char *filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) %{
-            '''
-            filename:     path / name of file to save to, must be unequal the document's filename
-            garbage:      level of garbage collection, 0 = none, 3 = all
-            clean:        clean content streams, 0 = False, 1 = True
-            deflate:      deflate uncompressed streams, 0 = False, 1 = True
-            incremental:  write just the changed objects, 0 = False, 1 = True
-            ascii:        where possible make the output ascii, 0 = False, 1 = True
-            expand:       one byte bitfield to decompress content, 0 = none, 1 = images, 2 = fonts, 255 = all
-            linear:       write linearised, 0 = False, 1 = True
-            '''
             if self.isClosed == 1:
                 raise ValueError("operation on closed document")
             if type(filename) == str:
@@ -247,6 +232,47 @@ struct fz_document_s {
             fz_catch(gctx)
                 return -1;
             return errors;
+        }
+
+
+        /***************************************/
+        /* get the permissions of the document */
+        /***************************************/
+        %pythonprepend getPermits() %{
+            if self.isClosed == 1:
+                raise ValueError("operation on closed document")
+        %}
+        %pythonappend getPermits() %{
+            # transform bitfield response into dictionary
+            d = {}
+            if val % 2: # print permission?
+                d["print"] = True
+            else:
+                d["print"] = False
+            val = val >> 1
+            if val % 2: # edit permission?
+                d["edit"] = True
+            else:
+                d["edit"] = False
+            val = val >> 1
+            if val % 2: # copy permission?
+                d["copy"] = True
+            else:
+                d["copy"] = False
+            val = val >> 1
+            if val % 2: # annotate permission?
+                d["note"] = True
+            else:
+                d["note"] = False
+            val = d
+        %}
+        int getPermits() {
+            int permit = 0;
+            if (fz_has_permission(gctx, $self, FZ_PERMISSION_PRINT)) permit = permit + 4;
+            if (fz_has_permission(gctx, $self, FZ_PERMISSION_EDIT)) permit = permit + 8;
+            if (fz_has_permission(gctx, $self, FZ_PERMISSION_COPY)) permit = permit + 16;
+            if (fz_has_permission(gctx, $self, FZ_PERMISSION_ANNOTATE)) permit = permit + 32;
+            return permit>>2;
         }
 
         %pythoncode %{
@@ -516,18 +542,41 @@ struct fz_pixmap_s
             return pm;
         }
 
-        /*******************************************/
-        /* create a pixmap from PNG-formatted data */
-        /*******************************************/
+        /******************************************/
+        /* create a pixmap from filename          */
+        /******************************************/
+        fz_pixmap_s(char *data) {
+            struct fz_image_s *img = NULL;
+            fz_try(gctx)
+                img = fz_new_image_from_file(gctx, data);
+            fz_catch(gctx)
+                ;
+            struct fz_pixmap_s *pm = NULL;
+            int w = -1;
+            fz_try(gctx)
+                pm = fz_get_pixmap_from_image(gctx, img, w, w);
+            fz_catch(gctx)
+                ;
+            fz_drop_image(gctx, img);
+            return pm;
+        }
+
+        /******************************************/
+        /* create a pixmap from data area   */
+        /******************************************/
         fz_pixmap_s(char *data, int size) {
+            struct fz_image_s *img = NULL;
+            fz_try(gctx)
+                img = fz_new_image_from_data(gctx, data, size);
+            fz_catch(gctx)
+                ;
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
-                pm = fz_load_png(gctx, data, size);
+                pm = fz_get_pixmap_from_image(gctx, img, -1, -1);
             fz_catch(gctx)
                 ;
             return pm;
         }
-
         ~fz_pixmap_s() {
 #ifdef MEMDEBUG
             fprintf(stderr, "[DEBUG]free pixmap\n");
@@ -553,16 +602,16 @@ struct fz_pixmap_s
             fz_tint_pixmap(gctx, $self, red, green, blue);
         }
 
-        /***************************/
-        /* clear pixmap with value */
-        /***************************/
+        /*********************************/
+        /* clear total pixmap with value */
+        /*********************************/
         void clearWith(int value) {
             fz_clear_pixmap_with_value(gctx, $self, value);
         }
 
-        /***************************/
-        /* clear pixmap with value */
-        /***************************/
+        /*************************************/
+        /* clear pixmap rectangle with value */
+        /*************************************/
         void clearWith(int value, const struct fz_irect_s *bbox) {
             fz_clear_pixmap_rect_with_value(gctx, $self, value, bbox);
         }
@@ -653,9 +702,9 @@ struct fz_pixmap_s
             return 0;
         }
 
-        /*************************/
-        /* invertIRect           */
-        /*************************/
+        /******************************/
+        /* invertIRect (total pixmap) */
+        /******************************/
         void invertIRect() {
             fz_invert_pixmap(gctx, $self);
         }

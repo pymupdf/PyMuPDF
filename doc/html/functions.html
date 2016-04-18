@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Point &mdash; PyMuPDF 1.9.0 documentation</title>
+    <title>Functions &mdash; PyMuPDF 1.9.0 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -25,9 +25,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
-    <link rel="up" title="Classes" href="classes.html" />
-    <link rel="next" title="Rect" href="rect.html" />
-    <link rel="prev" title="Pixmap" href="pixmap.html" /> 
+    <link rel="next" title="Constants and Enumerations" href="vars.html" />
+    <link rel="prev" title="TextSheet" href="textsheet.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -37,27 +36,26 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="rect.html" title="Rect"
+          <a href="vars.html" title="Constants and Enumerations"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="pixmap.html" title="Pixmap"
+          <a href="textsheet.html" title="TextSheet"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="classes.html" accesskey="U">Classes</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="pixmap.html"
-                        title="previous chapter">Pixmap</a></p>
+  <p class="topless"><a href="textsheet.html"
+                        title="previous chapter">TextSheet</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="rect.html"
-                        title="next chapter">Rect</a></p>
+  <p class="topless"><a href="vars.html"
+                        title="next chapter">Constants and Enumerations</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/point.txt"
+      <li><a href="_sources/functions.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -82,63 +80,49 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="point">
-<span id="id1"></span><h1>Point<a class="headerlink" href="#point" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal"><span class="pre">Point</span></code> represents a point in the plane, defined by its x and y coordinates.</p>
+  <div class="section" id="functions">
+<h1>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h1>
+<p>The following are miscelleneas functions directly available under the binding name, i.e. can be invoked as <code class="docutils literal"><span class="pre">fitz.function</span></code>.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="51%" />
-<col width="49%" />
+<col width="39%" />
+<col width="61%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head"><strong>Attribute</strong></th>
+<tr class="row-odd"><th class="head"><strong>Function</strong></th>
 <th class="head"><strong>Short Description</strong></th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><code class="xref py py-attr docutils literal"><span class="pre">Point.x</span></code></td>
-<td>The X-coordinate</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-attr docutils literal"><span class="pre">Point.y</span></code></td>
-<td>The Y-coordinate</td>
+<tr class="row-even"><td><a class="reference internal" href="#getPointDistance" title="getPointDistance"><code class="xref py py-meth docutils literal"><span class="pre">getPointDistance()</span></code></a></td>
+<td>calculates the distance between to points</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Class API</strong></p>
-<dl class="class">
-<dt id="Point">
-<em class="property">class </em><code class="descname">Point</code><a class="headerlink" href="#Point" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="Point.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#Point.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div>Constructor, without parameters defaulting to <code class="docutils literal"><span class="pre">Point(0.0,</span> <span class="pre">0.0)</span></code> (&#8220;top left&#8221;). Also see the example below.</div></blockquote>
+<blockquote>
+<div><dl class="method">
+<dt id="getPointDistance">
+<code class="descname">getPointDistance</code><span class="sig-paren">(</span><em>p1</em>, <em>p2</em>, <em>unit = &quot;pt&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#getPointDistance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the distance between two points in either pixel points &#8220;pt&#8221; (default) or millimeters &#8220;mm&#8221;. <code class="docutils literal"><span class="pre">fitz.getPointDistance(p1,</span> <span class="pre">p2)</span> <span class="pre">==</span> <span class="pre">fitz.getPointDistance(p2,</span> <span class="pre">p1)</span></code> always evaluates to <code class="docutils literal"><span class="pre">True</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>x</strong> (<em>float</em>) &#8211; X coordinate of the point</li>
-<li><strong>y</strong> (<em>float</em>) &#8211; Y coordinate of the point</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p1</strong> (<a class="reference internal" href="point.html#Point" title="Point"><em>Point</em></a>) &#8211; First point</li>
+<li><strong>p2</strong> (<a class="reference internal" href="point.html#Point" title="Point"><em>Point</em></a>) &#8211; Second point</li>
+<li><strong>unit</strong> (<em>str</em>) &#8211; Unit specification, &#8220;pt&#8221; or &#8220;mm&#8221;</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
 </td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
-</dd></dl>
-
-<p><strong>Example:</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
-Type &quot;copyright&quot;, &quot;credits&quot; or &quot;license()&quot; for more information.
-&gt;&gt;&gt; import fitz
-&gt;&gt;&gt; point = fitz.Point(25, 30)
-&gt;&gt;&gt; point
-fitz.Point(25.0, 30.0)
-&gt;&gt;&gt;
-</pre></div>
-</div>
+</div></blockquote>
 </div>
 
 
@@ -154,13 +138,12 @@ fitz.Point(25.0, 30.0)
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="rect.html" title="Rect"
+          <a href="vars.html" title="Constants and Enumerations"
              >next</a> |</li>
         <li class="right" >
-          <a href="pixmap.html" title="Pixmap"
+          <a href="textsheet.html" title="TextSheet"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="classes.html" >Classes</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

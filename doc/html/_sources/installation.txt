@@ -8,7 +8,7 @@ Installation generally encompasses downloading and generating PyMuPDF and MuPDF 
 
 This process consists of three steps described below under **"Option 1"**.
 
-If your operating system is Windows 7 or higher (x86 or x64), you can perform a binary setup, detailed out under **"Option 2"**. This process is **a lot faster** and requires no compiler, no Visual Studio, no download of MuPDF, no download of PyMuPDF. You only need to download PyMuPDF-optional-material.
+If your operating system is Windows 7 or higher (x86 or x64), you can perform a binary setup, detailed out under **"Option 2"**. This process is **a lot faster** and requires no compiler, no Visual Studio, no download of MuPDF, even no download of PyMuPDF. You only need to download those binaries from PyMuPDF-optional-material that fit your Python version.
 
 Option 1: Install from Sources
 -------------------------------
@@ -17,9 +17,9 @@ Step 1: Download PyMuPDF
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 Download this repository and unzip / decompress it. This will give you a folder, let us call it ``PyFitz``.
 
-Step 2: Download and Generate MuPDF 1.8
+Step 2: Download and Generate MuPDF 1.9
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Download ``mupdf-1.8-source.tar.gz`` from `MuPDF version 1.8 source <http://mupdf.com/downloads/>`_, now and unzip / decompress it. Let us call the resulting folder ``mupdf``.
+Download ``mupdf-1.9-source.tar.gz`` from `MuPDF version 1.9 source <http://mupdf.com/downloads/>`_, now and unzip / decompress it. Call the resulting folder ``mupdf``.
 
 Put it inside ``PyFitz`` as a subdirectory for keeping everything in one place.
 
@@ -37,15 +37,15 @@ Now perform a ``python setup.py install``.
 
 Note on using UPX
 ~~~~~~~~~~~~~~~~~~
-In Windows systems, your PyMuPDF installation will end up with four files: ``__init__.py``, ``fitz.py``, ``utils.py`` and ``_fitz.pyd`` in the ``site-packages`` directory (PYD files are Python's DLL version on Windows systems). ``_fitz.pyd`` has a size of 9.5 to 10 MB.
+In Windows systems, your PyMuPDF installation will end up with four files: ``__init__.py``, ``fitz.py``, ``utils.py`` and ``_fitz.pyd`` in the ``site-packages`` directory (PYD files are Python's DLL version on Windows systems). ``_fitz.pyd`` has a size of around 17 MB.
 
-You can reduce this by applying the compression utility UPX to it: ``upx -9 _fitz.pyd``. This will reduce the file size to about 4.5 MB. This should reduce load times (``import fitz`` statement) while keeping it fully functional.
+You can reduce this by applying the compression utility UPX to it: ``upx -9 _fitz.pyd``. This will reduce the file size to about 8 MB. This should reduce load times (``import fitz`` statement) while keeping it fully functional.
 
 Option 2: Install from Binaries
 --------------------------------
 Step 1: Download Optional Material
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Download `PyMuPDF-optional-material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_. From directory ``binary_setups`` select the zip file corresponding to your configuration and unzip it anywhere you like.
+Download `PyMuPDF-optional-material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_. From directory ``binary_setups`` select the zip file corresponding to your configuration and unzip it anywhere you like. To reduce download time, just download the zip file corresponding to your Python version.
 
 Step 2: Install PyMuPDF
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -65,7 +65,7 @@ If you are not sure, open a command prompt and start the Python interpreter to s
 
 The ``32 bit`` keyword is the relevant information, so in this example, choose ``setup_27_win32.zip`` to install PyMuPDF.
 
-If you see something like this:
+Accordingly, if you see this:
 ::
  Python 3.5.1 (v3.5.1:37a07cee5969, Dec  6 2015, 01:54:25) [MSC v.1900 64 bit (AMD64)] on win32
  Type "copyright", "credits" or "license()" for more information.
@@ -77,7 +77,7 @@ Targeting Parallel Python Installations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Setup scripts for binary install support the Python launcher ``py.exe`` introduced with version 3.3.
 
-They contain shebang lines specifying the intended Python version and additional checks for detecting error situations.
+They contain **shebang lines** specifying the intended Python version and additional checks for detecting error situations.
 
 This can be used to target the right Python version if you have several installed in parallel (and of course the Python launcher, too). Use the following statement to set up PyMuPDF correctly:
 

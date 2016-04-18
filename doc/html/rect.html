@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Rect &mdash; PyMuPDF 1.8.0 documentation</title>
+    <title>Rect &mdash; PyMuPDF 1.9.0 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.8.0',
+        VERSION:     '1.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="PyMuPDF 1.8.0 documentation" href="index.html" />
-    <link rel="up" title="Classes" href="class_index.html" />
+    <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
+    <link rel="up" title="Classes" href="classes.html" />
     <link rel="next" title="TextPage" href="textpage.html" />
     <link rel="prev" title="Point" href="point.html" /> 
   </head>
@@ -42,8 +42,8 @@
         <li class="right" >
           <a href="point.html" title="Point"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" accesskey="U">Classes</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="classes.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -84,7 +84,7 @@
             
   <div class="section" id="rect">
 <span id="id1"></span><h1>Rect<a class="headerlink" href="#rect" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal"><span class="pre">Rect</span></code> represents a rectangle defined by its top left and its bottom right <a class="reference internal" href="point.html#point"><span>Point</span></a> objects, in coordinates: ((x0, y0), (x1, y1)). Respectively, a rectangle can be defined in one of the two ways: either as a pair of <a class="reference internal" href="point.html#point"><span>Point</span></a> objects, or as a tuple of four coordinates.</p>
+<p><code class="docutils literal"><span class="pre">Rect</span></code> represents a rectangle defined by its top left and its bottom right <a class="reference internal" href="point.html#point"><span>Point</span></a> objects, in coordinates: ((x0, y0), (x1, y1)). Respectively, a rectangle can be defined in one of the four ways: as a pair of <a class="reference internal" href="point.html#point"><span>Point</span></a> objects, as a tuple of four coordinates, or as an arbitrary combination of these.</p>
 <p>Rectangle borders are always in parallel with the respective X- and Y-axes.
 A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is true, else &#8220;infinite&#8221;.</p>
 <table border="1" class="docutils">
@@ -137,7 +137,17 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
 <dl class="method">
 <dt>
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>p1</em>, <em>p2</em><span class="sig-paren">)</span></dt>
-<dd><p>Constructor. This will create a rectangle from two <a class="reference internal" href="point.html#point"><span>Point</span></a> objects: <code class="docutils literal"><span class="pre">p1</span></code> will be taken as the top-left and <code class="docutils literal"><span class="pre">p2</span></code> as the bottom-right point of the rectangle. See the example below.</p>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>p1</em>, <em>x1</em>, <em>y1</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>x0</em>, <em>y0</em>, <em>p2</em><span class="sig-paren">)</span></dt>
+<dd><p>Overloaded constructors: p1, p2 stand for <a class="reference internal" href="point.html#point"><span>Point</span></a> objects, while the other parameters mean float coordinates.</p>
 </dd></dl>
 
 <dl class="method">
@@ -262,12 +272,14 @@ Type &quot;copyright&quot;, &quot;credits&quot; or &quot;license()&quot; for mor
 &gt;&gt;&gt; import fitz
 &gt;&gt;&gt; p1 = fitz.Point(10, 10)
 &gt;&gt;&gt; p2 = fitz.Point(300, 450)
-&gt;&gt;&gt; rect1 = fitz.Rect(p1, p2)
-&gt;&gt;&gt; rect1
+&gt;&gt;&gt; fitz.Rect(p1, p2)
 fitz.Rect(10.0, 10.0, 300.0, 450.0)
-&gt;&gt;&gt; rect2 = fitz.Rect(0, 0, 250, 380)
-&gt;&gt;&gt; rect2
-fitz.Rect(0.0, 0.0, 250.0, 380.0)
+&gt;&gt;&gt; fitz.Rect(10, 10, 300, 450)
+fitz.Rect(10.0, 10.0, 300.0, 450.0)
+&gt;&gt;&gt; fitz.Rect(10, 10, p2)
+fitz.Rect(10.0, 10.0, 300.0, 450.0)
+&gt;&gt;&gt; fitz.Rect(p1, 300, 450)
+fitz.Rect(10.0, 10.0, 300.0, 450.0)
 &gt;&gt;&gt;
 </pre></div>
 </div>
@@ -283,7 +295,7 @@ fitz.IRect(0, -1, 124, 456)
 &gt;&gt;&gt;
 </pre></div>
 </div>
-<p>As can be seen, <code class="docutils literal"><span class="pre">r.round().x0</span> <span class="pre">=</span> <span class="pre">int(math.floor(r.x0))</span></code>, <code class="docutils literal"><span class="pre">r.round().y0</span> <span class="pre">=</span> <span class="pre">int(math.floor(r.y0))</span></code>, <code class="docutils literal"><span class="pre">r.round().x1</span> <span class="pre">=</span> <span class="pre">int(math.ceil(r.x1))</span></code> and <code class="docutils literal"><span class="pre">r.round().y1</span> <span class="pre">=</span> <span class="pre">int(math.ceil(r.y1))</span></code>.</p>
+<p>As can be seen, all of the following evaluate to <code class="docutils literal"><span class="pre">True</span></code>: <code class="docutils literal"><span class="pre">r.round().x0</span> <span class="pre">==</span> <span class="pre">int(math.floor(r.x0))</span></code>, <code class="docutils literal"><span class="pre">r.round().y0</span> <span class="pre">==</span> <span class="pre">int(math.floor(r.y0))</span></code>, <code class="docutils literal"><span class="pre">r.round().x1</span> <span class="pre">==</span> <span class="pre">int(math.ceil(r.x1))</span></code> and <code class="docutils literal"><span class="pre">r.round().y1</span> <span class="pre">==</span> <span class="pre">int(math.ceil(r.y1))</span></code>.</p>
 </div>
 
 
@@ -304,13 +316,13 @@ fitz.IRect(0, -1, 124, 456)
         <li class="right" >
           <a href="point.html" title="Point"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.8.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="class_index.html" >Classes</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="classes.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 25. Jan 2016.
+      Last updated on 18. Apr 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

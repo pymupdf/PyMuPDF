@@ -1,0 +1,30 @@
+.. raw:: pdf
+
+    PageBreak
+
+============
+Functions
+============
+The following are miscelleneas functions directly available under the binding name, i.e. can be invoked as ``fitz.function``.
+
+============================= ==============================================
+**Function**                  **Short Description**
+============================= ==============================================
+:meth:`getPointDistance`      calculates the distance between to points
+============================= ==============================================
+
+
+   .. method:: getPointDistance(p1, p2, unit = "pt")
+
+      Calculates the distance between two points in either pixel points "pt" (default) or millimeters "mm". ``fitz.getPointDistance(p1, p2) == fitz.getPointDistance(p2, p1)`` always evaluates to ``True``.
+
+      :param `p1`: First point
+      :type `p1`: Point
+
+      :param `p2`: Second point
+      :type `p2`: Point
+
+      :param `unit`: Unit specification, "pt" or "mm"
+      :type `unit`: str
+
+      :rtype: float

@@ -10,9 +10,11 @@
    :maxdepth: 2
 
    intro.txt
+   changes.txt
    installation.txt
    tutorial.txt
-   class_index.txt
+   classes.txt
+   functions.txt
    vars.txt
    app1.txt
    app2.txt
