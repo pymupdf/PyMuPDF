@@ -34,7 +34,7 @@ AUR: https://aur.archlinux.org/packages/python2-pymupdf/
 
 Ubuntu
 ------
-Since MuPDF v1.8 is not available yet in the official repo, you need to first build it from source. Make sure to add ``-fPIC`` to CFLAGS when compiling.
+Since MuPDF v1.9 is not available yet in the official repo, you need to first build it from source. Make sure to add ``-fPIC`` to CFLAGS when compiling.
 
 When MuPDF is ready, edit ``setup.py`` in PyMuPDF and comment out the line of ``library_dirs=[]`` to specify the directory which contains ``libmupdf.a`` and other 3rd party libraries. Remove ``crypto`` from ``libraries`` in ``setup.py`` if it complains.
 
