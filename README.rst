@@ -59,6 +59,7 @@ You can also access the complete documentation as a `PDF <https://github.com/rk7
 
 Legacy Support
 ==============
+* `Code compatible with MuPDF v1.8 <https://github.com/rk700/PyMuPDF/releases/tag/v1.8>`_
 
 * `Code compatible with MuPDF v1.7a <https://github.com/rk700/PyMuPDF/releases/tag/v1.7>`_
 
@@ -67,7 +68,7 @@ Legacy Support
 License
 =======
 
-PyMuPDF is distributed under GNU GPL v3.
+PyMuPDF is distributed under GNU GPL V3.
 
 Contact
 =======
