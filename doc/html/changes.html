@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
     <link rel="next" title="Installation" href="installation.html" />
     <link rel="prev" title="Introduction" href="intro.html" /> 
@@ -67,9 +66,6 @@
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -82,7 +78,7 @@
             
   <div class="section" id="changes-in-version-1-9-0">
 <h1>Changes in Version 1.9.0<a class="headerlink" href="#changes-in-version-1-9-0" title="Permalink to this headline">¶</a></h1>
-<p>This version of PyMuPDF is based on MuPDF library source code version 1.9 published on April 18, 2016.</p>
+<p>This version of PyMuPDF is based on MuPDF library source code version 1.9 published in April 18, 2016.</p>
 <p>Please have a look at MuPDF&#8217;s website to see which changes and enhancements contained herein.</p>
 <p>Changes in these bindings compared to version 1.8.0 are the following:</p>
 <ul class="simple">
@@ -91,8 +87,9 @@
 <li>The Pixmap constructor <code class="docutils literal"><span class="pre">fitz.Pixmap(data,</span> <span class="pre">len(data))</span></code> has been extended accordingly to support the above image formats as well (not just PNG as it did in version 1.8.0).</li>
 <li>Various improvements and new members in our demo and examples collections have been applied or added. Perhaps most prominently: <code class="docutils literal"><span class="pre">PDF_display</span></code> now supports scrolling with the mouse wheel, and there is a new example program <code class="docutils literal"><span class="pre">wxTableExtract</span></code> which allows to graphically identify and extract table data in documents.</li>
 <li><code class="docutils literal"><span class="pre">fitz.Rect</span></code> objects can now be created with all possible combinations of points and coordinates.</li>
-<li>PyMuPDF classes and methods now all contain  __doc__ strings, which were automatically created by SWIG. While the PyMuPDF documentation certainly is more detailed, this feature should help a lot using the bindings as a programmer.</li>
+<li>PyMuPDF classes and methods now all contain  __doc__ strings, which were mostly automatically created by SWIG. While the PyMuPDF documentation certainly is more detailed, this feature should help a lot when programming in Python-aware IDEs.</li>
 <li>A new method of <code class="docutils literal"><span class="pre">fitz.Document.getPermits()</span></code> returns the permissions associated with the current access to the document (print, edit, annotate, copy), as a Python dictionary.</li>
+<li>The identity matrix <code class="docutils literal"><span class="pre">fitz.Identity</span></code> is now <strong>immutable</strong>.</li>
 </ul>
 </div>
 
@@ -118,9 +115,9 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 18. Apr 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
+      Last updated on 27. Apr 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

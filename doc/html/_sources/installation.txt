@@ -45,39 +45,21 @@ Option 2: Install from Binaries
 --------------------------------
 Step 1: Download Optional Material
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Download `PyMuPDF-optional-material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_. From directory ``binary_setups`` select the zip file corresponding to your configuration and unzip it anywhere you like. To reduce download time, just download the zip file corresponding to your Python version.
+Download `PyMuPDF-optional-material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_. From directory ``binary_setups`` select the zip file corresponding to your configuration and unzip it anywhere you like. To reduce download time, just download the zip file corresponding to your Python version, or get it from `PyPI <https://pypi.python.org/pypi/PyMuPDF/1.9.0>`_.
 
 Step 2: Install PyMuPDF
 ~~~~~~~~~~~~~~~~~~~~~~~~
 Open a command prompt at the unzipped folder's top level and enter ``python setup.py install``.
 
-Done.
+Done after 2 seconds.
 
-This process requires no compiler or Visual Studio and is **very** fast (just a couple of seconds). The only pre-requisite is, that your Python configuration matches the zip file as follows:
-
-``setup_XY_platform.zip`` is for you if you have installed Python X.Y for ``platform``.
-
-If you are not sure, open a command prompt and start the Python interpreter to see something like this:
-::
- Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
- Type "copyright", "credits" or "license()" for more information.
- >>>
-
-The ``32 bit`` keyword is the relevant information, so in this example, choose ``setup_27_win32.zip`` to install PyMuPDF.
-
-Accordingly, if you see this:
-::
- Python 3.5.1 (v3.5.1:37a07cee5969, Dec  6 2015, 01:54:25) [MSC v.1900 64 bit (AMD64)] on win32
- Type "copyright", "credits" or "license()" for more information.
- >>>
-
-choose ``setup_35_win64.zip``.
+This process requires no compiler or Visual Studio and is **very** fast (just a couple of seconds). The only pre-requisite is, that your Python configuration matches the zip file.
 
 Targeting Parallel Python Installations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Setup scripts for binary install support the Python launcher ``py.exe`` introduced with version 3.3.
 
-They contain **shebang lines** specifying the intended Python version and additional checks for detecting error situations.
+They contain **shebang lines** specifying the intended Python version, and additional checks for detecting error situations.
 
 This can be used to target the right Python version if you have several installed in parallel (and of course the Python launcher, too). Use the following statement to set up PyMuPDF correctly:
 

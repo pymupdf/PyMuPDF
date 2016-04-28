@@ -50,14 +50,14 @@ Outline
 
       :rtype: string
 
-   .. method:: saveText
+   .. method:: saveText(filename)
 
-      The chain of outline items is being processed and printed to the file ``filename`` as a conventional table of contents. Each line of this file has the format ``<tab>...<tab><title><tab><page#>``, where the number of leading tabs is (n-1), with n equal to the outline level of the entry. Page numbers are 1-based in this case, while ``page# = 0`` if and only if the outline entry points to a place outside this document. If no title was specified for this outline entry, it appears as a tab character in this file.
+      The chain of outline items is being processed and printed to the file ``filename`` as a conventional table of contents. Each line of this file has the format ``<tab>...<tab><title><tab><page#>``, where the number of leading tabs is (n-1), with n equal to the outline hierarchy level of the entry. Page numbers are 1-based in this case, while ``page# = 0`` if and only if the outline entry points to a place outside this document. If no title text was specified for an outline entry, it appears as a tab character in this file.
 
       :param `filename`: Name of the file to write to.
       :type `filename`: string
 
-   .. method:: saveXML
+   .. method:: saveXML(filename)
 
       The chain of outline items is being processed and printed to a file ``filename`` as an XML-like table of contents. Each line of this file has the format ``<outline title="..." page="n"/>``, if the entry has no children. Otherwise the format is ``<outline title="..." page="n">``, and child entries will follow. The parent entry will be finished by a line containing ``</outline>``.
 

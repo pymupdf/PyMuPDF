@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="classes.html" />
     <link rel="next" title="IRect" href="irect.html" />
@@ -69,9 +68,6 @@
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -84,15 +80,13 @@
             
   <div class="section" id="identity">
 <span id="id1"></span><h1>Identity<a class="headerlink" href="#identity" title="Permalink to this headline">¶</a></h1>
-<p>Identity is just a <a class="reference internal" href="matrix.html#matrix"><span>Matrix</span></a> that performs no action, to be used whenever the syntax requires a <a class="reference internal" href="matrix.html#matrix"><span>Matrix</span></a>, but no actual transformation should take place.</p>
-<p><strong>Caution:</strong> <code class="docutils literal"><span class="pre">Identity</span></code> is a constant in the C code and therefore <strong>readonly, do not try to modify</strong> its properties in any way, i.e. you must not manipulate its <code class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span></code>, neither apply any method.</p>
-<p><code class="docutils literal"><span class="pre">Matrix(1,</span> <span class="pre">1)</span></code> creates a matrix that acts like <code class="docutils literal"><span class="pre">Identity</span></code>, but it may be changed. Use this when you need a starting point for further modification, e.g. by one of the <a class="reference internal" href="matrix.html#matrix"><span>Matrix</span></a> methods.</p>
-<p>In other words:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># the following will not work - the interpreter will crash!</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Identity</span><span class="o">.</span><span class="n">preRotate</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
-
-<span class="c"># do this instead:</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">preRotate</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+<p>Identity is just a <a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a> that performs no action, to be used whenever the syntax requires a <a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>, but no actual transformation should take place.</p>
+<p>Identity is a constant, an &#8220;immutable&#8221; object. So, all of its matrix properties and methods are hidden.</p>
+<p>If you need a do-nothing matrix as a starting point, use <code class="docutils literal"><span class="pre">fitz.Matrix(1,</span> <span class="pre">1)</span></code> or <code class="docutils literal"><span class="pre">fitz.Matrix(0)</span></code> instead, like so:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">preRotate</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span>
+<span class="go">fitz.Matrix(0.707106769085, 0.707106769085, -0.707106769085, 0.707106769085, 0.0, 0.0)</span>
+<span class="go">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
 </div>
@@ -120,9 +114,9 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 18. Apr 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
+      Last updated on 27. Apr 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

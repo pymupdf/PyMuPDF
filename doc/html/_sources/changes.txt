@@ -1,7 +1,7 @@
 =========================
 Changes in Version 1.9.0
 =========================
-This version of PyMuPDF is based on MuPDF library source code version 1.9 published on April 18, 2016.
+This version of PyMuPDF is based on MuPDF library source code version 1.9 published in April 18, 2016.
 
 Please have a look at MuPDF's website to see which changes and enhancements contained herein.
 
@@ -12,5 +12,6 @@ Changes in these bindings compared to version 1.8.0 are the following:
 * The Pixmap constructor ``fitz.Pixmap(data, len(data))`` has been extended accordingly to support the above image formats as well (not just PNG as it did in version 1.8.0).
 * Various improvements and new members in our demo and examples collections have been applied or added. Perhaps most prominently: ``PDF_display`` now supports scrolling with the mouse wheel, and there is a new example program ``wxTableExtract`` which allows to graphically identify and extract table data in documents.
 * ``fitz.Rect`` objects can now be created with all possible combinations of points and coordinates.
-* PyMuPDF classes and methods now all contain  __doc__ strings, which were automatically created by SWIG. While the PyMuPDF documentation certainly is more detailed, this feature should help a lot using the bindings as a programmer.
+* PyMuPDF classes and methods now all contain  __doc__ strings, which were mostly automatically created by SWIG. While the PyMuPDF documentation certainly is more detailed, this feature should help a lot when programming in Python-aware IDEs.
 * A new method of ``fitz.Document.getPermits()`` returns the permissions associated with the current access to the document (print, edit, annotate, copy), as a Python dictionary.
+* The identity matrix ``fitz.Identity`` is now **immutable**.

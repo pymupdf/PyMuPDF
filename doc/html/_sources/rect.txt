@@ -18,7 +18,8 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
 **Methods / Attributes**    **Short Description**
 =========================== =========================================================================
 :meth:`Rect.round`          creates the smallest :ref:`Irect` containing ``Rect``
-:meth:`Rect.transform`      transform ``Rect`` with a :ref:`Matrix`
+:meth:`Rect.transform`      transform rectangle with a :ref:`Matrix`
+:meth:`Rect.getRectArea`    calculate the area of the rectangle
 :attr:`Rect.height`         ``Rect`` height
 :attr:`Rect.width`          ``Rect`` width
 :attr:`Rect.x0`             Top left corner's X-coordinate
@@ -45,16 +46,25 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
 
    .. method:: round()
 
-      Creates the smallest :ref:`IRect` that contains ``Rect``. This is **not** simply the same as rounding each of the rectangle's coordinates!. Look at the example below.
+      Creates the smallest :ref:`IRect` that contains ``Rect``. This is **not** simply the same as rounding each of the rectangle's coordinates! Look at the example below.
 
       :rtype: :ref:`IRect`
 
-   .. attribute:: transform(m)
+   .. method:: transform(m)
 
       Transforms ``Rect`` with a :ref:`Matrix`.
 
-      :param `m`: A :ref:`Matrix` to be used for the transformation.
+      :param `m`: The matrix to be used for the transformation.
+      :param `m`: :ref:`Matrix`
       :rtype: :ref:`Rect`
+
+   .. method:: getRectArea(unit = 'pt')
+
+      Calculates the area of the rectangle. The area of an infinite rectangle is always zero. So, at least one of ``fitz.Rect(p1, p2)`` and ``fitz.Rect(p2, p1)`` has a zero area.
+
+      :param `unit`: Specify required unit: ``pt`` (pixel points, default) or ``mm`` (square millimeters).
+      :type `unit`: string
+      :rtype: float
 
    .. attribute:: width
 

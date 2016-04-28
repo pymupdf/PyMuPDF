@@ -33,7 +33,9 @@ A **span** consists of characters with the same properties. E.g. a different fon
 Output of ``getText(output="text")``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is the plain text output of a page of this tutorial's PDF version:
+This function extracts a page's plain **text in original order** as specified by the creator of the document (which may not be equal to a natural reading order!).
+
+An example output of this tutorial's PDF version:
 ::
  Tutorial
 
@@ -47,7 +49,7 @@ This is the plain text output of a page of this tutorial's PDF version:
 Output of ``getText(output="html")``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The HTML version looks like this:
+HTML output reflects the structure of the page's ``TextPage`` - without adding much other benefit. Again an example:
 ::
  <div class="page">
  <div class="block"><p>
@@ -65,7 +67,7 @@ The HTML version looks like this:
 Output of ``getText(output="json")``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-JSON output looks like so:
+JSON output reflects the structure of a ``TextPage`` and provides position details (``bbox`` - boundary boxes in pixel units) for every block, line and span. This is enough information to present a page's text in any required reading order (e.g. from top-left to bottom-right). The output can obviously be made usable by ``text_dict = json.loads(text)``. Have a look at our example program ``PDF2textJS.py``. Here is how it looks like:
 ::
  {
   "len":35,"width":595.2756,"height":841.8898,
@@ -98,7 +100,7 @@ JSON output looks like so:
 Output of ``getText(output="xml")``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Now the XML version:
+The XML version takes the level of detail even a lot deeper: every single character is provided with its position detail, and every span also contains font information:
 ::
  <page width="595.2756" height="841.8898">
  <block bbox="40.01575 53.730354 98.68775 76.08236">
@@ -131,27 +133,14 @@ Now the XML version:
  <char bbox="81.695755 79.300354 83.91576 93.04035" x="81.695755" y="90.050354" c="i"/>
  ...
 
-
-Resource Requirements
-~~~~~~~~~~~~~~~~~~~~~
-The four text extraction methods of a :ref:`TextPage` differ significantly: in terms of information they supply (see above), and in terms of resource requirements. More information of course means that more processing is required and a higher data volume is generated.
-
-For testing performance, we have run several example PDFs through these methods and found the following information. This  data is not statistically secured in any way - just take it as an idea for what you should expect to see.
-
-As a low end example we took this manual's PDF version (45+ pages, text oriented, 500 KB). The high end case was Adobe's PDF manual (1310 pages, text oriented, 32 MB). The other test cases were `Spektrum <http://www.spektrum.de/>`_ magazines of the year 2015 (the German version of Scientific American, 100+ pages, text with lots of complex interspersed images, 10 to 25 MB each).
+The method's output can be processed by one of Python's XML modules. We have successfully tested ``lxml``. See the demo program ``fontlister.py``. It creates a list of all fonts of a document including font size and where used on pages.
 
 Performance
 ~~~~~~~~~~~~
-Performance of text extraction has improved significantly in MuPDF 1.8! As of updating this documentation (mid November 2015), data hint at an improvement factor greater than 2. Especially the complex extraction methods now have a much lower effort penalty.
+The four text extraction methods of a :ref:`TextPage` differ significantly: in terms of information they supply (see above), and in terms of resource requirements. More information of course means that more processing is required and a higher data volume is generated.
 
-On a higher level Win10 machine (8 processors at 4 GHz, 8 GB RAM), ``extractXML()`` needs anything between 0.2 and 0.5 seconds per page. This means that you can extract extremely detailed text information of a complex 100-page magazine in less than a minute. This is faster than some other free text extraction tools like e.g. `Nitro 3 <https://www.gonitro.com/pdf-reader>`_.
+To begin with, all four methods are **very** fast in relation to what is there on the market. In terms of processing speed, we couldn't find a faster (free) tool.
 
-With ``PDF2TextJS.py`` of the example directory, you have a high performance text extraction utility with a high layout faithfulness!
+Relative to each other, ``xml`` is about 2 times slower than ``text``, the other three range between them. E.g. ``json`` needs about 13% - 14% more time than ``text``.
 
-Data Sizes
-~~~~~~~~~~~
-The sizes of the returned text strings follow this pattern (``extractText()`` is set to 1):
-
-``(Text : HTML : JSON : XML) ~ (1 : 4 : 6 : 87)``
-
-The number 87 for ``extractXML()`` corresponds to values between 200 and 400 KB per page.
+Look into the previous chapter **Appendix 1** for more performance information.

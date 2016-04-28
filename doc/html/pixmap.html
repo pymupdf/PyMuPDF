@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="classes.html" />
     <link rel="next" title="Point" href="point.html" />
@@ -79,9 +78,6 @@
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -97,7 +93,7 @@
 <p>Pixmaps (&#8220;pixel maps&#8221;) are objects at the heart of MuPDF&#8217;s rendering capabilities. They represent plane rectangular sets of pixels. Each pixel is described by a number of bytes (&#8220;components&#8221;) plus an alpha (transparency) byte.</p>
 <p>In PyMuPDF, there exist several ways to create a pixmap:</p>
 <ul class="simple">
-<li>create an empty pixmap based on <a class="reference internal" href="colorspace.html#colorspace"><span>Colorspace</span></a> and <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> information,</li>
+<li>create an empty pixmap based on <a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a> and <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> information,</li>
 <li>create a pixmap from an in-memory image,</li>
 <li>create a pixmap from a memory area that contains plain pixels,</li>
 <li>create a pixmap from a document page (via methods <a class="reference internal" href="page.html#Page.getPixmap" title="Page.getPixmap"><code class="xref py py-meth docutils literal"><span class="pre">Page.getPixmap()</span></code></a> or <a class="reference internal" href="document.html#Document.getPagePixmap" title="Document.getPagePixmap"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPagePixmap()</span></code></a>),</li>
@@ -138,10 +134,10 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <td>returns the pixmap&#8217;s total length</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Pixmap.getColorspace" title="Pixmap.getColorspace"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.getColorspace()</span></code></a></td>
-<td>returns the <a class="reference internal" href="colorspace.html#colorspace"><span>Colorspace</span></a> used</td>
+<td>returns the <a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a> used</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Pixmap.getIRect" title="Pixmap.getIRect"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.getIRect()</span></code></a></td>
-<td>returns the <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> used</td>
+<td>returns the <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> used</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Pixmap.invertIRect" title="Pixmap.invertIRect"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.invertIRect()</span></code></a></td>
 <td>invert the pixels of a given area</td>
@@ -188,8 +184,8 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>colorspace</strong> (<a class="reference internal" href="colorspace.html#colorspace"><span>Colorspace</span></a>) &#8211; The colorspace of the pixmap.</li>
-<li><strong>irect</strong> (<a class="reference internal" href="irect.html#irect"><span>IRect</span></a>) &#8211; Specifies the pixmap&#8217;s area and its location.</li>
+<li><strong>colorspace</strong> (<a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a>) &#8211; The colorspace of the pixmap.</li>
+<li><strong>irect</strong> (<a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a>) &#8211; Specifies the pixmap&#8217;s area and its location.</li>
 </ul>
 </td>
 </tr>
@@ -238,7 +234,7 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>colorspace</strong> (<a class="reference internal" href="colorspace.html#colorspace"><span>Colorspace</span></a>) &#8211; Colorspace of the image. This crucial parameter controls the interpretation of the <code class="docutils literal"><span class="pre">samples</span></code> area: for <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a>, <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a> and <a class="reference internal" href="vars.html#CS_CMYK" title="CS_CMYK"><code class="xref py py-data docutils literal"><span class="pre">CS_CMYK</span></code></a>, 2, 4 or 5 bytes in samples will be assumed to define one pixel, respectively.</li>
+<li><strong>colorspace</strong> (<a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a>) &#8211; Colorspace of the image. This crucial parameter controls the interpretation of the <code class="docutils literal"><span class="pre">samples</span></code> area: for <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a>, <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a> and <a class="reference internal" href="vars.html#CS_CMYK" title="CS_CMYK"><code class="xref py py-data docutils literal"><span class="pre">CS_CMYK</span></code></a>, 2, 4 or 5 bytes in samples will be assumed to define one pixel, respectively.</li>
 <li><strong>width</strong> (<em>int</em>) &#8211; Width of the image</li>
 <li><strong>height</strong> (<em>int</em>) &#8211; Height of the image</li>
 <li><strong>samples</strong> (<em>string</em>) &#8211; A string containing consecutive bytes describing all pixels of the image.</li>
@@ -252,14 +248,14 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <dl class="method">
 <dt id="Pixmap.clearWith">
 <code class="descname">clearWith</code><span class="sig-paren">(</span><em>value</em><span class="optional">[</span>, <em>irect</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.clearWith" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clears an area specified by the <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> <code class="docutils literal"><span class="pre">irect</span></code> within a pixmap. To clear the whole pixmap omit <code class="docutils literal"><span class="pre">irect</span></code>.</p>
+<dd><p>Clears an area specified by the <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> <code class="docutils literal"><span class="pre">irect</span></code> within a pixmap. To clear the whole pixmap omit <code class="docutils literal"><span class="pre">irect</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>value</strong> (<em>int</em>) &#8211; Values from 0 to 255 are valid. Each color byte of each pixel will be set to this value, while alpha will always be set to 255 (non-transparent). Default is 0 (black).</li>
-<li><strong>irect</strong> (<a class="reference internal" href="irect.html#irect"><span>IRect</span></a>) &#8211; An IRect object specifying the area to be cleared.</li>
+<li><strong>irect</strong> (<a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a>) &#8211; An IRect object specifying the area to be cleared.</li>
 </ul>
 </td>
 </tr>
@@ -304,12 +300,12 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <dl class="method">
 <dt id="Pixmap.invertIRect">
 <code class="descname">invertIRect</code><span class="sig-paren">(</span><em>irect</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.invertIRect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Invert the color of all pixels in an area specified by <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> <code class="docutils literal"><span class="pre">irect</span></code>. To invert everything, omit this parameter.</p>
+<dd><p>Invert the color of all pixels in an area specified by <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> <code class="docutils literal"><span class="pre">irect</span></code>. To invert everything, omit this parameter.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>irect</strong> (<a class="reference internal" href="irect.html#irect"><span>IRect</span></a>) &#8211; The <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> to be inverted.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>irect</strong> (<a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a>) &#8211; The <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> to be inverted.</td>
 </tr>
 </tbody>
 </table>
@@ -318,17 +314,17 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <dl class="method">
 <dt id="Pixmap.copyPixmap">
 <code class="descname">copyPixmap</code><span class="sig-paren">(</span><em>source</em>, <em>irect</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.copyPixmap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copies the <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> part of the <code class="docutils literal"><span class="pre">source</span></code> pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and different colorspaces (provided each is either <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> or <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a>). The copy mechanism automatically adjusts to any discrepancies between source and target pixmap like so:</p>
+<dd><p>Copies the <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> part of the <code class="docutils literal"><span class="pre">source</span></code> pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and different colorspaces (provided each is either <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> or <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a>). The copy mechanism automatically adjusts to any discrepancies between source and target pixmap like so:</p>
 <p>If copying from <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> to <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a>, the source gray-shade value will be put into each of the three rgb component bytes. If the other way round, (r + g + b) / 3 will be taken as the gray-shade value of the target.</p>
-<p>Between the specified <code class="docutils literal"><span class="pre">irect</span></code> and the target pixmap&#8217;s <a class="reference internal" href="irect.html#irect"><span>IRect</span></a>, an &#8220;intersection&#8221; rectangle is first being calculated. Then the corresponding data of this intersection are being copied. If the intersection is empty, nothing will happen.</p>
+<p>Between the specified <code class="docutils literal"><span class="pre">irect</span></code> and the target pixmap&#8217;s <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a>, an &#8220;intersection&#8221; rectangle is first being calculated. Then the corresponding data of this intersection are being copied. If the intersection is empty, nothing will happen.</p>
 <p>If you want your <code class="docutils literal"><span class="pre">source</span></code> pixmap image to land at a specific position of the target, modify its <code class="docutils literal"><span class="pre">x</span></code> and <code class="docutils literal"><span class="pre">y</span></code> attributes accordingly before copying. See the example below for how this works.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>source</strong> (<a class="reference internal" href="#pixmap"><span>Pixmap</span></a>) &#8211; The pixmap from where to copy.</li>
-<li><strong>irect</strong> (<a class="reference internal" href="irect.html#irect"><span>IRect</span></a>) &#8211; An IRect object specifying the area to be copied.</li>
+<li><strong>source</strong> (<a class="reference internal" href="#pixmap"><span class="std std-ref">Pixmap</span></a>) &#8211; The pixmap from where to copy.</li>
+<li><strong>irect</strong> (<a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a>) &#8211; An IRect object specifying the area to be copied.</li>
 </ul>
 </td>
 </tr>
@@ -358,7 +354,7 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="colorspace.html#colorspace"><span>Colorspace</span></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a></td>
 </tr>
 </tbody>
 </table>
@@ -367,12 +363,12 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <dl class="method">
 <dt id="Pixmap.getIRect">
 <code class="descname">getIRect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.getIRect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the <a class="reference internal" href="irect.html#irect"><span>IRect</span></a> used for constructing the pixmap. Usefull when the pixmap has been created from an image area.</p>
+<dd><p>Returns the <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> used for constructing the pixmap. Usefull when the pixmap has been created from an image area.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="irect.html#irect"><span>IRect</span></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a></td>
 </tr>
 </tbody>
 </table>
@@ -557,29 +553,29 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <h2>Pixmap Example Code Snippets<a class="headerlink" href="#pixmap-example-code-snippets" title="Permalink to this headline">¶</a></h2>
 <p><strong>Example 1</strong></p>
 <p>This shows how pixmaps can be used for purely graphical, non-PDF purposes. The script reads a PNG picture and creates a new PNG file which consist of 3 * 4 tiles of the original one:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
-<span class="c"># read in picture image and create a pixmap of it</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="c1"># read in picture image and create a pixmap of it</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="n">pix0</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="s">&quot;editra.png&quot;</span><span class="p">)</span>
+    <span class="n">pix0</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="s2">&quot;editra.png&quot;</span><span class="p">)</span>
 <span class="k">except</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;file does not exist or has invalid format&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;file does not exist or has invalid format&quot;</span><span class="p">)</span>
 
-<span class="c"># calculate target colorspace and pixmap dimensions and create it</span>
-<span class="n">tar_cs</span>     <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">getColorspace</span><span class="p">()</span>        <span class="c"># use colorspace of input</span>
-<span class="n">tar_width</span>  <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="mi">3</span>              <span class="c"># 3 tiles per row</span>
-<span class="n">tar_height</span> <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mi">4</span>             <span class="c"># 4 tiles per column</span>
+<span class="c1"># calculate target colorspace and pixmap dimensions and create it</span>
+<span class="n">tar_cs</span>     <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">getColorspace</span><span class="p">()</span>        <span class="c1"># use colorspace of input</span>
+<span class="n">tar_width</span>  <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="mi">3</span>              <span class="c1"># 3 tiles per row</span>
+<span class="n">tar_height</span> <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mi">4</span>             <span class="c1"># 4 tiles per column</span>
 <span class="n">tar_irect</span>  <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">IRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tar_width</span><span class="p">,</span> <span class="n">tar_height</span><span class="p">)</span>
 <span class="n">tar_pix</span>    <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">tar_cs</span><span class="p">,</span> <span class="n">tar_irect</span><span class="p">)</span>
-<span class="n">tar_pix</span><span class="o">.</span><span class="n">clearWith</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>        <span class="c"># clear target with a lively gray :-)</span>
+<span class="n">tar_pix</span><span class="o">.</span><span class="n">clearWith</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>        <span class="c1"># clear target with a lively gray :-)</span>
 
-<span class="c"># now fill target with 3 * 4 tiles of input picture</span>
+<span class="c1"># now fill target with 3 * 4 tiles of input picture</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)):</span>
-    <span class="n">pix0</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span>                          <span class="c"># modify input&#39;s y coord</span>
+    <span class="n">pix0</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span>                          <span class="c1"># modify input&#39;s y coord</span>
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)):</span>
-        <span class="n">pix0</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">j</span> <span class="o">*</span> <span class="n">pix0</span><span class="o">.</span><span class="n">width</span>                       <span class="c"># modify input&#39;s x coord</span>
-        <span class="n">tar_pix</span><span class="o">.</span><span class="n">copyPixmap</span><span class="p">(</span><span class="n">pix0</span><span class="p">,</span> <span class="n">pix0</span><span class="o">.</span><span class="n">getIRect</span><span class="p">())</span>     <span class="c"># copy input to new loc</span>
-        <span class="c"># save intermediate image to show what is happening</span>
-        <span class="n">fn</span> <span class="o">=</span> <span class="s">&quot;target-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.png&quot;</span>
+        <span class="n">pix0</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">j</span> <span class="o">*</span> <span class="n">pix0</span><span class="o">.</span><span class="n">width</span>                       <span class="c1"># modify input&#39;s x coord</span>
+        <span class="n">tar_pix</span><span class="o">.</span><span class="n">copyPixmap</span><span class="p">(</span><span class="n">pix0</span><span class="p">,</span> <span class="n">pix0</span><span class="o">.</span><span class="n">getIRect</span><span class="p">())</span>     <span class="c1"># copy input to new loc</span>
+        <span class="c1"># save intermediate image to show what is happening</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="s2">&quot;target-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span>
         <span class="n">tar_pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -590,40 +586,40 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <img alt="_images/target-32.png" src="_images/target-32.png" />
 <p><strong>Example 2</strong></p>
 <p>This shows how to create a PNG file from a numpy array (several times faster than most other methods):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">fitz</span>
-<span class="c">#==============================================================================</span>
-<span class="c"># create a fun-colored width * height PNG with fitz and numpy</span>
-<span class="c">#==============================================================================</span>
+<span class="c1">#==============================================================================</span>
+<span class="c1"># create a fun-colored width * height PNG with fitz and numpy</span>
+<span class="c1">#==============================================================================</span>
 <span class="n">height</span> <span class="o">=</span> <span class="mi">150</span>
 <span class="n">width</span>  <span class="o">=</span> <span class="mi">100</span>
 <span class="n">bild</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">height</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">width</span><span class="p">):</span>
-        <span class="c"># one pixel (some fun coloring)</span>
+        <span class="c1"># one pixel (some fun coloring)</span>
         <span class="n">bild</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">)</span><span class="o">%</span><span class="mi">256</span><span class="p">,</span> <span class="n">i</span><span class="o">%</span><span class="mi">256</span><span class="p">,</span> <span class="n">j</span><span class="o">%</span><span class="mi">256</span><span class="p">,</span> <span class="mi">255</span><span class="p">]</span>
 
-<span class="n">samples</span> <span class="o">=</span> <span class="n">bild</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span>       <span class="c"># get plain pixel data from numpy array</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="n">bild</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span>       <span class="c1"># get plain pixel data from numpy array</span>
 <span class="n">pix</span><span class="o">=</span><span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">Colorspace</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">CS_RGB</span><span class="p">),</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">samples</span><span class="p">)</span>
-<span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s">&quot;test.png&quot;</span><span class="p">)</span>
+<span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s2">&quot;test.png&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Example 3</strong></p>
 <p>This shows how to interface with <code class="docutils literal"><span class="pre">PIL</span> <span class="pre">/</span> <span class="pre">Pillow</span></code> (the Python Imaging Library), thereby extending the reach of image files that can be processed:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
-<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="k">import</span> <span class="n">Image</span>
 
 <span class="n">pix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="o">...</span> <span class="c"># any code here</span>
-<span class="c"># create and save a PIL image</span>
-<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="s">&quot;RGBA&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">pix</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">pix</span><span class="o">.</span><span class="n">height</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">samples</span><span class="p">))</span>
-<span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;jpeg&#39;</span><span class="p">)</span>
+<span class="o">...</span> <span class="c1"># any code here</span>
+<span class="c1"># create and save a PIL image</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">pix</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">pix</span><span class="o">.</span><span class="n">height</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">samples</span><span class="p">))</span>
+<span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;jpeg&#39;</span><span class="p">)</span>
 
-<span class="c"># an example for the opposite direction</span>
-<span class="c"># create a pixmap from any PIL-supported image file &quot;some_image.xxx&quot;</span>
+<span class="c1"># an example for the opposite direction</span>
+<span class="c1"># create a pixmap from any PIL-supported image file &quot;some_image.xxx&quot;</span>
 
-<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;some_image.xxx&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s">&quot;RGBA&quot;</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;some_image.xxx&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span><span class="p">)</span>
 <span class="n">samples</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
 <span class="n">pix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">csRGB</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">samples</span><span class="p">)</span>
 </pre></div>
@@ -654,9 +650,9 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 18. Apr 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
+      Last updated on 25. Apr 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

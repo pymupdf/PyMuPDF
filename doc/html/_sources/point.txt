@@ -21,9 +21,9 @@ Point
 
 .. class:: Point
 
-   .. method:: __init__(self, x, y)
+   .. method:: __init__(self, [x, y])
 
-      Constructor, without parameters defaulting to ``Point(0.0, 0.0)`` ("top left"). Also see the example below.
+      Constructor. Without parameters defaulting to ``Point(0.0, 0.0)`` ("top left"). Also see the example below.
 
      :param `x`: X coordinate of the point
 
@@ -32,6 +32,14 @@ Point
      :param `y`: Y coordinate of the point
 
      :type `y`: float
+
+   .. method:: __init__(self, p)
+
+      Constructor. Creates a **new copy** of the point.
+
+     :param `p`: The point to copy from.
+
+     :type `p`: :ref:`Point`
 
 
 **Example:**

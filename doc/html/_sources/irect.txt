@@ -11,17 +11,18 @@ IRect
 IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corner coordinates are integers. IRect is used to specify an area of pixels, e.g. to receive image data during rendering.
 
 
-====================== ========================================
+========================= ===========================================
 **Attribute / Method**          **Short Description**
-====================== ========================================
-:meth:`IRect.getRect`  return arectangle with same coordinates
-:attr:`IRect.width`    Width of the bounding box
-:attr:`IRect.height`   Height of the bounding box
-:attr:`IRect.x0`       X-coordinate of the top left corner
-:attr:`IRect.y0`       Y-coordinate of the top left corner
-:attr:`IRect.x1`       X-coordinate of the bottom right corner
-:attr:`IRect.y1`       Y-coordinate of the bottom right corner
-====================== ========================================
+========================= ===========================================
+:meth:`IRect.getRect`     return a :ref:`Rect` with same coordinates
+:meth:`IRect.getRectArea` calculate the area of the rectangle
+:attr:`IRect.width`       Width of the bounding box
+:attr:`IRect.height`      Height of the bounding box
+:attr:`IRect.x0`          X-coordinate of the top left corner
+:attr:`IRect.y0`          Y-coordinate of the top left corner
+:attr:`IRect.x1`          X-coordinate of the bottom right corner
+:attr:`IRect.y1`          Y-coordinate of the bottom right corner
+========================= ===========================================
 
 **Class API**
 
@@ -31,9 +32,33 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
 
       Constructor. Without parameters defaulting to ``IRect(0, 0, 0, 0)``, an empty rectangle. Also see the example below. Function :meth:`Rect.round` creates the smallest ``IRect`` containing ``Rect``.
 
+      :param `x0`: Top-left x coordinate.
+      :type `x0`: int
+
+      :param `y0`: Top-left y coordinate.
+      :type `y0`: int
+
+      :param `x1`: Bottom-right x coordinate.
+      :type `x1`: int
+
+      :param `y1`: Bottom-right y coordinate.
+      :type `y1`: int
+
    .. method:: getRect()
 
       A convenience function returning a :ref:`Rect` with the same coordinates as floating point values.
+
+      :rtype: :ref:`Rect`
+
+   .. method:: getRectArea(unit = 'pt')
+
+      Calculates the area of the rectangle.
+
+      :param `unit`: Specify the unit: ``pt`` (pixel points, default) or ``mm`` (square millimeters).
+
+      :type `unit`: string
+
+      :rtype: float
 
    .. attribute:: width
 
@@ -76,14 +101,16 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
 
 **Example:**
 ::
- Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
- Type "copyright", "credits" or "license()" for more information.
- >>> import fitz
- >>> irect = fitz.IRect(10, 10, 410, 610)
- >>> irect
- fitz.IRect(10, 10, 410, 610)
- >>> irect.height
- 600
- >>> irect.width
- 400
- >>>
+  Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
+  Type "copyright", "credits" or "license()" for more information.
+  >>> import fitz
+  >>> irect = fitz.IRect(10, 10, 410, 610)
+  >>> irect
+  fitz.IRect(10, 10, 410, 610)
+  >>> irect.height
+  600
+  >>> irect.width
+  400
+  >>> irect.getRectArea(unit = 'mm')
+  29868.51852
+

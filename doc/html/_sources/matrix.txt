@@ -8,7 +8,7 @@
 Matrix
 ==========
 
-Matrix is a row-major 3x3 matrix used by image transformations in MuPDF. With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) the page can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six numerical values.
+Matrix is a row-major 3x3 matrix used by image transformations in MuPDF (which complies with the respective concepts laid down in the Adobe manual). With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) the page can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six numerical values.
 
 Since all points or pixels live in a two-dimensional space, one column vector of that matrix is a constant unit vector, and only the remaining six elements are used for manipulations. These six elements are usually represented by ``[a,b,c,d,e,f]``. Here is how they are positioned in the matrix:
 
@@ -17,7 +17,7 @@ Since all points or pixels live in a two-dimensional space, one column vector of
 It should be noted, that
 
     * the below methods are just convenience functions - everything they do, can also be achieved by directly manipulating ``[a,b,c,d,e,f]``
-    * all manipulations can be combined - you can construct a matrix that does a rotate **and** a shear **and** a scale **and** a shift etc. in one go
+    * all manipulations can be combined - you can construct a matrix that does a rotate **and** a shear **and** a scale **and** a shift, etc. in one go. If you want to do this, have a look at the **remarks** further down or at the Adobe manual.
 
 
 ========================= ============================
@@ -39,15 +39,38 @@ It should be noted, that
 
 .. class:: Matrix
 
-   .. method:: __init__(self, a=1, b=0, c=0, d=1, e=0, f=0)
+   .. method:: __init__(self, sx, sy, [shear])
 
-      Constructor. ``Matrix(1, 1)`` will construct a modifyable version of the :ref:`Identity` matrix.
+      Constructor. Creates a matrix with scale or shear factors ``sx``, ``sy`` in x and y direction, respectively. The boolean ``shear`` controls the meaning of the other two paramters. ``fitz.Matrix(1, 1)`` creates a modifyable version of the :ref:`Identity` matrix, which looks like ``[1, 0, 0, 1, 0, 0]``.
+
+      :param `sx`: Scale or shear factor in x direction as controlled by ``shear``.
+      :type `sx`: float
+
+      :param `sy`: Scale or shear factor in y direction as controlled by ``shear``.
+      :type `sy`: float
+
+      :param `shear`: Controls whether ``sx`` and ``sy`` should be treated as scale or as shear factors. If shear is ``False`` (default), matrix ``[sx, 0, 0, sy, 0, 0]`` will be created. If ``shear`` is ``True``, matrix ``[1, sx, sy, 1, 0, 0]`` will be created.
+      :type `shear`: bool
+
+   .. method:: __init__(self, m)
+
+      Constructor. Creates **a new copy** of matrix m.
+
+      :param `m`: The matrix to copy from.
+      :type `m`: :ref:`Matrix`
+
+   .. method:: __init__(self, deg)
+
+      Constructor. Creates a matrix that performs a rotation by ``deg`` degrees. See method ``preRotate()`` for details. ``fitz.Matrix(0)`` creates a modifyable version of the :ref:`Identity` matrix.
+
+      :param `deg`: Rotation degrees.
+      :type `deg`: float
 
    .. method:: preRotate(deg)
 
-      Modify the matrix to perform a clockwise rotation for positive ``deg`` degrees, else counterclockwise. The matrix elements will change in the following way:
+      Modify the matrix to perform a counterclockwise rotation for positive ``deg`` degrees, else clockwise. The matrix elements of an identity matrix will change in the following way:
 
-	  ``[a,b,c,d,e,f] -> [cos(deg), sin(deg), -sin(deg), cos(deg), e, f]``.
+      ``[1, 0, 0, 1, 0, 0] -> [cos(deg), sin(deg), -sin(deg), cos(deg), 0, 0]``.
 
       :param `deg`: The rotation angle in degrees (use conventional notation based on Pi = 180 degrees).
       :type `deg`: float
@@ -108,10 +131,22 @@ It should be noted, that
 
       :type: float
 
+**Remarks**
+
+Obviously, changes of matrix properties and execution of matrix methods can be combined, i.e. executed consecutively. This is done by multiplying the respective matrices.
+
+Matrix multiplications are **not commutative**, i.e. execution sequence determines the result: a **shift - rotate** does in general not equal a **rotate - shift**. So it can become quite unclear which result a transformation will yield. E.g. if you apply ``preRotate(x)`` to an arbitrary matrix ``[a,b,c,d,e,f]`` you will get matrix ``[a*cos(x)+c*sin(x), b*cos(x)+d*sin(x), -a*sin(x)+c*cos(x), -b*sin(x)+d*cos(x), e, f]``.
+
+In order to obtain expected results, Adobe therefore recommends the following sequence when applying multiple matrix transformations (see page 206 of their manual):
+
+* Shift ("translate")
+* Rotate
+* Scale or shear ("skew")
+
 
 **Examples**
 
-Here are examples to illustrate some of the effects achievable with matrices. The following pictures start with a page of the PDF version of this help file. We show what will happen when a matrix is being applied (though always full pages are created, only parts are displayed here to save space).
+Here are examples to illustrate some of the effects achievable. The following pictures start with a page of the PDF version of this help file. We show what happens when a matrix is being applied (though always full pages are created, only parts are displayed here to save space).
 
 This is the original page image
 
@@ -120,40 +155,40 @@ This is the original page image
 
 Shifting
 ------------
-We transform it with a matrix where ``e = 100`` (right shift by 100 pixels)
+We transform it with a matrix where ``e = 100`` (right shift by 100 pixels).
 
 .. image:: e_is_100.png
 
 
-Next we do a down shift by 100 pixels: ``f = 100``
+Next we do a down shift by 100 pixels: ``f = 100``.
 
 .. image:: f_is_100.png
 
 
 Flipping
 --------------
-Flip the page left-right (``a = -1``)
+Flip the page left-right (``a = -1``).
 
 .. image:: a_is_-1.png
 
 
-Flip up-down (``d = -1``)
+Flip up-down (``d = -1``).
 
 .. image:: d_is_-1.png
 
 
 Shearing
 ----------------
-First a shear in Y direction (``b = 0.5``)
+First a shear in Y direction (``b = 0.5``).
 
 .. image:: b_is_0.5.png
 
-Second a shear in X direction (``c = 0.5``)
+Second a shear in X direction (``c = 0.5``).
 
 .. image:: c_is_0.5.png
 
 Rotating
 ---------
-Finally a rotation by 60 degrees (``preRotate(60)``)
+Finally a rotation by 30 clockwise degrees (``preRotate(-30)``).
 
 .. image:: rot_60.png

@@ -8,20 +8,21 @@
 Page
 ================
 
-Page interface, created by :meth:`Document.loadPage`.
+Class representing one document page. Can only be created by :meth:`Document.loadPage`, there is no separate constructor defined.
 
 
 ======================== ====================================
 **Method / Attribute**   **Short Description**
 ======================== ====================================
 :meth:`Page.bound`       the page's rectangle
-:meth:`Page.loadLinks`   get the first link of a page
-:meth:`Page.getLinks`    get all links of a page
-:meth:`Page.getText`     extract the text of a page
-:meth:`Page.getPixmap`   create a ``Pixmap`` for the page
-:meth:`Page.searchFor`   search for a string on a page
+:meth:`Page.loadLinks`   get the first link of the page
+:meth:`Page.getLinks`    get all links of the page
+:meth:`Page.getText`     extract the text of the page
+:meth:`Page.getPixmap`   create a ``Pixmap`` from the page
+:meth:`Page.searchFor`   search for a string on the page
 :meth:`Page.run`         run a page through a device
 :attr:`Page.number`      page number
+:attr:`Page.parent`      the owning document object
 ======================== ====================================
 
 **Class API**
@@ -46,15 +47,13 @@ Page interface, created by :meth:`Document.loadPage`.
       Retrieves **all** links of a page.
 
       :rtype: list
-      :returns: A list of dictionaries or ``[]``. Please note that the links are in the order as specified during PDF generation, not necessarily in any "natural" reading order.
+      :returns: A list of dictionaries or ``[]``. The entries are in the order as specified during PDF generation.
 
    .. method:: getText(output = 'text')
 
-      Retrieves the text of a page. Depending on the output parameter, the results of the :ref:`TextPage` extract methods are returned. The required objects :ref:`TextSheet`, :ref:`DisplayList`, :ref:`Device` and :ref:`TextPage` are automatically created or reused if present.
+      Retrieves the text of a page. Depending on the output parameter, the results of the :ref:`TextPage` extract methods are returned.
 
-      If ``output = 'text'`` is specified, the text is returned in the order as specified during PDF creation (which is not necessarily the normal reading order). As this may not always look like expected, consider using the example program ``PDF2TextJS.py``. It is based on ``extractJSON()`` output and re-arranges text according to the Western reading layout convention "from top-left to bottom-right".
-
-      In an earlier version, we provided a different taste of :meth:`TextPage.extractText` (parameter ``basic=False``), which did a similar job. However, the example program mentioned above is more than 50 times faster, so we deleted this option.
+      If ``output = 'text'`` is specified, the text is returned in the order as specified during PDF creation (which is not necessarily the normal reading order). As this may not always look like expected, consider using the example program ``PDF2TextJS.py``. It is based on ``extractJSON()`` and re-arranges text according to the Western reading layout convention "from top-left to bottom-right".
 
       :param `output`: A string indicating the requested text format, one of ``text`` (default), ``html``, ``json``, or ``xml``.
 
@@ -65,7 +64,7 @@ Page interface, created by :meth:`Document.loadPage`.
 
    .. method:: getPixmap(matrix = fitz.Identity, colorspace = "RGB")
 
-     Creates a Pixmap from a given page. The  method will automatically create or reuse a :ref:`DisplayList` for the page and also create the required drawing :ref:`Device`.
+     Creates a Pixmap from the page.
 
      :param `matrix`: A :ref:`Matrix` object. Default is the :ref:`Identity` matrix.
 
@@ -83,7 +82,16 @@ Page interface, created by :meth:`Document.loadPage`.
 
       Searches for ``text`` on a page. Identical to :meth:`TextPage.search`.
 
+      :param `text`: Text to searched for. Upper / lower case is ignored.
+
+      :type `text`: string
+
+      :param `hit_max`: Maximum number of occurrences accepted.
+
+      :type `hit_max`: int
+
       :rtype: list
+
       :returns: A list of :ref:`Rect` rectangles each of which surrounds one occurrence of ``text``.
 
    .. method:: run(dev, transform)
@@ -93,7 +101,7 @@ Page interface, created by :meth:`Document.loadPage`.
       :param `dev`: Device, obtained from one of the :ref:`Device` constructors.
       :type `dev`: :ref:`Device`
 
-      :param `transform`: Transformation to apply to the page. May include for example scaling and rotation, see :meth:`Matrix.preScale` and :meth:`Matrix.preRotate`. Set it to :ref:`Identity` if no transformation is desired.
+      :param `transform`: Transformation to apply to the page. Set it to :ref:`Identity` if no transformation is desired.
       :type `transform`: :ref:`Matrix`
 
    .. attribute:: number
@@ -101,4 +109,10 @@ Page interface, created by :meth:`Document.loadPage`.
       The page number
 
       :rtype: int
+
+   .. attribute:: parent
+
+      The owning document object.
+
+      :rtype: :ref:`Document`
 

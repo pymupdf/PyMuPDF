@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="classes.html" />
     <link rel="next" title="Outline" href="outline.html" />
@@ -80,9 +79,6 @@
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -95,14 +91,14 @@
             
   <div class="section" id="matrix">
 <span id="id1"></span><h1>Matrix<a class="headerlink" href="#matrix" title="Permalink to this headline">¶</a></h1>
-<p>Matrix is a row-major 3x3 matrix used by image transformations in MuPDF. With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) the page can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six numerical values.</p>
+<p>Matrix is a row-major 3x3 matrix used by image transformations in MuPDF (which complies with the respective concepts laid down in the Adobe manual). With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) the page can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six numerical values.</p>
 <p>Since all points or pixels live in a two-dimensional space, one column vector of that matrix is a constant unit vector, and only the remaining six elements are used for manipulations. These six elements are usually represented by <code class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span></code>. Here is how they are positioned in the matrix:</p>
 <img alt="_images/matrix.png" src="_images/matrix.png" />
 <p>It should be noted, that</p>
 <blockquote>
 <div><ul class="simple">
 <li>the below methods are just convenience functions - everything they do, can also be achieved by directly manipulating <code class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span></code></li>
-<li>all manipulations can be combined - you can construct a matrix that does a rotate <strong>and</strong> a shear <strong>and</strong> a scale <strong>and</strong> a shift etc. in one go</li>
+<li>all manipulations can be combined - you can construct a matrix that does a rotate <strong>and</strong> a shear <strong>and</strong> a scale <strong>and</strong> a shift, etc. in one go. If you want to do this, have a look at the <strong>remarks</strong> further down or at the Adobe manual.</li>
 </ul>
 </div></blockquote>
 <table border="1" class="docutils">
@@ -154,16 +150,56 @@
 <em class="property">class </em><code class="descname">Matrix</code><a class="headerlink" href="#Matrix" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="Matrix.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>a=1</em>, <em>b=0</em>, <em>c=0</em>, <em>d=1</em>, <em>e=0</em>, <em>f=0</em><span class="sig-paren">)</span><a class="headerlink" href="#Matrix.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor. <code class="docutils literal"><span class="pre">Matrix(1,</span> <span class="pre">1)</span></code> will construct a modifyable version of the <a class="reference internal" href="identity.html#identity"><span>Identity</span></a> matrix.</p>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>sx</em>, <em>sy</em><span class="optional">[</span>, <em>shear</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Matrix.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor. Creates a matrix with scale or shear factors <code class="docutils literal"><span class="pre">sx</span></code>, <code class="docutils literal"><span class="pre">sy</span></code> in x and y direction, respectively. The boolean <code class="docutils literal"><span class="pre">shear</span></code> controls the meaning of the other two paramters. <code class="docutils literal"><span class="pre">fitz.Matrix(1,</span> <span class="pre">1)</span></code> creates a modifyable version of the <a class="reference internal" href="identity.html#identity"><span class="std std-ref">Identity</span></a> matrix, which looks like <code class="docutils literal"><span class="pre">[1,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">0,</span> <span class="pre">0]</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sx</strong> (<em>float</em>) &#8211; Scale or shear factor in x direction as controlled by <code class="docutils literal"><span class="pre">shear</span></code>.</li>
+<li><strong>sy</strong> (<em>float</em>) &#8211; Scale or shear factor in y direction as controlled by <code class="docutils literal"><span class="pre">shear</span></code>.</li>
+<li><strong>shear</strong> (<em>bool</em>) &#8211; Controls whether <code class="docutils literal"><span class="pre">sx</span></code> and <code class="docutils literal"><span class="pre">sy</span></code> should be treated as scale or as shear factors. If shear is <code class="docutils literal"><span class="pre">False</span></code> (default), matrix <code class="docutils literal"><span class="pre">[sx,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">sy,</span> <span class="pre">0,</span> <span class="pre">0]</span></code> will be created. If <code class="docutils literal"><span class="pre">shear</span></code> is <code class="docutils literal"><span class="pre">True</span></code>, matrix <code class="docutils literal"><span class="pre">[1,</span> <span class="pre">sx,</span> <span class="pre">sy,</span> <span class="pre">1,</span> <span class="pre">0,</span> <span class="pre">0]</span></code> will be created.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>m</em><span class="sig-paren">)</span></dt>
+<dd><p>Constructor. Creates <strong>a new copy</strong> of matrix m.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> (<a class="reference internal" href="#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; The matrix to copy from.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>deg</em><span class="sig-paren">)</span></dt>
+<dd><p>Constructor. Creates a matrix that performs a rotation by <code class="docutils literal"><span class="pre">deg</span></code> degrees. See method <code class="docutils literal"><span class="pre">preRotate()</span></code> for details. <code class="docutils literal"><span class="pre">fitz.Matrix(0)</span></code> creates a modifyable version of the <a class="reference internal" href="identity.html#identity"><span class="std std-ref">Identity</span></a> matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deg</strong> (<em>float</em>) &#8211; Rotation degrees.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="Matrix.preRotate">
 <code class="descname">preRotate</code><span class="sig-paren">(</span><em>deg</em><span class="sig-paren">)</span><a class="headerlink" href="#Matrix.preRotate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Modify the matrix to perform a clockwise rotation for positive <code class="docutils literal"><span class="pre">deg</span></code> degrees, else counterclockwise. The matrix elements will change in the following way:</p>
-<blockquote>
-<div><code class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span> <span class="pre">-&gt;</span> <span class="pre">[cos(deg),</span> <span class="pre">sin(deg),</span> <span class="pre">-sin(deg),</span> <span class="pre">cos(deg),</span> <span class="pre">e,</span> <span class="pre">f]</span></code>.</div></blockquote>
+<dd><p>Modify the matrix to perform a counterclockwise rotation for positive <code class="docutils literal"><span class="pre">deg</span></code> degrees, else clockwise. The matrix elements of an identity matrix will change in the following way:</p>
+<p><code class="docutils literal"><span class="pre">[1,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">0,</span> <span class="pre">0]</span> <span class="pre">-&gt;</span> <span class="pre">[cos(deg),</span> <span class="pre">sin(deg),</span> <span class="pre">-sin(deg),</span> <span class="pre">cos(deg),</span> <span class="pre">0,</span> <span class="pre">0]</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -296,34 +332,43 @@
 
 </dd></dl>
 
+<p><strong>Remarks</strong></p>
+<p>Obviously, changes of matrix properties and execution of matrix methods can be combined, i.e. executed consecutively. This is done by multiplying the respective matrices.</p>
+<p>Matrix multiplications are <strong>not commutative</strong>, i.e. execution sequence determines the result: a <strong>shift - rotate</strong> does in general not equal a <strong>rotate - shift</strong>. So it can become quite unclear which result a transformation will yield. E.g. if you apply <code class="docutils literal"><span class="pre">preRotate(x)</span></code> to an arbitrary matrix <code class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span></code> you will get matrix <code class="docutils literal"><span class="pre">[a*cos(x)+c*sin(x),</span> <span class="pre">b*cos(x)+d*sin(x),</span> <span class="pre">-a*sin(x)+c*cos(x),</span> <span class="pre">-b*sin(x)+d*cos(x),</span> <span class="pre">e,</span> <span class="pre">f]</span></code>.</p>
+<p>In order to obtain expected results, Adobe therefore recommends the following sequence when applying multiple matrix transformations (see page 206 of their manual):</p>
+<ul class="simple">
+<li>Shift (&#8220;translate&#8221;)</li>
+<li>Rotate</li>
+<li>Scale or shear (&#8220;skew&#8221;)</li>
+</ul>
 <p><strong>Examples</strong></p>
-<p>Here are examples to illustrate some of the effects achievable with matrices. The following pictures start with a page of the PDF version of this help file. We show what will happen when a matrix is being applied (though always full pages are created, only parts are displayed here to save space).</p>
+<p>Here are examples to illustrate some of the effects achievable. The following pictures start with a page of the PDF version of this help file. We show what happens when a matrix is being applied (though always full pages are created, only parts are displayed here to save space).</p>
 <p>This is the original page image</p>
 <img alt="_images/original.png" src="_images/original.png" />
 <div class="section" id="shifting">
 <h2>Shifting<a class="headerlink" href="#shifting" title="Permalink to this headline">¶</a></h2>
-<p>We transform it with a matrix where <code class="docutils literal"><span class="pre">e</span> <span class="pre">=</span> <span class="pre">100</span></code> (right shift by 100 pixels)</p>
+<p>We transform it with a matrix where <code class="docutils literal"><span class="pre">e</span> <span class="pre">=</span> <span class="pre">100</span></code> (right shift by 100 pixels).</p>
 <img alt="_images/e_is_100.png" src="_images/e_is_100.png" />
-<p>Next we do a down shift by 100 pixels: <code class="docutils literal"><span class="pre">f</span> <span class="pre">=</span> <span class="pre">100</span></code></p>
+<p>Next we do a down shift by 100 pixels: <code class="docutils literal"><span class="pre">f</span> <span class="pre">=</span> <span class="pre">100</span></code>.</p>
 <img alt="_images/f_is_100.png" src="_images/f_is_100.png" />
 </div>
 <div class="section" id="flipping">
 <h2>Flipping<a class="headerlink" href="#flipping" title="Permalink to this headline">¶</a></h2>
-<p>Flip the page left-right (<code class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">-1</span></code>)</p>
+<p>Flip the page left-right (<code class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">-1</span></code>).</p>
 <img alt="_images/a_is_-1.png" src="_images/a_is_-1.png" />
-<p>Flip up-down (<code class="docutils literal"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">-1</span></code>)</p>
+<p>Flip up-down (<code class="docutils literal"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">-1</span></code>).</p>
 <img alt="_images/d_is_-1.png" src="_images/d_is_-1.png" />
 </div>
 <div class="section" id="shearing">
 <h2>Shearing<a class="headerlink" href="#shearing" title="Permalink to this headline">¶</a></h2>
-<p>First a shear in Y direction (<code class="docutils literal"><span class="pre">b</span> <span class="pre">=</span> <span class="pre">0.5</span></code>)</p>
+<p>First a shear in Y direction (<code class="docutils literal"><span class="pre">b</span> <span class="pre">=</span> <span class="pre">0.5</span></code>).</p>
 <img alt="_images/b_is_0.5.png" src="_images/b_is_0.5.png" />
-<p>Second a shear in X direction (<code class="docutils literal"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">0.5</span></code>)</p>
+<p>Second a shear in X direction (<code class="docutils literal"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">0.5</span></code>).</p>
 <img alt="_images/c_is_0.5.png" src="_images/c_is_0.5.png" />
 </div>
 <div class="section" id="rotating">
 <h2>Rotating<a class="headerlink" href="#rotating" title="Permalink to this headline">¶</a></h2>
-<p>Finally a rotation by 60 degrees (<code class="docutils literal"><span class="pre">preRotate(60)</span></code>)</p>
+<p>Finally a rotation by 30 clockwise degrees (<code class="docutils literal"><span class="pre">preRotate(-30)</span></code>).</p>
 <img alt="_images/rot_60.png" src="_images/rot_60.png" />
 </div>
 </div>
@@ -351,9 +396,9 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 18. Apr 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
+      Last updated on 28. Apr 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

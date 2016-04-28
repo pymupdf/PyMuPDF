@@ -208,7 +208,7 @@ This class represents a document. It can be constructed from a file or from memo
 
       <TZ> is a time zone value (time intervall relative to GMT) containing a sign ('+' or '-'), the hour (``hh``), and the minute (``'mm'``, attention: enclose in apostrophies!).
 
-      For example, a Venezuelan value might look like ``D:20150415131602-04'30'``, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Venezuela.
+      E.g a Venezuelan value might look like ``D:20150415131602-04'30'``, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Venezuela.
 
       :rtype: dict
 

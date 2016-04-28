@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
     <link rel="up" title="Classes" href="classes.html" />
     <link rel="next" title="Link" href="link.html" />
@@ -69,9 +68,6 @@
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -84,11 +80,11 @@
             
   <div class="section" id="irect">
 <span id="id1"></span><h1>IRect<a class="headerlink" href="#irect" title="Permalink to this headline">¶</a></h1>
-<p>IRect is a rectangular bounding box similar to <a class="reference internal" href="rect.html#rect"><span>Rect</span></a>, except that all corner coordinates are integers. IRect is used to specify an area of pixels, e.g. to receive image data during rendering.</p>
+<p>IRect is a rectangular bounding box similar to <a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a>, except that all corner coordinates are integers. IRect is used to specify an area of pixels, e.g. to receive image data during rendering.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="35%" />
-<col width="65%" />
+<col width="37%" />
+<col width="63%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Attribute / Method</strong></th>
@@ -97,24 +93,27 @@
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><a class="reference internal" href="#IRect.getRect" title="IRect.getRect"><code class="xref py py-meth docutils literal"><span class="pre">IRect.getRect()</span></code></a></td>
-<td>return arectangle with same coordinates</td>
+<td>return a <a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a> with same coordinates</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#IRect.width" title="IRect.width"><code class="xref py py-attr docutils literal"><span class="pre">IRect.width</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#IRect.getRectArea" title="IRect.getRectArea"><code class="xref py py-meth docutils literal"><span class="pre">IRect.getRectArea()</span></code></a></td>
+<td>calculate the area of the rectangle</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#IRect.width" title="IRect.width"><code class="xref py py-attr docutils literal"><span class="pre">IRect.width</span></code></a></td>
 <td>Width of the bounding box</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#IRect.height" title="IRect.height"><code class="xref py py-attr docutils literal"><span class="pre">IRect.height</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#IRect.height" title="IRect.height"><code class="xref py py-attr docutils literal"><span class="pre">IRect.height</span></code></a></td>
 <td>Height of the bounding box</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#IRect.x0" title="IRect.x0"><code class="xref py py-attr docutils literal"><span class="pre">IRect.x0</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#IRect.x0" title="IRect.x0"><code class="xref py py-attr docutils literal"><span class="pre">IRect.x0</span></code></a></td>
 <td>X-coordinate of the top left corner</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#IRect.y0" title="IRect.y0"><code class="xref py py-attr docutils literal"><span class="pre">IRect.y0</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#IRect.y0" title="IRect.y0"><code class="xref py py-attr docutils literal"><span class="pre">IRect.y0</span></code></a></td>
 <td>Y-coordinate of the top left corner</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#IRect.x1" title="IRect.x1"><code class="xref py py-attr docutils literal"><span class="pre">IRect.x1</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#IRect.x1" title="IRect.x1"><code class="xref py py-attr docutils literal"><span class="pre">IRect.x1</span></code></a></td>
 <td>X-coordinate of the bottom right corner</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#IRect.y1" title="IRect.y1"><code class="xref py py-attr docutils literal"><span class="pre">IRect.y1</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#IRect.y1" title="IRect.y1"><code class="xref py py-attr docutils literal"><span class="pre">IRect.y1</span></code></a></td>
 <td>Y-coordinate of the bottom right corner</td>
 </tr>
 </tbody>
@@ -127,12 +126,50 @@
 <dt id="IRect.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>x0</em>, <em>y0</em>, <em>x1</em>, <em>y1</em><span class="sig-paren">)</span><a class="headerlink" href="#IRect.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor. Without parameters defaulting to <code class="docutils literal"><span class="pre">IRect(0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0)</span></code>, an empty rectangle. Also see the example below. Function <a class="reference internal" href="rect.html#Rect.round" title="Rect.round"><code class="xref py py-meth docutils literal"><span class="pre">Rect.round()</span></code></a> creates the smallest <code class="docutils literal"><span class="pre">IRect</span></code> containing <code class="docutils literal"><span class="pre">Rect</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x0</strong> (<em>int</em>) &#8211; Top-left x coordinate.</li>
+<li><strong>y0</strong> (<em>int</em>) &#8211; Top-left y coordinate.</li>
+<li><strong>x1</strong> (<em>int</em>) &#8211; Bottom-right x coordinate.</li>
+<li><strong>y1</strong> (<em>int</em>) &#8211; Bottom-right y coordinate.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="IRect.getRect">
 <code class="descname">getRect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#IRect.getRect" title="Permalink to this definition">¶</a></dt>
-<dd><p>A convenience function returning a <a class="reference internal" href="rect.html#rect"><span>Rect</span></a> with the same coordinates as floating point values.</p>
+<dd><p>A convenience function returning a <a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a> with the same coordinates as floating point values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="IRect.getRectArea">
+<code class="descname">getRectArea</code><span class="sig-paren">(</span><em>unit = 'pt'</em><span class="sig-paren">)</span><a class="headerlink" href="#IRect.getRectArea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the area of the rectangle.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>unit</strong> (<em>string</em>) &#8211; Specify the unit: <code class="docutils literal"><span class="pre">pt</span></code> (pixel points, default) or <code class="docutils literal"><span class="pre">mm</span></code> (square millimeters).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
@@ -222,17 +259,18 @@
 </dd></dl>
 
 <p><strong>Example:</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
-Type &quot;copyright&quot;, &quot;credits&quot; or &quot;license()&quot; for more information.
-&gt;&gt;&gt; import fitz
-&gt;&gt;&gt; irect = fitz.IRect(10, 10, 410, 610)
-&gt;&gt;&gt; irect
-fitz.IRect(10, 10, 410, 610)
-&gt;&gt;&gt; irect.height
-600
-&gt;&gt;&gt; irect.width
-400
-&gt;&gt;&gt;
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Python</span> <span class="mf">2.7</span><span class="o">.</span><span class="mi">9</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">Dec</span> <span class="mi">10</span> <span class="mi">2014</span><span class="p">,</span> <span class="mi">12</span><span class="p">:</span><span class="mi">24</span><span class="p">:</span><span class="mi">55</span><span class="p">)</span> <span class="p">[</span><span class="n">MSC</span> <span class="n">v</span><span class="o">.</span><span class="mi">1500</span> <span class="mi">32</span> <span class="n">bit</span> <span class="p">(</span><span class="n">Intel</span><span class="p">)]</span> <span class="n">on</span> <span class="n">win32</span>
+<span class="n">Type</span> <span class="s2">&quot;copyright&quot;</span><span class="p">,</span> <span class="s2">&quot;credits&quot;</span> <span class="ow">or</span> <span class="s2">&quot;license()&quot;</span> <span class="k">for</span> <span class="n">more</span> <span class="n">information</span><span class="o">.</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">fitz</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">irect</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">IRect</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">410</span><span class="p">,</span> <span class="mi">610</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">irect</span>
+<span class="n">fitz</span><span class="o">.</span><span class="n">IRect</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">410</span><span class="p">,</span> <span class="mi">610</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">irect</span><span class="o">.</span><span class="n">height</span>
+<span class="mi">600</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">irect</span><span class="o">.</span><span class="n">width</span>
+<span class="mi">400</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">irect</span><span class="o">.</span><span class="n">getRectArea</span><span class="p">(</span><span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;mm&#39;</span><span class="p">)</span>
+<span class="mf">29868.51852</span>
 </pre></div>
 </div>
 </div>
@@ -260,9 +298,9 @@ fitz.IRect(10, 10, 410, 610)
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 18. Apr 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
+      Last updated on 28. Apr 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
     <link rel="next" title="Tutorial" href="tutorial.html" />
     <link rel="prev" title="Changes in Version 1.9.0" href="changes.html" /> 
@@ -87,9 +86,6 @@
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -140,33 +136,18 @@
 <h2>Option 2: Install from Binaries<a class="headerlink" href="#option-2-install-from-binaries" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="step-1-download-optional-material">
 <h3>Step 1: Download Optional Material<a class="headerlink" href="#step-1-download-optional-material" title="Permalink to this headline">¶</a></h3>
-<p>Download <a class="reference external" href="https://github.com/JorjMcKie/PyMuPDF-optional-material/">PyMuPDF-optional-material</a>. From directory <code class="docutils literal"><span class="pre">binary_setups</span></code> select the zip file corresponding to your configuration and unzip it anywhere you like. To reduce download time, just download the zip file corresponding to your Python version.</p>
+<p>Download <a class="reference external" href="https://github.com/JorjMcKie/PyMuPDF-optional-material/">PyMuPDF-optional-material</a>. From directory <code class="docutils literal"><span class="pre">binary_setups</span></code> select the zip file corresponding to your configuration and unzip it anywhere you like. To reduce download time, just download the zip file corresponding to your Python version, or get it from <a class="reference external" href="https://pypi.python.org/pypi/PyMuPDF/1.9.0">PyPI</a>.</p>
 </div>
 <div class="section" id="step-2-install-pymupdf">
 <h3>Step 2: Install PyMuPDF<a class="headerlink" href="#step-2-install-pymupdf" title="Permalink to this headline">¶</a></h3>
 <p>Open a command prompt at the unzipped folder&#8217;s top level and enter <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code>.</p>
-<p>Done.</p>
-<p>This process requires no compiler or Visual Studio and is <strong>very</strong> fast (just a couple of seconds). The only pre-requisite is, that your Python configuration matches the zip file as follows:</p>
-<p><code class="docutils literal"><span class="pre">setup_XY_platform.zip</span></code> is for you if you have installed Python X.Y for <code class="docutils literal"><span class="pre">platform</span></code>.</p>
-<p>If you are not sure, open a command prompt and start the Python interpreter to see something like this:</p>
-<div class="highlight-python"><div class="highlight"><pre>Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
-Type &quot;copyright&quot;, &quot;credits&quot; or &quot;license()&quot; for more information.
-&gt;&gt;&gt;
-</pre></div>
-</div>
-<p>The <code class="docutils literal"><span class="pre">32</span> <span class="pre">bit</span></code> keyword is the relevant information, so in this example, choose <code class="docutils literal"><span class="pre">setup_27_win32.zip</span></code> to install PyMuPDF.</p>
-<p>Accordingly, if you see this:</p>
-<div class="highlight-python"><div class="highlight"><pre>Python 3.5.1 (v3.5.1:37a07cee5969, Dec  6 2015, 01:54:25) [MSC v.1900 64 bit (AMD64)] on win32
-Type &quot;copyright&quot;, &quot;credits&quot; or &quot;license()&quot; for more information.
-&gt;&gt;&gt;
-</pre></div>
-</div>
-<p>choose <code class="docutils literal"><span class="pre">setup_35_win64.zip</span></code>.</p>
+<p>Done after 2 seconds.</p>
+<p>This process requires no compiler or Visual Studio and is <strong>very</strong> fast (just a couple of seconds). The only pre-requisite is, that your Python configuration matches the zip file.</p>
 </div>
 <div class="section" id="targeting-parallel-python-installations">
 <h3>Targeting Parallel Python Installations<a class="headerlink" href="#targeting-parallel-python-installations" title="Permalink to this headline">¶</a></h3>
 <p>Setup scripts for binary install support the Python launcher <code class="docutils literal"><span class="pre">py.exe</span></code> introduced with version 3.3.</p>
-<p>They contain <strong>shebang lines</strong> specifying the intended Python version and additional checks for detecting error situations.</p>
+<p>They contain <strong>shebang lines</strong> specifying the intended Python version, and additional checks for detecting error situations.</p>
 <p>This can be used to target the right Python version if you have several installed in parallel (and of course the Python launcher, too). Use the following statement to set up PyMuPDF correctly:</p>
 <p><code class="docutils literal"><span class="pre">py</span> <span class="pre">setup.py</span> <span class="pre">install</span></code></p>
 <p>The shebang line of <code class="docutils literal"><span class="pre">setup.py</span></code> will be interpreted by <code class="docutils literal"><span class="pre">py.exe</span></code> to automatically find the right Python, and the internal checks will make sure that version and bitness are as they sould be.</p>
@@ -196,9 +177,9 @@ Type &quot;copyright&quot;, &quot;credits&quot; or &quot;license()&quot; for mor
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 18. Apr 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
+      Last updated on 26. Apr 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>

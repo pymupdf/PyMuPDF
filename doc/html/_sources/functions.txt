@@ -5,7 +5,7 @@
 ============
 Functions
 ============
-The following are miscelleneas functions directly available under the binding name, i.e. can be invoked as ``fitz.function``.
+The following are miscellaneous functions directly available under the binding name, i.e. can be invoked as ``fitz.function``.
 
 ============================= ==============================================
 **Function**                  **Short Description**

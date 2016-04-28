@@ -23,7 +23,6 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
     <link rel="next" title="Appendix 2: Details on Text Extraction" href="app2.html" />
     <link rel="prev" title="Constants and Enumerations" href="vars.html" /> 
@@ -77,9 +76,6 @@
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -104,16 +100,16 @@
 <img alt="_images/filesizes.png" src="_images/filesizes.png" />
 <div class="section" id="part-1-parsing">
 <h2>Part 1: Parsing<a class="headerlink" href="#part-1-parsing" title="Permalink to this headline">¶</a></h2>
-<p>How fast is a PDF file read and its content parsed for further processing? The sheer parsing performance cannot directly be compared, because batch utilities always execute a requested task in one go, front to end. <code class="docutils literal"><span class="pre">pdfrw</span></code> too, has a <code class="docutils literal"><span class="pre">lazy</span></code> strategy for parsing, meaning it only parses those parts of a document that are required in any moment.</p>
-<p>We therefore measure the time to copy a PDF file to an output file, and doing nothing else.</p>
+<p>How fast is a PDF file read and its content parsed for further processing? The sheer parsing performance cannot directly be compared, because batch utilities always execute a requested task completely, in one go, front to end. <code class="docutils literal"><span class="pre">pdfrw</span></code> too, has a <code class="docutils literal"><span class="pre">lazy</span></code> strategy for parsing, meaning it only parses those parts of a document that are required in any moment.</p>
+<p>In order to yet find an answer to the question, we therefore measure the time to copy a PDF file to an output file with each tool, and doing nothing else.</p>
 <p><strong>These were the tools</strong></p>
-<p>All tools are either platform independant, or at least can run on Windows and Unix / Linux (pdftk).</p>
-<p><strong>Poppler</strong> is missing here, because it specifically is a Linux tool set, although we know there exist Windows ports (created with considerable effort apparently). Technically, it is a C/C++ library, for which a Python binding exists - in so far it is somewhat comparable to PyMuPDF. But Poppler in contrast is tightly coupled to <strong>Qt</strong> and <strong>Cairo</strong>. We may still include it in future, when a more handy Windows installation is available. We have seen however some <a class="reference external" href="http://hzqtc.github.io/2012/04/poppler-vs-mupdf.html">analysis</a>, that hints at a much lower performance than MuPDF. Our comparison of text extraction speeds also show a much lower performance of Poppler&#8217;s PDF code base <strong>Xpdf</strong>.</p>
+<p>All tools are either platform independent, or at least can run both, on Windows and Unix / Linux (pdftk).</p>
+<p><strong>Poppler</strong> is missing here, because it specifically is a Linux tool set, although we know there exist Windows ports (created with considerable effort apparently). Technically, it is a C/C++ library, for which a Python binding exists - in so far somewhat comparable to PyMuPDF. But Poppler in contrast is tightly coupled to <strong>Qt</strong> and <strong>Cairo</strong>. We may still include it in future, when a more handy Windows installation is available. We have seen however some <a class="reference external" href="http://hzqtc.github.io/2012/04/poppler-vs-mupdf.html">analysis</a>, that hints at a much lower performance than MuPDF. Our comparison of text extraction speeds also show a much lower performance of Poppler&#8217;s PDF code base <strong>Xpdf</strong>.</p>
 <p>Image rendering of MuPDF also is about three times faster than the one of Xpdf when comparing the command line tools <code class="docutils literal"><span class="pre">mudraw</span></code> of MuPDF and <code class="docutils literal"><span class="pre">pdftopng</span></code> of Xpdf - see part 3 of this chapter.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="12%" />
-<col width="88%" />
+<col width="11%" />
+<col width="89%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Tool</th>
@@ -125,7 +121,7 @@
 <td>tool of this manual, appearing as &#8220;fitz&#8221; in reports</td>
 </tr>
 <tr class="row-odd"><td>pdfrw</td>
-<td>a pure Python tool, can be used as frontend to ReportLab and rst2pdf</td>
+<td>a pure Python tool, is being used by rst2pdf, has interface to ReportLab</td>
 </tr>
 <tr class="row-even"><td>PyPDF2</td>
 <td>a pure Python tool with a very complete function set</td>
@@ -135,28 +131,28 @@
 </tr>
 </tbody>
 </table>
-<p>This is how each of the tools is being used with the test:</p>
+<p>This is how each of the tools was used:</p>
 <p><strong>PyMuPDF</strong>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="s">&quot;input.pdf&quot;</span><span class="p">)</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;output.pdf&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="s2">&quot;input.pdf&quot;</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;output.pdf&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>pdfrw</strong>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">PdfReader</span><span class="p">(</span><span class="s">&quot;input.pdf&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">doc</span> <span class="o">=</span> <span class="n">PdfReader</span><span class="p">(</span><span class="s2">&quot;input.pdf&quot;</span><span class="p">)</span>
 <span class="n">writer</span> <span class="o">=</span> <span class="n">PdfWriter</span><span class="p">()</span>
 <span class="n">writer</span><span class="o">.</span><span class="n">trailer</span> <span class="o">=</span> <span class="n">doc</span>
-<span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;output.pdf&quot;</span><span class="p">)</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.pdf&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>PyPDF2</strong>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">pdfmerge</span> <span class="o">=</span> <span class="n">PyPDF2</span><span class="o">.</span><span class="n">PdfFileMerger</span><span class="p">()</span>
-<span class="n">pdfmerge</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;input.pdf&quot;</span><span class="p">)</span>
-<span class="n">pdfmerge</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;output.pdf&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pdfmerge</span> <span class="o">=</span> <span class="n">PyPDF2</span><span class="o">.</span><span class="n">PdfFileMerger</span><span class="p">()</span>
+<span class="n">pdfmerge</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;input.pdf&quot;</span><span class="p">)</span>
+<span class="n">pdfmerge</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.pdf&quot;</span><span class="p">)</span>
 <span class="n">pdfmerge</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
 <p><strong>pdftk</strong>:</p>
-<div class="highlight-python"><div class="highlight"><pre>pdftk input.pdf output output.pdf
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pdftk</span> <span class="nb">input</span><span class="o">.</span><span class="n">pdf</span> <span class="n">output</span> <span class="n">output</span><span class="o">.</span><span class="n">pdf</span>
 </pre></div>
 </div>
 <p><strong>Observations</strong></p>
@@ -164,12 +160,12 @@
 <img alt="_images/copy_speed_1.png" src="_images/copy_speed_1.png" />
 <p>If we leave out the Adobe manual, this table looks like</p>
 <img alt="_images/copy_speed_2.png" src="_images/copy_speed_2.png" />
-<p>PyMuPDF is by far the fastest: on average 2.4 times faster than the second best (the pure Python tool pdfrw, <strong>chapeau pdfrw!</strong>), and 10 times faster than the command line tool pdftk.</p>
-<p>Where PyMuPDF only requires less than 24 seconds to process all files, pdftk affords itself almost 4 minutes.</p>
-<p>By far the slowest tool is PyPDF2 - it is more than 35 times slower than PyMuPDF and 15 times slower than pdfrw! The main reason for PyPDF2&#8217;s bad look comes from the Adobe manual. It obviously is slowed down by the linear file structure and the immense amount of bookmarks of this file. If we take out this special case, then PyPDF2 is 10.5 times slower than PyMuPDF, 4.4 times slower than pdfrw and 1.2 times slower than pdftk.</p>
+<p>PyMuPDF is by far the fastest: on average 4.5 times faster than the second best (the pure Python tool pdfrw, <strong>chapeau pdfrw!</strong>), and almost 20 times faster than the command line tool pdftk.</p>
+<p>Where PyMuPDF only requires less than 13 seconds to process all files, pdftk affords itself almost 4 minutes.</p>
+<p>By far the slowest tool is PyPDF2 - it is more than 66 times slower than PyMuPDF and 15 times slower than pdfrw! The main reason for PyPDF2&#8217;s bad look comes from the Adobe manual. It obviously is slowed down by the linear file structure and the immense amount of bookmarks of this file. If we take out this special case, then PyPDF2 is only 21.5 times slower than PyMuPDF, 4.5 times slower than pdfrw and 1.2 times slower than pdftk.</p>
 <p>If we look at the output PDFs, there is one surprise:</p>
 <p>Each tool created a PDF of similar size as the original. Apart from the Adobe case, PyMuPDF always created the smallest output.</p>
-<p>Adobe&#8217;s manual is an exception: The pure Python tools <strong>reduced</strong> its size by more than 20% (and yielded a document which is no longer linearized)!</p>
+<p>Adobe&#8217;s manual is an exception: The pure Python tools pdfrw and PyPDF2 <strong>reduced</strong> its size by more than 20% (and yielded a document which is no longer linearized)!</p>
 <p>PyMuPDF and pdftk in contrast <strong>drastically increased</strong> the size by 40% to about 50 MB (also no longer linearized).</p>
 <p>So far, we have no explanation of what is happening here.</p>
 </div>
@@ -187,24 +183,40 @@
 <p>For demonstration purposes, we have included a version of <code class="docutils literal"><span class="pre">GetText(doc,</span> <span class="pre">output</span> <span class="pre">=</span> <span class="pre">&quot;json&quot;)</span></code>, that also re-arranges the output according to occurrence on the page.</p>
 <p>Here are the results using the same test files as above (again: decimal point and comma reversed):</p>
 <img alt="_images/textperformance.png" src="_images/textperformance.png" />
-<p>Again, (Py-) MuPDF is the fastest around. It is two times faster than xpdf.</p>
-<p>JSON output is 1.7 times faster than xpdf, and even the &#8220;re-arranging&#8221; version is 1.6 times faster.</p>
-<p><code class="docutils literal"><span class="pre">pdfminer</span></code>, as a pure Python solution, of course is comparatively slow: MuPDF is 75 (64, 58) times faster and xpdf is 37 times faster. These observations in order of magnitude coincide with the statements on this <a class="reference external" href="http://www.unixuser.org/~euske/python/pdfminer/">web site</a>.</p>
+<p>Again, (Py-) MuPDF is the fastest around. It is between 2.3 and 2.6 times faster than xpdf.</p>
+<p><code class="docutils literal"><span class="pre">pdfminer</span></code>, as a pure Python solution, of course is comparatively slow: MuPDF is 50 to 60 times faster and xpdf is 23 times faster. These observations in order of magnitude coincide with the statements on this <a class="reference external" href="http://www.unixuser.org/~euske/python/pdfminer/">web site</a>.</p>
 </div>
 <div class="section" id="part-3-image-rendering">
 <h2>Part 3: Image Rendering<a class="headerlink" href="#part-3-image-rendering" title="Permalink to this headline">¶</a></h2>
-<p>We have tested rendering speed of MuPDF against the <code class="docutils literal"><span class="pre">pdftopng.exe</span></code>, a command lind tool of the <strong>Xpdf</strong> toolset, which is the PDF code basis of <strong>Poppler</strong>.</p>
-<p>MuPDF invocation using a resolution of 150 pixels (Xpdf default):</p>
-<div class="highlight-python"><div class="highlight"><pre>mutool draw -o t%d.png -r 150 file.pdf
+<p>We have tested rendering speed of MuPDF against the <code class="docutils literal"><span class="pre">pdftopng.exe</span></code>, a command lind tool of the <strong>Xpdf</strong> toolset (the PDF code basis of <strong>Poppler</strong>).</p>
+<p><strong>MuPDF invocation using a resolution of 150 pixels (Xpdf default):</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mutool</span> <span class="n">draw</span> <span class="o">-</span><span class="n">o</span> <span class="n">t</span><span class="o">%</span><span class="n">d</span><span class="o">.</span><span class="n">png</span> <span class="o">-</span><span class="n">r</span> <span class="mi">150</span> <span class="n">file</span><span class="o">.</span><span class="n">pdf</span>
 </pre></div>
 </div>
-<p>Xpdf invocation:</p>
-<div class="highlight-python"><div class="highlight"><pre>pdftopng.exe file.pdf ./
+<p><strong>PyMuPDF invocation:</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">zoom</span> <span class="o">=</span> <span class="mf">150.0</span> <span class="o">/</span> <span class="mf">72.0</span>
+<span class="n">mat</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">preScale</span><span class="p">(</span><span class="n">zoom</span><span class="p">,</span> <span class="n">zoom</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ProcessFile</span><span class="p">(</span><span class="n">datei</span><span class="p">):</span>
+    <span class="nb">print</span> <span class="s2">&quot;processing:&quot;</span><span class="p">,</span> <span class="n">datei</span>
+    <span class="n">doc</span><span class="o">=</span><span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">datei</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="p">):</span>
+        <span class="n">pix</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getPagePixmap</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">matrix</span><span class="o">=</span><span class="n">mat</span><span class="p">)</span>
+        <span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s2">&quot;t-</span><span class="si">%s</span><span class="s2">.png&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">pix</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">doc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span>
+</pre></div>
+</div>
+<p><strong>Xpdf invocation:</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pdftopng</span><span class="o">.</span><span class="n">exe</span> <span class="n">file</span><span class="o">.</span><span class="n">pdf</span> <span class="o">./</span>
 </pre></div>
 </div>
 <p>The resulting runtimes can be found here (again: meaning of decimal point and comma reversed):</p>
 <img alt="_images/render_speed.png" src="_images/render_speed.png" />
-<p>MuPDF is between 2.7 and 4.7 (on average 3.0) times faster than Xpdf.</p>
+<ul class="simple">
+<li>MuPDF and PyMuPDF are both about 3 times faster than Xpdf.</li>
+<li>The 2% speed difference between MuPDF (a utility written in C) and PyMuPDF is the Python overhead.</li>
+</ul>
 </div>
 </div>
 
@@ -230,9 +242,9 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2015, Ruikai Liu, Jorj McKie.
-      Last updated on 18. Apr 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
+      Last updated on 26. Apr 2016.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
 </html>
