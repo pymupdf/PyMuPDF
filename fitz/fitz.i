@@ -2,11 +2,12 @@
 /*
 #define MEMDEBUG
 */
-%feature("autodoc","3");
+%feature("autodoc","1");
 %{
 #define SWIG_FILE_WITH_INIT
 #include <fitz.h>
 #include <pdf.h>
+void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page);
 %}
 
 /* global context */
@@ -27,12 +28,27 @@ struct DeviceWrapper {
 };
 %}
 
-/* include version information */
-%pythoncode %{
-import os
-VersionFitz = "1.9"
-VersionBind = "1.9.0"
+/************************************/
+/* our own version of fitz.Identity */
+/************************************/
+%immutable;
+%inline %{
+const struct fz_matrix_s Identity = { 1, 0, 0, 1, 0, 0 };
 %}
+%mutable;
+
+/* include version information */
+%include version.i
+
+%include selecthelpers.i
+
+/************************************************************************************/
+/* typemap: make sure fz_buffers returned are converted to strings and then dropped */
+/************************************************************************************/
+%typemap(out) struct fz_buffer_s * {
+    $result = SWIG_FromCharPtrAndSize((const char *)$1->data, $1->len);
+    fz_drop_buffer(gctx, $1);
+}
 
 /* fz_document */
 %rename(Document) fz_document_s;
@@ -215,7 +231,9 @@ struct fz_document_s {
             }
         }
         int save(char *filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) {
+            /* cast-down fz_document to a pdf_document */
             pdf_document *pdf = pdf_specifics(gctx, $self);
+            if (!pdf) return -2;             // not a valid pdf structure, return
             int errors = 0;
             pdf_write_options opts;
             opts.do_incremental = incremental;
@@ -234,10 +252,78 @@ struct fz_document_s {
             return errors;
         }
 
+        /* typemap for Python list of integers */
+        %typemap(in) (int *liste, int argc) {
+            int i;
+            if (!PySequence_Check($input)) {
+                PyErr_SetString(PyExc_ValueError,"expected a sequence");
+                return NULL;
+            }
+            $2 = PySequence_Size($input);
+            if (!$2) {
+                PyErr_SetString(PyExc_ValueError,"sequence is empty");
+                return NULL;
+            }
+            $1 = (int *) malloc($2*sizeof(int));
+            for (i = 0; i < $2; i++) {
+                PyObject *o = PySequence_GetItem($input,i);
+                if (PyInt_Check(o)) {
+                    $1[i] = (int) PyInt_AsLong(o);
+                    }
+                else {
+                    PyErr_SetString(PyExc_ValueError,"sequence elements must be integers");
+                    free($1);
+                    return NULL;
+                    }
+            }
+        }
+        %typemap(freearg) (int *liste, int argc) {
+            if ($1) free($1);
+        }
+
+        /************************************************/
+        /* reduce document to keep only selected pages  */
+        /************************************************/
+        int _select(int *liste, int argc) {
+            /* cast-down fz_document to a pdf_document */
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            if (!pdf) {
+                PyErr_SetString(PyExc_ValueError,"not a valid pdf document");
+                return -2;
+                }
+            globals glo = { 0 };
+            glo.ctx = gctx;
+            glo.doc = pdf;
+            retainpages(gctx, &glo, argc, liste);
+            return 0;
+        }
+
+        %exception _readPageText {
+            $action
+            if(!result) {
+                PyErr_SetString(PyExc_Exception, "cannot do doc._readPageText");
+                return NULL;
+            }
+        }
+
+        struct fz_buffer_s *_readPageText(int pno, int output=0) {
+            fz_page *page;
+            fz_buffer *res;
+            fz_try(gctx) {
+                page = fz_load_page(gctx, $self, pno);
+                res = readPageText(page, output);
+                fz_drop_page(gctx, page);
+            }
+            fz_catch(gctx) {
+                fz_drop_page(gctx, page);
+            }
+            return res;
+        }
 
         /***************************************/
         /* get the permissions of the document */
         /***************************************/
+        %feature("autodoc","getPermits(self) -> dictionary containing permissions") getPermits;
         %pythonprepend getPermits() %{
             if self.isClosed == 1:
                 raise ValueError("operation on closed document")
@@ -365,6 +451,24 @@ struct fz_page_s {
             return fz_load_links(gctx, $self);
         }
 
+        %exception _readPageText {
+            $action
+            if(!result) {
+                PyErr_SetString(PyExc_Exception, "cannot do page.readPageText");
+                return NULL;
+            }
+        }
+
+        struct fz_buffer_s *_readPageText(int output=0) {
+            fz_buffer *res;
+            fz_try(gctx) {
+                res = readPageText($self, output);
+            }
+            fz_catch(gctx) {
+                ;
+            }
+            return res;
+        }
 
         /***********************************************************/
         /* Page.__repr__()                                         */
@@ -545,10 +649,10 @@ struct fz_pixmap_s
         /******************************************/
         /* create a pixmap from filename          */
         /******************************************/
-        fz_pixmap_s(char *data) {
+        fz_pixmap_s(char *filename) {
             struct fz_image_s *img = NULL;
             fz_try(gctx)
-                img = fz_new_image_from_file(gctx, data);
+                img = fz_new_image_from_file(gctx, filename);
             fz_catch(gctx)
                 ;
             struct fz_pixmap_s *pm = NULL;
@@ -564,10 +668,10 @@ struct fz_pixmap_s
         /******************************************/
         /* create a pixmap from data area   */
         /******************************************/
-        fz_pixmap_s(char *data, int size) {
+        fz_pixmap_s(char *imagedata, int size) {
             struct fz_image_s *img = NULL;
             fz_try(gctx)
-                img = fz_new_image_from_data(gctx, data, size);
+                img = fz_new_image_from_data(gctx, imagedata, size);
             fz_catch(gctx)
                 ;
             struct fz_pixmap_s *pm = NULL;
@@ -660,16 +764,16 @@ struct fz_pixmap_s
         }
 
         /************************/
-        /* writeIMG           */
+        /* _writeIMG           */
         /************************/
-        %exception writeIMG {
+        %exception _writeIMG {
             $action
             if(result) {
-                PyErr_SetString(PyExc_Exception, "cannot writeIMG");
+                PyErr_SetString(PyExc_Exception, "cannot _writeIMG");
                 return NULL;
             }
         }
-        %pythonprepend writeIMG(char *filename, char *format, int savealpha) %{
+        %pythonprepend _writeIMG(char *filename, char *format, int savealpha) %{
             if type(filename) == str:
                 pass
             elif type(filename) == unicode:
@@ -679,7 +783,7 @@ struct fz_pixmap_s
 
 
         %}
-        int writeIMG(char *filename, int format, int savealpha=0) {
+        int _writeIMG(char *filename, int format, int savealpha=0) {
             fz_try(gctx) {
                 switch(format)
                 {
@@ -888,11 +992,6 @@ struct fz_matrix_s
         %}
     }
 };
-%rename(Identity) fz_identity;
-%inline %{
-    extern const struct fz_matrix_s fz_identity;
-%}
-
 
 /* fz_outline */
 %rename(Outline) fz_outline_s;
@@ -1249,12 +1348,8 @@ struct fz_stext_sheet_s {
     }
     free($1);
 }
-%typemap(out) struct fz_buffer_s * {
-    $result = SWIG_FromCharPtrAndSize((const char *)$1->data, $1->len);
-    fz_drop_buffer(gctx, $1);
-}
 
-/* c helper functions for extractJSON */
+/* C helper functions for extractJSON */
 %{
 void
 fz_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox) {

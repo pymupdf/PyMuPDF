@@ -10,8 +10,10 @@ Changes in these bindings compared to version 1.8.0 are the following:
 * New methods ``getRectArea()`` for both ``fitz.Rect`` and ``fitz.IRect``
 * Pixmaps can now be created directly from files using the new constructor ``fitz.Pixmap(filename)``. All of the following image formats covered by MuPDF are thus also supported as inputs for pixmaps: BMP, JPEG, JXR, PNG, GIF, TIFF.
 * The Pixmap constructor ``fitz.Pixmap(data, len(data))`` has been extended accordingly to support the above image formats as well (not just PNG as it did in version 1.8.0).
-* Various improvements and new members in our demo and examples collections have been applied or added. Perhaps most prominently: ``PDF_display`` now supports scrolling with the mouse wheel, and there is a new example program ``wxTableExtract`` which allows to graphically identify and extract table data in documents.
 * ``fitz.Rect`` objects can now be created with all possible combinations of points and coordinates.
-* PyMuPDF classes and methods now all contain  __doc__ strings, which were mostly automatically created by SWIG. While the PyMuPDF documentation certainly is more detailed, this feature should help a lot when programming in Python-aware IDEs.
+* PyMuPDF classes and methods now all contain  __doc__ strings,  most of them created by SWIG automatically. While the PyMuPDF documentation certainly is more detailed, this feature should help a lot when programming in Python-aware IDEs.
 * A new method of ``fitz.Document.getPermits()`` returns the permissions associated with the current access to the document (print, edit, annotate, copy), as a Python dictionary.
 * The identity matrix ``fitz.Identity`` is now **immutable**.
+* The new method ``fitz.Document.select(list)`` removes all pages from an open document that are not contained in the list.
+* Various improvements and new members in our demo and examples collections. Perhaps most prominently: ``PDF_display`` now supports scrolling with the mouse wheel, and there is a new example program ``wxTableExtract`` which allows to graphically identify and extract table data in documents.
+* ``fitz.open()`` is an alias of ``fitz.Document()``.

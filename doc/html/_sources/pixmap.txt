@@ -64,7 +64,7 @@ Please have a look at the **example** section to see some pixmap usage "at work"
       This constructor creates a (non-empty) pixmap from file ``filename``, which is assumed to contain a supported image.
 
       :param `filename`: Path / name of the file. The origin of the resulting pixmap is (0,0).
-      :type `data`: string
+      :type `filename`: string
 
    .. method:: __init__(self, data, len)
 
@@ -244,8 +244,8 @@ Please have a look at the **example** section to see some pixmap usage "at work"
 
       :rtype: bool
 
-Supported Pixmap Image Types
------------------------------
+Supported Pixmap Construction Image Types
+-------------------------------------------
 Support includes the following file types: BMP, JPEG, GIF, TIFF, JXR, and PNG.
 
 Details on Saving Images with ``writeImage()``

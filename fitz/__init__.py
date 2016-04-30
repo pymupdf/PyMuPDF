@@ -11,7 +11,9 @@ csCMYK      = fitz.csCMYK
 
 import fitz.utils
 # copy functions to their respective fitz classes
+fitz.open                   = fitz.Document
 fitz.Document.getToC        = fitz.utils.getToC
+fitz.Document.select        = fitz.utils.select
 fitz.Document.getPagePixmap = fitz.utils.getPagePixmap
 fitz.Document.getPageText   = fitz.utils.getPageText
 fitz.Page.getLinks          = fitz.utils.getLinks
@@ -26,4 +28,5 @@ fitz.IRect.getRectArea      = fitz.utils.getRectArea
 getPointDistance            = fitz.utils.getPointDistance
 # ... and delete them from here
 del utils
-fitz.__doc__ = "PyMuPDF V. %s: the Python bindings for the MuPDF V. %s library" %(fitz.VersionBind, fitz.VersionFitz)
+fitz.__doc__ = "PyMuPDF %s: the Python bindings for the MuPDF %s library,\nCreation date %s" \
+               % (fitz.VersionBind, fitz.VersionFitz, fitz.VersionDate)

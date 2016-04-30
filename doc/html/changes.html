@@ -85,11 +85,13 @@
 <li>New methods <code class="docutils literal"><span class="pre">getRectArea()</span></code> for both <code class="docutils literal"><span class="pre">fitz.Rect</span></code> and <code class="docutils literal"><span class="pre">fitz.IRect</span></code></li>
 <li>Pixmaps can now be created directly from files using the new constructor <code class="docutils literal"><span class="pre">fitz.Pixmap(filename)</span></code>. All of the following image formats covered by MuPDF are thus also supported as inputs for pixmaps: BMP, JPEG, JXR, PNG, GIF, TIFF.</li>
 <li>The Pixmap constructor <code class="docutils literal"><span class="pre">fitz.Pixmap(data,</span> <span class="pre">len(data))</span></code> has been extended accordingly to support the above image formats as well (not just PNG as it did in version 1.8.0).</li>
-<li>Various improvements and new members in our demo and examples collections have been applied or added. Perhaps most prominently: <code class="docutils literal"><span class="pre">PDF_display</span></code> now supports scrolling with the mouse wheel, and there is a new example program <code class="docutils literal"><span class="pre">wxTableExtract</span></code> which allows to graphically identify and extract table data in documents.</li>
 <li><code class="docutils literal"><span class="pre">fitz.Rect</span></code> objects can now be created with all possible combinations of points and coordinates.</li>
-<li>PyMuPDF classes and methods now all contain  __doc__ strings, which were mostly automatically created by SWIG. While the PyMuPDF documentation certainly is more detailed, this feature should help a lot when programming in Python-aware IDEs.</li>
+<li>PyMuPDF classes and methods now all contain  __doc__ strings,  most of them created by SWIG automatically. While the PyMuPDF documentation certainly is more detailed, this feature should help a lot when programming in Python-aware IDEs.</li>
 <li>A new method of <code class="docutils literal"><span class="pre">fitz.Document.getPermits()</span></code> returns the permissions associated with the current access to the document (print, edit, annotate, copy), as a Python dictionary.</li>
 <li>The identity matrix <code class="docutils literal"><span class="pre">fitz.Identity</span></code> is now <strong>immutable</strong>.</li>
+<li>The new method <code class="docutils literal"><span class="pre">fitz.Document.select(list)</span></code> removes all pages from an open document that are not contained in the list.</li>
+<li>Various improvements and new members in our demo and examples collections. Perhaps most prominently: <code class="docutils literal"><span class="pre">PDF_display</span></code> now supports scrolling with the mouse wheel, and there is a new example program <code class="docutils literal"><span class="pre">wxTableExtract</span></code> which allows to graphically identify and extract table data in documents.</li>
+<li><code class="docutils literal"><span class="pre">fitz.open()</span></code> is an alias of <code class="docutils literal"><span class="pre">fitz.Document()</span></code>.</li>
 </ul>
 </div>
 
@@ -116,7 +118,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 27. Apr 2016.
+      Last updated on 30. Apr 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

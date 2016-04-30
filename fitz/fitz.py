@@ -91,9 +91,10 @@ except AttributeError:
 
 
 
-import os
-VersionFitz = "1.9"
-VersionBind = "1.9.0"
+import os                     
+VersionFitz = "1.9"           
+VersionBind = "1.9.0"         
+VersionDate = "2016-04-30  9:07:17"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -105,16 +106,7 @@ class Document(_object):
     __repr__ = _swig_repr
 
     def __init__(self, filename, stream=None, streamlen=0):
-        """
-        __init__(fz_document_s self, char const * filename, char * stream=None, int streamlen=0) -> Document
-
-        Parameters
-        ----------
-        filename: char const *
-        stream: char *
-        streamlen: int
-
-        """
+        """__init__(fz_document_s self, char const * filename, char * stream=None, int streamlen=0) -> Document"""
 
         if type(filename) == str:
             pass
@@ -149,14 +141,7 @@ class Document(_object):
 
 
     def close(self):
-        """
-        close(Document self)
-
-        Parameters
-        ----------
-        self: struct fz_document_s *
-
-        """
+        """close(Document self)"""
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -171,14 +156,7 @@ class Document(_object):
 
 
     def loadPage(self, number):
-        """
-        loadPage(Document self, int number) -> Page
-
-        Parameters
-        ----------
-        number: int
-
-        """
+        """loadPage(Document self, int number) -> Page"""
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -196,14 +174,7 @@ class Document(_object):
 
 
     def _loadOutline(self):
-        """
-        _loadOutline(Document self) -> Outline
-
-        Parameters
-        ----------
-        self: struct fz_document_s *
-
-        """
+        """_loadOutline(Document self) -> Outline"""
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -213,14 +184,7 @@ class Document(_object):
 
 
     def _dropOutline(self, ol):
-        """
-        _dropOutline(Document self, Outline ol)
-
-        Parameters
-        ----------
-        ol: struct fz_outline_s *
-
-        """
+        """_dropOutline(Document self, Outline ol)"""
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -230,14 +194,7 @@ class Document(_object):
 
 
     def _getPageCount(self):
-        """
-        _getPageCount(Document self) -> int
-
-        Parameters
-        ----------
-        self: struct fz_document_s *
-
-        """
+        """_getPageCount(Document self) -> int"""
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -247,14 +204,7 @@ class Document(_object):
 
 
     def _getMetadata(self, key):
-        """
-        _getMetadata(Document self, char const * key) -> char *
-
-        Parameters
-        ----------
-        key: char const *
-
-        """
+        """_getMetadata(Document self, char const * key) -> char *"""
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -264,14 +214,7 @@ class Document(_object):
 
 
     def _needsPass(self):
-        """
-        _needsPass(Document self) -> int
-
-        Parameters
-        ----------
-        self: struct fz_document_s *
-
-        """
+        """_needsPass(Document self) -> int"""
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -281,14 +224,7 @@ class Document(_object):
 
 
     def authenticate(self, arg2):
-        """
-        authenticate(Document self, char const * arg2) -> int
-
-        Parameters
-        ----------
-        pass: char const *
-
-        """
+        """authenticate(Document self, char const * arg2) -> int"""
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -305,21 +241,7 @@ class Document(_object):
 
 
     def save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0):
-        """
-        save(Document self, char * filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) -> int
-
-        Parameters
-        ----------
-        filename: char *
-        garbage: int
-        clean: int
-        deflate: int
-        incremental: int
-        ascii: int
-        expand: int
-        linear: int
-
-        """
+        """save(Document self, char * filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) -> int"""
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -338,15 +260,18 @@ class Document(_object):
         return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear)
 
 
+    def _select(self, liste):
+        """_select(Document self, int * liste) -> int"""
+        return _fitz.Document__select(self, liste)
+
+
+    def _readPageText(self, pno, output=0):
+        """_readPageText(Document self, int pno, int output=0) -> struct fz_buffer_s *"""
+        return _fitz.Document__readPageText(self, pno, output)
+
+
     def getPermits(self):
-        """
-        getPermits(Document self) -> int
-
-        Parameters
-        ----------
-        self: struct fz_document_s *
-
-        """
+        """getPermits(self) -> dictionary containing permissions"""
 
         if self.isClosed == 1:
             raise ValueError("operation on closed document")
@@ -406,6 +331,8 @@ class Document(_object):
     __del__ = lambda self: None
 Document_swigregister = _fitz.Document_swigregister
 Document_swigregister(Document)
+cvar = _fitz.cvar
+Identity = cvar.Identity
 
 class Page(_object):
     """Proxy of C fz_page_s struct."""
@@ -422,14 +349,7 @@ class Page(_object):
     __del__ = lambda self: None
 
     def bound(self):
-        """
-        bound(Page self) -> Rect
-
-        Parameters
-        ----------
-        self: struct fz_page_s *
-
-        """
+        """bound(Page self) -> Rect"""
 
         if self.parent.isClosed == 1:
             raise ValueError("page operation on closed document")
@@ -445,15 +365,7 @@ class Page(_object):
 
 
     def run(self, dw, m):
-        """
-        run(Page self, Device dw, Matrix m) -> int
-
-        Parameters
-        ----------
-        dw: struct DeviceWrapper *
-        m: struct fz_matrix_s const *
-
-        """
+        """run(Page self, Device dw, Matrix m) -> int"""
 
         if self.parent.isClosed == 1:
             raise ValueError("page operation on closed document")
@@ -463,14 +375,7 @@ class Page(_object):
 
 
     def loadLinks(self):
-        """
-        loadLinks(Page self) -> Link
-
-        Parameters
-        ----------
-        self: struct fz_page_s *
-
-        """
+        """loadLinks(Page self) -> Link"""
 
         if self.parent.isClosed == 1:
             raise ValueError("page operation on closed document")
@@ -485,6 +390,11 @@ class Page(_object):
         return val
 
 
+    def _readPageText(self, output=0):
+        """_readPageText(Page self, int output=0) -> struct fz_buffer_s *"""
+        return _fitz.Page__readPageText(self, output)
+
+
     def __repr__(self):
         return repr(self.parent) + ".loadPage(" + str(self.number) + ")"
 
@@ -493,15 +403,7 @@ Page_swigregister(Page)
 
 
 def _fz_transform_rect(rect, transform):
-    """
-    _fz_transform_rect(Rect rect, Matrix transform) -> Rect
-
-    Parameters
-    ----------
-    rect: struct fz_rect_s *
-    transform: struct fz_matrix_s const *
-
-    """
+    """_fz_transform_rect(Rect rect, Matrix transform) -> Rect"""
     return _fitz._fz_transform_rect(rect, transform)
 class Rect(_object):
     """Proxy of C fz_rect_s struct."""
@@ -532,43 +434,10 @@ class Rect(_object):
         """
         __init__(fz_rect_s self) -> Rect
         __init__(fz_rect_s self, Rect s) -> Rect
-
-        Parameters
-        ----------
-        s: struct fz_rect_s const *
-
         __init__(fz_rect_s self, Point lt, Point rb) -> Rect
-
-        Parameters
-        ----------
-        lt: struct fz_point_s const *
-        rb: struct fz_point_s const *
-
         __init__(fz_rect_s self, float x0, float y0, Point rb) -> Rect
-
-        Parameters
-        ----------
-        x0: float
-        y0: float
-        rb: struct fz_point_s const *
-
         __init__(fz_rect_s self, Point lt, float x1, float y1) -> Rect
-
-        Parameters
-        ----------
-        lt: struct fz_point_s const *
-        x1: float
-        y1: float
-
         __init__(fz_rect_s self, float x0, float y0, float x1, float y1) -> Rect
-
-        Parameters
-        ----------
-        x0: float
-        y0: float
-        x1: float
-        y1: float
-
         """
         this = _fitz.new_Rect(*args)
         try:
@@ -577,14 +446,7 @@ class Rect(_object):
             self.this = this
 
     def round(self):
-        """
-        round(Rect self) -> IRect
-
-        Parameters
-        ----------
-        self: struct fz_rect_s *
-
-        """
+        """round(Rect self) -> IRect"""
         val = _fitz.Rect_round(self)
 
         val.thisown = True
@@ -637,20 +499,7 @@ class IRect(_object):
         """
         __init__(fz_irect_s self) -> IRect
         __init__(fz_irect_s self, IRect s) -> IRect
-
-        Parameters
-        ----------
-        s: struct fz_irect_s const *
-
         __init__(fz_irect_s self, int x0, int y0, int x1, int y1) -> IRect
-
-        Parameters
-        ----------
-        x0: int
-        y0: int
-        x1: int
-        y1: int
-
         """
         this = _fitz.new_IRect(*args)
         try:
@@ -716,34 +565,9 @@ class Pixmap(_object):
     def __init__(self, *args):
         """
         __init__(fz_pixmap_s self, Colorspace cs, IRect bbox) -> Pixmap
-
-        Parameters
-        ----------
-        cs: struct fz_colorspace_s *
-        bbox: struct fz_irect_s const *
-
         __init__(fz_pixmap_s self, Colorspace cs, int w, int h, char * samples) -> Pixmap
-
-        Parameters
-        ----------
-        cs: struct fz_colorspace_s *
-        w: int
-        h: int
-        samples: char *
-
-        __init__(fz_pixmap_s self, char * data) -> Pixmap
-
-        Parameters
-        ----------
-        data: char *
-
-        __init__(fz_pixmap_s self, char * data, int size) -> Pixmap
-
-        Parameters
-        ----------
-        data: char *
-        size: int
-
+        __init__(fz_pixmap_s self, char * filename) -> Pixmap
+        __init__(fz_pixmap_s self, char * imagedata, int size) -> Pixmap
         """
         this = _fitz.new_Pixmap(*args)
         try:
@@ -754,28 +578,12 @@ class Pixmap(_object):
     __del__ = lambda self: None
 
     def gammaWith(self, gamma):
-        """
-        gammaWith(Pixmap self, float gamma)
-
-        Parameters
-        ----------
-        gamma: float
-
-        """
+        """gammaWith(Pixmap self, float gamma)"""
         return _fitz.Pixmap_gammaWith(self, gamma)
 
 
     def tintWith(self, red, green, blue):
-        """
-        tintWith(Pixmap self, int red, int green, int blue)
-
-        Parameters
-        ----------
-        red: int
-        green: int
-        blue: int
-
-        """
+        """tintWith(Pixmap self, int red, int green, int blue)"""
 
                     # only GRAY and RGB pixmaps allowed
         if self.n not in (2, 4):
@@ -788,57 +596,23 @@ class Pixmap(_object):
     def clearWith(self, *args):
         """
         clearWith(Pixmap self, int value)
-
-        Parameters
-        ----------
-        value: int
-
         clearWith(Pixmap self, int value, IRect bbox)
-
-        Parameters
-        ----------
-        value: int
-        bbox: struct fz_irect_s const *
-
         """
         return _fitz.Pixmap_clearWith(self, *args)
 
 
     def copyPixmap(self, src, bbox):
-        """
-        copyPixmap(Pixmap self, Pixmap src, IRect bbox)
-
-        Parameters
-        ----------
-        src: struct fz_pixmap_s *
-        bbox: struct fz_irect_s const *
-
-        """
+        """copyPixmap(Pixmap self, Pixmap src, IRect bbox)"""
         return _fitz.Pixmap_copyPixmap(self, src, bbox)
 
 
     def getSize(self):
-        """
-        getSize(Pixmap self) -> int
-
-        Parameters
-        ----------
-        self: struct fz_pixmap_s *
-
-        """
+        """getSize(Pixmap self) -> int"""
         return _fitz.Pixmap_getSize(self)
 
 
     def writePNG(self, filename, savealpha=0):
-        """
-        writePNG(Pixmap self, char * filename, int savealpha=0) -> int
-
-        Parameters
-        ----------
-        filename: char *
-        savealpha: int
-
-        """
+        """writePNG(Pixmap self, char * filename, int savealpha=0) -> int"""
 
         if type(filename) == str:
             pass
@@ -853,42 +627,21 @@ class Pixmap(_object):
         return _fitz.Pixmap_writePNG(self, filename, savealpha)
 
 
-    def writeIMG(self, filename, format, savealpha=0):
-        """
-        writeIMG(Pixmap self, char * filename, int format, int savealpha=0) -> int
-
-        Parameters
-        ----------
-        filename: char *
-        format: int
-        savealpha: int
-
-        """
-        return _fitz.Pixmap_writeIMG(self, filename, format, savealpha)
+    def _writeIMG(self, filename, format, savealpha=0):
+        """_writeIMG(Pixmap self, char * filename, int format, int savealpha=0) -> int"""
+        return _fitz.Pixmap__writeIMG(self, filename, format, savealpha)
 
 
     def invertIRect(self, *args):
         """
         invertIRect(Pixmap self)
         invertIRect(Pixmap self, IRect irect)
-
-        Parameters
-        ----------
-        irect: struct fz_irect_s const *
-
         """
         return _fitz.Pixmap_invertIRect(self, *args)
 
 
     def _getSamples(self):
-        """
-        _getSamples(Pixmap self) -> PyObject *
-
-        Parameters
-        ----------
-        self: struct fz_pixmap_s *
-
-        """
+        """_getSamples(Pixmap self) -> PyObject *"""
         return _fitz.Pixmap__getSamples(self)
 
 
@@ -924,14 +677,7 @@ class Colorspace(_object):
     __repr__ = _swig_repr
 
     def __init__(self, type):
-        """
-        __init__(fz_colorspace_s self, int type) -> Colorspace
-
-        Parameters
-        ----------
-        type: int
-
-        """
+        """__init__(fz_colorspace_s self, int type) -> Colorspace"""
         this = _fitz.new_Colorspace(type)
         try:
             self.this.append(this)
@@ -954,24 +700,8 @@ class Device(_object):
     def __init__(self, *args):
         """
         __init__(DeviceWrapper self, Pixmap pm) -> Device
-
-        Parameters
-        ----------
-        pm: struct fz_pixmap_s *
-
         __init__(DeviceWrapper self, DisplayList dl) -> Device
-
-        Parameters
-        ----------
-        dl: struct fz_display_list_s *
-
         __init__(DeviceWrapper self, TextSheet ts, TextPage tp) -> Device
-
-        Parameters
-        ----------
-        ts: struct fz_stext_sheet_s *
-        tp: struct fz_stext_page_s *
-
         """
         this = _fitz.new_Device(*args)
         try:
@@ -985,41 +715,15 @@ Device_swigregister(Device)
 
 
 def _fz_pre_scale(m, sx, sy):
-    """
-    _fz_pre_scale(Matrix m, float sx, float sy) -> Matrix
-
-    Parameters
-    ----------
-    m: struct fz_matrix_s *
-    sx: float
-    sy: float
-
-    """
+    """_fz_pre_scale(Matrix m, float sx, float sy) -> Matrix"""
     return _fitz._fz_pre_scale(m, sx, sy)
 
 def _fz_pre_shear(m, sx, sy):
-    """
-    _fz_pre_shear(Matrix m, float sx, float sy) -> Matrix
-
-    Parameters
-    ----------
-    m: struct fz_matrix_s *
-    sx: float
-    sy: float
-
-    """
+    """_fz_pre_shear(Matrix m, float sx, float sy) -> Matrix"""
     return _fitz._fz_pre_shear(m, sx, sy)
 
 def _fz_pre_rotate(m, degree):
-    """
-    _fz_pre_rotate(Matrix m, float degree) -> Matrix
-
-    Parameters
-    ----------
-    m: struct fz_matrix_s *
-    degree: float
-
-    """
+    """_fz_pre_rotate(Matrix m, float degree) -> Matrix"""
     return _fitz._fz_pre_rotate(m, degree)
 class Matrix(_object):
     """Proxy of C fz_matrix_s struct."""
@@ -1058,25 +762,8 @@ class Matrix(_object):
         """
         __init__(fz_matrix_s self) -> Matrix
         __init__(fz_matrix_s self, Matrix n) -> Matrix
-
-        Parameters
-        ----------
-        n: struct fz_matrix_s const *
-
         __init__(fz_matrix_s self, float sx, float sy, int shear=0) -> Matrix
-
-        Parameters
-        ----------
-        sx: float
-        sy: float
-        shear: int
-
         __init__(fz_matrix_s self, float degree) -> Matrix
-
-        Parameters
-        ----------
-        degree: float
-
         """
         this = _fitz.new_Matrix(*args)
         try:
@@ -1130,14 +817,7 @@ class Outline(_object):
         is_open = _swig_property(_fitz.Outline_is_open_get)
 
     def saveXML(self, filename):
-        """
-        saveXML(Outline self, char const * filename) -> int
-
-        Parameters
-        ----------
-        filename: char const *
-
-        """
+        """saveXML(Outline self, char const * filename) -> int"""
 
         if type(filename) == str:
             pass
@@ -1151,14 +831,7 @@ class Outline(_object):
 
 
     def saveText(self, filename):
-        """
-        saveText(Outline self, char const * filename) -> int
-
-        Parameters
-        ----------
-        filename: char const *
-
-        """
+        """saveText(Outline self, char const * filename) -> int"""
 
         if type(filename) == str:
             pass
@@ -1174,8 +847,6 @@ class Outline(_object):
     __del__ = lambda self: None
 Outline_swigregister = _fitz.Outline_swigregister
 Outline_swigregister(Outline)
-cvar = _fitz.cvar
-Identity = cvar.Identity
 
 
 _fitz.LINK_NONE_swigconstant(_fitz)
@@ -1211,134 +882,57 @@ class linkDest(_object):
         kind = _swig_property(_fitz.linkDest_kind_get)
 
     def _getPage(self):
-        """
-        _getPage(linkDest self) -> int
-
-        Parameters
-        ----------
-        self: struct fz_link_dest_s *
-
-        """
+        """_getPage(linkDest self) -> int"""
         return _fitz.linkDest__getPage(self)
 
 
     def _getDest(self):
-        """
-        _getDest(linkDest self) -> char *
-
-        Parameters
-        ----------
-        self: struct fz_link_dest_s *
-
-        """
+        """_getDest(linkDest self) -> char *"""
         return _fitz.linkDest__getDest(self)
 
 
     def _getFlags(self):
-        """
-        _getFlags(linkDest self) -> int
-
-        Parameters
-        ----------
-        self: struct fz_link_dest_s *
-
-        """
+        """_getFlags(linkDest self) -> int"""
         return _fitz.linkDest__getFlags(self)
 
 
     def _getLt(self):
-        """
-        _getLt(linkDest self) -> Point
-
-        Parameters
-        ----------
-        self: struct fz_link_dest_s *
-
-        """
+        """_getLt(linkDest self) -> Point"""
         return _fitz.linkDest__getLt(self)
 
 
     def _getRb(self):
-        """
-        _getRb(linkDest self) -> Point
-
-        Parameters
-        ----------
-        self: struct fz_link_dest_s *
-
-        """
+        """_getRb(linkDest self) -> Point"""
         return _fitz.linkDest__getRb(self)
 
 
     def _getFileSpec(self):
-        """
-        _getFileSpec(linkDest self) -> char *
-
-        Parameters
-        ----------
-        self: struct fz_link_dest_s *
-
-        """
+        """_getFileSpec(linkDest self) -> char *"""
         return _fitz.linkDest__getFileSpec(self)
 
 
     def _getNewWindow(self):
-        """
-        _getNewWindow(linkDest self) -> int
-
-        Parameters
-        ----------
-        self: struct fz_link_dest_s *
-
-        """
+        """_getNewWindow(linkDest self) -> int"""
         return _fitz.linkDest__getNewWindow(self)
 
 
     def _getUri(self):
-        """
-        _getUri(linkDest self) -> char *
-
-        Parameters
-        ----------
-        self: struct fz_link_dest_s *
-
-        """
+        """_getUri(linkDest self) -> char *"""
         return _fitz.linkDest__getUri(self)
 
 
     def _getIsMap(self):
-        """
-        _getIsMap(linkDest self) -> int
-
-        Parameters
-        ----------
-        self: struct fz_link_dest_s *
-
-        """
+        """_getIsMap(linkDest self) -> int"""
         return _fitz.linkDest__getIsMap(self)
 
 
     def _getIsUri(self):
-        """
-        _getIsUri(linkDest self) -> int
-
-        Parameters
-        ----------
-        self: struct fz_link_dest_s *
-
-        """
+        """_getIsUri(linkDest self) -> int"""
         return _fitz.linkDest__getIsUri(self)
 
 
     def _getNamed(self):
-        """
-        _getNamed(linkDest self) -> char *
-
-        Parameters
-        ----------
-        self: struct fz_link_dest_s *
-
-        """
+        """_getNamed(linkDest self) -> char *"""
         return _fitz.linkDest__getNamed(self)
 
     __swig_destroy__ = _fitz.delete_linkDest
@@ -1361,15 +955,7 @@ linkDest_swigregister(linkDest)
 
 
 def _fz_transform_point(point, transform):
-    """
-    _fz_transform_point(Point point, Matrix transform) -> Point
-
-    Parameters
-    ----------
-    point: struct fz_point_s *
-    transform: struct fz_matrix_s const *
-
-    """
+    """_fz_transform_point(Point point, Matrix transform) -> Point"""
     return _fitz._fz_transform_point(point, transform)
 class Point(_object):
     """Proxy of C fz_point_s struct."""
@@ -1392,18 +978,7 @@ class Point(_object):
         """
         __init__(fz_point_s self) -> Point
         __init__(fz_point_s self, Point q) -> Point
-
-        Parameters
-        ----------
-        q: struct fz_point_s const *
-
         __init__(fz_point_s self, float x, float y) -> Point
-
-        Parameters
-        ----------
-        x: float
-        y: float
-
         """
         this = _fitz.new_Point(*args)
         try:
@@ -1465,14 +1040,7 @@ class Link(_object):
     __del__ = lambda self: None
 
     def _getNext(self):
-        """
-        _getNext(Link self) -> Link
-
-        Parameters
-        ----------
-        self: struct fz_link_s *
-
-        """
+        """_getNext(Link self) -> Link"""
         val = _fitz.Link__getNext(self)
 
         if val:
@@ -1507,16 +1075,7 @@ class DisplayList(_object):
     __del__ = lambda self: None
 
     def run(self, dw, m, area):
-        """
-        run(DisplayList self, Device dw, Matrix m, Rect area) -> int
-
-        Parameters
-        ----------
-        dw: struct DeviceWrapper *
-        m: struct fz_matrix_s const *
-        area: struct fz_rect_s const *
-
-        """
+        """run(DisplayList self, Device dw, Matrix m, Rect area) -> int"""
         return _fitz.DisplayList_run(self, dw, m, area)
 
 DisplayList_swigregister = _fitz.DisplayList_swigregister
@@ -1567,63 +1126,27 @@ class TextPage(_object):
     __del__ = lambda self: None
 
     def search(self, needle, hit_max=16):
-        """
-        search(TextPage self, char const * needle, int hit_max=16) -> Rect
-
-        Parameters
-        ----------
-        needle: char const *
-        hit_max: int
-
-        """
+        """search(TextPage self, char const * needle, int hit_max=16) -> Rect"""
         return _fitz.TextPage_search(self, needle, hit_max)
 
 
     def extractText(self):
-        """
-        extractText(TextPage self) -> struct fz_buffer_s *
-
-        Parameters
-        ----------
-        self: struct fz_stext_page_s *
-
-        """
+        """extractText(TextPage self) -> struct fz_buffer_s *"""
         return _fitz.TextPage_extractText(self)
 
 
     def extractXML(self):
-        """
-        extractXML(TextPage self) -> struct fz_buffer_s *
-
-        Parameters
-        ----------
-        self: struct fz_stext_page_s *
-
-        """
+        """extractXML(TextPage self) -> struct fz_buffer_s *"""
         return _fitz.TextPage_extractXML(self)
 
 
     def extractHTML(self):
-        """
-        extractHTML(TextPage self) -> struct fz_buffer_s *
-
-        Parameters
-        ----------
-        self: struct fz_stext_page_s *
-
-        """
+        """extractHTML(TextPage self) -> struct fz_buffer_s *"""
         return _fitz.TextPage_extractHTML(self)
 
 
     def extractJSON(self):
-        """
-        extractJSON(TextPage self) -> struct fz_buffer_s *
-
-        Parameters
-        ----------
-        self: struct fz_stext_page_s *
-
-        """
+        """extractJSON(TextPage self) -> struct fz_buffer_s *"""
         return _fitz.TextPage_extractJSON(self)
 
 TextPage_swigregister = _fitz.TextPage_swigregister

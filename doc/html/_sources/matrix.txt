@@ -17,7 +17,7 @@ Since all points or pixels live in a two-dimensional space, one column vector of
 It should be noted, that
 
     * the below methods are just convenience functions - everything they do, can also be achieved by directly manipulating ``[a,b,c,d,e,f]``
-    * all manipulations can be combined - you can construct a matrix that does a rotate **and** a shear **and** a scale **and** a shift, etc. in one go. If you want to do this, have a look at the **remarks** further down or at the Adobe manual.
+    * all manipulations can be combined - you can construct a matrix that does a rotate **and** a shear **and** a scale **and** a shift, etc. in one go. If you however choose to do this, do have a look at the **remarks** further down or at the Adobe manual.
 
 
 ========================= ============================
@@ -131,8 +131,8 @@ It should be noted, that
 
       :type: float
 
-**Remarks**
-
+Remarks
+--------
 Obviously, changes of matrix properties and execution of matrix methods can be combined, i.e. executed consecutively. This is done by multiplying the respective matrices.
 
 Matrix multiplications are **not commutative**, i.e. execution sequence determines the result: a **shift - rotate** does in general not equal a **rotate - shift**. So it can become quite unclear which result a transformation will yield. E.g. if you apply ``preRotate(x)`` to an arbitrary matrix ``[a,b,c,d,e,f]`` you will get matrix ``[a*cos(x)+c*sin(x), b*cos(x)+d*sin(x), -a*sin(x)+c*cos(x), -b*sin(x)+d*cos(x), e, f]``.

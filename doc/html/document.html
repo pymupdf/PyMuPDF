@@ -47,6 +47,15 @@
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Document</a><ul>
+<li><a class="reference internal" href="#remarks-on-select">Remarks on <code class="docutils literal"><span class="pre">select()</span></code></a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="displaylist.html"
                         title="previous chapter">DisplayList</a></p>
@@ -81,10 +90,11 @@
   <div class="section" id="document">
 <span id="id1"></span><h1>Document<a class="headerlink" href="#document" title="Permalink to this headline">¶</a></h1>
 <p>This class represents a document. It can be constructed from a file or from memory. See below for details.</p>
+<p>Since version 1.9.0 there exists an alias <code class="docutils literal"><span class="pre">open</span></code> for this class.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="39%" />
-<col width="61%" />
+<col width="37%" />
+<col width="63%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Method / Attribute</strong></th>
@@ -116,25 +126,28 @@
 <tr class="row-odd"><td><a class="reference internal" href="#Document.close" title="Document.close"><code class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></code></a></td>
 <td>closes the document</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><code class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a></td>
+<td>selects pages from a document, discards the rest</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><code class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></code></a></td>
 <td>has document been closed?</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><code class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><code class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></code></a></td>
 <td>first <cite>Outline</cite> item</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.name" title="Document.name"><code class="xref py py-attr docutils literal"><span class="pre">Document.name</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.name" title="Document.name"><code class="xref py py-attr docutils literal"><span class="pre">Document.name</span></code></a></td>
 <td>filename of document</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
 <td>require password to access data?</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.isEncrypted" title="Document.isEncrypted"><code class="xref py py-attr docutils literal"><span class="pre">Document.isEncrypted</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.isEncrypted" title="Document.isEncrypted"><code class="xref py py-attr docutils literal"><span class="pre">Document.isEncrypted</span></code></a></td>
 <td>is document still encrypted?</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
 <td>the document&#8217;s number of pages</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
 <td>the document&#8217;s meta data</td>
 </tr>
 </tbody>
@@ -300,6 +313,22 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="Document.select">
+<code class="descname">select</code><span class="sig-paren">(</span><em>list</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retains only those pages in the document that occur in the list. Empty lists or elements outside the range 0 to <code class="docutils literal"><span class="pre">doc.pageCount</span> <span class="pre">-</span> <span class="pre">1</span></code> will cause a <code class="docutils literal"><span class="pre">ValueError</span></code>. For more details see remarks at the bottom or this chapter. Only PDF documents are supported by this method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>list</strong> (<em>list</em>) &#8211; A list of integers (zero-based) naming the pages to be included. Pages not occurring in the list will be deleted (from memory) and become unavailable until the document is reopened. Page numbers can occur multiple times and be in any order.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="Document.save">
 <code class="descname">save</code><span class="sig-paren">(</span><em>outfile</em>, <em>garbage=0</em>, <em>clean=0</em>, <em>deflate=0</em>, <em>incremental=0</em>, <em>ascii=0</em>, <em>expand=0</em>, <em>linear=0</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves a copy of the document under the name <code class="docutils literal"><span class="pre">outfile</span></code>. Include path specifications as necessary. Only PDF documents are supported by this function. Internally the document may have changed. E.g. after a successfull <code class="docutils literal"><span class="pre">authenticate</span></code>, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning of the document data could also have occurred, e.g. broken xref tables have been corrected and incremental changes have been resolved.</p>
@@ -442,6 +471,45 @@
 
 </dd></dl>
 
+<div class="section" id="remarks-on-select">
+<h2>Remarks on <code class="docutils literal"><span class="pre">select()</span></code><a class="headerlink" href="#remarks-on-select" title="Permalink to this headline">¶</a></h2>
+<p>Page numbers in the list need not be unique nor be in any particular sequence. This makes the method a versatile utility to e.g. select only even or odd pages, re-arrange a document from back to front, duplicate it, and so forth. In combination with text extraction you can also omit / include pages with no text or certain text, etc.</p>
+<p>You can execute several selections in a row. The document structure will be kept updated.</p>
+<p>Any of those actions will become permanent only with a <code class="docutils literal"><span class="pre">doc.save()</span></code>. Do not forget to specify the <code class="docutils literal"><span class="pre">garbage=3</span></code> option to eventually reduce the resulting document&#8217;s size.</p>
+<p>It should also be noted, that this method <strong>preserves all links, annotations and bookmarks</strong> that are still valid. In other words: deleting pages only deletes references that would otherwise point to nowhere.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Create a document copy with only pages containing text:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="p">))</span>                 <span class="c1"># list of all pages</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="p">)):</span>
+    <span class="n">txt</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getPageText</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>                   <span class="c1"># get the page&#39;s text</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">txt</span><span class="p">:</span>                                <span class="c1"># nothing there</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>                            <span class="c1"># remove page number from list</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>                                  <span class="c1"># apply the list</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>                 <span class="c1"># save the resulting PDF</span>
+</pre></div>
+</div>
+<p>Concatenate a document with itself:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="p">))</span>
+<span class="n">r</span> <span class="o">+=</span> <span class="n">r</span>                                         <span class="c1"># turn PDF into a copy of itself</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Create document copy in reverse page order:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -468,7 +536,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 26. Apr 2016.
+      Last updated on 30. Apr 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

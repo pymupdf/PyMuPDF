@@ -2,10 +2,36 @@
 # -*- coding: utf-8 -*-
 from . import fitz
 import math
-
+import numbers, types
 '''
 The following is a collection of commodity functions to simplify the use of PyMupdf.
 '''
+#==============================================================================
+# A function to select certain document pages
+#==============================================================================
+#def select([list]):
+def select(*arg):
+    '''select([list of page numbers])\nSelect document pages.
+Parameters:\nlist: list of page numbers to retain.\n
+Pages not in the list will be deleted.
+    '''
+    if len(arg) != 2:
+        raise ValueError("list of pages is required")
+    doc = arg[0]
+    liste = arg[1]
+    if doc.isClosed:
+        raise ValueError("operation on closed document")
+    if not doc.name.lower().endswith(("/pdf", ".pdf")):
+        raise ValueError("only PDF documents supported")
+    if not isinstance(liste, types.ListType):
+        raise ValueError("must provide a list of pages")
+    for l in liste:
+        if not isinstance(l, numbers.Integral):
+            raise ValueError("must be sequence of integers")
+        if l < 0 or l >= doc.pageCount:
+            raise ValueError("some page numbers outside valid range")
+    doc._select(liste)
+
 #==============================================================================
 # A function for searching string occurrences on a page.
 #==============================================================================
@@ -27,22 +53,12 @@ Returns a list of rectangles, each of which surrounds a found occurrence.
     if page.parent.isClosed:
         raise ValueError("page operation on closed document")
 
-    # reuse an existing fitz.DisplayList for this page if possible
-    dl = getattr(page, "DisplayList", None)      # reuse DisplayList from before
-    if not dl:
-        dl = fitz.DisplayList()                  # create DisplayList
-        dv = fitz.Device(dl)                     # create DisplayList device
-        page.run(dv, fitz.Identity)              # run page through it
-        page.DisplayList = dl                    # save DisplayList pointer
-
-    # reuse an existing fitz.TextPage for this page if possible
-    tp = getattr(page, "TextPage", None)         # reuse TextPage from before
-    if not tp:
-        ts = fitz.TextSheet()                    # create TextSheet
-        tp = fitz.TextPage()                     # create TextPage
-        rect = page.bound()                      # the page's rectangle
-        dl.run(fitz.Device(ts, tp), fitz.Identity, rect)   # run the page
-        page.TextPage = tp                       # save TextPage pointer
+    dl = fitz.DisplayList()                  # create DisplayList
+    page.run(fitz.Device(dl), fitz.Identity) # run page through it
+    ts = fitz.TextSheet()                    # create TextSheet
+    tp = fitz.TextPage()                     # create TextPage
+    rect = page.bound()                      # the page's rectangle
+    dl.run(fitz.Device(ts, tp), fitz.Identity, rect)   # run the page
 
     # return list of hitting reactangles
     return tp.search(text, hit_max = hit_max)
@@ -54,8 +70,8 @@ Returns a list of rectangles, each of which surrounds a found occurrence.
 def getText(*arg, **kw):
     '''getText(output='text')\nExtracts a PDF page's text.
 Parameters:\noutput option: text, html, json or xml.\n
-Returns a string representing the output of the TextPage extraction
-methods extractText, extractHTML, extractJSON, or etractXML respectively.
+Returns strings like the TextPage extraction methods extractText, extractHTML,
+extractJSON, or etractXML respectively.
 Default and misspelling choice is "text".
     '''
     # determine parameters. Using generalized arguments, so we can become a
@@ -70,31 +86,14 @@ Default and misspelling choice is "text".
     if page.parent.isClosed:
         raise ValueError("page operation on closed document")
 
-    # reuse an existing fitz.DisplayList for this page if possible
-    dl = getattr(page, "DisplayList", None)      # reuse DisplayList from before
-    if not dl:
-        dl = fitz.DisplayList()                  # create DisplayList
-        dv = fitz.Device(dl)                     # create DisplayList device
-        page.run(dv, fitz.Identity)              # run page through it
-        page.DisplayList = dl                    # save DisplayList pointer
-
-    # reuse an existing fitz.TextPage for this page if possible
-    tp = getattr(page, "TextPage", None)         # reuse TextPage from before
-    if tp is None:
-        ts = fitz.TextSheet()                    # create TextSheet
-        tp = fitz.TextPage()                     # create TextPage
-        rect = page.bound()                      # the page's rectangle
-        dl.run(fitz.Device(ts, tp), fitz.Identity, rect)   # run the page
-        page.TextPage = tp                       # save TextPage pointer
-
     # return requested text format
     if output.lower() == "json":
-        return tp.extractJSON()
+        return page._readPageText(output = 2)
     elif output.lower() == "html":
-        return tp.extractHTML()
+        return page._readPageText(output = 1)
     elif output.lower() == "xml":
-        return tp.extractXML()
-    return tp.extractText()
+        return page._readPageText(output = 3)
+    return page._readPageText(output = 0)
 
 #==============================================================================
 # A function for extracting a page's text.
@@ -104,8 +103,8 @@ def getPageText(*arg, **kw):
     '''getPageText(pno, output='text')
 Extracts a PDF page's text by page number.
 Parameters:\npno: page number\noutput option: text, html, json or xml.\n
-Returns a string representing the output of the TextPage extraction
-methods extractText, extractHTML, extractJSON, or etractXML respectively.
+Returns strings like the TextPage extraction methods extractText, extractHTML,
+extractJSON, or etractXML respectively.
 Default and misspelling choice is "text".
     '''
     # determine parameters. Using generics, so we can become a
@@ -124,25 +123,14 @@ Default and misspelling choice is "text".
     if pno < 0 or pno > doc.pageCount:
         raise ValueError("page number not in range 0 to %s" % (doc.pageCount,))
 
-    page = doc.loadPage(pno)
-
-    # reuse an existing fitz.DisplayList for this page if possible
-    dl = fitz.DisplayList()                  # create DisplayList
-    dv = fitz.Device(dl)                     # create DisplayList device
-    page.run(dv, fitz.Identity)              # run page through it
-    ts = fitz.TextSheet()                    # create TextSheet
-    tp = fitz.TextPage()                     # create TextPage
-    rect = page.bound()                      # the page's rectangle
-    dl.run(fitz.Device(ts, tp), fitz.Identity, rect)  # run the page
-
     # return requested text format
     if output.lower() == "json":
-        return tp.extractJSON()
+        return doc._readPageText(pno, output = 2)
     elif output.lower() == "html":
-        return tp.extractHTML()
+        return doc._readPageText(pno, output = 1)
     elif output.lower() == "xml":
-        return tp.extractXML()
-    return tp.extractText()
+        return doc._readPageText(pno, output = 3)
+    return doc._readPageText(pno, output = 0)
 
 #==============================================================================
 # A function for rendering a page's image.
@@ -154,8 +142,8 @@ def getPixmap(*arg, **kw):
 Creates a fitz.Pixmap of a PDF page.
 Parameters:\nmatrix: a fitz.Matrix instance to specify required transformations.
 Defaults to fitz.Identity (no transformation).
-colorspace: text string to specify required colour space (RGB, CMYK, GRAY - upper or lower case).
-Default and misspelling choice is "RGB".
+colorspace: text string to specify required colour space (rgb, rgb, gray - case ignored).
+Default and misspelling choice is "rgb".
     '''
     # get parameters
     if len(arg) != 1:
@@ -184,23 +172,16 @@ Default and misspelling choice is "RGB".
     else:
         cs = fitz.csRGB
 
-    # reuse an existing fitz.DisplayList for this page if possible
-    dl = getattr(page, "DisplayList", None)      # reuse DisplayList from before
-    if not dl:
-        dl = fitz.DisplayList()                  # create DisplayList
-        dv = fitz.Device(dl)                     # create DisplayList device
-        page.run(dv, fitz.Identity)              # run page through it
-        page.DisplayList = dl                    # save DisplayList pointer
-
-    page.TextPage = None                         # force fresh one next time
-
-    r = page.bound().transform(matrix)           # scale page boundaries
-    ir = r.round()                               # integer rectangle of it
-    pix = fitz.Pixmap(cs, ir)                    # create an empty pixmap
-    pix.clearWith(255)                           # clear it with color "white"
-    dv = fitz.Device(pix)                        # create a "draw" device
-
-    dl.run(dv, matrix, r)                        # render the page
+    dl = fitz.DisplayList()                  # create DisplayList
+    page.run(fitz.Device(dl), fitz.Identity) # run page through it
+    r = page.bound().transform(matrix)       # scale page boundaries
+    ir = r.round()                           # integer rectangle of it
+    pix = fitz.Pixmap(cs, ir)                # create an empty pixmap
+    pix.clearWith(255)                       # clear it with color "white"
+    dv = fitz.Device(pix)                    # create a "draw" device
+    dl.run(dv, matrix, r)                    # render the page
+    dv = None
+    dl = None
     return pix
 
 #==============================================================================
@@ -213,8 +194,8 @@ Creates a fitz.Pixmap object for a PDF page number.
 Parameters:\npno: page number (int)
 matrix: a fitz.Matrix instance to specify required transformations.
 Defaults to fitz.Identity (no transformation).
-colorspace: text string to specify the required colour space (RGB, CMYK, GRAY - upper or lower case).
-Default and misspelling choice is "RGB".
+colorspace: text string to specify the required colour space (rgb, cmyk, gray - case ignored).
+Default and misspelling choice is "rgb".
     '''
     # get parameters
     doc = arg[0]
@@ -229,8 +210,8 @@ Default and misspelling choice is "RGB".
         colorspace = "RGB"
 
     # check if called with a valid document and page number
-    if pno < 0 or pno > doc.pageCount:
-        raise ValueError("page number not in range 0 to %s" % (doc.pageCount,))
+    pno = max(0, pno)
+    pno = min(pno, doc.pageCount-1)
     if doc.isClosed:
         raise ValueError("page operation on closed document")
     page = doc.loadPage(pno)
@@ -248,8 +229,8 @@ Default and misspelling choice is "RGB".
     pix = fitz.Pixmap(cs, ir)                    # create an empty pixmap
     pix.clearWith(255)                           # clear it with color "white"
     dv = fitz.Device(pix)                        # create a "draw" device
-
     page.run(dv, matrix)                         # render the page
+    page = None
     return pix
 
 #==============================================================================
@@ -501,6 +482,6 @@ savealpha: whether to save the alpha channel
     else:
         raise ValueError("invalid output parameter")
 
-    rc = pix.writeIMG(filename, c_output, savealpha)
+    rc = pix._writeIMG(filename, c_output, savealpha)
 
     return rc

@@ -2999,8 +2999,9 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_fz_rect_s swig_types[14]
 #define SWIGTYPE_p_fz_stext_page_s swig_types[15]
 #define SWIGTYPE_p_fz_stext_sheet_s swig_types[16]
-static swig_type_info *swig_types[18];
-static swig_module_info swig_module = {swig_types, 17, 0, 0, 0, 0};
+#define SWIGTYPE_p_int swig_types[17]
+static swig_type_info *swig_types[19];
+static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3035,6 +3036,7 @@ static swig_module_info swig_module = {swig_types, 17, 0, 0, 0, 0};
 #define SWIG_FILE_WITH_INIT
 #include <fitz.h>
 #include <pdf.h>
+void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page);
 
 
     fz_context *gctx;
@@ -3043,6 +3045,336 @@ struct DeviceWrapper {
     fz_device *device;
     fz_display_list *list;
 };
+
+
+const struct fz_matrix_s Identity = { 1, 0, 0, 1, 0, 0 };
+
+
+struct fz_buffer_s *readPageText(fz_page *page, int output) {
+    fz_buffer *res;
+    fz_output *out;
+    fz_stext_sheet *ts;
+    fz_stext_page *tp;
+    fz_try(gctx) {
+        ts = fz_new_stext_sheet(gctx);
+        tp = fz_new_stext_page_from_page(gctx, page, ts);
+        res = fz_new_buffer(gctx, 1024);
+        out = fz_new_output_with_buffer(gctx, res);
+        if (output<=0) fz_print_stext_page(gctx, out, tp);
+        if (output==1) fz_print_stext_page_html(gctx, out, tp);
+        if (output==2) fz_print_stext_page_json(gctx, out, tp);
+        if (output>=3) fz_print_stext_page_xml(gctx, out, tp);
+        fz_drop_output(gctx, out);
+        fz_drop_stext_page(gctx, tp);
+        fz_drop_stext_sheet(gctx, ts);
+        }
+        fz_catch(gctx) {
+            fz_drop_output(gctx, out);
+            fz_drop_stext_page(gctx, tp);
+            fz_drop_stext_sheet(gctx, ts);
+            fz_drop_buffer(gctx, res);
+        }
+    return res;
+}
+
+
+typedef struct globals_s
+{
+    pdf_document *doc;
+    fz_context *ctx;
+} globals;
+
+int string_in_names_list(fz_context *ctx, pdf_obj *p, pdf_obj *names_list)
+{
+    int n = pdf_array_len(ctx, names_list);
+    int i;
+    char *str = pdf_to_str_buf(ctx, p);
+
+    for (i = 0; i < n ; i += 2)
+    {
+        if (!strcmp(pdf_to_str_buf(ctx, pdf_array_get(ctx, names_list, i)), str))
+            return 1;
+    }
+    return 0;
+}
+
+/*
+ * Recreate page tree to only retain specified pages.
+ */
+
+void retainpage(fz_context *ctx, pdf_document *doc, pdf_obj *parent, pdf_obj *kids, int page)
+{
+    pdf_obj *pageref = pdf_lookup_page_obj(ctx, doc, page);
+    pdf_obj *pageobj = pdf_resolve_indirect(ctx, pageref);
+
+    pdf_dict_put(ctx, pageobj, PDF_NAME_Parent, parent);
+
+    /* Store page object in new kids array */
+    pdf_array_push(ctx, kids, pageref);
+}
+
+int dest_is_valid_page(fz_context *ctx, pdf_obj *obj, int *page_object_nums, int pagecount)
+{
+    int i;
+    int num = pdf_to_num(ctx, obj);
+
+    if (num == 0)
+        return 0;
+    for (i = 0; i < pagecount; i++)
+    {
+        if (page_object_nums[i] == num)
+            return 1;
+    }
+    return 0;
+}
+
+int dest_is_valid(fz_context *ctx, pdf_obj *o, int page_count, int *page_object_nums, pdf_obj *names_list)
+{
+    pdf_obj *p;
+
+    p = pdf_dict_get(ctx, o, PDF_NAME_A);
+    if (pdf_name_eq(ctx, pdf_dict_get(ctx, p, PDF_NAME_S), PDF_NAME_GoTo) &&
+        !string_in_names_list(ctx, pdf_dict_get(ctx, p, PDF_NAME_D), names_list))
+        return 0;
+
+    p = pdf_dict_get(ctx, o, PDF_NAME_Dest);
+    if (p == NULL)
+    {}
+    else if (pdf_is_string(ctx, p))
+    {
+        return string_in_names_list(ctx, p, names_list);
+    }
+    else if (!dest_is_valid_page(ctx, pdf_array_get(ctx, p, 0), page_object_nums, page_count))
+        return 0;
+
+    return 1;
+}
+
+int strip_outlines(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int page_count, int *page_object_nums, pdf_obj *names_list);
+
+int strip_outline(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int page_count, int *page_object_nums, pdf_obj *names_list, pdf_obj **pfirst, pdf_obj **plast)
+{
+    pdf_obj *prev = NULL;
+    pdf_obj *first = NULL;
+    pdf_obj *current;
+    int count = 0;
+
+    for (current = outlines; current != NULL; )
+    {
+        int nc;
+
+        /* Strip any children to start with. This takes care of
+         * First/Last/Count for us. */
+        nc = strip_outlines(ctx, doc, current, page_count, page_object_nums, names_list);
+
+        if (!dest_is_valid(ctx, current, page_count, page_object_nums, names_list))
+        {
+            if (nc == 0)
+            {
+                /* Outline with invalid dest and no children. Drop it by
+                 * pulling the next one in here. */
+                pdf_obj *next = pdf_dict_get(ctx, current, PDF_NAME_Next);
+                if (next == NULL)
+                {
+                    /* There is no next one to pull in */
+                    if (prev != NULL)
+                        pdf_dict_del(ctx, prev, PDF_NAME_Next);
+                }
+                else if (prev != NULL)
+                {
+                    pdf_dict_put(ctx, prev, PDF_NAME_Next, next);
+                    pdf_dict_put(ctx, next, PDF_NAME_Prev, prev);
+                }
+                else
+                {
+                    pdf_dict_del(ctx, next, PDF_NAME_Prev);
+                }
+                current = next;
+            }
+            else
+            {
+                /* Outline with invalid dest, but children. Just drop the dest. */
+                pdf_dict_del(ctx, current, PDF_NAME_Dest);
+                pdf_dict_del(ctx, current, PDF_NAME_A);
+                current = pdf_dict_get(ctx, current, PDF_NAME_Next);
+            }
+        }
+        else
+        {
+            /* Keep this one */
+            if (first == NULL)
+                first = current;
+            prev = current;
+            current = pdf_dict_get(ctx, current, PDF_NAME_Next);
+            count++;
+        }
+    }
+
+    *pfirst = first;
+    *plast = prev;
+
+    return count;
+}
+
+int strip_outlines(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int page_count, int *page_object_nums, pdf_obj *names_list)
+{
+    int nc;
+    pdf_obj *first;
+    pdf_obj *last;
+
+    first = pdf_dict_get(ctx, outlines, PDF_NAME_First);
+    if (first == NULL)
+        nc = 0;
+    else
+        nc = strip_outline(ctx, doc, first, page_count, page_object_nums, names_list, &first, &last);
+
+    if (nc == 0)
+    {
+        pdf_dict_del(ctx, outlines, PDF_NAME_First);
+        pdf_dict_del(ctx, outlines, PDF_NAME_Last);
+        pdf_dict_del(ctx, outlines, PDF_NAME_Count);
+    }
+    else
+    {
+        int old_count = pdf_to_int(ctx, pdf_dict_get(ctx, outlines, PDF_NAME_Count));
+        pdf_dict_put(ctx, outlines, PDF_NAME_First, first);
+        pdf_dict_put(ctx, outlines, PDF_NAME_Last, last);
+        pdf_dict_put_drop(ctx, outlines, PDF_NAME_Count, pdf_new_int(ctx, doc, old_count > 0 ? nc : -nc));
+    }
+
+    return nc;
+}
+
+void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
+{
+    pdf_obj *oldroot, *root, *pages, *kids, *countobj, *parent, *olddests;
+    pdf_document *doc = glo->doc;
+    int argidx = 0;
+    pdf_obj *names_list = NULL;
+    pdf_obj *outlines;
+    int pagecount;
+    int i;
+    int *page_object_nums;
+
+    /* Keep only pages/type and (reduced) dest entries to avoid
+     * references to unretained pages */
+    oldroot = pdf_dict_get(ctx, pdf_trailer(ctx, doc), PDF_NAME_Root);
+    pages = pdf_dict_get(ctx, oldroot, PDF_NAME_Pages);
+    olddests = pdf_load_name_tree(ctx, doc, PDF_NAME_Dests);
+    outlines = pdf_dict_get(ctx, oldroot, PDF_NAME_Outlines);
+
+    root = pdf_new_dict(ctx, doc, 3);
+    pdf_dict_put(ctx, root, PDF_NAME_Type, pdf_dict_get(ctx, oldroot, PDF_NAME_Type));
+    pdf_dict_put(ctx, root, PDF_NAME_Pages, pdf_dict_get(ctx, oldroot, PDF_NAME_Pages));
+    pdf_dict_put(ctx, root, PDF_NAME_Outlines, outlines);
+
+    pdf_update_object(ctx, doc, pdf_to_num(ctx, oldroot), root);
+
+    /* Create a new kids array with only the pages we want to keep */
+    parent = pdf_new_indirect(ctx, doc, pdf_to_num(ctx, pages), pdf_to_gen(ctx, pages));
+    kids = pdf_new_array(ctx, doc, 1);
+
+    /* Retain pages specified */
+    int page;
+    for (page = 0; page < argc; page++)
+        {
+            retainpage(ctx, doc, parent, kids, liste[page]);
+        }
+
+    pdf_drop_obj(ctx, parent);
+
+    /* Update page count and kids array */
+    countobj = pdf_new_int(ctx, doc, pdf_array_len(ctx, kids));
+    pdf_dict_put(ctx, pages, PDF_NAME_Count, countobj);
+    pdf_drop_obj(ctx, countobj);
+    pdf_dict_put(ctx, pages, PDF_NAME_Kids, kids);
+    pdf_drop_obj(ctx, kids);
+
+    /* Force the next call to pdf_count_pages to recount */
+    glo->doc->page_count = 0;
+
+    pagecount = pdf_count_pages(ctx, doc);
+    page_object_nums = fz_calloc(ctx, pagecount, sizeof(*page_object_nums));
+    for (i = 0; i < pagecount; i++)
+    {
+        pdf_obj *pageref = pdf_lookup_page_obj(ctx, doc, i);
+        page_object_nums[i] = pdf_to_num(ctx, pageref);
+    }
+
+    /* If we had an old Dests tree (now reformed as an olddests
+     * dictionary), keep any entries in there that point to
+     * valid pages. This may mean we keep more than we need, but
+     * it's safe at least. */
+    if (olddests)
+    {
+        pdf_obj *names = pdf_new_dict(ctx, doc, 1);
+        pdf_obj *dests = pdf_new_dict(ctx, doc, 1);
+        int len = pdf_dict_len(ctx, olddests);
+
+        names_list = pdf_new_array(ctx, doc, 32);
+
+        for (i = 0; i < len; i++)
+        {
+            pdf_obj *key = pdf_dict_get_key(ctx, olddests, i);
+            pdf_obj *val = pdf_dict_get_val(ctx, olddests, i);
+            pdf_obj *dest = pdf_dict_get(ctx, val, PDF_NAME_D);
+
+            dest = pdf_array_get(ctx, dest ? dest : val, 0);
+            if (dest_is_valid_page(ctx, dest, page_object_nums, pagecount))
+            {
+                pdf_obj *key_str = pdf_new_string(ctx, doc, pdf_to_name(ctx, key), strlen(pdf_to_name(ctx, key)));
+                pdf_array_push(ctx, names_list, key_str);
+                pdf_array_push(ctx, names_list, val);
+                pdf_drop_obj(ctx, key_str);
+            }
+        }
+
+        pdf_dict_put(ctx, dests, PDF_NAME_Names, names_list);
+        pdf_dict_put(ctx, names, PDF_NAME_Dests, dests);
+        pdf_dict_put(ctx, root, PDF_NAME_Names, names);
+
+        pdf_drop_obj(ctx, names);
+        pdf_drop_obj(ctx, dests);
+        pdf_drop_obj(ctx, olddests);
+    }
+
+    /* Edit each pages /Annot list to remove any links that point to
+     * nowhere. */
+    for (i = 0; i < pagecount; i++)
+    {
+        pdf_obj *pageref = pdf_lookup_page_obj(ctx, doc, i);
+        pdf_obj *pageobj = pdf_resolve_indirect(ctx, pageref);
+
+        pdf_obj *annots = pdf_dict_get(ctx, pageobj, PDF_NAME_Annots);
+
+        int len = pdf_array_len(ctx, annots);
+        int j;
+
+        for (j = 0; j < len; j++)
+        {
+            pdf_obj *o = pdf_array_get(ctx, annots, j);
+
+            if (!pdf_name_eq(ctx, pdf_dict_get(ctx, o, PDF_NAME_Subtype), PDF_NAME_Link))
+                continue;
+
+            if (!dest_is_valid(ctx, o, pagecount, page_object_nums, names_list))
+            {
+                /* Remove this annotation */
+                pdf_array_delete(ctx, annots, j);
+                j--;
+            }
+        }
+    }
+
+    if (strip_outlines(ctx, doc, outlines, pagecount, page_object_nums, names_list) == 0)
+    {
+        pdf_dict_del(ctx, root, PDF_NAME_Outlines);
+    }
+
+    fz_free(ctx, page_object_nums);
+    pdf_drop_obj(ctx, names_list);
+    pdf_drop_obj(ctx, root);
+}
 
 
 SWIGINTERN swig_type_info*
@@ -3412,7 +3744,9 @@ SWIGINTERN int fz_document_s_authenticate(struct fz_document_s *self,char const 
             return fz_authenticate_password(gctx, self, pass);
         }
 SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename,int garbage,int clean,int deflate,int incremental,int ascii,int expand,int linear){
+            /* cast-down fz_document to a pdf_document */
             pdf_document *pdf = pdf_specifics(gctx, self);
+            if (!pdf) return -2;             // not a valid pdf structure, return
             int errors = 0;
             pdf_write_options opts;
             opts.do_incremental = incremental;
@@ -3429,6 +3763,32 @@ SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename,int 
             fz_catch(gctx)
                 return -1;
             return errors;
+        }
+SWIGINTERN int fz_document_s__select(struct fz_document_s *self,int *liste,int argc){
+            /* cast-down fz_document to a pdf_document */
+            pdf_document *pdf = pdf_specifics(gctx, self);
+            if (!pdf) {
+                PyErr_SetString(PyExc_ValueError,"not a valid pdf document");
+                return -2;
+                }
+            globals glo = { 0 };
+            glo.ctx = gctx;
+            glo.doc = pdf;
+            retainpages(gctx, &glo, argc, liste);
+            return 0;
+        }
+SWIGINTERN struct fz_buffer_s *fz_document_s__readPageText(struct fz_document_s *self,int pno,int output){
+            fz_page *page;
+            fz_buffer *res;
+            fz_try(gctx) {
+                page = fz_load_page(gctx, self, pno);
+                res = readPageText(page, output);
+                fz_drop_page(gctx, page);
+            }
+            fz_catch(gctx) {
+                fz_drop_page(gctx, page);
+            }
+            return res;
         }
 SWIGINTERN int fz_document_s_getPermits(struct fz_document_s *self){
             int permit = 0;
@@ -3460,6 +3820,16 @@ SWIGINTERN int fz_page_s_run(struct fz_page_s *self,struct DeviceWrapper *dw,str
         }
 SWIGINTERN struct fz_link_s *fz_page_s_loadLinks(struct fz_page_s *self){
             return fz_load_links(gctx, self);
+        }
+SWIGINTERN struct fz_buffer_s *fz_page_s__readPageText(struct fz_page_s *self,int output){
+            fz_buffer *res;
+            fz_try(gctx) {
+                res = readPageText(self, output);
+            }
+            fz_catch(gctx) {
+                ;
+            }
+            return res;
         }
 
 /* Getting isfinite working pre C99 across multiple platforms is non-trivial. Users can provide SWIG_isfinite on older platforms. */
@@ -3579,10 +3949,10 @@ SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_1(struct fz_colorspace_s *c
                 ;
             return pm;
         }
-SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_2(char *data){
+SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_2(char *filename){
             struct fz_image_s *img = NULL;
             fz_try(gctx)
-                img = fz_new_image_from_file(gctx, data);
+                img = fz_new_image_from_file(gctx, filename);
             fz_catch(gctx)
                 ;
             struct fz_pixmap_s *pm = NULL;
@@ -3594,10 +3964,10 @@ SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_2(char *data){
             fz_drop_image(gctx, img);
             return pm;
         }
-SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_3(char *data,int size){
+SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_3(char *imagedata,int size){
             struct fz_image_s *img = NULL;
             fz_try(gctx)
-                img = fz_new_image_from_data(gctx, data, size);
+                img = fz_new_image_from_data(gctx, imagedata, size);
             fz_catch(gctx)
                 ;
             struct fz_pixmap_s *pm = NULL;
@@ -3639,7 +4009,7 @@ SWIGINTERN int fz_pixmap_s_writePNG(struct fz_pixmap_s *self,char *filename,int 
                 return 1;
             return 0;
         }
-SWIGINTERN int fz_pixmap_s_writeIMG(struct fz_pixmap_s *self,char *filename,int format,int savealpha){
+SWIGINTERN int fz_pixmap_s__writeIMG(struct fz_pixmap_s *self,char *filename,int format,int savealpha){
             fz_try(gctx) {
                 switch(format)
                 {
@@ -3759,9 +4129,6 @@ SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_3(float degree){
             fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
             return fz_rotate(m, degree);
         }
-
-    extern const struct fz_matrix_s fz_identity;
-
 SWIGINTERN int fz_outline_s_saveXML(struct fz_outline_s *self,char const *filename){
             int res = 1;
             struct fz_output_s *xml;
@@ -4149,6 +4516,20 @@ SWIGINTERN struct fz_buffer_s *fz_stext_page_s_extractJSON(struct fz_stext_page_
 #ifdef __cplusplus
 extern "C" {
 #endif
+SWIGINTERN int Swig_var_Identity_set(PyObject *_val SWIGUNUSED) {
+  SWIG_Error(SWIG_AttributeError,"Variable Identity is read-only.");
+  return 1;
+}
+
+
+SWIGINTERN PyObject *Swig_var_Identity_get(void) {
+  PyObject *pyobj = 0;
+  
+  pyobj = SWIG_NewPointerObj(SWIG_as_voidptr(&Identity), SWIGTYPE_p_fz_matrix_s,  0 );
+  return pyobj;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_Document(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
@@ -4544,6 +4925,112 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Document__select(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  int *arg2 = (int *) 0 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Document__select",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__select" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  {
+    int i;
+    if (!PySequence_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"expected a sequence");
+      return NULL;
+    }
+    arg3 = PySequence_Size(obj1);
+    if (!arg3) {
+      PyErr_SetString(PyExc_ValueError,"sequence is empty");
+      return NULL;
+    }
+    arg2 = (int *) malloc(arg3*sizeof(int));
+    for (i = 0; i < arg3; i++) {
+      PyObject *o = PySequence_GetItem(obj1,i);
+      if (PyInt_Check(o)) {
+        arg2[i] = (int) PyInt_AsLong(o);
+      }
+      else {
+        PyErr_SetString(PyExc_ValueError,"sequence elements must be integers");
+        free(arg2);
+        return NULL;
+      }
+    }
+  }
+  result = (int)fz_document_s__select(arg1,arg2,arg3);
+  resultobj = SWIG_From_int((int)(result));
+  {
+    if (arg2) free(arg2);
+  }
+  return resultobj;
+fail:
+  {
+    if (arg2) free(arg2);
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document__readPageText(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  int arg2 ;
+  int arg3 = (int) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  struct fz_buffer_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO|O:Document__readPageText",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__readPageText" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document__readPageText" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  if (obj2) {
+    ecode3 = SWIG_AsVal_int(obj2, &val3);
+    if (!SWIG_IsOK(ecode3)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Document__readPageText" "', argument " "3"" of type '" "int""'");
+    } 
+    arg3 = (int)(val3);
+  }
+  {
+    result = (struct fz_buffer_s *)fz_document_s__readPageText(arg1,arg2,arg3);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, "cannot do doc._readPageText");
+      return NULL;
+    }
+  }
+  {
+    resultobj = SWIG_FromCharPtrAndSize((const char *)result->data, result->len);
+    fz_drop_buffer(gctx, result);
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Document_getPermits(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
@@ -4699,6 +5186,48 @@ SWIGINTERN PyObject *_wrap_Page_loadLinks(PyObject *SWIGUNUSEDPARM(self), PyObje
   arg1 = (struct fz_page_s *)(argp1);
   result = (struct fz_link_s *)fz_page_s_loadLinks(arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_link_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Page__readPageText(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
+  int arg2 = (int) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  struct fz_buffer_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O|O:Page__readPageText",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page__readPageText" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
+  }
+  arg1 = (struct fz_page_s *)(argp1);
+  if (obj1) {
+    ecode2 = SWIG_AsVal_int(obj1, &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Page__readPageText" "', argument " "2"" of type '" "int""'");
+    } 
+    arg2 = (int)(val2);
+  }
+  {
+    result = (struct fz_buffer_s *)fz_page_s__readPageText(arg1,arg2);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, "cannot do page.readPageText");
+      return NULL;
+    }
+  }
+  {
+    resultobj = SWIG_FromCharPtrAndSize((const char *)result->data, result->len);
+    fz_drop_buffer(gctx, result);
+  }
   return resultobj;
 fail:
   return NULL;
@@ -6705,7 +7234,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Pixmap_writeIMG(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_Pixmap__writeIMG(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -6726,33 +7255,33 @@ SWIGINTERN PyObject *_wrap_Pixmap_writeIMG(PyObject *SWIGUNUSEDPARM(self), PyObj
   PyObject * obj3 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO|O:Pixmap_writeIMG",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO|O:Pixmap__writeIMG",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_writeIMG" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap__writeIMG" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
   }
   arg1 = (struct fz_pixmap_s *)(argp1);
   res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Pixmap_writeIMG" "', argument " "2"" of type '" "char *""'");
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Pixmap__writeIMG" "', argument " "2"" of type '" "char *""'");
   }
   arg2 = (char *)(buf2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Pixmap_writeIMG" "', argument " "3"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Pixmap__writeIMG" "', argument " "3"" of type '" "int""'");
   } 
   arg3 = (int)(val3);
   if (obj3) {
     ecode4 = SWIG_AsVal_int(obj3, &val4);
     if (!SWIG_IsOK(ecode4)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "Pixmap_writeIMG" "', argument " "4"" of type '" "int""'");
+      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "Pixmap__writeIMG" "', argument " "4"" of type '" "int""'");
     } 
     arg4 = (int)(val4);
   }
   {
-    result = (int)fz_pixmap_s_writeIMG(arg1,arg2,arg3,arg4);
+    result = (int)fz_pixmap_s__writeIMG(arg1,arg2,arg3,arg4);
     if(result) {
-      PyErr_SetString(PyExc_Exception, "cannot writeIMG");
+      PyErr_SetString(PyExc_Exception, "cannot _writeIMG");
       return NULL;
     }
   }
@@ -7769,20 +8298,6 @@ SWIGINTERN PyObject *Matrix_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObjec
   SWIG_TypeNewClientData(SWIGTYPE_p_fz_matrix_s, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
-
-SWIGINTERN int Swig_var_Identity_set(PyObject *_val SWIGUNUSED) {
-  SWIG_Error(SWIG_AttributeError,"Variable Identity is read-only.");
-  return 1;
-}
-
-
-SWIGINTERN PyObject *Swig_var_Identity_get(void) {
-  PyObject *pyobj = 0;
-  
-  pyobj = SWIG_NewPointerObj(SWIG_as_voidptr(&fz_identity), SWIGTYPE_p_fz_matrix_s,  0 );
-  return pyobj;
-}
-
 
 SWIGINTERN PyObject *_wrap_Outline_title_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
@@ -9242,930 +9757,145 @@ SWIGINTERN PyObject *TextPage_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObj
 
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
-	 { (char *)"new_Document", _wrap_new_Document, METH_VARARGS, (char *)"\n"
-		"new_Document(char const * filename, char * stream=None, int streamlen=0) -> Document\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"filename: char const *\n"
-		"stream: char *\n"
-		"streamlen: int\n"
-		"\n"
-		""},
-	 { (char *)"Document_close", _wrap_Document_close, METH_VARARGS, (char *)"\n"
-		"Document_close(Document self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_document_s *\n"
-		"\n"
-		""},
-	 { (char *)"Document_loadPage", _wrap_Document_loadPage, METH_VARARGS, (char *)"\n"
-		"Document_loadPage(Document self, int number) -> Page\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_document_s *\n"
-		"number: int\n"
-		"\n"
-		""},
-	 { (char *)"Document__loadOutline", _wrap_Document__loadOutline, METH_VARARGS, (char *)"\n"
-		"Document__loadOutline(Document self) -> Outline\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_document_s *\n"
-		"\n"
-		""},
-	 { (char *)"Document__dropOutline", _wrap_Document__dropOutline, METH_VARARGS, (char *)"\n"
-		"Document__dropOutline(Document self, Outline ol)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_document_s *\n"
-		"ol: struct fz_outline_s *\n"
-		"\n"
-		""},
-	 { (char *)"Document__getPageCount", _wrap_Document__getPageCount, METH_VARARGS, (char *)"\n"
-		"Document__getPageCount(Document self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_document_s *\n"
-		"\n"
-		""},
-	 { (char *)"Document__getMetadata", _wrap_Document__getMetadata, METH_VARARGS, (char *)"\n"
-		"Document__getMetadata(Document self, char const * key) -> char *\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_document_s *\n"
-		"key: char const *\n"
-		"\n"
-		""},
-	 { (char *)"Document__needsPass", _wrap_Document__needsPass, METH_VARARGS, (char *)"\n"
-		"Document__needsPass(Document self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_document_s *\n"
-		"\n"
-		""},
-	 { (char *)"Document_authenticate", _wrap_Document_authenticate, METH_VARARGS, (char *)"\n"
-		"Document_authenticate(Document self, char const * arg3) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_document_s *\n"
-		"pass: char const *\n"
-		"\n"
-		""},
-	 { (char *)"Document_save", _wrap_Document_save, METH_VARARGS, (char *)"\n"
-		"Document_save(Document self, char * filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_document_s *\n"
-		"filename: char *\n"
-		"garbage: int\n"
-		"clean: int\n"
-		"deflate: int\n"
-		"incremental: int\n"
-		"ascii: int\n"
-		"expand: int\n"
-		"linear: int\n"
-		"\n"
-		""},
-	 { (char *)"Document_getPermits", _wrap_Document_getPermits, METH_VARARGS, (char *)"\n"
-		"Document_getPermits(Document self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_document_s *\n"
-		"\n"
-		""},
-	 { (char *)"delete_Document", _wrap_delete_Document, METH_VARARGS, (char *)"\n"
-		"delete_Document(Document self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_document_s *\n"
-		"\n"
-		""},
+	 { (char *)"new_Document", _wrap_new_Document, METH_VARARGS, (char *)"new_Document(char const * filename, char * stream=None, int streamlen=0) -> Document"},
+	 { (char *)"Document_close", _wrap_Document_close, METH_VARARGS, (char *)"Document_close(Document self)"},
+	 { (char *)"Document_loadPage", _wrap_Document_loadPage, METH_VARARGS, (char *)"Document_loadPage(Document self, int number) -> Page"},
+	 { (char *)"Document__loadOutline", _wrap_Document__loadOutline, METH_VARARGS, (char *)"Document__loadOutline(Document self) -> Outline"},
+	 { (char *)"Document__dropOutline", _wrap_Document__dropOutline, METH_VARARGS, (char *)"Document__dropOutline(Document self, Outline ol)"},
+	 { (char *)"Document__getPageCount", _wrap_Document__getPageCount, METH_VARARGS, (char *)"Document__getPageCount(Document self) -> int"},
+	 { (char *)"Document__getMetadata", _wrap_Document__getMetadata, METH_VARARGS, (char *)"Document__getMetadata(Document self, char const * key) -> char *"},
+	 { (char *)"Document__needsPass", _wrap_Document__needsPass, METH_VARARGS, (char *)"Document__needsPass(Document self) -> int"},
+	 { (char *)"Document_authenticate", _wrap_Document_authenticate, METH_VARARGS, (char *)"Document_authenticate(Document self, char const * arg3) -> int"},
+	 { (char *)"Document_save", _wrap_Document_save, METH_VARARGS, (char *)"Document_save(Document self, char * filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) -> int"},
+	 { (char *)"Document__select", _wrap_Document__select, METH_VARARGS, (char *)"Document__select(Document self, int * liste) -> int"},
+	 { (char *)"Document__readPageText", _wrap_Document__readPageText, METH_VARARGS, (char *)"Document__readPageText(Document self, int pno, int output=0) -> struct fz_buffer_s *"},
+	 { (char *)"Document_getPermits", _wrap_Document_getPermits, METH_VARARGS, (char *)"getPermits(self) -> dictionary containing permissions"},
+	 { (char *)"delete_Document", _wrap_delete_Document, METH_VARARGS, (char *)"delete_Document(Document self)"},
 	 { (char *)"Document_swigregister", Document_swigregister, METH_VARARGS, NULL},
-	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, (char *)"\n"
-		"delete_Page(Page self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_page_s *\n"
-		"\n"
-		""},
-	 { (char *)"Page_bound", _wrap_Page_bound, METH_VARARGS, (char *)"\n"
-		"Page_bound(Page self) -> Rect\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_page_s *\n"
-		"\n"
-		""},
-	 { (char *)"Page_run", _wrap_Page_run, METH_VARARGS, (char *)"\n"
-		"Page_run(Page self, Device dw, Matrix m) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_page_s *\n"
-		"dw: struct DeviceWrapper *\n"
-		"m: struct fz_matrix_s const *\n"
-		"\n"
-		""},
-	 { (char *)"Page_loadLinks", _wrap_Page_loadLinks, METH_VARARGS, (char *)"\n"
-		"Page_loadLinks(Page self) -> Link\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_page_s *\n"
-		"\n"
-		""},
+	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, (char *)"delete_Page(Page self)"},
+	 { (char *)"Page_bound", _wrap_Page_bound, METH_VARARGS, (char *)"Page_bound(Page self) -> Rect"},
+	 { (char *)"Page_run", _wrap_Page_run, METH_VARARGS, (char *)"Page_run(Page self, Device dw, Matrix m) -> int"},
+	 { (char *)"Page_loadLinks", _wrap_Page_loadLinks, METH_VARARGS, (char *)"Page_loadLinks(Page self) -> Link"},
+	 { (char *)"Page__readPageText", _wrap_Page__readPageText, METH_VARARGS, (char *)"Page__readPageText(Page self, int output=0) -> struct fz_buffer_s *"},
 	 { (char *)"Page_swigregister", Page_swigregister, METH_VARARGS, NULL},
-	 { (char *)"_fz_transform_rect", _wrap__fz_transform_rect, METH_VARARGS, (char *)"\n"
-		"_fz_transform_rect(Rect rect, Matrix transform) -> Rect\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"rect: struct fz_rect_s *\n"
-		"transform: struct fz_matrix_s const *\n"
-		"\n"
-		""},
-	 { (char *)"Rect_x0_set", _wrap_Rect_x0_set, METH_VARARGS, (char *)"\n"
-		"Rect_x0_set(Rect self, float x0)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_rect_s *\n"
-		"x0: float\n"
-		"\n"
-		""},
-	 { (char *)"Rect_x0_get", _wrap_Rect_x0_get, METH_VARARGS, (char *)"\n"
-		"Rect_x0_get(Rect self) -> float\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_rect_s *\n"
-		"\n"
-		""},
-	 { (char *)"Rect_y0_set", _wrap_Rect_y0_set, METH_VARARGS, (char *)"\n"
-		"Rect_y0_set(Rect self, float y0)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_rect_s *\n"
-		"y0: float\n"
-		"\n"
-		""},
-	 { (char *)"Rect_y0_get", _wrap_Rect_y0_get, METH_VARARGS, (char *)"\n"
-		"Rect_y0_get(Rect self) -> float\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_rect_s *\n"
-		"\n"
-		""},
-	 { (char *)"Rect_x1_set", _wrap_Rect_x1_set, METH_VARARGS, (char *)"\n"
-		"Rect_x1_set(Rect self, float x1)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_rect_s *\n"
-		"x1: float\n"
-		"\n"
-		""},
-	 { (char *)"Rect_x1_get", _wrap_Rect_x1_get, METH_VARARGS, (char *)"\n"
-		"Rect_x1_get(Rect self) -> float\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_rect_s *\n"
-		"\n"
-		""},
-	 { (char *)"Rect_y1_set", _wrap_Rect_y1_set, METH_VARARGS, (char *)"\n"
-		"Rect_y1_set(Rect self, float y1)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_rect_s *\n"
-		"y1: float\n"
-		"\n"
-		""},
-	 { (char *)"Rect_y1_get", _wrap_Rect_y1_get, METH_VARARGS, (char *)"\n"
-		"Rect_y1_get(Rect self) -> float\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_rect_s *\n"
-		"\n"
-		""},
+	 { (char *)"_fz_transform_rect", _wrap__fz_transform_rect, METH_VARARGS, (char *)"_fz_transform_rect(Rect rect, Matrix transform) -> Rect"},
+	 { (char *)"Rect_x0_set", _wrap_Rect_x0_set, METH_VARARGS, (char *)"Rect_x0_set(Rect self, float x0)"},
+	 { (char *)"Rect_x0_get", _wrap_Rect_x0_get, METH_VARARGS, (char *)"Rect_x0_get(Rect self) -> float"},
+	 { (char *)"Rect_y0_set", _wrap_Rect_y0_set, METH_VARARGS, (char *)"Rect_y0_set(Rect self, float y0)"},
+	 { (char *)"Rect_y0_get", _wrap_Rect_y0_get, METH_VARARGS, (char *)"Rect_y0_get(Rect self) -> float"},
+	 { (char *)"Rect_x1_set", _wrap_Rect_x1_set, METH_VARARGS, (char *)"Rect_x1_set(Rect self, float x1)"},
+	 { (char *)"Rect_x1_get", _wrap_Rect_x1_get, METH_VARARGS, (char *)"Rect_x1_get(Rect self) -> float"},
+	 { (char *)"Rect_y1_set", _wrap_Rect_y1_set, METH_VARARGS, (char *)"Rect_y1_set(Rect self, float y1)"},
+	 { (char *)"Rect_y1_get", _wrap_Rect_y1_get, METH_VARARGS, (char *)"Rect_y1_get(Rect self) -> float"},
 	 { (char *)"new_Rect", _wrap_new_Rect, METH_VARARGS, (char *)"\n"
 		"Rect()\n"
 		"Rect(Rect s)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"s: struct fz_rect_s const *\n"
-		"\n"
 		"Rect(Point lt, Point rb)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"lt: struct fz_point_s const *\n"
-		"rb: struct fz_point_s const *\n"
-		"\n"
 		"Rect(float x0, float y0, Point rb)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"x0: float\n"
-		"y0: float\n"
-		"rb: struct fz_point_s const *\n"
-		"\n"
 		"Rect(Point lt, float x1, float y1)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"lt: struct fz_point_s const *\n"
-		"x1: float\n"
-		"y1: float\n"
-		"\n"
 		"new_Rect(float x0, float y0, float x1, float y1) -> Rect\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"x0: float\n"
-		"y0: float\n"
-		"x1: float\n"
-		"y1: float\n"
-		"\n"
 		""},
-	 { (char *)"Rect_round", _wrap_Rect_round, METH_VARARGS, (char *)"\n"
-		"Rect_round(Rect self) -> IRect\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_rect_s *\n"
-		"\n"
-		""},
-	 { (char *)"delete_Rect", _wrap_delete_Rect, METH_VARARGS, (char *)"\n"
-		"delete_Rect(Rect self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_rect_s *\n"
-		"\n"
-		""},
+	 { (char *)"Rect_round", _wrap_Rect_round, METH_VARARGS, (char *)"Rect_round(Rect self) -> IRect"},
+	 { (char *)"delete_Rect", _wrap_delete_Rect, METH_VARARGS, (char *)"delete_Rect(Rect self)"},
 	 { (char *)"Rect_swigregister", Rect_swigregister, METH_VARARGS, NULL},
-	 { (char *)"IRect_x0_set", _wrap_IRect_x0_set, METH_VARARGS, (char *)"\n"
-		"IRect_x0_set(IRect self, int x0)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_irect_s *\n"
-		"x0: int\n"
-		"\n"
-		""},
-	 { (char *)"IRect_x0_get", _wrap_IRect_x0_get, METH_VARARGS, (char *)"\n"
-		"IRect_x0_get(IRect self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_irect_s *\n"
-		"\n"
-		""},
-	 { (char *)"IRect_y0_set", _wrap_IRect_y0_set, METH_VARARGS, (char *)"\n"
-		"IRect_y0_set(IRect self, int y0)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_irect_s *\n"
-		"y0: int\n"
-		"\n"
-		""},
-	 { (char *)"IRect_y0_get", _wrap_IRect_y0_get, METH_VARARGS, (char *)"\n"
-		"IRect_y0_get(IRect self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_irect_s *\n"
-		"\n"
-		""},
-	 { (char *)"IRect_x1_set", _wrap_IRect_x1_set, METH_VARARGS, (char *)"\n"
-		"IRect_x1_set(IRect self, int x1)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_irect_s *\n"
-		"x1: int\n"
-		"\n"
-		""},
-	 { (char *)"IRect_x1_get", _wrap_IRect_x1_get, METH_VARARGS, (char *)"\n"
-		"IRect_x1_get(IRect self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_irect_s *\n"
-		"\n"
-		""},
-	 { (char *)"IRect_y1_set", _wrap_IRect_y1_set, METH_VARARGS, (char *)"\n"
-		"IRect_y1_set(IRect self, int y1)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_irect_s *\n"
-		"y1: int\n"
-		"\n"
-		""},
-	 { (char *)"IRect_y1_get", _wrap_IRect_y1_get, METH_VARARGS, (char *)"\n"
-		"IRect_y1_get(IRect self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_irect_s *\n"
-		"\n"
-		""},
+	 { (char *)"IRect_x0_set", _wrap_IRect_x0_set, METH_VARARGS, (char *)"IRect_x0_set(IRect self, int x0)"},
+	 { (char *)"IRect_x0_get", _wrap_IRect_x0_get, METH_VARARGS, (char *)"IRect_x0_get(IRect self) -> int"},
+	 { (char *)"IRect_y0_set", _wrap_IRect_y0_set, METH_VARARGS, (char *)"IRect_y0_set(IRect self, int y0)"},
+	 { (char *)"IRect_y0_get", _wrap_IRect_y0_get, METH_VARARGS, (char *)"IRect_y0_get(IRect self) -> int"},
+	 { (char *)"IRect_x1_set", _wrap_IRect_x1_set, METH_VARARGS, (char *)"IRect_x1_set(IRect self, int x1)"},
+	 { (char *)"IRect_x1_get", _wrap_IRect_x1_get, METH_VARARGS, (char *)"IRect_x1_get(IRect self) -> int"},
+	 { (char *)"IRect_y1_set", _wrap_IRect_y1_set, METH_VARARGS, (char *)"IRect_y1_set(IRect self, int y1)"},
+	 { (char *)"IRect_y1_get", _wrap_IRect_y1_get, METH_VARARGS, (char *)"IRect_y1_get(IRect self) -> int"},
 	 { (char *)"new_IRect", _wrap_new_IRect, METH_VARARGS, (char *)"\n"
 		"IRect()\n"
 		"IRect(IRect s)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"s: struct fz_irect_s const *\n"
-		"\n"
 		"new_IRect(int x0, int y0, int x1, int y1) -> IRect\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"x0: int\n"
-		"y0: int\n"
-		"x1: int\n"
-		"y1: int\n"
-		"\n"
 		""},
-	 { (char *)"delete_IRect", _wrap_delete_IRect, METH_VARARGS, (char *)"\n"
-		"delete_IRect(IRect self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_irect_s *\n"
-		"\n"
-		""},
+	 { (char *)"delete_IRect", _wrap_delete_IRect, METH_VARARGS, (char *)"delete_IRect(IRect self)"},
 	 { (char *)"IRect_swigregister", IRect_swigregister, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_x_set", _wrap_Pixmap_x_set, METH_VARARGS, (char *)"\n"
-		"Pixmap_x_set(Pixmap self, int x)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"x: int\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_x_get", _wrap_Pixmap_x_get, METH_VARARGS, (char *)"\n"
-		"Pixmap_x_get(Pixmap self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_y_set", _wrap_Pixmap_y_set, METH_VARARGS, (char *)"\n"
-		"Pixmap_y_set(Pixmap self, int y)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"y: int\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_y_get", _wrap_Pixmap_y_get, METH_VARARGS, (char *)"\n"
-		"Pixmap_y_get(Pixmap self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_w_set", _wrap_Pixmap_w_set, METH_VARARGS, (char *)"\n"
-		"Pixmap_w_set(Pixmap self, int w)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"w: int\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_w_get", _wrap_Pixmap_w_get, METH_VARARGS, (char *)"\n"
-		"Pixmap_w_get(Pixmap self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_h_set", _wrap_Pixmap_h_set, METH_VARARGS, (char *)"\n"
-		"Pixmap_h_set(Pixmap self, int h)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"h: int\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_h_get", _wrap_Pixmap_h_get, METH_VARARGS, (char *)"\n"
-		"Pixmap_h_get(Pixmap self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_n_set", _wrap_Pixmap_n_set, METH_VARARGS, (char *)"\n"
-		"Pixmap_n_set(Pixmap self, int n)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"n: int\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_n_get", _wrap_Pixmap_n_get, METH_VARARGS, (char *)"\n"
-		"Pixmap_n_get(Pixmap self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_interpolate_set", _wrap_Pixmap_interpolate_set, METH_VARARGS, (char *)"\n"
-		"Pixmap_interpolate_set(Pixmap self, int interpolate)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"interpolate: int\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_interpolate_get", _wrap_Pixmap_interpolate_get, METH_VARARGS, (char *)"\n"
-		"Pixmap_interpolate_get(Pixmap self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_xres_set", _wrap_Pixmap_xres_set, METH_VARARGS, (char *)"\n"
-		"Pixmap_xres_set(Pixmap self, int xres)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"xres: int\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_xres_get", _wrap_Pixmap_xres_get, METH_VARARGS, (char *)"\n"
-		"Pixmap_xres_get(Pixmap self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_yres_set", _wrap_Pixmap_yres_set, METH_VARARGS, (char *)"\n"
-		"Pixmap_yres_set(Pixmap self, int yres)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"yres: int\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_yres_get", _wrap_Pixmap_yres_get, METH_VARARGS, (char *)"\n"
-		"Pixmap_yres_get(Pixmap self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"\n"
-		""},
+	 { (char *)"Pixmap_x_set", _wrap_Pixmap_x_set, METH_VARARGS, (char *)"Pixmap_x_set(Pixmap self, int x)"},
+	 { (char *)"Pixmap_x_get", _wrap_Pixmap_x_get, METH_VARARGS, (char *)"Pixmap_x_get(Pixmap self) -> int"},
+	 { (char *)"Pixmap_y_set", _wrap_Pixmap_y_set, METH_VARARGS, (char *)"Pixmap_y_set(Pixmap self, int y)"},
+	 { (char *)"Pixmap_y_get", _wrap_Pixmap_y_get, METH_VARARGS, (char *)"Pixmap_y_get(Pixmap self) -> int"},
+	 { (char *)"Pixmap_w_set", _wrap_Pixmap_w_set, METH_VARARGS, (char *)"Pixmap_w_set(Pixmap self, int w)"},
+	 { (char *)"Pixmap_w_get", _wrap_Pixmap_w_get, METH_VARARGS, (char *)"Pixmap_w_get(Pixmap self) -> int"},
+	 { (char *)"Pixmap_h_set", _wrap_Pixmap_h_set, METH_VARARGS, (char *)"Pixmap_h_set(Pixmap self, int h)"},
+	 { (char *)"Pixmap_h_get", _wrap_Pixmap_h_get, METH_VARARGS, (char *)"Pixmap_h_get(Pixmap self) -> int"},
+	 { (char *)"Pixmap_n_set", _wrap_Pixmap_n_set, METH_VARARGS, (char *)"Pixmap_n_set(Pixmap self, int n)"},
+	 { (char *)"Pixmap_n_get", _wrap_Pixmap_n_get, METH_VARARGS, (char *)"Pixmap_n_get(Pixmap self) -> int"},
+	 { (char *)"Pixmap_interpolate_set", _wrap_Pixmap_interpolate_set, METH_VARARGS, (char *)"Pixmap_interpolate_set(Pixmap self, int interpolate)"},
+	 { (char *)"Pixmap_interpolate_get", _wrap_Pixmap_interpolate_get, METH_VARARGS, (char *)"Pixmap_interpolate_get(Pixmap self) -> int"},
+	 { (char *)"Pixmap_xres_set", _wrap_Pixmap_xres_set, METH_VARARGS, (char *)"Pixmap_xres_set(Pixmap self, int xres)"},
+	 { (char *)"Pixmap_xres_get", _wrap_Pixmap_xres_get, METH_VARARGS, (char *)"Pixmap_xres_get(Pixmap self) -> int"},
+	 { (char *)"Pixmap_yres_set", _wrap_Pixmap_yres_set, METH_VARARGS, (char *)"Pixmap_yres_set(Pixmap self, int yres)"},
+	 { (char *)"Pixmap_yres_get", _wrap_Pixmap_yres_get, METH_VARARGS, (char *)"Pixmap_yres_get(Pixmap self) -> int"},
 	 { (char *)"new_Pixmap", _wrap_new_Pixmap, METH_VARARGS, (char *)"\n"
 		"Pixmap(Colorspace cs, IRect bbox)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"cs: struct fz_colorspace_s *\n"
-		"bbox: struct fz_irect_s const *\n"
-		"\n"
 		"Pixmap(Colorspace cs, int w, int h, char * samples)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"cs: struct fz_colorspace_s *\n"
-		"w: int\n"
-		"h: int\n"
-		"samples: char *\n"
-		"\n"
-		"Pixmap(char * data)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"data: char *\n"
-		"\n"
-		"new_Pixmap(char * data, int size) -> Pixmap\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"data: char *\n"
-		"size: int\n"
-		"\n"
+		"Pixmap(char * filename)\n"
+		"new_Pixmap(char * imagedata, int size) -> Pixmap\n"
 		""},
-	 { (char *)"delete_Pixmap", _wrap_delete_Pixmap, METH_VARARGS, (char *)"\n"
-		"delete_Pixmap(Pixmap self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_gammaWith", _wrap_Pixmap_gammaWith, METH_VARARGS, (char *)"\n"
-		"Pixmap_gammaWith(Pixmap self, float gamma)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"gamma: float\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_tintWith", _wrap_Pixmap_tintWith, METH_VARARGS, (char *)"\n"
-		"Pixmap_tintWith(Pixmap self, int red, int green, int blue)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"red: int\n"
-		"green: int\n"
-		"blue: int\n"
-		"\n"
-		""},
+	 { (char *)"delete_Pixmap", _wrap_delete_Pixmap, METH_VARARGS, (char *)"delete_Pixmap(Pixmap self)"},
+	 { (char *)"Pixmap_gammaWith", _wrap_Pixmap_gammaWith, METH_VARARGS, (char *)"Pixmap_gammaWith(Pixmap self, float gamma)"},
+	 { (char *)"Pixmap_tintWith", _wrap_Pixmap_tintWith, METH_VARARGS, (char *)"Pixmap_tintWith(Pixmap self, int red, int green, int blue)"},
 	 { (char *)"Pixmap_clearWith", _wrap_Pixmap_clearWith, METH_VARARGS, (char *)"\n"
 		"clearWith(int value)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"value: int\n"
-		"\n"
 		"Pixmap_clearWith(Pixmap self, int value, IRect bbox)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"value: int\n"
-		"bbox: struct fz_irect_s const *\n"
-		"\n"
 		""},
-	 { (char *)"Pixmap_copyPixmap", _wrap_Pixmap_copyPixmap, METH_VARARGS, (char *)"\n"
-		"Pixmap_copyPixmap(Pixmap self, Pixmap src, IRect bbox)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"src: struct fz_pixmap_s *\n"
-		"bbox: struct fz_irect_s const *\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_getSize", _wrap_Pixmap_getSize, METH_VARARGS, (char *)"\n"
-		"Pixmap_getSize(Pixmap self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_writePNG", _wrap_Pixmap_writePNG, METH_VARARGS, (char *)"\n"
-		"Pixmap_writePNG(Pixmap self, char * filename, int savealpha=0) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"filename: char *\n"
-		"savealpha: int\n"
-		"\n"
-		""},
-	 { (char *)"Pixmap_writeIMG", _wrap_Pixmap_writeIMG, METH_VARARGS, (char *)"\n"
-		"Pixmap_writeIMG(Pixmap self, char * filename, int format, int savealpha=0) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"filename: char *\n"
-		"format: int\n"
-		"savealpha: int\n"
-		"\n"
-		""},
+	 { (char *)"Pixmap_copyPixmap", _wrap_Pixmap_copyPixmap, METH_VARARGS, (char *)"Pixmap_copyPixmap(Pixmap self, Pixmap src, IRect bbox)"},
+	 { (char *)"Pixmap_getSize", _wrap_Pixmap_getSize, METH_VARARGS, (char *)"Pixmap_getSize(Pixmap self) -> int"},
+	 { (char *)"Pixmap_writePNG", _wrap_Pixmap_writePNG, METH_VARARGS, (char *)"Pixmap_writePNG(Pixmap self, char * filename, int savealpha=0) -> int"},
+	 { (char *)"Pixmap__writeIMG", _wrap_Pixmap__writeIMG, METH_VARARGS, (char *)"Pixmap__writeIMG(Pixmap self, char * filename, int format, int savealpha=0) -> int"},
 	 { (char *)"Pixmap_invertIRect", _wrap_Pixmap_invertIRect, METH_VARARGS, (char *)"\n"
 		"invertIRect()\n"
 		"Pixmap_invertIRect(Pixmap self, IRect irect)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"irect: struct fz_irect_s const *\n"
-		"\n"
 		""},
-	 { (char *)"Pixmap__getSamples", _wrap_Pixmap__getSamples, METH_VARARGS, (char *)"\n"
-		"Pixmap__getSamples(Pixmap self) -> PyObject *\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_pixmap_s *\n"
-		"\n"
-		""},
+	 { (char *)"Pixmap__getSamples", _wrap_Pixmap__getSamples, METH_VARARGS, (char *)"Pixmap__getSamples(Pixmap self) -> PyObject *"},
 	 { (char *)"Pixmap_swigregister", Pixmap_swigregister, METH_VARARGS, NULL},
 	 { (char *)"CS_RGB_swigconstant", CS_RGB_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"CS_GRAY_swigconstant", CS_GRAY_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"CS_CMYK_swigconstant", CS_CMYK_swigconstant, METH_VARARGS, NULL},
-	 { (char *)"new_Colorspace", _wrap_new_Colorspace, METH_VARARGS, (char *)"\n"
-		"new_Colorspace(int type) -> Colorspace\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"type: int\n"
-		"\n"
-		""},
-	 { (char *)"delete_Colorspace", _wrap_delete_Colorspace, METH_VARARGS, (char *)"\n"
-		"delete_Colorspace(Colorspace self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_colorspace_s *\n"
-		"\n"
-		""},
+	 { (char *)"new_Colorspace", _wrap_new_Colorspace, METH_VARARGS, (char *)"new_Colorspace(int type) -> Colorspace"},
+	 { (char *)"delete_Colorspace", _wrap_delete_Colorspace, METH_VARARGS, (char *)"delete_Colorspace(Colorspace self)"},
 	 { (char *)"Colorspace_swigregister", Colorspace_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_Device", _wrap_new_Device, METH_VARARGS, (char *)"\n"
 		"Device(Pixmap pm)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"pm: struct fz_pixmap_s *\n"
-		"\n"
 		"Device(DisplayList dl)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"dl: struct fz_display_list_s *\n"
-		"\n"
 		"new_Device(TextSheet ts, TextPage tp) -> Device\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"ts: struct fz_stext_sheet_s *\n"
-		"tp: struct fz_stext_page_s *\n"
-		"\n"
 		""},
-	 { (char *)"delete_Device", _wrap_delete_Device, METH_VARARGS, (char *)"\n"
-		"delete_Device(Device self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct DeviceWrapper *\n"
-		"\n"
-		""},
+	 { (char *)"delete_Device", _wrap_delete_Device, METH_VARARGS, (char *)"delete_Device(Device self)"},
 	 { (char *)"Device_swigregister", Device_swigregister, METH_VARARGS, NULL},
-	 { (char *)"_fz_pre_scale", _wrap__fz_pre_scale, METH_VARARGS, (char *)"\n"
-		"_fz_pre_scale(Matrix m, float sx, float sy) -> Matrix\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"m: struct fz_matrix_s *\n"
-		"sx: float\n"
-		"sy: float\n"
-		"\n"
-		""},
-	 { (char *)"_fz_pre_shear", _wrap__fz_pre_shear, METH_VARARGS, (char *)"\n"
-		"_fz_pre_shear(Matrix m, float sx, float sy) -> Matrix\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"m: struct fz_matrix_s *\n"
-		"sx: float\n"
-		"sy: float\n"
-		"\n"
-		""},
-	 { (char *)"_fz_pre_rotate", _wrap__fz_pre_rotate, METH_VARARGS, (char *)"\n"
-		"_fz_pre_rotate(Matrix m, float degree) -> Matrix\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"m: struct fz_matrix_s *\n"
-		"degree: float\n"
-		"\n"
-		""},
-	 { (char *)"Matrix_a_set", _wrap_Matrix_a_set, METH_VARARGS, (char *)"\n"
-		"Matrix_a_set(Matrix self, float a)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_matrix_s *\n"
-		"a: float\n"
-		"\n"
-		""},
-	 { (char *)"Matrix_a_get", _wrap_Matrix_a_get, METH_VARARGS, (char *)"\n"
-		"Matrix_a_get(Matrix self) -> float\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_matrix_s *\n"
-		"\n"
-		""},
-	 { (char *)"Matrix_b_set", _wrap_Matrix_b_set, METH_VARARGS, (char *)"\n"
-		"Matrix_b_set(Matrix self, float b)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_matrix_s *\n"
-		"b: float\n"
-		"\n"
-		""},
-	 { (char *)"Matrix_b_get", _wrap_Matrix_b_get, METH_VARARGS, (char *)"\n"
-		"Matrix_b_get(Matrix self) -> float\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_matrix_s *\n"
-		"\n"
-		""},
-	 { (char *)"Matrix_c_set", _wrap_Matrix_c_set, METH_VARARGS, (char *)"\n"
-		"Matrix_c_set(Matrix self, float c)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_matrix_s *\n"
-		"c: float\n"
-		"\n"
-		""},
-	 { (char *)"Matrix_c_get", _wrap_Matrix_c_get, METH_VARARGS, (char *)"\n"
-		"Matrix_c_get(Matrix self) -> float\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_matrix_s *\n"
-		"\n"
-		""},
-	 { (char *)"Matrix_d_set", _wrap_Matrix_d_set, METH_VARARGS, (char *)"\n"
-		"Matrix_d_set(Matrix self, float d)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_matrix_s *\n"
-		"d: float\n"
-		"\n"
-		""},
-	 { (char *)"Matrix_d_get", _wrap_Matrix_d_get, METH_VARARGS, (char *)"\n"
-		"Matrix_d_get(Matrix self) -> float\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_matrix_s *\n"
-		"\n"
-		""},
-	 { (char *)"Matrix_e_set", _wrap_Matrix_e_set, METH_VARARGS, (char *)"\n"
-		"Matrix_e_set(Matrix self, float e)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_matrix_s *\n"
-		"e: float\n"
-		"\n"
-		""},
-	 { (char *)"Matrix_e_get", _wrap_Matrix_e_get, METH_VARARGS, (char *)"\n"
-		"Matrix_e_get(Matrix self) -> float\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_matrix_s *\n"
-		"\n"
-		""},
-	 { (char *)"Matrix_f_set", _wrap_Matrix_f_set, METH_VARARGS, (char *)"\n"
-		"Matrix_f_set(Matrix self, float f)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_matrix_s *\n"
-		"f: float\n"
-		"\n"
-		""},
-	 { (char *)"Matrix_f_get", _wrap_Matrix_f_get, METH_VARARGS, (char *)"\n"
-		"Matrix_f_get(Matrix self) -> float\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_matrix_s *\n"
-		"\n"
-		""},
+	 { (char *)"_fz_pre_scale", _wrap__fz_pre_scale, METH_VARARGS, (char *)"_fz_pre_scale(Matrix m, float sx, float sy) -> Matrix"},
+	 { (char *)"_fz_pre_shear", _wrap__fz_pre_shear, METH_VARARGS, (char *)"_fz_pre_shear(Matrix m, float sx, float sy) -> Matrix"},
+	 { (char *)"_fz_pre_rotate", _wrap__fz_pre_rotate, METH_VARARGS, (char *)"_fz_pre_rotate(Matrix m, float degree) -> Matrix"},
+	 { (char *)"Matrix_a_set", _wrap_Matrix_a_set, METH_VARARGS, (char *)"Matrix_a_set(Matrix self, float a)"},
+	 { (char *)"Matrix_a_get", _wrap_Matrix_a_get, METH_VARARGS, (char *)"Matrix_a_get(Matrix self) -> float"},
+	 { (char *)"Matrix_b_set", _wrap_Matrix_b_set, METH_VARARGS, (char *)"Matrix_b_set(Matrix self, float b)"},
+	 { (char *)"Matrix_b_get", _wrap_Matrix_b_get, METH_VARARGS, (char *)"Matrix_b_get(Matrix self) -> float"},
+	 { (char *)"Matrix_c_set", _wrap_Matrix_c_set, METH_VARARGS, (char *)"Matrix_c_set(Matrix self, float c)"},
+	 { (char *)"Matrix_c_get", _wrap_Matrix_c_get, METH_VARARGS, (char *)"Matrix_c_get(Matrix self) -> float"},
+	 { (char *)"Matrix_d_set", _wrap_Matrix_d_set, METH_VARARGS, (char *)"Matrix_d_set(Matrix self, float d)"},
+	 { (char *)"Matrix_d_get", _wrap_Matrix_d_get, METH_VARARGS, (char *)"Matrix_d_get(Matrix self) -> float"},
+	 { (char *)"Matrix_e_set", _wrap_Matrix_e_set, METH_VARARGS, (char *)"Matrix_e_set(Matrix self, float e)"},
+	 { (char *)"Matrix_e_get", _wrap_Matrix_e_get, METH_VARARGS, (char *)"Matrix_e_get(Matrix self) -> float"},
+	 { (char *)"Matrix_f_set", _wrap_Matrix_f_set, METH_VARARGS, (char *)"Matrix_f_set(Matrix self, float f)"},
+	 { (char *)"Matrix_f_get", _wrap_Matrix_f_get, METH_VARARGS, (char *)"Matrix_f_get(Matrix self) -> float"},
 	 { (char *)"new_Matrix", _wrap_new_Matrix, METH_VARARGS, (char *)"\n"
 		"Matrix()\n"
 		"Matrix(Matrix n)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"n: struct fz_matrix_s const *\n"
-		"\n"
 		"Matrix(float sx, float sy, int shear=0)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"sx: float\n"
-		"sy: float\n"
-		"shear: int\n"
-		"\n"
 		"new_Matrix(float degree) -> Matrix\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"degree: float\n"
-		"\n"
 		""},
-	 { (char *)"delete_Matrix", _wrap_delete_Matrix, METH_VARARGS, (char *)"\n"
-		"delete_Matrix(Matrix self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_matrix_s *\n"
-		"\n"
-		""},
+	 { (char *)"delete_Matrix", _wrap_delete_Matrix, METH_VARARGS, (char *)"delete_Matrix(Matrix self)"},
 	 { (char *)"Matrix_swigregister", Matrix_swigregister, METH_VARARGS, NULL},
-	 { (char *)"Outline_title_get", _wrap_Outline_title_get, METH_VARARGS, (char *)"\n"
-		"Outline_title_get(Outline self) -> char *\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_outline_s *\n"
-		"\n"
-		""},
-	 { (char *)"Outline_dest_get", _wrap_Outline_dest_get, METH_VARARGS, (char *)"\n"
-		"Outline_dest_get(Outline self) -> linkDest\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_outline_s *\n"
-		"\n"
-		""},
-	 { (char *)"Outline_next_get", _wrap_Outline_next_get, METH_VARARGS, (char *)"\n"
-		"Outline_next_get(Outline self) -> Outline\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_outline_s *\n"
-		"\n"
-		""},
-	 { (char *)"Outline_down_get", _wrap_Outline_down_get, METH_VARARGS, (char *)"\n"
-		"Outline_down_get(Outline self) -> Outline\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_outline_s *\n"
-		"\n"
-		""},
-	 { (char *)"Outline_is_open_get", _wrap_Outline_is_open_get, METH_VARARGS, (char *)"\n"
-		"Outline_is_open_get(Outline self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_outline_s *\n"
-		"\n"
-		""},
-	 { (char *)"Outline_saveXML", _wrap_Outline_saveXML, METH_VARARGS, (char *)"\n"
-		"Outline_saveXML(Outline self, char const * filename) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_outline_s *\n"
-		"filename: char const *\n"
-		"\n"
-		""},
-	 { (char *)"Outline_saveText", _wrap_Outline_saveText, METH_VARARGS, (char *)"\n"
-		"Outline_saveText(Outline self, char const * filename) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_outline_s *\n"
-		"filename: char const *\n"
-		"\n"
-		""},
-	 { (char *)"delete_Outline", _wrap_delete_Outline, METH_VARARGS, (char *)"\n"
-		"delete_Outline(Outline self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_outline_s *\n"
-		"\n"
-		""},
+	 { (char *)"Outline_title_get", _wrap_Outline_title_get, METH_VARARGS, (char *)"Outline_title_get(Outline self) -> char *"},
+	 { (char *)"Outline_dest_get", _wrap_Outline_dest_get, METH_VARARGS, (char *)"Outline_dest_get(Outline self) -> linkDest"},
+	 { (char *)"Outline_next_get", _wrap_Outline_next_get, METH_VARARGS, (char *)"Outline_next_get(Outline self) -> Outline"},
+	 { (char *)"Outline_down_get", _wrap_Outline_down_get, METH_VARARGS, (char *)"Outline_down_get(Outline self) -> Outline"},
+	 { (char *)"Outline_is_open_get", _wrap_Outline_is_open_get, METH_VARARGS, (char *)"Outline_is_open_get(Outline self) -> int"},
+	 { (char *)"Outline_saveXML", _wrap_Outline_saveXML, METH_VARARGS, (char *)"Outline_saveXML(Outline self, char const * filename) -> int"},
+	 { (char *)"Outline_saveText", _wrap_Outline_saveText, METH_VARARGS, (char *)"Outline_saveText(Outline self, char const * filename) -> int"},
+	 { (char *)"delete_Outline", _wrap_delete_Outline, METH_VARARGS, (char *)"delete_Outline(Outline self)"},
 	 { (char *)"Outline_swigregister", Outline_swigregister, METH_VARARGS, NULL},
 	 { (char *)"LINK_NONE_swigconstant", LINK_NONE_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"LINK_GOTO_swigconstant", LINK_GOTO_swigconstant, METH_VARARGS, NULL},
@@ -10173,178 +9903,31 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"LINK_LAUNCH_swigconstant", LINK_LAUNCH_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"LINK_NAMED_swigconstant", LINK_NAMED_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"LINK_GOTOR_swigconstant", LINK_GOTOR_swigconstant, METH_VARARGS, NULL},
-	 { (char *)"linkDest_kind_get", _wrap_linkDest_kind_get, METH_VARARGS, (char *)"\n"
-		"linkDest_kind_get(linkDest self) -> fz_link_kind\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_dest_s *\n"
-		"\n"
-		""},
-	 { (char *)"linkDest__getPage", _wrap_linkDest__getPage, METH_VARARGS, (char *)"\n"
-		"linkDest__getPage(linkDest self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_dest_s *\n"
-		"\n"
-		""},
-	 { (char *)"linkDest__getDest", _wrap_linkDest__getDest, METH_VARARGS, (char *)"\n"
-		"linkDest__getDest(linkDest self) -> char *\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_dest_s *\n"
-		"\n"
-		""},
-	 { (char *)"linkDest__getFlags", _wrap_linkDest__getFlags, METH_VARARGS, (char *)"\n"
-		"linkDest__getFlags(linkDest self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_dest_s *\n"
-		"\n"
-		""},
-	 { (char *)"linkDest__getLt", _wrap_linkDest__getLt, METH_VARARGS, (char *)"\n"
-		"linkDest__getLt(linkDest self) -> Point\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_dest_s *\n"
-		"\n"
-		""},
-	 { (char *)"linkDest__getRb", _wrap_linkDest__getRb, METH_VARARGS, (char *)"\n"
-		"linkDest__getRb(linkDest self) -> Point\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_dest_s *\n"
-		"\n"
-		""},
-	 { (char *)"linkDest__getFileSpec", _wrap_linkDest__getFileSpec, METH_VARARGS, (char *)"\n"
-		"linkDest__getFileSpec(linkDest self) -> char *\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_dest_s *\n"
-		"\n"
-		""},
-	 { (char *)"linkDest__getNewWindow", _wrap_linkDest__getNewWindow, METH_VARARGS, (char *)"\n"
-		"linkDest__getNewWindow(linkDest self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_dest_s *\n"
-		"\n"
-		""},
-	 { (char *)"linkDest__getUri", _wrap_linkDest__getUri, METH_VARARGS, (char *)"\n"
-		"linkDest__getUri(linkDest self) -> char *\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_dest_s *\n"
-		"\n"
-		""},
-	 { (char *)"linkDest__getIsMap", _wrap_linkDest__getIsMap, METH_VARARGS, (char *)"\n"
-		"linkDest__getIsMap(linkDest self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_dest_s *\n"
-		"\n"
-		""},
-	 { (char *)"linkDest__getIsUri", _wrap_linkDest__getIsUri, METH_VARARGS, (char *)"\n"
-		"linkDest__getIsUri(linkDest self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_dest_s *\n"
-		"\n"
-		""},
-	 { (char *)"linkDest__getNamed", _wrap_linkDest__getNamed, METH_VARARGS, (char *)"\n"
-		"linkDest__getNamed(linkDest self) -> char *\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_dest_s *\n"
-		"\n"
-		""},
-	 { (char *)"delete_linkDest", _wrap_delete_linkDest, METH_VARARGS, (char *)"\n"
-		"delete_linkDest(linkDest self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_dest_s *\n"
-		"\n"
-		""},
+	 { (char *)"linkDest_kind_get", _wrap_linkDest_kind_get, METH_VARARGS, (char *)"linkDest_kind_get(linkDest self) -> fz_link_kind"},
+	 { (char *)"linkDest__getPage", _wrap_linkDest__getPage, METH_VARARGS, (char *)"linkDest__getPage(linkDest self) -> int"},
+	 { (char *)"linkDest__getDest", _wrap_linkDest__getDest, METH_VARARGS, (char *)"linkDest__getDest(linkDest self) -> char *"},
+	 { (char *)"linkDest__getFlags", _wrap_linkDest__getFlags, METH_VARARGS, (char *)"linkDest__getFlags(linkDest self) -> int"},
+	 { (char *)"linkDest__getLt", _wrap_linkDest__getLt, METH_VARARGS, (char *)"linkDest__getLt(linkDest self) -> Point"},
+	 { (char *)"linkDest__getRb", _wrap_linkDest__getRb, METH_VARARGS, (char *)"linkDest__getRb(linkDest self) -> Point"},
+	 { (char *)"linkDest__getFileSpec", _wrap_linkDest__getFileSpec, METH_VARARGS, (char *)"linkDest__getFileSpec(linkDest self) -> char *"},
+	 { (char *)"linkDest__getNewWindow", _wrap_linkDest__getNewWindow, METH_VARARGS, (char *)"linkDest__getNewWindow(linkDest self) -> int"},
+	 { (char *)"linkDest__getUri", _wrap_linkDest__getUri, METH_VARARGS, (char *)"linkDest__getUri(linkDest self) -> char *"},
+	 { (char *)"linkDest__getIsMap", _wrap_linkDest__getIsMap, METH_VARARGS, (char *)"linkDest__getIsMap(linkDest self) -> int"},
+	 { (char *)"linkDest__getIsUri", _wrap_linkDest__getIsUri, METH_VARARGS, (char *)"linkDest__getIsUri(linkDest self) -> int"},
+	 { (char *)"linkDest__getNamed", _wrap_linkDest__getNamed, METH_VARARGS, (char *)"linkDest__getNamed(linkDest self) -> char *"},
+	 { (char *)"delete_linkDest", _wrap_delete_linkDest, METH_VARARGS, (char *)"delete_linkDest(linkDest self)"},
 	 { (char *)"linkDest_swigregister", linkDest_swigregister, METH_VARARGS, NULL},
-	 { (char *)"_fz_transform_point", _wrap__fz_transform_point, METH_VARARGS, (char *)"\n"
-		"_fz_transform_point(Point point, Matrix transform) -> Point\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"point: struct fz_point_s *\n"
-		"transform: struct fz_matrix_s const *\n"
-		"\n"
-		""},
-	 { (char *)"Point_x_set", _wrap_Point_x_set, METH_VARARGS, (char *)"\n"
-		"Point_x_set(Point self, float x)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_point_s *\n"
-		"x: float\n"
-		"\n"
-		""},
-	 { (char *)"Point_x_get", _wrap_Point_x_get, METH_VARARGS, (char *)"\n"
-		"Point_x_get(Point self) -> float\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_point_s *\n"
-		"\n"
-		""},
-	 { (char *)"Point_y_set", _wrap_Point_y_set, METH_VARARGS, (char *)"\n"
-		"Point_y_set(Point self, float y)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_point_s *\n"
-		"y: float\n"
-		"\n"
-		""},
-	 { (char *)"Point_y_get", _wrap_Point_y_get, METH_VARARGS, (char *)"\n"
-		"Point_y_get(Point self) -> float\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_point_s *\n"
-		"\n"
-		""},
+	 { (char *)"_fz_transform_point", _wrap__fz_transform_point, METH_VARARGS, (char *)"_fz_transform_point(Point point, Matrix transform) -> Point"},
+	 { (char *)"Point_x_set", _wrap_Point_x_set, METH_VARARGS, (char *)"Point_x_set(Point self, float x)"},
+	 { (char *)"Point_x_get", _wrap_Point_x_get, METH_VARARGS, (char *)"Point_x_get(Point self) -> float"},
+	 { (char *)"Point_y_set", _wrap_Point_y_set, METH_VARARGS, (char *)"Point_y_set(Point self, float y)"},
+	 { (char *)"Point_y_get", _wrap_Point_y_get, METH_VARARGS, (char *)"Point_y_get(Point self) -> float"},
 	 { (char *)"new_Point", _wrap_new_Point, METH_VARARGS, (char *)"\n"
 		"Point()\n"
 		"Point(Point q)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"q: struct fz_point_s const *\n"
-		"\n"
 		"new_Point(float x, float y) -> Point\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"x: float\n"
-		"y: float\n"
-		"\n"
 		""},
-	 { (char *)"delete_Point", _wrap_delete_Point, METH_VARARGS, (char *)"\n"
-		"delete_Point(Point self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_point_s *\n"
-		"\n"
-		""},
+	 { (char *)"delete_Point", _wrap_delete_Point, METH_VARARGS, (char *)"delete_Point(Point self)"},
 	 { (char *)"Point_swigregister", Point_swigregister, METH_VARARGS, NULL},
 	 { (char *)"LINK_FLAG_L_VALID_swigconstant", LINK_FLAG_L_VALID_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"LINK_FLAG_T_VALID_swigconstant", LINK_FLAG_T_VALID_swigconstant, METH_VARARGS, NULL},
@@ -10353,138 +9936,27 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"LINK_FLAG_FIT_H_swigconstant", LINK_FLAG_FIT_H_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"LINK_FLAG_FIT_V_swigconstant", LINK_FLAG_FIT_V_swigconstant, METH_VARARGS, NULL},
 	 { (char *)"LINK_FLAG_R_IS_ZOOM_swigconstant", LINK_FLAG_R_IS_ZOOM_swigconstant, METH_VARARGS, NULL},
-	 { (char *)"Link_rect_get", _wrap_Link_rect_get, METH_VARARGS, (char *)"\n"
-		"Link_rect_get(Link self) -> Rect\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_s *\n"
-		"\n"
-		""},
-	 { (char *)"Link_dest_get", _wrap_Link_dest_get, METH_VARARGS, (char *)"\n"
-		"Link_dest_get(Link self) -> linkDest\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_s *\n"
-		"\n"
-		""},
-	 { (char *)"delete_Link", _wrap_delete_Link, METH_VARARGS, (char *)"\n"
-		"delete_Link(Link self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_s *\n"
-		"\n"
-		""},
-	 { (char *)"Link__getNext", _wrap_Link__getNext, METH_VARARGS, (char *)"\n"
-		"Link__getNext(Link self) -> Link\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_link_s *\n"
-		"\n"
-		""},
+	 { (char *)"Link_rect_get", _wrap_Link_rect_get, METH_VARARGS, (char *)"Link_rect_get(Link self) -> Rect"},
+	 { (char *)"Link_dest_get", _wrap_Link_dest_get, METH_VARARGS, (char *)"Link_dest_get(Link self) -> linkDest"},
+	 { (char *)"delete_Link", _wrap_delete_Link, METH_VARARGS, (char *)"delete_Link(Link self)"},
+	 { (char *)"Link__getNext", _wrap_Link__getNext, METH_VARARGS, (char *)"Link__getNext(Link self) -> Link"},
 	 { (char *)"Link_swigregister", Link_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_DisplayList", _wrap_new_DisplayList, METH_VARARGS, (char *)"new_DisplayList() -> DisplayList"},
-	 { (char *)"delete_DisplayList", _wrap_delete_DisplayList, METH_VARARGS, (char *)"\n"
-		"delete_DisplayList(DisplayList self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_display_list_s *\n"
-		"\n"
-		""},
-	 { (char *)"DisplayList_run", _wrap_DisplayList_run, METH_VARARGS, (char *)"\n"
-		"DisplayList_run(DisplayList self, Device dw, Matrix m, Rect area) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_display_list_s *\n"
-		"dw: struct DeviceWrapper *\n"
-		"m: struct fz_matrix_s const *\n"
-		"area: struct fz_rect_s const *\n"
-		"\n"
-		""},
+	 { (char *)"delete_DisplayList", _wrap_delete_DisplayList, METH_VARARGS, (char *)"delete_DisplayList(DisplayList self)"},
+	 { (char *)"DisplayList_run", _wrap_DisplayList_run, METH_VARARGS, (char *)"DisplayList_run(DisplayList self, Device dw, Matrix m, Rect area) -> int"},
 	 { (char *)"DisplayList_swigregister", DisplayList_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_TextSheet", _wrap_new_TextSheet, METH_VARARGS, (char *)"new_TextSheet() -> TextSheet"},
-	 { (char *)"delete_TextSheet", _wrap_delete_TextSheet, METH_VARARGS, (char *)"\n"
-		"delete_TextSheet(TextSheet self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_stext_sheet_s *\n"
-		"\n"
-		""},
+	 { (char *)"delete_TextSheet", _wrap_delete_TextSheet, METH_VARARGS, (char *)"delete_TextSheet(TextSheet self)"},
 	 { (char *)"TextSheet_swigregister", TextSheet_swigregister, METH_VARARGS, NULL},
-	 { (char *)"TextPage_len_set", _wrap_TextPage_len_set, METH_VARARGS, (char *)"\n"
-		"TextPage_len_set(TextPage self, int len)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_stext_page_s *\n"
-		"len: int\n"
-		"\n"
-		""},
-	 { (char *)"TextPage_len_get", _wrap_TextPage_len_get, METH_VARARGS, (char *)"\n"
-		"TextPage_len_get(TextPage self) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_stext_page_s *\n"
-		"\n"
-		""},
+	 { (char *)"TextPage_len_set", _wrap_TextPage_len_set, METH_VARARGS, (char *)"TextPage_len_set(TextPage self, int len)"},
+	 { (char *)"TextPage_len_get", _wrap_TextPage_len_get, METH_VARARGS, (char *)"TextPage_len_get(TextPage self) -> int"},
 	 { (char *)"new_TextPage", _wrap_new_TextPage, METH_VARARGS, (char *)"new_TextPage() -> TextPage"},
-	 { (char *)"delete_TextPage", _wrap_delete_TextPage, METH_VARARGS, (char *)"\n"
-		"delete_TextPage(TextPage self)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_stext_page_s *\n"
-		"\n"
-		""},
-	 { (char *)"TextPage_search", _wrap_TextPage_search, METH_VARARGS, (char *)"\n"
-		"TextPage_search(TextPage self, char const * needle, int hit_max=16) -> Rect\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_stext_page_s *\n"
-		"needle: char const *\n"
-		"hit_max: int\n"
-		"\n"
-		""},
-	 { (char *)"TextPage_extractText", _wrap_TextPage_extractText, METH_VARARGS, (char *)"\n"
-		"TextPage_extractText(TextPage self) -> struct fz_buffer_s *\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_stext_page_s *\n"
-		"\n"
-		""},
-	 { (char *)"TextPage_extractXML", _wrap_TextPage_extractXML, METH_VARARGS, (char *)"\n"
-		"TextPage_extractXML(TextPage self) -> struct fz_buffer_s *\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_stext_page_s *\n"
-		"\n"
-		""},
-	 { (char *)"TextPage_extractHTML", _wrap_TextPage_extractHTML, METH_VARARGS, (char *)"\n"
-		"TextPage_extractHTML(TextPage self) -> struct fz_buffer_s *\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_stext_page_s *\n"
-		"\n"
-		""},
-	 { (char *)"TextPage_extractJSON", _wrap_TextPage_extractJSON, METH_VARARGS, (char *)"\n"
-		"TextPage_extractJSON(TextPage self) -> struct fz_buffer_s *\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"self: struct fz_stext_page_s *\n"
-		"\n"
-		""},
+	 { (char *)"delete_TextPage", _wrap_delete_TextPage, METH_VARARGS, (char *)"delete_TextPage(TextPage self)"},
+	 { (char *)"TextPage_search", _wrap_TextPage_search, METH_VARARGS, (char *)"TextPage_search(TextPage self, char const * needle, int hit_max=16) -> Rect"},
+	 { (char *)"TextPage_extractText", _wrap_TextPage_extractText, METH_VARARGS, (char *)"TextPage_extractText(TextPage self) -> struct fz_buffer_s *"},
+	 { (char *)"TextPage_extractXML", _wrap_TextPage_extractXML, METH_VARARGS, (char *)"TextPage_extractXML(TextPage self) -> struct fz_buffer_s *"},
+	 { (char *)"TextPage_extractHTML", _wrap_TextPage_extractHTML, METH_VARARGS, (char *)"TextPage_extractHTML(TextPage self) -> struct fz_buffer_s *"},
+	 { (char *)"TextPage_extractJSON", _wrap_TextPage_extractJSON, METH_VARARGS, (char *)"TextPage_extractJSON(TextPage self) -> struct fz_buffer_s *"},
 	 { (char *)"TextPage_swigregister", TextPage_swigregister, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
@@ -10509,6 +9981,7 @@ static swig_type_info _swigt__p_fz_point_s = {"_p_fz_point_s", "struct fz_point_
 static swig_type_info _swigt__p_fz_rect_s = {"_p_fz_rect_s", "struct fz_rect_s *|fz_rect_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_fz_stext_page_s = {"_p_fz_stext_page_s", "struct fz_stext_page_s *|fz_stext_page_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_fz_stext_sheet_s = {"_p_fz_stext_sheet_s", "struct fz_stext_sheet_s *|fz_stext_sheet_s *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_int = {"_p_int", "int *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_DeviceWrapper,
@@ -10528,6 +10001,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_fz_rect_s,
   &_swigt__p_fz_stext_page_s,
   &_swigt__p_fz_stext_sheet_s,
+  &_swigt__p_int,
 };
 
 static swig_cast_info _swigc__p_DeviceWrapper[] = {  {&_swigt__p_DeviceWrapper, 0, 0, 0},{0, 0, 0, 0}};
@@ -10547,6 +10021,7 @@ static swig_cast_info _swigc__p_fz_point_s[] = {  {&_swigt__p_fz_point_s, 0, 0, 
 static swig_cast_info _swigc__p_fz_rect_s[] = {  {&_swigt__p_fz_rect_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_stext_page_s[] = {  {&_swigt__p_fz_stext_page_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_stext_sheet_s[] = {  {&_swigt__p_fz_stext_sheet_s, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_DeviceWrapper,
@@ -10566,6 +10041,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_fz_rect_s,
   _swigc__p_fz_stext_page_s,
   _swigc__p_fz_stext_sheet_s,
+  _swigc__p_int,
 };
 
 

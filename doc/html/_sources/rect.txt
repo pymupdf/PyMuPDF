@@ -55,7 +55,7 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
       Transforms ``Rect`` with a :ref:`Matrix`.
 
       :param `m`: The matrix to be used for the transformation.
-      :param `m`: :ref:`Matrix`
+      :type `m`: :ref:`Matrix`
       :rtype: :ref:`Rect`
 
    .. method:: getRectArea(unit = 'pt')

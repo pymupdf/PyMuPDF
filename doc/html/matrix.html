@@ -50,6 +50,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Matrix</a><ul>
+<li><a class="reference internal" href="#remarks">Remarks</a></li>
 <li><a class="reference internal" href="#shifting">Shifting</a></li>
 <li><a class="reference internal" href="#flipping">Flipping</a></li>
 <li><a class="reference internal" href="#shearing">Shearing</a></li>
@@ -98,7 +99,7 @@
 <blockquote>
 <div><ul class="simple">
 <li>the below methods are just convenience functions - everything they do, can also be achieved by directly manipulating <code class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span></code></li>
-<li>all manipulations can be combined - you can construct a matrix that does a rotate <strong>and</strong> a shear <strong>and</strong> a scale <strong>and</strong> a shift, etc. in one go. If you want to do this, have a look at the <strong>remarks</strong> further down or at the Adobe manual.</li>
+<li>all manipulations can be combined - you can construct a matrix that does a rotate <strong>and</strong> a shear <strong>and</strong> a scale <strong>and</strong> a shift, etc. in one go. If you however choose to do this, do have a look at the <strong>remarks</strong> further down or at the Adobe manual.</li>
 </ul>
 </div></blockquote>
 <table border="1" class="docutils">
@@ -332,7 +333,8 @@
 
 </dd></dl>
 
-<p><strong>Remarks</strong></p>
+<div class="section" id="remarks">
+<h2>Remarks<a class="headerlink" href="#remarks" title="Permalink to this headline">¶</a></h2>
 <p>Obviously, changes of matrix properties and execution of matrix methods can be combined, i.e. executed consecutively. This is done by multiplying the respective matrices.</p>
 <p>Matrix multiplications are <strong>not commutative</strong>, i.e. execution sequence determines the result: a <strong>shift - rotate</strong> does in general not equal a <strong>rotate - shift</strong>. So it can become quite unclear which result a transformation will yield. E.g. if you apply <code class="docutils literal"><span class="pre">preRotate(x)</span></code> to an arbitrary matrix <code class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span></code> you will get matrix <code class="docutils literal"><span class="pre">[a*cos(x)+c*sin(x),</span> <span class="pre">b*cos(x)+d*sin(x),</span> <span class="pre">-a*sin(x)+c*cos(x),</span> <span class="pre">-b*sin(x)+d*cos(x),</span> <span class="pre">e,</span> <span class="pre">f]</span></code>.</p>
 <p>In order to obtain expected results, Adobe therefore recommends the following sequence when applying multiple matrix transformations (see page 206 of their manual):</p>
@@ -345,6 +347,7 @@
 <p>Here are examples to illustrate some of the effects achievable. The following pictures start with a page of the PDF version of this help file. We show what happens when a matrix is being applied (though always full pages are created, only parts are displayed here to save space).</p>
 <p>This is the original page image</p>
 <img alt="_images/original.png" src="_images/original.png" />
+</div>
 <div class="section" id="shifting">
 <h2>Shifting<a class="headerlink" href="#shifting" title="Permalink to this headline">¶</a></h2>
 <p>We transform it with a matrix where <code class="docutils literal"><span class="pre">e</span> <span class="pre">=</span> <span class="pre">100</span></code> (right shift by 100 pixels).</p>
@@ -397,7 +400,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 28. Apr 2016.
+      Last updated on 30. Apr 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
