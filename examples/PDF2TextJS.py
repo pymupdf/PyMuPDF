@@ -33,6 +33,8 @@ def SortBlocks(blocks):
 
     sblocks = []
     for b in blocks:
+        if b["type"] != "text":                  # only look at text blocks
+            continue
         x0 = str(int(round(b["bbox"][0],0))).rjust(4,"0") # x coord in pixels
         y0 = str(int(round(b["bbox"][1],0))).rjust(4,"0") # y coord in pixels
         sortkey = y0 + x0                                # = "yx"

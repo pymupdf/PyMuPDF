@@ -269,6 +269,16 @@ struct fz_document_s {
                 PyObject *o = PySequence_GetItem($input,i);
                 if (PyInt_Check(o)) {
                     $1[i] = (int) PyInt_AsLong(o);
+                    if ($1[i] < 0) {
+                        PyErr_SetString(PyExc_ValueError,"sequence elements must be >= 0");
+                        free($1);
+                        return NULL;
+                        }
+                    if ($1[i] >= fz_count_pages(gctx, arg1)) {
+                        PyErr_SetString(PyExc_ValueError,"sequence elements must be < pageCount");
+                        free($1);
+                        return NULL;
+                        }
                     }
                 else {
                     PyErr_SetString(PyExc_ValueError,"sequence elements must be integers");
@@ -289,6 +299,7 @@ struct fz_document_s {
             pdf_document *pdf = pdf_specifics(gctx, $self);
             if (!pdf) {
                 PyErr_SetString(PyExc_ValueError,"not a valid pdf document");
+                free(liste);
                 return -2;
                 }
             globals glo = { 0 };
@@ -1411,8 +1422,11 @@ fz_send_data_base64(fz_context *ctx, fz_output *out, fz_buffer *buffer)
         int c = buffer->data[3*i];
         int d = buffer->data[3*i+1];
         int e = buffer->data[3*i+2];
-        if ((i & 15) == 0)
-            fz_printf(ctx, out, "\n");
+        /*************************************************/
+        /* JSON decoders do not like interspersed "\n" ! */
+        /*************************************************/
+        //if ((i & 15) == 0)
+        //    fz_printf(ctx, out, "\n");
         fz_printf(ctx, out, "%c%c%c%c", set[c>>2], set[((c&3)<<4)|(d>>4)], set[((d&15)<<2)|(e>>6)], set[e & 63]);
     }
     i *= 3;
@@ -1499,11 +1513,11 @@ fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page)
                 fz_image_block *image = page->blocks[block_n].u.image;
 
                 fz_print_rect_json(ctx, out, &(image->bbox));
-                fz_printf(ctx, out, "\"type\":%d,\"width\":%d,\"height\":%d",
+                fz_printf(ctx, out, "\"imgtype\":%d,\"width\":%d,\"height\":%d,",
                                     image->image->buffer->params.type,
                                     image->image->w,
                                     image->image->h);
-                fz_printf(ctx, out, "\"image\":");
+                fz_printf(ctx, out, "\"image\":\n");
                 if (image->image->buffer == NULL) {
                     fz_printf(ctx, out, "null");
                 } else {

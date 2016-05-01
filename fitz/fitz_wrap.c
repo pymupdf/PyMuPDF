@@ -3769,6 +3769,7 @@ SWIGINTERN int fz_document_s__select(struct fz_document_s *self,int *liste,int a
             pdf_document *pdf = pdf_specifics(gctx, self);
             if (!pdf) {
                 PyErr_SetString(PyExc_ValueError,"not a valid pdf document");
+                free(liste);
                 return -2;
                 }
             globals glo = { 0 };
@@ -4312,8 +4313,11 @@ fz_send_data_base64(fz_context *ctx, fz_output *out, fz_buffer *buffer)
         int c = buffer->data[3*i];
         int d = buffer->data[3*i+1];
         int e = buffer->data[3*i+2];
-        if ((i & 15) == 0)
-            fz_printf(ctx, out, "\n");
+        /*************************************************/
+        /* JSON decoders do not like interspersed "\n" ! */
+        /*************************************************/
+        //if ((i & 15) == 0)
+        //    fz_printf(ctx, out, "\n");
         fz_printf(ctx, out, "%c%c%c%c", set[c>>2], set[((c&3)<<4)|(d>>4)], set[((d&15)<<2)|(e>>6)], set[e & 63]);
     }
     i *= 3;
@@ -4400,11 +4404,11 @@ fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page)
                 fz_image_block *image = page->blocks[block_n].u.image;
 
                 fz_print_rect_json(ctx, out, &(image->bbox));
-                fz_printf(ctx, out, "\"type\":%d,\"width\":%d,\"height\":%d",
+                fz_printf(ctx, out, "\"imgtype\":%d,\"width\":%d,\"height\":%d,",
                                     image->image->buffer->params.type,
                                     image->image->w,
                                     image->image->h);
-                fz_printf(ctx, out, "\"image\":");
+                fz_printf(ctx, out, "\"image\":\n");
                 if (image->image->buffer == NULL) {
                     fz_printf(ctx, out, "null");
                 } else {
@@ -4958,6 +4962,16 @@ SWIGINTERN PyObject *_wrap_Document__select(PyObject *SWIGUNUSEDPARM(self), PyOb
       PyObject *o = PySequence_GetItem(obj1,i);
       if (PyInt_Check(o)) {
         arg2[i] = (int) PyInt_AsLong(o);
+        if (arg2[i] < 0) {
+          PyErr_SetString(PyExc_ValueError,"sequence elements must be >= 0");
+          free(arg2);
+          return NULL;
+        }
+        if (arg2[i] >= fz_count_pages(gctx, arg1)) {
+          PyErr_SetString(PyExc_ValueError,"sequence elements must be < pageCount");
+          free(arg2);
+          return NULL;
+        }
       }
       else {
         PyErr_SetString(PyExc_ValueError,"sequence elements must be integers");

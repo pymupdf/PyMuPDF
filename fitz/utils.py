@@ -23,14 +23,7 @@ Pages not in the list will be deleted.
         raise ValueError("operation on closed document")
     if not doc.name.lower().endswith(("/pdf", ".pdf")):
         raise ValueError("only PDF documents supported")
-    if not isinstance(liste, types.ListType):
-        raise ValueError("must provide a list of pages")
-    for l in liste:
-        if not isinstance(l, numbers.Integral):
-            raise ValueError("must be sequence of integers")
-        if l < 0 or l >= doc.pageCount:
-            raise ValueError("some page numbers outside valid range")
-    doc._select(liste)
+    return doc._select(liste)
 
 #==============================================================================
 # A function for searching string occurrences on a page.
