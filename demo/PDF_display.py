@@ -73,9 +73,9 @@ def getint(v):
         return int(v)
     except ValueError:
         pass
-    a = "0"
     if not isinstance(v, types.StringTypes):
-        return a
+        return 0
+    a = "0"
     for d in v:
         if d in "0123456789":
             a += d
