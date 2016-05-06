@@ -10,7 +10,7 @@ if sys.platform.startswith('linux'):
                                      '/usr/local/include/mupdf'
                                     ],
                        #library_dirs=['<mupdf_and_3rd_party_libraries_dir>'],
-                       libraries=['mupdf', 'mujs', 
+                       libraries=['mupdf', 'mupdfthird', 
                                   'crypto', #openssl is required by mupdf on archlinux
                                   'jbig2dec', 'openjp2', 'jpeg',
                                   'freetype'], # the libraries to link with
