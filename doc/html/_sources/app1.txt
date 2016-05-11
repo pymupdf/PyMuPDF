@@ -49,7 +49,7 @@ This is how each of the tools was used:
 
 **PyMuPDF**:
 ::
- doc = fitz.Document("input.pdf")
+ doc = fitz.open("input.pdf")
  doc.save("output.pdf")
 
 **pdfrw**:
@@ -122,7 +122,7 @@ Here are the results using the same test files as above (again: decimal point an
 
 .. image:: textperformance.png
 
-Again, (Py-) MuPDF is the fastest around. It is between 2.3 and 2.6 times faster than xpdf.
+Again, (Py-) MuPDF is the fastest around. It is 2.3 to 2.6 times faster than xpdf.
 
 ``pdfminer``, as a pure Python solution, of course is comparatively slow: MuPDF is 50 to 60 times faster and xpdf is 23 times faster. These observations in order of magnitude coincide with the statements on this `web site <http://www.unixuser.org/~euske/python/pdfminer/>`_.
 
@@ -143,13 +143,13 @@ We have tested rendering speed of MuPDF against the ``pdftopng.exe``, a command 
 **PyMuPDF invocation:**
 ::
  zoom = 150.0 / 72.0
- mat = fitz.Matrix(1,1).preScale(zoom, zoom)
+ mat = fitz.Matrix(zoom, zoom)
  def ProcessFile(datei):
      print "processing:", datei
-     doc=fitz.Document(datei)
-     for i in range(doc.pageCount):
-         pix = doc.getPagePixmap(i, matrix=mat)
-         pix.writePNG("t-%s.png" % i)
+     doc=fitz.open(datei)
+     for p in fitz.Pages(doc):
+         pix = p.getPixmap(matrix=mat)
+         pix.writePNG("t-%s.png" % p.number)
          pix = None
      doc.close()
      return

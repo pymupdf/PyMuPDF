@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Constants and Enumerations &mdash; PyMuPDF 1.9.0 documentation</title>
+    <title>Constants and Enumerations &mdash; PyMuPDF 1.9.1 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.9.0',
+        VERSION:     '1.9.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
+    <link rel="top" title="PyMuPDF 1.9.1 documentation" href="index.html" />
     <link rel="next" title="Appendix 1: Performance" href="app1.html" />
     <link rel="prev" title="Functions" href="functions.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="functions.html" title="Functions"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -92,8 +92,8 @@
 <h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="35%" />
-<col width="65%" />
+<col width="25%" />
+<col width="75%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Constant</strong></th>
@@ -101,69 +101,29 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><dl class="first last data">
-<dt id="CS_RGB">
-<code class="descname">CS_RGB</code><a class="headerlink" href="#CS_RGB" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-even"><td>CS_RGB</td>
 <td>1 - Type of <a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a> is RGBA</td>
 </tr>
-<tr class="row-odd"><td><dl class="first last data">
-<dt id="CS_GRAY">
-<code class="descname">CS_GRAY</code><a class="headerlink" href="#CS_GRAY" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-odd"><td>CS_GRAY</td>
 <td>2 - Type of <a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a> is GRAY</td>
 </tr>
-<tr class="row-even"><td><dl class="first last data">
-<dt id="CS_CMYK">
-<code class="descname">CS_CMYK</code><a class="headerlink" href="#CS_CMYK" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-even"><td>CS_CMYK</td>
 <td>3 - Type of <a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a> is CMYK</td>
 </tr>
-<tr class="row-odd"><td><dl class="first last data">
-<dt id="csRGB">
-<code class="descname">csRGB</code><a class="headerlink" href="#csRGB" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-odd"><td>csRGB</td>
 <td>= fitz.Colorspace(fitz.CS_RGB)</td>
 </tr>
-<tr class="row-even"><td><dl class="first last data">
-<dt id="csGRAY">
-<code class="descname">csGRAY</code><a class="headerlink" href="#csGRAY" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-even"><td>csGRAY</td>
 <td>= fitz.Colorspace(fitz.CS_GRAY)</td>
 </tr>
-<tr class="row-odd"><td><dl class="first last data">
-<dt id="csCMYK">
-<code class="descname">csCMYK</code><a class="headerlink" href="#csCMYK" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-odd"><td>csCMYK</td>
 <td>= fitz.Colorspace(fitz.CS_CMYK)</td>
 </tr>
-<tr class="row-even"><td><dl class="first last data">
-<dt id="VersionBind">
-<code class="descname">VersionBind</code><a class="headerlink" href="#VersionBind" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
-<td>&#8216;1.9.0&#8217; - string: version of PyMuPDF (this binding)</td>
+<tr class="row-even"><td>VersionBind</td>
+<td>&#8216;1.9.1&#8217; - string: version of PyMuPDF (this binding)</td>
 </tr>
-<tr class="row-odd"><td><dl class="first last data">
-<dt id="VersionFitz">
-<code class="descname">VersionFitz</code><a class="headerlink" href="#VersionFitz" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
-<td>&#8216;1.9&#8217; - string: version of MuPDF / fitz</td>
+<tr class="row-odd"><td>VersionFitz</td>
+<td>&#8216;1.9a&#8217; - string: version of MuPDF / fitz</td>
 </tr>
 </tbody>
 </table>
@@ -173,8 +133,8 @@
 <p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> (link destination type). For details consult <a class="reference external" href="http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf">Adobe PDF Reference sixth edition 1.7 November 2006</a>, chapter 8.2 on page 581 ff.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="40%" />
-<col width="60%" />
+<col width="27%" />
+<col width="73%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Value</strong></th>
@@ -182,52 +142,22 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><dl class="first last data">
-<dt id="LINK_NONE">
-<code class="descname">LINK_NONE</code><a class="headerlink" href="#LINK_NONE" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-even"><td>LINK_NONE</td>
 <td>0 - No destination</td>
 </tr>
-<tr class="row-odd"><td><dl class="first last data">
-<dt id="LINK_GOTO">
-<code class="descname">LINK_GOTO</code><a class="headerlink" href="#LINK_GOTO" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-odd"><td>LINK_GOTO</td>
 <td>1 - Points to a place in this document</td>
 </tr>
-<tr class="row-even"><td><dl class="first last data">
-<dt id="LINK_URI">
-<code class="descname">LINK_URI</code><a class="headerlink" href="#LINK_URI" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-even"><td>LINK_URI</td>
 <td>2 - Points to an URI</td>
 </tr>
-<tr class="row-odd"><td><dl class="first last data">
-<dt id="LINK_LAUNCH">
-<code class="descname">LINK_LAUNCH</code><a class="headerlink" href="#LINK_LAUNCH" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-odd"><td>LINK_LAUNCH</td>
 <td>3 - Launch (open) another document</td>
 </tr>
-<tr class="row-even"><td><dl class="first last data">
-<dt id="LINK_NAMED">
-<code class="descname">LINK_NAMED</code><a class="headerlink" href="#LINK_NAMED" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-even"><td>LINK_NAMED</td>
 <td>4 - Perform some action</td>
 </tr>
-<tr class="row-odd"><td><dl class="first last data">
-<dt id="LINK_GOTOR">
-<code class="descname">LINK_GOTOR</code><a class="headerlink" href="#LINK_GOTOR" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-odd"><td>LINK_GOTOR</td>
 <td>5 - Points to another document</td>
 </tr>
 </tbody>
@@ -235,8 +165,8 @@
 <p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.flags" title="linkDest.flags"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.flags</span></code></a> (link destination flags). <strong>Attention</strong>: The rightmost byte of this integer is a bit field. The values represent boolean indicators showing whether the associated statement is <code class="docutils literal"><span class="pre">True</span></code>.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="42%" />
-<col width="58%" />
+<col width="32%" />
+<col width="68%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Value</strong></th>
@@ -244,60 +174,25 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><dl class="first last data">
-<dt id="LINK_FLAG_L_VALID">
-<code class="descname">LINK_FLAG_L_VALID</code><a class="headerlink" href="#LINK_FLAG_L_VALID" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-even"><td>LINK_FLAG_L_VALID</td>
 <td>1  (bit 0) Top left x value is valid</td>
 </tr>
-<tr class="row-odd"><td><dl class="first last data">
-<dt id="LINK_FLAG_T_VALID">
-<code class="descname">LINK_FLAG_T_VALID</code><a class="headerlink" href="#LINK_FLAG_T_VALID" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-odd"><td>LINK_FLAG_T_VALID</td>
 <td>2  (bit 1) Top left y value is valid</td>
 </tr>
-<tr class="row-even"><td><dl class="first last data">
-<dt id="LINK_FLAG_R_VALID">
-<code class="descname">LINK_FLAG_R_VALID</code><a class="headerlink" href="#LINK_FLAG_R_VALID" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-even"><td>LINK_FLAG_R_VALID</td>
 <td>4  (bit 2) Bottom right x value is valid</td>
 </tr>
-<tr class="row-odd"><td><dl class="first last data">
-<dt id="LINK_FLAG_B_VALID">
-<code class="descname">LINK_FLAG_B_VALID</code><a class="headerlink" href="#LINK_FLAG_B_VALID" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-odd"><td>LINK_FLAG_B_VALID</td>
 <td>8  (bit 3) Bottom right y value is valid</td>
 </tr>
-<tr class="row-even"><td><dl class="first last data">
-<dt id="LINK_FLAG_FIT_H">
-<code class="descname">LINK_FLAG_FIT_H</code><a class="headerlink" href="#LINK_FLAG_FIT_H" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-even"><td>LINK_FLAG_FIT_H</td>
 <td>16 (bit 4) Horizontal fit</td>
 </tr>
-<tr class="row-odd"><td><dl class="first last data">
-<dt id="LINK_FLAG_FIT_V">
-<code class="descname">LINK_FLAG_FIT_V</code><a class="headerlink" href="#LINK_FLAG_FIT_V" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-odd"><td>LINK_FLAG_FIT_V</td>
 <td>32 (bit 5) Vertical fit</td>
 </tr>
-<tr class="row-even"><td><dl class="first last data">
-<dt id="LINK_FLAG_R_IS_ZOOM">
-<code class="descname">LINK_FLAG_R_IS_ZOOM</code><a class="headerlink" href="#LINK_FLAG_R_IS_ZOOM" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</td>
+<tr class="row-even"><td>LINK_FLAG_R_IS_ZOOM</td>
 <td>64 (bit 6) Bottom right x is a zoom figure</td>
 </tr>
 </tbody>
@@ -323,12 +218,12 @@
         <li class="right" >
           <a href="functions.html" title="Functions"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 25. Apr 2016.
+      Last updated on 11. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

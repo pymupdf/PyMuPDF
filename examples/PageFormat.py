@@ -1,92 +1,85 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import types
-PaperSizes = {
-            'A0':'2384x3370',
-            'A1':'1684x2384',
-            'A2':'1190x1684',
-            'A3':'842x1190',
-            'A4':'595x842',
-            'A5':'420x595',
-            'A6':'298x420',
-            'A7':'210x298',
-            'A8':'148x210',
-            'B0':'2835x4008',
-            'B1':'2004x2835',
-            'B2':'1417x2004',
-            'B3':'1001x1417',
-            'B4':'709x1001',
-            'B5':'499x709',
-            'B6':'354x499',
-            'B7':'249x354',
-            'B8':'176x249',
-            'B9':'125x176',
-            'B10':'88x125',
-            'C2':'1837x578',
-            'C3':'578x919',
-            'C4':'919x649',
-            'C5':'649x459',
-            'C6':'459x323',
-            'Invoice':'396x612',
-            'Executive':'522x756',
-            'Letter':'612x792',
-            'Legal':'612x1008',
-            'Ledger':'792x1224',
+'''
+www.din-formate.de
+www.din-formate.info/amerikanische-formate.html
+www.directtools.de/wissen/normen/iso.htm
+'''
+def FindFit(w, h):
+    PaperSizes = {                     # known paper formats @ 72 dpi
+            'A0': [2384, 3370],
+            'A1': [1684, 2384],
+            'A2': [1191, 1684],
+            'A3': [842, 1191],
+            'A4': [595, 842],
+            'A5': [420, 595],
+            'A6': [298, 420],
+            'A7': [210, 298],
+            'A8': [147, 210],
+            'A9': [105, 147],
+            'A10': [74, 105],
+            'B0': [2835, 4008],
+            'B1': [2004, 2835],
+            'B2': [1417, 2004],
+            'B3': [1001, 1417],
+            'B4': [709, 1001],
+            'B5': [499, 709],
+            'B6': [354, 499],
+            'B7': [249, 354],
+            'B8': [176, 249],
+            'B9': [125, 176],
+            'B10': [88, 125],
+            'C0': [2599, 3677],
+            'C1': [1837, 2599],
+            'C2': [1298, 1837],
+            'C3': [918, 1298],
+            'C4': [649, 918],
+            'C5': [459, 649],
+            'C6': [323, 459],
+            'C7': [230, 323],
+            'C8': [162, 230],
+            'C9': [113, 162],
+            'C10': [79, 113],
+            'Tabloid Extra': [864, 1296],
+            'Legal-13': [612, 936],
+            'Commercial': [297, 684],
+            'Monarch': [279, 540],
+            'Card-5x7': [360, 504],
+            'Card-4x6': [288, 432],
+            'Invoice': [396, 612],
+            'Executive': [522, 756],
+            'Letter': [612, 792],
+            'Legal': [612, 1008],
+            'Ledger': [792, 1224],
             }
 
-PaperForms = {
-            '2384x3370':'A0',
-            '1684x2384':'A1',
-            '1190x1684':'A2',
-            '842x1190':'A3',
-            '595x842':'A4',
-            '420x595':'A5',
-            '298x420':'A6',
-            '210x298':'A7',
-            '148x210':'A8',
-            '2835x4008':'B0',
-            '2004x2835':'B1',
-            '1417x2004':'B2',
-            '1001x1417':'B3',
-            '709x1001':'B4',
-            '499x709':'B5',
-            '354x499':'B6',
-            '249x354':'B7',
-            '176x249':'B8',
-            '125x176':'B9',
-            '88x125':'B10',
-            '1837x578':'C2',
-            '578x919':'C3',
-            '919x649':'C4',
-            '649x459':'C5',
-            '459x323':'C6',
-            '396x612':'Invoice',
-            '522x756':'Executive',
-            '612x792':'Letter',
-            '612x1008':'Legal',
-            '792x1224':'Ledger',
-            }
+    wi = int(round(w, 0))              # round parameters
+    hi = int(round(h, 0))
+    if w <= h:                         # create copy with width <= height
+        w1 = wi
+        h1 = hi
+    else:
+        w1 = hi
+        h1 = wi
 
-def PageFormat(doc, page):
-    ''' Returns the paper format of a given document page.
-    Parameters:
-    doc:  a fitz.Document object or None
-    page: a fitz.Page object or an integer. If integer, doc must be a document object
-    '''
-    if isinstance(page, numbers.Number):
-        pg = doc.loadPage(page)
-        r = pg.bound()
+    sw = str(w1)                       # string versions
+    sh = str(h1)
+    
+    # deviation of input from existing forms
+    stab = [abs(w1-s[0])+abs(h1-s[1]) for s in PaperSizes.values()]
+    small = min(stab)                  # minimum deviation
+    idx = stab.index(small)            # its index
+    f = PaperSizes.keys()[idx]         # name of found paper format
+
+    if w <= h:                         # if input width <= height,
+        ff = f + "-P"                  # it is a portait
+        ss = str(PaperSizes[f][0]) + " x " + str(PaperSizes[f][1])
     else:
-        r = page.bound()
-    o = "-P"
-    w = int(round(r.width,0))
-    h = int(round(r.height,0))
-    if r.width <= r.height:
-        txt = str(w) + "x" + str(h)
-    else:
-        txt = str(h) + "x" + str(w)
-        o = "-L"
-    if txt in PaperForms:
-        return PaperForms[txt] + o
-    else:
-        return "%sx%s (other)" % (w, h)
+        ff = f + "-L"                  # else landscape
+        ss = str(PaperSizes[f][1]) + " x " + str(PaperSizes[f][0])
+
+    if small == 0:                     # exact fit ?
+        return ff                      # done
+    rtxt = "%s x %s (other), closest: %s = %s"   # else show best fit
+    rtxt = rtxt % (sw, sh, ff, ss)
+    return rtxt

@@ -3775,6 +3775,7 @@ SWIGINTERN int fz_document_s__select(struct fz_document_s *self,int *liste,int a
             globals glo = { 0 };
             glo.ctx = gctx;
             glo.doc = pdf;
+            /* code of retainpages copied from source fz_clean_file.c */
             retainpages(gctx, &glo, argc, liste);
             return 0;
         }
@@ -4009,6 +4010,76 @@ SWIGINTERN int fz_pixmap_s_writePNG(struct fz_pixmap_s *self,char *filename,int 
             fz_catch(gctx)
                 return 1;
             return 0;
+        }
+SWIGINTERN struct fz_buffer_s *fz_pixmap_s_getPNGData(struct fz_pixmap_s *self,int savealpha){
+            struct fz_buffer_s *res = NULL;
+            fz_output *out;
+            fz_try(gctx) {
+                res = fz_new_buffer(gctx, 1024);
+                out = fz_new_output_with_buffer(gctx, res);
+                fz_write_pixmap_as_png(gctx, out, self, savealpha);
+                fz_drop_output(gctx, out);
+            }
+            fz_catch(gctx)
+                 ;
+            return res;
+        }
+SWIGINTERN PyObject *fz_pixmap_s_samplesRGB(struct fz_pixmap_s *self){
+            if (self->n != 4) return NULL;  /* RGB colorspaces onbly */
+            char *t;
+            char *s;
+            char *out;
+            int i;
+            int j;
+            int size;
+            PyObject *res;                   /* feedback bytearrarray */
+            s = (char *)self->samples;      // point to samples
+            size = self->w * self->h * 3;  // new area is 3/4 of samples
+            out = (char *)malloc(size);      // allocate it
+            if (!out) {                      // got it?
+                PyErr_SetString(PyExc_Exception, "cannot allocate samplesRGB");
+                return NULL;
+            }
+            t = (char *)out;                 // point to it
+            for (i=0; i<self->w; i++) {
+                for (j=0; j<self->h; j++) {
+                    t[0] = s[0];
+                    t[1] = s[1];
+                    t[2] = s[2];
+                    t = t + 3;
+                    s = s + 4;
+                }
+            }
+            res = (PyObject *)PyByteArray_FromStringAndSize((const char *)out, size);
+            free(out);
+            return res;
+        }
+SWIGINTERN PyObject *fz_pixmap_s_samplesAlpha(struct fz_pixmap_s *self){
+            char *t;
+            char *s;
+            char *out;
+            int i;
+            int j;
+            int size;
+            PyObject *res;                   /* feedback bytearrarray */
+            s = (char *)self->samples;      // point to samples
+            size = self->w * self->h;      // new area is 1/4 of samples
+            out = (char *)malloc(size);      // allocate it
+            if (!out) {                      // got it?
+                PyErr_SetString(PyExc_Exception, "cannot allocate samplesAlpha");
+                return NULL;
+            }
+            t = (char *)out;                 // point to it
+            for (i=0; i<self->w; i++) {
+                for (j=0; j<self->h; j++) {
+                    t[0] = s[self->n - 1];
+                    t = t + 1;
+                    s = s + self->n;
+                }
+            }
+            res = (PyObject *)PyByteArray_FromStringAndSize((const char *)out, size);
+            free(out);
+            return res;
         }
 SWIGINTERN int fz_pixmap_s__writeIMG(struct fz_pixmap_s *self,char *filename,int format,int savealpha){
             fz_try(gctx) {
@@ -4313,9 +4384,9 @@ fz_send_data_base64(fz_context *ctx, fz_output *out, fz_buffer *buffer)
         int c = buffer->data[3*i];
         int d = buffer->data[3*i+1];
         int e = buffer->data[3*i+2];
-        /*************************************************/
-        /* JSON decoders do not like interspersed "\n" ! */
-        /*************************************************/
+        /**************************************************/
+        /* JSON decoders do not like "\n" in base64 data! */
+        /**************************************************/
         //if ((i & 15) == 0)
         //    fz_printf(ctx, out, "\n");
         fz_printf(ctx, out, "%c%c%c%c", set[c>>2], set[((c&3)<<4)|(d>>4)], set[((d&15)<<2)|(e>>6)], set[e & 63]);
@@ -4948,6 +5019,8 @@ SWIGINTERN PyObject *_wrap_Document__select(PyObject *SWIGUNUSEDPARM(self), PyOb
   arg1 = (struct fz_document_s *)(argp1);
   {
     int i;
+    /* a little dirty: "arg1" is the document object */
+    int pageCount = fz_count_pages(gctx, arg1);
     if (!PySequence_Check(obj1)) {
       PyErr_SetString(PyExc_ValueError,"expected a sequence");
       return NULL;
@@ -4962,19 +5035,14 @@ SWIGINTERN PyObject *_wrap_Document__select(PyObject *SWIGUNUSEDPARM(self), PyOb
       PyObject *o = PySequence_GetItem(obj1,i);
       if (PyInt_Check(o)) {
         arg2[i] = (int) PyInt_AsLong(o);
-        if (arg2[i] < 0) {
-          PyErr_SetString(PyExc_ValueError,"sequence elements must be >= 0");
-          free(arg2);
-          return NULL;
-        }
-        if (arg2[i] >= fz_count_pages(gctx, arg1)) {
-          PyErr_SetString(PyExc_ValueError,"sequence elements must be < pageCount");
+        if ((arg2[i] < 0) | (arg2[i] >= pageCount)) {
+          PyErr_SetString(PyExc_ValueError,"page numbers outside range 0 <= n < pageCount");
           free(arg2);
           return NULL;
         }
       }
       else {
-        PyErr_SetString(PyExc_ValueError,"sequence elements must be integers");
+        PyErr_SetString(PyExc_ValueError,"page numbers must be integers");
         free(arg2);
         return NULL;
       }
@@ -7244,6 +7312,86 @@ SWIGINTERN PyObject *_wrap_Pixmap_writePNG(PyObject *SWIGUNUSEDPARM(self), PyObj
   return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pixmap_getPNGData(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  int arg2 = (int) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  struct fz_buffer_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O|O:Pixmap_getPNGData",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_getPNGData" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  if (obj1) {
+    ecode2 = SWIG_AsVal_int(obj1, &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Pixmap_getPNGData" "', argument " "2"" of type '" "int""'");
+    } 
+    arg2 = (int)(val2);
+  }
+  result = (struct fz_buffer_s *)fz_pixmap_s_getPNGData(arg1,arg2);
+  {
+    resultobj = SWIG_FromCharPtrAndSize((const char *)result->data, result->len);
+    fz_drop_buffer(gctx, result);
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pixmap_samplesRGB(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Pixmap_samplesRGB",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_samplesRGB" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  result = (PyObject *)fz_pixmap_s_samplesRGB(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pixmap_samplesAlpha(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Pixmap_samplesAlpha",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_samplesAlpha" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  result = (PyObject *)fz_pixmap_s_samplesAlpha(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
   return NULL;
 }
 
@@ -9859,6 +10007,9 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Pixmap_copyPixmap", _wrap_Pixmap_copyPixmap, METH_VARARGS, (char *)"Pixmap_copyPixmap(Pixmap self, Pixmap src, IRect bbox)"},
 	 { (char *)"Pixmap_getSize", _wrap_Pixmap_getSize, METH_VARARGS, (char *)"Pixmap_getSize(Pixmap self) -> int"},
 	 { (char *)"Pixmap_writePNG", _wrap_Pixmap_writePNG, METH_VARARGS, (char *)"Pixmap_writePNG(Pixmap self, char * filename, int savealpha=0) -> int"},
+	 { (char *)"Pixmap_getPNGData", _wrap_Pixmap_getPNGData, METH_VARARGS, (char *)"Pixmap_getPNGData(Pixmap self, int savealpha=0) -> struct fz_buffer_s *"},
+	 { (char *)"Pixmap_samplesRGB", _wrap_Pixmap_samplesRGB, METH_VARARGS, (char *)"Pixmap_samplesRGB(Pixmap self) -> PyObject *"},
+	 { (char *)"Pixmap_samplesAlpha", _wrap_Pixmap_samplesAlpha, METH_VARARGS, (char *)"Pixmap_samplesAlpha(Pixmap self) -> PyObject *"},
 	 { (char *)"Pixmap__writeIMG", _wrap_Pixmap__writeIMG, METH_VARARGS, (char *)"Pixmap__writeIMG(Pixmap self, char * filename, int format, int savealpha=0) -> int"},
 	 { (char *)"Pixmap_invertIRect", _wrap_Pixmap_invertIRect, METH_VARARGS, (char *)"\n"
 		"invertIRect()\n"

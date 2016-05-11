@@ -13,7 +13,7 @@ The following is a collection of commodity functions to simplify the use of PyMu
 def select(*arg):
     '''select([list of page numbers])\nSelect document pages.
 Parameters:\nlist: list of page numbers to retain.\n
-Pages not in the list will be deleted.
+Pages not in the list will be deleted. Pages can occur multiple times and in any order.
     '''
     if len(arg) != 2:
         raise ValueError("list of pages is required")
@@ -478,3 +478,40 @@ savealpha: whether to save the alpha channel
     rc = pix._writeIMG(filename, c_output, savealpha)
 
     return rc
+
+class Pages():
+    ''' Creates an iterator over a document's set of pages'''
+    def __init__(self, doc):
+        if not getattr(doc, "pageCount", None):
+            raise ValueError("'%s' is not a valid fitz.Document" %(doc,))
+        self.pno      = -1
+        self.max      = doc.pageCount - 1
+        self.file     = doc.name
+        self.isStream = doc.streamlen > 0
+        self.doc      = repr(doc)
+        self.parent   = doc
+        self.page     = None
+        
+    def __getitem__(self, i):
+        self.page = None
+        if i > self.max:
+            raise StopIteration("page does not exist")
+        if i < 0:
+            raise ValueError("page number cannot be < 0")
+        self.page = self.parent.loadPage(i)
+        return self.page
+    
+    def __len__(self):
+        return self.parent.pageCount
+    
+    def __del__(self):
+        self.page = None
+    
+    def next(self):
+        self.page = None
+        self.pno += 1
+        if self.pno > self.max:
+            self.page = None
+            raise StopIteration
+        self.page = self.parent.loadPage(self.pno)
+        return self.page

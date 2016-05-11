@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Appendix 1: Performance &mdash; PyMuPDF 1.9.0 documentation</title>
+    <title>Appendix 1: Performance &mdash; PyMuPDF 1.9.1 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.9.0',
+        VERSION:     '1.9.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
+    <link rel="top" title="PyMuPDF 1.9.1 documentation" href="index.html" />
     <link rel="next" title="Appendix 2: Details on Text Extraction" href="app2.html" />
     <link rel="prev" title="Constants and Enumerations" href="vars.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="vars.html" title="Constants and Enumerations"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -133,7 +133,7 @@
 </table>
 <p>This is how each of the tools was used:</p>
 <p><strong>PyMuPDF</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="s2">&quot;input.pdf&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;input.pdf&quot;</span><span class="p">)</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;output.pdf&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -183,7 +183,7 @@
 <p>For demonstration purposes, we have included a version of <code class="docutils literal"><span class="pre">GetText(doc,</span> <span class="pre">output</span> <span class="pre">=</span> <span class="pre">&quot;json&quot;)</span></code>, that also re-arranges the output according to occurrence on the page.</p>
 <p>Here are the results using the same test files as above (again: decimal point and comma reversed):</p>
 <img alt="_images/textperformance.png" src="_images/textperformance.png" />
-<p>Again, (Py-) MuPDF is the fastest around. It is between 2.3 and 2.6 times faster than xpdf.</p>
+<p>Again, (Py-) MuPDF is the fastest around. It is 2.3 to 2.6 times faster than xpdf.</p>
 <p><code class="docutils literal"><span class="pre">pdfminer</span></code>, as a pure Python solution, of course is comparatively slow: MuPDF is 50 to 60 times faster and xpdf is 23 times faster. These observations in order of magnitude coincide with the statements on this <a class="reference external" href="http://www.unixuser.org/~euske/python/pdfminer/">web site</a>.</p>
 </div>
 <div class="section" id="part-3-image-rendering">
@@ -195,13 +195,13 @@
 </div>
 <p><strong>PyMuPDF invocation:</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">zoom</span> <span class="o">=</span> <span class="mf">150.0</span> <span class="o">/</span> <span class="mf">72.0</span>
-<span class="n">mat</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">preScale</span><span class="p">(</span><span class="n">zoom</span><span class="p">,</span> <span class="n">zoom</span><span class="p">)</span>
+<span class="n">mat</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="n">zoom</span><span class="p">,</span> <span class="n">zoom</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">ProcessFile</span><span class="p">(</span><span class="n">datei</span><span class="p">):</span>
     <span class="nb">print</span> <span class="s2">&quot;processing:&quot;</span><span class="p">,</span> <span class="n">datei</span>
-    <span class="n">doc</span><span class="o">=</span><span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">datei</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="p">):</span>
-        <span class="n">pix</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getPagePixmap</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">matrix</span><span class="o">=</span><span class="n">mat</span><span class="p">)</span>
-        <span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s2">&quot;t-</span><span class="si">%s</span><span class="s2">.png&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">doc</span><span class="o">=</span><span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">datei</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pages</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+        <span class="n">pix</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">getPixmap</span><span class="p">(</span><span class="n">matrix</span><span class="o">=</span><span class="n">mat</span><span class="p">)</span>
+        <span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s2">&quot;t-</span><span class="si">%s</span><span class="s2">.png&quot;</span> <span class="o">%</span> <span class="n">p</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
         <span class="n">pix</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">doc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span>
@@ -238,12 +238,12 @@
         <li class="right" >
           <a href="vars.html" title="Constants and Enumerations"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 26. Apr 2016.
+      Last updated on 11. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

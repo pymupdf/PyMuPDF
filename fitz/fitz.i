@@ -252,9 +252,11 @@ struct fz_document_s {
             return errors;
         }
 
-        /* typemap for Python list of integers */
+        /* typemap for Python list of integers (page numbers) */
         %typemap(in) (int *liste, int argc) {
             int i;
+            /* a little dirty: "arg1" is the document object */
+            int pageCount = fz_count_pages(gctx, arg1);
             if (!PySequence_Check($input)) {
                 PyErr_SetString(PyExc_ValueError,"expected a sequence");
                 return NULL;
@@ -269,19 +271,14 @@ struct fz_document_s {
                 PyObject *o = PySequence_GetItem($input,i);
                 if (PyInt_Check(o)) {
                     $1[i] = (int) PyInt_AsLong(o);
-                    if ($1[i] < 0) {
-                        PyErr_SetString(PyExc_ValueError,"sequence elements must be >= 0");
-                        free($1);
-                        return NULL;
-                        }
-                    if ($1[i] >= fz_count_pages(gctx, arg1)) {
-                        PyErr_SetString(PyExc_ValueError,"sequence elements must be < pageCount");
+                    if (($1[i] < 0) | ($1[i] >= pageCount)) {
+                        PyErr_SetString(PyExc_ValueError,"page numbers outside range 0 <= n < pageCount");
                         free($1);
                         return NULL;
                         }
                     }
                 else {
-                    PyErr_SetString(PyExc_ValueError,"sequence elements must be integers");
+                    PyErr_SetString(PyExc_ValueError,"page numbers must be integers");
                     free($1);
                     return NULL;
                     }
@@ -305,6 +302,7 @@ struct fz_document_s {
             globals glo = { 0 };
             glo.ctx = gctx;
             glo.doc = pdf;
+            /* code of retainpages copied from source fz_clean_file.c */
             retainpages(gctx, &glo, argc, liste);
             return 0;
         }
@@ -774,8 +772,96 @@ struct fz_pixmap_s
             return 0;
         }
 
+        /**********************/
+        /* getPNGData         */
+        /**********************/
+        struct fz_buffer_s *getPNGData(int savealpha=0) {
+            struct fz_buffer_s *res = NULL;
+            fz_output *out;
+            fz_try(gctx) {
+                res = fz_new_buffer(gctx, 1024);
+                out = fz_new_output_with_buffer(gctx, res);
+                fz_write_pixmap_as_png(gctx, out, $self, savealpha);
+                fz_drop_output(gctx, out);
+            }
+            fz_catch(gctx)
+                 ;
+            return res;
+        }
+
+        /**************************************/
+        /* samplesRGB                         */
+        /* utility to extract samples data    */
+        /* without the alpha bytes (RGB only) */
+        /**************************************/
+
+        PyObject *samplesRGB() {
+            if ($self->n != 4) return NULL;  /* RGB colorspaces onbly */
+            char *t;
+            char *s;
+            char *out;
+            int i;
+            int j;
+            int size;
+            PyObject *res;                   /* feedback bytearrarray */
+            s = (char *)$self->samples;      // point to samples
+            size = $self->w * $self->h * 3;  // new area is 3/4 of samples
+            out = (char *)malloc(size);      // allocate it
+            if (!out) {                      // got it?
+                PyErr_SetString(PyExc_Exception, "cannot allocate samplesRGB");
+                return NULL;
+            }
+            t = (char *)out;                 // point to it
+            for (i=0; i<$self->w; i++) {
+                for (j=0; j<$self->h; j++) {
+                    t[0] = s[0];
+                    t[1] = s[1];
+                    t[2] = s[2];
+                    t = t + 3;
+                    s = s + 4;
+                }
+            }
+            res = (PyObject *)PyByteArray_FromStringAndSize((const char *)out, size);
+            free(out);
+            return res;
+        }
+
+        /**************************************/
+        /* samplesAlpha                       */
+        /* utility to extract the alpha bytes */
+        /* out of the samples area            */
+        /**************************************/
+
+        PyObject *samplesAlpha() {
+            char *t;
+            char *s;
+            char *out;
+            int i;
+            int j;
+            int size;
+            PyObject *res;                   /* feedback bytearrarray */
+            s = (char *)$self->samples;      // point to samples
+            size = $self->w * $self->h;      // new area is 1/4 of samples
+            out = (char *)malloc(size);      // allocate it
+            if (!out) {                      // got it?
+                PyErr_SetString(PyExc_Exception, "cannot allocate samplesAlpha");
+                return NULL;
+            }
+            t = (char *)out;                 // point to it
+            for (i=0; i<$self->w; i++) {
+                for (j=0; j<$self->h; j++) {
+                    t[0] = s[$self->n - 1];
+                    t = t + 1;
+                    s = s + $self->n;
+                }
+            }
+            res = (PyObject *)PyByteArray_FromStringAndSize((const char *)out, size);
+            free(out);
+            return res;
+        }
+
         /************************/
-        /* _writeIMG           */
+        /* _writeIMG            */
         /************************/
         %exception _writeIMG {
             $action
@@ -1422,9 +1508,9 @@ fz_send_data_base64(fz_context *ctx, fz_output *out, fz_buffer *buffer)
         int c = buffer->data[3*i];
         int d = buffer->data[3*i+1];
         int e = buffer->data[3*i+2];
-        /*************************************************/
-        /* JSON decoders do not like interspersed "\n" ! */
-        /*************************************************/
+        /**************************************************/
+        /* JSON decoders do not like "\n" in base64 data! */
+        /**************************************************/
         //if ((i & 15) == 0)
         //    fz_printf(ctx, out, "\n");
         fz_printf(ctx, out, "%c%c%c%c", set[c>>2], set[((c&3)<<4)|(d>>4)], set[((d&15)<<2)|(e>>6)], set[e & 63]);

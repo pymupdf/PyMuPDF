@@ -13,6 +13,7 @@ import fitz.utils
 # copy functions to their respective fitz classes
 fitz.open                   = fitz.Document
 fitz.Document.getToC        = fitz.utils.getToC
+fitz.Pages                  = fitz.utils.Pages
 fitz.Document.select        = fitz.utils.select
 fitz.Document.getPagePixmap = fitz.utils.getPagePixmap
 fitz.Document.getPageText   = fitz.utils.getPageText

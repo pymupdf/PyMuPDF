@@ -138,9 +138,9 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
     .. method:: select(list)
 
-      Retains only those pages in the document that occur in the list. Empty lists or elements outside the range 0 to ``doc.pageCount - 1`` will cause a ``ValueError``. For more details see remarks at the bottom or this chapter. Only PDF documents are supported by this method.
+      Retains only those pages in the document that occur in the list. Empty lists or elements outside the range ``0 <= page < doc.pageCount`` will cause a ``ValueError``. For more details see remarks at the bottom or this chapter. Only PDF documents are supported by this method.
 
-      :param `list`: A list of integers (zero-based) naming the pages to be included. Pages not occurring in the list will be deleted (from memory) and become unavailable until the document is reopened. Page numbers can occur multiple times and be in any order.
+      :param `list`: A list (or tuple) of integers (zero-based) naming the pages to be included. Pages not occurring in the list will be deleted (from memory) and become unavailable until the document is reopened. Page numbers can occur multiple times and be in any order.
 
       :type `list`: list
 
@@ -244,6 +244,8 @@ Page numbers in the list need not be unique nor be in any particular sequence. T
 
 You can execute several selections in a row. The document structure will be kept updated.
 
+This also means, that any document information from before this method may no longer be valid. This is especially true for old page objects, table of contents and the ``pageCount`` property.
+
 Any of those actions will become permanent only with a ``doc.save()``. Do not forget to specify the ``garbage=3`` option to eventually reduce the resulting document's size.
 
 It should also be noted, that this method **preserves all links, annotations and bookmarks** that are still valid. In other words: deleting pages only deletes references that would otherwise point to nowhere.
@@ -251,17 +253,26 @@ It should also be noted, that this method **preserves all links, annotations and
 Examples
 ---------
 
-Create a document copy with only pages containing text:
+Create a document copy deleting pages with no text:
 ::
  import fitz
  doc = fitz.open("any.pdf")
  r = list(range(doc.pageCount))                 # list of all pages
- for i in list(range(doc.pageCount)):
-     txt = doc.getPageText(i)                   # get the page's text
+ for p in fitz.Pages(doc):
+     txt = p.getText()                          # get the page's text
      if not txt:                                # nothing there
-         r.remove(i)                            # remove page number from list
+         r.remove(p.number)                     # remove page number from list
  doc.select(r)                                  # apply the list
  doc.save("out.pdf", garbage=3)                 # save the resulting PDF
+
+
+Create a sub document with the odd pages:
+::
+ import fitz
+ doc = fitz.open("any.pdf")
+ r = [i for i in list(range(doc.pageCount)) if i%2 > 0]
+ doc.select(r)                                  # apply the list
+ doc.save("any-odd.pdf", garbage=3)             # save PDF with the odd pages
 
 
 Concatenate a document with itself:
@@ -271,7 +282,7 @@ Concatenate a document with itself:
  r = list(range(doc.pageCount))
  r += r                                         # turn PDF into a copy of itself
  doc.select(r)
- doc.save("out.pdf", garbage=3)
+ doc.save("out.pdf")                            # contains pages 0,...,n,0,...,n of <any.pdf>
 
 Create document copy in reverse page order:
 ::
@@ -279,4 +290,4 @@ Create document copy in reverse page order:
  doc = fitz.open("any.pdf")
  r = list(range(doc.pageCount-1, -1, -1))
  doc.select(r)
- doc.save("out.pdf", garbage=3)
+ doc.save("out.pdf")

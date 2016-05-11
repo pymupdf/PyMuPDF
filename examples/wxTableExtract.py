@@ -20,7 +20,7 @@ import fitz
 import wx
 import os
 from ParseTab import ParseTab
-from PageFormat import PageFormat
+from PageFormat import FindFit
 from wx.lib.embeddedimage import PyEmbeddedImage
 #==============================================================================
 # The following data has been created by the wxPython tool img2py.py
@@ -67,9 +67,9 @@ def getint(v):
         return int(v)
     except ValueError:
         pass
-    a = "0"
     if not isinstance(v, types.StringTypes):
-        return a
+        return 0
+    a = "0"
     for d in v:
         if d in "0123456789":
             a += d
@@ -673,10 +673,9 @@ class PDFdisplay (wx.Dialog):
         # get Pixmap of a page
         p = self.doc.loadPage(pg_nr - 1)
         pix = p.getPixmap()
-        a = str(pix.samples)                     # string version of pixel area
-        a2 = "".join([a[4*i:4*i+3] for i in range(len(a)/4)]) # RGBA -> RGB
-        bitmap = wx.BitmapFromBuffer(pix.width, pix.height, a2)
-        self.paperform.Label = "Paper format: " + PageFormat(None, p)
+        a = pix.samplesRGB()
+        bitmap = wx.BitmapFromBuffer(pix.width, pix.height, a)
+        self.paperform.Label = "Paper format: " + FindFit(pix.w, pix.h)
         return bitmap
 
     def decrypt_doc(self):

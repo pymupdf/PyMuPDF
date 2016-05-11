@@ -11,29 +11,34 @@ PyMuPDF provides access to all important functions of MuPDF from within a Python
 
 MuPDF stands out among all similar products for its top rendering capability and unsurpassed processing speed.
 
-You can check this out yourself:
-Compare the various free PDF-viewers. In terms of speed and rendering quality `SumatraPDF <http://www.sumatrapdfreader.org/>`_ ranges at the top (apart from MuPDF's own standalone viewer) - and it is based on  MuPDF!
+Check this out yourself and compare the various free PDF-viewers. In terms of speed and rendering quality `SumatraPDF <http://www.sumatrapdfreader.org/>`_ ranges at the top (apart from MuPDF's own standalone viewer) - since it has changed its library basis to  MuPDF!
 
-While PyMuPDF has been available since several years for an earlier version of MuPDF (1.2), it was until only mid May 2015, that its creator and a few co-workers decided to elevate it to support the current release of MuPDF (first 1,7a  and, since April 2016, 1.9).
+While PyMuPDF has been available since several years for an earlier version of MuPDF (1.2), it was until only mid May 2015, that its creator and a few co-workers decided to elevate it to support the current release of MuPDF (first V1.7a  then V1.8 in November 2016, and V1.9 and V1.9a since April 2016).
 
-And we are determined to keep PyMuPDF also current with future MuPDF versions!
+And we are determined to keep PyMuPDF also current in the future!
 
 PyMuPDF runs and has been tested on Mac, Linux, Windows 7, Windows 10, Python 2 and Python 3 (x86 and x64 versions). Other platforms should work too as long as MuPDF and Python support them.
 
 The main differences compared to version 1.2 are
 
-* A greatly simplified installation procedure: For Windows and Linux platforms it should come down to running the ``python setup.py install`` command once MuPDF has been installed. On Windows there exist pre-generated binary versions, which simplify and speed up installation even more.
+* A greatly simplified installation procedure: For Windows and Linux platforms it should come down to running the usual ``python setup.py install`` command once MuPDF has been installed. On Windows there also exist pre-generated binary versions, which simplify and speed up installation even more.
 
-* The API has changed: it is now simpler and a lot less cryptic.
+* The API has changed: it is now a lot simpler.
 
 * The supported function set has been significantly increased: apart from rendering, MuPDF's traditional strength, we now also offer a wide range of text extraction options.
 
 * Demo code has been extended, and an additional ``examples`` directory is there to contain working programs. Among them are an editor for a document's table of contents, a full featured document joiner and a document-to-text conversion utility.
-
-We invite you to join our efforts by contributing to the the wiki pages, by using what is there - and, of course, by submitting issues and bugs to the site!
 
 Note on the Name ``fitz``
 --------------------------
 The Python import statement for this library is ``import fitz``. Here is the reason why:
 
 The original rendering library for MuPDF was called ``Libart``. "After Artifex Software acquired the MuPDF project, the development focus shifted on writing a new modern graphics library called ``Fitz``. Fitz was originally intended as an R&D project to replace the aging Ghostscript graphics library, but has instead become the rendering engine powering MuPDF." (Quoted from `Wikipedia <https://en.wikipedia.org/wiki/MuPDF>`_).
+
+License
+--------
+PyMuPDF is distributed under GNU GPL V3 or later.
+
+MuPDF is distributed under a variation of it: the **GNU AFFERO GPL V3**. While in earlier days this license has been more restrictive, version 3 is in effect not any more than GNU GPL. There are just some technical details on how / where you must make available any changes you might have made make to the **MuPDF library**. Other than that, nothing prevents you to distribute and even sell software you have built on the basis of MuPDF.
+
+If you use the pre-built Windows binary installation, then both, the GNU AFFERO GPL and the `UPX license <http://upx.sourceforge.net/upx-license.html>`_ automatically apply.

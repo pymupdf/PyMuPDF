@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Changes in Version 1.9.0 &mdash; PyMuPDF 1.9.0 documentation</title>
+    <title>Changes in Version 1.9.1 &mdash; PyMuPDF 1.9.1 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.9.0',
+        VERSION:     '1.9.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
+    <link rel="top" title="PyMuPDF 1.9.1 documentation" href="index.html" />
     <link rel="next" title="Installation" href="installation.html" />
     <link rel="prev" title="Introduction" href="intro.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="intro.html" title="Introduction"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -76,10 +76,10 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="changes-in-version-1-9-0">
-<h1>Changes in Version 1.9.0<a class="headerlink" href="#changes-in-version-1-9-0" title="Permalink to this headline">¶</a></h1>
-<p>This version of PyMuPDF is based on MuPDF library source code version 1.9 published in April 18, 2016.</p>
-<p>Please have a look at MuPDF&#8217;s website to see which changes and enhancements contained herein.</p>
+  <div class="section" id="changes-in-version-1-9-1">
+<h1>Changes in Version 1.9.1<a class="headerlink" href="#changes-in-version-1-9-1" title="Permalink to this headline">¶</a></h1>
+<p>This version of PyMuPDF is based on MuPDF library source code version 1.9a published on April 21, 2016.</p>
+<p>Please have a look at MuPDF&#8217;s website to see which changes and enhancements are contained herein.</p>
 <p>Changes in these bindings compared to version 1.8.0 are the following:</p>
 <ul class="simple">
 <li>New methods <code class="docutils literal"><span class="pre">getRectArea()</span></code> for both <code class="docutils literal"><span class="pre">fitz.Rect</span></code> and <code class="docutils literal"><span class="pre">fitz.IRect</span></code></li>
@@ -89,9 +89,13 @@
 <li>PyMuPDF classes and methods now all contain  __doc__ strings,  most of them created by SWIG automatically. While the PyMuPDF documentation certainly is more detailed, this feature should help a lot when programming in Python-aware IDEs.</li>
 <li>A new method of <code class="docutils literal"><span class="pre">fitz.Document.getPermits()</span></code> returns the permissions associated with the current access to the document (print, edit, annotate, copy), as a Python dictionary.</li>
 <li>The identity matrix <code class="docutils literal"><span class="pre">fitz.Identity</span></code> is now <strong>immutable</strong>.</li>
-<li>The new method <code class="docutils literal"><span class="pre">fitz.Document.select(list)</span></code> removes all pages from an open document that are not contained in the list.</li>
+<li>The new method <code class="docutils literal"><span class="pre">fitz.Document.select(list)</span></code> removes all pages from an open document that are not contained in the list. Pages can also be duplicated and re-arranged.</li>
 <li>Various improvements and new members in our demo and examples collections. Perhaps most prominently: <code class="docutils literal"><span class="pre">PDF_display</span></code> now supports scrolling with the mouse wheel, and there is a new example program <code class="docutils literal"><span class="pre">wxTableExtract</span></code> which allows to graphically identify and extract table data in documents.</li>
 <li><code class="docutils literal"><span class="pre">fitz.open()</span></code> is an alias of <code class="docutils literal"><span class="pre">fitz.Document()</span></code>.</li>
+<li>New method <code class="docutils literal"><span class="pre">fitz.Pixmap.getPNGData()</span></code> which will return a memory area formatted as a PNG image of the pixmap.</li>
+<li>New technical method <code class="docutils literal"><span class="pre">fitz.Pixmap.samplesRGB()</span></code> providing a <code class="docutils literal"><span class="pre">samples</span></code> version with alpha bytes stripped off (RGB colorspaces only).</li>
+<li>New technical method <code class="docutils literal"><span class="pre">fitz.Pixmap.samplesAlpha()</span></code> providing the alpha bytes only of the <code class="docutils literal"><span class="pre">samples</span></code> area.</li>
+<li>New iterator over a document&#8217;s set of pages.</li>
 </ul>
 </div>
 
@@ -113,12 +117,12 @@
         <li class="right" >
           <a href="intro.html" title="Introduction"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 30. Apr 2016.
+      Last updated on 11. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

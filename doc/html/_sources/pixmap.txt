@@ -28,12 +28,15 @@ Please have a look at the **example** section to see some pixmap usage "at work"
 :meth:`Pixmap.tintWith`       tints a pixmap with a color
 :meth:`Pixmap.gammaWith`      applies a gamma factor to the pixmap
 :meth:`Pixmap.writePNG`       saves a pixmap as a PNG file
+:meth:`Pixmap.getPNGData`     returns a PNG as a memory area
 :meth:`Pixmap.writeImage`     saves a pixmap in a variety of image formats
 :meth:`Pixmap.copyPixmap`     copy parts of another pixmap
 :meth:`Pixmap.getSize`        returns the pixmap's total length
 :meth:`Pixmap.getColorspace`  returns the :ref:`Colorspace` used
 :meth:`Pixmap.getIRect`       returns the :ref:`IRect` used
 :meth:`Pixmap.invertIRect`    invert the pixels of a given area
+:meth:`Pixmap.samplesRGB`     RGB pixel data without alpha bytes
+:meth:`Pixmap.samplesAlpha`   returns the alpha bytes
 :attr:`Pixmap.samples`        the components data for all pixels
 :attr:`Pixmap.height`         height of the region in pixels
 :attr:`Pixmap.width`          width of the region in pixels
@@ -175,6 +178,15 @@ Please have a look at the **example** section to see some pixmap usage "at work"
       :param `savealpha`: Save the alpha channel (``True``) or not (``False`` - the default).
       :type `savealpha`: bool
 
+   .. method:: getPNGData(savealpha=False)
+
+      Returns the pixmap data as an image area in PNG format.
+
+      :param `savealpha`: Save the alpha channel (``True``) or not (``False`` - the default).
+      :type `savealpha`: bool
+
+      :rtype: string
+
    .. method:: writeImage(filename, output="png", savealpha=False)
 
       Saves a pixmap as an image file. This method is an extension to ``writePNG()``. Depending on the output chosen, some or all colorspaces are supported and different file extensions can be chosen. Please see the table below.
@@ -187,6 +199,18 @@ Please have a look at the **example** section to see some pixmap usage "at work"
 
       :param `savealpha`: Save the alpha channel (``True``) or not (``False`` - the default).
       :type `savealpha`: bool
+
+   .. method:: samplesRGB()
+
+      Returns the pixmap samples (see below) without alpha bytes (currently RGB only). This is a technical function: occasionally dialog managers cannot deal with the RGBA format and either expect RGB data only, or eventually a separate alpha channel alongside.
+
+      :rtype: bytearray
+
+   .. method:: samplesAlpha()
+
+      Returns the alpha channel of the pixmap's samples area (see below). This is a technical function: occasionally dialog managers cannot deal with the RGBA format and either expect RGB data only, or eventually a separate alpha channel alongside.
+
+      :rtype: bytearray
 
    .. attribute:: samples
 

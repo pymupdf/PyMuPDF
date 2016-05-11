@@ -1,0 +1,41 @@
+.. raw:: pdf
+
+    PageBreak
+
+.. _Pages:
+
+================
+Pages
+================
+
+This is an iterator class over a document's set of pages.
+
+**Class API**
+
+.. class:: Pages
+
+   .. method:: Pages(doc)
+
+      This creates an iterator over the pages of document ``doc``.
+
+      :param `doc`: An opened document
+      :type `doc`: :ref:`Document`
+
+      :rtype: iterator
+
+Usage
+-------
+The iterator object is constructed as follows:
+::
+ doc = fitz.open(...)
+ pages = fitz.Pages(doc)
+
+ # this will loop through all the pages
+ for page in pages:
+     # do something with the page. page.number contains current page number
+
+ # a single page can now also be accessed by its index
+ assert pages[20] == doc.loadPage(20)
+
+ # the len() function returns the number of pages
+ assert len(fitz.Pages(doc)) == doc.pageCount

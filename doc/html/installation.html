@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Installation &mdash; PyMuPDF 1.9.0 documentation</title>
+    <title>Installation &mdash; PyMuPDF 1.9.1 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.9.0',
+        VERSION:     '1.9.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,9 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
+    <link rel="top" title="PyMuPDF 1.9.1 documentation" href="index.html" />
     <link rel="next" title="Tutorial" href="tutorial.html" />
-    <link rel="prev" title="Changes in Version 1.9.0" href="changes.html" /> 
+    <link rel="prev" title="Changes in Version 1.9.1" href="changes.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -38,9 +38,9 @@
           <a href="tutorial.html" title="Tutorial"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="changes.html" title="Changes in Version 1.9.0"
+          <a href="changes.html" title="Changes in Version 1.9.1"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -52,7 +52,7 @@
 <li><a class="reference internal" href="#step-1-download-pymupdf">Step 1: Download PyMuPDF</a></li>
 <li><a class="reference internal" href="#step-2-download-and-generate-mupdf-1-9">Step 2: Download and Generate MuPDF 1.9</a></li>
 <li><a class="reference internal" href="#step-3-build-setup-pymupdf">Step 3: Build / Setup PyMuPDF</a></li>
-<li><a class="reference internal" href="#note-on-using-upx">Note on using UPX</a></li>
+<li><a class="reference internal" href="#using-upx">Using UPX</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#option-2-install-from-binaries">Option 2: Install from Binaries</a><ul>
@@ -67,7 +67,7 @@
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="changes.html"
-                        title="previous chapter">Changes in Version 1.9.0</a></p>
+                        title="previous chapter">Changes in Version 1.9.1</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="tutorial.html"
                         title="next chapter">Tutorial</a></p>
@@ -99,8 +99,8 @@
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>Installation generally encompasses downloading and generating PyMuPDF and MuPDF from sources.</p>
-<p>This process consists of three steps described below under <strong>&#8220;Option 1&#8221;</strong>.</p>
-<p>If your operating system is Windows 7 or higher (x86 or x64), you can perform a binary setup, detailed out under <strong>&#8220;Option 2&#8221;</strong>. This process is <strong>a lot faster</strong> and requires no compiler, no Visual Studio, no download of MuPDF, even no download of PyMuPDF. You only need to download those binaries from PyMuPDF-optional-material that fit your Python version.</p>
+<p>This process consists of three steps described below under <strong>&#8220;Option 1: Install from Sources&#8221;</strong>.</p>
+<p>If your operating system is Windows 7 or higher (x86 or x64), you can perform a binary setup, detailed out under <strong>&#8220;Option 2: Install from Binaries&#8221;</strong>. This process is <strong>a lot faster</strong> and requires no compiler, no Visual Studio, no download of MuPDF, even no download of PyMuPDF. You only need to download those binaries from PyMuPDF-optional-material or PyPI, that fit your Python version.</p>
 <div class="section" id="option-1-install-from-sources">
 <h2>Option 1: Install from Sources<a class="headerlink" href="#option-1-install-from-sources" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="step-1-download-pymupdf">
@@ -109,9 +109,24 @@
 </div>
 <div class="section" id="step-2-download-and-generate-mupdf-1-9">
 <h3>Step 2: Download and Generate MuPDF 1.9<a class="headerlink" href="#step-2-download-and-generate-mupdf-1-9" title="Permalink to this headline">¶</a></h3>
-<p>Download <code class="docutils literal"><span class="pre">mupdf-1.9-source.tar.gz</span></code> from <a class="reference external" href="http://mupdf.com/downloads/">MuPDF version 1.9 source</a>, now and unzip / decompress it. Call the resulting folder <code class="docutils literal"><span class="pre">mupdf</span></code>.</p>
+<p>Download <code class="docutils literal"><span class="pre">mupdf-1.9a-source.tar.gz</span></code> from <a class="reference external" href="http://mupdf.com/downloads/">MuPDF version 1.9a source</a>, now and unzip / decompress it. Call the resulting folder <code class="docutils literal"><span class="pre">mupdf</span></code>.</p>
+<p>Make sure you download the (sub-) version for which PyMuPDF has stated its compatibility. The various Linux flavors usually have their own specific ways to support download of packages which we cannot cover here. Do not hesitate posting inquiries to our web site or sending e-mail to the authors for getting support.</p>
 <p>Put it inside <code class="docutils literal"><span class="pre">PyFitz</span></code> as a subdirectory for keeping everything in one place.</p>
 <p><strong>Generate MuPDF now</strong>. The MuPDF source includes generation procedures / makefiles for numerous platforms. For Windows platforms, Visual Studio solution and project definitions are provided.</p>
+<p><strong>Controlling the Binary File Size</strong>. Since version 1.9, MuPDF includes support for many dozens of additional fonts for all sorts of alphabets like Chinese, Corean, Kyrillic, Indonesian, etc. If you do not (want to) control the amount of such support, the resulting binaries for MuPDF will be quite big and easily approach 20 MB. If you feel you do not need everything here, you need to manually change header file <code class="docutils literal"><span class="pre">fitz.h</span></code> (contained in directory <code class="docutils literal"><span class="pre">/include/mupdf</span></code>) by inserting <code class="docutils literal"><span class="pre">#define</span></code> statements like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#ifndef MUDPF_FITZ_H</span>
+<span class="c1">#define MUDPF_FITZ_H</span>
+
+<span class="c1">#define NOTO_SMALL          // choose smaller set of supported fonts</span>
+<span class="c1">#define TOFU_CJK            // exclude Android specific font</span>
+
+<span class="c1">#ifdef __cplusplus</span>
+<span class="n">extern</span> <span class="s2">&quot;C&quot;</span> <span class="p">{</span>
+<span class="c1">#endif</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>With the above two <code class="docutils literal"><span class="pre">#define</span></code> statements, the PyMuPDF binary should come down to a one digit MB size.</p>
 <p>You may want to consult additional installation hints on PyMuPDF&#8217;s <a class="reference external" href="https://github.com/rk700/PyMuPDF/">main page</a> on Github.com.</p>
 </div>
 <div class="section" id="step-3-build-setup-pymupdf">
@@ -126,10 +141,10 @@
 </dl>
 <p>Now perform a <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code>.</p>
 </div>
-<div class="section" id="note-on-using-upx">
-<h3>Note on using UPX<a class="headerlink" href="#note-on-using-upx" title="Permalink to this headline">¶</a></h3>
-<p>In Windows systems, your PyMuPDF installation will end up with four files: <code class="docutils literal"><span class="pre">__init__.py</span></code>, <code class="docutils literal"><span class="pre">fitz.py</span></code>, <code class="docutils literal"><span class="pre">utils.py</span></code> and <code class="docutils literal"><span class="pre">_fitz.pyd</span></code> in the <code class="docutils literal"><span class="pre">site-packages</span></code> directory (PYD files are Python&#8217;s DLL version on Windows systems). <code class="docutils literal"><span class="pre">_fitz.pyd</span></code> has a size of around 17 MB.</p>
-<p>You can reduce this by applying the compression utility UPX to it: <code class="docutils literal"><span class="pre">upx</span> <span class="pre">-9</span> <span class="pre">_fitz.pyd</span></code>. This will reduce the file size to about 8 MB. This should reduce load times (<code class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></code> statement) while keeping it fully functional.</p>
+<div class="section" id="using-upx">
+<h3>Using UPX<a class="headerlink" href="#using-upx" title="Permalink to this headline">¶</a></h3>
+<p>Your PyMuPDF installation will end up with four files: <code class="docutils literal"><span class="pre">__init__.py</span></code>, <code class="docutils literal"><span class="pre">fitz.py</span></code>, <code class="docutils literal"><span class="pre">utils.py</span></code> and the binary <code class="docutils literal"><span class="pre">_fitz.xxx</span></code> in the <code class="docutils literal"><span class="pre">site-packages</span></code> directory. The extension of the binary will be <code class="docutils literal"><span class="pre">.pyd</span></code> on Windows, <code class="docutils literal"><span class="pre">.so</span></code> on Linux, and so forth.</p>
+<p>Depending on your OS, your compiler and your font support choice (see above), this binary can be quite large: ranging from 8 MB to 20 MB. You can reduce this by applying the compression utility <a class="reference external" href="http://upx.sourceforge.net/">UPX</a> to it, which exists for many operating systems. UPX will reduce the size of <code class="docutils literal"><span class="pre">_fitz.xxx</span></code> by more than 50%. You will end up with 4 MB to 9 MB without impacting functionality or execution speed.</p>
 </div>
 </div>
 <div class="section" id="option-2-install-from-binaries">
@@ -141,8 +156,8 @@
 <div class="section" id="step-2-install-pymupdf">
 <h3>Step 2: Install PyMuPDF<a class="headerlink" href="#step-2-install-pymupdf" title="Permalink to this headline">¶</a></h3>
 <p>Open a command prompt at the unzipped folder&#8217;s top level and enter <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code>.</p>
-<p>Done after 2 seconds.</p>
-<p>This process requires no compiler or Visual Studio and is <strong>very</strong> fast (just a couple of seconds). The only pre-requisite is, that your Python configuration matches the zip file.</p>
+<p><strong>You are done after 2 seconds.</strong></p>
+<p>This process requires no compiler or Visual Studio and is <strong>very</strong> fast. The only pre-requisite is, that your Python configuration matches the zip file.</p>
 </div>
 <div class="section" id="targeting-parallel-python-installations">
 <h3>Targeting Parallel Python Installations<a class="headerlink" href="#targeting-parallel-python-installations" title="Permalink to this headline">¶</a></h3>
@@ -171,14 +186,14 @@
           <a href="tutorial.html" title="Tutorial"
              >next</a> |</li>
         <li class="right" >
-          <a href="changes.html" title="Changes in Version 1.9.0"
+          <a href="changes.html" title="Changes in Version 1.9.1"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 26. Apr 2016.
+      Last updated on 11. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

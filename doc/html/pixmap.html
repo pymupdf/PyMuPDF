@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Pixmap &mdash; PyMuPDF 1.9.0 documentation</title>
+    <title>Pixmap &mdash; PyMuPDF 1.9.1 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.9.0',
+        VERSION:     '1.9.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,10 +23,10 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.0 documentation" href="index.html" />
+    <link rel="top" title="PyMuPDF 1.9.1 documentation" href="index.html" />
     <link rel="up" title="Classes" href="classes.html" />
     <link rel="next" title="Point" href="point.html" />
-    <link rel="prev" title="Page" href="page.html" /> 
+    <link rel="prev" title="Pages" href="pages.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,9 +39,9 @@
           <a href="point.html" title="Point"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="page.html" title="Page"
+          <a href="pages.html" title="Pages"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="classes.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>
@@ -58,8 +58,8 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="page.html"
-                        title="previous chapter">Page</a></p>
+  <p class="topless"><a href="pages.html"
+                        title="previous chapter">Pages</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="point.html"
                         title="next chapter">Point</a></p>
@@ -124,49 +124,58 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <tr class="row-odd"><td><a class="reference internal" href="#Pixmap.writePNG" title="Pixmap.writePNG"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.writePNG()</span></code></a></td>
 <td>saves a pixmap as a PNG file</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.writeImage" title="Pixmap.writeImage"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.writeImage()</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.getPNGData" title="Pixmap.getPNGData"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.getPNGData()</span></code></a></td>
+<td>returns a PNG as a memory area</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.writeImage" title="Pixmap.writeImage"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.writeImage()</span></code></a></td>
 <td>saves a pixmap in a variety of image formats</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.copyPixmap" title="Pixmap.copyPixmap"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.copyPixmap()</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.copyPixmap" title="Pixmap.copyPixmap"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.copyPixmap()</span></code></a></td>
 <td>copy parts of another pixmap</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.getSize" title="Pixmap.getSize"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.getSize()</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.getSize" title="Pixmap.getSize"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.getSize()</span></code></a></td>
 <td>returns the pixmap&#8217;s total length</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.getColorspace" title="Pixmap.getColorspace"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.getColorspace()</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.getColorspace" title="Pixmap.getColorspace"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.getColorspace()</span></code></a></td>
 <td>returns the <a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a> used</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.getIRect" title="Pixmap.getIRect"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.getIRect()</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.getIRect" title="Pixmap.getIRect"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.getIRect()</span></code></a></td>
 <td>returns the <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> used</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.invertIRect" title="Pixmap.invertIRect"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.invertIRect()</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.invertIRect" title="Pixmap.invertIRect"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.invertIRect()</span></code></a></td>
 <td>invert the pixels of a given area</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.samples" title="Pixmap.samples"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.samples</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.samplesRGB" title="Pixmap.samplesRGB"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.samplesRGB()</span></code></a></td>
+<td>RGB pixel data without alpha bytes</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.samplesAlpha" title="Pixmap.samplesAlpha"><code class="xref py py-meth docutils literal"><span class="pre">Pixmap.samplesAlpha()</span></code></a></td>
+<td>returns the alpha bytes</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.samples" title="Pixmap.samples"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.samples</span></code></a></td>
 <td>the components data for all pixels</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.height" title="Pixmap.height"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.height</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.height" title="Pixmap.height"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.height</span></code></a></td>
 <td>height of the region in pixels</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.width" title="Pixmap.width"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.width</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.width" title="Pixmap.width"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.width</span></code></a></td>
 <td>width of the region in pixels</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.x" title="Pixmap.x"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.x</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.x" title="Pixmap.x"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.x</span></code></a></td>
 <td>X-coordinate of top-left corner of pixmap</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.y" title="Pixmap.y"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.y</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.y" title="Pixmap.y"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.y</span></code></a></td>
 <td>Y-coordinate of top-left corner of pixmap</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.n" title="Pixmap.n"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.n</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.n" title="Pixmap.n"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.n</span></code></a></td>
 <td>number of bytes per pixel</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.xres" title="Pixmap.xres"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.xres</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.xres" title="Pixmap.xres"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.xres</span></code></a></td>
 <td>resolution in X-direction</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.yres" title="Pixmap.yres"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.yres</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Pixmap.yres" title="Pixmap.yres"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.yres</span></code></a></td>
 <td>resolution in Y-direction</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Pixmap.interpolate" title="Pixmap.interpolate"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.interpolate</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Pixmap.interpolate" title="Pixmap.interpolate"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.interpolate</span></code></a></td>
 <td>interpolation method indicator</td>
 </tr>
 </tbody>
@@ -393,6 +402,22 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 </dd></dl>
 
 <dl class="method">
+<dt id="Pixmap.getPNGData">
+<code class="descname">getPNGData</code><span class="sig-paren">(</span><em>savealpha=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.getPNGData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the pixmap data as an image area in PNG format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>savealpha</strong> (<em>bool</em>) &#8211; Save the alpha channel (<code class="docutils literal"><span class="pre">True</span></code>) or not (<code class="docutils literal"><span class="pre">False</span></code> - the default).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="Pixmap.writeImage">
 <code class="descname">writeImage</code><span class="sig-paren">(</span><em>filename</em>, <em>output=&quot;png&quot;</em>, <em>savealpha=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.writeImage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves a pixmap as an image file. This method is an extension to <code class="docutils literal"><span class="pre">writePNG()</span></code>. Depending on the output chosen, some or all colorspaces are supported and different file extensions can be chosen. Please see the table below.</p>
@@ -406,6 +431,34 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <li><strong>savealpha</strong> (<em>bool</em>) &#8211; Save the alpha channel (<code class="docutils literal"><span class="pre">True</span></code>) or not (<code class="docutils literal"><span class="pre">False</span></code> - the default).</li>
 </ul>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.samplesRGB">
+<code class="descname">samplesRGB</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.samplesRGB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the pixmap samples (see below) without alpha bytes (currently RGB only). This is a technical function: occasionally dialog managers cannot deal with the RGBA format and either expect RGB data only, or eventually a separate alpha channel alongside.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bytearray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Pixmap.samplesAlpha">
+<code class="descname">samplesAlpha</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.samplesAlpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the alpha channel of the pixmap&#8217;s samples area (see below). This is a technical function: occasionally dialog managers cannot deal with the RGBA format and either expect RGB data only, or eventually a separate alpha channel alongside.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bytearray</td>
 </tr>
 </tbody>
 </table>
@@ -643,15 +696,15 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
           <a href="point.html" title="Point"
              >next</a> |</li>
         <li class="right" >
-          <a href="page.html" title="Page"
+          <a href="pages.html" title="Pages"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="classes.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 30. Apr 2016.
+      Last updated on 11. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

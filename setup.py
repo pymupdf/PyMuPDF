@@ -46,12 +46,12 @@ else:
                                   'libthirdparty',                    
                                  ],
                        extra_link_args=['/NODEFAULTLIB:MSVCRT'],
-                                     # dir of libmupdf.lib and libthirdparty.lib
+                                     # dir of libmupdf.lib etc.
                        library_dirs=['./PyMuPDF-optional-material/LibWin32'],
                        sources=['./fitz/fitz_wrap.c',])
 
 setup(name = 'fitz',
-      version = "1.9.0", 
+      version = "1.9.1", 
       description = 'Python bindings for the PDF rendering library MuPDF',
       classifiers = ['Development Status :: 4 - Beta',
                      'Environment :: Console',

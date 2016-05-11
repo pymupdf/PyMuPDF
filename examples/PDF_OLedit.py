@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
+# -*- coding: latin-1 -*-
 
 '''
 Created on Sun May 03 16:15:08 2015
@@ -61,6 +61,22 @@ import wx.lib.gridmovers as gridmovers
 import PyPDF2  # only used for output (make_pdf)
 import fitz
 from icons import ico_pdf
+
+def getint(v):
+    import types
+    # extract digits from a string to form an integer
+    try:
+        return int(v)
+    except ValueError:
+        pass
+    if not isinstance(v, types.StringTypes):
+        return 0
+    a = "0"
+    for d in v:
+        if d in "0123456789":
+            a += d
+    return int(a)
+
 #==============================================================================
 # define scale factor for displaying page images (20% larger)
 #==============================================================================
@@ -70,6 +86,7 @@ scaling = fitz.Matrix(1, 1).preScale(1.2, 1.2)
 #==============================================================================
 defPos = wx.DefaultPosition
 defSiz = wx.DefaultSize
+khaki  = wx.Colour(240, 230, 140)
 
 #==============================================================================
 # convenience class for storing information across functions
@@ -80,17 +97,7 @@ class PDFconfig():
         self.meta = {}                   # PDF meta information
         self.seiten = 0                  # max pages
         self.inhalt = []                 # table of contents storage
-        self.oldPage = 0                 # last displayed page number
         self.file = None                 # pdf filename
-        # we use temp png files for buffering already displayed pages
-        tmppic = tempfile.NamedTemporaryFile(suffix = ".png",
-                    delete = False)
-        tmppic.file.close()              # created temp file for PNG images
-        self.pic = tmppic.name           # save its filename
-        self.pics = self.pic[:-4] + "%s.png"  # mask for other PDF pages
-        # list of existing temp png files
-        self.pic_pages = []              # saves displayed page pic filenames
-        self.pic_pages.append(self.pic)  # store the one just created
 
     def TempPDF(self, dir = None):
 #==============================================================================
@@ -102,16 +109,20 @@ class PDFconfig():
         self.opdffile = temppdf.file
 
 #==============================================================================
-# render a PDF page and store image in png file
+# render a PDF page and return wx.Bitmap
 #==============================================================================
-def pdf_show(datei, seite):
+def pdf_show(seite):
     page_idx = int(seite) - 1
-    page = PDFcfg.doc.loadPage(page_idx)    # get the page
-    pix = fitz.GetPixmap(page,              # create its Pixmap
-                         matrix = scaling,  # and scale it
-                         colorspace = "RGB")
-    pix.writePNG(datei)                     # write it ot temp file
-    return
+    pix = PDFcfg.doc.getPagePixmap(page_idx, matrix = scaling)
+    # the following method returns just RGB data - no alpha bytes
+    # this seems to be required in Windows versions of wx.
+    # on other platforms try instead:
+    #bmp = wx.BitmapfromBufferRGBA(pix.w, pix.h, pix.samples)
+    a = pix.samplesRGB()                  # samples without alpha bytes
+    bmp = wx.BitmapFromBuffer(pix.w, pix.h, a)
+    pix = None
+    a   = None
+    return bmp
 
 #==============================================================================
 # PDFTable = a tabular grid class in wx
@@ -126,11 +137,11 @@ class PDFTable(gridlib.PyGridTableBase):
                           gridlib.GRID_VALUE_NUMBER,
                           ]
         # initial load of table with outline data
-        # each line consists of [lvl, title page]
+        # each line consists of [lvl, title, page]
         # for display, we "indent" the title with spaces
         self.data = [[PDFcfg.inhalt[i][0],          # indentation level
                       " "*(PDFcfg.inhalt[i][0] -1) + \
-                      PDFcfg.inhalt[i][1],
+                      PDFcfg.inhalt[i][1].decode("utf-8","ignore"),  # title
                       PDFcfg.inhalt[i][2]] \
                               for i in range(len(PDFcfg.inhalt))]
         if not PDFcfg.inhalt:
@@ -177,7 +188,7 @@ class PDFTable(gridlib.PyGridTableBase):
 
 #==============================================================================
 # set row names (just row counters in our case). Only needed, because we have
-# row-based operations (dragging, duplicating) and these require some label.
+# row-based operations (dragging, duplicating), and these require some label.
 #==============================================================================
     def GetRowLabelValue(self,row):
         return str(row +1)
@@ -226,7 +237,7 @@ class PDFTable(gridlib.PyGridTableBase):
         if grid:
             if self.cur_row in range(len(self.data)): # insert in the middle?
                 self.data.insert(self.cur_row, zeile)
-                grid.BeginBatch()                     # inform grid
+                grid.BeginBatch()                     # inform the grid
                 msg = gridlib.GridTableMessage(self,
                        gridlib.GRIDTABLE_NOTIFY_ROWS_INSERTED, self.cur_row, 1)
                 grid.ProcessTableMessage(msg)
@@ -262,7 +273,7 @@ class PDFTable(gridlib.PyGridTableBase):
         grid = self.GetView()
         if grid:
             del self.data[row]
-            grid.BeginBatch()                         # inform grid
+            grid.BeginBatch()                         # inform the grid
             msg = gridlib.GridTableMessage(self,
                    gridlib.GRIDTABLE_NOTIFY_ROWS_DELETED, row, 1)
             grid.ProcessTableMessage(msg)
@@ -411,6 +422,7 @@ class PDFDialog (wx.Dialog):
                                      wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|
                                      wx.RESIZE_BORDER)
         self.SetIcon(ico_pdf.img.GetIcon())      # set a screen icon
+        self.SetBackgroundColour(khaki)
         # maximize the screen
         #self.Maximize()
         # alternatively, try more scrutiny:
@@ -571,7 +583,7 @@ class PDFDialog (wx.Dialog):
 
         self.zuSeite = wx.TextCtrl(self, wx.ID_ANY, u"1",
                              defPos, wx.Size(40, -1),
-                             wx.TE_PROCESS_ENTER)
+                             wx.TE_PROCESS_ENTER|wx.TE_RIGHT)
         ri_szr20.Add(self.zuSeite, 0, wx.ALL, 5)
 
         max_pages = wx.StaticText(self, wx.ID_ANY,
@@ -583,9 +595,8 @@ class PDFDialog (wx.Dialog):
         ri_szr.Add(ri_szr20, 0, wx.EXPAND, 5)
 
         # define the bitmap for the pdf image ...
-        self.PDFbild = wx.StaticBitmap(self, wx.ID_ANY,
-                           wx.Bitmap(PDFcfg.pic,
-                           wx.BITMAP_TYPE_PNG),
+        bmp = pdf_show(1)
+        self.PDFbild = wx.StaticBitmap(self, wx.ID_ANY, bmp,
                            defPos, defSiz, wx.BORDER_NONE)
         # ... and add it to the vertical sizer
         ri_szr.Add(self.PDFbild, 0, wx.ALL, 0)
@@ -609,17 +620,27 @@ class PDFDialog (wx.Dialog):
         self.btn_vor.Bind(wx.EVT_BUTTON, self.forwPage)       # "forward"
         self.btn_zur.Bind(wx.EVT_BUTTON, self.backPage)       # "backward"
         self.zuSeite.Bind(wx.EVT_TEXT_ENTER, self.gotoPage)   # "page number"
+        self.PDFbild.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
 
     def __del__(self):
         pass
 
+    def OnMouseWheel(self, event):
+        # process wheel as paging operations
+        d = event.GetWheelRotation()     # int indicating direction
+        if d < 0:
+            self.forwPage(event)
+        elif d > 0:
+            self.backPage(event)
+        return
+
     def forwPage(self, event):
-        seite = int(self.zuSeite.Value) + 1
+        seite = getint(self.zuSeite.Value) + 1
         PicRefresh(seite)
         event.Skip()
 
     def backPage(self, event):
-        seite = int(self.zuSeite.Value) - 1
+        seite = getint(self.zuSeite.Value) - 1
         PicRefresh(seite)
         event.Skip()
 
@@ -679,30 +700,17 @@ class PDFDialog (wx.Dialog):
 # display a PDF page
 #==============================================================================
 def PicRefresh(seite):
-    i_seite = int(seite)
+    i_seite = getint(seite)
     i_seite = max(1, i_seite)           # ensure page# is within boundaries
     i_seite = min(PDFcfg.seiten, i_seite)
 
     dlg.zuSeite.Value = str(i_seite)    # set page number in dialog fields
 
-    if i_seite == PDFcfg.oldPage:       # same as last page? do nothing
-        return
-
-    PDFcfg.oldPage = i_seite            # save this page number in memory
-
-    datei = PDFcfg.pics % (i_seite,)    # generate a temp PNG filename
-
-    if datei in PDFcfg.pic_pages:       # does this file exist already?
-        pass
-    else:
-        PDFcfg.pic = datei              # memorize filename
-        pdf_show(datei, i_seite)        # save PDF page to this file
-        PDFcfg.pic_pages.append(datei)  # put its name into the list
-
-    file_bm = wx.Bitmap(datei, wx.BITMAP_TYPE_PNG)
-    dlg.PDFbild.SetSize(file_bm.Size)
-    dlg.PDFbild.SetBitmap(file_bm)
+    bmp = pdf_show(i_seite)
+    dlg.PDFbild.SetSize(bmp.Size)
+    dlg.PDFbild.SetBitmap(bmp)
     dlg.PDFbild.Refresh(True)
+    bmp = None
     dlg.Layout()
 
 #==============================================================================
@@ -718,7 +726,7 @@ def DisableOK():
 #==============================================================================
 def getPDFinfo():
     PDFcfg.doc = fitz.Document(PDFcfg.file)
-    PDFcfg.inhalt = fitz.GetToC(PDFcfg.doc)
+    PDFcfg.inhalt = PDFcfg.doc.getToC()
     PDFcfg.seiten = PDFcfg.doc.pageCount
     PDFmeta = {"author":"", "title":"", "subject":""}
     for key in PDFcfg.doc.metadata:
@@ -776,7 +784,7 @@ def make_pdf(dlg):
         lvl = int(z[0])
         pag = int(z[2]) - 1
         tit = z[1].strip()
-        tit = tit.encode("latin-1", "replace")
+        tit = tit.encode("latin-1", "ignore")
         if lvl == 1:                        # no parent if level 1
             bm = PDFof.addBookmark(tit, pag, None, None, False, False, "/Fit")
             lvl_tab[0] = bm                 # memorize it: serves as parent!
@@ -885,7 +893,6 @@ if infile:
 # Generate PDF page 1 image
 #==============================================================================
     if getPDFinfo() == 0:              # input is not encrypted
-        pdf_show(PDFcfg.pic, 1)
         PDFcfg.oldPage = 1
         dlg = PDFDialog(None)
 
@@ -900,9 +907,6 @@ if infile:
             make_pdf(dlg)
         dlg.Destroy()
         app = None
-        # delete all page images accumulated during the session
-        for datei in PDFcfg.pic_pages:
-            os.remove(datei)
     else:
         wx.MessageBox("Currently cannot edit encrypted file\n" + infile,
                       "Encrypted File Error")

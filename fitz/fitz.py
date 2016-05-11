@@ -92,9 +92,9 @@ except AttributeError:
 
 
 import os                     
-VersionFitz = "1.9"           
-VersionBind = "1.9.0"         
-VersionDate = "2016-05-01  4:00:38"        
+VersionFitz = "1.9a"          
+VersionBind = "1.9.1"         
+VersionDate = "2016-05-10 13:31:16"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -625,6 +625,21 @@ class Pixmap(_object):
 
 
         return _fitz.Pixmap_writePNG(self, filename, savealpha)
+
+
+    def getPNGData(self, savealpha=0):
+        """getPNGData(Pixmap self, int savealpha=0) -> struct fz_buffer_s *"""
+        return _fitz.Pixmap_getPNGData(self, savealpha)
+
+
+    def samplesRGB(self):
+        """samplesRGB(Pixmap self) -> PyObject *"""
+        return _fitz.Pixmap_samplesRGB(self)
+
+
+    def samplesAlpha(self):
+        """samplesAlpha(Pixmap self) -> PyObject *"""
+        return _fitz.Pixmap_samplesAlpha(self)
 
 
     def _writeIMG(self, filename, format, savealpha=0):

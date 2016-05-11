@@ -7,9 +7,9 @@ Tutorial
 =========
 This tutorial will show you the use of MuPDF in Python step by step.
 
-Because MuPDF supports not only PDF, but also XPS, OpenXPS and EPUB formats, so does PyMuPDF. Nevertheless we will only talk about PDF files for the sake of brevity.
+Because MuPDF supports not only PDF, but also XPS, OpenXPS, CBZ and EPUB formats, so does PyMuPDF. Nevertheless we will only talk about PDF files for the sake of brevity. At places where only PDF files are supported, this will be mentioned explicitely.
 
-As for string handling, MuPDF will pass back any string as UTF-8 encoded - no exceptions. Where this binding has added functionality, we usually decode string to unicode. An example is the :meth:`Document.ToC` method.
+As for string handling, MuPDF will pass back any string as UTF-8 encoded - no exceptions. Where this binding has added functionality, we usually decode string to unicode.
 
 Import the Bindings
 ==========================
@@ -17,50 +17,57 @@ The Python bindings to MuPDF are made available by this import statement:
 ::
  import fitz
 
+You can check your version by printing the docstring:
+::
+ >>> print fitz.__doc__
+ PyMuPDF 1.9.1: the Python bindings for the MuPDF 1.9a library,
+ creation date 2016-05-10 18:09:34
+ >>>
+
 
 Open a Document
 ======================
 In order to access a supported document, it must be opened with the following statement:
 ::
- doc = fitz.Document(filename)
+ doc = fitz.Document(filename)     # or fitz.open(filename) (since V1.9.0)
 
-This will create ``doc`` as a :ref:`Document` object. ``filename`` must be a Python string or unicode object that specifies the name of an existing file (with or without a fully or partially qualified path).
+This will create ``doc`` as a :ref:`Document` object. ``filename`` must be a Python string or unicode object that specifies the name of an existing file.
 
-It is also possible to construct a document from memory data, i.e. without using a file. See :ref:`Document` for details.
+It is also possible to open a document from memory data, i.e. without using a file. See :ref:`Document` for details.
 
 A :ref:`Document` contains several attributes and functions. Among them are meta information (like "author" or "subject"), number of total pages, outline and encryption information.
 
-Some :ref:`Document` methods and attributes
+Some :ref:`Document` Methods and Attributes
 =============================================
 
 =========================== ==========================================
 **Method / Attribute**      **Description**
 =========================== ==========================================
-:attr:`Document.pageCount`  Number of pages of ``filename`` (integer).
-:attr:`Document.metadata`   Metadata of the ``Document`` (dictionary).
-:attr:`Document.outline`    First outline entry of ``Document``
-:meth:`Document.getToC`     Table of contents of ``Document`` (list).
+:attr:`Document.pageCount`  Number of pages (int).
+:attr:`Document.metadata`   Metadata (dictionary).
+:attr:`Document.outline`    First outline entry
+:meth:`Document.getToC`     Table of contents (list).
 :meth:`Document.loadPage`   Create a ``Page`` object.
 =========================== ==========================================
 
 Access Meta Data
 ========================
-:attr:`Document.metadata` is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_. Further information can also be found in chapter :ref:`Document`. The meta data fields are of type string if not otherwise indicated and may be missing, in which case they contain ``None``.
+:attr:`Document.metadata` is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_. Further information can also be found in chapter :ref:`Document`. The meta data fields are of type string if not otherwise indicated. Be aware that not all of them may be present or contain meaningfull data.
 
-======================== ==============================
-**Key**                  **Value**
-======================== ==============================
-.. data:: producer       Producer (producing software)
-.. data:: format         PDF format, e.g. 'PDF-1.4'
-.. data:: encryption     Encryption method used
-.. data:: author         Author
-.. data:: modDate        Date of last modification
-.. data:: keywords       Keywords
-.. data:: title          Title
-.. data:: creationDate   Date of creation
-.. data:: creator        Creating application
-.. data:: subject        Subject
-======================== ==============================
+============== ==============================
+**Key**        **Value**
+============== ==============================
+producer       Producer (producing software)
+format         PDF format, e.g. 'PDF-1.4'
+encryption     Encryption method used
+author         Author
+modDate        Date of last modification
+keywords       Keywords
+title          Title
+creationDate   Date of creation
+creator        Creating application
+subject        Subject
+============== ==============================
 
 Work with Outlines
 =========================
@@ -82,15 +89,16 @@ This creates olItem as an :ref:`Outline` object. Look there for further details.
 Work with Pages
 ======================
 Tasks that can be performed with a :ref:`Page` are at the core of MuPDF's functionality.
-Among other things, you can render a :ref:`Page`, optionally zooming, rotating or shearing it.
-You can write it's image to files (in PNG format), extract text from it or search for text strings.
+Among other things, you can render a page, optionally zooming, rotating or shearing it.
+You can write it's image to files, extract text from it or search for text strings.
+
 At first, a page object must be created:
 ::
- page = doc.loadPage(n)        # represents page n of the document
+ page = doc.loadPage(n)        # represents page n of the document (0-based)
 
 Some typical uses of :ref:`Page` objects follow:
 
-Inspect the links on a :ref:`Page`
+Inspect the Links on a Page
 ------------------------------------
 Here is how to get all links and their types:
 ::
@@ -101,7 +109,7 @@ Here is how to get all links and their types:
 
 ``links`` is a Python list containing Python dictionaries as entries. For details see :meth:`Page.getLinks`.
 
-Render a :ref:`Page`
+Render a Page
 -----------------------
 This example creates an image out of a page's content:
 ::
@@ -110,33 +118,32 @@ This example creates an image out of a page's content:
  # now pix contains an RGB image of the page, ready to be used
  #-----------------------------------------------------------------------------------
 
-Save the page image in a file
+Save the Page Image in a File
 -----------------------------------
 We can simply store the image in a PNG file:
 ::
  pix.writePNG("test.png")
 
 
-Display the image in dialog managers
+Display the Image in Dialog Managers
 --------------------------------------
 We can also use the image in a dialog. :attr:`Pixmap.samples` represents the area of bytes of all the pixels as a Python bytearray. This area (or its ``str()``-version), is directly usable by presumably most dialog managers. Here are two examples. Please also have a look at the examples directory of this repository.
 
 **wxPython**:
 ::
- data = pix.samples                          # data = bytearray of raw pixel data (RGBA)
  bitmap = wx.BitmapFromBufferRGBA(pix.width, # image width
              pix.height,                     # image height
-             str(data))                      # wxPython only accepts strings, no bytearrays
+             pix.samples)                    # bytearray with pixel data
 
 **Tkinter**:
 ::
- data = pix.samples
  # the following requires: "from PIL import Image"
- img = Image.frombytes("RGBA", [pix.width, pix.height], str(data))
+ img = Image.frombytes("RGBA", [pix.width, pix.height], pix.samples)
  photo = ImageTk.PhotoImage(img)
 
+Now, ``photo`` can be used as an image in TK.
 
-Text extraction
+Text Extraction
 ----------------
 We can also extract all text of a page in one chunk of string:
 ::
@@ -146,13 +153,13 @@ For the ``output`` parameter, the following values can be specified:
 
 * ``text``: plain text with line breaks. No format and no position info.
 
-* ``html``: line breaks, alignment, grouping. No format and no position info
+* ``html``: line breaks, alignment, grouping. No format and no position info.
 
-* ``json``: full formatting info (except colors and fonts) down to spans (see appendix)
+* ``json``: full formatting info (except colors and fonts) down to spans (see Appendix 2).
 
-* ``xml``: full formatting info (except colors) down to individual characters
+* ``xml``: full formatting info (except colors) down to single characters (!).
 
-To give you an idea about the output of these alternatives, we did text extracts from this document's PDF version and several other examples. See the appendix for details about implications on processing times and space requirements.
+To give you an idea about the output of these alternatives, we did text example extracts. See the Appendix 2.
 
 Text Searching
 ---------------
@@ -161,24 +168,37 @@ You can find out, exactly where on a page a certain string appears like this:
  areas = page.searchFor("mupdf", hit_max = 32)
 
 
-The variable ``areas`` will now contain a list of up to 32 :ref:`Rect` rectangles which surround each occurrence of string "mupdf" (not case sensitive).
+The variable ``areas`` will now contain a list of up to 32 :ref:`Rect` rectangles each of which surround an occurrence of string "mupdf" (case insensitive).
 
 Please also do have a look at the demonstration program ``demo.py``. Among others it contains details on how the :ref:`TextPage`, :ref:`TextSheet`, :ref:`Device` and :ref:`DisplayList` classes can be used for a more direct control, e.g. when performance considerations require it.
 
 
 Output
 =======
-Output capabilities of MuPDF (such as PDF generation) are currently very limited. However, a copy of a currently opened document can be created (PDF only, none of the other file types).
+Output capabilities of MuPDF (such as PDF generation) have improved in version 1.9. Output is supported for PDF documents only.
 
-We support this with the method :meth:`Document.save`.
+Re-arrange and Delete Pages
+----------------------------------
+Method :meth:`Document.select()` accepts a list (or tuple) of integers as an argument. These integers must be in the range ``0 <= i < countPage``. When executed, all pages not occurring in this list will be deleted. Pages that do occur will remain - **in the sequence specified and as many times as specified.**
 
-If the document had been successfully decrypted before, ``save()`` will automatically create a decrypted copy.
+So you can easily create sub-PDFs of the first / last 10 pages, only odd or even pages (for doing double-sided printing), pages that do (not) contain a certain text, ... whatever you may think of.
 
-In addition, this method will also perform some clean-up:
+To make any such changes permanent, execute :meth:`Document.save()` (see below) and then close / re-open the original document for any further processing.
 
-If the document containes invalid or broken xrefs, the saved version will have them automatically corrected, which makes it readable by other Python PDF software, like `pdfrw <https://github.com/pmaupin/pdfrw>`_ or `PyPDF2 <http://mstamy2.github.io/PyPDF2>`_. In many cases, the saved version will also be smaller than the original.
+The saved document will contain all links, annotations and bookmarks referenced by its pages which still point to valid destinations.
 
-:meth:`Document.save` now also supports all options of MuPDF's command line utility ``mutool clean``, see below (mutool clean option = "MCO").
+Save
+-------
+
+If the document had been successfully decrypted before, ``save()`` will automatically save a decrypted copy.
+
+If you altered the document via :meth:`Document.select()`, then the resulting document will be saved. Do specify option ``garbage=3`` (see below) if many pages have been omitted by ``select()``.
+
+As part of ``save()``, some clean-up will take place:
+
+If the document containes invalid or broken xrefs, the saved version will have them automatically corrected (thus making it readable by other Python PDF software, like `pdfrw <https://github.com/pmaupin/pdfrw>`_ or `PyPDF2 <http://mstamy2.github.io/PyPDF2>`_). In many cases, the saved version will also be smaller than the original.
+
+:meth:`Document.save` now also supports all options of MuPDF's command line utility ``mutool clean``, see the following table (mutool clean option = "MCO").
 
 ================== ======= ==================================================
 **Option**         **MCO** **Effect**
@@ -196,9 +216,7 @@ expand = 255        -d     decompress all
 incremental = 1     n/a    only save data that have changed (do not use yet)
 ================== ======= ==================================================
 
-Please note, that :meth:`Document.save`, according to MuPDF's documentation, is still being further developed, so expect changes in the future here. Also observe our remarks in the above table.
-
-Like with ``mutool clean``, not all combinations of the above options may work for all documents - so be ready to experiment a little.
+Be ready to experiment a little if you want to fully exploit above options: like with ``mutool clean``, not all combinations may always work: there are just too many inconsistently constructed PDF files out there ...
 
 We have found, that the fastest, yet very stable combination is ``mutool clean -ggg -z``, giving good compression results. In PyMuPDF this corresponds to ``doc.save(filename, garbage=3, deflate=1)``.
 
@@ -212,9 +230,9 @@ This can be achieved by the :meth:`Document.close` method. Apart from closing th
 
 **Caution:**
 
-As with normal file objects, after close, the document and all objects referencing it will be invalid  and **must no longer be used**. This binding protects against most such invalid uses by disabling properties and methods of the :ref:`Document` and any associated :meth:`Document.loadPage` objects.
+As with normal file objects, after close, the document and all objects referencing it will be invalid  and **must no longer be used**. This bindings protect against most such invalid uses by disabling properties and methods of the :ref:`Document` and any associated :meth:`Document.loadPage` objects.
 
-However, re-opening a previously closed file by a new :ref:`Document` is no problem. Please also do have a look at the following valid example:
+However, re-opening a previously closed file by a new :ref:`Document` is no problem. Have a look at the following valid example:
 ::
  doc = fitz.Document(f_old)           # open a document
  <... some statements ...>            # e.g. decryption
@@ -224,7 +242,7 @@ However, re-opening a previously closed file by a new :ref:`Document` is no prob
  os.rename(f_new, f_old)              # rename the decrypted / cleaned version
  doc = fitz.Document(f_old)           # use it as input for MuPDF
 
-Example: Dynamically cleaning up corrupt PDF documents
+Example: Dynamically Clean up Corrupt PDF Documents
 ========================================================
 This shows a potential use of PyMuPDF with another Python PDF library (``pdfrw``).
 
@@ -246,9 +264,9 @@ If a PDF is broken or needs to be decrypted, one could dynamically invoke PyMuPD
      try:
          return PdfReader(ibuffer)       # let us try
      except:                             # problem! see if PyMuPDF can heal it
-         doc = fitz.Document("application/pdf",
-                             idata,
-                             len(idata)) # scan pdf data in memory
+         doc = fitz.open("application/pdf",
+                         idata,
+                         len(idata))     # scan pdf data in memory
          doc.save("test.pdf",            # may want to use a temp file
                   garbage=3,
                   deflate=1)             # save a cleaned version
@@ -256,7 +274,7 @@ If a PDF is broken or needs to be decrypted, one could dynamically invoke PyMuPD
          idata = ifile.read()            # put in memory
          ifile.close()
          ibuffer = StringIO(idata)       # convert to stream
-         return PdfReader(ibuffer)       # now let pdfrw retry
+         return PdfReader(ibuffer)       # let pdfrw retry
  #---------------------------------------
 
  pdf = reader(sys.argv[1])

@@ -1,9 +1,13 @@
-=========================
-Changes in Version 1.9.0
-=========================
-This version of PyMuPDF is based on MuPDF library source code version 1.9 published in April 18, 2016.
+.. raw:: pdf
 
-Please have a look at MuPDF's website to see which changes and enhancements contained herein.
+    PageBreak
+
+=========================
+Changes in Version 1.9.1
+=========================
+This version of PyMuPDF is based on MuPDF library source code version 1.9a published on April 21, 2016.
+
+Please have a look at MuPDF's website to see which changes and enhancements are contained herein.
 
 Changes in these bindings compared to version 1.8.0 are the following:
 
@@ -14,6 +18,10 @@ Changes in these bindings compared to version 1.8.0 are the following:
 * PyMuPDF classes and methods now all contain  __doc__ strings,  most of them created by SWIG automatically. While the PyMuPDF documentation certainly is more detailed, this feature should help a lot when programming in Python-aware IDEs.
 * A new method of ``fitz.Document.getPermits()`` returns the permissions associated with the current access to the document (print, edit, annotate, copy), as a Python dictionary.
 * The identity matrix ``fitz.Identity`` is now **immutable**.
-* The new method ``fitz.Document.select(list)`` removes all pages from an open document that are not contained in the list.
+* The new method ``fitz.Document.select(list)`` removes all pages from an open document that are not contained in the list. Pages can also be duplicated and re-arranged.
 * Various improvements and new members in our demo and examples collections. Perhaps most prominently: ``PDF_display`` now supports scrolling with the mouse wheel, and there is a new example program ``wxTableExtract`` which allows to graphically identify and extract table data in documents.
 * ``fitz.open()`` is an alias of ``fitz.Document()``.
+* New method ``fitz.Pixmap.getPNGData()`` which will return a memory area formatted as a PNG image of the pixmap.
+* New technical method ``fitz.Pixmap.samplesRGB()`` providing a ``samples`` version with alpha bytes stripped off (RGB colorspaces only).
+* New technical method ``fitz.Pixmap.samplesAlpha()`` providing the alpha bytes only of the ``samples`` area.
+* New iterator over a document's set of pages.

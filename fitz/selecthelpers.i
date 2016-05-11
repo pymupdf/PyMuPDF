@@ -1,6 +1,12 @@
-/***************************************************/
-/* read text from a document page - the short way  */
-/***************************************************/
+/**********************************************************/
+/* read text from a document page - the short way         */
+/* The main called function, fz_new_stext_page_from_page, */
+/* is contained in utils.c in the fitz directory.         */
+/* At its core, it creates an stext device runs the stext */
+/* page through it, then deletes the device again and     */
+/* returns the text page.                                 */
+/* A display list is not used in the process.             */
+/**********************************************************/
 %{
 struct fz_buffer_s *readPageText(fz_page *page, int output) {
     fz_buffer *res;
@@ -30,9 +36,12 @@ struct fz_buffer_s *readPageText(fz_page *page, int output) {
 }
 %}
 
-/***************************************************/
-/* helpers for document page selection             */
-/***************************************************/
+/******************************************************/
+/* Helpers for document page selection                */
+/* The main logic was imported from pdf_clean_file.c  */
+/* Instead of analyzing a string-based spefication    */
+/* of the selected pages, we accept an integer array. */
+/******************************************************/
 %{
 typedef struct globals_s
 {
