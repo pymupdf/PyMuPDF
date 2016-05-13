@@ -475,9 +475,12 @@
 <h2>Remarks on <code class="docutils literal"><span class="pre">select()</span></code><a class="headerlink" href="#remarks-on-select" title="Permalink to this headline">¶</a></h2>
 <p>Page numbers in the list need not be unique nor be in any particular sequence. This makes the method a versatile utility to e.g. select only even or odd pages, re-arrange a document from back to front, duplicate it, and so forth. In combination with text extraction you can also omit / include pages with no text or certain text, etc.</p>
 <p>You can execute several selections in a row. The document structure will be kept updated.</p>
-<p>This also means, that any document information from before this method may no longer be valid. This is especially true for old page objects, table of contents and the <code class="docutils literal"><span class="pre">pageCount</span></code> property.</p>
-<p>Any of those actions will become permanent only with a <code class="docutils literal"><span class="pre">doc.save()</span></code>. Do not forget to specify the <code class="docutils literal"><span class="pre">garbage=3</span></code> option to eventually reduce the resulting document&#8217;s size.</p>
-<p>It should also be noted, that this method <strong>preserves all links, annotations and bookmarks</strong> that are still valid. In other words: deleting pages only deletes references that would otherwise point to nowhere.</p>
+<div class="admonition caution">
+<p class="first admonition-title">Caution</p>
+<p class="last">This also means, that any document information from before this method must be assumed to be invalid. This is especially true for old page objects, table of contents and the <code class="docutils literal"><span class="pre">pageCount</span></code> property. If you plan to use the <code class="docutils literal"><span class="pre">close()</span></code> method, make sure you have deleted any page object created before (by <code class="docutils literal"><span class="pre">page</span> <span class="pre">=</span> <span class="pre">None</span></code>).</p>
+</div>
+<p>Any of those actions will become permanent only with a <code class="docutils literal"><span class="pre">doc.save()</span></code>. If you have deleted pages, do not forget to specify the <code class="docutils literal"><span class="pre">garbage=3</span></code> option to eventually reduce the resulting document&#8217;s size.</p>
+<p>It should also be noted, that this method <strong>preserves all links, annotations and bookmarks</strong> that are still valid. In other words: deleting pages only deletes those references that would otherwise point to nowhere.</p>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
@@ -485,10 +488,12 @@
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
 <span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="p">))</span>                 <span class="c1"># list of all pages</span>
+
 <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pages</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
-    <span class="n">txt</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">getText</span><span class="p">()</span>                          <span class="c1"># get the page&#39;s text</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">txt</span><span class="p">:</span>                                <span class="c1"># nothing there</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">getText</span><span class="p">():</span>                        <span class="c1"># contains no text</span>
         <span class="n">r</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>                     <span class="c1"># remove page number from list</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="kc">None</span>                                   <span class="c1"># release page memory</span>
+
 <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>                                  <span class="c1"># apply the list</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>                 <span class="c1"># save the resulting PDF</span>
 </pre></div>
@@ -510,7 +515,7 @@
 <span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.pdf&quot;</span><span class="p">)</span>                            <span class="c1"># contains pages 0,...,n,0,...,n of &lt;any.pdf&gt;</span>
 </pre></div>
 </div>
-<p>Create document copy in reverse page order:</p>
+<p>Create document copy in reverse page order (well, don&#8217;t try with a million pages):</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
 <span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
@@ -545,7 +550,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 11. May 2016.
+      Last updated on 13. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

@@ -243,7 +243,7 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>colorspace</strong> (<a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a>) &#8211; Colorspace of the image. This crucial parameter controls the interpretation of the <code class="docutils literal"><span class="pre">samples</span></code> area: for <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a>, <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a> and <a class="reference internal" href="vars.html#CS_CMYK" title="CS_CMYK"><code class="xref py py-data docutils literal"><span class="pre">CS_CMYK</span></code></a>, 2, 4 or 5 bytes in samples will be assumed to define one pixel, respectively.</li>
+<li><strong>colorspace</strong> (<a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a>) &#8211; Colorspace of the image. This crucial parameter controls the interpretation of the <code class="docutils literal"><span class="pre">samples</span></code> area: for <code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code>, <code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code> and <code class="xref py py-data docutils literal"><span class="pre">CS_CMYK</span></code>, 2, 4 or 5 bytes in samples will be assumed to define one pixel, respectively.</li>
 <li><strong>width</strong> (<em>int</em>) &#8211; Width of the image</li>
 <li><strong>height</strong> (<em>int</em>) &#8211; Height of the image</li>
 <li><strong>samples</strong> (<em>string</em>) &#8211; A string containing consecutive bytes describing all pixels of the image.</li>
@@ -275,8 +275,8 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <dl class="method">
 <dt id="Pixmap.tintWith">
 <code class="descname">tintWith</code><span class="sig-paren">(</span><em>red</em>, <em>green</em>, <em>blue</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.tintWith" title="Permalink to this definition">¶</a></dt>
-<dd><p>Colorizes (tints) a pixmap with a color provided as a value triple (red, green, blue). Use this method only for <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> or <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a> colorspaces. A <code class="docutils literal"><span class="pre">TypeError</span></code> exception will otherwise be raised.</p>
-<p>If the colorspace is <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a>, <code class="docutils literal"><span class="pre">(red</span> <span class="pre">+</span> <span class="pre">green</span> <span class="pre">+</span> <span class="pre">blue)/3</span></code> will be taken as the tinting value.</p>
+<dd><p>Colorizes (tints) a pixmap with a color provided as a value triple (red, green, blue). Use this method only for <code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code> or <code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code> colorspaces. A <code class="docutils literal"><span class="pre">TypeError</span></code> exception will otherwise be raised.</p>
+<p>If the colorspace is <code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code>, <code class="docutils literal"><span class="pre">(red</span> <span class="pre">+</span> <span class="pre">green</span> <span class="pre">+</span> <span class="pre">blue)/3</span></code> will be taken as the tinting value.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -323,8 +323,8 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <dl class="method">
 <dt id="Pixmap.copyPixmap">
 <code class="descname">copyPixmap</code><span class="sig-paren">(</span><em>source</em>, <em>irect</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.copyPixmap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copies the <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> part of the <code class="docutils literal"><span class="pre">source</span></code> pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and different colorspaces (provided each is either <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> or <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a>). The copy mechanism automatically adjusts to any discrepancies between source and target pixmap like so:</p>
-<p>If copying from <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> to <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a>, the source gray-shade value will be put into each of the three rgb component bytes. If the other way round, (r + g + b) / 3 will be taken as the gray-shade value of the target.</p>
+<dd><p>Copies the <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> part of the <code class="docutils literal"><span class="pre">source</span></code> pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and different colorspaces (provided each is either <code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code> or <code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code>). The copy mechanism automatically adjusts to any discrepancies between source and target pixmap like so:</p>
+<p>If copying from <code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code> to <code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code>, the source gray-shade value will be put into each of the three rgb component bytes. If the other way round, (r + g + b) / 3 will be taken as the gray-shade value of the target.</p>
 <p>Between the specified <code class="docutils literal"><span class="pre">irect</span></code> and the target pixmap&#8217;s <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a>, an &#8220;intersection&#8221; rectangle is first being calculated. Then the corresponding data of this intersection are being copied. If the intersection is empty, nothing will happen.</p>
 <p>If you want your <code class="docutils literal"><span class="pre">source</span></code> pixmap image to land at a specific position of the target, modify its <code class="docutils literal"><span class="pre">x</span></code> and <code class="docutils literal"><span class="pre">y</span></code> attributes accordingly before copying. See the example below for how this works.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -538,7 +538,7 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <dl class="attribute">
 <dt id="Pixmap.n">
 <code class="descname">n</code><a class="headerlink" href="#Pixmap.n" title="Permalink to this definition">¶</a></dt>
-<dd><p>Number of components per pixel. This number depends on (and identifies) the chosen colorspace: <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> = 2, <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a> = 4, <a class="reference internal" href="vars.html#CS_CMYK" title="CS_CMYK"><code class="xref py py-data docutils literal"><span class="pre">CS_CMYK</span></code></a> = 5.</p>
+<dd><p>Number of components per pixel. This number depends on (and identifies) the chosen colorspace: <code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code> = 2, <code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code> = 4, <code class="xref py py-data docutils literal"><span class="pre">CS_CMYK</span></code> = 5.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -619,7 +619,7 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
 <span class="n">tar_height</span> <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mi">4</span>             <span class="c1"># 4 tiles per column</span>
 <span class="n">tar_irect</span>  <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">IRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tar_width</span><span class="p">,</span> <span class="n">tar_height</span><span class="p">)</span>
 <span class="n">tar_pix</span>    <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">tar_cs</span><span class="p">,</span> <span class="n">tar_irect</span><span class="p">)</span>
-<span class="n">tar_pix</span><span class="o">.</span><span class="n">clearWith</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>        <span class="c1"># clear target with a lively gray :-)</span>
+<span class="n">tar_pix</span><span class="o">.</span><span class="n">clearWith</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>        <span class="c1"># clear target with a very lively stone-gray (thanks, Loriot)</span>
 
 <span class="c1"># now fill target with 3 * 4 tiles of input picture</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)):</span>
@@ -704,7 +704,7 @@ Please have a look at the <strong>example</strong> section to see some pixmap us
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 11. May 2016.
+      Last updated on 13. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

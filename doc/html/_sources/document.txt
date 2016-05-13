@@ -244,11 +244,11 @@ Page numbers in the list need not be unique nor be in any particular sequence. T
 
 You can execute several selections in a row. The document structure will be kept updated.
 
-This also means, that any document information from before this method may no longer be valid. This is especially true for old page objects, table of contents and the ``pageCount`` property.
+.. CAUTION:: This also means, that any document information from before this method must be assumed to be invalid. This is especially true for old page objects, table of contents and the ``pageCount`` property. If you plan to use the ``close()`` method, make sure you have deleted any page object created before (by ``page = None``).
 
-Any of those actions will become permanent only with a ``doc.save()``. Do not forget to specify the ``garbage=3`` option to eventually reduce the resulting document's size.
+Any of those actions will become permanent only with a ``doc.save()``. If you have deleted pages, do not forget to specify the ``garbage=3`` option to eventually reduce the resulting document's size.
 
-It should also be noted, that this method **preserves all links, annotations and bookmarks** that are still valid. In other words: deleting pages only deletes references that would otherwise point to nowhere.
+It should also be noted, that this method **preserves all links, annotations and bookmarks** that are still valid. In other words: deleting pages only deletes those references that would otherwise point to nowhere.
 
 Examples
 ---------
@@ -258,10 +258,12 @@ Create a document copy deleting pages with no text:
  import fitz
  doc = fitz.open("any.pdf")
  r = list(range(doc.pageCount))                 # list of all pages
+
  for p in fitz.Pages(doc):
-     txt = p.getText()                          # get the page's text
-     if not txt:                                # nothing there
+     if not p.getText():                        # contains no text
          r.remove(p.number)                     # remove page number from list
+     p = None                                   # release page memory
+
  doc.select(r)                                  # apply the list
  doc.save("out.pdf", garbage=3)                 # save the resulting PDF
 
@@ -284,7 +286,7 @@ Concatenate a document with itself:
  doc.select(r)
  doc.save("out.pdf")                            # contains pages 0,...,n,0,...,n of <any.pdf>
 
-Create document copy in reverse page order:
+Create document copy in reverse page order (well, don't try with a million pages):
 ::
  import fitz
  doc = fitz.open("any.pdf")

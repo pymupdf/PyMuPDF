@@ -50,6 +50,7 @@
 <li><a class="reference internal" href="#">Constants and Enumerations</a><ul>
 <li><a class="reference internal" href="#constants">Constants</a></li>
 <li><a class="reference internal" href="#enumerations">Enumerations</a></li>
+<li><a class="reference internal" href="#possible-values-of-linkdest-flags-link-destination-flags">Possible values of <code class="docutils literal"><span class="pre">linkDest.flags</span></code> (link destination flags)</a></li>
 </ul>
 </li>
 </ul>
@@ -90,113 +91,325 @@
 <p>Constants and enumerations of MuPDF as implemented by PyMuPDF. If your import statement was <code class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></code> then each of the following variables <code class="docutils literal"><span class="pre">var</span></code> is accessible as <code class="docutils literal"><span class="pre">fitz.var</span></code>.</p>
 <div class="section" id="constants">
 <h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
-<table border="1" class="docutils">
-<colgroup>
-<col width="25%" />
-<col width="75%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head"><strong>Constant</strong></th>
-<th class="head"><strong>Description</strong></th>
-</tr>
-</thead>
+<dl class="data">
+<dt id="csRGB">
+<code class="descname">csRGB</code><a class="headerlink" href="#csRGB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predefined RGB colorspace <code class="docutils literal"><span class="pre">fitz.Colorspace(fitz.CS_RGB)</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-even"><td>CS_RGB</td>
-<td>1 - Type of <a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a> is RGBA</td>
-</tr>
-<tr class="row-odd"><td>CS_GRAY</td>
-<td>2 - Type of <a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a> is GRAY</td>
-</tr>
-<tr class="row-even"><td>CS_CMYK</td>
-<td>3 - Type of <a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a> is CMYK</td>
-</tr>
-<tr class="row-odd"><td>csRGB</td>
-<td>= fitz.Colorspace(fitz.CS_RGB)</td>
-</tr>
-<tr class="row-even"><td>csGRAY</td>
-<td>= fitz.Colorspace(fitz.CS_GRAY)</td>
-</tr>
-<tr class="row-odd"><td>csCMYK</td>
-<td>= fitz.Colorspace(fitz.CS_CMYK)</td>
-</tr>
-<tr class="row-even"><td>VersionBind</td>
-<td>&#8216;1.9.1&#8217; - string: version of PyMuPDF (this binding)</td>
-</tr>
-<tr class="row-odd"><td>VersionFitz</td>
-<td>&#8216;1.9a&#8217; - string: version of MuPDF / fitz</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a></td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="data">
+<dt id="csGRAY">
+<code class="descname">csGRAY</code><a class="headerlink" href="#csGRAY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predefined GRAY colorspace  <code class="docutils literal"><span class="pre">fitz.Colorspace(fitz.CS_GRAY)</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="csCMYK">
+<code class="descname">csCMYK</code><a class="headerlink" href="#csCMYK" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predefined CMYK colorspace  <code class="docutils literal"><span class="pre">fitz.Colorspace(fitz.CS_CMYK)</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="CS_RGB">
+<code class="descname">CS_RGB</code><a class="headerlink" href="#CS_RGB" title="Permalink to this definition">¶</a></dt>
+<dd><p>1 - Type of <a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a> is RGBA</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="CS_GRAY">
+<code class="descname">CS_GRAY</code><a class="headerlink" href="#CS_GRAY" title="Permalink to this definition">¶</a></dt>
+<dd><p>2 - Type of <a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a> is GRAY</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="CS_CMYK">
+<code class="descname">CS_CMYK</code><a class="headerlink" href="#CS_CMYK" title="Permalink to this definition">¶</a></dt>
+<dd><p>3 - Type of <a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a> is CMYK</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="VersionBind">
+<code class="descname">VersionBind</code><a class="headerlink" href="#VersionBind" title="Permalink to this definition">¶</a></dt>
+<dd><p>&#8216;1.9.1&#8217; - version of PyMuPDF (these bindings)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="VersionFitz">
+<code class="descname">VersionFitz</code><a class="headerlink" href="#VersionFitz" title="Permalink to this definition">¶</a></dt>
+<dd><p>&#8216;1.9a&#8217; - version of MuPDF</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="VersionDate">
+<code class="descname">VersionDate</code><a class="headerlink" href="#VersionDate" title="Permalink to this definition">¶</a></dt>
+<dd><p>ISO timestamp <code class="docutils literal"><span class="pre">YYYY-MM-DD</span> <span class="pre">HH:MM:SS</span></code> when these bindings were created.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <div class="section" id="enumerations">
 <h2>Enumerations<a class="headerlink" href="#enumerations" title="Permalink to this headline">¶</a></h2>
-<p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> (link destination type). For details consult <a class="reference external" href="http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf">Adobe PDF Reference sixth edition 1.7 November 2006</a>, chapter 8.2 on page 581 ff.</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="27%" />
-<col width="73%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head"><strong>Value</strong></th>
-<th class="head"><strong>Description</strong></th>
-</tr>
-</thead>
+<p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> (link destination type). For details consult <a class="reference external" href="http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf">Adobe PDF Reference sixth edition 1.7 November 2006</a>, chapter 8.2 on pp. 581.</p>
+<dl class="data">
+<dt id="LINK_NONE">
+<code class="descname">LINK_NONE</code><a class="headerlink" href="#LINK_NONE" title="Permalink to this definition">¶</a></dt>
+<dd><p>0 - No destination</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-even"><td>LINK_NONE</td>
-<td>0 - No destination</td>
-</tr>
-<tr class="row-odd"><td>LINK_GOTO</td>
-<td>1 - Points to a place in this document</td>
-</tr>
-<tr class="row-even"><td>LINK_URI</td>
-<td>2 - Points to an URI</td>
-</tr>
-<tr class="row-odd"><td>LINK_LAUNCH</td>
-<td>3 - Launch (open) another document</td>
-</tr>
-<tr class="row-even"><td>LINK_NAMED</td>
-<td>4 - Perform some action</td>
-</tr>
-<tr class="row-odd"><td>LINK_GOTOR</td>
-<td>5 - Points to another document</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
 </tr>
 </tbody>
 </table>
-<p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.flags" title="linkDest.flags"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.flags</span></code></a> (link destination flags). <strong>Attention</strong>: The rightmost byte of this integer is a bit field. The values represent boolean indicators showing whether the associated statement is <code class="docutils literal"><span class="pre">True</span></code>.</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="32%" />
-<col width="68%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head"><strong>Value</strong></th>
-<th class="head"><strong>Description</strong></th>
-</tr>
-</thead>
+</dd></dl>
+
+<dl class="data">
+<dt id="LINK_GOTO">
+<code class="descname">LINK_GOTO</code><a class="headerlink" href="#LINK_GOTO" title="Permalink to this definition">¶</a></dt>
+<dd><p>1 - Points to a place in this document</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
 <tbody valign="top">
-<tr class="row-even"><td>LINK_FLAG_L_VALID</td>
-<td>1  (bit 0) Top left x value is valid</td>
-</tr>
-<tr class="row-odd"><td>LINK_FLAG_T_VALID</td>
-<td>2  (bit 1) Top left y value is valid</td>
-</tr>
-<tr class="row-even"><td>LINK_FLAG_R_VALID</td>
-<td>4  (bit 2) Bottom right x value is valid</td>
-</tr>
-<tr class="row-odd"><td>LINK_FLAG_B_VALID</td>
-<td>8  (bit 3) Bottom right y value is valid</td>
-</tr>
-<tr class="row-even"><td>LINK_FLAG_FIT_H</td>
-<td>16 (bit 4) Horizontal fit</td>
-</tr>
-<tr class="row-odd"><td>LINK_FLAG_FIT_V</td>
-<td>32 (bit 5) Vertical fit</td>
-</tr>
-<tr class="row-even"><td>LINK_FLAG_R_IS_ZOOM</td>
-<td>64 (bit 6) Bottom right x is a zoom figure</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="data">
+<dt id="LINK_URI">
+<code class="descname">LINK_URI</code><a class="headerlink" href="#LINK_URI" title="Permalink to this definition">¶</a></dt>
+<dd><p>2 - Points to an URI</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="LINK_LAUNCH">
+<code class="descname">LINK_LAUNCH</code><a class="headerlink" href="#LINK_LAUNCH" title="Permalink to this definition">¶</a></dt>
+<dd><p>3 - Launch (open) another document</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="LINK_NAMED">
+<code class="descname">LINK_NAMED</code><a class="headerlink" href="#LINK_NAMED" title="Permalink to this definition">¶</a></dt>
+<dd><p>4 - Perform some action</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="LINK_GOTOR">
+<code class="descname">LINK_GOTOR</code><a class="headerlink" href="#LINK_GOTOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>5 - Points to another document</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="possible-values-of-linkdest-flags-link-destination-flags">
+<h2>Possible values of <a class="reference internal" href="linkdest.html#linkDest.flags" title="linkDest.flags"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.flags</span></code></a> (link destination flags)<a class="headerlink" href="#possible-values-of-linkdest-flags-link-destination-flags" title="Permalink to this headline">¶</a></h2>
+<div class="admonition caution">
+<p class="first admonition-title">Caution</p>
+<p class="last">The rightmost byte of this integer is a bit field. The values represent boolean indicators showing whether the associated statements are <code class="docutils literal"><span class="pre">True</span></code> (may be more than one).</p>
+</div>
+<dl class="data">
+<dt id="LINK_FLAG_L_VALID">
+<code class="descname">LINK_FLAG_L_VALID</code><a class="headerlink" href="#LINK_FLAG_L_VALID" title="Permalink to this definition">¶</a></dt>
+<dd><p>1  (bit 0) Top left x value is valid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="LINK_FLAG_T_VALID">
+<code class="descname">LINK_FLAG_T_VALID</code><a class="headerlink" href="#LINK_FLAG_T_VALID" title="Permalink to this definition">¶</a></dt>
+<dd><p>2  (bit 1) Top left y value is valid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="LINK_FLAG_R_VALID">
+<code class="descname">LINK_FLAG_R_VALID</code><a class="headerlink" href="#LINK_FLAG_R_VALID" title="Permalink to this definition">¶</a></dt>
+<dd><p>4  (bit 2) Bottom right x value is valid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="LINK_FLAG_B_VALID">
+<code class="descname">LINK_FLAG_B_VALID</code><a class="headerlink" href="#LINK_FLAG_B_VALID" title="Permalink to this definition">¶</a></dt>
+<dd><p>8  (bit 3) Bottom right y value is valid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="LINK_FLAG_FIT_H">
+<code class="descname">LINK_FLAG_FIT_H</code><a class="headerlink" href="#LINK_FLAG_FIT_H" title="Permalink to this definition">¶</a></dt>
+<dd><p>16 (bit 4) Horizontal fit</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="LINK_FLAG_FIT_V">
+<code class="descname">LINK_FLAG_FIT_V</code><a class="headerlink" href="#LINK_FLAG_FIT_V" title="Permalink to this definition">¶</a></dt>
+<dd><p>32 (bit 5) Vertical fit</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="LINK_FLAG_R_IS_ZOOM">
+<code class="descname">LINK_FLAG_R_IS_ZOOM</code><a class="headerlink" href="#LINK_FLAG_R_IS_ZOOM" title="Permalink to this definition">¶</a></dt>
+<dd><p>64 (bit 6) Bottom right x is a zoom figure</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 </div>
 
@@ -223,7 +436,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 11. May 2016.
+      Last updated on 13. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

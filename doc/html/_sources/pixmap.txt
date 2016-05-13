@@ -301,7 +301,7 @@ This shows how pixmaps can be used for purely graphical, non-PDF purposes. The s
  tar_height = pix0.height * 4             # 4 tiles per column
  tar_irect  = fitz.IRect(0, 0, tar_width, tar_height)
  tar_pix    = fitz.Pixmap(tar_cs, tar_irect)
- tar_pix.clearWith(90)        # clear target with a lively gray :-)
+ tar_pix.clearWith(90)        # clear target with a very lively stone-gray (thanks, Loriot)
 
  # now fill target with 3 * 4 tiles of input picture
  for i in list(range(4)):

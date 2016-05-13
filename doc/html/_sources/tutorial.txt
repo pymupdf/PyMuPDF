@@ -168,9 +168,9 @@ You can find out, exactly where on a page a certain string appears like this:
  areas = page.searchFor("mupdf", hit_max = 32)
 
 
-The variable ``areas`` will now contain a list of up to 32 :ref:`Rect` rectangles each of which surround an occurrence of string "mupdf" (case insensitive).
+The variable ``areas`` will now contain a list of up to 32 :ref:`Rect` rectangles each of which surrounds one occurrence of string "mupdf" (case insensitive).
 
-Please also do have a look at the demonstration program ``demo.py``. Among others it contains details on how the :ref:`TextPage`, :ref:`TextSheet`, :ref:`Device` and :ref:`DisplayList` classes can be used for a more direct control, e.g. when performance considerations require it.
+Please also do have a look at the demo program ``demo.py``. Among others it contains details on how the :ref:`TextPage`, :ref:`TextSheet`, :ref:`Device` and :ref:`DisplayList` classes can be used for a more direct control, e.g. when performance considerations require it.
 
 
 Output
@@ -179,7 +179,7 @@ Output capabilities of MuPDF (such as PDF generation) have improved in version 1
 
 Re-arrange and Delete Pages
 ----------------------------------
-Method :meth:`Document.select()` accepts a list (or tuple) of integers as an argument. These integers must be in the range ``0 <= i < countPage``. When executed, all pages not occurring in this list will be deleted. Pages that do occur will remain - **in the sequence specified and as many times as specified.**
+Method :meth:`Document.select()` accepts a list (or tuple) of integers as an argument. These integers must be in the range ``0 <= i < pageCount``. When executed, all pages not occurring in this list will be deleted. Pages that do occur will remain - **in the sequence specified and as many times as specified.**
 
 So you can easily create sub-PDFs of the first / last 10 pages, only odd or even pages (for doing double-sided printing), pages that do (not) contain a certain text, ... whatever you may think of.
 
@@ -228,9 +228,7 @@ In some situations it is desirable to "close" a :ref:`Document` such that it bec
 
 This can be achieved by the :meth:`Document.close` method. Apart from closing the file, all buffer areas associated with the document will be freed. If the document has been created from memory data, no underlying file is opened by MuPDF, so only the buffer release will take place.
 
-**Caution:**
-
-As with normal file objects, after close, the document and all objects referencing it will be invalid  and **must no longer be used**. This bindings protect against most such invalid uses by disabling properties and methods of the :ref:`Document` and any associated :meth:`Document.loadPage` objects.
+.. CAUTION:: As with normal file objects, after close, the document and all objects referencing it will be invalid  and **must no longer be used**. This bindings protect against most such invalid uses by disabling properties and methods of the :ref:`Document` and any associated :meth:`Document.loadPage` objects.
 
 However, re-opening a previously closed file by a new :ref:`Document` is no problem. Have a look at the following valid example:
 ::

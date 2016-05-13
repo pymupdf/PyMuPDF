@@ -87,16 +87,27 @@
 <em class="property">class </em><code class="descname">Colorspace</code><a class="headerlink" href="#Colorspace" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="Colorspace.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>colorspace</em><span class="sig-paren">)</span><a class="headerlink" href="#Colorspace.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor</p>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>cno</em><span class="sig-paren">)</span><a class="headerlink" href="#Colorspace.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Constructor</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>colorspace</strong> &#8211; A number identifying the colorspace. Possible values are <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a>, <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> and <a class="reference internal" href="vars.html#CS_CMYK" title="CS_CMYK"><code class="xref py py-data docutils literal"><span class="pre">CS_CMYK</span></code></a>.</td>
+<tr class="field-odd field"><th class="field-name">param <cite>cno</cite>:</th><td class="field-body">A number identifying the colorspace. Possible values are <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a>, <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> and <a class="reference internal" href="vars.html#CS_CMYK" title="CS_CMYK"><code class="xref py py-data docutils literal"><span class="pre">CS_CMYK</span></code></a>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">type <cite>cbo</cite>:</th><td class="field-body">int</td>
 </tr>
 </tbody>
 </table>
+</div></blockquote>
+<p><strong>Predefined Colorspaces</strong></p>
+<p>For saving some typing effort, there exist predefined colorspace objects for the three available cases.</p>
+<ul class="simple">
+<li><a class="reference internal" href="vars.html#csRGB" title="csRGB"><code class="xref py py-data docutils literal"><span class="pre">csRGB</span></code></a>  = <code class="docutils literal"><span class="pre">fitz.Colorspace(fitz.CS_RGB)</span></code></li>
+<li><a class="reference internal" href="vars.html#csGRAY" title="csGRAY"><code class="xref py py-data docutils literal"><span class="pre">csGRAY</span></code></a> = <code class="docutils literal"><span class="pre">fitz.Colorspace(fitz.CS_GRAY)</span></code></li>
+<li><a class="reference internal" href="vars.html#csCMYK" title="csCMYK"><code class="xref py py-data docutils literal"><span class="pre">csCMYK</span></code></a> = <code class="docutils literal"><span class="pre">fitz.Colorspace(fitz.CS_CMYK)</span></code></li>
+</ul>
 </dd></dl>
 
 </dd></dl>
@@ -127,7 +138,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 11. May 2016.
+      Last updated on 13. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

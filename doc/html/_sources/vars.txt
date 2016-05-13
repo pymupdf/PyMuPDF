@@ -7,47 +7,148 @@ Constants and Enumerations
 ===============================
 Constants and enumerations of MuPDF as implemented by PyMuPDF. If your import statement was ``import fitz`` then each of the following variables ``var`` is accessible as ``fitz.var``.
 
-Constants
-=========
 
-================= =============================================
-**Constant**                **Description**
-================= =============================================
-CS_RGB            1 - Type of :ref:`Colorspace` is RGBA
-CS_GRAY           2 - Type of :ref:`Colorspace` is GRAY
-CS_CMYK           3 - Type of :ref:`Colorspace` is CMYK
-csRGB             = fitz.Colorspace(fitz.CS_RGB)
-csGRAY            = fitz.Colorspace(fitz.CS_GRAY)
-csCMYK            = fitz.Colorspace(fitz.CS_CMYK)
-VersionBind       '1.9.1' - string: version of PyMuPDF (this binding)
-VersionFitz       '1.9a' - string: version of MuPDF / fitz
-================= =============================================
+Constants
+---------
+
+.. py:data:: csRGB
+
+    Predefined RGB colorspace ``fitz.Colorspace(fitz.CS_RGB)``.
+
+    :rtype: :ref:`Colorspace`
+
+.. py:data:: csGRAY
+
+    Predefined GRAY colorspace  ``fitz.Colorspace(fitz.CS_GRAY)``.
+
+    :rtype: :ref:`Colorspace`
+
+.. py:data:: csCMYK
+
+    Predefined CMYK colorspace  ``fitz.Colorspace(fitz.CS_CMYK)``.
+
+    :rtype: :ref:`Colorspace`
+
+.. py:data:: CS_RGB
+
+    1 - Type of :ref:`Colorspace` is RGBA
+
+    :rtype: int
+
+.. py:data:: CS_GRAY
+
+    2 - Type of :ref:`Colorspace` is GRAY
+
+    :rtype: int
+
+.. py:data:: CS_CMYK
+
+    3 - Type of :ref:`Colorspace` is CMYK
+
+    :rtype: int
+
+.. py:data:: VersionBind
+
+    '1.9.1' - version of PyMuPDF (these bindings)
+
+    :rtype: string
+
+.. py:data:: VersionFitz
+
+    '1.9a' - version of MuPDF
+
+    :rtype: string
+
+.. py:data:: VersionDate
+
+    ISO timestamp ``YYYY-MM-DD HH:MM:SS`` when these bindings were created.
+
+    :rtype: string
 
 Enumerations
-=============
-Possible values of :attr:`linkDest.kind` (link destination type). For details consult `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_, chapter 8.2 on page 581 ff.
+-------------
+Possible values of :attr:`linkDest.kind` (link destination type). For details consult `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_, chapter 8.2 on pp. 581.
 
-================= =============================================
-**Value**                    **Description**
-================= =============================================
-LINK_NONE         0 - No destination
-LINK_GOTO         1 - Points to a place in this document
-LINK_URI          2 - Points to an URI
-LINK_LAUNCH       3 - Launch (open) another document
-LINK_NAMED        4 - Perform some action
-LINK_GOTOR        5 - Points to another document
-================= =============================================
+.. py:data:: LINK_NONE
 
-Possible values of :attr:`linkDest.flags` (link destination flags). **Attention**: The rightmost byte of this integer is a bit field. The values represent boolean indicators showing whether the associated statement is ``True``.
+    0 - No destination
 
-===================== =============================================
-**Value**                       **Description**
-===================== =============================================
-LINK_FLAG_L_VALID     1  (bit 0) Top left x value is valid
-LINK_FLAG_T_VALID     2  (bit 1) Top left y value is valid
-LINK_FLAG_R_VALID     4  (bit 2) Bottom right x value is valid
-LINK_FLAG_B_VALID     8  (bit 3) Bottom right y value is valid
-LINK_FLAG_FIT_H       16 (bit 4) Horizontal fit
-LINK_FLAG_FIT_V       32 (bit 5) Vertical fit
-LINK_FLAG_R_IS_ZOOM   64 (bit 6) Bottom right x is a zoom figure
-===================== =============================================
+    :rtype: int
+
+.. py:data:: LINK_GOTO
+
+    1 - Points to a place in this document
+
+    :rtype: int
+
+.. py:data:: LINK_URI
+
+    2 - Points to an URI
+
+    :rtype: int
+
+.. py:data:: LINK_LAUNCH
+
+    3 - Launch (open) another document
+
+    :rtype: int
+
+.. py:data:: LINK_NAMED
+
+    4 - Perform some action
+
+    :rtype: int
+
+.. py:data:: LINK_GOTOR
+
+    5 - Points to another document
+
+    :rtype: int
+
+
+Possible values of :attr:`linkDest.flags` (link destination flags)
+------------------------------------------------------------------
+
+.. caution:: The rightmost byte of this integer is a bit field. The values represent boolean indicators showing whether the associated statements are ``True`` (may be more than one).
+
+.. py:data:: LINK_FLAG_L_VALID
+
+    1  (bit 0) Top left x value is valid
+
+    :rtype: bool
+
+.. py:data:: LINK_FLAG_T_VALID
+
+    2  (bit 1) Top left y value is valid
+
+    :rtype: bool
+
+.. py:data:: LINK_FLAG_R_VALID
+
+    4  (bit 2) Bottom right x value is valid
+
+    :rtype: bool
+
+.. py:data:: LINK_FLAG_B_VALID
+
+    8  (bit 3) Bottom right y value is valid
+
+    :rtype: bool
+
+.. py:data:: LINK_FLAG_FIT_H
+
+    16 (bit 4) Horizontal fit
+
+    :rtype: bool
+
+.. py:data:: LINK_FLAG_FIT_V
+
+    32 (bit 5) Vertical fit
+
+    :rtype: bool
+
+.. py:data:: LINK_FLAG_R_IS_ZOOM
+
+    64 (bit 6) Bottom right x is a zoom figure
+
+    :rtype: bool

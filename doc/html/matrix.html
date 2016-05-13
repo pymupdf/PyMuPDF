@@ -336,13 +336,13 @@
 <div class="section" id="remarks">
 <h2>Remarks<a class="headerlink" href="#remarks" title="Permalink to this headline">¶</a></h2>
 <p>Obviously, changes of matrix properties and execution of matrix methods can be combined, i.e. executed consecutively. This is done by multiplying the respective matrices.</p>
-<p>Matrix multiplications are <strong>not commutative</strong>, i.e. execution sequence determines the result: a <strong>shift - rotate</strong> does in general not equal a <strong>rotate - shift</strong>. So it can become quite unclear which result a transformation will yield. E.g. if you apply <code class="docutils literal"><span class="pre">preRotate(x)</span></code> to an arbitrary matrix <code class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span></code> you will get matrix <code class="docutils literal"><span class="pre">[a*cos(x)+c*sin(x),</span> <span class="pre">b*cos(x)+d*sin(x),</span> <span class="pre">-a*sin(x)+c*cos(x),</span> <span class="pre">-b*sin(x)+d*cos(x),</span> <span class="pre">e,</span> <span class="pre">f]</span></code>.</p>
-<p>In order to obtain expected results, Adobe therefore recommends the following sequence when applying multiple matrix transformations (see page 206 of their manual):</p>
-<ul class="simple">
+<p>Matrix multiplications are <strong>not commutative</strong>, i.e. execution sequence determines the result: a <strong>shift-rotate</strong> is not equal a <strong>rotate-shift</strong> in general. So it can easily become unclear which result a transformation will yield. E.g. if you apply <code class="docutils literal"><span class="pre">preRotate(x)</span></code> to an arbitrary matrix <code class="docutils literal"><span class="pre">[a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">d,</span> <span class="pre">e,</span> <span class="pre">f]</span></code> you will get the matrix <code class="docutils literal"><span class="pre">[a*cos(x)+c*sin(x),</span> <span class="pre">b*cos(x)+d*sin(x),</span> <span class="pre">-a*sin(x)+c*cos(x),</span> <span class="pre">-b*sin(x)+d*cos(x),</span> <span class="pre">e,</span> <span class="pre">f]</span></code> ...</p>
+<p>In order to keep results foreseeable for a series of transformations, Adobe recommends the following sequence (see page 206 of their manual):</p>
+<ol class="arabic simple">
 <li>Shift (&#8220;translate&#8221;)</li>
 <li>Rotate</li>
 <li>Scale or shear (&#8220;skew&#8221;)</li>
-</ul>
+</ol>
 <p><strong>Examples</strong></p>
 <p>Here are examples to illustrate some of the effects achievable. The following pictures start with a page of the PDF version of this help file. We show what happens when a matrix is being applied (though always full pages are created, only parts are displayed here to save space).</p>
 <p>This is the original page image</p>
@@ -400,7 +400,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 11. May 2016.
+      Last updated on 13. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

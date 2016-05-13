@@ -287,12 +287,16 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">fitz</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">p1</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">p2</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">450</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
 <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="mf">450.0</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">450</span><span class="p">)</span>
 <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="mf">450.0</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
 <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="mf">450.0</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">450</span><span class="p">)</span>
 <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="mf">450.0</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span>
@@ -303,14 +307,22 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
 <span class="n">Type</span> <span class="s2">&quot;copyright&quot;</span><span class="p">,</span> <span class="s2">&quot;credits&quot;</span> <span class="ow">or</span> <span class="s2">&quot;license()&quot;</span> <span class="k">for</span> <span class="n">more</span> <span class="n">information</span><span class="o">.</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">fitz</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">r</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">123.88</span><span class="p">,</span> <span class="mf">455.123456</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">r</span>
 <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.009999999776482582</span><span class="p">,</span> <span class="mf">123.87999725341797</span><span class="p">,</span> <span class="mf">455.1234436035156</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">r</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
 <span class="n">fitz</span><span class="o">.</span><span class="n">IRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">124</span><span class="p">,</span> <span class="mi">456</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
-<p>As can be seen, all of the following evaluate to <code class="docutils literal"><span class="pre">True</span></code>: <code class="docutils literal"><span class="pre">r.round().x0</span> <span class="pre">==</span> <span class="pre">int(math.floor(r.x0))</span></code>, <code class="docutils literal"><span class="pre">r.round().y0</span> <span class="pre">==</span> <span class="pre">int(math.floor(r.y0))</span></code>, <code class="docutils literal"><span class="pre">r.round().x1</span> <span class="pre">==</span> <span class="pre">int(math.ceil(r.x1))</span></code> and <code class="docutils literal"><span class="pre">r.round().y1</span> <span class="pre">==</span> <span class="pre">int(math.ceil(r.y1))</span></code>.</p>
+<p>As can be seen, all of the following evaluate to <code class="docutils literal"><span class="pre">True</span></code>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">r.round().x0</span> <span class="pre">==</span> <span class="pre">int(math.floor(r.x0))</span></code></li>
+<li><code class="docutils literal"><span class="pre">r.round().y0</span> <span class="pre">==</span> <span class="pre">int(math.floor(r.y0))</span></code></li>
+<li><code class="docutils literal"><span class="pre">r.round().x1</span> <span class="pre">==</span> <span class="pre">int(math.ceil(r.x1))</span></code></li>
+<li><code class="docutils literal"><span class="pre">r.round().y1</span> <span class="pre">==</span> <span class="pre">int(math.ceil(r.y1))</span></code>.</li>
+</ul>
 </div>
 
 
@@ -337,7 +349,7 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 11. May 2016.
+      Last updated on 13. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

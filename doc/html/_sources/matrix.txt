@@ -135,13 +135,13 @@ Remarks
 --------
 Obviously, changes of matrix properties and execution of matrix methods can be combined, i.e. executed consecutively. This is done by multiplying the respective matrices.
 
-Matrix multiplications are **not commutative**, i.e. execution sequence determines the result: a **shift - rotate** does in general not equal a **rotate - shift**. So it can become quite unclear which result a transformation will yield. E.g. if you apply ``preRotate(x)`` to an arbitrary matrix ``[a,b,c,d,e,f]`` you will get matrix ``[a*cos(x)+c*sin(x), b*cos(x)+d*sin(x), -a*sin(x)+c*cos(x), -b*sin(x)+d*cos(x), e, f]``.
+Matrix multiplications are **not commutative**, i.e. execution sequence determines the result: a **shift-rotate** is not equal a **rotate-shift** in general. So it can easily become unclear which result a transformation will yield. E.g. if you apply ``preRotate(x)`` to an arbitrary matrix ``[a, b, c, d, e, f]`` you will get the matrix ``[a*cos(x)+c*sin(x), b*cos(x)+d*sin(x), -a*sin(x)+c*cos(x), -b*sin(x)+d*cos(x), e, f]`` ...
 
-In order to obtain expected results, Adobe therefore recommends the following sequence when applying multiple matrix transformations (see page 206 of their manual):
+In order to keep results foreseeable for a series of transformations, Adobe recommends the following sequence (see page 206 of their manual):
 
-* Shift ("translate")
-* Rotate
-* Scale or shear ("skew")
+1. Shift ("translate")
+2. Rotate
+3. Scale or shear ("skew")
 
 
 **Examples**
