@@ -80,7 +80,7 @@
             
   <div class="section" id="linkdest">
 <span id="id1"></span><h1>linkDest<a class="headerlink" href="#linkdest" title="Permalink to this headline">¶</a></h1>
-<p>Class representing the <cite>dest</cite> property of an outline entry.</p>
+<p>Class representing the <cite>dest</cite> property of an outline entry or a link. Describes the link to which such entries point.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="43%" />
@@ -93,37 +93,37 @@
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><a class="reference internal" href="#linkDest.dest" title="linkDest.dest"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.dest</span></code></a></td>
-<td>Destination</td>
+<td>destination</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#linkDest.fileSpec" title="linkDest.fileSpec"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.fileSpec</span></code></a></td>
-<td>File specification (path, filename)</td>
+<td>file specification (path, filename)</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#linkDest.flags" title="linkDest.flags"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.flags</span></code></a></td>
-<td>Descriptive flags</td>
+<td>descriptive flags</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#linkDest.isMap" title="linkDest.isMap"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.isMap</span></code></a></td>
-<td>Is this a MAP?</td>
+<td>is this a MAP?</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#linkDest.isUri" title="linkDest.isUri"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.isUri</span></code></a></td>
-<td>Is this an URI?</td>
+<td>is this a URI?</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a></td>
-<td>Kind of destination</td>
+<td>kind of destination</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#linkDest.lt" title="linkDest.lt"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.lt</span></code></a></td>
-<td>Top left coordinates</td>
+<td>top left coordinates</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#linkDest.named" title="linkDest.named"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.named</span></code></a></td>
-<td>Name if named destination</td>
+<td>name if named destination</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#linkDest.newWindow" title="linkDest.newWindow"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.newWindow</span></code></a></td>
-<td>Name of new window</td>
+<td>name of new window</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#linkDest.page" title="linkDest.page"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.page</span></code></a></td>
-<td>Page number</td>
+<td>page number</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#linkDest.rb" title="linkDest.rb"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.rb</span></code></a></td>
-<td>Bottom right coordinates</td>
+<td>bottom right coordinates</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#linkDest.uri" title="linkDest.uri"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.uri</span></code></a></td>
 <td>URI</td>
@@ -137,12 +137,12 @@
 <dd><dl class="attribute">
 <dt id="linkDest.dest">
 <code class="descname">dest</code><a class="headerlink" href="#linkDest.dest" title="Permalink to this definition">¶</a></dt>
-<dd><p>Destination of <code class="docutils literal"><span class="pre">linkDest</span></code>.</p>
+<dd><p>Target destination name if specified (only if <a class="reference internal" href="#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> = <a class="reference internal" href="vars.html#LINK_GOTOR" title="LINK_GOTOR"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTOR</span></code></a>).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="link.html#link"><span class="std std-ref">Link</span></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
 </tr>
 </tbody>
 </table>
@@ -151,7 +151,7 @@
 <dl class="attribute">
 <dt id="linkDest.fileSpec">
 <code class="descname">fileSpec</code><a class="headerlink" href="#linkDest.fileSpec" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the filename (including any path specifications) this link points to, if applicable.</p>
+<dd><p>Contains the filename (including any path specifications) this link points to, if applicable (only if <a class="reference internal" href="#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> = <a class="reference internal" href="vars.html#LINK_GOTOR" title="LINK_GOTOR"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTOR</span></code></a>).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -235,12 +235,12 @@
 <dl class="attribute">
 <dt id="linkDest.named">
 <code class="descname">named</code><a class="headerlink" href="#linkDest.named" title="Permalink to this definition">¶</a></dt>
-<dd><p>This destination refers to some named resource of the document (see Adobe PDF documentation).</p>
+<dd><p>This destination refers to some named action to perform (e.g. a javascript, see Adobe PDF documentation).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
 </tr>
 </tbody>
 </table>
@@ -249,7 +249,7 @@
 <dl class="attribute">
 <dt id="linkDest.newWindow">
 <code class="descname">newWindow</code><a class="headerlink" href="#linkDest.newWindow" title="Permalink to this definition">¶</a></dt>
-<dd><p>This destination refers to an action that will open a new window.</p>
+<dd><p>If true, the destination should be launched in a new window.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -263,7 +263,7 @@
 <dl class="attribute">
 <dt id="linkDest.page">
 <code class="descname">page</code><a class="headerlink" href="#linkDest.page" title="Permalink to this definition">¶</a></dt>
-<dd><p>The page number (in this or the target document) this destination points to.</p>
+<dd><p>The page number (in this or the target document) this destination points to. Only set if <a class="reference internal" href="#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> = <a class="reference internal" href="vars.html#LINK_GOTOR" title="LINK_GOTOR"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTOR</span></code></a> or <a class="reference internal" href="#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> = <a class="reference internal" href="vars.html#LINK_GOTO" title="LINK_GOTO"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTO</span></code></a>. Can be <code class="docutils literal"><span class="pre">-1</span></code> if <a class="reference internal" href="#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> = <a class="reference internal" href="vars.html#LINK_GOTOR" title="LINK_GOTOR"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTOR</span></code></a>, in which case <a class="reference internal" href="#linkDest.dest" title="linkDest.dest"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.dest</span></code></a> determines where to go (to be resolved by target document).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -330,7 +330,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 13. May 2016.
+      Last updated on 15. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

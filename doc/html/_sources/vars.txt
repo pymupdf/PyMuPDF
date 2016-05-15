@@ -83,7 +83,7 @@ Possible values of :attr:`linkDest.kind` (link destination type). For details co
 
 .. py:data:: LINK_URI
 
-    2 - Points to an URI
+    2 - Points to a URI
 
     :rtype: int
 

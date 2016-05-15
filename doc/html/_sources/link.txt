@@ -13,9 +13,9 @@ Represents a pointer to somewhere (this document, other documents, the internet)
 ====================== ============================================
 **Attribute**          **Short Description**
 ====================== ============================================
-:attr:`Link.rect`      Clickable area in untransformed coordinates.
-:attr:`Link.dest`      Kind of link destination.
-:attr:`Link.next`      Link to next link
+:attr:`Link.rect`      clickable area in untransformed coordinates.
+:attr:`Link.dest`      link destination
+:attr:`Link.next`      link to next link
 ====================== ============================================
 
 **Class API**
@@ -30,9 +30,9 @@ Represents a pointer to somewhere (this document, other documents, the internet)
 
    .. attribute:: dest
 
-      The link destination kind. An integer to be interpreted as one of the ``FZ_LINK_*`` values.
+      The link destination. An object describing the destination this link points to.
 
-      :rtype: int
+      :rtype: :ref:`linkDest`
 
    .. attribute:: next
 
