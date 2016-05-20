@@ -28,15 +28,6 @@ struct DeviceWrapper {
 };
 %}
 
-/************************************/
-/* our own version of fitz.Identity */
-/************************************/
-%immutable;
-%inline %{
-const struct fz_matrix_s Identity = { 1, 0, 0, 1, 0, 0 };
-%}
-%mutable;
-
 /* include version information */
 %include version.i
 
@@ -127,7 +118,7 @@ struct fz_document_s {
             }
         }
         %pythonprepend loadPage(int) %{
-            if self.isClosed == 1:
+            if self.isClosed:
                 raise ValueError("operation on closed document")
         %}
         %pythonappend loadPage(int) %{
@@ -146,14 +137,14 @@ struct fz_document_s {
         }
 
         %pythonprepend _loadOutline() %{
-            if self.isClosed == 1:
+            if self.isClosed:
                 raise ValueError("operation on closed document")
         %}
         struct fz_outline_s *_loadOutline() {
             return fz_load_outline(gctx, $self);
         }
         %pythonprepend _dropOutline(struct fz_outline_s *ol) %{
-            if self.isClosed == 1:
+            if self.isClosed:
                 raise ValueError("operation on closed document")
         %}
         void _dropOutline(struct fz_outline_s *ol) {
@@ -163,7 +154,7 @@ struct fz_document_s {
             fz_drop_outline(gctx, ol);
         }
         %pythonprepend _getPageCount() %{
-            if self.isClosed == 1:
+            if self.isClosed:
                 raise ValueError("operation on closed document")
         %}
         int _getPageCount() {
@@ -171,7 +162,7 @@ struct fz_document_s {
         }
 
         %pythonprepend _getMetadata(const char *key) %{
-            if self.isClosed == 1:
+            if self.isClosed:
                 raise ValueError("operation on closed document")
         %}
         char *_getMetadata(const char *key) {
@@ -187,7 +178,7 @@ struct fz_document_s {
                 return NULL;
         }
         %pythonprepend _needsPass() %{
-            if self.isClosed == 1:
+            if self.isClosed:
                 raise ValueError("operation on closed document")
         %}
         int _needsPass() {
@@ -195,7 +186,7 @@ struct fz_document_s {
         }
 
         %pythonprepend authenticate(const char *pass) %{
-            if self.isClosed == 1:
+            if self.isClosed:
                 raise ValueError("operation on closed document")
         %}
         %pythonappend authenticate(const char *pass) %{
@@ -330,7 +321,7 @@ struct fz_document_s {
         }
 
         /***************************************/
-        /* get the permissions of the document */
+        /* get document permissions            */
         /***************************************/
         %feature("autodoc","getPermits(self) -> dictionary containing permissions") getPermits;
         %pythonprepend getPermits() %{
@@ -368,6 +359,17 @@ struct fz_document_s {
             if (fz_has_permission(gctx, $self, FZ_PERMISSION_COPY)) permit = permit + 16;
             if (fz_has_permission(gctx, $self, FZ_PERMISSION_ANNOTATE)) permit = permit + 32;
             return permit>>2;
+        }
+
+        int _getPageObjNumber(int pno) {
+            /* cast-down fz_document to a pdf_document */
+            int pageCount = fz_count_pages(gctx, $self);
+            if ((pno < 0) | (pno >= pageCount)) return -1;
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            if (!pdf) return -2;
+            pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, pno);
+            int objnum = pdf_to_num(gctx, pageref);
+            return objnum;
         }
 
         %pythoncode %{
@@ -660,16 +662,15 @@ struct fz_pixmap_s
         /******************************************/
         fz_pixmap_s(char *filename) {
             struct fz_image_s *img = NULL;
-            fz_try(gctx)
-                img = fz_new_image_from_file(gctx, filename);
-            fz_catch(gctx)
-                ;
             struct fz_pixmap_s *pm = NULL;
-            int w = -1;
-            fz_try(gctx)
-                pm = fz_get_pixmap_from_image(gctx, img, w, w);
-            fz_catch(gctx)
-                ;
+            fz_try(gctx) {
+                img = fz_new_image_from_file(gctx, filename);
+                pm = fz_get_pixmap_from_image(gctx, img, -1, 1);
+                }
+            fz_catch(gctx) {
+                if (img) fz_drop_image(gctx, img);
+                return NULL;
+                }
             fz_drop_image(gctx, img);
             return pm;
         }
@@ -679,15 +680,16 @@ struct fz_pixmap_s
         /******************************************/
         fz_pixmap_s(char *imagedata, int size) {
             struct fz_image_s *img = NULL;
-            fz_try(gctx)
-                img = fz_new_image_from_data(gctx, imagedata, size);
-            fz_catch(gctx)
-                ;
             struct fz_pixmap_s *pm = NULL;
-            fz_try(gctx)
+            fz_try(gctx) {
+                img = fz_new_image_from_data(gctx, imagedata, size);
                 pm = fz_get_pixmap_from_image(gctx, img, -1, -1);
-            fz_catch(gctx)
-                ;
+                }
+            fz_catch(gctx) {
+                if (img) fz_drop_image(gctx, img);
+                return NULL;
+                }
+            fz_drop_image(gctx, img);
             return pm;
         }
         ~fz_pixmap_s() {
@@ -877,8 +879,6 @@ struct fz_pixmap_s
                 filename = filename.encode('utf8')
             else:
                 raise TypeError("filename must be a string")
-
-
         %}
         int _writeIMG(char *filename, int format, int savealpha=0) {
             fz_try(gctx) {
@@ -1089,6 +1089,11 @@ struct fz_matrix_s
         %}
     }
 };
+
+%immutable Identity;
+%rename(Identity) fz_identity;
+extern const struct fz_matrix_s fz_identity;
+%mutable;
 
 /* fz_outline */
 %rename(Outline) fz_outline_s;

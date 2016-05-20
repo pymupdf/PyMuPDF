@@ -1,12 +1,12 @@
-/**********************************************************/
-/* read text from a document page - the short way         */
-/* The main called function, fz_new_stext_page_from_page, */
-/* is contained in utils.c in the fitz directory.         */
-/* At its core, it creates an stext device runs the stext */
-/* page through it, then deletes the device again and     */
-/* returns the text page.                                 */
-/* A display list is not used in the process.             */
-/**********************************************************/
+/***********************************************************/
+/* read text from a document page - the short way          */
+/* The main called function, fz_new_stext_page_from_page,  */
+/* is contained in utils.c in the fitz directory.          */
+/* At its core, it creates an stext device, runs the stext */
+/* page through it, then deletes the device again and      */
+/* returns the text page.                                  */
+/* A display list is not used in the process.              */
+/***********************************************************/
 %{
 struct fz_buffer_s *readPageText(fz_page *page, int output) {
     fz_buffer *res;
@@ -27,10 +27,10 @@ struct fz_buffer_s *readPageText(fz_page *page, int output) {
         fz_drop_stext_sheet(gctx, ts);
         }
         fz_catch(gctx) {
-            fz_drop_output(gctx, out);
-            fz_drop_stext_page(gctx, tp);
-            fz_drop_stext_sheet(gctx, ts);
-            fz_drop_buffer(gctx, res);
+            if (out) fz_drop_output(gctx, out);
+            if (tp)  fz_drop_stext_page(gctx, tp);
+            if (ts)  fz_drop_stext_sheet(gctx, ts);
+            if (res) fz_drop_buffer(gctx, res);
         }
     return res;
 }
@@ -210,6 +210,11 @@ int strip_outlines(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int pa
     return nc;
 }
 
+/****************************************************************
+   called by PyMuPDF:
+   argc  = length of "liste"
+   liste = list of page numbers to retain
+*****************************************************************/
 void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
 {
     pdf_obj *oldroot, *root, *pages, *kids, *countobj, *parent, *olddests;

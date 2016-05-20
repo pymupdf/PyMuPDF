@@ -94,7 +94,7 @@ except AttributeError:
 import os                     
 VersionFitz = "1.9a"          
 VersionBind = "1.9.1"         
-VersionDate = "2016-05-10 13:31:16"        
+VersionDate = "2016-05-20 13:45:00"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -158,7 +158,7 @@ class Document(_object):
     def loadPage(self, number):
         """loadPage(Document self, int number) -> Page"""
 
-        if self.isClosed == 1:
+        if self.isClosed:
             raise ValueError("operation on closed document")
 
 
@@ -176,7 +176,7 @@ class Document(_object):
     def _loadOutline(self):
         """_loadOutline(Document self) -> Outline"""
 
-        if self.isClosed == 1:
+        if self.isClosed:
             raise ValueError("operation on closed document")
 
 
@@ -186,7 +186,7 @@ class Document(_object):
     def _dropOutline(self, ol):
         """_dropOutline(Document self, Outline ol)"""
 
-        if self.isClosed == 1:
+        if self.isClosed:
             raise ValueError("operation on closed document")
 
 
@@ -196,7 +196,7 @@ class Document(_object):
     def _getPageCount(self):
         """_getPageCount(Document self) -> int"""
 
-        if self.isClosed == 1:
+        if self.isClosed:
             raise ValueError("operation on closed document")
 
 
@@ -206,7 +206,7 @@ class Document(_object):
     def _getMetadata(self, key):
         """_getMetadata(Document self, char const * key) -> char *"""
 
-        if self.isClosed == 1:
+        if self.isClosed:
             raise ValueError("operation on closed document")
 
 
@@ -216,7 +216,7 @@ class Document(_object):
     def _needsPass(self):
         """_needsPass(Document self) -> int"""
 
-        if self.isClosed == 1:
+        if self.isClosed:
             raise ValueError("operation on closed document")
 
 
@@ -226,7 +226,7 @@ class Document(_object):
     def authenticate(self, arg2):
         """authenticate(Document self, char const * arg2) -> int"""
 
-        if self.isClosed == 1:
+        if self.isClosed:
             raise ValueError("operation on closed document")
 
 
@@ -306,6 +306,11 @@ class Document(_object):
         return val
 
 
+    def _getPageObjNumber(self, pno):
+        """_getPageObjNumber(Document self, int pno) -> int"""
+        return _fitz.Document__getPageObjNumber(self, pno)
+
+
     def initData(self):
         if self.isEncrypted:
             raise ValueError("cannot initData - document is still encrypted")
@@ -331,8 +336,6 @@ class Document(_object):
     __del__ = lambda self: None
 Document_swigregister = _fitz.Document_swigregister
 Document_swigregister(Document)
-cvar = _fitz.cvar
-Identity = cvar.Identity
 
 class Page(_object):
     """Proxy of C fz_page_s struct."""
@@ -862,6 +865,8 @@ class Outline(_object):
     __del__ = lambda self: None
 Outline_swigregister = _fitz.Outline_swigregister
 Outline_swigregister(Outline)
+cvar = _fitz.cvar
+Identity = cvar.Identity
 
 
 _fitz.LINK_NONE_swigconstant(_fitz)

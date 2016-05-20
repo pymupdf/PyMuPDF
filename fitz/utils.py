@@ -18,9 +18,11 @@ Pages not in the list will be deleted. Pages can occur multiple times and in any
     if len(arg) != 2:
         raise ValueError("list of pages is required")
     doc = arg[0]
+    if not repr(doc).startswith("fitz.Document"):
+        raise ValueError("invalid fitz.Document provided to select")
+    if doc.isClosed or doc.isEncrypted:
+        raise ValueError("operation on closed or encrypted document")
     liste = arg[1]
-    if doc.isClosed:
-        raise ValueError("operation on closed document")
     if not doc.name.lower().endswith(("/pdf", ".pdf")):
         raise ValueError("only PDF documents supported")
     return doc._select(liste)
@@ -40,11 +42,13 @@ Returns a list of rectangles, each of which surrounds a found occurrence.
         hit_max = kw["hit_max"]
     else:
         hit_max = 16
+        if kw:
+            raise ValueError("invalid keyword parameter specified")
 
-    if not getattr(page, "parent", None):
+    if not repr(page.parent).startswith("fitz.Document"):
         raise ValueError("invalid page object provided to searchFor")
-    if page.parent.isClosed:
-        raise ValueError("page operation on closed document")
+    if page.parent.isClosed or self.parent.isEncrypted:
+        raise ValueError("page operation on closed or encrpted document")
 
     dl = fitz.DisplayList()                  # create DisplayList
     page.run(fitz.Device(dl), fitz.Identity) # run page through it
@@ -69,15 +73,20 @@ Default and misspelling choice is "text".
     '''
     # determine parameters. Using generalized arguments, so we can become a
     # method of the Page class
+    if len(arg) != 1:
+        raise ValueError("requiring 1 pos. argument, %s given" % (len(arg),))
     page = arg[0]                                # arg[0] = self when Page method
+    if not repr(page.parent).startswith("fitz.Document"):
+        raise ValueError("invalid page object provided to getText")
+    if page.parent.isClosed or page.parent.isEncrypted:
+        raise ValueError("page operation on closed or encrypted document")
+
     if "output" in kw:
         output = kw["output"]
     else:
         output = "text"
-    if not getattr(page, "parent", None):
-        raise ValueError("invalid page object provided to getText")
-    if page.parent.isClosed:
-        raise ValueError("page operation on closed document")
+        if kw:
+            raise ValueError("getText invalid keyword specified")
 
     # return requested text format
     if output.lower() == "json":
@@ -105,16 +114,21 @@ Default and misspelling choice is "text".
     if len(arg) != 2:
         raise ValueError("requiring 2 pos. arguments, %s given" % (len(arg),))
     doc = arg[0]                       # arg[0] = self when Document method
+    if not repr(doc).startswith("fitz.Document"):
+        raise ValueError("invalid fitz.Document object specified")
+    if doc.isClosed or doc.isEncrypted:
+        raise ValueError("operation on closed or encrypted document")
+    
     pno = int(arg[1])                  # page number
+    if pno < 0 or pno >= doc.pageCount:
+        raise ValueError("page number not in range 0 to %s" % (doc.pageCount - 1,))
+
     if "output" in kw:
         output = kw["output"]
     else:
         output = "text"
-
-    if doc.isClosed:
-        raise ValueError("page operation on closed document")
-    if pno < 0 or pno > doc.pageCount:
-        raise ValueError("page number not in range 0 to %s" % (doc.pageCount,))
+        if kw:
+            raise ValueError("invalid keyword specified to getPageText")
 
     # return requested text format
     if output.lower() == "json":
@@ -142,20 +156,22 @@ Default and misspelling choice is "rgb".
     if len(arg) != 1:
         raise ValueError("requiring 1 pos. argument, %s given" % (len(arg),))
     page = arg[0]
+    if not repr(page.parent).startswith("fitz.Document"):
+        raise ValueError("invalid page object provided to getPixmap")
+    if page.parent.isClosed or page.parent.isEncrypted:
+        raise ValueError("page operation on closed or encrypted document")
+    
+    matrix = fitz.Identity
+    colorspace = "rgb"
+    
+    for k in kw.keys():
+        if k not in ["matrix", "colorspace"]:
+            raise ValueError("invalid keyword in getPixmap")
+            
     if "matrix" in kw:
         matrix = kw["matrix"]
-    else:
-        matrix = fitz.Identity
     if "colorspace" in kw:
         colorspace = kw["colorspace"]
-    else:
-        colorspace = "RGB"
-
-    # check if called with a valid page
-    if not getattr(page, "parent", None):
-        raise ValueError("invalid page object provided to getPixmap")
-    if page.parent.isClosed:
-        raise ValueError("page operation on closed document")
 
     # determine required colorspace
     if colorspace.upper() == "GRAY":
@@ -191,22 +207,31 @@ colorspace: text string to specify the required colour space (rgb, cmyk, gray - 
 Default and misspelling choice is "rgb".
     '''
     # get parameters
+    if len(arg) != 2:
+        raise ValueError("need 2 positional arguments, got %s" % (len(arg),))
     doc = arg[0]
-    pno = int(arg[1])
-    if "matrix" in kw:
-        matrix = kw["matrix"]
-    else:
-        matrix = fitz.Identity
-    if "colorspace" in kw:
-        colorspace = kw["colorspace"]
-    else:
-        colorspace = "RGB"
+    # check if called with a valid document
+    if not repr(doc).startswith("fitz.Document"):
+        raise ValueError("invalid fitz.Document provided to getPagePixmap")
+    if doc.isClosed or doc.isEncrypted:
+        raise ValueError("operation on closed or encrypted document")
 
-    # check if called with a valid document and page number
-    pno = max(0, pno)
-    pno = min(pno, doc.pageCount-1)
-    if doc.isClosed:
-        raise ValueError("page operation on closed document")
+    pno = int(arg[1])
+    if pno < 0 or pno >= doc.pageCount:
+        raise ValueError("page number not in range 0 to %s" % (doc.pageCount - 1,))
+    
+    for k in kw.keys():
+        if k not in ["matrix", "colorspace"]:
+            raise ValueError("invalid keyword specified to getPagePixmap")
+
+    matrix = fitz.Identity
+    colorspace = "rgb"
+            
+    if "matrix" in kw.keys():
+        matrix = kw["matrix"]
+    if "colorspace" in kw.keys():
+        colorspace = kw["colorspace"]
+
     page = doc.loadPage(pno)
 
     # determine required colorspace
@@ -217,13 +242,14 @@ Default and misspelling choice is "rgb".
     else:
         cs = fitz.csRGB
 
-    r = page.bound().transform(matrix)           # scale page boundaries
+    r = page.bound().transform(matrix)           # get scaled page boundaries
     ir = r.round()                               # integer rectangle of it
     pix = fitz.Pixmap(cs, ir)                    # create an empty pixmap
     pix.clearWith(255)                           # clear it with color "white"
     dv = fitz.Device(pix)                        # create a "draw" device
     page.run(dv, matrix)                         # render the page
-    page = None
+    page = None                                  # remove page
+    dv = None                                    # remove device
     return pix
 
 #==============================================================================
@@ -242,17 +268,17 @@ The presence of other keys depends on this kind - see PyMuPDF's ducmentation for
     page = arg[0]
 
     # check whether called with a valid page
-    if not getattr(page, "parent", None):
+    if not repr(page.parent).startswith("fitz.Document"):
         raise ValueError("invalid page object provided to getLinks")
-    if page.parent.isClosed:
-        raise ValueError("page operation on closed document")
+    if page.parent.isClosed or page.parent.isEncrypted:
+        raise ValueError("page operation on closed or encrypted document")
     ln = page.loadLinks()
     links = []
     while ln:
-        nl = {"kind":ln.dest.kind, "from": [round(ln.rect.x0, 4), round(ln.rect.y0, 4), round(ln.rect.x1, 4), round(ln.rect.y1, 4)]}
+        nl = {"kind":ln.dest.kind, "from": ln.rect}
         flags = bin(ln.dest.flags)[2:].rjust(8, "0")
         if flags[6:] == "11":
-            nl["to"] = [round(ln.dest.lt.x, 4), round(ln.dest.lt.y, 4)]
+            nl["to"] = fitz.Point(ln.dest.lt.x, ln.dest.lt.y)
 
         if ln.dest.kind == fitz.LINK_URI:
             nl["type"] = "uri"
@@ -302,6 +328,8 @@ and link destination (if simple = False). For details see PyMuPDF's documentatio
         simple = kw["simple"]
     else:
         simple = True
+        if kw:
+            raise ValueError("invalid keyword provided to getToc")
 
     def recurse(olItem, liste, lvl):
         '''Recursively follow the outline item chain and record item information in a list.'''
@@ -351,17 +379,14 @@ and link destination (if simple = False). For details see PyMuPDF's documentatio
         return liste
 
     # check if we are being called legally
-    if not getattr(doc, "authenticate", None):
+    if not repr(doc).startswith("fitz.Document"):
         raise ValueError("invalid document object provided to getToC")
 
-    # if the Document object has no outline property, then method
-    # initData() has not yet been invoked, i.e. it's still encrypted
-    if hasattr(doc, "outline"):
-        olItem = doc.outline
-    else:
-        raise ValueError("document invalid or still encrypted")
-    if doc.isClosed:
-        raise ValueError("operation on closed document")
+    # check if document is open and not encrypted
+    if doc.isClosed or doc.isEncrypted:
+        raise ValueError("operation on closed or encrypted document")
+    
+    olItem = doc.outline
 
     if not olItem: return []
     lvl = 1
@@ -376,6 +401,8 @@ def getIRect(*arg, **kw):
     '''getIRect()\nReturns the IRect of a given Pixmap.'''
     # get parameters
     p = arg[0]
+    if not repr(p).startswith("fitz.Pixmap"):
+        raise ValueError("no valid fitz.Pixmap provided")
     return fitz.IRect(p.x, p.y, p.x + p.width, p.y + p.height)
 
 #==============================================================================
@@ -386,6 +413,9 @@ def getColorspace(*arg, **kw):
     '''Returns the fitz.Colorspace of a given fitz.Pixmap.'''
     # get parameters
     p = arg[0]
+    if not repr(p).startswith("fitz.Pixmap"):
+        raise ValueError("no valid fitz.Pixmap provided")
+
     if p.n == 2:
         return fitz.csGRAY
     elif p.n == 4:
@@ -482,7 +512,7 @@ savealpha: whether to save the alpha channel
 class Pages():
     ''' Creates an iterator over a document's set of pages'''
     def __init__(self, doc):
-        if not getattr(doc, "pageCount", None):
+        if not repr(doc).startswith("fitz.Document"):
             raise ValueError("'%s' is not a valid fitz.Document" %(doc,))
         self.pno      = -1
         self.max      = doc.pageCount - 1
@@ -491,22 +521,21 @@ class Pages():
         self.doc      = repr(doc)
         self.parent   = doc
         self.page     = None
-        
+
     def __getitem__(self, i):
         self.page = None
-        if i > self.max:
-            raise StopIteration("page does not exist")
-        if i < 0:
-            raise ValueError("page number cannot be < 0")
+        if i > self.max or i < 0:
+            raise StopIteration("page number not in range 0 to %s" % (self.max,))
+        self.pno = i
         self.page = self.parent.loadPage(i)
         return self.page
-    
+
     def __len__(self):
         return self.parent.pageCount
-    
+
     def __del__(self):
         self.page = None
-    
+
     def next(self):
         self.page = None
         self.pno += 1

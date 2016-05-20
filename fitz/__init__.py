@@ -1,13 +1,27 @@
 from __future__ import absolute_import
 from fitz.fitz import *
 
+def no_set_identity(*args):
+    ''' Do not allow any changes for Identity matrix'''
+    raise ValueError("Identity matrix is READONLY")
+
 # define the supported colorspaces for convenience
-fitz.csRGB  = fitz.Colorspace(fitz.CS_RGB)
-fitz.csGRAY = fitz.Colorspace(fitz.CS_GRAY)
-fitz.csCMYK = fitz.Colorspace(fitz.CS_CMYK)
-csRGB       = fitz.csRGB
-csGRAY      = fitz.csGRAY
-csCMYK      = fitz.csCMYK
+fitz.csRGB    = fitz.Colorspace(fitz.CS_RGB)
+fitz.csGRAY   = fitz.Colorspace(fitz.CS_GRAY)
+fitz.csCMYK   = fitz.Colorspace(fitz.CS_CMYK)
+csRGB         = fitz.csRGB
+csGRAY        = fitz.csGRAY
+csCMYK        = fitz.csCMYK
+
+fitz.Identity.__swig_setmethods__["a"] = no_set_identity
+fitz.Identity.__swig_setmethods__["b"] = no_set_identity
+fitz.Identity.__swig_setmethods__["c"] = no_set_identity
+fitz.Identity.__swig_setmethods__["d"] = no_set_identity
+fitz.Identity.__swig_setmethods__["e"] = no_set_identity
+fitz.Identity.__swig_setmethods__["f"] = no_set_identity
+fitz.Identity.preRotate                = no_set_identity
+fitz.Identity.preScale                 = no_set_identity
+fitz.Identity.preShear                 = no_set_identity
 
 import fitz.utils
 # copy functions to their respective fitz classes
@@ -29,5 +43,5 @@ fitz.IRect.getRectArea      = fitz.utils.getRectArea
 getPointDistance            = fitz.utils.getPointDistance
 # ... and delete them from here
 del utils
-fitz.__doc__ = "PyMuPDF %s: the Python bindings for the MuPDF %s library,\nCreation date %s" \
+fitz.__doc__ = "PyMuPDF %s: the Python bindings for the MuPDF %s library,\ncreated on %s" \
                % (fitz.VersionBind, fitz.VersionFitz, fitz.VersionDate)

@@ -3047,9 +3047,6 @@ struct DeviceWrapper {
 };
 
 
-const struct fz_matrix_s Identity = { 1, 0, 0, 1, 0, 0 };
-
-
 struct fz_buffer_s *readPageText(fz_page *page, int output) {
     fz_buffer *res;
     fz_output *out;
@@ -3069,10 +3066,10 @@ struct fz_buffer_s *readPageText(fz_page *page, int output) {
         fz_drop_stext_sheet(gctx, ts);
         }
         fz_catch(gctx) {
-            fz_drop_output(gctx, out);
-            fz_drop_stext_page(gctx, tp);
-            fz_drop_stext_sheet(gctx, ts);
-            fz_drop_buffer(gctx, res);
+            if (out) fz_drop_output(gctx, out);
+            if (tp)  fz_drop_stext_page(gctx, tp);
+            if (ts)  fz_drop_stext_sheet(gctx, ts);
+            if (res) fz_drop_buffer(gctx, res);
         }
     return res;
 }
@@ -3245,6 +3242,11 @@ int strip_outlines(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int pa
     return nc;
 }
 
+/****************************************************************
+   called by PyMuPDF:
+   argc  = length of "liste"
+   liste = list of page numbers to retain
+*****************************************************************/
 void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
 {
     pdf_obj *oldroot, *root, *pages, *kids, *countobj, *parent, *olddests;
@@ -3800,6 +3802,16 @@ SWIGINTERN int fz_document_s_getPermits(struct fz_document_s *self){
             if (fz_has_permission(gctx, self, FZ_PERMISSION_ANNOTATE)) permit = permit + 32;
             return permit>>2;
         }
+SWIGINTERN int fz_document_s__getPageObjNumber(struct fz_document_s *self,int pno){
+            /* cast-down fz_document to a pdf_document */
+            int pageCount = fz_count_pages(gctx, self);
+            if ((pno < 0) | (pno >= pageCount)) return -1;
+            pdf_document *pdf = pdf_specifics(gctx, self);
+            if (!pdf) return -2;
+            pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, pno);
+            int objnum = pdf_to_num(gctx, pageref);
+            return objnum;
+        }
 SWIGINTERN void delete_fz_page_s(struct fz_page_s *self){
 
 
@@ -3953,30 +3965,30 @@ SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_1(struct fz_colorspace_s *c
         }
 SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_2(char *filename){
             struct fz_image_s *img = NULL;
-            fz_try(gctx)
-                img = fz_new_image_from_file(gctx, filename);
-            fz_catch(gctx)
-                ;
             struct fz_pixmap_s *pm = NULL;
-            int w = -1;
-            fz_try(gctx)
-                pm = fz_get_pixmap_from_image(gctx, img, w, w);
-            fz_catch(gctx)
-                ;
+            fz_try(gctx) {
+                img = fz_new_image_from_file(gctx, filename);
+                pm = fz_get_pixmap_from_image(gctx, img, -1, 1);
+                }
+            fz_catch(gctx) {
+                if (img) fz_drop_image(gctx, img);
+                return NULL;
+                }
             fz_drop_image(gctx, img);
             return pm;
         }
 SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_3(char *imagedata,int size){
             struct fz_image_s *img = NULL;
-            fz_try(gctx)
-                img = fz_new_image_from_data(gctx, imagedata, size);
-            fz_catch(gctx)
-                ;
             struct fz_pixmap_s *pm = NULL;
-            fz_try(gctx)
+            fz_try(gctx) {
+                img = fz_new_image_from_data(gctx, imagedata, size);
                 pm = fz_get_pixmap_from_image(gctx, img, -1, -1);
-            fz_catch(gctx)
-                ;
+                }
+            fz_catch(gctx) {
+                if (img) fz_drop_image(gctx, img);
+                return NULL;
+                }
+            fz_drop_image(gctx, img);
             return pm;
         }
 SWIGINTERN void delete_fz_pixmap_s(struct fz_pixmap_s *self){
@@ -4591,20 +4603,6 @@ SWIGINTERN struct fz_buffer_s *fz_stext_page_s_extractJSON(struct fz_stext_page_
 #ifdef __cplusplus
 extern "C" {
 #endif
-SWIGINTERN int Swig_var_Identity_set(PyObject *_val SWIGUNUSED) {
-  SWIG_Error(SWIG_AttributeError,"Variable Identity is read-only.");
-  return 1;
-}
-
-
-SWIGINTERN PyObject *Swig_var_Identity_get(void) {
-  PyObject *pyobj = 0;
-  
-  pyobj = SWIG_NewPointerObj(SWIG_as_voidptr(&Identity), SWIGTYPE_p_fz_matrix_s,  0 );
-  return pyobj;
-}
-
-
 SWIGINTERN PyObject *_wrap_new_Document(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
@@ -5128,6 +5126,37 @@ SWIGINTERN PyObject *_wrap_Document_getPermits(PyObject *SWIGUNUSEDPARM(self), P
   }
   arg1 = (struct fz_document_s *)(argp1);
   result = (int)fz_document_s_getPermits(arg1);
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document__getPageObjNumber(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Document__getPageObjNumber",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__getPageObjNumber" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document__getPageObjNumber" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  result = (int)fz_document_s__getPageObjNumber(arg1,arg2);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
@@ -8461,6 +8490,20 @@ SWIGINTERN PyObject *Matrix_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObjec
   return SWIG_Py_Void();
 }
 
+SWIGINTERN int Swig_var_Identity_set(PyObject *_val SWIGUNUSED) {
+  SWIG_Error(SWIG_AttributeError,"Variable Identity is read-only.");
+  return 1;
+}
+
+
+SWIGINTERN PyObject *Swig_var_Identity_get(void) {
+  PyObject *pyobj = 0;
+  
+  pyobj = SWIG_NewPointerObj(SWIG_as_voidptr(&fz_identity), SWIGTYPE_p_fz_matrix_s,  0 );
+  return pyobj;
+}
+
+
 SWIGINTERN PyObject *_wrap_Outline_title_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_outline_s *arg1 = (struct fz_outline_s *) 0 ;
@@ -9932,6 +9975,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document__select", _wrap_Document__select, METH_VARARGS, (char *)"Document__select(Document self, int * liste) -> int"},
 	 { (char *)"Document__readPageText", _wrap_Document__readPageText, METH_VARARGS, (char *)"Document__readPageText(Document self, int pno, int output=0) -> struct fz_buffer_s *"},
 	 { (char *)"Document_getPermits", _wrap_Document_getPermits, METH_VARARGS, (char *)"getPermits(self) -> dictionary containing permissions"},
+	 { (char *)"Document__getPageObjNumber", _wrap_Document__getPageObjNumber, METH_VARARGS, (char *)"Document__getPageObjNumber(Document self, int pno) -> int"},
 	 { (char *)"delete_Document", _wrap_delete_Document, METH_VARARGS, (char *)"delete_Document(Document self)"},
 	 { (char *)"Document_swigregister", Document_swigregister, METH_VARARGS, NULL},
 	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, (char *)"delete_Page(Page self)"},
