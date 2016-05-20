@@ -13,12 +13,7 @@ csRGB         = fitz.csRGB
 csGRAY        = fitz.csGRAY
 csCMYK        = fitz.csCMYK
 
-fitz.Identity.__swig_setmethods__["a"] = no_set_identity
-fitz.Identity.__swig_setmethods__["b"] = no_set_identity
-fitz.Identity.__swig_setmethods__["c"] = no_set_identity
-fitz.Identity.__swig_setmethods__["d"] = no_set_identity
-fitz.Identity.__swig_setmethods__["e"] = no_set_identity
-fitz.Identity.__swig_setmethods__["f"] = no_set_identity
+# redirect every change intent to Identity
 fitz.Identity.preRotate                = no_set_identity
 fitz.Identity.preScale                 = no_set_identity
 fitz.Identity.preShear                 = no_set_identity
