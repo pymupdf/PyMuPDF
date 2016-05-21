@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from fitz.fitz import *
 
+<<<<<<< HEAD
 class M_Identity(fitz.Matrix):
     def __init__(self):
         fitz.Matrix.__init__(self, 1.0, 1.0)
@@ -25,6 +26,8 @@ Identity = M_Identity()
 
 fitz.Identity = Identity
 
+=======
+>>>>>>> origin/master
 # define the supported colorspaces for convenience
 fitz.csRGB    = fitz.Colorspace(fitz.CS_RGB)
 fitz.csGRAY   = fitz.Colorspace(fitz.CS_GRAY)
