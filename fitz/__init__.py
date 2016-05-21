@@ -1,10 +1,6 @@
 from __future__ import absolute_import
 from fitz.fitz import *
 
-def no_set_identity(*args):
-    ''' Do not allow any changes for Identity matrix'''
-    raise ValueError("Identity matrix is READONLY")
-
 # define the supported colorspaces for convenience
 fitz.csRGB    = fitz.Colorspace(fitz.CS_RGB)
 fitz.csGRAY   = fitz.Colorspace(fitz.CS_GRAY)
@@ -12,11 +8,6 @@ fitz.csCMYK   = fitz.Colorspace(fitz.CS_CMYK)
 csRGB         = fitz.csRGB
 csGRAY        = fitz.csGRAY
 csCMYK        = fitz.csCMYK
-
-# redirect every change intent to Identity
-fitz.Identity.preRotate                = no_set_identity
-fitz.Identity.preScale                 = no_set_identity
-fitz.Identity.preShear                 = no_set_identity
 
 import fitz.utils
 # copy functions to their respective fitz classes
