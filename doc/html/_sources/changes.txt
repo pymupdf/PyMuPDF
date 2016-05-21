@@ -25,3 +25,7 @@ Changes in these bindings compared to version 1.8.0 are the following:
 * New technical method ``fitz.Pixmap.samplesRGB()`` providing a ``samples`` version with alpha bytes stripped off (RGB colorspaces only).
 * New technical method ``fitz.Pixmap.samplesAlpha()`` providing the alpha bytes only of the ``samples`` area.
 * New iterator over a document's set of pages.
+* New matrix methods ``invert()`` (calculate inverted matrix), ``concat()`` (calculate matrix product), ``preTranslate()`` (perform a shift operation).
+* New ``IRect`` methods ``intersect()`` (intersection with another rectangle), ``translate()`` (perform a shift operation).
+* New ``Rect`` methods ``intersect()`` (intersection with another rectangle), ``transform()`` (transformation with a matrix), ``includePoint()`` (enlarge rectangle to also contain a point), ``union()`` (smallest rectangle to also contain another one).
+* Documented ``Point.transform()`` (transform a point with a matrix).

@@ -1,9 +1,29 @@
 from __future__ import absolute_import
 from fitz.fitz import *
 
-def no_set_identity(*args):
-    ''' Do not allow any changes for Identity matrix'''
-    raise ValueError("Identity matrix is READONLY")
+class M_Identity(fitz.Matrix):
+    def __init__(self):
+        fitz.Matrix.__init__(self, 1.0, 1.0)
+    def __setattr__(self, name, value):
+        if name in "abcdef":
+            raise NotImplementedError("Identity is a constant")
+        else:
+            super(fitz.Matrix, self).__setattr__(name, value)
+
+    def preRotate(*args):
+        raise NotImplementedError("Identity is a constant")
+    def preShear(*args):
+        raise NotImplementedError("Identity is a constant")
+    def preScale(*args):
+        raise NotImplementedError("Identity is a constant")
+    def concat(*args):
+        raise NotImplementedError("Identity is a constant")
+    def invert(*args):
+        raise NotImplementedError("Identity is a constant")
+        
+Identity = M_Identity()
+
+fitz.Identity = Identity
 
 # define the supported colorspaces for convenience
 fitz.csRGB    = fitz.Colorspace(fitz.CS_RGB)
@@ -12,11 +32,6 @@ fitz.csCMYK   = fitz.Colorspace(fitz.CS_CMYK)
 csRGB         = fitz.csRGB
 csGRAY        = fitz.csGRAY
 csCMYK        = fitz.csCMYK
-
-# redirect every change intent to Identity
-fitz.Identity.preRotate                = no_set_identity
-fitz.Identity.preScale                 = no_set_identity
-fitz.Identity.preShear                 = no_set_identity
 
 import fitz.utils
 # copy functions to their respective fitz classes

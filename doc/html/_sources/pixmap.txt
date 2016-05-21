@@ -12,14 +12,15 @@ Pixmaps ("pixel maps") are objects at the heart of MuPDF's rendering capabilitie
 
 In PyMuPDF, there exist several ways to create a pixmap:
 
-* create an empty pixmap based on :ref:`Colorspace` and :ref:`IRect` information,
-* create a pixmap from an in-memory image,
-* create a pixmap from a memory area that contains plain pixels,
-* create a pixmap from a document page (via methods :meth:`Page.getPixmap` or :meth:`Document.getPagePixmap`),
-* create a pixmap from a file.
+1. create a pixmap from a document page (via methods :meth:`Page.getPixmap` or :meth:`Document.getPagePixmap`)
+2. create an empty pixmap based on :ref:`Colorspace` and :ref:`IRect` information
+3. create a pixmap from a file
+4. create a pixmap from an in-memory image
+5. create a pixmap from a memory area that contains plain pixels
 
-For supported image types using the file or in-memory constructors, see section below.
-Please have a look at the **example** section to see some pixmap usage "at work".
+.. NOTE:: For supported image types using the **file** or **in-memory constructors**, see section below.
+
+Have a look at the **example** section to see some pixmap usage "at work".
 
 ============================= ==============================================
 **Method / Attribute**        **Short Description**
@@ -129,9 +130,9 @@ Please have a look at the **example** section to see some pixmap usage "at work"
 
    .. method:: invertIRect(irect)
 
-      Invert the color of all pixels in an area specified by :ref:`IRect` ``irect``. To invert everything, omit this parameter.
+      Invert the color of all pixels in an area specified by :ref:`IRect` ``irect``. To invert everything, use ``getIRect()`` or omit this parameter.
 
-      :param `irect`: The :ref:`IRect` to be inverted.
+      :param `irect`: The area to be inverted.
       :type `irect`: :ref:`IRect`
 
    .. method:: copyPixmap(source, irect)
@@ -158,13 +159,13 @@ Please have a look at the **example** section to see some pixmap usage "at work"
 
    .. method:: getColorspace()
 
-      Returns the colorspace used for constructing the pixmap. Usefull when the pixmap has been created from an image area.
+      Returns the colorspace of the pixmap.
 
       :rtype: :ref:`Colorspace`
 
    .. method:: getIRect()
 
-      Returns the :ref:`IRect` used for constructing the pixmap. Usefull when the pixmap has been created from an image area.
+      Returns the ``IRect`` of the pixmap.
 
       :rtype: :ref:`IRect`
 
@@ -175,14 +176,14 @@ Please have a look at the **example** section to see some pixmap usage "at work"
       :param `filename`: The filename to save as (the extension ``png`` must be specified).
       :type `filename`: string
 
-      :param `savealpha`: Save the alpha channel (``True``) or not (``False`` - the default).
+      :param `savealpha`: Also save the alpha channel (``True``) or not (``False`` - the default).
       :type `savealpha`: bool
 
    .. method:: getPNGData(savealpha=False)
 
       Returns the pixmap data as an image area in PNG format.
 
-      :param `savealpha`: Save the alpha channel (``True``) or not (``False`` - the default).
+      :param `savealpha`: Also save the alpha channel (``True``) or not (``False`` - the default).
       :type `savealpha`: bool
 
       :rtype: string
@@ -300,8 +301,10 @@ This shows how pixmaps can be used for purely graphical, non-PDF purposes. The s
  tar_width  = pix0.width * 3              # 3 tiles per row
  tar_height = pix0.height * 4             # 4 tiles per column
  tar_irect  = fitz.IRect(0, 0, tar_width, tar_height)
+ # create empty target pixmap
  tar_pix    = fitz.Pixmap(tar_cs, tar_irect)
- tar_pix.clearWith(90)        # clear target with a very lively stone-gray (thanks, Loriot)
+ # clear target with a very lively stone-gray (thanks and RIP, Loriot)
+ tar_pix.clearWith(90)
 
  # now fill target with 3 * 4 tiles of input picture
  for i in list(range(4)):

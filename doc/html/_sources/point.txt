@@ -10,12 +10,13 @@ Point
 
 ``Point`` represents a point in the plane, defined by its x and y coordinates.
 
-======================== =======================
-**Attribute**            **Short Description**
-======================== =======================
-:attr:`Point.x`          The X-coordinate
-:attr:`Point.y`          The Y-coordinate
-======================== =======================
+======================== ====================================
+**Attribute / Method**    **Short Description**
+======================== ====================================
+:meth:`Point.transform`  transform point with a matrix
+:attr:`Point.x`          the X-coordinate
+:attr:`Point.y`          the Y-coordinate
+======================== ====================================
 
 **Class API**
 
@@ -35,12 +36,19 @@ Point
 
    .. method:: __init__(self, p)
 
-      Constructor. Creates a **new copy** of the point.
+      Constructor. Makes a **new copy** of point ``p``.
 
      :param `p`: The point to copy from.
 
      :type `p`: :ref:`Point`
 
+   .. method:: transform(m)
+
+      Applies matrix ``m`` to the point.
+
+     :param `m`: The matrix to be applied.
+
+     :type `m`: :ref:`Matrix`
 
 **Example:**
 ::
@@ -50,4 +58,7 @@ Point
  >>> point = fitz.Point(25, 30)
  >>> point
  fitz.Point(25.0, 30.0)
+ >>> m = fitz.Matrix(2, 2)
+ >>> point.transform(m)
+ fitz.Point(50.0, 60.0)
  >>>

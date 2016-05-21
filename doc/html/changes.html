@@ -96,6 +96,10 @@
 <li>New technical method <code class="docutils literal"><span class="pre">fitz.Pixmap.samplesRGB()</span></code> providing a <code class="docutils literal"><span class="pre">samples</span></code> version with alpha bytes stripped off (RGB colorspaces only).</li>
 <li>New technical method <code class="docutils literal"><span class="pre">fitz.Pixmap.samplesAlpha()</span></code> providing the alpha bytes only of the <code class="docutils literal"><span class="pre">samples</span></code> area.</li>
 <li>New iterator over a document&#8217;s set of pages.</li>
+<li>New matrix methods <code class="docutils literal"><span class="pre">invert()</span></code> (calculate inverted matrix), <code class="docutils literal"><span class="pre">concat()</span></code> (calculate matrix product), <code class="docutils literal"><span class="pre">preTranslate()</span></code> (perform a shift operation).</li>
+<li>New <code class="docutils literal"><span class="pre">IRect</span></code> methods <code class="docutils literal"><span class="pre">intersect()</span></code> (intersection with another rectangle), <code class="docutils literal"><span class="pre">translate()</span></code> (perform a shift operation).</li>
+<li>New <code class="docutils literal"><span class="pre">Rect</span></code> methods <code class="docutils literal"><span class="pre">intersect()</span></code> (intersection with another rectangle), <code class="docutils literal"><span class="pre">transform()</span></code> (transformation with a matrix), <code class="docutils literal"><span class="pre">includePoint()</span></code> (enlarge rectangle to also contain a point), <code class="docutils literal"><span class="pre">union()</span></code> (smallest rectangle to also contain another one).</li>
+<li>Documented <code class="docutils literal"><span class="pre">Point.transform()</span></code> (transform a point with a matrix).</li>
 </ul>
 </div>
 
@@ -122,7 +126,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 13. May 2016.
+      Last updated on 21. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

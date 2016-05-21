@@ -92,8 +92,8 @@
             
   <div class="section" id="matrix">
 <span id="id1"></span><h1>Matrix<a class="headerlink" href="#matrix" title="Permalink to this headline">¶</a></h1>
-<p>Matrix is a row-major 3x3 matrix used by image transformations in MuPDF (which complies with the respective concepts laid down in the Adobe manual). With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) the page can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six numerical values.</p>
-<p>Since all points or pixels live in a two-dimensional space, one column vector of that matrix is a constant unit vector, and only the remaining six elements are used for manipulations. These six elements are usually represented by <code class="docutils literal"><span class="pre">[a,b,c,d,e,f]</span></code>. Here is how they are positioned in the matrix:</p>
+<p>Matrix is a row-major 3x3 matrix used by image transformations in MuPDF (which complies with the respective concepts laid down in the Adobe manual). With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) the page can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six float values.</p>
+<p>Since all points or pixels live in a two-dimensional space, one column vector of that matrix is a constant unit vector, and only the remaining six elements are used for manipulations. These six elements are usually represented by <code class="docutils literal"><span class="pre">[a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">d,</span> <span class="pre">e,</span> <span class="pre">f]</span></code>. Here is how they are positioned in the matrix:</p>
 <img alt="_images/matrix.png" src="_images/matrix.png" />
 <p>It should be noted, that</p>
 <blockquote>
@@ -104,8 +104,8 @@
 </div></blockquote>
 <table border="1" class="docutils">
 <colgroup>
-<col width="47%" />
-<col width="53%" />
+<col width="41%" />
+<col width="59%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Method / Attribute</strong></th>
@@ -113,35 +113,41 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><a class="reference internal" href="#Matrix.__init__" title="Matrix.__init__"><code class="xref py py-meth docutils literal"><span class="pre">Matrix.__init__()</span></code></a></td>
-<td>Constructor.</td>
+<tr class="row-even"><td><a class="reference internal" href="#Matrix.preRotate" title="Matrix.preRotate"><code class="xref py py-meth docutils literal"><span class="pre">Matrix.preRotate()</span></code></a></td>
+<td>perform a rotation</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Matrix.preRotate" title="Matrix.preRotate"><code class="xref py py-meth docutils literal"><span class="pre">Matrix.preRotate()</span></code></a></td>
-<td>Perform a rotation</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Matrix.preScale" title="Matrix.preScale"><code class="xref py py-meth docutils literal"><span class="pre">Matrix.preScale()</span></code></a></td>
+<td>perform a scaling</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Matrix.preScale" title="Matrix.preScale"><code class="xref py py-meth docutils literal"><span class="pre">Matrix.preScale()</span></code></a></td>
-<td>Perform a scaling</td>
+<tr class="row-even"><td><a class="reference internal" href="#Matrix.preShear" title="Matrix.preShear"><code class="xref py py-meth docutils literal"><span class="pre">Matrix.preShear()</span></code></a></td>
+<td>perform a shearing (skewing)</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Matrix.preShear" title="Matrix.preShear"><code class="xref py py-meth docutils literal"><span class="pre">Matrix.preShear()</span></code></a></td>
-<td>Perform a shearing</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Matrix.preTranslate" title="Matrix.preTranslate"><code class="xref py py-meth docutils literal"><span class="pre">Matrix.preTranslate()</span></code></a></td>
+<td>perform a translation (shifting)</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Matrix.concat" title="Matrix.concat"><code class="xref py py-meth docutils literal"><span class="pre">Matrix.concat()</span></code></a></td>
+<td>perform a matrix multiplication</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Matrix.invert" title="Matrix.invert"><code class="xref py py-meth docutils literal"><span class="pre">Matrix.invert()</span></code></a></td>
+<td>calculate the inverted matrix</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Matrix.a" title="Matrix.a"><code class="xref py py-attr docutils literal"><span class="pre">Matrix.a</span></code></a></td>
-<td>Zoom factor X direction</td>
+<td>zoom factor X direction</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Matrix.b" title="Matrix.b"><code class="xref py py-attr docutils literal"><span class="pre">Matrix.b</span></code></a></td>
-<td>Shearing effect Y direction</td>
+<td>shearing effect Y direction</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Matrix.c" title="Matrix.c"><code class="xref py py-attr docutils literal"><span class="pre">Matrix.c</span></code></a></td>
-<td>Shearing effect X direction</td>
+<td>shearing effect X direction</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Matrix.d" title="Matrix.d"><code class="xref py py-attr docutils literal"><span class="pre">Matrix.d</span></code></a></td>
-<td>Zoom factor Y direction</td>
+<td>zoom factor Y direction</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Matrix.e" title="Matrix.e"><code class="xref py py-attr docutils literal"><span class="pre">Matrix.e</span></code></a></td>
-<td>Horizontal shift</td>
+<td>horizontal shift</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Matrix.f" title="Matrix.f"><code class="xref py py-attr docutils literal"><span class="pre">Matrix.f</span></code></a></td>
-<td>Vertical shift</td>
+<td>vertical shift</td>
 </tr>
 </tbody>
 </table>
@@ -214,7 +220,7 @@
 <dl class="method">
 <dt id="Matrix.preScale">
 <code class="descname">preScale</code><span class="sig-paren">(</span><em>sx</em>, <em>sy</em><span class="sig-paren">)</span><a class="headerlink" href="#Matrix.preScale" title="Permalink to this definition">¶</a></dt>
-<dd><p>Modify the matrix to scale by the zoom factors sx and sy. Has effects on attributes <code class="docutils literal"><span class="pre">a</span></code> and <code class="docutils literal"><span class="pre">d</span></code> only.</p>
+<dd><p>Modify the matrix to scale by the zoom factors sx and sy. Has effects on attributes <code class="docutils literal"><span class="pre">a</span></code> thru <code class="docutils literal"><span class="pre">d</span></code> only: <code class="docutils literal"><span class="pre">[a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">d,</span> <span class="pre">e,</span> <span class="pre">f]</span> <span class="pre">-&gt;</span> <span class="pre">[a*sx,</span> <span class="pre">b*sx,</span> <span class="pre">c*sy,</span> <span class="pre">d*sy,</span> <span class="pre">e,</span> <span class="pre">f]</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -232,7 +238,7 @@
 <dl class="method">
 <dt id="Matrix.preShear">
 <code class="descname">preShear</code><span class="sig-paren">(</span><em>sx</em>, <em>sy</em><span class="sig-paren">)</span><a class="headerlink" href="#Matrix.preShear" title="Permalink to this definition">¶</a></dt>
-<dd><p>Modify the matrix to perform a shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has effects on attributes <code class="docutils literal"><span class="pre">b</span></code> and <code class="docutils literal"><span class="pre">c</span></code> only.</p>
+<dd><p>Modify the matrix to perform a shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has effects on attributes <code class="docutils literal"><span class="pre">a</span></code> thru <code class="docutils literal"><span class="pre">d</span></code> only: <code class="docutils literal"><span class="pre">[a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">d,</span> <span class="pre">e,</span> <span class="pre">f]</span> <span class="pre">-&gt;</span> <span class="pre">[c*sy,</span> <span class="pre">d*sy,</span> <span class="pre">a*sx,</span> <span class="pre">b*sx,</span> <span class="pre">e,</span> <span class="pre">f]</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -242,6 +248,58 @@
 <li><strong>sy</strong> (<em>float</em>) &#8211; Shearing effect in Y direction. See attribute <code class="docutils literal"><span class="pre">b</span></code>.</li>
 </ul>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Matrix.preTranslate">
+<code class="descname">preTranslate</code><span class="sig-paren">(</span><em>tx</em>, <em>ty</em><span class="sig-paren">)</span><a class="headerlink" href="#Matrix.preTranslate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify the matrix to perform a shifting / translation operation along the x and / or y axis. Has effects on attributes <code class="docutils literal"><span class="pre">e</span></code> and <code class="docutils literal"><span class="pre">f</span></code> only: <code class="docutils literal"><span class="pre">[a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">d,</span> <span class="pre">e,</span> <span class="pre">f]</span> <span class="pre">-&gt;</span> <span class="pre">[a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">d,</span> <span class="pre">tx*a</span> <span class="pre">+</span> <span class="pre">ty*c,</span> <span class="pre">tx*b</span> <span class="pre">+</span> <span class="pre">ty*d]</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>tx</strong> (<em>float</em>) &#8211; Shearing effect in X direction. See attribute <code class="docutils literal"><span class="pre">c</span></code>.</li>
+<li><strong>ty</strong> (<em>float</em>) &#8211; Shearing effect in Y direction. See attribute <code class="docutils literal"><span class="pre">b</span></code>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Matrix.concat">
+<code class="descname">concat</code><span class="sig-paren">(</span><em>m1</em>, <em>m2</em><span class="sig-paren">)</span><a class="headerlink" href="#Matrix.concat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the matrix product <code class="docutils literal"><span class="pre">m1</span> <span class="pre">*</span> <span class="pre">m2</span></code> and store the result in the current matrix. Any of <code class="docutils literal"><span class="pre">m1</span></code> or <code class="docutils literal"><span class="pre">m2</span></code> may be the current matrix. Be aware that matrix multiplication is not commutative. So the sequence of <code class="docutils literal"><span class="pre">m1</span></code>, <code class="docutils literal"><span class="pre">m2</span></code> is important.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>m1</strong> (<a class="reference internal" href="#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; First (left) matrix.</li>
+<li><strong>m2</strong> (<a class="reference internal" href="#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; Second (right) matrix.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Matrix.invert">
+<code class="descname">invert</code><span class="sig-paren">(</span><em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#Matrix.invert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the matrix inverse of <code class="docutils literal"><span class="pre">m</span></code> and store the result in the current matrix. Returns <code class="docutils literal"><span class="pre">1</span></code> if <code class="docutils literal"><span class="pre">m</span></code> is not invertible (&#8220;degenerate&#8221;). In this case the current matrix <strong>will not change</strong>. Returns <code class="docutils literal"><span class="pre">0</span></code> if <code class="docutils literal"><span class="pre">m</span></code> is invertible, and the current matrix is replaced with the inverted <code class="docutils literal"><span class="pre">m</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> (<a class="reference internal" href="#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; Matrix to be inverted.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
 </tr>
 </tbody>
 </table>
@@ -400,7 +458,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 13. May 2016.
+      Last updated on 21. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

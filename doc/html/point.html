@@ -83,20 +83,23 @@
 <p><code class="docutils literal"><span class="pre">Point</span></code> represents a point in the plane, defined by its x and y coordinates.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="51%" />
-<col width="49%" />
+<col width="40%" />
+<col width="60%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head"><strong>Attribute</strong></th>
+<tr class="row-odd"><th class="head"><strong>Attribute / Method</strong></th>
 <th class="head"><strong>Short Description</strong></th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><code class="xref py py-attr docutils literal"><span class="pre">Point.x</span></code></td>
-<td>The X-coordinate</td>
+<tr class="row-even"><td><a class="reference internal" href="#Point.transform" title="Point.transform"><code class="xref py py-meth docutils literal"><span class="pre">Point.transform()</span></code></a></td>
+<td>transform point with a matrix</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-attr docutils literal"><span class="pre">Point.y</span></code></td>
-<td>The Y-coordinate</td>
+<tr class="row-odd"><td><code class="xref py py-attr docutils literal"><span class="pre">Point.x</span></code></td>
+<td>the X-coordinate</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-attr docutils literal"><span class="pre">Point.y</span></code></td>
+<td>the Y-coordinate</td>
 </tr>
 </tbody>
 </table>
@@ -127,12 +130,27 @@
 <dt>
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>p</em><span class="sig-paren">)</span></dt>
 <dd><blockquote>
-<div>Constructor. Creates a <strong>new copy</strong> of the point.</div></blockquote>
+<div>Constructor. Makes a <strong>new copy</strong> of point <code class="docutils literal"><span class="pre">p</span></code>.</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="#point"><span class="std std-ref">Point</span></a>) &#8211; The point to copy from.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Point.transform">
+<code class="descname">transform</code><span class="sig-paren">(</span><em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#Point.transform" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>Applies matrix <code class="docutils literal"><span class="pre">m</span></code> to the point.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; The matrix to be applied.</td>
 </tr>
 </tbody>
 </table>
@@ -147,6 +165,9 @@
 <span class="o">&gt;&gt;&gt;</span> <span class="n">point</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">point</span>
 <span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">m</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">point</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
@@ -176,7 +197,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 13. May 2016.
+      Last updated on 21. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

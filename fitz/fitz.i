@@ -559,6 +559,22 @@ struct fz_rect_s
             fz_round_rect(irect, $self);
             return irect;
         }
+
+        struct fz_rect_s *includePoint(const struct fz_point_s *p) {
+            fz_include_point_in_rect($self, p);
+            return $self;
+        }
+
+        struct fz_rect_s *intersect(struct fz_rect_s *r) {
+            fz_intersect_rect($self, r);
+            return $self;
+        }
+
+        struct fz_rect_s *union(struct fz_rect_s *r) {
+            fz_union_rect($self, r);
+            return $self;
+        }
+
         %pythoncode %{
             def transform(self, m):
                 _fitz._fz_transform_rect(self, m)
@@ -601,6 +617,16 @@ struct fz_irect_s
             r->x1 = x1;
             r->y1 = y1;
             return r;
+        }
+
+        struct fz_irect_s *translate(int xoff, int yoff) {
+            fz_translate_irect($self, xoff, yoff);
+            return $self;
+        }
+
+        struct fz_irect_s *intersect(struct fz_irect_s *ir) {
+            fz_intersect_irect($self, ir);
+            return $self;
         }
 
         %pythoncode %{
@@ -1073,6 +1099,22 @@ struct fz_matrix_s
             fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
             return fz_rotate(m, degree);
         }
+
+        int invert(const struct fz_matrix_s *m) {
+            int rc = fz_try_invert_matrix($self, m);
+            return rc;
+        }
+
+        struct fz_matrix_s *preTranslate(float sx, float sy) {
+            fz_pre_translate($self, sx, sy);
+            return $self;
+        }
+
+        struct fz_matrix_s *concat(struct fz_matrix_s *m1, struct fz_matrix_s *m2) {
+            fz_concat($self, m1, m2);
+            return $self;
+        }
+
         %pythoncode %{
             def preScale(self, sx, sy):
                 _fitz._fz_pre_scale(self, sx, sy)
@@ -1090,10 +1132,6 @@ struct fz_matrix_s
     }
 };
 
-%immutable Identity;
-%rename(Identity) fz_identity;
-extern const struct fz_matrix_s fz_identity;
-%mutable;
 
 /* fz_outline */
 %rename(Outline) fz_outline_s;

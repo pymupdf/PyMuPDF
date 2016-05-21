@@ -8,9 +8,9 @@
 Matrix
 ==========
 
-Matrix is a row-major 3x3 matrix used by image transformations in MuPDF (which complies with the respective concepts laid down in the Adobe manual). With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) the page can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six numerical values.
+Matrix is a row-major 3x3 matrix used by image transformations in MuPDF (which complies with the respective concepts laid down in the Adobe manual). With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) the page can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six float values.
 
-Since all points or pixels live in a two-dimensional space, one column vector of that matrix is a constant unit vector, and only the remaining six elements are used for manipulations. These six elements are usually represented by ``[a,b,c,d,e,f]``. Here is how they are positioned in the matrix:
+Since all points or pixels live in a two-dimensional space, one column vector of that matrix is a constant unit vector, and only the remaining six elements are used for manipulations. These six elements are usually represented by ``[a, b, c, d, e, f]``. Here is how they are positioned in the matrix:
 
 .. image:: matrix.png
 
@@ -20,20 +20,22 @@ It should be noted, that
     * all manipulations can be combined - you can construct a matrix that does a rotate **and** a shear **and** a scale **and** a shift, etc. in one go. If you however choose to do this, do have a look at the **remarks** further down or at the Adobe manual.
 
 
-========================= ============================
-**Method / Attribute**    **Description**
-========================= ============================
-:meth:`Matrix.__init__`   Constructor.
-:meth:`Matrix.preRotate`  Perform a rotation
-:meth:`Matrix.preScale`   Perform a scaling
-:meth:`Matrix.preShear`   Perform a shearing
-:attr:`Matrix.a`          Zoom factor X direction
-:attr:`Matrix.b`          Shearing effect Y direction
-:attr:`Matrix.c`          Shearing effect X direction
-:attr:`Matrix.d`          Zoom factor Y direction
-:attr:`Matrix.e`          Horizontal shift
-:attr:`Matrix.f`          Vertical shift
-========================= ============================
+================================ ==============================================
+**Method / Attribute**             **Description**
+================================ ==============================================
+:meth:`Matrix.preRotate`         perform a rotation
+:meth:`Matrix.preScale`          perform a scaling
+:meth:`Matrix.preShear`          perform a shearing (skewing)
+:meth:`Matrix.preTranslate`      perform a translation (shifting)
+:meth:`Matrix.concat`            perform a matrix multiplication
+:meth:`Matrix.invert`            calculate the inverted matrix
+:attr:`Matrix.a`                 zoom factor X direction
+:attr:`Matrix.b`                 shearing effect Y direction
+:attr:`Matrix.c`                 shearing effect X direction
+:attr:`Matrix.d`                 zoom factor Y direction
+:attr:`Matrix.e`                 horizontal shift
+:attr:`Matrix.f`                 vertical shift
+================================ ==============================================
 
 **Class API**
 
@@ -77,7 +79,7 @@ It should be noted, that
 
    .. method:: preScale(sx, sy)
 
-      Modify the matrix to scale by the zoom factors sx and sy. Has effects on attributes ``a`` and ``d`` only.
+      Modify the matrix to scale by the zoom factors sx and sy. Has effects on attributes ``a`` thru ``d`` only: ``[a, b, c, d, e, f] -> [a*sx, b*sx, c*sy, d*sy, e, f]``.
 
       :param `sx`: Zoom factor in X direction. For the effect see description of attribute ``a``.
       :type `sx`: float
@@ -87,13 +89,42 @@ It should be noted, that
 
    .. method:: preShear(sx, sy)
 
-      Modify the matrix to perform a shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has effects on attributes ``b`` and ``c`` only.
+      Modify the matrix to perform a shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has effects on attributes ``a`` thru ``d`` only: ``[a, b, c, d, e, f] -> [c*sy, d*sy, a*sx, b*sx, e, f]``.
 
       :param `sx`: Shearing effect in X direction. See attribute ``c``.
       :type `sx`: float
 
       :param `sy`: Shearing effect in Y direction. See attribute ``b``.
       :type `sy`: float
+
+   .. method:: preTranslate(tx, ty)
+
+      Modify the matrix to perform a shifting / translation operation along the x and / or y axis. Has effects on attributes ``e`` and ``f`` only: ``[a, b, c, d, e, f] -> [a, b, c, d, tx*a + ty*c, tx*b + ty*d]``.
+
+      :param `tx`: Shearing effect in X direction. See attribute ``c``.
+      :type `tx`: float
+
+      :param `ty`: Shearing effect in Y direction. See attribute ``b``.
+      :type `ty`: float
+
+   .. method:: concat(m1, m2)
+
+      Calculate the matrix product ``m1 * m2`` and store the result in the current matrix. Any of ``m1`` or ``m2`` may be the current matrix. Be aware that matrix multiplication is not commutative. So the sequence of ``m1``, ``m2`` is important.
+
+      :param `m1`: First (left) matrix.
+      :type `m1`: :ref:`Matrix`
+
+      :param `m2`: Second (right) matrix.
+      :type `m2`: :ref:`Matrix`
+
+   .. method:: invert(m)
+
+      Calculate the matrix inverse of ``m`` and store the result in the current matrix. Returns ``1`` if ``m`` is not invertible ("degenerate"). In this case the current matrix **will not change**. Returns ``0`` if ``m`` is invertible, and the current matrix is replaced with the inverted ``m``.
+
+      :param `m`: Matrix to be inverted.
+      :type `m`: :ref:`Matrix`
+
+      :rtype: int
 
    .. attribute:: a
 

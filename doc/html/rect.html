@@ -85,8 +85,8 @@
 A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is true, else &#8220;infinite&#8221;.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="27%" />
-<col width="73%" />
+<col width="35%" />
+<col width="65%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Methods / Attributes</strong></th>
@@ -95,31 +95,40 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><a class="reference internal" href="#Rect.round" title="Rect.round"><code class="xref py py-meth docutils literal"><span class="pre">Rect.round()</span></code></a></td>
-<td>creates the smallest <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> containing <code class="docutils literal"><span class="pre">Rect</span></code></td>
+<td>create smallest <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> containing rectangle</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Rect.transform" title="Rect.transform"><code class="xref py py-meth docutils literal"><span class="pre">Rect.transform()</span></code></a></td>
-<td>transform rectangle with a <a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a></td>
+<td>transform rectangle with a matrix</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.getRectArea" title="Rect.getRectArea"><code class="xref py py-meth docutils literal"><span class="pre">Rect.getRectArea()</span></code></a></td>
-<td>calculate the area of the rectangle</td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.intersect" title="Rect.intersect"><code class="xref py py-meth docutils literal"><span class="pre">Rect.intersect()</span></code></a></td>
+<td>common part with another rectangle</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Rect.height" title="Rect.height"><code class="xref py py-attr docutils literal"><span class="pre">Rect.height</span></code></a></td>
-<td><code class="docutils literal"><span class="pre">Rect</span></code> height</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.includePoint" title="Rect.includePoint"><code class="xref py py-meth docutils literal"><span class="pre">Rect.includePoint()</span></code></a></td>
+<td>smallest rectangle also containing a specified point</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.width" title="Rect.width"><code class="xref py py-attr docutils literal"><span class="pre">Rect.width</span></code></a></td>
-<td><code class="docutils literal"><span class="pre">Rect</span></code> width</td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.union" title="Rect.union"><code class="xref py py-meth docutils literal"><span class="pre">Rect.union()</span></code></a></td>
+<td>smallest rectangle also containing another rectangle</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Rect.x0" title="Rect.x0"><code class="xref py py-attr docutils literal"><span class="pre">Rect.x0</span></code></a></td>
-<td>Top left corner&#8217;s X-coordinate</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.getRectArea" title="Rect.getRectArea"><code class="xref py py-meth docutils literal"><span class="pre">Rect.getRectArea()</span></code></a></td>
+<td>calculate rectangle area</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.y0" title="Rect.y0"><code class="xref py py-attr docutils literal"><span class="pre">Rect.y0</span></code></a></td>
-<td>Top left corner&#8217;s Y-coordinate</td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.height" title="Rect.height"><code class="xref py py-attr docutils literal"><span class="pre">Rect.height</span></code></a></td>
+<td>rectangle height</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Rect.x1" title="Rect.x1"><code class="xref py py-attr docutils literal"><span class="pre">Rect.x1</span></code></a></td>
-<td>Bottom right corner&#8217;s X-coordinate</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.width" title="Rect.width"><code class="xref py py-attr docutils literal"><span class="pre">Rect.width</span></code></a></td>
+<td>rectangle width</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.y1" title="Rect.y1"><code class="xref py py-attr docutils literal"><span class="pre">Rect.y1</span></code></a></td>
-<td>Bottom right corner&#8217;s Y-coordinate</td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.x0" title="Rect.x0"><code class="xref py py-attr docutils literal"><span class="pre">Rect.x0</span></code></a></td>
+<td>top left corner&#8217;s X-coordinate</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.y0" title="Rect.y0"><code class="xref py py-attr docutils literal"><span class="pre">Rect.y0</span></code></a></td>
+<td>top left corner&#8217;s Y-coordinate</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.x1" title="Rect.x1"><code class="xref py py-attr docutils literal"><span class="pre">Rect.x1</span></code></a></td>
+<td>bottom right corner&#8217;s X-coordinate</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Rect.y1" title="Rect.y1"><code class="xref py py-attr docutils literal"><span class="pre">Rect.y1</span></code></a></td>
+<td>bottom right corner&#8217;s Y-coordinate</td>
 </tr>
 </tbody>
 </table>
@@ -166,14 +175,54 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
 <dl class="method">
 <dt id="Rect.transform">
 <code class="descname">transform</code><span class="sig-paren">(</span><em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#Rect.transform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transforms <code class="docutils literal"><span class="pre">Rect</span></code> with a <a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>.</p>
+<dd><p>Transforms rectangle with a matrix.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; The matrix to be used for the transformation.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rect"><span class="std std-ref">Rect</span></a></td>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Rect.intersect">
+<code class="descname">intersect</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="headerlink" href="#Rect.intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>The intersection (common rectangular area) of the current rectangle and <code class="docutils literal"><span class="pre">r</span></code> is calculated and replaces the current rectangle. If either rectangle is empty, the result is also empty. If one of the rectangles is infinite, the other one is taken as the result - and hence also infinite if both rectangles were infinite.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>r</strong> (<a class="reference internal" href="#rect"><span class="std std-ref">Rect</span></a>) &#8211; Second rectangle</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Rect.union">
+<code class="descname">union</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="headerlink" href="#Rect.union" title="Permalink to this definition">¶</a></dt>
+<dd><p>The smallest rectangle containing the current one and <code class="docutils literal"><span class="pre">r</span></code> is calculated and replaces the current one. If either rectangle is infinite, the result is also infinite. If one is empty, the other will be taken as the result (which will be empty if both were empty).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>r</strong> (<a class="reference internal" href="#rect"><span class="std std-ref">Rect</span></a>) &#8211; Second rectangle</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Rect.includePoint">
+<code class="descname">includePoint</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#Rect.includePoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>The smallest rectangle containing the current one and point <code class="docutils literal"><span class="pre">p</span></code> is calculated and replaces the current one. To create a rectangle to contain a series of points, start with the empty <code class="docutils literal"><span class="pre">fitz.Rect(p1,</span> <span class="pre">p1)</span></code> and successively perform <code class="docutils literal"><span class="pre">includePoint</span></code> operations for the other points.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="point.html#point"><span class="std std-ref">Point</span></a>) &#8211; Point to include.</td>
 </tr>
 </tbody>
 </table>
@@ -349,7 +398,7 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 13. May 2016.
+      Last updated on 21. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

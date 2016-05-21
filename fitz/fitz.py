@@ -94,7 +94,7 @@ except AttributeError:
 import os                     
 VersionFitz = "1.9a"          
 VersionBind = "1.9.1"         
-VersionDate = "2016-05-20 13:45:00"        
+VersionDate = "2016-05-21  9:06:49"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -458,6 +458,16 @@ class Rect(_object):
         return val
 
 
+    def includePoint(self, p):
+        """includePoint(Rect self, Point p) -> Rect"""
+        return _fitz.Rect_includePoint(self, p)
+
+
+    def intersect(self, r):
+        """intersect(Rect self, Rect r) -> Rect"""
+        return _fitz.Rect_intersect(self, r)
+
+
     def transform(self, m):
         _fitz._fz_transform_rect(self, m)
         return self
@@ -509,6 +519,16 @@ class IRect(_object):
             self.this.append(this)
         except Exception:
             self.this = this
+
+    def translate(self, xoff, yoff):
+        """translate(IRect self, int xoff, int yoff) -> IRect"""
+        return _fitz.IRect_translate(self, xoff, yoff)
+
+
+    def intersect(self, ir):
+        """intersect(IRect self, IRect ir) -> IRect"""
+        return _fitz.IRect_intersect(self, ir)
+
 
     width = property(lambda self: self.x1-self.x0)
     height = property(lambda self: self.y1-self.y0)
@@ -789,6 +809,21 @@ class Matrix(_object):
         except Exception:
             self.this = this
 
+    def invert(self, m):
+        """invert(Matrix self, Matrix m) -> int"""
+        return _fitz.Matrix_invert(self, m)
+
+
+    def preTranslate(self, sx, sy):
+        """preTranslate(Matrix self, float sx, float sy) -> Matrix"""
+        return _fitz.Matrix_preTranslate(self, sx, sy)
+
+
+    def concat(self, m1, m2):
+        """concat(Matrix self, Matrix m1, Matrix m2) -> Matrix"""
+        return _fitz.Matrix_concat(self, m1, m2)
+
+
     def preScale(self, sx, sy):
         _fitz._fz_pre_scale(self, sx, sy)
         return self
@@ -865,8 +900,6 @@ class Outline(_object):
     __del__ = lambda self: None
 Outline_swigregister = _fitz.Outline_swigregister
 Outline_swigregister(Outline)
-cvar = _fitz.cvar
-Identity = cvar.Identity
 
 
 _fitz.LINK_NONE_swigconstant(_fitz)

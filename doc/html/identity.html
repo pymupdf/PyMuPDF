@@ -81,7 +81,7 @@
   <div class="section" id="identity">
 <span id="id1"></span><h1>Identity<a class="headerlink" href="#identity" title="Permalink to this headline">¶</a></h1>
 <p>Identity is just a <a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a> that performs no action, to be used whenever the syntax requires a <a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>, but no actual transformation should take place.</p>
-<p>Identity is a constant, an &#8220;immutable&#8221; object. So, all of its matrix properties and methods are hidden.</p>
+<p>Identity is a constant, an &#8220;immutable&#8221; object. So, all of its matrix properties are read-only and its methods are disabled.</p>
 <p>If you need a do-nothing matrix as a starting point, use <code class="docutils literal"><span class="pre">fitz.Matrix(1,</span> <span class="pre">1)</span></code> or <code class="docutils literal"><span class="pre">fitz.Matrix(0)</span></code> instead, like so:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">preRotate</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">m</span>
@@ -115,7 +115,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 13. May 2016.
+      Last updated on 21. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

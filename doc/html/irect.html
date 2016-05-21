@@ -83,8 +83,8 @@
 <p>IRect is a rectangular bounding box similar to <a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a>, except that all corner coordinates are integers. IRect is used to specify an area of pixels, e.g. to receive image data during rendering.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="37%" />
-<col width="63%" />
+<col width="41%" />
+<col width="59%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Attribute / Method</strong></th>
@@ -98,11 +98,17 @@
 <tr class="row-odd"><td><a class="reference internal" href="#IRect.getRectArea" title="IRect.getRectArea"><code class="xref py py-meth docutils literal"><span class="pre">IRect.getRectArea()</span></code></a></td>
 <td>calculate the area of the rectangle</td>
 </tr>
+<tr class="row-even"><td><a class="reference internal" href="#IRect.intersect" title="IRect.intersect"><code class="xref py py-meth docutils literal"><span class="pre">IRect.intersect()</span></code></a></td>
+<td>common part with another rectangle</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#IRect.translate" title="IRect.translate"><code class="xref py py-meth docutils literal"><span class="pre">IRect.translate()</span></code></a></td>
+<td>shift rectangle</td>
+</tr>
 <tr class="row-even"><td><a class="reference internal" href="#IRect.width" title="IRect.width"><code class="xref py py-attr docutils literal"><span class="pre">IRect.width</span></code></a></td>
-<td>Width of the bounding box</td>
+<td>width of the rectangle</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#IRect.height" title="IRect.height"><code class="xref py py-attr docutils literal"><span class="pre">IRect.height</span></code></a></td>
-<td>Height of the bounding box</td>
+<td>height of the rectangle</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#IRect.x0" title="IRect.x0"><code class="xref py py-attr docutils literal"><span class="pre">IRect.x0</span></code></a></td>
 <td>X-coordinate of the top left corner</td>
@@ -164,9 +170,41 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>unit</strong> (<em>string</em>) &#8211; Specify the unit: <code class="docutils literal"><span class="pre">pt</span></code> (pixel points, default) or <code class="docutils literal"><span class="pre">mm</span></code> (square millimeters).</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>unit</strong> (<em>string</em>) &#8211; Specify the unit: <code class="docutils literal"><span class="pre">pt</span></code> (square pixel points, default) or <code class="docutils literal"><span class="pre">mm</span></code> (square millimeters).</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="IRect.intersect">
+<code class="descname">intersect</code><span class="sig-paren">(</span><em>ir</em><span class="sig-paren">)</span><a class="headerlink" href="#IRect.intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>The intersection (common rectangular area) of the current rectangle and <code class="docutils literal"><span class="pre">ir</span></code> is calculated and replaces the current rectangle. If either rectangle is empty, the result is also empty. If one of the rectangles is infinite, the other one is taken as the result - and hence also infinite if both rectangles were infinite.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ir</strong> (<a class="reference internal" href="#irect"><span class="std std-ref">IRect</span></a>) &#8211; Second rectangle.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="IRect.translate">
+<code class="descname">translate</code><span class="sig-paren">(</span><em>tx</em>, <em>ty</em><span class="sig-paren">)</span><a class="headerlink" href="#IRect.translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modifies the rectangle to perform a shift in x and / or y direction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>tx</strong> (<em>int</em>) &#8211; Number of pixels to shift horizontally. Negative values mean shifting left.</li>
+<li><strong>ty</strong> (<em>int</em>) &#8211; Number of pixels to shift vertically. Negative values mean shifting down.</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -299,7 +337,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 13. May 2016.
+      Last updated on 21. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

@@ -25,24 +25,32 @@ Make sure you download the (sub-) version for which PyMuPDF has stated its compa
 
 Put it inside ``PyFitz`` as a subdirectory for keeping everything in one place.
 
-**Generate MuPDF now**. The MuPDF source includes generation procedures / makefiles for numerous platforms. For Windows platforms, Visual Studio solution and project definitions are provided.
+**Controlling the Binary File Size:**
 
-**Controlling the Binary File Size**. Since version 1.9, MuPDF includes support for many dozens of additional fonts for all sorts of alphabets like Chinese, Corean, Kyrillic, Indonesian, etc. If you do not (want to) control the amount of such support, the resulting binaries for MuPDF will be quite big and easily approach 20 MB. If you feel you do not need everything here, you need to manually change header file ``fitz.h`` (contained in directory ``/include/mupdf``) by inserting ``#define`` statements like this:
+Since version 1.9, MuPDF includes support for many dozens of additional fonts for all sorts of alphabets from all over the world like Chinese, Japanese, Corean, Kyrillic, Indonesian, etc. If you accept the MuPDF standard here, the resulting binary for PyMuPDF will be quite big and easily approach 20 MB.
+
+If you feel you do not want or need every font, you can reduce their amount by adding appropriate ``#define`` statements to header file ``/include/mupdf/fitz.h`` by inserting ``#define`` statements like this:
 ::
  #ifndef MUDPF_FITZ_H
  #define MUDPF_FITZ_H
 
- #define NOTO_SMALL          // choose smaller set of supported fonts
- #define TOFU_CJK            // exclude Android specific font
+ #define NOTO_SMALL          // choose a small set of extra fonts
+ #define TOFU_CJK            // exclude Android specific fonts
 
  #ifdef __cplusplus
  extern "C" {
  #endif
  ...
 
-With the above two ``#define`` statements, the PyMuPDF binary should come down to a one digit MB size.
+The above minimal choice should bring down the binary file size to a one digit MB amount.
 
-You may want to consult additional installation hints on PyMuPDF's `main page <https://github.com/rk700/PyMuPDF/>`_ on Github.com.
+Check out file ``.../source/fitz/noto.c`` to see other possible combinations.
+
+**Generate MuPDF now**.
+
+The MuPDF source includes generation procedures / makefiles for numerous platforms. For Windows platforms, Visual Studio solution and project definitions are provided.
+
+Consult additional installation hints on PyMuPDF's `main page <https://github.com/rk700/PyMuPDF/>`_ on Github.com.
 
 Step 3: Build / Setup PyMuPDF
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -54,7 +62,7 @@ Now perform a ``python setup.py install``.
 
 Using UPX
 ~~~~~~~~~~~~~~~~~~
-Your PyMuPDF installation will end up with four files: ``__init__.py``, ``fitz.py``, ``utils.py`` and the binary ``_fitz.xxx`` in the ``site-packages`` directory. The extension of the binary will be ``.pyd`` on Windows, ``.so`` on Linux, and so forth.
+Your PyMuPDF installation will end up with four files: ``__init__.py``, ``fitz.py``, ``utils.py`` and the binary ``_fitz.xxx`` in the ``site-packages`` directory. The extension of the binary will be ``.pyd`` on Windows and ``.so`` on Linux.
 
 Depending on your OS, your compiler and your font support choice (see above), this binary can be quite large: ranging from 8 MB to 20 MB. You can reduce this by applying the compression utility `UPX <http://upx.sourceforge.net/>`_ to it, which exists for many operating systems. UPX will reduce the size of ``_fitz.xxx`` by more than 50%. You will end up with 4 MB to 9 MB without impacting functionality or execution speed.
 
@@ -62,7 +70,7 @@ Option 2: Install from Binaries
 --------------------------------
 Step 1: Download Optional Material
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Download `PyMuPDF-optional-material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_. From directory ``binary_setups`` select the zip file corresponding to your configuration and unzip it anywhere you like. To reduce download time, just download the zip file corresponding to your Python version, or get it from `PyPI <https://pypi.python.org/pypi/PyMuPDF/1.9.0>`_.
+Download `PyMuPDF-optional-material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_. From directory ``binary_setups`` select the zip file corresponding to your configuration and unzip it anywhere you like. To reduce download time, just download the zip file corresponding to your Python version, or get it from `PyPI <https://pypi.python.org/pypi/PyMuPDF/1.9.1>`_.
 
 Step 2: Install PyMuPDF
 ~~~~~~~~~~~~~~~~~~~~~~~~

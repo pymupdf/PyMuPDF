@@ -10,19 +10,20 @@ IRect
 
 IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corner coordinates are integers. IRect is used to specify an area of pixels, e.g. to receive image data during rendering.
 
-
-========================= ===========================================
+============================== ===========================================
 **Attribute / Method**          **Short Description**
-========================= ===========================================
-:meth:`IRect.getRect`     return a :ref:`Rect` with same coordinates
-:meth:`IRect.getRectArea` calculate the area of the rectangle
-:attr:`IRect.width`       Width of the bounding box
-:attr:`IRect.height`      Height of the bounding box
-:attr:`IRect.x0`          X-coordinate of the top left corner
-:attr:`IRect.y0`          Y-coordinate of the top left corner
-:attr:`IRect.x1`          X-coordinate of the bottom right corner
-:attr:`IRect.y1`          Y-coordinate of the bottom right corner
-========================= ===========================================
+============================== ===========================================
+:meth:`IRect.getRect`          return a :ref:`Rect` with same coordinates
+:meth:`IRect.getRectArea`      calculate the area of the rectangle
+:meth:`IRect.intersect`        common part with another rectangle
+:meth:`IRect.translate`        shift rectangle
+:attr:`IRect.width`            width of the rectangle
+:attr:`IRect.height`           height of the rectangle
+:attr:`IRect.x0`               X-coordinate of the top left corner
+:attr:`IRect.y0`               Y-coordinate of the top left corner
+:attr:`IRect.x1`               X-coordinate of the bottom right corner
+:attr:`IRect.y1`               Y-coordinate of the bottom right corner
+============================== ===========================================
 
 **Class API**
 
@@ -54,11 +55,31 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
 
       Calculates the area of the rectangle.
 
-      :param `unit`: Specify the unit: ``pt`` (pixel points, default) or ``mm`` (square millimeters).
+      :param `unit`: Specify the unit: ``pt`` (square pixel points, default) or ``mm`` (square millimeters).
 
       :type `unit`: string
 
       :rtype: float
+
+   .. method:: intersect(ir)
+
+      The intersection (common rectangular area) of the current rectangle and ``ir`` is calculated and replaces the current rectangle. If either rectangle is empty, the result is also empty. If one of the rectangles is infinite, the other one is taken as the result - and hence also infinite if both rectangles were infinite.
+
+      :param `ir`: Second rectangle.
+
+      :type `ir`: :ref:`IRect`
+
+
+   .. method:: translate(tx, ty)
+
+      Modifies the rectangle to perform a shift in x and / or y direction.
+
+      :param `tx`: Number of pixels to shift horizontally. Negative values mean shifting left.
+      :type `tx`: int
+
+      :param `ty`: Number of pixels to shift vertically. Negative values mean shifting down.
+      :type `ty`: int
+
 
    .. attribute:: width
 

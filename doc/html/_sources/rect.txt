@@ -14,19 +14,22 @@ Rectangle borders are always in parallel with the respective X- and Y-axes.
 A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite".
 
 
-=========================== =========================================================================
-**Methods / Attributes**    **Short Description**
-=========================== =========================================================================
-:meth:`Rect.round`          creates the smallest :ref:`Irect` containing ``Rect``
-:meth:`Rect.transform`      transform rectangle with a :ref:`Matrix`
-:meth:`Rect.getRectArea`    calculate the area of the rectangle
-:attr:`Rect.height`         ``Rect`` height
-:attr:`Rect.width`          ``Rect`` width
-:attr:`Rect.x0`             Top left corner's X-coordinate
-:attr:`Rect.y0`             Top left corner's Y-coordinate
-:attr:`Rect.x1`             Bottom right corner's X-coordinate
-:attr:`Rect.y1`             Bottom right corner's Y-coordinate
-=========================== =========================================================================
+============================= =======================================================
+**Methods / Attributes**      **Short Description**
+============================= =======================================================
+:meth:`Rect.round`            create smallest :ref:`Irect` containing rectangle
+:meth:`Rect.transform`        transform rectangle with a matrix
+:meth:`Rect.intersect`        common part with another rectangle
+:meth:`Rect.includePoint`     smallest rectangle also containing a specified point
+:meth:`Rect.union`            smallest rectangle also containing another rectangle
+:meth:`Rect.getRectArea`      calculate rectangle area
+:attr:`Rect.height`           rectangle height
+:attr:`Rect.width`            rectangle width
+:attr:`Rect.x0`               top left corner's X-coordinate
+:attr:`Rect.y0`               top left corner's Y-coordinate
+:attr:`Rect.x1`               bottom right corner's X-coordinate
+:attr:`Rect.y1`               bottom right corner's Y-coordinate
+============================= =======================================================
 
 **Class API**
 
@@ -52,11 +55,31 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
 
    .. method:: transform(m)
 
-      Transforms ``Rect`` with a :ref:`Matrix`.
+      Transforms rectangle with a matrix.
 
       :param `m`: The matrix to be used for the transformation.
       :type `m`: :ref:`Matrix`
-      :rtype: :ref:`Rect`
+
+   .. method:: intersect(r)
+
+      The intersection (common rectangular area) of the current rectangle and ``r`` is calculated and replaces the current rectangle. If either rectangle is empty, the result is also empty. If one of the rectangles is infinite, the other one is taken as the result - and hence also infinite if both rectangles were infinite.
+
+      :param `r`: Second rectangle
+      :type `r`: :ref:`Rect`
+
+   .. method:: union(r)
+
+      The smallest rectangle containing the current one and ``r`` is calculated and replaces the current one. If either rectangle is infinite, the result is also infinite. If one is empty, the other will be taken as the result (which will be empty if both were empty).
+
+      :param `r`: Second rectangle
+      :type `r`: :ref:`Rect`
+
+   .. method:: includePoint(p)
+
+      The smallest rectangle containing the current one and point ``p`` is calculated and replaces the current one. To create a rectangle to contain a series of points, start with the empty ``fitz.Rect(p1, p1)`` and successively perform ``includePoint`` operations for the other points.
+
+      :param `p`: Point to include.
+      :type `p`: :ref:`Point`
 
    .. method:: getRectArea(unit = 'pt')
 
