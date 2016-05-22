@@ -3942,6 +3942,10 @@ SWIGINTERN struct fz_rect_s *fz_rect_s_intersect(struct fz_rect_s *self,struct f
             fz_intersect_rect(self, r);
             return self;
         }
+SWIGINTERN struct fz_rect_s *fz_rect_s_includeRect(struct fz_rect_s *self,struct fz_rect_s *r){
+            fz_union_rect(self, r);
+            return self;
+        }
 SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_1(struct fz_irect_s const *s){
             fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
             *r = *s;
@@ -6013,6 +6017,37 @@ SWIGINTERN PyObject *_wrap_Rect_intersect(PyObject *SWIGUNUSEDPARM(self), PyObje
   }
   arg2 = (struct fz_rect_s *)(argp2);
   result = (struct fz_rect_s *)fz_rect_s_intersect(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Rect_includeRect(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
+  struct fz_rect_s *arg2 = (struct fz_rect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  struct fz_rect_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Rect_includeRect",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_includeRect" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg1 = (struct fz_rect_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Rect_includeRect" "', argument " "2"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg2 = (struct fz_rect_s *)(argp2);
+  result = (struct fz_rect_s *)fz_rect_s_includeRect(arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, 0 |  0 );
   return resultobj;
 fail:
@@ -10262,6 +10297,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Rect_round", _wrap_Rect_round, METH_VARARGS, (char *)"Rect_round(Rect self) -> IRect"},
 	 { (char *)"Rect_includePoint", _wrap_Rect_includePoint, METH_VARARGS, (char *)"Rect_includePoint(Rect self, Point p) -> Rect"},
 	 { (char *)"Rect_intersect", _wrap_Rect_intersect, METH_VARARGS, (char *)"Rect_intersect(Rect self, Rect r) -> Rect"},
+	 { (char *)"Rect_includeRect", _wrap_Rect_includeRect, METH_VARARGS, (char *)"Rect_includeRect(Rect self, Rect r) -> Rect"},
 	 { (char *)"delete_Rect", _wrap_delete_Rect, METH_VARARGS, (char *)"delete_Rect(Rect self)"},
 	 { (char *)"Rect_swigregister", Rect_swigregister, METH_VARARGS, NULL},
 	 { (char *)"IRect_x0_set", _wrap_IRect_x0_set, METH_VARARGS, (char *)"IRect_x0_set(IRect self, int x0)"},

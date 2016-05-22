@@ -1,33 +1,32 @@
 from __future__ import absolute_import
 from fitz.fitz import *
 
-<<<<<<< HEAD
 class M_Identity(fitz.Matrix):
     def __init__(self):
         fitz.Matrix.__init__(self, 1.0, 1.0)
     def __setattr__(self, name, value):
         if name in "abcdef":
-            raise NotImplementedError("Identity is a constant")
+            raise NotImplementedError("Identity is readonly")
         else:
             super(fitz.Matrix, self).__setattr__(name, value)
 
     def preRotate(*args):
-        raise NotImplementedError("Identity is a constant")
+        raise NotImplementedError("Identity is readonly")
     def preShear(*args):
-        raise NotImplementedError("Identity is a constant")
+        raise NotImplementedError("Identity is readonly")
     def preScale(*args):
-        raise NotImplementedError("Identity is a constant")
+        raise NotImplementedError("Identity is readonly")
+    def preTranslate(*args):
+        raise NotImplementedError("Identity is readonly")
     def concat(*args):
-        raise NotImplementedError("Identity is a constant")
+        raise NotImplementedError("Identity is readonly")
     def invert(*args):
-        raise NotImplementedError("Identity is a constant")
+        raise NotImplementedError("Identity is readonly")
         
 Identity = M_Identity()
 
 fitz.Identity = Identity
 
-=======
->>>>>>> origin/master
 # define the supported colorspaces for convenience
 fitz.csRGB    = fitz.Colorspace(fitz.CS_RGB)
 fitz.csGRAY   = fitz.Colorspace(fitz.CS_GRAY)

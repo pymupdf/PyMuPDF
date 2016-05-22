@@ -20,8 +20,8 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
 :meth:`Rect.round`            create smallest :ref:`Irect` containing rectangle
 :meth:`Rect.transform`        transform rectangle with a matrix
 :meth:`Rect.intersect`        common part with another rectangle
-:meth:`Rect.includePoint`     smallest rectangle also containing a specified point
-:meth:`Rect.union`            smallest rectangle also containing another rectangle
+:meth:`Rect.includePoint`     enlarge rectangle to also contain a point
+:meth:`Rect.includeRect`      enlarge rectangle to also contain another one
 :meth:`Rect.getRectArea`      calculate rectangle area
 :attr:`Rect.height`           rectangle height
 :attr:`Rect.width`            rectangle width
@@ -67,7 +67,7 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
       :param `r`: Second rectangle
       :type `r`: :ref:`Rect`
 
-   .. method:: union(r)
+   .. method:: includeRect(r)
 
       The smallest rectangle containing the current one and ``r`` is calculated and replaces the current one. If either rectangle is infinite, the result is also infinite. If one is empty, the other will be taken as the result (which will be empty if both were empty).
 

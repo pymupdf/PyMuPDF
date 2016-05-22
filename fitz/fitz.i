@@ -570,7 +570,7 @@ struct fz_rect_s
             return $self;
         }
 
-        struct fz_rect_s *union(struct fz_rect_s *r) {
+        struct fz_rect_s *includeRect(struct fz_rect_s *r) {
             fz_union_rect($self, r);
             return $self;
         }

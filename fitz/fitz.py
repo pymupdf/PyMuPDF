@@ -94,7 +94,7 @@ except AttributeError:
 import os                     
 VersionFitz = "1.9a"          
 VersionBind = "1.9.1"         
-VersionDate = "2016-05-21  9:06:49"        
+VersionDate = "2016-05-22  6:56:08"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -466,6 +466,11 @@ class Rect(_object):
     def intersect(self, r):
         """intersect(Rect self, Rect r) -> Rect"""
         return _fitz.Rect_intersect(self, r)
+
+
+    def includeRect(self, r):
+        """includeRect(Rect self, Rect r) -> Rect"""
+        return _fitz.Rect_includeRect(self, r)
 
 
     def transform(self, m):

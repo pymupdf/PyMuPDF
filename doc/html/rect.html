@@ -104,10 +104,10 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
 <td>common part with another rectangle</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Rect.includePoint" title="Rect.includePoint"><code class="xref py py-meth docutils literal"><span class="pre">Rect.includePoint()</span></code></a></td>
-<td>smallest rectangle also containing a specified point</td>
+<td>enlarge rectangle to also contain a point</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Rect.union" title="Rect.union"><code class="xref py py-meth docutils literal"><span class="pre">Rect.union()</span></code></a></td>
-<td>smallest rectangle also containing another rectangle</td>
+<tr class="row-even"><td><a class="reference internal" href="#Rect.includeRect" title="Rect.includeRect"><code class="xref py py-meth docutils literal"><span class="pre">Rect.includeRect()</span></code></a></td>
+<td>enlarge rectangle to also contain another one</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Rect.getRectArea" title="Rect.getRectArea"><code class="xref py py-meth docutils literal"><span class="pre">Rect.getRectArea()</span></code></a></td>
 <td>calculate rectangle area</td>
@@ -201,8 +201,8 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
 </dd></dl>
 
 <dl class="method">
-<dt id="Rect.union">
-<code class="descname">union</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="headerlink" href="#Rect.union" title="Permalink to this definition">¶</a></dt>
+<dt id="Rect.includeRect">
+<code class="descname">includeRect</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="headerlink" href="#Rect.includeRect" title="Permalink to this definition">¶</a></dt>
 <dd><p>The smallest rectangle containing the current one and <code class="docutils literal"><span class="pre">r</span></code> is calculated and replaces the current one. If either rectangle is infinite, the result is also infinite. If one is empty, the other will be taken as the result (which will be empty if both were empty).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -398,7 +398,7 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 21. May 2016.
+      Last updated on 22. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
