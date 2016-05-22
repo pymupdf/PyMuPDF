@@ -101,10 +101,10 @@ It should be noted, that
 
       Modify the matrix to perform a shifting / translation operation along the x and / or y axis. Has effects on attributes ``e`` and ``f`` only: ``[a, b, c, d, e, f] -> [a, b, c, d, tx*a + ty*c, tx*b + ty*d]``.
 
-      :param `tx`: Shearing effect in X direction. See attribute ``c``.
+      :param `tx`: Translation effect in X direction. See attribute ``e``.
       :type `tx`: float
 
-      :param `ty`: Shearing effect in Y direction. See attribute ``b``.
+      :param `ty`: Translation effect in Y direction. See attribute ``f``.
       :type `ty`: float
 
    .. method:: concat(m1, m2)
