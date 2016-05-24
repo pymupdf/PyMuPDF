@@ -251,7 +251,7 @@
 
 <dl class="method">
 <dt id="Document.getPagePixmap">
-<code class="descname">getPagePixmap</code><span class="sig-paren">(</span><em>pno</em>, <em>matrix = fitz.Identity</em>, <em>colorspace = &quot;rgb&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.getPagePixmap" title="Permalink to this definition">¶</a></dt>
+<code class="descname">getPagePixmap</code><span class="sig-paren">(</span><em>pno</em>, <em>matrix = fitz.Identity</em>, <em>colorspace = &quot;rgb&quot;</em>, <em>clip = None</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.getPagePixmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a pixmap from one of the document&#8217;s pages - identified by number <code class="docutils literal"><span class="pre">pno</span></code> (zero-based).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -261,6 +261,7 @@
 <li><strong>pno</strong> (<em>int</em>) &#8211; Page number, zero-based</li>
 <li><strong>matrix</strong> (<a class="reference internal" href="matrix.html#Matrix" title="Matrix"><em>Matrix</em></a>) &#8211; A transformation matrix - default is <a class="reference internal" href="identity.html#identity"><span class="std std-ref">Identity</span></a>.</li>
 <li><strong>colorspace</strong> (<em>string</em>) &#8211; A string specifying the requested colorspace - default is <code class="docutils literal"><span class="pre">rgb</span></code>.</li>
+<li><strong>clip</strong> (<a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a>) &#8211; An <code class="docutils literal"><span class="pre">Irect</span></code> to restrict rendering of the page to the rectangle&#8217;s area. If not specified, the complete page will be rendered.</li>
 </ul>
 </td>
 </tr>
@@ -550,7 +551,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 13. May 2016.
+      Last updated on 24. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

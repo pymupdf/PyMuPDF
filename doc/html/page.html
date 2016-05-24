@@ -192,7 +192,7 @@
 
 <dl class="method">
 <dt id="Page.getPixmap">
-<code class="descname">getPixmap</code><span class="sig-paren">(</span><em>matrix = fitz.Identity</em>, <em>colorspace = &quot;RGB&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.getPixmap" title="Permalink to this definition">¶</a></dt>
+<code class="descname">getPixmap</code><span class="sig-paren">(</span><em>matrix = fitz.Identity</em>, <em>colorspace = &quot;RGB&quot;</em>, <em>clip = None</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.getPixmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Pixmap from the page.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -201,6 +201,7 @@
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>matrix</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; A <a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a> object. Default is the <a class="reference internal" href="identity.html#identity"><span class="std std-ref">Identity</span></a> matrix.</li>
 <li><strong>colorspace</strong> (<em>string</em>) &#8211; Defines the required colorspace, one of <code class="docutils literal"><span class="pre">GRAY</span></code>, <code class="docutils literal"><span class="pre">CMYK</span></code> or <code class="docutils literal"><span class="pre">RGB</span></code> (default).</li>
+<li><strong>clip</strong> (<a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a>) &#8211; An <code class="docutils literal"><span class="pre">Irect</span></code> to restrict rendering of the page to the rectangle&#8217;s area. If not specified, the complete page will be rendered.</li>
 </ul>
 </td>
 </tr>
@@ -312,7 +313,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 13. May 2016.
+      Last updated on 24. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

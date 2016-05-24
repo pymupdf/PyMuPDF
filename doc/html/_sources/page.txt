@@ -62,7 +62,7 @@ Class representing one document page. Can only be created by :meth:`Document.loa
       :rtype: string
       :returns: The page's text as one string.
 
-   .. method:: getPixmap(matrix = fitz.Identity, colorspace = "RGB")
+   .. method:: getPixmap(matrix = fitz.Identity, colorspace = "RGB", clip = None)
 
      Creates a Pixmap from the page.
 
@@ -73,6 +73,10 @@ Class representing one document page. Can only be created by :meth:`Document.loa
      :param `colorspace`: Defines the required colorspace, one of ``GRAY``, ``CMYK`` or ``RGB`` (default).
 
      :type `colorspace`: string
+
+     :param `clip`: An ``Irect`` to restrict rendering of the page to the rectangle's area. If not specified, the complete page will be rendered.
+
+     :type `clip`: :ref:`IRect`
 
      :rtype: :ref:`Pixmap`
 

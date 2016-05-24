@@ -14,28 +14,23 @@ The different format handlers (pdf, xps, etc.) interpret pages to a "device". Th
 
 .. class:: Device
 
-   .. method:: __init__(self, object)
+   .. method:: __init__(self, object, clip)
 
       Constructor for either a pixel map or a display list device.
 
-   .. attribute:: object
+      :param `object`: one of ``Pixmap`` or ``DisplayList``
+      :type `object`: :ref:`Pixmap` or :ref:`DisplayList`
 
-      An object representing one of :ref:`Pixmap`, or :ref:`DisplayList`
-
-      :type: instance
+      :param `clip`: An optional `IRect` for ``Pixmap`` devices only to restrict rendering to a certain area of the page. If the complete page is required, specify ``None``. For display list devices, this parameter must be omitted.
+      :type `clip`: :ref:`IRect`
 
    .. method:: __init__(self, textsheet, textpage)
 
       Constructor for a text page device.
 
-   .. attribute:: textsheet
+      :param `textsheet`: ``TextSheet`` object
+      :type `textsheet`: :ref:`TextSheet`
 
-      A :ref:`TextSheet` object.
+      :param `textpage`: ``TextPage`` object
+      :type `textpage`: :ref:`TextPage`
 
-      :type: instance
-
-   .. attribute:: textpage
-
-      A :ref:`TextPage` object.
-
-      :type: instance

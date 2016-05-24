@@ -143,14 +143,15 @@ Default and misspelling choice is "text".
 # A function for rendering a page's image.
 # Requires a page object.
 #==============================================================================
-#def getPixmap(matrix = fitz.Identity, colorspace = "RGB"):
+#def getPixmap(matrix = fitz.Identity, colorspace = "RGB", clip = None):
 def getPixmap(*arg, **kw):
-    '''getPixmap(matrix=fitz.Identity, colorspace='rgb')
+    '''getPixmap(matrix=fitz.Identity, colorspace='rgb', clip = None)
 Creates a fitz.Pixmap of a PDF page.
 Parameters:\nmatrix: a fitz.Matrix instance to specify required transformations.
 Defaults to fitz.Identity (no transformation).
 colorspace: text string to specify required colour space (rgb, rgb, gray - case ignored).
 Default and misspelling choice is "rgb".
+clip: a fitz.IRect to restrict rendering to this area.
     '''
     # get parameters
     if len(arg) != 1:
@@ -161,17 +162,20 @@ Default and misspelling choice is "rgb".
     if page.parent.isClosed or page.parent.isEncrypted:
         raise ValueError("page operation on closed or encrypted document")
     
+    for k in kw.keys():
+        if k not in ["matrix", "colorspace", "clip"]:
+            raise ValueError("invalid keyword in getPixmap")
+    # set default values
     matrix = fitz.Identity
     colorspace = "rgb"
+    clip = None
     
-    for k in kw.keys():
-        if k not in ["matrix", "colorspace"]:
-            raise ValueError("invalid keyword in getPixmap")
-            
     if "matrix" in kw:
         matrix = kw["matrix"]
     if "colorspace" in kw:
         colorspace = kw["colorspace"]
+    if "clip" in kw:
+        clip = kw["clip"]
 
     # determine required colorspace
     if colorspace.upper() == "GRAY":
@@ -183,28 +187,40 @@ Default and misspelling choice is "rgb".
 
     dl = fitz.DisplayList()                  # create DisplayList
     page.run(fitz.Device(dl), fitz.Identity) # run page through it
-    r = page.bound().transform(matrix)       # scale page boundaries
-    ir = r.round()                           # integer rectangle of it
+    r = page.bound()                         # get page boundaries
+
+    if clip:
+        r.intersect(clip.getRect())          # only the part within clip
+        r.transform(matrix)                  # transform it
+        clip = r.round()                     # make IRect copy of it
+        ir = clip
+    else:                                    # take full page
+        r.transform(matrix)                  # transform it
+        ir = r.round()                       # make IRect copy of it
+
     pix = fitz.Pixmap(cs, ir)                # create an empty pixmap
     pix.clearWith(255)                       # clear it with color "white"
-    dv = fitz.Device(pix)                    # create a "draw" device
+    dv = fitz.Device(pix, clip)              # create a "draw" device
     dl.run(dv, matrix, r)                    # render the page
     dv = None
     dl = None
+    pix.x = 0
+    pix.y = 0
     return pix
 
 #==============================================================================
 # A function for rendering a page by its number
 #==============================================================================
-#def getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = "RGB"):
+# getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = "RGB", clip = None):
 def getPagePixmap(*arg, **kw):
-    '''getPagePixmap(pno, matrix=fitz.Identity, colorspace="rgb")
-Creates a fitz.Pixmap object for a PDF page number.
+    '''getPagePixmap(pno, matrix=fitz.Identity, colorspace="rgb", clip = None)
+Creates a fitz.Pixmap object for a document page number.
 Parameters:\npno: page number (int)
 matrix: a fitz.Matrix instance to specify required transformations.
 Defaults to fitz.Identity (no transformation).
 colorspace: text string to specify the required colour space (rgb, cmyk, gray - case ignored).
 Default and misspelling choice is "rgb".
+clip: a fitz.IRect to restrict rendering to this area
     '''
     # get parameters
     if len(arg) != 2:
@@ -215,22 +231,25 @@ Default and misspelling choice is "rgb".
         raise ValueError("invalid fitz.Document provided to getPagePixmap")
     if doc.isClosed or doc.isEncrypted:
         raise ValueError("operation on closed or encrypted document")
-
+    # check if called with a valid page number
     pno = int(arg[1])
     if pno < 0 or pno >= doc.pageCount:
         raise ValueError("page number not in range 0 to %s" % (doc.pageCount - 1,))
     
     for k in kw.keys():
-        if k not in ["matrix", "colorspace"]:
+        if k not in ["matrix", "colorspace", "clip"]:
             raise ValueError("invalid keyword specified to getPagePixmap")
-
+    # default values
     matrix = fitz.Identity
     colorspace = "rgb"
+    clip = None
             
     if "matrix" in kw.keys():
         matrix = kw["matrix"]
     if "colorspace" in kw.keys():
         colorspace = kw["colorspace"]
+    if "clip" in kw.keys():
+        clip = kw["clip"]
 
     page = doc.loadPage(pno)
 
@@ -242,14 +261,28 @@ Default and misspelling choice is "rgb".
     else:
         cs = fitz.csRGB
 
-    r = page.bound().transform(matrix)           # get scaled page boundaries
-    ir = r.round()                               # integer rectangle of it
-    pix = fitz.Pixmap(cs, ir)                    # create an empty pixmap
-    pix.clearWith(255)                           # clear it with color "white"
-    dv = fitz.Device(pix)                        # create a "draw" device
-    page.run(dv, matrix)                         # render the page
-    page = None                                  # remove page
-    dv = None                                    # remove device
+    dl = fitz.DisplayList()                  # create DisplayList
+    page.run(fitz.Device(dl), fitz.Identity) # run page through it
+    r = page.bound()                         # get page boundaries
+
+    if clip:                                 
+        r.intersect(clip.getRect())          # only the part within clip
+        r.transform(matrix)                  # transform it
+        clip = r.round()                     # make IRect copy of it
+        ir = clip
+    else:                                    # take full page
+        r.transform(matrix)                  # transform it
+        ir = r.round()                       # make IRect copy of it
+
+    pix = fitz.Pixmap(cs, ir)                # create an empty pixmap
+    pix.clearWith(255)                       # clear it with color "white"
+    dv = fitz.Device(pix, clip)              # create a "draw" device
+    dl.run(dv, matrix, r)                    # render the page
+    dv = None
+    dl = None
+    page = None
+    pix.x = 0
+    pix.y = 0
     return pix
 
 #==============================================================================
@@ -591,4 +624,8 @@ def mat_neg(m1):          # __neg__
 def mat_abs(m):           # __abs__
     a = m.a**2 + m.b**2 + m.c**2 + m.d**2 + m.e**2 + m.f**2
     return math.sqrt(a)
+
+def mat_true(m):          # __nonzero__
+    a = m.a**2 + m.b**2 + m.c**2 + m.d**2 + m.e**2 + m.f**2
+    return a > 0.0
 

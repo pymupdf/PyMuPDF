@@ -4171,11 +4171,14 @@ SWIGINTERN void delete_fz_colorspace_s(struct fz_colorspace_s *self){
 
             fz_drop_colorspace(gctx, self);
         }
-SWIGINTERN struct DeviceWrapper *new_DeviceWrapper__SWIG_0(struct fz_pixmap_s *pm){
+SWIGINTERN struct DeviceWrapper *new_DeviceWrapper__SWIG_0(struct fz_pixmap_s *pm,struct fz_irect_s *clip){
             struct DeviceWrapper *dw = NULL;
             fz_try(gctx) {
                 dw = (struct DeviceWrapper *)calloc(1, sizeof(struct DeviceWrapper));
-                dw->device = fz_new_draw_device(gctx, pm);
+                if (!clip)
+                    dw->device = fz_new_draw_device(gctx, pm);
+                else
+                    dw->device = fz_new_draw_device_with_bbox(gctx, pm, clip);
             }
             fz_catch(gctx)
                 ;
@@ -7894,19 +7897,28 @@ SWIGINTERN PyObject *Colorspace_swigregister(PyObject *SWIGUNUSEDPARM(self), PyO
 SWIGINTERN PyObject *_wrap_new_Device__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  struct fz_irect_s *arg2 = (struct fz_irect_s *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
   PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
   struct DeviceWrapper *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:new_Device",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_Device",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Device" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
   }
   arg1 = (struct fz_pixmap_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_irect_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_Device" "', argument " "2"" of type '" "struct fz_irect_s *""'"); 
+  }
+  arg2 = (struct fz_irect_s *)(argp2);
   {
-    result = (struct DeviceWrapper *)new_DeviceWrapper__SWIG_0(arg1);
+    result = (struct DeviceWrapper *)new_DeviceWrapper__SWIG_0(arg1,arg2);
     if(!result) {
       PyErr_SetString(PyExc_Exception, "cannot create Device");
       return NULL;
@@ -7999,19 +8011,24 @@ SWIGINTERN PyObject *_wrap_new_Device(PyObject *self, PyObject *args) {
   if (argc == 1) {
     int _v;
     void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_pixmap_s, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      return _wrap_new_Device__SWIG_0(self, args);
-    }
-  }
-  if (argc == 1) {
-    int _v;
-    void *vptr = 0;
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_display_list_s, 0);
     _v = SWIG_CheckState(res);
     if (_v) {
       return _wrap_new_Device__SWIG_1(self, args);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_pixmap_s, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_fz_irect_s, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_new_Device__SWIG_0(self, args);
+      }
     }
   }
   if (argc == 2) {
@@ -8032,7 +8049,7 @@ SWIGINTERN PyObject *_wrap_new_Device(PyObject *self, PyObject *args) {
 fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_Device'.\n"
     "  Possible C/C++ prototypes are:\n"
-    "    DeviceWrapper::DeviceWrapper(struct fz_pixmap_s *)\n"
+    "    DeviceWrapper::DeviceWrapper(struct fz_pixmap_s *,struct fz_irect_s *)\n"
     "    DeviceWrapper::DeviceWrapper(struct fz_display_list_s *)\n"
     "    DeviceWrapper::DeviceWrapper(struct fz_stext_sheet_s *,struct fz_stext_page_s *)\n");
   return 0;
@@ -10368,7 +10385,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"delete_Colorspace", _wrap_delete_Colorspace, METH_VARARGS, (char *)"delete_Colorspace(Colorspace self)"},
 	 { (char *)"Colorspace_swigregister", Colorspace_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_Device", _wrap_new_Device, METH_VARARGS, (char *)"\n"
-		"Device(Pixmap pm)\n"
+		"Device(Pixmap pm, IRect clip)\n"
 		"Device(DisplayList dl)\n"
 		"new_Device(TextSheet ts, TextPage tp) -> Device\n"
 		""},

@@ -92,7 +92,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       :rtype: list
 
-    .. method:: getPagePixmap(pno, matrix = fitz.Identity, colorspace = "rgb")
+    .. method:: getPagePixmap(pno, matrix = fitz.Identity, colorspace = "rgb", clip = None)
 
       Creates a pixmap from one of the document's pages - identified by number ``pno`` (zero-based).
 
@@ -107,6 +107,10 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
       :param `colorspace`: A string specifying the requested colorspace - default is ``rgb``.
 
       :type `colorspace`: string
+
+      :param `clip`: An ``Irect`` to restrict rendering of the page to the rectangle's area. If not specified, the complete page will be rendered.
+
+      :type `clip`: :ref:`IRect`
 
       :rtype: :ref:`Pixmap`
 

@@ -61,6 +61,7 @@ fitz.Matrix.__sub__         = fitz.utils.mat_sub
 fitz.Matrix.__abs__         = fitz.utils.mat_abs
 fitz.Matrix.__neg__         = fitz.utils.mat_neg
 fitz.Matrix.__invert__      = fitz.utils.mat_invert
+fitz.Matrix.__nonzero__     = fitz.utils.mat_true
 
 # ... and delete them from here
 del utils

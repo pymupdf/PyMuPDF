@@ -1019,11 +1019,14 @@ struct DeviceWrapper
                 return NULL;
             }
         }
-        DeviceWrapper(struct fz_pixmap_s *pm) {
+        DeviceWrapper(struct fz_pixmap_s *pm, struct fz_irect_s *clip) {
             struct DeviceWrapper *dw = NULL;
             fz_try(gctx) {
                 dw = (struct DeviceWrapper *)calloc(1, sizeof(struct DeviceWrapper));
-                dw->device = fz_new_draw_device(gctx, pm);
+                if (!clip)
+                    dw->device = fz_new_draw_device(gctx, pm);
+                else
+                    dw->device = fz_new_draw_device_with_bbox(gctx, pm, clip);
             }
             fz_catch(gctx)
                 ;

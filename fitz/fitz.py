@@ -94,7 +94,7 @@ except AttributeError:
 import os                     
 VersionFitz = "1.9a"          
 VersionBind = "1.9.1"         
-VersionDate = "2016-05-23 19:38:05"        
+VersionDate = "2016-05-24 11:48:23"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -750,7 +750,7 @@ class Device(_object):
 
     def __init__(self, *args):
         """
-        __init__(DeviceWrapper self, Pixmap pm) -> Device
+        __init__(DeviceWrapper self, Pixmap pm, IRect clip) -> Device
         __init__(DeviceWrapper self, DisplayList dl) -> Device
         __init__(DeviceWrapper self, TextSheet ts, TextPage tp) -> Device
         """
