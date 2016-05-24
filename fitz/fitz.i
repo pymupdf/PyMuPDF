@@ -293,7 +293,7 @@ struct fz_document_s {
             globals glo = { 0 };
             glo.ctx = gctx;
             glo.doc = pdf;
-            /* code of retainpages copied from source fz_clean_file.c */
+            /* code of retainpages copied from fz_clean_file.c */
             retainpages(gctx, &glo, argc, liste);
             return 0;
         }
@@ -315,7 +315,9 @@ struct fz_document_s {
                 fz_drop_page(gctx, page);
             }
             fz_catch(gctx) {
-                fz_drop_page(gctx, page);
+                if (page) fz_drop_page(gctx, page);
+                if (res) fz_drop_buffer(gctx, res);
+                return NULL;
             }
             return res;
         }
@@ -485,6 +487,8 @@ struct fz_page_s {
         /* Page.__repr__()                                         */
         /***********************************************************/
         %pythoncode %{
+        def __str__(self):
+            return "page %s of %s" % (self.number, repr(self.parent))
         def __repr__(self):
             return repr(self.parent) + ".loadPage(" + str(self.number) + ")"
         %}
@@ -580,6 +584,9 @@ struct fz_rect_s
                 _fitz._fz_transform_rect(self, m)
                 return self
 
+            def __len__(self):
+                return 4
+
             def __repr__(self):
                 return "fitz.Rect" + str((self.x0, self.y0, self.x1, self.y1))
 
@@ -635,6 +642,9 @@ struct fz_irect_s
 
             def getRect(self):
                 return Rect(self.x0, self.y0, self.x1, self.y1)
+
+            def __len__(self):
+                return 4
 
             def __repr__(self):
                 return "fitz.IRect" + str((self.x0, self.y0, self.x1, self.y1))
@@ -1058,7 +1068,6 @@ struct DeviceWrapper
     }
 };
 
-
 /* fz_matrix */
 %rename(_fz_pre_scale) fz_pre_scale;
 %rename(_fz_pre_shear) fz_pre_shear;
@@ -1117,15 +1126,19 @@ struct fz_matrix_s
 
         %pythoncode %{
             def preScale(self, sx, sy):
+                """preScale(Matrix self, float sx, float sy) -> Matrix self updated"""
                 _fitz._fz_pre_scale(self, sx, sy)
                 return self
             def preShear(self, sx, sy):
+                """preShear(Matrix self, float sx, float sy) -> Matrix self updated"""
                 _fitz._fz_pre_shear(self, sx, sy)
                 return self
             def preRotate(self, degree):
+                """preRotate(Matrix self, float degree) -> Matrix self updated"""
                 _fitz._fz_pre_rotate(self, degree)
                 return self
-
+            def __len__(self):
+                return 6
             def __repr__(self):
                 return "fitz.Matrix(%s, %s, %s, %s, %s, %s)" % (self.a, self.b, self.c, self.d, self.e, self.f)
         %}
@@ -1350,6 +1363,9 @@ struct fz_point_s
             def transform(self, m):
                 _fitz._fz_transform_point(self, m)
                 return self
+
+            def __len__(self):
+                return 2
 
             def __repr__(self):
                 return "fitz.Point" + str((self.x, self.y))

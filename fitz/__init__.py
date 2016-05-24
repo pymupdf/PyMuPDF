@@ -22,6 +22,8 @@ class M_Identity(fitz.Matrix):
         raise NotImplementedError("Identity is readonly")
     def invert(*args):
         raise NotImplementedError("Identity is readonly")
+    def __repr__(self):
+        return "fitz.Identity"
         
 Identity = M_Identity()
 
@@ -53,6 +55,13 @@ fitz.Pixmap.writeImage      = fitz.utils.writeImage
 fitz.Rect.getRectArea       = fitz.utils.getRectArea
 fitz.IRect.getRectArea      = fitz.utils.getRectArea
 getPointDistance            = fitz.utils.getPointDistance
+fitz.Matrix.__mul__         = fitz.utils.mat_mult
+fitz.Matrix.__add__         = fitz.utils.mat_add
+fitz.Matrix.__sub__         = fitz.utils.mat_sub
+fitz.Matrix.__abs__         = fitz.utils.mat_abs
+fitz.Matrix.__neg__         = fitz.utils.mat_neg
+fitz.Matrix.__invert__      = fitz.utils.mat_invert
+
 # ... and delete them from here
 del utils
 fitz.__doc__ = "PyMuPDF %s: the Python bindings for the MuPDF %s library,\ncreated on %s" \

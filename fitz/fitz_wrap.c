@@ -3777,7 +3777,7 @@ SWIGINTERN int fz_document_s__select(struct fz_document_s *self,int *liste,int a
             globals glo = { 0 };
             glo.ctx = gctx;
             glo.doc = pdf;
-            /* code of retainpages copied from source fz_clean_file.c */
+            /* code of retainpages copied from fz_clean_file.c */
             retainpages(gctx, &glo, argc, liste);
             return 0;
         }
@@ -3790,7 +3790,9 @@ SWIGINTERN struct fz_buffer_s *fz_document_s__readPageText(struct fz_document_s 
                 fz_drop_page(gctx, page);
             }
             fz_catch(gctx) {
-                fz_drop_page(gctx, page);
+                if (page) fz_drop_page(gctx, page);
+                if (res) fz_drop_buffer(gctx, res);
+                return NULL;
             }
             return res;
         }

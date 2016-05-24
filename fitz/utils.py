@@ -544,3 +544,51 @@ class Pages():
             raise StopIteration
         self.page = self.parent.loadPage(self.pno)
         return self.page
+
+#==============================================================================
+# arithmetic methods for fitz.Matrix
+#==============================================================================
+def mat_mult(m1, m2):     # __mul__
+    m = fitz.Matrix()
+    m.concat(m1, m2)
+    return m
+
+def mat_invert(m1):       # __invert__
+    m = fitz.Matrix()
+    r = m.invert(m1)
+    return m
+
+def mat_add(m1, m2):      # __add__
+    m = fitz.Matrix()
+    m.a = m1.a + m2.a
+    m.b = m1.b + m2.b
+    m.c = m1.c + m2.c
+    m.d = m1.d + m2.d
+    m.e = m1.e + m2.e
+    m.f = m1.f + m2.f
+    return m
+
+def mat_sub(m1, m2):      # __sub__
+    m = fitz.Matrix()
+    m.a = m1.a - m2.a
+    m.b = m1.b - m2.b
+    m.c = m1.c - m2.c
+    m.d = m1.d - m2.d
+    m.e = m1.e - m2.e
+    m.f = m1.f - m2.f
+    return m
+
+def mat_neg(m1):          # __neg__
+    m = fitz.Matrix()
+    m.a = -m1.a
+    m.b = -m1.b
+    m.c = -m1.c
+    m.d = -m1.d
+    m.e = -m1.e
+    m.f = -m1.f
+    return m
+
+def mat_abs(m):           # __abs__
+    a = m.a**2 + m.b**2 + m.c**2 + m.d**2 + m.e**2 + m.f**2
+    return math.sqrt(a)
+

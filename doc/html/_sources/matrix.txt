@@ -174,9 +174,39 @@ In order to keep results foreseeable for a series of transformations, Adobe reco
 2. Rotate
 3. Scale or shear ("skew")
 
+Matrix Arithmetics
+-------------------
+For programmer convenience, we have added some arithmetic operations to the Matrix class making use of the above methods. These allow a more intuitive handling. In what follows, m, m1, m2 are matrices:
 
-**Examples**
+* Addition: with ``m = m1 + m2``, ``m`` will be the matrix ``[m1.a + m2.a, ...]``
+* Subtraction: with ``m = m1 - m2``, ``m`` will be the matrix ``[m1.a - m2.a, ...]``
+* Multiplication: with ``m = m1 * m2``, ``m`` will be the matrix ``concat(m1, m2)``.
+* Negation: ``-m`` is the matrix ``[-m.a, -m.b, ...]``
+* Inversion: ``~m`` is the matrix such that ``m * ~m = fitz.Identity``. If ``m`` is degenerate (not invertible), ``~m`` will be ``[0, 0, 0, 0, 0, 0]``.
+* Absolute Value: ``abs(m)`` is a float containing the euclidian norm of ``m``.
 
+This makes the following operations possible:
+::
+ >>> import fitz
+ >>> m45p = fitz.Matrix(45)            # rotate 45 degrees counterclockwise
+ >>> m45m = fitz.Matrix(-45)           # rotate 45 degrees clockwise
+ >>> m90p = fitz.Matrix(90)            # rotate 90 degrees counterclockwise
+ >>>
+ >>> abs(m90p - m45p * m45p)           # should be (close to) zero
+ 8.429369702178807e-08
+ >>>
+ >>> abs(m45p * m45m - fitz.Identity)  # should be (close to) zero
+ 2.1073424255447017e-07
+ >>>
+ >>> abs(m45p - ~m45m)                 # should be (close to) zero
+ 2.384185791015625e-07
+ >>>
+ >>> m90p * m90p * m90p * m90p         # should be 360 degrees = fitz.Identity
+ fitz.Matrix(1.0, -0.0, 0.0, 1.0, 0.0, 0.0)
+ >>>
+
+Examples
+-------------
 Here are examples to illustrate some of the effects achievable. The following pictures start with a page of the PDF version of this help file. We show what happens when a matrix is being applied (though always full pages are created, only parts are displayed here to save space).
 
 This is the original page image

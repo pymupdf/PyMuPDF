@@ -94,7 +94,7 @@ except AttributeError:
 import os                     
 VersionFitz = "1.9a"          
 VersionBind = "1.9.1"         
-VersionDate = "2016-05-22  6:56:08"        
+VersionDate = "2016-05-23 19:38:05"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -398,6 +398,8 @@ class Page(_object):
         return _fitz.Page__readPageText(self, output)
 
 
+    def __str__(self):
+        return "page %s of %s" % (self.number, repr(self.parent))
     def __repr__(self):
         return repr(self.parent) + ".loadPage(" + str(self.number) + ")"
 
@@ -477,6 +479,9 @@ class Rect(_object):
         _fitz._fz_transform_rect(self, m)
         return self
 
+    def __len__(self):
+        return 4
+
     def __repr__(self):
         return "fitz.Rect" + str((self.x0, self.y0, self.x1, self.y1))
 
@@ -540,6 +545,9 @@ class IRect(_object):
 
     def getRect(self):
         return Rect(self.x0, self.y0, self.x1, self.y1)
+
+    def __len__(self):
+        return 4
 
     def __repr__(self):
         return "fitz.IRect" + str((self.x0, self.y0, self.x1, self.y1))
@@ -830,15 +838,19 @@ class Matrix(_object):
 
 
     def preScale(self, sx, sy):
+        """preScale(Matrix self, float sx, float sy) -> Matrix self updated"""
         _fitz._fz_pre_scale(self, sx, sy)
         return self
     def preShear(self, sx, sy):
+        """preShear(Matrix self, float sx, float sy) -> Matrix self updated"""
         _fitz._fz_pre_shear(self, sx, sy)
         return self
     def preRotate(self, degree):
+        """preRotate(Matrix self, float degree) -> Matrix self updated"""
         _fitz._fz_pre_rotate(self, degree)
         return self
-
+    def __len__(self):
+        return 6
     def __repr__(self):
         return "fitz.Matrix(%s, %s, %s, %s, %s, %s)" % (self.a, self.b, self.c, self.d, self.e, self.f)
 
@@ -1047,6 +1059,9 @@ class Point(_object):
     def transform(self, m):
         _fitz._fz_transform_point(self, m)
         return self
+
+    def __len__(self):
+        return 2
 
     def __repr__(self):
         return "fitz.Point" + str((self.x, self.y))
