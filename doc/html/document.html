@@ -138,6 +138,12 @@
 <tr class="row-odd"><td><a class="reference internal" href="#Document.name" title="Document.name"><code class="xref py py-attr docutils literal"><span class="pre">Document.name</span></code></a></td>
 <td>filename of document</td>
 </tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.openErrCode" title="Document.openErrCode"><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrCode</span></code></a></td>
+<td>indicates structure problem during open</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrMsg</span></code></td>
+<td>contains an error message if openErrCode &gt; 0</td>
+</tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
 <td>require password to access data?</td>
 </tr>
@@ -332,20 +338,20 @@
 <dl class="method">
 <dt id="Document.save">
 <code class="descname">save</code><span class="sig-paren">(</span><em>outfile</em>, <em>garbage=0</em>, <em>clean=0</em>, <em>deflate=0</em>, <em>incremental=0</em>, <em>ascii=0</em>, <em>expand=0</em>, <em>linear=0</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves a copy of the document under the name <code class="docutils literal"><span class="pre">outfile</span></code>. Include path specifications as necessary. Only PDF documents are supported by this function. Internally the document may have changed. E.g. after a successfull <code class="docutils literal"><span class="pre">authenticate</span></code>, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning of the document data could also have occurred, e.g. broken xref tables have been corrected and incremental changes have been resolved.</p>
+<dd><p>Saves a copy of the document under the name <code class="docutils literal"><span class="pre">outfile</span></code>. Include path specifications as necessary. Only PDF documents are supported by this function. Internally the document may have changed. E.g. after a successfull <code class="docutils literal"><span class="pre">authenticate</span></code>, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning of the document data could also have occurred, e.g. broken xref tables have been corrected and previous incremental changes have been resolved.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outfile</strong> (<em>string</em>) &#8211; The file name to save to. Must be different from the original <code class="docutils literal"><span class="pre">filename</span></code> / <code class="docutils literal"><span class="pre">filetype</span></code> value or else a ValueError will be raised.</li>
-<li><strong>garbage</strong> (<em>int</em>) &#8211; Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition compact xref tables, 3 = in addition merge duplicate objects.</li>
+<li><strong>outfile</strong> (<em>string</em>) &#8211; The file name to save to. Must be different from the original <code class="docutils literal"><span class="pre">filename</span></code> value if <code class="docutils literal"><span class="pre">incremental</span> <span class="pre">=</span> <span class="pre">0</span></code> or else a ValueError will be raised. If saving incremental, then <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code> <strong>must be zero</strong> and <code class="docutils literal"><span class="pre">outfile</span></code> <strong>must equal</strong> the original filename.</li>
+<li><strong>garbage</strong> (<em>int</em>) &#8211; Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition compact xref tables, 3 = in addition merge duplicate objects. Excludes <code class="docutils literal"><span class="pre">incremental</span></code>.</li>
 <li><strong>clean</strong> (<em>int</em>) &#8211; Clean content streams: 0 = False, 1 = True.</li>
 <li><strong>deflate</strong> (<em>int</em>) &#8211; Deflate uncompressed streams: 0 = False, 1 = True.</li>
-<li><strong>incremental</strong> (<em>int</em>) &#8211; Only save changed objects: 0 = False, 1 = True.</li>
+<li><strong>incremental</strong> (<em>int</em>) &#8211; Only save changed objects: 0 = False, 1 = True. Excludes <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code>. Cannot be used for de- / encrypted files and for files that have invalid internal structures (<code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>). In such cases saving to a new file is required.</li>
 <li><strong>ascii</strong> (<em>int</em>) &#8211; Where possible make the output ASCII: 0 = False, 1 = True.</li>
 <li><strong>expand</strong> (<em>int</em>) &#8211; One byte bitfield to decompress contents: 0 = none, 1 = images, 2 = fonts, 255 = all. This convenience option generates a decompressed file version that can be better read by some other programs.</li>
-<li><strong>linear</strong> (<em>int</em>) &#8211; Save a linearised version of the document: 0 = False, 1 = True. This option creates a file format for improved performance when read via internet connections.</li>
+<li><strong>linear</strong> (<em>int</em>) &#8211; Save a linearised version of the document: 0 = False, 1 = True. This option creates a file format for improved performance when read via internet connections. Excludes <code class="docutils literal"><span class="pre">incremental</span></code>.</li>
 </ul>
 </td>
 </tr>
@@ -431,7 +437,7 @@
 <p>If the date fields contain meaningfull data (which need not be the case), they are strings in the PDF-internal timestamp format &#8220;D:&lt;TS&gt;&lt;TZ&gt;&#8221;, where</p>
 <p>&lt;TS&gt; is the 12 character ISO timestamp <code class="docutils literal"><span class="pre">YYYMMDDhhmmss</span></code> (<code class="docutils literal"><span class="pre">YYYY</span></code> - year, <code class="docutils literal"><span class="pre">MM</span></code> - month, <code class="docutils literal"><span class="pre">DD</span></code> - day, <code class="docutils literal"><span class="pre">hh</span></code> - hour, <code class="docutils literal"><span class="pre">mm</span></code> - minute, <code class="docutils literal"><span class="pre">ss</span></code> - second), and</p>
 <p>&lt;TZ&gt; is a time zone value (time intervall relative to GMT) containing a sign (&#8216;+&#8217; or &#8216;-&#8216;), the hour (<code class="docutils literal"><span class="pre">hh</span></code>), and the minute (<code class="docutils literal"><span class="pre">'mm'</span></code>, attention: enclose in apostrophies!).</p>
-<p>E.g a Venezuelan value might look like <code class="docutils literal"><span class="pre">D:20150415131602-04'30'</span></code>, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Venezuela.</p>
+<p>E.g a Venezuelan value might look like <code class="docutils literal"><span class="pre">D:20150415131602-04'00'</span></code>, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Venezuela.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -470,6 +476,34 @@
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="Document.openErrCode">
+<code class="descname">openErrCode</code><a class="headerlink" href="#Document.openErrCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shows whether issues had to be resolved while opening the document. If <code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, the attribute <code class="docutils literal"><span class="pre">openErrMsg</span></code> contains some explanantion. If an error occurred, any <code class="docutils literal"><span class="pre">save()</span></code> of the document must occur to a new file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Document.pageErrMsg">
+<code class="descname">pageErrMsg</code><a class="headerlink" href="#Document.pageErrMsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains either an empty string or an error message if <code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <div class="section" id="remarks-on-select">
@@ -480,7 +514,7 @@
 <p class="first admonition-title">Caution</p>
 <p class="last">This also means, that any document information from before this method must be assumed to be invalid. This is especially true for old page objects, table of contents and the <code class="docutils literal"><span class="pre">pageCount</span></code> property. If you plan to use the <code class="docutils literal"><span class="pre">close()</span></code> method, make sure you have deleted any page object created before (by <code class="docutils literal"><span class="pre">page</span> <span class="pre">=</span> <span class="pre">None</span></code>).</p>
 </div>
-<p>Any of those actions will become permanent only with a <code class="docutils literal"><span class="pre">doc.save()</span></code>. If you have deleted pages, do not forget to specify the <code class="docutils literal"><span class="pre">garbage=3</span></code> option to eventually reduce the resulting document&#8217;s size.</p>
+<p>Any of those actions will become permanent only with a <code class="docutils literal"><span class="pre">doc.save()</span></code>. If you have deleted pages, do not forget to specify the <code class="docutils literal"><span class="pre">garbage=3</span></code> option to eventually reduce the resulting document&#8217;s size (if you are saving to a new file).</p>
 <p>It should also be noted, that this method <strong>preserves all links, annotations and bookmarks</strong> that are still valid. In other words: deleting pages only deletes those references that would otherwise point to nowhere.</p>
 </div>
 <div class="section" id="examples">
@@ -488,32 +522,34 @@
 <p>Create a document copy deleting pages with no text:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
-<span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="p">))</span>                 <span class="c1"># list of all pages</span>
+<span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="p">))</span>             <span class="c1"># list of all pages</span>
 
 <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pages</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">getText</span><span class="p">():</span>                        <span class="c1"># contains no text</span>
-        <span class="n">r</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>                     <span class="c1"># remove page number from list</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="kc">None</span>                                   <span class="c1"># release page memory</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">getText</span><span class="p">():</span>                    <span class="c1"># contains no text</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>                 <span class="c1"># remove page number from list</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="kc">None</span>                               <span class="c1"># release page memory</span>
 
-<span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>                                  <span class="c1"># apply the list</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>                 <span class="c1"># save the resulting PDF</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>                              <span class="c1"># apply the list</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>             <span class="c1"># save the resulting PDF, OR</span>
+<span class="c1"># overwrite the original document ... *** VERY FAST! ***</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">,</span> <span class="n">incremental</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>       <span class="c1"># excludes garbage collection</span>
 </pre></div>
 </div>
 <p>Create a sub document with the odd pages:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
 <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="p">))</span> <span class="k">if</span> <span class="n">i</span><span class="o">%</span><span class="mi">2</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>                                  <span class="c1"># apply the list</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;any-odd.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>             <span class="c1"># save PDF with the odd pages</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>                              <span class="c1"># apply the list</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;any-oddpages.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>    <span class="c1"># save PDF with the odd pages</span>
 </pre></div>
 </div>
 <p>Concatenate a document with itself:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
 <span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="p">))</span>
-<span class="n">r</span> <span class="o">+=</span> <span class="n">r</span>                                         <span class="c1"># turn PDF into a copy of itself</span>
+<span class="n">r</span> <span class="o">+=</span> <span class="n">r</span>                                     <span class="c1"># turn PDF into a copy of itself</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.pdf&quot;</span><span class="p">)</span>                            <span class="c1"># contains pages 0,...,n,0,...,n of &lt;any.pdf&gt;</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;any-any.pdf&quot;</span><span class="p">)</span>                    <span class="c1"># contains doubled content &lt;any.pdf&gt;</span>
 </pre></div>
 </div>
 <p>Create document copy in reverse page order (well, don&#8217;t try with a million pages):</p>
@@ -551,7 +587,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 24. May 2016.
+      Last updated on 27. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

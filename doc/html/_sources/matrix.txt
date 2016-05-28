@@ -176,15 +176,15 @@ In order to keep results foreseeable for a series of transformations, Adobe reco
 
 Matrix Arithmetics
 -------------------
-For programmer convenience, we have added some arithmetic operations to the Matrix class making use of the above methods. These allow a more intuitive handling. In what follows, m, m1, m2 are matrices:
+A number of arithmetics operations have been defined for the ``Matrix`` class. In what follows, m, m1, m2 are matrices:
 
-* Addition: with ``m = m1 + m2``, ``m`` will be the matrix ``[m1.a + m2.a, ...]``
-* Subtraction: with ``m = m1 - m2``, ``m`` will be the matrix ``[m1.a - m2.a, ...]``
-* Multiplication: with ``m = m1 * m2``, ``m`` will be the matrix ``concat(m1, m2)``.
-* Negation: ``-m`` is the matrix ``[-m.a, -m.b, ...]``
-* Inversion: ``~m`` is the matrix such that ``m * ~m = fitz.Identity``. If ``m`` is degenerate (not invertible), ``~m`` will be ``[0, 0, 0, 0, 0, 0]``.
-* Absolute Value: ``abs(m)`` is a float containing the euclidian norm of ``m``. Typically used for testing whether two matrices are "almost equal", like ``abs(m1 - m2) < epsilon``.
-* Non-Zero Test: You can test whether a matrix is all zero (``[0, 0, 0, 0, 0, 0]``): ``if not ~m: print "m is not invertible"``
+* **Addition:** with ``m1 + m2`` is a new matrix containing ``[m1.a + m2.a, ..., m1.f + m2.f]``
+* **Subtraction:** analogous to addition
+* **Multiplication:** ``m1 * m2`` is a new matrix calculated as ``concat(m1, m2)``
+* **Negation:** ``-m`` is the new matrix ``[-m.a, -m.b, ...]``
+* **Inversion:** ``~m`` is the new matrix such that ``m * ~m = fitz.Identity``. If ``m`` is degenerate (not invertible), ``~m`` will be ``[0, 0, 0, 0, 0, 0]``.
+* **Absolute Value:** ``abs(m)`` is a float containing the Euclidean norm of ``m``. Typically used for testing whether two matrices are "almost equal", like ``abs(m1 - m2) < epsilon``.
+* **Non-Zero-Test:** You can test whether a matrix is all zero (``[0, 0, 0, 0, 0, 0]``): ``if not ~m: print "m is not invertible"``
 
 This makes the following operations possible:
 ::

@@ -11,7 +11,9 @@ Rect
 ``Rect`` represents a rectangle defined by its top left and its bottom right :ref:`Point` objects, in coordinates: ((x0, y0), (x1, y1)). Respectively, a rectangle can be defined in one of the four ways: as a pair of :ref:`Point` objects, as a tuple of four coordinates, or as an arbitrary combination of these.
 
 Rectangle borders are always in parallel with the respective X- and Y-axes.
-A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite".
+A rectangle is called *finite* if x0 <= x1 and y0 <= y1 is true, else *infinite*.
+
+A rectangle is called *empty* if x0 = x1 or y0 = y1, i.e. if its area is zero.
 
 
 ============================= =======================================================
@@ -45,11 +47,15 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
 
    .. method:: __init__(self, x0, y0, p2)
 
-      Overloaded constructors: p1, p2 stand for :ref:`Point` objects, while the other parameters mean float coordinates.
+   .. method:: __init__(self, r)
+
+      Overloaded constructors: ``p1``, ``p2`` stand for :ref:`Point` objects, ``r`` means another rectangle, while the other parameters mean float coordinates.
+
+	  If ``r`` is specified, the constructor creates a **new copy** of ``r``.
 
    .. method:: round()
 
-      Creates the smallest :ref:`IRect` that contains ``Rect``. This is **not** simply the same as rounding each of the rectangle's coordinates! Look at the example below.
+      Creates the smallest :ref:`IRect` containing ``Rect``. This is **not** the same as simply rounding each of the rectangle's coordinates! Look at the example below.
 
       :rtype: :ref:`IRect`
 
@@ -126,11 +132,22 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
       :type: float
 
 
+Rect Arithmetics
+-----------------
+A number of arithmetics operations have been defined for the ``Rect`` class.
+
+- **Addition:** ``r + x`` where ``r`` is a ``Rect`` and ``x`` can be a ``Rect``, ``IRect`` or a number. The result is a new ``Rect`` with added components of the operands. If ``x`` is a number, it is added to all components of ``r``.
+- **Subtraction:** analogous to addition.
+- **Negation:** ``-r`` is a new ``Rect`` with negated components of ``r``.
+- **Inclusion:** ``r | x`` is the new ``Rect`` that also includes ``x``, which can be an ``IRect``, ``Rect`` or ``Point``.
+- **Intersection:** ``r & x`` is a new ``Rect`` containing the area common to ``r`` and ``x`` which can be an ``IRect`` or ``Rect``.
+- **Multiplication:** ``r * m`` is a new ``Rect`` containing ``r`` transformed with matrix ``m``.
+
+Examples
+----------
+
 **Example 1:**
 ::
- Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
- Type "copyright", "credits" or "license()" for more information.
- >>> import fitz
  >>> p1 = fitz.Point(10, 10)
  >>> p2 = fitz.Point(300, 450)
  >>>
@@ -149,9 +166,6 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
 
 **Example 2:**
 ::
- Python 2.7.9 (default, Dec 10 2014, 12:24:55) [MSC v.1500 32 bit (Intel)] on win32
- Type "copyright", "credits" or "license()" for more information.
- >>> import fitz
  >>> r = fitz.Rect(0.5, -0.01, 123.88, 455.123456)
  >>>
  >>> r
@@ -160,6 +174,23 @@ A rectangle is called "finite" if x0 <= x1 and y0 <= y1 is true, else "infinite"
  >>> r.round()
  fitz.IRect(0, -1, 124, 456)
  >>>
+
+**Example 3:**
+::
+  >>> m = fitz.Matrix(45)
+  >>> r = fitz.Rect(10, 10, 410, 610)
+  >>> r * m
+  fitz.Rect(-424.2640686035156, 14.142135620117188, 282.84271240234375, 721.2489013671875)
+  >>>
+  >>> r | fitz.Point(5, 5)
+  fitz.Rect(5.0, 5.0, 410.0, 610.0)
+  >>>
+  >>> r + 5
+  fitz.Rect(15.0, 15.0, 415.0, 615.0)
+  >>>
+  >>> r & fitz.Rect(0, 0, 15, 15)
+  fitz.Rect(10.0, 10.0, 15.0, 15.0)
+
 
 As can be seen, all of the following evaluate to ``True``:
 

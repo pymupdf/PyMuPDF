@@ -8,6 +8,7 @@
 #include <fitz.h>
 #include <pdf.h>
 void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page);
+
 %}
 
 /* global context */
@@ -19,6 +20,7 @@ void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *pa
     }
     fz_register_document_handlers(gctx);
 %}
+
 %header %{
     fz_context *gctx;
 
@@ -48,7 +50,9 @@ struct fz_document_s {
         %exception fz_document_s {
             $action
             if(!result) {
-                PyErr_SetString(PyExc_Exception, "cannot create Document");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -60,7 +64,7 @@ struct fz_document_s {
             else:
                 raise TypeError("filename must be a string")
             if not os.path.exists(filename) and streamlen == 0:
-                raise IOError("no such file: '%s'" % (filename,))
+                raise IOError("no such file: " + filename)
             self.name = filename
             self.streamlen = streamlen
             self.isClosed = 0
@@ -69,6 +73,9 @@ struct fz_document_s {
 
         %}
         %pythonappend fz_document_s(const char *filename, char *stream=NULL, int streamlen=0) %{
+            if this:
+                self.openErrCode = self._getGCTXerrcode();
+                self.openErrMsg  = self._getGCTXerrmsg();
             if this and self.needsPass:
                 self.isEncrypted = 1
             # we won't init encrypted doc until it is decrypted
@@ -81,12 +88,12 @@ struct fz_document_s {
             fz_stream *data = NULL;
             if (streamlen > 0)
                 data = fz_open_memory(gctx, stream, streamlen);
-            fz_try(gctx)
+            fz_try(gctx) {
                 if (streamlen == 0)
                     doc = fz_open_document(gctx, filename);
                 else
                     doc = fz_open_document_with_stream(gctx, filename, data);
-
+            }
             fz_catch(gctx)
                 ;
             return doc;
@@ -113,7 +120,9 @@ struct fz_document_s {
         %exception loadPage {
             $action
             if(!result) {
-                PyErr_SetString(PyExc_Exception, "cannot loadPage");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -185,6 +194,17 @@ struct fz_document_s {
             return fz_needs_password(gctx, $self);
         }
 
+
+        int _getGCTXerrcode() {
+            return gctx->error->errcode;
+        }
+
+        char *_getGCTXerrmsg() {
+            char *value;
+            value = gctx->error->message;
+            return value;
+        }
+
         %pythonprepend authenticate(const char *pass) %{
             if self.isClosed:
                 raise ValueError("operation on closed document")
@@ -209,15 +229,25 @@ struct fz_document_s {
                 filename = filename.encode('utf8')
             else:
                 raise TypeError("filename must be a string")
-            if filename == self.name:
+            if filename == self.name and incremental == 0:
                 raise ValueError("cannot save to input file")
             if not self.name.lower().endswith(("/pdf", ".pdf")):
                 raise ValueError("can only save PDF files")
+            if incremental and (self.name != filename or self.streamlen > 0):
+                raise ValueError("incremental save to original file only")
+            if incremental and (garbage > 0 or linear > 0):
+                raise ValueError("incremental excludes garbage and linear")
+            if incremental and self.openErrCode > 0:
+                raise ValueError("error '%s' during open - save to new file" % (self.openErrMsg,))
+            if incremental and self.needsPass > 0:
+                raise ValueError("decrypted files must be saved to new file")
         %}
         %exception save {
             $action
             if(result) {
-                PyErr_SetString(PyExc_Exception, "cannot save Document");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -234,12 +264,14 @@ struct fz_document_s {
             opts.do_garbage = garbage;
             opts.do_linear = linear;
             opts.do_clean = clean;
-            opts.continue_on_error = 1;
+            opts.continue_on_error = 0;
             opts.errors = &errors;
             fz_try(gctx)
                 pdf_save_document(gctx, pdf, filename, &opts);
             fz_catch(gctx)
-                return -1;
+                if (gctx->error && gctx->error->errcode > FZ_ERROR_NONE) return gctx->error->errcode;
+                return errors;
+            if (gctx->error && gctx->error->errcode > FZ_ERROR_NONE) return gctx->error->errcode;
             return errors;
         }
 
@@ -429,7 +461,9 @@ struct fz_page_s {
         %exception run {
             $action
             if(result) {
-                PyErr_SetString(PyExc_Exception, "cannot run page");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -665,7 +699,9 @@ struct fz_pixmap_s
         %exception fz_pixmap_s {
             $action
             if(!result) {
-                PyErr_SetString(PyExc_Exception, "cannot create Pixmap");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -787,7 +823,9 @@ struct fz_pixmap_s
         %exception writePNG {
             $action
             if(result) {
-                PyErr_SetString(PyExc_Exception, "cannot writePNG");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -1448,7 +1486,9 @@ struct fz_display_list_s {
         %exception run {
             $action
             if(result) {
-                PyErr_SetString(PyExc_Exception, "cannot run display list");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -1733,7 +1773,9 @@ struct fz_stext_page_s {
         %exception extractText {
             $action
             if(!result) {
-                PyErr_SetString(PyExc_Exception, "cannot extract text");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -1758,7 +1800,9 @@ struct fz_stext_page_s {
         %exception extractXML {
             $action
             if(!result) {
-                PyErr_SetString(PyExc_Exception, "cannot extract XML text");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -1783,7 +1827,9 @@ struct fz_stext_page_s {
         %exception extractHTML {
             $action
             if(!result) {
-                PyErr_SetString(PyExc_Exception, "cannot extract HTML text");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -1808,7 +1854,9 @@ struct fz_stext_page_s {
         %exception extractJSON {
             $action
             if(!result) {
-                PyErr_SetString(PyExc_Exception, "cannot extract JSON text");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }

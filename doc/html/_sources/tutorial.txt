@@ -179,7 +179,7 @@ Output capabilities of MuPDF (such as PDF generation) have improved in version 1
 
 Re-arrange and Delete Pages
 ----------------------------------
-Method :meth:`Document.select()` accepts a list (or tuple) of integers as an argument. These integers must be in the range ``0 <= i < pageCount``. When executed, all pages not occurring in this list will be deleted. Pages that do occur will remain - **in the sequence specified and as many times as specified.**
+Method :meth:`Document.select()` accepts a list (or tuple) of integers as an argument. These integers must be in the range ``0 <= i < pageCount``. When executed, all pages not occurring in this list will be deleted. Pages that do occur will remain - **in the sequence specified and as many times as specified in this list.**
 
 So you can easily create sub-PDFs of the first / last 10 pages, only odd or even pages (for doing double-sided printing), pages that do (not) contain a certain text, ... whatever you may think of.
 
@@ -192,13 +192,15 @@ Save
 
 If the document had been successfully decrypted before, ``save()`` will automatically save a decrypted copy.
 
-If you altered the document via :meth:`Document.select()`, then the resulting document will be saved. Do specify option ``garbage=3`` (see below) if many pages have been omitted by ``select()``.
+If you altered the document via :meth:`Document.select()`, then the resulting document will be saved. Do specify option ``garbage=3`` (see below) if many pages have been omitted by ``select()`` (and you have not chosen to save to the original file).
 
-As part of ``save()``, some clean-up will take place:
+Since MuPDF 1.9, you can also write changes back to the original file by specifying ``incremental = True / 1`` (if no PDF structure problems exist in the document - decrypted files will also need to be saved to a new file). This option excludes the ``garbage`` and ``linear`` options, and the specified **filename must equal the original** one. This process is **extremely fast**, since any changes are **appended to the original file** - it will not be rewritten as a whole.
 
-If the document containes invalid or broken xrefs, the saved version will have them automatically corrected (thus making it readable by other Python PDF software, like `pdfrw <https://github.com/pmaupin/pdfrw>`_ or `PyPDF2 <http://mstamy2.github.io/PyPDF2>`_). In many cases, the saved version will also be smaller than the original.
+As part of ``save()``, some clean-up will always take place:
 
-:meth:`Document.save` now also supports all options of MuPDF's command line utility ``mutool clean``, see the following table (mutool clean option = "MCO").
+If the document containes invalid or broken xrefs, the saved version will have them automatically corrected (thus making it readable by other Python PDF software, like `pdfrw <https://github.com/pmaupin/pdfrw>`_ or `PyPDF2 <http://mstamy2.github.io/PyPDF2>`_). In many cases, the saved copy will also be smaller than the original.
+
+:meth:`Document.save` supports all options of MuPDF's command line utility ``mutool clean``, see the following table (mutool clean option = "MCO").
 
 ================== ======= ==================================================
 **Option**         **MCO** **Effect**
@@ -206,27 +208,27 @@ If the document containes invalid or broken xrefs, the saved version will have t
 garbage = 1         -g     garbage collect unused objects
 garbage = 2         -gg    in addition to 1, compact xref tables
 garbage = 3         -ggg   in addition to 2, merge duplicate objects
-clean = 1           -s     clean content streams (avoid or use with care!)
+clean = 1           -s     clean content streams
 deflate = 1         -z     deflate uncompressed streams
 ascii = 1           -a     convert data to ASCII format
 linear = 1          -l     create a linearized version (do not use yet)
 expand = 1          -i     decompress images
 expand = 2          -f     decompress fonts
 expand = 255        -d     decompress all
-incremental = 1     n/a    only save data that have changed (do not use yet)
+incremental = 1     n/a    only save data that have changed
 ================== ======= ==================================================
 
-Be ready to experiment a little if you want to fully exploit above options: like with ``mutool clean``, not all combinations may always work: there are just too many inconsistently constructed PDF files out there ...
+Be ready to experiment a little if you want to fully exploit above options: like with ``mutool clean``, not all combinations may always work: there are just too many ill-constructed PDF files out there ...
 
 We have found, that the fastest, yet very stable combination is ``mutool clean -ggg -z``, giving good compression results. In PyMuPDF this corresponds to ``doc.save(filename, garbage=3, deflate=1)``.
 
-In some cases, best compression factors result, if ``expand`` and ``deflate`` are used together, though they seem to be contradictory. This works, because MuPDF is forced to expand and then re-compress all objects, which will correct poor compressions during document creation.
+
 
 Close
 ======
 In some situations it is desirable to "close" a :ref:`Document` such that it becomes fully available again to the OS while your program is still running.
 
-This can be achieved by the :meth:`Document.close` method. Apart from closing the file, all buffer areas associated with the document will be freed. If the document has been created from memory data, no underlying file is opened by MuPDF, so only the buffer release will take place.
+This can be achieved by the :meth:`Document.close` method. Apart from closing the underlying file, buffer areas associated with the document will be freed. If the document has been created from memory data, no underlying file is opened by MuPDF, so only the buffer release will take place.
 
 .. CAUTION:: As with normal file objects, after close, the document and all objects referencing it will be invalid  and **must no longer be used**. This bindings protect against most such invalid uses by disabling properties and methods of the :ref:`Document` and any associated :meth:`Document.loadPage` objects.
 

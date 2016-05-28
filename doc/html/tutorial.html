@@ -310,7 +310,7 @@ You can write it&#8217;s image to files, extract text from it or search for text
 <p>Output capabilities of MuPDF (such as PDF generation) have improved in version 1.9. Output is supported for PDF documents only.</p>
 <div class="section" id="re-arrange-and-delete-pages">
 <h3>Re-arrange and Delete Pages<a class="headerlink" href="#re-arrange-and-delete-pages" title="Permalink to this headline">¶</a></h3>
-<p>Method <a class="reference internal" href="document.html#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a> accepts a list (or tuple) of integers as an argument. These integers must be in the range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>. When executed, all pages not occurring in this list will be deleted. Pages that do occur will remain - <strong>in the sequence specified and as many times as specified.</strong></p>
+<p>Method <a class="reference internal" href="document.html#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a> accepts a list (or tuple) of integers as an argument. These integers must be in the range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>. When executed, all pages not occurring in this list will be deleted. Pages that do occur will remain - <strong>in the sequence specified and as many times as specified in this list.</strong></p>
 <p>So you can easily create sub-PDFs of the first / last 10 pages, only odd or even pages (for doing double-sided printing), pages that do (not) contain a certain text, ... whatever you may think of.</p>
 <p>To make any such changes permanent, execute <a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> (see below) and then close / re-open the original document for any further processing.</p>
 <p>The saved document will contain all links, annotations and bookmarks referenced by its pages which still point to valid destinations.</p>
@@ -318,10 +318,11 @@ You can write it&#8217;s image to files, extract text from it or search for text
 <div class="section" id="save">
 <h3>Save<a class="headerlink" href="#save" title="Permalink to this headline">¶</a></h3>
 <p>If the document had been successfully decrypted before, <code class="docutils literal"><span class="pre">save()</span></code> will automatically save a decrypted copy.</p>
-<p>If you altered the document via <a class="reference internal" href="document.html#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a>, then the resulting document will be saved. Do specify option <code class="docutils literal"><span class="pre">garbage=3</span></code> (see below) if many pages have been omitted by <code class="docutils literal"><span class="pre">select()</span></code>.</p>
-<p>As part of <code class="docutils literal"><span class="pre">save()</span></code>, some clean-up will take place:</p>
-<p>If the document containes invalid or broken xrefs, the saved version will have them automatically corrected (thus making it readable by other Python PDF software, like <a class="reference external" href="https://github.com/pmaupin/pdfrw">pdfrw</a> or <a class="reference external" href="http://mstamy2.github.io/PyPDF2">PyPDF2</a>). In many cases, the saved version will also be smaller than the original.</p>
-<p><a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> now also supports all options of MuPDF&#8217;s command line utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>, see the following table (mutool clean option = &#8220;MCO&#8221;).</p>
+<p>If you altered the document via <a class="reference internal" href="document.html#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a>, then the resulting document will be saved. Do specify option <code class="docutils literal"><span class="pre">garbage=3</span></code> (see below) if many pages have been omitted by <code class="docutils literal"><span class="pre">select()</span></code> (and you have not chosen to save to the original file).</p>
+<p>Since MuPDF 1.9, you can also write changes back to the original file by specifying <code class="docutils literal"><span class="pre">incremental</span> <span class="pre">=</span> <span class="pre">True</span> <span class="pre">/</span> <span class="pre">1</span></code> (if no PDF structure problems exist in the document - decrypted files will also need to be saved to a new file). This option excludes the <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code> options, and the specified <strong>filename must equal the original</strong> one. This process is <strong>extremely fast</strong>, since any changes are <strong>appended to the original file</strong> - it will not be rewritten as a whole.</p>
+<p>As part of <code class="docutils literal"><span class="pre">save()</span></code>, some clean-up will always take place:</p>
+<p>If the document containes invalid or broken xrefs, the saved version will have them automatically corrected (thus making it readable by other Python PDF software, like <a class="reference external" href="https://github.com/pmaupin/pdfrw">pdfrw</a> or <a class="reference external" href="http://mstamy2.github.io/PyPDF2">PyPDF2</a>). In many cases, the saved copy will also be smaller than the original.</p>
+<p><a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> supports all options of MuPDF&#8217;s command line utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>, see the following table (mutool clean option = &#8220;MCO&#8221;).</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="24%" />
@@ -349,7 +350,7 @@ You can write it&#8217;s image to files, extract text from it or search for text
 </tr>
 <tr class="row-odd"><td>clean = 1</td>
 <td>-s</td>
-<td>clean content streams (avoid or use with care!)</td>
+<td>clean content streams</td>
 </tr>
 <tr class="row-even"><td>deflate = 1</td>
 <td>-z</td>
@@ -377,19 +378,18 @@ You can write it&#8217;s image to files, extract text from it or search for text
 </tr>
 <tr class="row-even"><td>incremental = 1</td>
 <td>n/a</td>
-<td>only save data that have changed (do not use yet)</td>
+<td>only save data that have changed</td>
 </tr>
 </tbody>
 </table>
-<p>Be ready to experiment a little if you want to fully exploit above options: like with <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>, not all combinations may always work: there are just too many inconsistently constructed PDF files out there ...</p>
+<p>Be ready to experiment a little if you want to fully exploit above options: like with <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>, not all combinations may always work: there are just too many ill-constructed PDF files out there ...</p>
 <p>We have found, that the fastest, yet very stable combination is <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span> <span class="pre">-ggg</span> <span class="pre">-z</span></code>, giving good compression results. In PyMuPDF this corresponds to <code class="docutils literal"><span class="pre">doc.save(filename,</span> <span class="pre">garbage=3,</span> <span class="pre">deflate=1)</span></code>.</p>
-<p>In some cases, best compression factors result, if <code class="docutils literal"><span class="pre">expand</span></code> and <code class="docutils literal"><span class="pre">deflate</span></code> are used together, though they seem to be contradictory. This works, because MuPDF is forced to expand and then re-compress all objects, which will correct poor compressions during document creation.</p>
 </div>
 </div>
 <div class="section" id="close">
 <h2>Close<a class="headerlink" href="#close" title="Permalink to this headline">¶</a></h2>
 <p>In some situations it is desirable to &#8220;close&#8221; a <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> such that it becomes fully available again to the OS while your program is still running.</p>
-<p>This can be achieved by the <a class="reference internal" href="document.html#Document.close" title="Document.close"><code class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></code></a> method. Apart from closing the file, all buffer areas associated with the document will be freed. If the document has been created from memory data, no underlying file is opened by MuPDF, so only the buffer release will take place.</p>
+<p>This can be achieved by the <a class="reference internal" href="document.html#Document.close" title="Document.close"><code class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></code></a> method. Apart from closing the underlying file, buffer areas associated with the document will be freed. If the document has been created from memory data, no underlying file is opened by MuPDF, so only the buffer release will take place.</p>
 <div class="admonition caution">
 <p class="first admonition-title">Caution</p>
 <p class="last">As with normal file objects, after close, the document and all objects referencing it will be invalid  and <strong>must no longer be used</strong>. This bindings protect against most such invalid uses by disabling properties and methods of the <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> and any associated <a class="reference internal" href="document.html#Document.loadPage" title="Document.loadPage"><code class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></code></a> objects.</p>
@@ -470,7 +470,7 @@ You can write it&#8217;s image to files, extract text from it or search for text
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 13. May 2016.
+      Last updated on 27. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

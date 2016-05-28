@@ -27,6 +27,8 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 :attr:`Document.isClosed`       has document been closed?
 :attr:`Document.outline`        first `Outline` item
 :attr:`Document.name`           filename of document
+:attr:`Document.openErrCode`    indicates structure problem during open
+:attr:`Document.openErrMsg`     contains an error message if openErrCode > 0
 :attr:`Document.needsPass`      require password to access data?
 :attr:`Document.isEncrypted`    is document still encrypted?
 :attr:`Document.pageCount`      the document's number of pages
@@ -152,12 +154,12 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
     .. method:: save(outfile, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0)
 
-      Saves a copy of the document under the name ``outfile``. Include path specifications as necessary. Only PDF documents are supported by this function. Internally the document may have changed. E.g. after a successfull ``authenticate``, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning of the document data could also have occurred, e.g. broken xref tables have been corrected and incremental changes have been resolved.
+      Saves a copy of the document under the name ``outfile``. Include path specifications as necessary. Only PDF documents are supported by this function. Internally the document may have changed. E.g. after a successfull ``authenticate``, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning of the document data could also have occurred, e.g. broken xref tables have been corrected and previous incremental changes have been resolved.
 
-      :param `outfile`: The file name to save to. Must be different from the original ``filename`` / ``filetype`` value or else a ValueError will be raised.
+      :param `outfile`: The file name to save to. Must be different from the original ``filename`` value if ``incremental = 0`` or else a ValueError will be raised. If saving incremental, then ``garbage`` and ``linear`` **must be zero** and ``outfile`` **must equal** the original filename.
       :type `outfile`: string
 
-      :param `garbage`: Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition compact xref tables, 3 = in addition merge duplicate objects.
+      :param `garbage`: Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition compact xref tables, 3 = in addition merge duplicate objects. Excludes ``incremental``.
       :type `garbage`: int
 
       :param `clean`: Clean content streams: 0 = False, 1 = True.
@@ -166,7 +168,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
       :param `deflate`: Deflate uncompressed streams: 0 = False, 1 = True.
       :type `deflate`: int
 
-      :param `incremental`: Only save changed objects: 0 = False, 1 = True.
+      :param `incremental`: Only save changed objects: 0 = False, 1 = True. Excludes ``garbage`` and ``linear``. Cannot be used for de- / encrypted files and for files that have invalid internal structures (``openErrCode > 0``). In such cases saving to a new file is required.
       :type `incremental`: int
 
       :param `ascii`: Where possible make the output ASCII: 0 = False, 1 = True.
@@ -175,7 +177,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
       :param `expand`: One byte bitfield to decompress contents: 0 = none, 1 = images, 2 = fonts, 255 = all. This convenience option generates a decompressed file version that can be better read by some other programs.
       :type `expand`: int
 
-      :param `linear`: Save a linearised version of the document: 0 = False, 1 = True. This option creates a file format for improved performance when read via internet connections.
+      :param `linear`: Save a linearised version of the document: 0 = False, 1 = True. This option creates a file format for improved performance when read via internet connections. Excludes ``incremental``.
       :type `linear`: int
 
       :rtype: int
@@ -225,7 +227,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       <TZ> is a time zone value (time intervall relative to GMT) containing a sign ('+' or '-'), the hour (``hh``), and the minute (``'mm'``, attention: enclose in apostrophies!).
 
-      E.g a Venezuelan value might look like ``D:20150415131602-04'30'``, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Venezuela.
+      E.g a Venezuelan value might look like ``D:20150415131602-04'00'``, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Venezuela.
 
       :rtype: dict
 
@@ -241,6 +243,18 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       :rtype: int
 
+    .. Attribute:: openErrCode
+
+      Shows whether issues had to be resolved while opening the document. If ``openErrCode > 0``, the attribute ``openErrMsg`` contains some explanantion. If an error occurred, any ``save()`` of the document must occur to a new file.
+
+      :rtype: int
+
+    .. Attribute:: pageErrMsg
+
+      Contains either an empty string or an error message if ``openErrCode > 0``.
+
+      :rtype: string
+
 Remarks on ``select()``
 ------------------------
 
@@ -250,7 +264,7 @@ You can execute several selections in a row. The document structure will be kept
 
 .. CAUTION:: This also means, that any document information from before this method must be assumed to be invalid. This is especially true for old page objects, table of contents and the ``pageCount`` property. If you plan to use the ``close()`` method, make sure you have deleted any page object created before (by ``page = None``).
 
-Any of those actions will become permanent only with a ``doc.save()``. If you have deleted pages, do not forget to specify the ``garbage=3`` option to eventually reduce the resulting document's size.
+Any of those actions will become permanent only with a ``doc.save()``. If you have deleted pages, do not forget to specify the ``garbage=3`` option to eventually reduce the resulting document's size (if you are saving to a new file).
 
 It should also be noted, that this method **preserves all links, annotations and bookmarks** that are still valid. In other words: deleting pages only deletes those references that would otherwise point to nowhere.
 
@@ -261,15 +275,17 @@ Create a document copy deleting pages with no text:
 ::
  import fitz
  doc = fitz.open("any.pdf")
- r = list(range(doc.pageCount))                 # list of all pages
+ r = list(range(doc.pageCount))             # list of all pages
 
  for p in fitz.Pages(doc):
-     if not p.getText():                        # contains no text
-         r.remove(p.number)                     # remove page number from list
-     p = None                                   # release page memory
+     if not p.getText():                    # contains no text
+         r.remove(p.number)                 # remove page number from list
+     p = None                               # release page memory
 
- doc.select(r)                                  # apply the list
- doc.save("out.pdf", garbage=3)                 # save the resulting PDF
+ doc.select(r)                              # apply the list
+ doc.save("out.pdf", garbage=3)             # save the resulting PDF, OR
+ # overwrite the original document ... *** VERY FAST! ***
+ doc.save("any.pdf", incremental = 1)       # excludes garbage collection
 
 
 Create a sub document with the odd pages:
@@ -277,8 +293,8 @@ Create a sub document with the odd pages:
  import fitz
  doc = fitz.open("any.pdf")
  r = [i for i in list(range(doc.pageCount)) if i%2 > 0]
- doc.select(r)                                  # apply the list
- doc.save("any-odd.pdf", garbage=3)             # save PDF with the odd pages
+ doc.select(r)                              # apply the list
+ doc.save("any-oddpages.pdf", garbage=3)    # save PDF with the odd pages
 
 
 Concatenate a document with itself:
@@ -286,9 +302,9 @@ Concatenate a document with itself:
  import fitz
  doc = fitz.open("any.pdf")
  r = list(range(doc.pageCount))
- r += r                                         # turn PDF into a copy of itself
+ r += r                                     # turn PDF into a copy of itself
  doc.select(r)
- doc.save("out.pdf")                            # contains pages 0,...,n,0,...,n of <any.pdf>
+ doc.save("any-any.pdf")                    # contains doubled content <any.pdf>
 
 Create document copy in reverse page order (well, don't try with a million pages):
 ::

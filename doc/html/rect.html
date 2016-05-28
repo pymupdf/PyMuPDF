@@ -47,6 +47,15 @@
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Rect</a><ul>
+<li><a class="reference internal" href="#rect-arithmetics">Rect Arithmetics</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="point.html"
                         title="previous chapter">Point</a></p>
@@ -82,7 +91,8 @@
 <span id="id1"></span><h1>Rect<a class="headerlink" href="#rect" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal"><span class="pre">Rect</span></code> represents a rectangle defined by its top left and its bottom right <a class="reference internal" href="point.html#point"><span class="std std-ref">Point</span></a> objects, in coordinates: ((x0, y0), (x1, y1)). Respectively, a rectangle can be defined in one of the four ways: as a pair of <a class="reference internal" href="point.html#point"><span class="std std-ref">Point</span></a> objects, as a tuple of four coordinates, or as an arbitrary combination of these.</p>
 <p>Rectangle borders are always in parallel with the respective X- and Y-axes.
-A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is true, else &#8220;infinite&#8221;.</p>
+A rectangle is called <em>finite</em> if x0 &lt;= x1 and y0 &lt;= y1 is true, else <em>infinite</em>.</p>
+<p>A rectangle is called <em>empty</em> if x0 = x1 or y0 = y1, i.e. if its area is zero.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="35%" />
@@ -155,13 +165,20 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
 <dl class="method">
 <dt>
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>x0</em>, <em>y0</em>, <em>p2</em><span class="sig-paren">)</span></dt>
-<dd><p>Overloaded constructors: p1, p2 stand for <a class="reference internal" href="point.html#point"><span class="std std-ref">Point</span></a> objects, while the other parameters mean float coordinates.</p>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>r</em><span class="sig-paren">)</span></dt>
+<dd><p>Overloaded constructors: <code class="docutils literal"><span class="pre">p1</span></code>, <code class="docutils literal"><span class="pre">p2</span></code> stand for <a class="reference internal" href="point.html#point"><span class="std std-ref">Point</span></a> objects, <code class="docutils literal"><span class="pre">r</span></code> means another rectangle, while the other parameters mean float coordinates.</p>
+<blockquote>
+<div>If <code class="docutils literal"><span class="pre">r</span></code> is specified, the constructor creates a <strong>new copy</strong> of <code class="docutils literal"><span class="pre">r</span></code>.</div></blockquote>
 </dd></dl>
 
 <dl class="method">
 <dt id="Rect.round">
 <code class="descname">round</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Rect.round" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates the smallest <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> that contains <code class="docutils literal"><span class="pre">Rect</span></code>. This is <strong>not</strong> simply the same as rounding each of the rectangle&#8217;s coordinates! Look at the example below.</p>
+<dd><p>Creates the smallest <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> containing <code class="docutils literal"><span class="pre">Rect</span></code>. This is <strong>not</strong> the same as simply rounding each of the rectangle&#8217;s coordinates! Look at the example below.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -330,39 +347,63 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
 
 </dd></dl>
 
+<div class="section" id="rect-arithmetics">
+<h2>Rect Arithmetics<a class="headerlink" href="#rect-arithmetics" title="Permalink to this headline">¶</a></h2>
+<p>A number of arithmetics operations have been defined for the <code class="docutils literal"><span class="pre">Rect</span></code> class.</p>
+<ul class="simple">
+<li><strong>Addition:</strong> <code class="docutils literal"><span class="pre">r</span> <span class="pre">+</span> <span class="pre">x</span></code> where <code class="docutils literal"><span class="pre">r</span></code> is a <code class="docutils literal"><span class="pre">Rect</span></code> and <code class="docutils literal"><span class="pre">x</span></code> can be a <code class="docutils literal"><span class="pre">Rect</span></code>, <code class="docutils literal"><span class="pre">IRect</span></code> or a number. The result is a new <code class="docutils literal"><span class="pre">Rect</span></code> with added components of the operands. If <code class="docutils literal"><span class="pre">x</span></code> is a number, it is added to all components of <code class="docutils literal"><span class="pre">r</span></code>.</li>
+<li><strong>Subtraction:</strong> analogous to addition.</li>
+<li><strong>Negation:</strong> <code class="docutils literal"><span class="pre">-r</span></code> is a new <code class="docutils literal"><span class="pre">Rect</span></code> with negated components of <code class="docutils literal"><span class="pre">r</span></code>.</li>
+<li><strong>Inclusion:</strong> <code class="docutils literal"><span class="pre">r</span> <span class="pre">|</span> <span class="pre">x</span></code> is the new <code class="docutils literal"><span class="pre">Rect</span></code> that also includes <code class="docutils literal"><span class="pre">x</span></code>, which can be an <code class="docutils literal"><span class="pre">IRect</span></code>, <code class="docutils literal"><span class="pre">Rect</span></code> or <code class="docutils literal"><span class="pre">Point</span></code>.</li>
+<li><strong>Intersection:</strong> <code class="docutils literal"><span class="pre">r</span> <span class="pre">&amp;</span> <span class="pre">x</span></code> is a new <code class="docutils literal"><span class="pre">Rect</span></code> containing the area common to <code class="docutils literal"><span class="pre">r</span></code> and <code class="docutils literal"><span class="pre">x</span></code> which can be an <code class="docutils literal"><span class="pre">IRect</span></code> or <code class="docutils literal"><span class="pre">Rect</span></code>.</li>
+<li><strong>Multiplication:</strong> <code class="docutils literal"><span class="pre">r</span> <span class="pre">*</span> <span class="pre">m</span></code> is a new <code class="docutils literal"><span class="pre">Rect</span></code> containing <code class="docutils literal"><span class="pre">r</span></code> transformed with matrix <code class="docutils literal"><span class="pre">m</span></code>.</li>
+</ul>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p><strong>Example 1:</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Python</span> <span class="mf">2.7</span><span class="o">.</span><span class="mi">9</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">Dec</span> <span class="mi">10</span> <span class="mi">2014</span><span class="p">,</span> <span class="mi">12</span><span class="p">:</span><span class="mi">24</span><span class="p">:</span><span class="mi">55</span><span class="p">)</span> <span class="p">[</span><span class="n">MSC</span> <span class="n">v</span><span class="o">.</span><span class="mi">1500</span> <span class="mi">32</span> <span class="n">bit</span> <span class="p">(</span><span class="n">Intel</span><span class="p">)]</span> <span class="n">on</span> <span class="n">win32</span>
-<span class="n">Type</span> <span class="s2">&quot;copyright&quot;</span><span class="p">,</span> <span class="s2">&quot;credits&quot;</span> <span class="ow">or</span> <span class="s2">&quot;license()&quot;</span> <span class="k">for</span> <span class="n">more</span> <span class="n">information</span><span class="o">.</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">fitz</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">p1</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">p2</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">450</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
-<span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="mf">450.0</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">450</span><span class="p">)</span>
-<span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="mf">450.0</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
-<span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="mf">450.0</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">450</span><span class="p">)</span>
-<span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">,</span> <span class="mf">450.0</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p1</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p2</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">450</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
+<span class="go">fitz.Rect(10.0, 10.0, 300.0, 450.0)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">450</span><span class="p">)</span>
+<span class="go">fitz.Rect(10.0, 10.0, 300.0, 450.0)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
+<span class="go">fitz.Rect(10.0, 10.0, 300.0, 450.0)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">450</span><span class="p">)</span>
+<span class="go">fitz.Rect(10.0, 10.0, 300.0, 450.0)</span>
+<span class="go">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
 <p><strong>Example 2:</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Python</span> <span class="mf">2.7</span><span class="o">.</span><span class="mi">9</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">Dec</span> <span class="mi">10</span> <span class="mi">2014</span><span class="p">,</span> <span class="mi">12</span><span class="p">:</span><span class="mi">24</span><span class="p">:</span><span class="mi">55</span><span class="p">)</span> <span class="p">[</span><span class="n">MSC</span> <span class="n">v</span><span class="o">.</span><span class="mi">1500</span> <span class="mi">32</span> <span class="n">bit</span> <span class="p">(</span><span class="n">Intel</span><span class="p">)]</span> <span class="n">on</span> <span class="n">win32</span>
-<span class="n">Type</span> <span class="s2">&quot;copyright&quot;</span><span class="p">,</span> <span class="s2">&quot;credits&quot;</span> <span class="ow">or</span> <span class="s2">&quot;license()&quot;</span> <span class="k">for</span> <span class="n">more</span> <span class="n">information</span><span class="o">.</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">fitz</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">r</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">123.88</span><span class="p">,</span> <span class="mf">455.123456</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">r</span>
-<span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.009999999776482582</span><span class="p">,</span> <span class="mf">123.87999725341797</span><span class="p">,</span> <span class="mf">455.1234436035156</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">r</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
-<span class="n">fitz</span><span class="o">.</span><span class="n">IRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">124</span><span class="p">,</span> <span class="mi">456</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">123.88</span><span class="p">,</span> <span class="mf">455.123456</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span>
+<span class="go">fitz.Rect(0.5, -0.009999999776482582, 123.87999725341797, 455.1234436035156)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
+<span class="go">fitz.IRect(0, -1, 124, 456)</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p><strong>Example 3:</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">410</span><span class="p">,</span> <span class="mi">610</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">*</span> <span class="n">m</span>
+<span class="go">fitz.Rect(-424.2640686035156, 14.142135620117188, 282.84271240234375, 721.2489013671875)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">|</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="go">fitz.Rect(5.0, 5.0, 410.0, 610.0)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">+</span> <span class="mi">5</span>
+<span class="go">fitz.Rect(15.0, 15.0, 415.0, 615.0)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">&amp;</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<span class="go">fitz.Rect(10.0, 10.0, 15.0, 15.0)</span>
 </pre></div>
 </div>
 <p>As can be seen, all of the following evaluate to <code class="docutils literal"><span class="pre">True</span></code>:</p>
@@ -372,6 +413,7 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
 <li><code class="docutils literal"><span class="pre">r.round().x1</span> <span class="pre">==</span> <span class="pre">int(math.ceil(r.x1))</span></code></li>
 <li><code class="docutils literal"><span class="pre">r.round().y1</span> <span class="pre">==</span> <span class="pre">int(math.ceil(r.y1))</span></code>.</li>
 </ul>
+</div>
 </div>
 
 
@@ -398,7 +440,7 @@ A rectangle is called &#8220;finite&#8221; if x0 &lt;= x1 and y0 &lt;= y1 is tru
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 22. May 2016.
+      Last updated on 26. May 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

@@ -3039,6 +3039,7 @@ static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
 void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page);
 
 
+
     fz_context *gctx;
 
 struct DeviceWrapper {
@@ -3649,12 +3650,12 @@ SWIGINTERN struct fz_document_s *new_fz_document_s(char const *filename,char *st
             fz_stream *data = NULL;
             if (streamlen > 0)
                 data = fz_open_memory(gctx, stream, streamlen);
-            fz_try(gctx)
+            fz_try(gctx) {
                 if (streamlen == 0)
                     doc = fz_open_document(gctx, filename);
                 else
                     doc = fz_open_document_with_stream(gctx, filename, data);
-
+            }
             fz_catch(gctx)
                 ;
             return doc;
@@ -3742,6 +3743,14 @@ SWIG_FromCharPtr(const char *cptr)
 SWIGINTERN int fz_document_s__needsPass(struct fz_document_s *self){
             return fz_needs_password(gctx, self);
         }
+SWIGINTERN int fz_document_s__getGCTXerrcode(struct fz_document_s *self){
+            return gctx->error->errcode;
+        }
+SWIGINTERN char *fz_document_s__getGCTXerrmsg(struct fz_document_s *self){
+            char *value;
+            value = gctx->error->message;
+            return value;
+        }
 SWIGINTERN int fz_document_s_authenticate(struct fz_document_s *self,char const *pass){
             return fz_authenticate_password(gctx, self, pass);
         }
@@ -3758,12 +3767,14 @@ SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename,int 
             opts.do_garbage = garbage;
             opts.do_linear = linear;
             opts.do_clean = clean;
-            opts.continue_on_error = 1;
+            opts.continue_on_error = 0;
             opts.errors = &errors;
             fz_try(gctx)
                 pdf_save_document(gctx, pdf, filename, &opts);
             fz_catch(gctx)
-                return -1;
+                if (gctx->error && gctx->error->errcode > FZ_ERROR_NONE) return gctx->error->errcode;
+                return errors;
+            if (gctx->error && gctx->error->errcode > FZ_ERROR_NONE) return gctx->error->errcode;
             return errors;
         }
 SWIGINTERN int fz_document_s__select(struct fz_document_s *self,int *liste,int argc){
@@ -4681,7 +4692,9 @@ SWIGINTERN PyObject *_wrap_new_Document(PyObject *SWIGUNUSEDPARM(self), PyObject
   {
     result = (struct fz_document_s *)new_fz_document_s((char const *)arg1,arg2,arg3);
     if(!result) {
-      PyErr_SetString(PyExc_Exception, "cannot create Document");
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
       return NULL;
     }
   }
@@ -4743,7 +4756,9 @@ SWIGINTERN PyObject *_wrap_Document_loadPage(PyObject *SWIGUNUSEDPARM(self), PyO
   {
     result = (struct fz_page_s *)fz_document_s_loadPage(arg1,arg2);
     if(!result) {
-      PyErr_SetString(PyExc_Exception, "cannot loadPage");
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
       return NULL;
     }
   }
@@ -4878,6 +4893,50 @@ SWIGINTERN PyObject *_wrap_Document__needsPass(PyObject *SWIGUNUSEDPARM(self), P
   arg1 = (struct fz_document_s *)(argp1);
   result = (int)fz_document_s__needsPass(arg1);
   resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document__getGCTXerrcode(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Document__getGCTXerrcode",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__getGCTXerrcode" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  result = (int)fz_document_s__getGCTXerrcode(arg1);
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document__getGCTXerrmsg(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Document__getGCTXerrmsg",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__getGCTXerrmsg" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  result = (char *)fz_document_s__getGCTXerrmsg(arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
   return resultobj;
 fail:
   return NULL;
@@ -5022,7 +5081,9 @@ SWIGINTERN PyObject *_wrap_Document_save(PyObject *SWIGUNUSEDPARM(self), PyObjec
   {
     result = (int)fz_document_s_save(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9);
     if(result) {
-      PyErr_SetString(PyExc_Exception, "cannot save Document");
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
       return NULL;
     }
   }
@@ -5307,7 +5368,9 @@ SWIGINTERN PyObject *_wrap_Page_run(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
   {
     result = (int)fz_page_s_run(arg1,arg2,(struct fz_matrix_s const *)arg3);
     if(result) {
-      PyErr_SetString(PyExc_Exception, "cannot run page");
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
       return NULL;
     }
   }
@@ -6984,7 +7047,9 @@ SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_0(PyObject *SWIGUNUSEDPARM(self), Py
   {
     result = (struct fz_pixmap_s *)new_fz_pixmap_s__SWIG_0(arg1,(struct fz_irect_s const *)arg2);
     if(!result) {
-      PyErr_SetString(PyExc_Exception, "cannot create Pixmap");
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
       return NULL;
     }
   }
@@ -7040,7 +7105,9 @@ SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_1(PyObject *SWIGUNUSEDPARM(self), Py
   {
     result = (struct fz_pixmap_s *)new_fz_pixmap_s__SWIG_1(arg1,arg2,arg3,arg4);
     if(!result) {
-      PyErr_SetString(PyExc_Exception, "cannot create Pixmap");
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
       return NULL;
     }
   }
@@ -7071,7 +7138,9 @@ SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_2(PyObject *SWIGUNUSEDPARM(self), Py
   {
     result = (struct fz_pixmap_s *)new_fz_pixmap_s__SWIG_2(arg1);
     if(!result) {
-      PyErr_SetString(PyExc_Exception, "cannot create Pixmap");
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
       return NULL;
     }
   }
@@ -7111,7 +7180,9 @@ SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_3(PyObject *SWIGUNUSEDPARM(self), Py
   {
     result = (struct fz_pixmap_s *)new_fz_pixmap_s__SWIG_3(arg1,arg2);
     if(!result) {
-      PyErr_SetString(PyExc_Exception, "cannot create Pixmap");
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
       return NULL;
     }
   }
@@ -7533,7 +7604,9 @@ SWIGINTERN PyObject *_wrap_Pixmap_writePNG(PyObject *SWIGUNUSEDPARM(self), PyObj
   {
     result = (int)fz_pixmap_s_writePNG(arg1,arg2,arg3);
     if(result) {
-      PyErr_SetString(PyExc_Exception, "cannot writePNG");
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
       return NULL;
     }
   }
@@ -9927,7 +10000,9 @@ SWIGINTERN PyObject *_wrap_DisplayList_run(PyObject *SWIGUNUSEDPARM(self), PyObj
   {
     result = (int)fz_display_list_s_run(arg1,arg2,(struct fz_matrix_s const *)arg3,(struct fz_rect_s const *)arg4);
     if(result) {
-      PyErr_SetString(PyExc_Exception, "cannot run display list");
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
       return NULL;
     }
   }
@@ -10158,7 +10233,9 @@ SWIGINTERN PyObject *_wrap_TextPage_extractText(PyObject *SWIGUNUSEDPARM(self), 
   {
     result = (struct fz_buffer_s *)fz_stext_page_s_extractText(arg1);
     if(!result) {
-      PyErr_SetString(PyExc_Exception, "cannot extract text");
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
       return NULL;
     }
   }
@@ -10189,7 +10266,9 @@ SWIGINTERN PyObject *_wrap_TextPage_extractXML(PyObject *SWIGUNUSEDPARM(self), P
   {
     result = (struct fz_buffer_s *)fz_stext_page_s_extractXML(arg1);
     if(!result) {
-      PyErr_SetString(PyExc_Exception, "cannot extract XML text");
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
       return NULL;
     }
   }
@@ -10220,7 +10299,9 @@ SWIGINTERN PyObject *_wrap_TextPage_extractHTML(PyObject *SWIGUNUSEDPARM(self), 
   {
     result = (struct fz_buffer_s *)fz_stext_page_s_extractHTML(arg1);
     if(!result) {
-      PyErr_SetString(PyExc_Exception, "cannot extract HTML text");
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
       return NULL;
     }
   }
@@ -10251,7 +10332,9 @@ SWIGINTERN PyObject *_wrap_TextPage_extractJSON(PyObject *SWIGUNUSEDPARM(self), 
   {
     result = (struct fz_buffer_s *)fz_stext_page_s_extractJSON(arg1);
     if(!result) {
-      PyErr_SetString(PyExc_Exception, "cannot extract JSON text");
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
       return NULL;
     }
   }
@@ -10282,6 +10365,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document__getPageCount", _wrap_Document__getPageCount, METH_VARARGS, (char *)"Document__getPageCount(Document self) -> int"},
 	 { (char *)"Document__getMetadata", _wrap_Document__getMetadata, METH_VARARGS, (char *)"Document__getMetadata(Document self, char const * key) -> char *"},
 	 { (char *)"Document__needsPass", _wrap_Document__needsPass, METH_VARARGS, (char *)"Document__needsPass(Document self) -> int"},
+	 { (char *)"Document__getGCTXerrcode", _wrap_Document__getGCTXerrcode, METH_VARARGS, (char *)"Document__getGCTXerrcode(Document self) -> int"},
+	 { (char *)"Document__getGCTXerrmsg", _wrap_Document__getGCTXerrmsg, METH_VARARGS, (char *)"Document__getGCTXerrmsg(Document self) -> char *"},
 	 { (char *)"Document_authenticate", _wrap_Document_authenticate, METH_VARARGS, (char *)"Document_authenticate(Document self, char const * arg3) -> int"},
 	 { (char *)"Document_save", _wrap_Document_save, METH_VARARGS, (char *)"Document_save(Document self, char * filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) -> int"},
 	 { (char *)"Document__select", _wrap_Document__select, METH_VARARGS, (char *)"Document__select(Document self, int * liste) -> int"},

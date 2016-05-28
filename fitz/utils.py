@@ -582,6 +582,8 @@ class Pages():
 # arithmetic methods for fitz.Matrix
 #==============================================================================
 def mat_mult(m1, m2):     # __mul__
+    if not repr(m2).startswith(("fitz.Matrix", "fitz.Identity")):
+        raise NotImplementedError
     m = fitz.Matrix()
     m.concat(m1, m2)
     return m
@@ -592,6 +594,8 @@ def mat_invert(m1):       # __invert__
     return m
 
 def mat_add(m1, m2):      # __add__
+    if not repr(m2).startswith(("fitz.Matrix", "fitz.Identity")):
+        raise NotImplementedError
     m = fitz.Matrix()
     m.a = m1.a + m2.a
     m.b = m1.b + m2.b
@@ -602,6 +606,8 @@ def mat_add(m1, m2):      # __add__
     return m
 
 def mat_sub(m1, m2):      # __sub__
+    if not repr(m2).startswith(("fitz.Matrix", "fitz.Identity")):
+        raise NotImplementedError
     m = fitz.Matrix()
     m.a = m1.a - m2.a
     m.b = m1.b - m2.b
@@ -629,3 +635,186 @@ def mat_true(m):          # __nonzero__
     a = m.a**2 + m.b**2 + m.c**2 + m.d**2 + m.e**2 + m.f**2
     return a > 0.0
 
+#==============================================================================
+# arithmetic methods for fitz.Rect
+#==============================================================================
+def rect_neg(r):             # __neg__: (-1)*r, also for irect
+    if repr(r).startswith("fitz.Rect"):
+        nr = fitz.Rect(r)
+    else:
+        nr = fitz.IRect(r)
+    nr.x0 *= -1
+    nr.y0 *= -1
+    nr.x1 *= -1
+    nr.y1 *= -1
+    return nr
+
+def rect_or(r1, r2):         # __or__: include point, rect or irect
+    if not repr(r1).startswith("fitz.Rect"):
+        raise NotImplementedError
+    if not repr(r2).startswith(("fitz.Rect", "fitz.IRect", "fitz.Point")):
+        raise NotImplementedError
+    r = fitz.Rect(r1)
+    if repr(r2).startswith("fitz.Rect"):
+        return r.includeRect(r2)
+    elif repr(r2).startswith("fitz.IRect"):
+        return r.includeRect(r2.getRect())
+    return r.includePoint(r2)
+    
+def rect_and(r1, r2):        # __and__: intersection with rect or irect
+    if not repr(r1).startswith("fitz.Rect"):
+        raise NotImplementedError
+    if not repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
+        raise NotImplementedError
+    r = fitz.Rect(r1)
+    if repr(r2).startswith("fitz.Rect"):
+        return r.intersect(r2)
+    if repr(r2).startswith("fitz.IRect"):
+        return r.intersect(r2.getRect())
+    raise NotImplementedError
+        
+def rect_add(r1, r2):        # __add__: add number, rect or irect to rect
+    if not repr(r1).startswith("fitz.Rect"):
+        raise NotImplementedError
+    r = fitz.Rect(r1)
+    if repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
+        a = r2
+    elif isinstance(r2, numbers.Integral) or isinstance(r, numbers.Real):
+        a = fitz.Rect(r2, r2, r2, r2)
+    else:
+        raise NotImplementedError
+    r.x0 += a.x0
+    r.y0 += a.y0
+    r.x1 += a.x1
+    r.y1 += a.y1
+    return r
+    
+def rect_sub(r1, r2):        # __sub__: subtract number, rect or irect from rect
+    if not repr(r1).startswith("fitz.Rect"):
+        raise NotImplementedError
+    r = fitz.Rect(r1)
+    if repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
+        a = r2
+    elif isinstance(r2, numbers.Integral) or isinstance(r, numbers.Real):
+        a = fitz.Rect(r2, r2, r2, r2)
+    else:
+        raise NotImplementedError
+    r.x0 -= a.x0
+    r.y0 -= a.y0
+    r.x1 -= a.x1
+    r.y1 -= a.y1
+    return r
+    
+def rect_mul(r, m):          # __mul__: transform with matrix
+    if not repr(r).startswith("fitz.Rect"):
+        raise NotImplementedError
+    if not repr(m).startswith(("fitz.Matrix", "fitz.Identity")):
+        raise NotImplementedError
+    r1 = fitz.Rect(r)
+    return r1.transform(m)
+    
+#==============================================================================
+# arithmetic methods for fitz.IRect
+#==============================================================================
+def irect_or(r1, r2):        # __or__: include point, rect or irect
+    if not repr(r1).startswith("fitz.IRect"):
+        raise NotImplementedError
+    if not repr(r2).startswith(("fitz.Rect", "fitz.IRect", "fitz.Point")):
+        raise NotImplementedError
+    r = r1.getRect()
+    if repr(r2).startswith("fitz.Rect"):
+        return r.includeRect(r2).round()
+    elif repr(r2).startswith("fitz.IRect"):
+        return r.includeRect(r2.getRect()).round()
+    return r.includePoint(r2).round()
+    
+def irect_and(r1, r2):       # __and__: intersection with rect or irect
+    if not repr(r1).startswith("fitz.IRect"):
+        raise NotImplementedError
+    if not repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
+        raise NotImplementedError
+    r = fitz.IRect(r1)
+    if repr(r2).startswith("fitz.Rect"):
+        return r.intersect(r2).round()
+    if repr(r2).startswith("fitz.IRect"):
+        return r.intersect(r2)
+    raise NotImplementedError
+        
+def irect_add(r1, r2):       # __add__: add number, rect or irect
+    if not repr(r1).startswith("fitz.IRect"):
+        raise NotImplementedError
+    r = r1.getRect()
+    if repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
+        a = r2
+    elif isinstance(r2, numbers.Integral) or isinstance(r2, numbers.Real):
+        a = fitz.Rect(r2, r2, r2, r2)
+    else:
+        raise NotImplementedError
+    r.x0 += a.x0
+    r.y0 += a.y0
+    r.x1 += a.x1
+    r.y1 += a.y1
+    return r.round()
+    
+def irect_sub(r1, r2):       # __sub__: subtract number, rect or irect
+    if not repr(r1).startswith("fitz.IRect"):
+        raise NotImplementedError
+    r = r1.getRect()
+    if repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
+        a = r2
+    elif isinstance(r2, numbers.Integral) or isinstance(r2, numbers.Real):
+        a = fitz.Rect(r2, r2, r2, r2)
+    else:
+        raise NotImplementedError
+    r.x0 -= a.x0
+    r.y0 -= a.y0
+    r.x1 -= a.x1
+    r.y1 -= a.y1
+    return r.round()
+    
+def irect_mul(r, m):         # __mul__: transform with matrix
+    if not repr(r).startswith("fitz.IRect"):
+        raise NotImplementedError
+    if not repr(m).startswith(("fitz.Matrix", "fitz.Identity")):
+        raise NotImplementedError
+    r1 = r.getRect()
+    return r1.transform(m).round()
+    
+#==============================================================================
+# arithmetic methods for fitz.Point
+#==============================================================================
+def point_neg(p):            # __neg__: point with negated coordinates
+    return fitz.Point(-p.x, -p.y)
+    
+def point_add(p1, p2):
+    if not repr(p1).startswith("fitz.Point"):
+        raise NotImplementedError
+    if repr(p2).startswith("fitz.Point"):
+        p = p2
+    elif isinstance(p2, numbers.Integral) or isinstance(p2, numbers.Real):
+        p = fitz.Point(p2, p2)
+    else:
+        raise NotImplementedError
+    return fitz.Point(p1.x + p.x, p1.y + p.y)
+    
+def point_sub(p1, p2):
+    if not repr(p1).startswith("fitz.Point"):
+        raise NotImplementedError
+    if repr(p2).startswith("fitz.Point"):
+        p = p2
+    elif isinstance(p2, numbers.Integral) or isinstance(p2, numbers.Real):
+        p = fitz.Point(p2, p2)
+    else:
+        raise NotImplementedError
+    return fitz.Point(p1.x - p.x, p1.y - p.y)
+
+def point_mul(p, m):
+    if not repr(p).startswith("fitz.Point"):
+        raise NotImplementedError
+    if not repr(m).startswith(("fitz.Matrix", "fitz.Identity")):
+        raise NotImplementedError
+    p1 = fitz.Point(p)
+    return p1.transform(m)
+
+def point_abs(p):
+    return math.sqrt(p.x**2 + p.y**2)

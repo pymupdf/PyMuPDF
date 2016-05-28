@@ -94,7 +94,7 @@ except AttributeError:
 import os                     
 VersionFitz = "1.9a"          
 VersionBind = "1.9.1"         
-VersionDate = "2016-05-24 11:48:23"        
+VersionDate = "2016-05-27 17:24:52"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -130,6 +130,9 @@ class Document(_object):
         except Exception:
             self.this = this
 
+        if this:
+            self.openErrCode = self._getGCTXerrcode();
+            self.openErrMsg  = self._getGCTXerrmsg();
         if this and self.needsPass:
             self.isEncrypted = 1
         # we won't init encrypted doc until it is decrypted
@@ -223,6 +226,16 @@ class Document(_object):
         return _fitz.Document__needsPass(self)
 
 
+    def _getGCTXerrcode(self):
+        """_getGCTXerrcode(Document self) -> int"""
+        return _fitz.Document__getGCTXerrcode(self)
+
+
+    def _getGCTXerrmsg(self):
+        """_getGCTXerrmsg(Document self) -> char *"""
+        return _fitz.Document__getGCTXerrmsg(self)
+
+
     def authenticate(self, arg2):
         """authenticate(Document self, char const * arg2) -> int"""
 
@@ -251,10 +264,18 @@ class Document(_object):
             filename = filename.encode('utf8')
         else:
             raise TypeError("filename must be a string")
-        if filename == self.name:
+        if filename == self.name and incremental == 0:
             raise ValueError("cannot save to input file")
         if not self.name.lower().endswith(("/pdf", ".pdf")):
             raise ValueError("can only save PDF files")
+        if incremental and (self.name != filename or self.streamlen > 0):
+            raise ValueError("incremental save to original file only")
+        if incremental and (garbage > 0 or linear > 0):
+            raise ValueError("incremental excludes garbage and linear")
+        if incremental and self.openErrCode > 0:
+            raise ValueError("error '%s' during open - save to new file" % (self.openErrMsg,))
+        if incremental and self.needsPass > 0:
+            raise ValueError("decrypted files must be saved to new file")
 
 
         return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear)

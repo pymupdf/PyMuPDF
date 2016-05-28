@@ -55,6 +55,7 @@ fitz.Pixmap.writeImage      = fitz.utils.writeImage
 fitz.Rect.getRectArea       = fitz.utils.getRectArea
 fitz.IRect.getRectArea      = fitz.utils.getRectArea
 getPointDistance            = fitz.utils.getPointDistance
+# matrix arithmetics
 fitz.Matrix.__mul__         = fitz.utils.mat_mult
 fitz.Matrix.__add__         = fitz.utils.mat_add
 fitz.Matrix.__sub__         = fitz.utils.mat_sub
@@ -62,6 +63,27 @@ fitz.Matrix.__abs__         = fitz.utils.mat_abs
 fitz.Matrix.__neg__         = fitz.utils.mat_neg
 fitz.Matrix.__invert__      = fitz.utils.mat_invert
 fitz.Matrix.__nonzero__     = fitz.utils.mat_true
+# rect arithmetics
+fitz.Rect.__neg__           = fitz.utils.rect_neg
+fitz.Rect.__or__            = fitz.utils.rect_or
+fitz.Rect.__and__           = fitz.utils.rect_and
+fitz.Rect.__add__           = fitz.utils.rect_add
+fitz.Rect.__sub__           = fitz.utils.rect_sub
+fitz.Rect.__mul__           = fitz.utils.rect_mul
+# irect arithmetics
+fitz.IRect.__neg__          = fitz.utils.rect_neg
+fitz.IRect.__or__           = fitz.utils.irect_or
+fitz.IRect.__and__          = fitz.utils.irect_and
+fitz.IRect.__add__          = fitz.utils.irect_add
+fitz.IRect.__sub__          = fitz.utils.irect_sub
+fitz.IRect.__mul__          = fitz.utils.irect_mul
+# point arithmetics
+fitz.Point.__neg__          = fitz.utils.point_neg
+fitz.Point.__add__          = fitz.utils.point_add
+fitz.Point.__sub__          = fitz.utils.point_sub
+fitz.Point.__abs__          = fitz.utils.point_abs
+fitz.Point.__mul__          = fitz.utils.point_mul
+
 
 # ... and delete them from here
 del utils
