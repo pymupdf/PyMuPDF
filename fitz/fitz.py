@@ -115,7 +115,7 @@ class Document(_object):
         else:
             raise TypeError("filename must be a string")
         if not os.path.exists(filename) and streamlen == 0:
-            raise IOError("no such file: '%s'" % (filename,))
+            raise IOError("no such file: " + filename)
         self.name = filename
         self.streamlen = streamlen
         self.isClosed = 0
@@ -133,12 +133,12 @@ class Document(_object):
         if this:
             self.openErrCode = self._getGCTXerrcode();
             self.openErrMsg  = self._getGCTXerrmsg();
-        if this and self.needsPass:
-            self.isEncrypted = 1
-        # we won't init encrypted doc until it is decrypted
-        if this and not self.needsPass:
-            self.initData()
             self.thisown = False
+            if self.needsPass:
+                self.isEncrypted = 1
+        # we won't init encrypted doc until it is decrypted
+            else:
+                self.initData()
 
 
 

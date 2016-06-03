@@ -76,12 +76,12 @@ struct fz_document_s {
             if this:
                 self.openErrCode = self._getGCTXerrcode();
                 self.openErrMsg  = self._getGCTXerrmsg();
-            if this and self.needsPass:
-                self.isEncrypted = 1
-            # we won't init encrypted doc until it is decrypted
-            if this and not self.needsPass:
-                self.initData()
                 self.thisown = False
+                if self.needsPass:
+                    self.isEncrypted = 1
+                # we won't init encrypted doc until it is decrypted
+                else:
+                    self.initData()
         %}
         fz_document_s(const char *filename, char *stream=NULL, int streamlen=0) {
             struct fz_document_s *doc = NULL;
