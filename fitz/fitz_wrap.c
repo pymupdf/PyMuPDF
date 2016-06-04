@@ -4291,7 +4291,7 @@ SWIGINTERN int fz_link_dest_s__getPage(struct fz_link_dest_s *self){
             return (self->kind == FZ_LINK_GOTO || self->kind == FZ_LINK_GOTOR) ? self->ld.gotor.page : 0;
         }
 SWIGINTERN char *fz_link_dest_s__getDest(struct fz_link_dest_s *self){
-            return (self->kind == FZ_LINK_GOTO || self->kind == FZ_LINK_GOTOR) ? self->ld.gotor.dest : NULL;
+            return (self->kind == FZ_LINK_GOTOR) ? self->ld.gotor.dest : NULL;
         }
 SWIGINTERN int fz_link_dest_s__getFlags(struct fz_link_dest_s *self){
             return (self->kind == FZ_LINK_GOTO || self->kind == FZ_LINK_GOTOR) ? self->ld.gotor.flags : 0;
@@ -4303,7 +4303,7 @@ SWIGINTERN struct fz_point_s *fz_link_dest_s__getRb(struct fz_link_dest_s *self)
             return (self->kind == FZ_LINK_GOTO || self->kind == FZ_LINK_GOTOR) ? &(self->ld.gotor.rb) : NULL;
         }
 SWIGINTERN char *fz_link_dest_s__getFileSpec(struct fz_link_dest_s *self){
-            return (self->kind == FZ_LINK_GOTO || self->kind == FZ_LINK_GOTOR) ? self->ld.gotor.file_spec : (self->kind==FZ_LINK_LAUNCH ? self->ld.launch.file_spec : NULL);
+            return (self->kind == FZ_LINK_GOTOR) ? self->ld.gotor.file_spec : (self->kind==FZ_LINK_LAUNCH ? self->ld.launch.file_spec : NULL);
         }
 SWIGINTERN int fz_link_dest_s__getNewWindow(struct fz_link_dest_s *self){
             return (self->kind == FZ_LINK_GOTO || self->kind == FZ_LINK_GOTOR) ? self->ld.gotor.new_window : (self->kind==FZ_LINK_LAUNCH ? self->ld.launch.new_window : 0);
