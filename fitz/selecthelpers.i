@@ -1,13 +1,52 @@
-/***********************************************************/
-/* read text from a document page - the short way          */
-/* The main called function, fz_new_stext_page_from_page,  */
-/* is contained in utils.c in the fitz directory.          */
-/* At its core, it creates an stext device, runs the stext */
-/* page through it, then deletes the device again and      */
-/* returns the text page.                                  */
-/* A display list is not used in the process.              */
-/***********************************************************/
 %{
+/*******************************************************************************
+Fills table 'res' with outline object numbers
+*******************************************************************************/
+int fillOLNumbers(int *res, pdf_obj *obj, int oc, int argc) {
+    int onum;
+    pdf_obj *first, *parent, *thisobj;
+    if (!obj) return oc;
+    if (oc >= argc) return oc;
+    thisobj = obj;
+    while (thisobj) {
+        onum = pdf_to_num(gctx, thisobj);
+        res[oc] = onum;
+        oc += 1;
+        first = pdf_dict_get(gctx, thisobj, PDF_NAME_First);   /* try go down */
+        if (first) oc = fillOLNumbers(res, first, oc, argc);   /* recurse     */
+        thisobj = pdf_dict_get(gctx, thisobj, PDF_NAME_Next);  /* try go next */
+        parent = pdf_dict_get(gctx, thisobj, PDF_NAME_Parent); /* get parent  */
+        if (!thisobj) thisobj = parent;         /* goto parent if no next obj */
+    }
+    return oc;
+}
+/*******************************************************************************
+Returns number of outlines
+*******************************************************************************/
+int countOutlines(pdf_obj *obj, int oc) {
+    pdf_obj *first, *parent, *thisobj;
+    if (!obj) return oc;
+    thisobj = obj;
+    while (thisobj) {
+        oc += 1;
+        first = pdf_dict_get(gctx, thisobj, PDF_NAME_First);   /* try go down */
+        if (first) oc = countOutlines(first, oc);
+        thisobj = pdf_dict_get(gctx, thisobj, PDF_NAME_Next);  /* try go next */
+        parent = pdf_dict_get(gctx, thisobj, PDF_NAME_Parent); /* get parent  */
+        if (!thisobj) thisobj = parent;      /* goto parent if no next exists */
+    }
+    return oc;
+}
+
+/*******************************************************************************
+Read text from a document page - the short way.
+Main logic is contained in function fz_new_stext_page_from_page of file
+utils.c in the fitz directory.
+At its core, it creates an stext device, runs the stext page through it,
+deletes the device and returns the text buffer in the requested format.
+A display list is not used in the process.
+*******************************************************************************/
+
 struct fz_buffer_s *readPageText(fz_page *page, int output) {
     fz_buffer *res;
     fz_output *out;
@@ -25,24 +64,22 @@ struct fz_buffer_s *readPageText(fz_page *page, int output) {
         fz_drop_output(gctx, out);
         fz_drop_stext_page(gctx, tp);
         fz_drop_stext_sheet(gctx, ts);
-        }
-        fz_catch(gctx) {
-            if (out) fz_drop_output(gctx, out);
-            if (tp)  fz_drop_stext_page(gctx, tp);
-            if (ts)  fz_drop_stext_sheet(gctx, ts);
-            if (res) fz_drop_buffer(gctx, res);
-        }
+    }
+    fz_catch(gctx) {
+        if (out) fz_drop_output(gctx, out);
+        if (tp)  fz_drop_stext_page(gctx, tp);
+        if (ts)  fz_drop_stext_sheet(gctx, ts);
+        if (res) fz_drop_buffer(gctx, res);
+    }
     return res;
 }
-%}
 
-/******************************************************/
-/* Helpers for document page selection                */
-/* The main logic was imported from pdf_clean_file.c  */
-/* Instead of analyzing a string-based spefication    */
-/* of the selected pages, we accept an integer array. */
-/******************************************************/
-%{
+/*******************************************************************************
+Helpers for document page selection - main logic was imported
+from pdf_clean_file.c. But instead of analyzing a string-based spefication of
+selected pages, we accept an integer array.
+*******************************************************************************/
+
 typedef struct globals_s
 {
     pdf_document *doc;
@@ -63,9 +100,9 @@ int string_in_names_list(fz_context *ctx, pdf_obj *p, pdf_obj *names_list)
     return 0;
 }
 
-/*
- * Recreate page tree to only retain specified pages.
- */
+/*******************************************************************************
+Recreate page tree to only retain specified pages.
+*******************************************************************************/
 
 void retainpage(fz_context *ctx, pdf_document *doc, pdf_obj *parent, pdf_obj *kids, int page)
 {
@@ -128,16 +165,20 @@ int strip_outline(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int pag
     {
         int nc;
 
-        /* Strip any children to start with. This takes care of
-         * First/Last/Count for us. */
+/*******************************************************************************
+        Strip any children to start with. This takes care of 
+        First / Last / Count for us.
+*******************************************************************************/
         nc = strip_outlines(ctx, doc, current, page_count, page_object_nums, names_list);
 
         if (!dest_is_valid(ctx, current, page_count, page_object_nums, names_list))
         {
             if (nc == 0)
             {
-                /* Outline with invalid dest and no children. Drop it by
-                 * pulling the next one in here. */
+/*******************************************************************************
+                Outline with invalid dest and no children. Drop it by
+                pulling the next one in here.
+*******************************************************************************/
                 pdf_obj *next = pdf_dict_get(ctx, current, PDF_NAME_Next);
                 if (next == NULL)
                 {
@@ -210,11 +251,11 @@ int strip_outlines(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int pa
     return nc;
 }
 
-/****************************************************************
+/*******************************************************************************
    called by PyMuPDF:
    argc  = length of "liste"
-   liste = list of page numbers to retain
-*****************************************************************/
+   liste = (list of int) page numbers to retain
+*******************************************************************************/
 void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
 {
     pdf_obj *oldroot, *root, *pages, *kids, *countobj, *parent, *olddests;
@@ -226,8 +267,10 @@ void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
     int i;
     int *page_object_nums;
 
-    /* Keep only pages/type and (reduced) dest entries to avoid
-     * references to unretained pages */
+/*******************************************************************************
+    Keep only pages/type and (reduced) dest entries to avoid
+    references to dropped pages
+*******************************************************************************/
     oldroot = pdf_dict_get(ctx, pdf_trailer(ctx, doc), PDF_NAME_Root);
     pages = pdf_dict_get(ctx, oldroot, PDF_NAME_Pages);
     olddests = pdf_load_name_tree(ctx, doc, PDF_NAME_Dests);
@@ -271,10 +314,10 @@ void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
         page_object_nums[i] = pdf_to_num(ctx, pageref);
     }
 
-    /* If we had an old Dests tree (now reformed as an olddests
-     * dictionary), keep any entries in there that point to
-     * valid pages. This may mean we keep more than we need, but
-     * it's safe at least. */
+/*******************************************************************************    If we had an old Dests tree (now reformed as an olddests dictionary),
+    keep any entries in there that point to valid pages.
+    This may mean we keep more than we need, but it is safe at least.
+*******************************************************************************/
     if (olddests)
     {
         pdf_obj *names = pdf_new_dict(ctx, doc, 1);
@@ -308,8 +351,9 @@ void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
         pdf_drop_obj(ctx, olddests);
     }
 
-    /* Edit each pages /Annot list to remove any links that point to
-     * nowhere. */
+/*******************************************************************************
+    Edit each pages /Annot list to remove any links pointing to nowhere.
+*******************************************************************************/
     for (i = 0; i < pagecount; i++)
     {
         pdf_obj *pageref = pdf_lookup_page_obj(ctx, doc, i);

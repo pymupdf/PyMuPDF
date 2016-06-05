@@ -333,7 +333,9 @@ struct fz_document_s {
         %exception _readPageText {
             $action
             if(!result) {
-                PyErr_SetString(PyExc_Exception, "cannot do doc._readPageText");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -501,7 +503,9 @@ struct fz_page_s {
         %exception _readPageText {
             $action
             if(!result) {
-                PyErr_SetString(PyExc_Exception, "cannot do page.readPageText");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -942,7 +946,9 @@ struct fz_pixmap_s
         %exception _writeIMG {
             $action
             if(result) {
-                PyErr_SetString(PyExc_Exception, "cannot _writeIMG");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -1053,7 +1059,9 @@ struct DeviceWrapper
         %exception DeviceWrapper {
             $action
             if(!result) {
-                PyErr_SetString(PyExc_Exception, "cannot create Device");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -1238,7 +1246,9 @@ struct fz_outline_s {
         %exception saveXML {
             $action
             if(result) {
-                PyErr_SetString(PyExc_Exception, "saveXML failed");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -1266,7 +1276,9 @@ struct fz_outline_s {
         %exception saveText {
             $action
             if(result) {
-                PyErr_SetString(PyExc_Exception, "saveText failed");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -1464,7 +1476,9 @@ struct fz_display_list_s {
         %exception fz_display_list_s {
             $action
             if(!result) {
-                PyErr_SetString(PyExc_Exception, "cannot create DisplayList");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -1511,7 +1525,9 @@ struct fz_stext_sheet_s {
         %exception fz_stext_sheet_s {
             $action
             if(!result) {
-                PyErr_SetString(PyExc_Exception, "cannot create TextSheet");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
@@ -1612,6 +1628,7 @@ fz_send_data_base64(fz_context *ctx, fz_output *out, fz_buffer *buffer)
         int e = buffer->data[3*i+2];
         /**************************************************/
         /* JSON decoders do not like "\n" in base64 data! */
+        /* ==> next 2 lines commented out                 */
         /**************************************************/
         //if ((i & 15) == 0)
         //    fz_printf(ctx, out, "\n");
@@ -1733,7 +1750,9 @@ struct fz_stext_page_s {
         %exception fz_stext_page_s {
             $action
             if(!result) {
-                PyErr_SetString(PyExc_Exception, "cannot create TextPage");
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
                 return NULL;
             }
         }
