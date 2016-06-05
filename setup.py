@@ -10,10 +10,12 @@ if sys.platform.startswith('linux'):
                                      '/usr/local/include/mupdf'
                                     ],
                        #library_dirs=['<mupdf_and_3rd_party_libraries_dir>'],
-                       libraries=['mupdf', 'mupdfthird', 
-                                  'crypto', #openssl is required by mupdf on archlinux
-                                  'jbig2dec', 'openjp2', 'jpeg',
-                                  'freetype'], # the libraries to link with
+                       libraries=[
+                           'mupdf',
+                           'crypto', #openssl is required by mupdf on archlinux
+                           'jbig2dec', 'openjp2', 'jpeg', 'freetype',
+                           'mupdfthird',
+                           ], # the libraries to link with
                       )
 elif sys.platform.startswith('darwin'):
     module = Extension('fitz._fitz', # name of the module
@@ -43,7 +45,7 @@ else:
                                     ],
                        libraries=[ # these are needed in Windows
                                   'libmupdf', 'libfonts',
-                                  'libthirdparty',                    
+                                  'libthirdparty',
                                  ],
                        extra_link_args=['/NODEFAULTLIB:MSVCRT'],
                                      # dir of libmupdf.lib etc.
@@ -51,7 +53,7 @@ else:
                        sources=['./fitz/fitz_wrap.c',])
 
 setup(name = 'fitz',
-      version = "1.9.1", 
+      version = "1.9.1",
       description = 'Python bindings for the PDF rendering library MuPDF',
       classifiers = ['Development Status :: 4 - Beta',
                      'Environment :: Console',
