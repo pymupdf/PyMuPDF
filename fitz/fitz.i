@@ -268,9 +268,9 @@ struct fz_document_s {
             opts.errors = &errors;
             fz_try(gctx)
                 pdf_save_document(gctx, pdf, filename, &opts);
-            fz_catch(gctx)
-                if (gctx->error && gctx->error->errcode > FZ_ERROR_NONE) return gctx->error->errcode;
-                return errors;
+            fz_catch(gctx) {
+                return gctx->error->errcode;
+            }
             if (gctx->error && gctx->error->errcode > FZ_ERROR_NONE) return gctx->error->errcode;
             return errors;
         }

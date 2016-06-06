@@ -3848,8 +3848,7 @@ SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename,int 
             fz_try(gctx)
                 pdf_save_document(gctx, pdf, filename, &opts);
             fz_catch(gctx) {
-                if (gctx->error && gctx->error->errcode > FZ_ERROR_NONE) return gctx->error->errcode;
-                return errors;
+                return gctx->error->errcode;
             }
             if (gctx->error && gctx->error->errcode > FZ_ERROR_NONE) return gctx->error->errcode;
             return errors;
