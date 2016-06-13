@@ -8,18 +8,19 @@
 Outline
 ================
 
-``outline`` is a property of ``Document``. If not ``None``, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in "horizontal" direction by property ``Outline.next`` to the next item of same level, and "downwards" by property ``Outline.down`` to the next item one level lower. The full tree of all outline items for e.g. a conventional table of contents can be recovered by following these "pointers".
+``outline``, also called "bookmark", is a property of ``Document``. If not ``None``, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in "horizontal" direction by property ``Outline.next`` to the next item of same level, and "downwards" by property ``Outline.down`` to the next item one level down. The full tree of all outline items for e.g. a conventional table of contents can be recovered by following these "pointers".
 
 
 ========================= ==================================================
 **Method / Attribute**    **Short Description**
 ========================= ==================================================
-:attr:`Outline.down`      Next item downwards
-:attr:`Outline.next`      Next item same level
-:attr:`Outline.dest`      Link destination
-:attr:`Outline.title`     Title
-:meth:`Outline.saveText`  Prints a conventional table of contents to a file
-:meth:`Outline.saveXML`   Prints an XML-like table of contents to a file
+:attr:`Outline.down`      next item downwards
+:attr:`Outline.next`      next item same level
+:attr:`Outline.dest`      link destination
+:attr:`Outline.title`     title
+:attr:`Outline.is_open`   whether sub-outlines are open or colapsed
+:meth:`Outline.saveText`  prints a conventional table of contents to a file
+:meth:`Outline.saveXML`   prints an XML-like table of contents to a file
 ========================= ==================================================
 
 **Class API**
@@ -49,6 +50,12 @@ Outline
       The item's title as a string or ``None``.
 
       :rtype: string
+
+   .. attribute:: is_open
+
+      Indicator showing whether any sub-outlines should be expanded (``True``) or be colapsed (``False``). This information should be interpreted by PDF display software accordingly.
+
+      :rtype: bool
 
    .. method:: saveText(filename)
 

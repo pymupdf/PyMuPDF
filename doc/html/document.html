@@ -51,7 +51,8 @@
   <ul>
 <li><a class="reference internal" href="#">Document</a><ul>
 <li><a class="reference internal" href="#remarks-on-select">Remarks on <code class="docutils literal"><span class="pre">select()</span></code></a></li>
-<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#select-examples"><code class="docutils literal"><span class="pre">select()</span></code> Examples</a></li>
+<li><a class="reference internal" href="#setmetadata-example"><code class="docutils literal"><span class="pre">setMetadata()</span></code> Example</a></li>
 </ul>
 </li>
 </ul>
@@ -103,13 +104,13 @@
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><a class="reference internal" href="#Document.authenticate" title="Document.authenticate"><code class="xref py py-meth docutils literal"><span class="pre">Document.authenticate()</span></code></a></td>
-<td>decrypts the document</td>
+<td>decrypt the document</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.loadPage" title="Document.loadPage"><code class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></code></a></td>
-<td>reads a page</td>
+<td>read a page</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a></td>
-<td>saves a copy of the document</td>
+<td>save the document</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.getToC" title="Document.getToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.getToC()</span></code></a></td>
 <td>create a table of contents</td>
@@ -118,43 +119,46 @@
 <td>create a pixmap from a page by its number</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.getPageText" title="Document.getPageText"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPageText()</span></code></a></td>
-<td>extracts the text of a page by its number</td>
+<td>extract the text of a page by its number</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.getPermits" title="Document.getPermits"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPermits()</span></code></a></td>
 <td>show permissions to access the document</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.close" title="Document.close"><code class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></code></a></td>
-<td>closes the document</td>
+<td>close the document</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a></td>
-<td>selects pages from a document, discards the rest</td>
+<td>select a subset of pages</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><code class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.setMetadata" title="Document.setMetadata"><code class="xref py py-meth docutils literal"><span class="pre">Document.setMetadata()</span></code></a></td>
+<td>set the metadata</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><code class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></code></a></td>
 <td>has document been closed?</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><code class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><code class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></code></a></td>
 <td>first <cite>Outline</cite> item</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.name" title="Document.name"><code class="xref py py-attr docutils literal"><span class="pre">Document.name</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.name" title="Document.name"><code class="xref py py-attr docutils literal"><span class="pre">Document.name</span></code></a></td>
 <td>filename of document</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.openErrCode" title="Document.openErrCode"><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrCode</span></code></a></td>
-<td>indicates structure problem during open</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.openErrCode" title="Document.openErrCode"><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrCode</span></code></a></td>
+<td>&gt; 0 if repair occurred during open</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrMsg</span></code></td>
-<td>contains an error message if openErrCode &gt; 0</td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.openErrMsg" title="Document.openErrMsg"><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrMsg</span></code></a></td>
+<td>last error message if openErrCode &gt; 0</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
 <td>require password to access data?</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.isEncrypted" title="Document.isEncrypted"><code class="xref py py-attr docutils literal"><span class="pre">Document.isEncrypted</span></code></a></td>
-<td>is document still encrypted?</td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.isEncrypted" title="Document.isEncrypted"><code class="xref py py-attr docutils literal"><span class="pre">Document.isEncrypted</span></code></a></td>
+<td>document still encrypted?</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
-<td>the document&#8217;s number of pages</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
+<td>number of pages</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
-<td>the document&#8217;s meta data</td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
+<td>metadata</td>
 </tr>
 </tbody>
 </table>
@@ -165,7 +169,7 @@
 <dd><dl class="method">
 <dt id="Document.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructs a <code class="docutils literal"><span class="pre">Document</span></code> object from a file.</p>
+<dd><p>Constructs a <code class="docutils literal"><span class="pre">Document</span></code> object from <code class="docutils literal"><span class="pre">filename</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -183,7 +187,7 @@
 <dl class="method">
 <dt>
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>filetype</em>, <em>stream=data</em>, <em>streamlen=len(data)</em><span class="sig-paren">)</span></dt>
-<dd><p>Constructs a <code class="docutils literal"><span class="pre">Document</span></code> object from memory data.</p>
+<dd><p>Constructs a <code class="docutils literal"><span class="pre">Document</span></code> object from memory <code class="docutils literal"><span class="pre">data</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -247,7 +251,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>simple</strong> (<em>boolean</em>) &#8211; Indicates whether a detailed ToC is required. If <code class="docutils literal"><span class="pre">simple</span> <span class="pre">=</span> <span class="pre">False</span></code> is specified, each entry of the list also contains a dictionary with <a class="reference internal" href="link.html#link"><span class="std std-ref">Link</span></a> details for each outline entry.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>simple</strong> (<em>boolean</em>) &#8211; Indicates whether a detailed ToC is required. If <code class="docutils literal"><span class="pre">simple</span> <span class="pre">=</span> <span class="pre">False</span></code>, each entry of the list also contains a dictionary with <a class="reference internal" href="linkdest.html#linkdest"><span class="std std-ref">linkDest</span></a> details for each outline entry.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
@@ -322,12 +326,12 @@
 <dl class="method">
 <dt id="Document.select">
 <code class="descname">select</code><span class="sig-paren">(</span><em>list</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.select" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retains only those pages in the document that occur in the list. Empty lists or elements outside the range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">page</span> <span class="pre">&lt;</span> <span class="pre">doc.pageCount</span></code> will cause a <code class="docutils literal"><span class="pre">ValueError</span></code>. For more details see remarks at the bottom or this chapter. Only PDF documents are supported by this method.</p>
+<dd><p>PDF documents only: Retains only those pages of the document whose numbers occur in the list. Empty lists or elements outside the range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">page</span> <span class="pre">&lt;</span> <span class="pre">doc.pageCount</span></code> will cause a <code class="docutils literal"><span class="pre">ValueError</span></code>. For more details see remarks at the bottom or this chapter.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>list</strong> (<em>list</em>) &#8211; A list (or tuple) of integers (zero-based) naming the pages to be included. Pages not occurring in the list will be deleted (from memory) and become unavailable until the document is reopened. Page numbers can occur multiple times and be in any order.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>list</strong> (<em>list</em>) &#8211; A list (or tuple) of page numbers (zero-based) to be included. Pages not in the list will be deleted (from memory) and become unavailable until the document is reopened. <strong>Page numbers can occur multiple times and be in any order:</strong> the resulting sub-document will reflect the list exactly as specified.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
 </tr>
@@ -336,21 +340,39 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="Document.setMetadata">
+<code class="descname">setMetadata</code><span class="sig-paren">(</span><em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.setMetadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>PDF documents only: Sets or updates the metadata of the document as specified in <code class="docutils literal"><span class="pre">m</span></code>, a Python dictionary. As with method <code class="docutils literal"><span class="pre">select()</span></code>, these changes become permanent only when you save the document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> (<em>dict</em>) &#8211; A dictionary with keys <code class="docutils literal"><span class="pre">title</span></code>, <code class="docutils literal"><span class="pre">author</span></code>, <code class="docutils literal"><span class="pre">subject</span></code>, <code class="docutils literal"><span class="pre">keywords</span></code>, <code class="docutils literal"><span class="pre">creator</span></code>, <code class="docutils literal"><span class="pre">producer</span></code>, <code class="docutils literal"><span class="pre">creationDate</span></code>, and <code class="docutils literal"><span class="pre">modDate</span></code>. All keys are optional. A PDF&#8217;s format and encryption method cannot be set or changed, these keys therefore have no effect and will be ignored. If any value should not contain data, do not specify its key or set the value to <code class="docutils literal"><span class="pre">None</span></code>. If you use <code class="docutils literal"><span class="pre">m</span> <span class="pre">=</span> <span class="pre">{}</span></code> all metadata information will be cleared to <code class="docutils literal"><span class="pre">unspecified</span></code>. If you want to selectively change only some values, modify <code class="docutils literal"><span class="pre">doc.metadata</span></code> directly and use it as the argument for this method.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal"><span class="pre">0</span></code> upon successful execution and a negative value in case of errors. <code class="docutils literal"><span class="pre">doc.metadata</span></code> will be updated.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="Document.save">
 <code class="descname">save</code><span class="sig-paren">(</span><em>outfile</em>, <em>garbage=0</em>, <em>clean=0</em>, <em>deflate=0</em>, <em>incremental=0</em>, <em>ascii=0</em>, <em>expand=0</em>, <em>linear=0</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves a copy of the document under the name <code class="docutils literal"><span class="pre">outfile</span></code>. Include path specifications as necessary. Only PDF documents are supported by this function. Internally the document may have changed. E.g. after a successfull <code class="docutils literal"><span class="pre">authenticate</span></code>, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning of the document data could also have occurred, e.g. broken xref tables have been corrected and previous incremental changes have been resolved.</p>
+<dd><p>PDF documents only: Saves the <strong>current content of the document</strong> under the name <code class="docutils literal"><span class="pre">outfile</span></code> (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successfull <code class="docutils literal"><span class="pre">authenticate</span></code>, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed methods <code class="docutils literal"><span class="pre">select()</span></code> or <code class="docutils literal"><span class="pre">setMetadata()</span></code>, their results will also be reflected in the saved version.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outfile</strong> (<em>string</em>) &#8211; The file name to save to. Must be different from the original <code class="docutils literal"><span class="pre">filename</span></code> value if <code class="docutils literal"><span class="pre">incremental</span> <span class="pre">=</span> <span class="pre">0</span></code> or else a ValueError will be raised. If saving incremental, then <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code> <strong>must be zero</strong> and <code class="docutils literal"><span class="pre">outfile</span></code> <strong>must equal</strong> the original filename.</li>
-<li><strong>garbage</strong> (<em>int</em>) &#8211; Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition compact xref tables, 3 = in addition merge duplicate objects. Excludes <code class="docutils literal"><span class="pre">incremental</span></code>.</li>
+<li><strong>outfile</strong> (<em>string</em>) &#8211; The file name to save to. Must be different from the original <code class="docutils literal"><span class="pre">filename</span></code> value if <code class="docutils literal"><span class="pre">incremental=False</span></code> or else a ValueError will be raised. If saving incremental, then <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code> <strong>must be</strong> <code class="docutils literal"><span class="pre">False</span></code> and <code class="docutils literal"><span class="pre">outfile</span></code> <strong>must equal</strong> the original filename.</li>
+<li><strong>garbage</strong> (<em>int</em>) &#8211; Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition compact xref table, 3 = in addition merge duplicate objects. Excludes <code class="docutils literal"><span class="pre">incremental</span></code>.</li>
 <li><strong>clean</strong> (<em>int</em>) &#8211; Clean content streams: 0 = False, 1 = True.</li>
 <li><strong>deflate</strong> (<em>int</em>) &#8211; Deflate uncompressed streams: 0 = False, 1 = True.</li>
-<li><strong>incremental</strong> (<em>int</em>) &#8211; Only save changed objects: 0 = False, 1 = True. Excludes <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code>. Cannot be used for de- / encrypted files and for files that have invalid internal structures (<code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>). In such cases saving to a new file is required.</li>
+<li><strong>incremental</strong> (<em>int</em>) &#8211; Only save changed objects: 0 = False, 1 = True. Excludes <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code>. Cannot be used for decrypted files and for files that have been repaired during open (<code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>). In these cases saving to a new file is required.</li>
 <li><strong>ascii</strong> (<em>int</em>) &#8211; Where possible make the output ASCII: 0 = False, 1 = True.</li>
-<li><strong>expand</strong> (<em>int</em>) &#8211; One byte bitfield to decompress contents: 0 = none, 1 = images, 2 = fonts, 255 = all. This convenience option generates a decompressed file version that can be better read by some other programs.</li>
+<li><strong>expand</strong> (<em>int</em>) &#8211; Decompress contents: 0 = none, 1 = images, 2 = fonts, 255 = all. This convenience option generates a decompressed file version that can be better read by some other programs.</li>
 <li><strong>linear</strong> (<em>int</em>) &#8211; Save a linearised version of the document: 0 = False, 1 = True. This option creates a file format for improved performance when read via internet connections. Excludes <code class="docutils literal"><span class="pre">incremental</span></code>.</li>
 </ul>
 </td>
@@ -368,13 +390,13 @@
 <dl class="method">
 <dt id="Document.close">
 <code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Document.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Releases space allocations associated with the document, and, if created from a file, closes <code class="docutils literal"><span class="pre">filename</span></code> thus releasing control of it to the OS.</p>
+<dd><p>Releases space allocations associated with the document. If created from a file, also closes <code class="docutils literal"><span class="pre">filename</span></code> (releasing control the OS).</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="Document.outline">
 <code class="descname">outline</code><a class="headerlink" href="#Document.outline" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains either <code class="docutils literal"><span class="pre">None</span></code> or the first <a class="reference internal" href="outline.html#outline"><span class="std std-ref">Outline</span></a> entry of the document. Can be used as a starting point to walk through all outline items. If an encrypted document has not yet been authenticated, an <code class="docutils literal"><span class="pre">AttributeError</span></code> exception will be raised, when this attribute is being accessed.</p>
+<dd><p>Contains either <code class="docutils literal"><span class="pre">None</span></code> or the first <a class="reference internal" href="outline.html#outline"><span class="std std-ref">Outline</span></a> entry of the document. Can be used as a starting point to walk through all outline items. If a document with <code class="docutils literal"><span class="pre">needPass=True</span></code> has not yet been authenticated, an <code class="docutils literal"><span class="pre">AttributeError</span></code> will be raised, when this attribute is being accessed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -416,7 +438,7 @@
 <dl class="attribute">
 <dt id="Document.isEncrypted">
 <code class="descname">isEncrypted</code><a class="headerlink" href="#Document.isEncrypted" title="Permalink to this definition">¶</a></dt>
-<dd><p>This indicator initially equals the value of <code class="docutils literal"><span class="pre">needsPass</span></code>. After a successfull authentification, it is set to <code class="docutils literal"><span class="pre">False</span> <span class="pre">=</span> <span class="pre">0</span></code> to reflect the situation.</p>
+<dd><p>This indicator initially equals the value of <code class="docutils literal"><span class="pre">needsPass</span></code>. After successful authentification, it is set to <code class="docutils literal"><span class="pre">False</span> <span class="pre">=</span> <span class="pre">0</span></code> to reflect the situation.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -430,14 +452,14 @@
 <dl class="attribute">
 <dt id="Document.metadata">
 <code class="descname">metadata</code><a class="headerlink" href="#Document.metadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the document&#8217;s meta data as a Python dictionary or <code class="docutils literal"><span class="pre">None</span></code> if the document is encrypted. Its keys are <code class="docutils literal"><span class="pre">format</span></code>, <code class="docutils literal"><span class="pre">encryption</span></code>, <code class="docutils literal"><span class="pre">title</span></code>, <code class="docutils literal"><span class="pre">author</span></code>, <code class="docutils literal"><span class="pre">subject</span></code>, <code class="docutils literal"><span class="pre">keywords</span></code>, <code class="docutils literal"><span class="pre">creator</span></code>, <code class="docutils literal"><span class="pre">producer</span></code>, <code class="docutils literal"><span class="pre">creationDate</span></code>, <code class="docutils literal"><span class="pre">modDate</span></code>. All item values are strings or <code class="docutils literal"><span class="pre">None</span></code>.</p>
-<p>Except <code class="docutils literal"><span class="pre">format</span></code> and <code class="docutils literal"><span class="pre">encryption</span></code>, the key names correspond in an obvious way to a PDF&#8217;s &#8220;official&#8221; meta data fields <code class="docutils literal"><span class="pre">/Creator</span></code>, <code class="docutils literal"><span class="pre">/Producer</span></code>, <code class="docutils literal"><span class="pre">/CreationDate</span></code>, <code class="docutils literal"><span class="pre">/ModDate</span></code>, <code class="docutils literal"><span class="pre">/Title</span></code>, <code class="docutils literal"><span class="pre">/Author</span></code>, <code class="docutils literal"><span class="pre">/Subject</span></code>, <code class="docutils literal"><span class="pre">/Keywords</span></code> respectively.</p>
-<p>The value of <code class="docutils literal"><span class="pre">format</span></code> contains the version of the PDF format (e.g. &#8216;PDF-1.6&#8217;).</p>
-<p>The value of <code class="docutils literal"><span class="pre">encryption</span></code> either contains <code class="docutils literal"><span class="pre">None</span></code> (not encrypted), or a string naming the used encryption method (e.g. <code class="docutils literal"><span class="pre">'Standard</span> <span class="pre">V4</span> <span class="pre">R4</span> <span class="pre">128-bit</span> <span class="pre">RC4'</span></code>).</p>
-<p>If the date fields contain meaningfull data (which need not be the case), they are strings in the PDF-internal timestamp format &#8220;D:&lt;TS&gt;&lt;TZ&gt;&#8221;, where</p>
+<dd><p>Contains the document&#8217;s meta data as a Python dictionary or <code class="docutils literal"><span class="pre">None</span></code> (if encrypted <strong>and</strong> <code class="docutils literal"><span class="pre">needPass=True</span></code>). Keys are <code class="docutils literal"><span class="pre">format</span></code>, <code class="docutils literal"><span class="pre">encryption</span></code>, <code class="docutils literal"><span class="pre">title</span></code>, <code class="docutils literal"><span class="pre">author</span></code>, <code class="docutils literal"><span class="pre">subject</span></code>, <code class="docutils literal"><span class="pre">keywords</span></code>, <code class="docutils literal"><span class="pre">creator</span></code>, <code class="docutils literal"><span class="pre">producer</span></code>, <code class="docutils literal"><span class="pre">creationDate</span></code>, <code class="docutils literal"><span class="pre">modDate</span></code>. All item values are strings or <code class="docutils literal"><span class="pre">None</span></code>.</p>
+<p>Except <code class="docutils literal"><span class="pre">format</span></code> and <code class="docutils literal"><span class="pre">encryption</span></code>, the key names correspond in an obvious way to the PDF dictionary keys <code class="docutils literal"><span class="pre">/Creator</span></code>, <code class="docutils literal"><span class="pre">/Producer</span></code>, <code class="docutils literal"><span class="pre">/CreationDate</span></code>, <code class="docutils literal"><span class="pre">/ModDate</span></code>, <code class="docutils literal"><span class="pre">/Title</span></code>, <code class="docutils literal"><span class="pre">/Author</span></code>, <code class="docutils literal"><span class="pre">/Subject</span></code>, <code class="docutils literal"><span class="pre">/Keywords</span></code> respectively.</p>
+<p><code class="docutils literal"><span class="pre">format</span></code> contains the PDF version (e.g. &#8216;PDF-1.6&#8217;).</p>
+<p><code class="docutils literal"><span class="pre">encryption</span></code> either contains <code class="docutils literal"><span class="pre">None</span></code> (no encryption), or a string naming an encryption method (e.g. <code class="docutils literal"><span class="pre">'Standard</span> <span class="pre">V4</span> <span class="pre">R4</span> <span class="pre">128-bit</span> <span class="pre">RC4'</span></code>). Note that an encryption method may be specified for a readable document (i.e. <code class="docutils literal"><span class="pre">needsPass=False</span></code>). In such cases not all permissions will probably have been granted. Check dictionary <code class="docutils literal"><span class="pre">getPermits()</span></code> for details.</p>
+<p>If the date fields contain meaningful data (which need not be the case at all!), they are strings in the PDF-internal timestamp format &#8220;D:&lt;TS&gt;&lt;TZ&gt;&#8221;, where</p>
 <p>&lt;TS&gt; is the 12 character ISO timestamp <code class="docutils literal"><span class="pre">YYYMMDDhhmmss</span></code> (<code class="docutils literal"><span class="pre">YYYY</span></code> - year, <code class="docutils literal"><span class="pre">MM</span></code> - month, <code class="docutils literal"><span class="pre">DD</span></code> - day, <code class="docutils literal"><span class="pre">hh</span></code> - hour, <code class="docutils literal"><span class="pre">mm</span></code> - minute, <code class="docutils literal"><span class="pre">ss</span></code> - second), and</p>
-<p>&lt;TZ&gt; is a time zone value (time intervall relative to GMT) containing a sign (&#8216;+&#8217; or &#8216;-&#8216;), the hour (<code class="docutils literal"><span class="pre">hh</span></code>), and the minute (<code class="docutils literal"><span class="pre">'mm'</span></code>, attention: enclose in apostrophies!).</p>
-<p>E.g a Venezuelan value might look like <code class="docutils literal"><span class="pre">D:20150415131602-04'00'</span></code>, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Venezuela.</p>
+<p>&lt;TZ&gt; is a time zone value (time intervall relative to GMT) containing a sign (&#8216;+&#8217; or &#8216;-&#8216;), the hour (<code class="docutils literal"><span class="pre">hh</span></code>), and the minute (<code class="docutils literal"><span class="pre">'mm'</span></code>, note the apostrophies!).</p>
+<p>A Paraguayan value might hence look like <code class="docutils literal"><span class="pre">D:20150415131602-04'00'</span></code>, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Asuncion.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -479,7 +501,7 @@
 <dl class="attribute">
 <dt id="Document.openErrCode">
 <code class="descname">openErrCode</code><a class="headerlink" href="#Document.openErrCode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Shows whether issues had to be resolved while opening the document. If <code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, the attribute <code class="docutils literal"><span class="pre">openErrMsg</span></code> contains some explanantion. If an error occurred, any <code class="docutils literal"><span class="pre">save()</span></code> of the document must occur to a new file.</p>
+<dd><p>Shows whether a repair took place while opening the document. If <code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, the attribute <code class="docutils literal"><span class="pre">openErrMsg</span></code> contains the last repair message and also appears on <code class="docutils literal"><span class="pre">SYSERR</span></code>. If an error occurred, any <code class="docutils literal"><span class="pre">save()</span></code> of the document must occur to a new file, incremental saves cannot be used.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -491,9 +513,9 @@
 </dd></dl>
 
 <dl class="attribute">
-<dt id="Document.pageErrMsg">
-<code class="descname">pageErrMsg</code><a class="headerlink" href="#Document.pageErrMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains either an empty string or an error message if <code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.</p>
+<dt id="Document.openErrMsg">
+<code class="descname">openErrMsg</code><a class="headerlink" href="#Document.openErrMsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains either an empty string or the last error message if <code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>. Together with other error messages, it will also appear on <code class="docutils literal"><span class="pre">SYSERR</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -508,17 +530,17 @@
 
 <div class="section" id="remarks-on-select">
 <h2>Remarks on <code class="docutils literal"><span class="pre">select()</span></code><a class="headerlink" href="#remarks-on-select" title="Permalink to this headline">¶</a></h2>
-<p>Page numbers in the list need not be unique nor be in any particular sequence. This makes the method a versatile utility to e.g. select only even or odd pages, re-arrange a document from back to front, duplicate it, and so forth. In combination with text extraction you can also omit / include pages with no text or certain text, etc.</p>
+<p>Page numbers in the list need not be unique nor be in any particular sequence. This makes the method a versatile utility to e.g. select only even or odd pages, re-arrange a document from back to front, duplicate it, and so forth. In combination with text extraction you can also omit / include pages with no text or a certain text, etc.</p>
 <p>You can execute several selections in a row. The document structure will be kept updated.</p>
 <div class="admonition caution">
 <p class="first admonition-title">Caution</p>
-<p class="last">This also means, that any document information from before this method must be assumed to be invalid. This is especially true for old page objects, table of contents and the <code class="docutils literal"><span class="pre">pageCount</span></code> property. If you plan to use the <code class="docutils literal"><span class="pre">close()</span></code> method, make sure you have deleted any page object created before (by <code class="docutils literal"><span class="pre">page</span> <span class="pre">=</span> <span class="pre">None</span></code>).</p>
+<p class="last">This also means, that any document data from before this method must be assumed to be invalid. This is especially true for old page objects, table of contents and the <code class="docutils literal"><span class="pre">pageCount</span></code> property. If you plan to use the <code class="docutils literal"><span class="pre">close()</span></code> method, make sure you have deleted any page object created before (by <code class="docutils literal"><span class="pre">page</span> <span class="pre">=</span> <span class="pre">None</span></code>).</p>
 </div>
-<p>Any of those actions will become permanent only with a <code class="docutils literal"><span class="pre">doc.save()</span></code>. If you have deleted pages, do not forget to specify the <code class="docutils literal"><span class="pre">garbage=3</span></code> option to eventually reduce the resulting document&#8217;s size (if you are saving to a new file).</p>
-<p>It should also be noted, that this method <strong>preserves all links, annotations and bookmarks</strong> that are still valid. In other words: deleting pages only deletes those references that would otherwise point to nowhere.</p>
+<p>Any of those changes will become permanent only with a <code class="docutils literal"><span class="pre">doc.save()</span></code>. If you have de-selected many pages, consider specifying <code class="docutils literal"><span class="pre">garbage=3</span></code> option to eventually reduce the resulting document&#8217;s size (when saving to a new file).</p>
+<p>Also note, that this method <strong>preserves all links, annotations and bookmarks</strong> that are still valid. In other words: deleting pages only deletes references that point to de-selected pages.</p>
 </div>
-<div class="section" id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="select-examples">
+<h2><code class="docutils literal"><span class="pre">select()</span></code> Examples<a class="headerlink" href="#select-examples" title="Permalink to this headline">¶</a></h2>
 <p>Create a document copy deleting pages with no text:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
@@ -531,6 +553,7 @@
 
 <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>                              <span class="c1"># apply the list</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>             <span class="c1"># save the resulting PDF, OR</span>
+
 <span class="c1"># overwrite the original document ... *** VERY FAST! ***</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">,</span> <span class="n">incremental</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>       <span class="c1"># excludes garbage collection</span>
 </pre></div>
@@ -549,7 +572,7 @@
 <span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="p">))</span>
 <span class="n">r</span> <span class="o">+=</span> <span class="n">r</span>                                     <span class="c1"># turn PDF into a copy of itself</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;any-any.pdf&quot;</span><span class="p">)</span>                    <span class="c1"># contains doubled content &lt;any.pdf&gt;</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;any-any.pdf&quot;</span><span class="p">)</span>                    <span class="c1"># contains doubled &lt;any.pdf&gt;</span>
 </pre></div>
 </div>
 <p>Create document copy in reverse page order (well, don&#8217;t try with a million pages):</p>
@@ -558,6 +581,29 @@
 <span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.pdf&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="setmetadata-example">
+<h2><code class="docutils literal"><span class="pre">setMetadata()</span></code> Example<a class="headerlink" href="#setmetadata-example" title="Permalink to this headline">¶</a></h2>
+<p>Clear metadata information. If you do this out of privacy / data protection concerns, make sure you save the document as a new file with <code class="docutils literal"><span class="pre">garbage</span></code> option specified. Only then the old <code class="docutils literal"><span class="pre">/Info</span></code> object will also be physically removed from the file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">=</span><span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;pymupdf.pdf&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">metadata</span>
+<span class="go">{&#39;producer&#39;: &#39;rst2pdf, reportlab&#39;, &#39;format&#39;: &#39;PDF 1.4&#39;, &#39;encryption&#39;: None, &#39;author&#39;:</span>
+<span class="go">&#39;Jorj X. McKie&#39;, &#39;modDate&#39;: &quot;D:20160611145816-04&#39;00&#39;&quot;, &#39;keywords&#39;: &#39;PDF, XPS, EPUB, CBZ&#39;,</span>
+<span class="go">&#39;title&#39;: &#39;The PyMuPDF Documentation&#39;, &#39;creationDate&#39;: &quot;D:20160611145816-04&#39;00&#39;&quot;,</span>
+<span class="go">&#39;creator&#39;: &#39;sphinx&#39;, &#39;subject&#39;: &#39;PyMuPDF 1.9.1&#39;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">setMetadata</span><span class="p">({})</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">metadata</span>
+<span class="go">{&#39;producer&#39;: &#39;unspecified&#39;, &#39;format&#39;: &#39;PDF 1.4&#39;, &#39;encryption&#39;: None, &#39;author&#39;:</span>
+<span class="go">&#39;unspecified&#39;, &#39;modDate&#39;: &#39;unspecified&#39;, &#39;keywords&#39;: &#39;unspecified&#39;, &#39;title&#39;:</span>
+<span class="go">&#39;unspecified&#39;, &#39;creationDate&#39;: &#39;unspecified&#39;, &#39;creator&#39;: &#39;unspecified&#39;,</span>
+<span class="go">&#39;subject&#39;: &#39;unspecified&#39;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;anonymous.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="go">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
 </div>
@@ -587,7 +633,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 27. May 2016.
+      Last updated on 13. Jun 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

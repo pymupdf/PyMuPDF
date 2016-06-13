@@ -99,7 +99,7 @@ except __builtin__.Exception:
 import os                     
 VersionFitz = "1.9a"          
 VersionBind = "1.9.1"         
-VersionDate = "2016-06-06 07:28:09"        
+VersionDate = "2016-06-11 14:41:02"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -138,12 +138,12 @@ class Document(_object):
         if this:
             self.openErrCode = self._getGCTXerrcode();
             self.openErrMsg  = self._getGCTXerrmsg();
-            self.thisown = False
-            if self.needsPass:
-                self.isEncrypted = 1
+        if this and self.needsPass:
+            self.isEncrypted = 1
         # we won't init encrypted doc until it is decrypted
-            else:
-                self.initData()
+        if this and not self.needsPass:
+            self.initData()
+            self.thisown = False
 
 
 
@@ -337,15 +337,26 @@ class Document(_object):
         return _fitz.Document__getPageObjNumber(self, pno)
 
 
+    def _delOutlines(self):
+        """_delOutlines(Document self) -> int"""
+        val = _fitz.Document__delOutlines(self)
+
+        self.initData()
+
+
+        return val
+
+
+    def _setMetadata(self, text):
+        """_setMetadata(Document self, char * text) -> int"""
+        return _fitz.Document__setMetadata(self, text)
+
+
     def initData(self):
         if self.isEncrypted:
-            raise ValueError("cannot initData - document is still encrypted")
+            raise ValueError("cannot initData - document still encrypted")
         self._outline = self._loadOutline()
-        self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format','title':'info:Title',
-                                                                   'author':'info:Author','subject':'info:Subject',
-                                                                   'keywords':'info:Keywords','creator':'info:Creator',
-                                                                   'producer':'info:Producer','creationDate':'info:CreationDate',
-                                                                   'modDate':'info:ModDate'}.items()])
+        self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format', 'title':'info:Title', 'author':'info:Author','subject':'info:Subject', 'keywords':'info:Keywords','creator':'info:Creator', 'producer':'info:Producer', 'creationDate':'info:CreationDate', 'modDate':'info:ModDate'}.items()])
         self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
 
     outline = property(lambda self: self._outline)

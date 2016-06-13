@@ -3850,7 +3850,6 @@ SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename,int 
             fz_catch(gctx) {
                 return gctx->error->errcode;
             }
-            if (gctx->error && gctx->error->errcode > FZ_ERROR_NONE) return gctx->error->errcode;
             return errors;
         }
 SWIGINTERN int fz_document_s__select(struct fz_document_s *self,int *liste,int argc){
@@ -3885,10 +3884,10 @@ SWIGINTERN struct fz_buffer_s *fz_document_s__readPageText(struct fz_document_s 
         }
 SWIGINTERN int fz_document_s_getPermits(struct fz_document_s *self){
             int permit = 0;
-            if (fz_has_permission(gctx, self, FZ_PERMISSION_PRINT)) permit = permit + 4;
-            if (fz_has_permission(gctx, self, FZ_PERMISSION_EDIT)) permit = permit + 8;
-            if (fz_has_permission(gctx, self, FZ_PERMISSION_COPY)) permit = permit + 16;
-            if (fz_has_permission(gctx, self, FZ_PERMISSION_ANNOTATE)) permit = permit + 32;
+            if (fz_has_permission(gctx, self, FZ_PERMISSION_PRINT))    permit += 4;
+            if (fz_has_permission(gctx, self, FZ_PERMISSION_EDIT))     permit += 8;
+            if (fz_has_permission(gctx, self, FZ_PERMISSION_COPY))     permit += 16;
+            if (fz_has_permission(gctx, self, FZ_PERMISSION_ANNOTATE)) permit += 32;
             return permit>>2;
         }
 SWIGINTERN int fz_document_s__getPageObjNumber(struct fz_document_s *self,int pno){
@@ -3900,6 +3899,57 @@ SWIGINTERN int fz_document_s__getPageObjNumber(struct fz_document_s *self,int pn
             pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, pno);
             int objnum = pdf_to_num(gctx, pageref);
             return objnum;
+        }
+SWIGINTERN int fz_document_s__delOutlines(struct fz_document_s *self){
+            pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
+            if (!pdf) return -2;                            /* not a pdf      */
+            pdf_obj *root, *olroot, *first;
+            /* main root */
+            root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root);
+            /* outline root */
+            olroot = pdf_dict_get(gctx, root, PDF_NAME_Outlines);
+            if (!olroot) return 0;                          /* no outlines    */
+            int olrootnum, objcount, argc, i;
+            int *res;
+            objcount = 0;
+            argc = 0;
+            olrootnum = pdf_to_num(gctx, olroot);           /* object number  */
+            first = pdf_dict_get(gctx, olroot, PDF_NAME_First); /* first outl */
+            argc = countOutlines(first, argc);         /* get number outlines */
+            res = malloc(argc * sizeof(int));          /* object number table */
+            objcount = fillOLNumbers(res, first, objcount, argc);/* fill table*/
+            pdf_dict_del(gctx, root, PDF_NAME_Outlines);   /* del OL root ref */
+            pdf_delete_object(gctx, pdf, olrootnum);    /* del OL root object */
+            for (i = 0; i < objcount; i++) {
+                pdf_delete_object(gctx, pdf, res[i]);     /* del all OL items */
+            }
+            return objcount;
+        }
+SWIGINTERN int fz_document_s__setMetadata(struct fz_document_s *self,char *text){
+            pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
+            if (!pdf) return -2;                            /* not a pdf      */
+            pdf_obj *info, *new_info, *new_info_ind;
+            int info_num;
+            info_num = 0;              /* will contain xref no of info object */
+            fz_try(gctx) {
+                /* create /Info object based on passed-in string              */
+                new_info = pdf_new_obj_from_str(gctx, pdf, text);
+            }
+            fz_catch(gctx) {
+                return gctx->error->errcode;
+            }
+            /* replace existing /Info object                                  */
+            info = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Info);
+            if (info) {
+                info_num = pdf_to_num(gctx, info); /* get xref no of old info */
+                pdf_update_object(gctx, pdf, info_num, new_info);/* put new in*/
+                return 0;
+            }
+            /* create new indirect object from /Info object                   */
+            new_info_ind = pdf_add_object(gctx, pdf, new_info);
+            /* put this in the trailer dictionary                             */
+            pdf_dict_put(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Info, new_info_ind);
+            return 0;
         }
 SWIGINTERN void delete_fz_page_s(struct fz_page_s *self){
 
@@ -4370,7 +4420,7 @@ SWIGINTERN int fz_link_dest_s__getPage(struct fz_link_dest_s *self){
             return (self->kind == FZ_LINK_GOTO || self->kind == FZ_LINK_GOTOR) ? self->ld.gotor.page : 0;
         }
 SWIGINTERN char *fz_link_dest_s__getDest(struct fz_link_dest_s *self){
-            return (self->kind == FZ_LINK_GOTOR) ? self->ld.gotor.dest : NULL;
+            return (self->kind == FZ_LINK_GOTO || self->kind == FZ_LINK_GOTOR) ? self->ld.gotor.dest : NULL;
         }
 SWIGINTERN int fz_link_dest_s__getFlags(struct fz_link_dest_s *self){
             return (self->kind == FZ_LINK_GOTO || self->kind == FZ_LINK_GOTOR) ? self->ld.gotor.flags : 0;
@@ -4382,7 +4432,7 @@ SWIGINTERN struct fz_point_s *fz_link_dest_s__getRb(struct fz_link_dest_s *self)
             return (self->kind == FZ_LINK_GOTO || self->kind == FZ_LINK_GOTOR) ? &(self->ld.gotor.rb) : NULL;
         }
 SWIGINTERN char *fz_link_dest_s__getFileSpec(struct fz_link_dest_s *self){
-            return (self->kind == FZ_LINK_GOTOR) ? self->ld.gotor.file_spec : (self->kind==FZ_LINK_LAUNCH ? self->ld.launch.file_spec : NULL);
+            return (self->kind == FZ_LINK_GOTO || self->kind == FZ_LINK_GOTOR) ? self->ld.gotor.file_spec : (self->kind==FZ_LINK_LAUNCH ? self->ld.launch.file_spec : NULL);
         }
 SWIGINTERN int fz_link_dest_s__getNewWindow(struct fz_link_dest_s *self){
             return (self->kind == FZ_LINK_GOTO || self->kind == FZ_LINK_GOTOR) ? self->ld.gotor.new_window : (self->kind==FZ_LINK_LAUNCH ? self->ld.launch.new_window : 0);
@@ -5340,6 +5390,62 @@ SWIGINTERN PyObject *_wrap_Document__getPageObjNumber(PyObject *SWIGUNUSEDPARM(s
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document__delOutlines(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Document__delOutlines",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__delOutlines" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  result = (int)fz_document_s__delOutlines(arg1);
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document__setMetadata(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Document__setMetadata",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__setMetadata" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Document__setMetadata" "', argument " "2"" of type '" "char *""'");
+  }
+  arg2 = (char *)(buf2);
+  result = (int)fz_document_s__setMetadata(arg1,arg2);
+  resultobj = SWIG_From_int((int)(result));
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
 }
 
@@ -10299,6 +10405,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document__readPageText", _wrap_Document__readPageText, METH_VARARGS, (char *)"Document__readPageText(Document self, int pno, int output=0) -> struct fz_buffer_s *"},
 	 { (char *)"Document_getPermits", _wrap_Document_getPermits, METH_VARARGS, (char *)"getPermits(self) -> dictionary containing permissions"},
 	 { (char *)"Document__getPageObjNumber", _wrap_Document__getPageObjNumber, METH_VARARGS, (char *)"Document__getPageObjNumber(Document self, int pno) -> int"},
+	 { (char *)"Document__delOutlines", _wrap_Document__delOutlines, METH_VARARGS, (char *)"Document__delOutlines(Document self) -> int"},
+	 { (char *)"Document__setMetadata", _wrap_Document__setMetadata, METH_VARARGS, (char *)"Document__setMetadata(Document self, char * text) -> int"},
 	 { (char *)"delete_Document", _wrap_delete_Document, METH_VARARGS, (char *)"delete_Document(Document self)"},
 	 { (char *)"Document_swigregister", Document_swigregister, METH_VARARGS, NULL},
 	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, (char *)"delete_Page(Page self)"},

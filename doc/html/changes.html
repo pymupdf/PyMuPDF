@@ -100,6 +100,9 @@
 <li>New <code class="docutils literal"><span class="pre">IRect</span></code> methods <code class="docutils literal"><span class="pre">intersect()</span></code> (intersection with another rectangle), <code class="docutils literal"><span class="pre">translate()</span></code> (perform a shift operation).</li>
 <li>New <code class="docutils literal"><span class="pre">Rect</span></code> methods <code class="docutils literal"><span class="pre">intersect()</span></code> (intersection with another rectangle), <code class="docutils literal"><span class="pre">transform()</span></code> (transformation with a matrix), <code class="docutils literal"><span class="pre">includePoint()</span></code> (enlarge rectangle to also contain a point), <code class="docutils literal"><span class="pre">includeRect()</span></code> (enlarge rectangle to also contain another one).</li>
 <li>Documented <code class="docutils literal"><span class="pre">Point.transform()</span></code> (transform a point with a matrix).</li>
+<li>Arithmetics introduced for <code class="docutils literal"><span class="pre">Matrix</span></code>, <code class="docutils literal"><span class="pre">IRect</span></code>, <code class="docutils literal"><span class="pre">Rect</span></code> and <code class="docutils literal"><span class="pre">Point</span></code> classes, allowing compact, algebraic formulations for manipulating such objects.</li>
+<li>Incremental saves for changes are possible now using this call pattern: <code class="docutils literal"><span class="pre">doc.save(doc.name,</span> <span class="pre">incremental=True)</span></code></li>
+<li>A PDF document&#8217;s metadata can now be set or changed by method <code class="docutils literal"><span class="pre">setMetadata()</span></code>. Any such changes can be made permanent by method <code class="docutils literal"><span class="pre">save(...,</span> <span class="pre">incremental=True)</span></code>. When data security considerations require it, all metadata can be deleted also by this method.</li>
 </ul>
 </div>
 
@@ -126,7 +129,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 22. May 2016.
+      Last updated on 11. Jun 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

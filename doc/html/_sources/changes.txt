@@ -29,3 +29,6 @@ Changes in these bindings compared to version 1.8.0 are the following:
 * New ``IRect`` methods ``intersect()`` (intersection with another rectangle), ``translate()`` (perform a shift operation).
 * New ``Rect`` methods ``intersect()`` (intersection with another rectangle), ``transform()`` (transformation with a matrix), ``includePoint()`` (enlarge rectangle to also contain a point), ``includeRect()`` (enlarge rectangle to also contain another one).
 * Documented ``Point.transform()`` (transform a point with a matrix).
+* Arithmetics introduced for ``Matrix``, ``IRect``, ``Rect`` and ``Point`` classes, allowing compact, algebraic formulations for manipulating such objects.
+* Incremental saves for changes are possible now using this call pattern: ``doc.save(doc.name, incremental=True)``
+* A PDF document's metadata can now be set or changed by method ``setMetadata()``. Any such changes can be made permanent by method ``save(..., incremental=True)``. When data security considerations require it, all metadata can be deleted also by this method.

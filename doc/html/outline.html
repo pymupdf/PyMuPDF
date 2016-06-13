@@ -80,7 +80,7 @@
             
   <div class="section" id="outline">
 <span id="id1"></span><h1>Outline<a class="headerlink" href="#outline" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal"><span class="pre">outline</span></code> is a property of <code class="docutils literal"><span class="pre">Document</span></code>. If not <code class="docutils literal"><span class="pre">None</span></code>, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in &#8220;horizontal&#8221; direction by property <code class="docutils literal"><span class="pre">Outline.next</span></code> to the next item of same level, and &#8220;downwards&#8221; by property <code class="docutils literal"><span class="pre">Outline.down</span></code> to the next item one level lower. The full tree of all outline items for e.g. a conventional table of contents can be recovered by following these &#8220;pointers&#8221;.</p>
+<p><code class="docutils literal"><span class="pre">outline</span></code>, also called &#8220;bookmark&#8221;, is a property of <code class="docutils literal"><span class="pre">Document</span></code>. If not <code class="docutils literal"><span class="pre">None</span></code>, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in &#8220;horizontal&#8221; direction by property <code class="docutils literal"><span class="pre">Outline.next</span></code> to the next item of same level, and &#8220;downwards&#8221; by property <code class="docutils literal"><span class="pre">Outline.down</span></code> to the next item one level down. The full tree of all outline items for e.g. a conventional table of contents can be recovered by following these &#8220;pointers&#8221;.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="33%" />
@@ -93,22 +93,25 @@
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><a class="reference internal" href="#Outline.down" title="Outline.down"><code class="xref py py-attr docutils literal"><span class="pre">Outline.down</span></code></a></td>
-<td>Next item downwards</td>
+<td>next item downwards</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Outline.next" title="Outline.next"><code class="xref py py-attr docutils literal"><span class="pre">Outline.next</span></code></a></td>
-<td>Next item same level</td>
+<td>next item same level</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Outline.dest" title="Outline.dest"><code class="xref py py-attr docutils literal"><span class="pre">Outline.dest</span></code></a></td>
-<td>Link destination</td>
+<td>link destination</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Outline.title" title="Outline.title"><code class="xref py py-attr docutils literal"><span class="pre">Outline.title</span></code></a></td>
-<td>Title</td>
+<td>title</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Outline.saveText" title="Outline.saveText"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveText()</span></code></a></td>
-<td>Prints a conventional table of contents to a file</td>
+<tr class="row-even"><td><a class="reference internal" href="#Outline.is_open" title="Outline.is_open"><code class="xref py py-attr docutils literal"><span class="pre">Outline.is_open</span></code></a></td>
+<td>whether sub-outlines are open or colapsed</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Outline.saveXML" title="Outline.saveXML"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveXML()</span></code></a></td>
-<td>Prints an XML-like table of contents to a file</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Outline.saveText" title="Outline.saveText"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveText()</span></code></a></td>
+<td>prints a conventional table of contents to a file</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Outline.saveXML" title="Outline.saveXML"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveXML()</span></code></a></td>
+<td>prints an XML-like table of contents to a file</td>
 </tr>
 </tbody>
 </table>
@@ -172,6 +175,20 @@
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="Outline.is_open">
+<code class="descname">is_open</code><a class="headerlink" href="#Outline.is_open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicator showing whether any sub-outlines should be expanded (<code class="docutils literal"><span class="pre">True</span></code>) or be colapsed (<code class="docutils literal"><span class="pre">False</span></code>). This information should be interpreted by PDF display software accordingly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="Outline.saveText">
 <code class="descname">saveText</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#Outline.saveText" title="Permalink to this definition">¶</a></dt>
@@ -228,7 +245,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 13. May 2016.
+      Last updated on 01. Jun 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

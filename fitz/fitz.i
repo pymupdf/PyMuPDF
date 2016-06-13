@@ -35,9 +35,9 @@ struct DeviceWrapper {
 
 %include selecthelpers.i
 
-/************************************************************************************/
-/* typemap: make sure fz_buffers returned are converted to strings and then dropped */
-/************************************************************************************/
+/*******************************************************************************
+out-typemap: convert return fz_buffers to strings and drop them 
+*******************************************************************************/
 %typemap(out) struct fz_buffer_s * {
     $result = SWIG_FromCharPtrAndSize((const char *)$1->data, $1->len);
     fz_drop_buffer(gctx, $1);
@@ -76,12 +76,12 @@ struct fz_document_s {
             if this:
                 self.openErrCode = self._getGCTXerrcode();
                 self.openErrMsg  = self._getGCTXerrmsg();
+            if this and self.needsPass:
+                self.isEncrypted = 1
+            # we won't init encrypted doc until it is decrypted
+            if this and not self.needsPass:
+                self.initData()
                 self.thisown = False
-                if self.needsPass:
-                    self.isEncrypted = 1
-                # we won't init encrypted doc until it is decrypted
-                else:
-                    self.initData()
         %}
         fz_document_s(const char *filename, char *stream=NULL, int streamlen=0) {
             struct fz_document_s *doc = NULL;
@@ -271,11 +271,10 @@ struct fz_document_s {
             fz_catch(gctx) {
                 return gctx->error->errcode;
             }
-            if (gctx->error && gctx->error->errcode > FZ_ERROR_NONE) return gctx->error->errcode;
             return errors;
         }
 
-        /* typemap for Python list of integers (page numbers) */
+        /* typemap for Python list of integers (page numbers) as input */
         %typemap(in) (int *liste, int argc) {
             int i;
             /* a little dirty: "arg1" is the document object */
@@ -390,10 +389,10 @@ struct fz_document_s {
         %}
         int getPermits() {
             int permit = 0;
-            if (fz_has_permission(gctx, $self, FZ_PERMISSION_PRINT)) permit = permit + 4;
-            if (fz_has_permission(gctx, $self, FZ_PERMISSION_EDIT)) permit = permit + 8;
-            if (fz_has_permission(gctx, $self, FZ_PERMISSION_COPY)) permit = permit + 16;
-            if (fz_has_permission(gctx, $self, FZ_PERMISSION_ANNOTATE)) permit = permit + 32;
+            if (fz_has_permission(gctx, $self, FZ_PERMISSION_PRINT))    permit += 4;
+            if (fz_has_permission(gctx, $self, FZ_PERMISSION_EDIT))     permit += 8;
+            if (fz_has_permission(gctx, $self, FZ_PERMISSION_COPY))     permit += 16;
+            if (fz_has_permission(gctx, $self, FZ_PERMISSION_ANNOTATE)) permit += 32;
             return permit>>2;
         }
 
@@ -407,17 +406,74 @@ struct fz_document_s {
             int objnum = pdf_to_num(gctx, pageref);
             return objnum;
         }
+/*******************************************************************************
+Delete all outlines from a pdf document
+*******************************************************************************/
+        %pythonappend _delOutlines() %{
+            self.initData()
+        %}
+        int _delOutlines() {
+            pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
+            if (!pdf) return -2;                            /* not a pdf      */
+            pdf_obj *root, *olroot, *first;
+            /* main root */
+            root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root);
+            /* outline root */
+            olroot = pdf_dict_get(gctx, root, PDF_NAME_Outlines);
+            if (!olroot) return 0;                          /* no outlines    */
+            int olrootnum, objcount, argc, i;
+            int *res;
+            objcount = 0;
+            argc = 0;
+            olrootnum = pdf_to_num(gctx, olroot);           /* object number  */
+            first = pdf_dict_get(gctx, olroot, PDF_NAME_First); /* first outl */
+            argc = countOutlines(first, argc);         /* get number outlines */
+            res = malloc(argc * sizeof(int));          /* object number table */
+            objcount = fillOLNumbers(res, first, objcount, argc);/* fill table*/
+            pdf_dict_del(gctx, root, PDF_NAME_Outlines);   /* del OL root ref */
+            pdf_delete_object(gctx, pdf, olrootnum);    /* del OL root object */
+            for (i = 0; i < objcount; i++) {
+                pdf_delete_object(gctx, pdf, res[i]);     /* del all OL items */
+            }
+            return objcount;
+        }
+
+/*******************************************************************************
+Add or update metadata with provided raw string
+*******************************************************************************/
+        int _setMetadata(char *text) {
+            pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
+            if (!pdf) return -2;                            /* not a pdf      */
+            pdf_obj *info, *new_info, *new_info_ind;
+            int info_num;
+            info_num = 0;              /* will contain xref no of info object */
+            fz_try(gctx) {
+                /* create /Info object based on passed-in string              */
+                new_info = pdf_new_obj_from_str(gctx, pdf, text);
+            }
+            fz_catch(gctx) {
+                return gctx->error->errcode;
+            }
+            /* replace existing /Info object                                  */
+            info = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Info);
+            if (info) {
+                info_num = pdf_to_num(gctx, info); /* get xref no of old info */
+                pdf_update_object(gctx, pdf, info_num, new_info);/* put new in*/
+                return 0;
+            }
+            /* create new indirect object from /Info object                   */
+            new_info_ind = pdf_add_object(gctx, pdf, new_info);
+            /* put this in the trailer dictionary                             */
+            pdf_dict_put(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Info, new_info_ind);
+            return 0;
+        }
 
         %pythoncode %{
             def initData(self):
                 if self.isEncrypted:
-                    raise ValueError("cannot initData - document is still encrypted")
+                    raise ValueError("cannot initData - document still encrypted")
                 self._outline = self._loadOutline()
-                self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format','title':'info:Title',
-                                                                           'author':'info:Author','subject':'info:Subject',
-                                                                           'keywords':'info:Keywords','creator':'info:Creator',
-                                                                           'producer':'info:Producer','creationDate':'info:CreationDate',
-                                                                           'modDate':'info:ModDate'}.items()])
+                self.metadata = dict([(k,self._getMetadata(v)) for k,v in {'format':'format', 'title':'info:Title', 'author':'info:Author','subject':'info:Subject', 'keywords':'info:Keywords','creator':'info:Creator', 'producer':'info:Producer', 'creationDate':'info:CreationDate', 'modDate':'info:ModDate'}.items()])
                 self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
 
             outline = property(lambda self: self._outline)
@@ -429,7 +485,7 @@ struct fz_document_s {
                     return "fitz.Document('%s')" % (self.name,)
                 return "fitz.Document('%s', stream = <data>, streamlen = %s)" % (self.name, self.streamlen)
 
-        %}
+            %}
     }
 };
 
@@ -1332,7 +1388,7 @@ struct fz_link_dest_s {
             return ($self->kind == FZ_LINK_GOTO || $self->kind == FZ_LINK_GOTOR) ? $self->ld.gotor.page : 0;
         }
         char *_getDest() {
-            return ($self->kind == FZ_LINK_GOTOR) ? $self->ld.gotor.dest : NULL;
+            return ($self->kind == FZ_LINK_GOTO || $self->kind == FZ_LINK_GOTOR) ? $self->ld.gotor.dest : NULL;
         }
         int _getFlags() {
             return ($self->kind == FZ_LINK_GOTO || $self->kind == FZ_LINK_GOTOR) ? $self->ld.gotor.flags : 0;
@@ -1344,7 +1400,7 @@ struct fz_link_dest_s {
             return ($self->kind == FZ_LINK_GOTO || $self->kind == FZ_LINK_GOTOR) ? &($self->ld.gotor.rb) : NULL;
         }
         char *_getFileSpec() {
-            return ($self->kind == FZ_LINK_GOTOR) ? $self->ld.gotor.file_spec : ($self->kind==FZ_LINK_LAUNCH ? $self->ld.launch.file_spec : NULL);
+            return ($self->kind == FZ_LINK_GOTO || $self->kind == FZ_LINK_GOTOR) ? $self->ld.gotor.file_spec : ($self->kind==FZ_LINK_LAUNCH ? $self->ld.launch.file_spec : NULL);
         }
         int _getNewWindow() {
             return ($self->kind == FZ_LINK_GOTO || $self->kind == FZ_LINK_GOTOR) ? $self->ld.gotor.new_window : ($self->kind==FZ_LINK_LAUNCH ? $self->ld.launch.new_window : 0);

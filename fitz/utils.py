@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from . import fitz
 import math
-import numbers, types
 '''
 The following is a collection of commodity functions to simplify the use of PyMupdf.
 '''
@@ -118,7 +117,7 @@ Default and misspelling choice is "text".
         raise ValueError("invalid fitz.Document object specified")
     if doc.isClosed or doc.isEncrypted:
         raise ValueError("operation on closed or encrypted document")
-    
+
     pno = int(arg[1])                  # page number
     if pno < 0 or pno >= doc.pageCount:
         raise ValueError("page number not in range 0 to %s" % (doc.pageCount - 1,))
@@ -161,7 +160,7 @@ clip: a fitz.IRect to restrict rendering to this area.
         raise ValueError("invalid page object provided to getPixmap")
     if page.parent.isClosed or page.parent.isEncrypted:
         raise ValueError("page operation on closed or encrypted document")
-    
+
     for k in kw.keys():
         if k not in ["matrix", "colorspace", "clip"]:
             raise ValueError("invalid keyword in getPixmap")
@@ -169,7 +168,7 @@ clip: a fitz.IRect to restrict rendering to this area.
     matrix = fitz.Identity
     colorspace = "rgb"
     clip = None
-    
+
     if "matrix" in kw:
         matrix = kw["matrix"]
     if "colorspace" in kw:
@@ -235,7 +234,7 @@ clip: a fitz.IRect to restrict rendering to this area
     pno = int(arg[1])
     if pno < 0 or pno >= doc.pageCount:
         raise ValueError("page number not in range 0 to %s" % (doc.pageCount - 1,))
-    
+
     for k in kw.keys():
         if k not in ["matrix", "colorspace", "clip"]:
             raise ValueError("invalid keyword specified to getPagePixmap")
@@ -243,7 +242,7 @@ clip: a fitz.IRect to restrict rendering to this area
     matrix = fitz.Identity
     colorspace = "rgb"
     clip = None
-            
+
     if "matrix" in kw.keys():
         matrix = kw["matrix"]
     if "colorspace" in kw.keys():
@@ -265,7 +264,7 @@ clip: a fitz.IRect to restrict rendering to this area
     page.run(fitz.Device(dl), fitz.Identity) # run page through it
     r = page.bound()                         # get page boundaries
 
-    if clip:                                 
+    if clip:
         r.intersect(clip.getRect())          # only the part within clip
         r.transform(matrix)                  # transform it
         clip = r.round()                     # make IRect copy of it
@@ -418,7 +417,7 @@ and link destination (if simple = False). For details see PyMuPDF's documentatio
     # check if document is open and not encrypted
     if doc.isClosed or doc.isEncrypted:
         raise ValueError("operation on closed or encrypted document")
-    
+
     olItem = doc.outline
 
     if not olItem: return []
@@ -660,7 +659,7 @@ def rect_or(r1, r2):         # __or__: include point, rect or irect
     elif repr(r2).startswith("fitz.IRect"):
         return r.includeRect(r2.getRect())
     return r.includePoint(r2)
-    
+
 def rect_and(r1, r2):        # __and__: intersection with rect or irect
     if not repr(r1).startswith("fitz.Rect"):
         raise NotImplementedError
@@ -672,14 +671,14 @@ def rect_and(r1, r2):        # __and__: intersection with rect or irect
     if repr(r2).startswith("fitz.IRect"):
         return r.intersect(r2.getRect())
     raise NotImplementedError
-        
+
 def rect_add(r1, r2):        # __add__: add number, rect or irect to rect
     if not repr(r1).startswith("fitz.Rect"):
         raise NotImplementedError
     r = fitz.Rect(r1)
     if repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
         a = r2
-    elif isinstance(r2, numbers.Integral) or isinstance(r, numbers.Real):
+    elif type(r2) is int or type(r2) is float:
         a = fitz.Rect(r2, r2, r2, r2)
     else:
         raise NotImplementedError
@@ -688,14 +687,14 @@ def rect_add(r1, r2):        # __add__: add number, rect or irect to rect
     r.x1 += a.x1
     r.y1 += a.y1
     return r
-    
+
 def rect_sub(r1, r2):        # __sub__: subtract number, rect or irect from rect
     if not repr(r1).startswith("fitz.Rect"):
         raise NotImplementedError
     r = fitz.Rect(r1)
     if repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
         a = r2
-    elif isinstance(r2, numbers.Integral) or isinstance(r, numbers.Real):
+    elif type(r2) is int or type(r2) is float:
         a = fitz.Rect(r2, r2, r2, r2)
     else:
         raise NotImplementedError
@@ -704,7 +703,7 @@ def rect_sub(r1, r2):        # __sub__: subtract number, rect or irect from rect
     r.x1 -= a.x1
     r.y1 -= a.y1
     return r
-    
+
 def rect_mul(r, m):          # __mul__: transform with matrix
     if not repr(r).startswith("fitz.Rect"):
         raise NotImplementedError
@@ -712,11 +711,11 @@ def rect_mul(r, m):          # __mul__: transform with matrix
         raise NotImplementedError
     r1 = fitz.Rect(r)
     return r1.transform(m)
-    
+
 #==============================================================================
 # arithmetic methods for fitz.IRect
 #==============================================================================
-def irect_or(r1, r2):        # __or__: include point, rect or irect
+def irect_or(r1, r2):        # __or__: include a point, rect or irect
     if not repr(r1).startswith("fitz.IRect"):
         raise NotImplementedError
     if not repr(r2).startswith(("fitz.Rect", "fitz.IRect", "fitz.Point")):
@@ -727,8 +726,8 @@ def irect_or(r1, r2):        # __or__: include point, rect or irect
     elif repr(r2).startswith("fitz.IRect"):
         return r.includeRect(r2.getRect()).round()
     return r.includePoint(r2).round()
-    
-def irect_and(r1, r2):       # __and__: intersection with rect or irect
+
+def irect_and(r1, r2):       # __and__: intersection with a rect or irect
     if not repr(r1).startswith("fitz.IRect"):
         raise NotImplementedError
     if not repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
@@ -739,14 +738,14 @@ def irect_and(r1, r2):       # __and__: intersection with rect or irect
     if repr(r2).startswith("fitz.IRect"):
         return r.intersect(r2)
     raise NotImplementedError
-        
-def irect_add(r1, r2):       # __add__: add number, rect or irect
+
+def irect_add(r1, r2):       # __add__: add a number, rect or irect
     if not repr(r1).startswith("fitz.IRect"):
         raise NotImplementedError
     r = r1.getRect()
     if repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
         a = r2
-    elif isinstance(r2, numbers.Integral) or isinstance(r2, numbers.Real):
+    elif type(r2) is int or type(r2) is float:
         a = fitz.Rect(r2, r2, r2, r2)
     else:
         raise NotImplementedError
@@ -755,14 +754,14 @@ def irect_add(r1, r2):       # __add__: add number, rect or irect
     r.x1 += a.x1
     r.y1 += a.y1
     return r.round()
-    
+
 def irect_sub(r1, r2):       # __sub__: subtract number, rect or irect
     if not repr(r1).startswith("fitz.IRect"):
         raise NotImplementedError
     r = r1.getRect()
     if repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
         a = r2
-    elif isinstance(r2, numbers.Integral) or isinstance(r2, numbers.Real):
+    elif type(r2) is int or type(r2) is float:
         a = fitz.Rect(r2, r2, r2, r2)
     else:
         raise NotImplementedError
@@ -771,7 +770,7 @@ def irect_sub(r1, r2):       # __sub__: subtract number, rect or irect
     r.x1 -= a.x1
     r.y1 -= a.y1
     return r.round()
-    
+
 def irect_mul(r, m):         # __mul__: transform with matrix
     if not repr(r).startswith("fitz.IRect"):
         raise NotImplementedError
@@ -779,30 +778,30 @@ def irect_mul(r, m):         # __mul__: transform with matrix
         raise NotImplementedError
     r1 = r.getRect()
     return r1.transform(m).round()
-    
+
 #==============================================================================
 # arithmetic methods for fitz.Point
 #==============================================================================
 def point_neg(p):            # __neg__: point with negated coordinates
     return fitz.Point(-p.x, -p.y)
-    
+
 def point_add(p1, p2):
     if not repr(p1).startswith("fitz.Point"):
         raise NotImplementedError
     if repr(p2).startswith("fitz.Point"):
         p = p2
-    elif isinstance(p2, numbers.Integral) or isinstance(p2, numbers.Real):
+    elif type(p2) is int or type(p2) is float:
         p = fitz.Point(p2, p2)
     else:
         raise NotImplementedError
     return fitz.Point(p1.x + p.x, p1.y + p.y)
-    
+
 def point_sub(p1, p2):
     if not repr(p1).startswith("fitz.Point"):
         raise NotImplementedError
     if repr(p2).startswith("fitz.Point"):
         p = p2
-    elif isinstance(p2, numbers.Integral) or isinstance(p2, numbers.Real):
+    elif type(p2) is int or type(p2) is float:
         p = fitz.Point(p2, p2)
     else:
         raise NotImplementedError
@@ -818,3 +817,50 @@ def point_mul(p, m):
 
 def point_abs(p):
     return math.sqrt(p.x**2 + p.y**2)
+
+#==============================================================================
+# Document method Set Metadata
+#==============================================================================
+def setMetadata(doc, d):
+    if not repr(doc).startswith("fitz.Document") or not doc.name.lower().endswith(("/pdf", ".pdf")):
+        raise ValueError("argument 1 must be a PDF document")
+    if doc.isClosed or doc.isEncrypted:
+        raise ValueError("operation on closed or encrypted document")
+    if type(d) is not dict:
+        raise ValueError("argument 2 must be a dictionary")
+    for k in d.keys():
+        if not k in ["author", "producer", "creator", "title", "format", "encryption",
+                     "creationDate", "modDate", "subject", "keywords"]:
+            raise ValueError("invalid dictionary key: " + k)
+    # PDF /Info skeleton
+    m = """<</Author(%s) /CreationDate(%s) /Creator(%s) /Keywords(%s) /ModDate(%s)
+/Producer(%s) /Subject(%s) /Title(%s)>>"""
+    aut = "unspecified"
+    cre = "unspecified"
+    mod = "unspecified"
+    crd = "unspecified"
+    kew = "unspecified"
+    pro = "unspecified"
+    sub = "unspecified"
+    tit = "unspecified"
+    if "author" in d and d["author"] is not None:
+        aut = d["author"]
+    if "producer" in d and d["producer"] is not None:
+        pro = d["producer"]
+    if "creator" in d and d["creator"] is not None:
+        cre = d["creator"]
+    if "title" in d and d["title"] is not None:
+        tit = d["title"]
+    if "creationDate" in d and d["creationDate"] is not None:
+        crd = d["creationDate"]
+    if "modDate" in d and d["modDate"] is not None:
+        mod = d["modDate"]
+    if "subject" in d and d["subject"] is not None:
+        sub = d["subject"]
+    if "keywords" in d and d["keywords"] is not None:
+        kew = d["keywords"]
+    m = m % (aut, crd, cre, kew, mod, pro, sub, tit,)
+    r = doc._setMetadata(m)
+    if r == 0:
+        doc.initData()
+    return r
