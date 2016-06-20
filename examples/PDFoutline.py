@@ -10,17 +10,26 @@ Copyright (c) 2015 Jorj X. McKie
 The license of this program is governed by the GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007. See the "COPYING" file of this repository.
 
-This an example program for the Python binding PyMuPDF of MuPDF.
-Its dependencies are:
-PyMuPDF 1.8 or later
-wxPython 3.0 or later
-PyPDF2 1.25 or later
+Example program for the Python binding PyMuPDF of MuPDF.
 
-This a program for editing a PDF file's table of contents (ToC).
+Changes in version 1.9.1
+-------------------------
+- removed depedency on PyPDF2 by using PyMuPDF's new methods setMetadata() and 
+  setToC().
+
+- using incremental saves if output file equals input.
+
+Dependencies:
+--------------
+PyMuPDF 1.9.1 or later
+wxPython 3.0 or later
+
+This is a program for editing a PDF file's table of contents (ToC).
 After choosing a file in a file selection dialog, its ToC is displayed
 in a grid, together with an image of the currently displayed PDF page.
-ToC entries can be edited, added, deleted and moved.
-The thus modified PDF can be saved elsewhere or replace the original file.
+Entries in the grid can be edited, added, duplicated, deleted and moved.
+Permanent changes to the underlying file are made only when the SAVE button is
+pressed.
 
 The overall screen layout is as follows:
 
@@ -54,13 +63,12 @@ Layout of right sizer "ri_szr"
 
 '''
 import os, sys
-import tempfile
 import wx
 import wx.grid as gridlib
 import wx.lib.gridmovers as gridmovers
-import PyPDF2  # only used for output (make_pdf)
 import fitz
 from icons import ico_pdf
+ENCODING = "latin-1"         # used for title only
 
 def getint(v):
     import types
@@ -80,7 +88,7 @@ def getint(v):
 #==============================================================================
 # define scale factor for displaying page images (20% larger)
 #==============================================================================
-scaling = fitz.Matrix(1, 1).preScale(1.2, 1.2)
+scaling = fitz.Matrix(1.2, 1.2)
 #==============================================================================
 # just abbreviations
 #==============================================================================
@@ -98,21 +106,13 @@ class PDFconfig():
         self.seiten = 0                  # max pages
         self.inhalt = []                 # table of contents storage
         self.file = None                 # pdf filename
-
-    def TempPDF(self, dir = None):
-#==============================================================================
-#       temp PDF for the save process (only needed when infile = outfile)
-#==============================================================================
-        temppdf = tempfile.NamedTemporaryFile(suffix = ".pdf",
-                    dir = dir, delete = False)
-        self.opdfname = temppdf.name
-        self.opdffile = temppdf.file
+        self.oldpage = 0                 # stores displayed page number
 
 #==============================================================================
 # render a PDF page and return wx.Bitmap
 #==============================================================================
 def pdf_show(seite):
-    page_idx = int(seite) - 1
+    page_idx = getint(seite) - 1
     pix = PDFcfg.doc.getPagePixmap(page_idx, matrix = scaling)
     # the following method returns just RGB data - no alpha bytes
     # this seems to be required in Windows versions of wx.
@@ -415,7 +415,7 @@ class MyGrid(gridlib.Grid):
 class PDFDialog (wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__ (self, parent, id = wx.ID_ANY,
-                             title = u"Maintain the PDF Table of Contents",
+                             title = "Maintain the Table of Contents",
                              pos = defPos, size = defSiz,
                              style = wx.CAPTION|wx.CLOSE_BOX|
                                      wx.DEFAULT_DIALOG_STYLE|
@@ -426,7 +426,7 @@ class PDFDialog (wx.Dialog):
         # maximize the screen
         #self.Maximize()
         # alternatively, try more scrutiny:
-        width = wx.GetDisplaySize()[0]-30        # define maximum width
+        width = wx.GetDisplaySize()[0]-500        # define maximum width
         height = wx.GetDisplaySize()[1]-35       # define maximum height
         self.SetSize(wx.Size(width, height))
 #==============================================================================
@@ -434,7 +434,7 @@ class PDFDialog (wx.Dialog):
 #==============================================================================
         self.szr10 = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.btn_neu = wx.Button(self, wx.ID_ANY, u"New Row",
+        self.btn_neu = wx.Button(self, wx.ID_ANY, "New Row",
                         defPos, defSiz, 0)
         self.szr10.Add(self.btn_neu, 0, wx.ALIGN_CENTER|wx.ALL, 5)
 
@@ -459,7 +459,7 @@ class PDFDialog (wx.Dialog):
         self.szr30.SetFlexibleDirection(wx.BOTH)
         self.szr30.SetNonFlexibleGrowMode(wx.FLEX_GROWMODE_SPECIFIED)
 
-        self.tx_input = wx.StaticText(self, wx.ID_ANY, u"Input:",
+        self.tx_input = wx.StaticText(self, wx.ID_ANY, "Input:",
                             defPos, defSiz, 0)
         self.tx_input.Wrap(-1)
         self.szr30.Add(self.tx_input, 0, wx.ALIGN_CENTER, 5)
@@ -470,18 +470,15 @@ class PDFDialog (wx.Dialog):
         self.tx_eindat.Wrap(-1)
         self.szr30.Add(self.tx_eindat, 0, wx.ALL, 5)
 
-        self.tx_ausdat = wx.StaticText(self, wx.ID_ANY, u"Output:",
+        self.tx_ausdat = wx.StaticText(self, wx.ID_ANY, "Output:",
                             defPos, defSiz, 0)
         self.tx_ausdat.Wrap(-1)
         self.szr30.Add(self.tx_ausdat, 0, wx.ALIGN_CENTER, 5)
 
         self.btn_aus = wx.FilePickerCtrl(self, wx.ID_ANY,
-                        PDFcfg.file,
-                        u"set output file",
-                        u"*.pdf",
+                        PDFcfg.file, "set output file", "*.pdf",
                         defPos, wx.Size(480,-1),
-                        wx.FLP_OVERWRITE_PROMPT|
-                        wx.FLP_SAVE|
+                        wx.FLP_OVERWRITE_PROMPT|wx.FLP_SAVE|
                         wx.FLP_USE_TEXTCTRL)
         self.szr30.Add(self.btn_aus, 0, wx.ALL, 5)
         self.tx_autor = wx.StaticText(self, wx.ID_ANY, "Author:",
@@ -518,13 +515,13 @@ class PDFDialog (wx.Dialog):
 # Sizer 31: check data
 #==============================================================================
         self.szr31 = wx.FlexGridSizer(1, 2, 0, 0)
-        self.btn_chk = wx.Button(self, wx.ID_ANY, u"Check Data",
+        self.btn_chk = wx.Button(self, wx.ID_ANY, "Check Data",
                         defPos, defSiz, 0)
         self.szr31.Add(self.btn_chk, 0, wx.ALIGN_TOP|wx.ALL, 5)
         self.msg = wx.StaticText(self, wx.ID_ANY, "Before data can be saved, "\
                     "they must be checked with this button.\n"\
                     "Warning: Any original 'Output' file will be overwritten, "\
-                    "once you press OK!",
+                    "once you press SAVE!",
                     defPos, defSiz, 0)
         self.msg.Wrap(-1)
         self.szr31.Add(self.msg, 0, wx.ALL, 5)
@@ -533,7 +530,7 @@ class PDFDialog (wx.Dialog):
 # Sizer 40: OK / Cancel
 #==============================================================================
         self.szr40 = wx.StdDialogButtonSizer()
-        self.szr40OK = wx.Button(self, wx.ID_OK)
+        self.szr40OK = wx.Button(self, wx.ID_OK, label="SAVE")
         self.szr40OK.Disable()
         self.szr40.AddButton(self.szr40OK)
         self.szr40Cancel = wx.Button(self, wx.ID_CANCEL)
@@ -573,15 +570,15 @@ class PDFDialog (wx.Dialog):
 
         ri_szr20 = wx.BoxSizer(wx.HORIZONTAL) # defines the control line
 
-        self.btn_vor = wx.Button(self, wx.ID_ANY, u"forward",
+        self.btn_vor = wx.Button(self, wx.ID_ANY, "forward",
                            defPos, defSiz, 0)
         ri_szr20.Add(self.btn_vor, 0, wx.ALL, 5)
 
-        self.btn_zur = wx.Button(self, wx.ID_ANY, u"backward",
+        self.btn_zur = wx.Button(self, wx.ID_ANY, "backward",
                            defPos, defSiz, 0)
         ri_szr20.Add(self.btn_zur, 0, wx.ALL, 5)
 
-        self.zuSeite = wx.TextCtrl(self, wx.ID_ANY, u"1",
+        self.zuSeite = wx.TextCtrl(self, wx.ID_ANY, "1",
                              defPos, wx.Size(40, -1),
                              wx.TE_PROCESS_ENTER|wx.TE_RIGHT)
         ri_szr20.Add(self.zuSeite, 0, wx.ALL, 5)
@@ -620,7 +617,7 @@ class PDFDialog (wx.Dialog):
         self.btn_vor.Bind(wx.EVT_BUTTON, self.forwPage)       # "forward"
         self.btn_zur.Bind(wx.EVT_BUTTON, self.backPage)       # "backward"
         self.zuSeite.Bind(wx.EVT_TEXT_ENTER, self.gotoPage)   # "page number"
-        self.PDFbild.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel)
+        self.PDFbild.Bind(wx.EVT_MOUSEWHEEL, self.OnMouseWheel) # mouse scroll
 
     def __del__(self):
         pass
@@ -689,12 +686,16 @@ class PDFDialog (wx.Dialog):
                 self.msg.Label = "row %s: missing title" % (str(i+1),)
                 break
 
+        if valide and (self.btn_aus.GetPath() == PDFcfg.file):
+            if PDFcfg.doc.openErrCode > 0 or PDFcfg.doc.needsPass == 1:
+                valide = False
+                self.msg.Label = "repaired or encrypted document - choose a different Output"
+
         if not valide:
             self.szr40OK.Disable()
         else:
             self.szr40OK.Enable()
         self.Layout()
-        self.Centre(wx.BOTH)
 
 #==============================================================================
 # display a PDF page
@@ -705,6 +706,9 @@ def PicRefresh(seite):
     i_seite = min(PDFcfg.seiten, i_seite)
 
     dlg.zuSeite.Value = str(i_seite)    # set page number in dialog fields
+    if PDFcfg.oldpage == i_seite:
+        return
+    PDFcfg.oldpage = i_seite
 
     bmp = pdf_show(i_seite)
     dlg.PDFbild.SetSize(bmp.Size)
@@ -725,125 +729,75 @@ def DisableOK():
 # Read PDF document information
 #==============================================================================
 def getPDFinfo():
-    PDFcfg.doc = fitz.Document(PDFcfg.file)
+    PDFcfg.doc = fitz.open(PDFcfg.file)
+    if PDFcfg.doc.needsPass:
+        decrypt_doc()
+    if PDFcfg.doc.isEncrypted:
+        return True
     PDFcfg.inhalt = PDFcfg.doc.getToC()
     PDFcfg.seiten = PDFcfg.doc.pageCount
     PDFmeta = {"author":"", "title":"", "subject":""}
-    for key in PDFcfg.doc.metadata:
-        wert = PDFcfg.doc.metadata[key]
+    for key, wert in PDFcfg.doc.metadata.items():
         if wert:
-            PDFmeta[key] = wert.decode("utf-8")
+            PDFmeta[key] = wert.decode("utf-8", "ignore")
         else:
             PDFmeta[key] = ""
     PDFcfg.meta = PDFmeta
-    return PDFcfg.doc.needsPass
+    return False
+
+def decrypt_doc():
+    # let user enter document password
+    pw = None
+    dlg = wx.TextEntryDialog(None, 'Please enter password below:',
+             'Document is password protected', '',
+             style = wx.TextEntryDialogStyle|wx.TE_PASSWORD)
+    while pw is None:
+        rc = dlg.ShowModal()
+        if rc == wx.ID_OK:
+            pw = str(dlg.GetValue().encode("utf-8"))
+            PDFcfg.doc.authenticate(pw)
+        else:
+            return
+        if PDFcfg.doc.isEncrypted:
+            pw = None
+            dlg.SetTitle("Wrong password. Enter correct password or cancel.")
+    return
 
 #==============================================================================
 # Write the changed PDF file
 #============================================================================
 def make_pdf(dlg):
-    # create a PDF compatible timestamp
-    cdate = wx.DateTime.Now().Format("D:%Y%m%d%H%M%S-04'30'")
-    PDFmeta = {"/Creator":"MuPDF_OLedit.py",
-               "/Producer":"PyMuPDF, PyPDF2",
-               "/CreationDate": cdate,
-               "/ModDate": cdate,
-               "/Title":dlg.austit.Value,
-               "/Author":dlg.ausaut.Value,
-               "/Subject":dlg.aussub.Value}
+    cdate = wx.DateTime.Now().Format("D:%Y%m%d%H%M%S-04'00'")
+    PDFmeta = {"creator":"PDFoutline.py",
+               "producer":"PyMuPDF",
+               "creationDate": cdate,
+               "modDate": cdate,
+               "title":dlg.austit.Value,
+               "author":dlg.ausaut.Value,
+               "subject":dlg.aussub.Value}
 
-#==============================================================================
-# We need PyPDF2 for writing the updated PDF file.
-# PdfFileMerger would have been more practical (and perhaps faster?), but it
-# contains a bug in its addBookmark method (which is amazingly different from
-# the method with the same name in the PdfFileWriter class).
-#==============================================================================
-    infile = open(PDFcfg.file, "rb")
-    PDFif = PyPDF2.PdfFileReader(infile)
-    PDFof = PyPDF2.PdfFileWriter()
-    for p in range(PDFcfg.seiten):        # first just copy all pages to output
-        page = PDFif.getPage(p)
-        # this obviously just means storing a pointer to the page somewhere
-        PDFof.addPage(page)
-
-#==============================================================================
-# add the meta data
-#==============================================================================
-    PDFof.addMetadata(PDFmeta)
-#==============================================================================
-# lvl_tab stores last bookmark of indent level corresponding to index - 1
-#==============================================================================
-    try:
-        lvl_tab = [0] * max([int(z[0]) for z in dlg.szr20.Table.data])
-    except:
-        lvl_tab = []
+    PDFcfg.doc.setMetadata(PDFmeta)    # set new metadata
+    newtoc = []
 #==============================================================================
 # store our outline entries as bookmarks
 #==============================================================================
     for z in dlg.szr20.Table.data:
         lvl = int(z[0])
-        pag = int(z[2]) - 1
+        pno = int(z[2])
         tit = z[1].strip()
-        tit = tit.encode("latin-1", "ignore")
-        if lvl == 1:                        # no parent if level 1
-            bm = PDFof.addBookmark(tit, pag, None, None, False, False, "/Fit")
-            lvl_tab[0] = bm                 # memorize it: serves as parent!
-        else:
-            # parent = last entry of next higher level
-            bm = PDFof.addBookmark(tit, pag, lvl_tab[lvl - 2],
-            None, False, False, "/Fit")
-            lvl_tab[lvl - 1] = bm           # memorize it: serves as parent!
-#==============================================================================
-# before saving anything, check the outfile situation
-#==============================================================================
+        tit = tit.encode(ENCODING, "ignore")
+        newtoc.append([lvl, tit, pno])
+
+    PDFcfg.doc.setToC(newtoc)
+
     outfile = dlg.btn_aus.GetPath()         # get dir & name of file in screen
-    outfile_dir, outfile_name = os.path.split(outfile)
 
-    if outfile != PDFcfg.file:              # if outfile != input file
-        PDFof_fle = open(dlg.btn_aus.GetPath(), "wb")
+    if outfile == PDFcfg.file:
+        PDFcfg.doc.save(outfile, incremental=True)
     else:                                   # equal: replace input file
-        PDFcfg.TempPDF(dir = outfile_dir)   # first create temp file
-        PDFof_fle = PDFcfg.opdffile         # use it as output
+        PDFcfg.doc.save(outfile, garbage=3)
 
-    PDFof.write(PDFof_fle)                  # write new content to it
-    infile.close()                          # close input file
-    PDFof_fle.close()                       # close output file
-
-    if outfile != PDFcfg.file:              # done if output != input
-        return
-
-    # free MuPDF resources, because the input must be closed if overwritten
-    PDFcfg.doc.close()
-
-    # remove the old input file, rename temp file to input file name
-    try:
-        os.remove(PDFcfg.file)
-        os.rename(PDFcfg.opdfname, PDFcfg.file)
-        return
-    except:
-        pass
-#==============================================================================
-#   Input file is in use, save the precious work to another name
-#==============================================================================
-    new_file = outfile
-    msg = "Input file is still in use, choose another name"
-    while new_file == outfile:
-        dlg = wx.FileDialog(None,
-                message = msg,
-                defaultDir = outfile_dir, defaultFile = outfile_name,
-                style=wx.SAVE)
-        rc = dlg.ShowModal()
-        if rc != wx.ID_OK:               # user is giving up, so do we
-            os.remove(PDFcfg.opdfname)   # remove the temp file
-            return
-        new_file = dlg.GetPath()
-        if os.path.exists(new_file):
-            new_file = outfile
-            msg = "File must not exist - choose another name"
-        dlg.Destroy()
-
-    os.rename(PDFcfg.opdfname, new_file)
-
+    return
 
 #==============================================================================
 #
@@ -853,7 +807,7 @@ def make_pdf(dlg):
 if wx.VERSION[0] >= 3:
     pass
 else:
-    print "need wx version of at least 3"
+    print "need wxPython version 3.0 or higher"
     sys.exit(1)
 app = None
 app = wx.App()
@@ -886,27 +840,13 @@ if not infile:
     # destroy this dialog
     dlg.Destroy()
 
-if infile:
-    PDFcfg = PDFconfig()        # create our PDF descriptor scratchpad
+if infile:                      # if we have a filename ...
+    PDFcfg = PDFconfig()        # create our PDF scratchpad
     PDFcfg.file = infile
-#==============================================================================
-# Generate PDF page 1 image
-#==============================================================================
     if getPDFinfo() == 0:              # input is not encrypted
-        PDFcfg.oldPage = 1
-        dlg = PDFDialog(None)
-
-#==============================================================================
-# Show dialog
-#==============================================================================
-        rc = dlg.ShowModal()
-#==============================================================================
-# Generate modified PDF file
-#==============================================================================
-        if rc == wx.ID_OK:             # output PDF only if OK pressed
+        dlg = PDFDialog(None)          # create dialog
+        rc = dlg.ShowModal()           # show dialog
+        if rc == wx.ID_OK:           # output PDF if SAVE pressed
             make_pdf(dlg)
         dlg.Destroy()
         app = None
-    else:
-        wx.MessageBox("Currently cannot edit encrypted file\n" + infile,
-                      "Encrypted File Error")
