@@ -25,6 +25,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 :meth:`Document.close`          close the document
 :meth:`Document.select`         select a subset of pages
 :meth:`Document.setMetadata`    set the metadata
+:meth:`Document.setToC`         replace the table of contents (TOC)
 :attr:`Document.isClosed`       has document been closed?
 :attr:`Document.outline`        first `Outline` item
 :attr:`Document.name`           filename of document
@@ -162,16 +163,33 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
       :type `m`: dict
 
       :rtype: int
-      :returns: ``0`` upon successful execution and a negative value in case of errors. ``doc.metadata`` will be updated.
+      :returns: ``0`` upon successful execution, otherwise a non-zero integer. ``doc.metadata`` will be updated upon successful execution.
+
+    .. method:: setToC(toc)
+
+      PDF documents only: Replaces the complete current outline tree (table of contents) with a new one. After successful execution, the new outline tree can be accessed as usual via method ``getToc()`` or via property ``outline``. Like with other output-oriented methods, changes must be made permanent via ``save()`` (incremental save supported). Internally, this method consists of the following two steps. For a demonstration see example below.
+
+	  Step 1 deletes all existing bookmarks.
+
+	  Step 2 creates a new table of contents from the entries contained in ``toc``.
+
+	  Should anything go wrong in step 2, step 1 will **not be reversed**, i.e. the old bookmarks will **remain deleted**.
+
+      :param `toc`: A Python list with all bookmark entries that should form the new table of contents. A list compatible with the results of ``getToC()`` (either ``simple=True`` or ``simple=False`` is fine) can be used. In fact, the most practical way to create a new TOC is appropiately modifying ``getToC()``-output and using this as parameter. In any case, each list entry of ``toc`` must consist of 3 or 4 elements: ``[lvl, title, pno, top]``. ``lvl`` is the hierarchy level (int) of the item, starting with ``1``. ``title`` (str) is the title to be displayed. ``pno`` (int) is the target page number where the item points to **(attention: 1-based to support getToC()-output)**.  ``top`` (int / float) is a horizontal location on the page in pixel units. ``top`` is counted from bottom, so a zero points to the bottom of the target page. If ``top`` is omitted, it will be calculated as 36 pixels (half an inch) from top of the page. ``top`` may also be a dictionary (like from ``getToC(simple=False)``) - in this case the value is extracted from its key ``to`` if present.
+
+      :type `toc`: list
+
+      :rtype: int
+      :returns: ``0`` upon successful execution, otherwise a non-zero integer. ``doc.outline`` will be updated upon successful execution and method ``getToC(...)`` will also reflect the new situation.
 
     .. method:: save(outfile, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0)
 
-      PDF documents only: Saves the **current content of the document** under the name ``outfile`` (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successfull ``authenticate``, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed methods ``select()`` or ``setMetadata()``, their results will also be reflected in the saved version.
+      PDF documents only: Saves the **current content of the document** under the name ``outfile`` (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successfull ``authenticate``, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed methods ``select()``, ``setMetadata()`` or ``setToC()``, their results will also be reflected in the saved version.
 
       :param `outfile`: The file name to save to. Must be different from the original ``filename`` value if ``incremental=False`` or else a ValueError will be raised. If saving incremental, then ``garbage`` and ``linear`` **must be** ``False`` and ``outfile`` **must equal** the original filename.
       :type `outfile`: string
 
-      :param `garbage`: Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition compact xref table, 3 = in addition merge duplicate objects. Excludes ``incremental``.
+      :param `garbage`: Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition to 1, compact xref table, 3 = in addition to 2, merge duplicate objects. Excludes ``incremental``.
       :type `garbage`: int
 
       :param `clean`: Clean content streams: 0 = False, 1 = True.
@@ -349,3 +367,29 @@ Clear metadata information. If you do this out of privacy / data protection conc
  0
  >>>
 
+``setToC()`` Example
+----------------------------------
+This shows how to modify or add a table of contents:
+::
+ $ py -3.5
+ Python 3.5.1 (v3.5.1:37a07cee5969, Dec  6 2015, 01:54:25) [MSC v.1900 64 bit (AMD64)] on win32
+ Type "help", "copyright", "credits" or "license" for more information.
+ >>> import fitz
+ >>> doc = fitz.open("test.pdf")
+ >>> toc = doc.getToC()
+ >>> for t in toc: print(t)                           # show what we have
+ ...
+ [1, 'The PyMuPDF Documentation', 1]
+ [2, 'Introduction', 1]
+ [3, 'Note on the Name fitz', 1]
+ [3, 'License', 1]
+ >>> toc[1][1] = "Introduction modified by setToC"    # modify anything
+ >>> doc.setToC(toc)                                  # replace outline tree
+ 0
+ >>> for t in doc.getToC(): print(t)                  # demonstrate it worked
+ ...
+ [1, 'The PyMuPDF Documentation', 1]
+ [2, 'Introduction modified by setToC', 1]            # <<< this has changed
+ [3, 'Note on the Name fitz', 1]
+ [3, 'License', 1]
+ >>>

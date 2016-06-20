@@ -5,6 +5,7 @@
 %feature("autodoc","1");
 %{
 #define SWIG_FILE_WITH_INIT
+#define SWIG_PYTHON_2_UNICODE
 #include <fitz.h>
 #include <pdf.h>
 void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page);
@@ -36,7 +37,7 @@ struct DeviceWrapper {
 %include selecthelpers.i
 
 /*******************************************************************************
-out-typemap: convert return fz_buffers to strings and drop them 
+out-typemap: convert return fz_buffers to strings and drop them
 *******************************************************************************/
 %typemap(out) struct fz_buffer_s * {
     $result = SWIG_FromCharPtrAndSize((const char *)$1->data, $1->len);
@@ -294,7 +295,7 @@ struct fz_document_s {
                 if (PyInt_Check(o)) {
                     $1[i] = (int) PyInt_AsLong(o);
                     if (($1[i] < 0) | ($1[i] >= pageCount)) {
-                        PyErr_SetString(PyExc_ValueError,"page numbers outside range 0 <= n < pageCount");
+                        PyErr_SetString(PyExc_ValueError,"page numbers not in range 0 <= n < pageCount");
                         free($1);
                         return NULL;
                         }
@@ -396,42 +397,76 @@ struct fz_document_s {
             return permit>>2;
         }
 
-        int _getPageObjNumber(int pno) {
+        %exception _getPageObjNumber {
+            $action
+            if(!result) {
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
+                return NULL;
+            }
+        }
+
+        PyObject *_getPageObjNumber(int pno) {
             /* cast-down fz_document to a pdf_document */
             int pageCount = fz_count_pages(gctx, $self);
-            if ((pno < 0) | (pno >= pageCount)) return -1;
+            fz_try(gctx) {
+                if ((pno < 0) | (pno >= pageCount)) {
+                    fz_rethrow_message(gctx,"page number out of range");
+                }
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            if (!pdf) return -2;
+            fz_try(gctx) {
+                if (!pdf) {
+                    fz_rethrow_message(gctx,"not a PDF document");
+                }
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
             pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, pno);
-            int objnum = pdf_to_num(gctx, pageref);
-            return objnum;
+            long objnum = (long) pdf_to_num(gctx, pageref);
+            long objgen = (long) pdf_to_gen(gctx, pageref);
+            PyObject *res, *xrefnum_o, *gennum_o;
+            res = PyList_New(2);                        /* create Python list */
+            xrefnum_o = PyInt_FromLong(objnum);
+            gennum_o  = PyInt_FromLong(objgen);
+            PyList_SetItem(res, 0, xrefnum_o);
+            PyList_SetItem(res, 1, gennum_o);
+            return res;
         }
 /*******************************************************************************
-Delete all outlines from a pdf document
+Delete all bookmarks (table of contents)
+returns number of outline entries deleted
 *******************************************************************************/
-        %pythonappend _delOutlines() %{
+        %pythonappend _delToC() %{
             self.initData()
         %}
-        int _delOutlines() {
+        int _delToC() {
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
             if (!pdf) return -2;                            /* not a pdf      */
             pdf_obj *root, *olroot, *first;
-            /* main root */
+            /* get main root */
             root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root);
-            /* outline root */
+            /* get outline root */
             olroot = pdf_dict_get(gctx, root, PDF_NAME_Outlines);
             if (!olroot) return 0;                          /* no outlines    */
-            int olrootnum, objcount, argc, i;
+            int objcount, argc, i;
             int *res;
             objcount = 0;
             argc = 0;
-            olrootnum = pdf_to_num(gctx, olroot);           /* object number  */
             first = pdf_dict_get(gctx, olroot, PDF_NAME_First); /* first outl */
+            if (!first) return 0;
             argc = countOutlines(first, argc);         /* get number outlines */
+            if (argc < 1) return 0;
             res = malloc(argc * sizeof(int));          /* object number table */
             objcount = fillOLNumbers(res, first, objcount, argc);/* fill table*/
-            pdf_dict_del(gctx, root, PDF_NAME_Outlines);   /* del OL root ref */
-            pdf_delete_object(gctx, pdf, olrootnum);    /* del OL root object */
+            pdf_dict_del(gctx, olroot, PDF_NAME_First);
+            pdf_dict_del(gctx, olroot, PDF_NAME_Last);
+            pdf_dict_del(gctx, olroot, PDF_NAME_Count);
             for (i = 0; i < objcount; i++) {
                 pdf_delete_object(gctx, pdf, res[i]);     /* del all OL items */
             }
@@ -439,16 +474,73 @@ Delete all outlines from a pdf document
         }
 
 /*******************************************************************************
-Add or update metadata with provided raw string
+Get Xref Number of Outline Root
+creates OL root if necessary
 *******************************************************************************/
-        int _setMetadata(char *text) {
+        int _getOLRootNumber()
+        {
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
             if (!pdf) return -2;                            /* not a pdf      */
+            pdf_obj *root, *olroot, *ind_obj;
+            /* get main root */
+            root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root);
+            /* get outline root */
+            olroot = pdf_dict_get(gctx, root, PDF_NAME_Outlines);
+            if (olroot == NULL)
+            {
+                olroot = pdf_new_dict(gctx, pdf, 4);
+                pdf_dict_put(gctx, olroot, PDF_NAME_Type, PDF_NAME_Outlines);
+                ind_obj = pdf_add_object(gctx, pdf, olroot);
+                pdf_dict_put(gctx, root, PDF_NAME_Outlines, ind_obj);
+                olroot = pdf_dict_get(gctx, root, PDF_NAME_Outlines);
+                pdf_drop_obj(gctx, ind_obj);
+            }
+            return pdf_to_num(gctx, olroot);
+        }
+
+/*******************************************************************************
+Get New Xref Number
+*******************************************************************************/
+        int _getNewXref()
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
+            if (!pdf) return -2;                            /* not a pdf      */
+            return pdf_create_object(gctx, pdf);
+        }
+
+/*******************************************************************************
+Update Xref Number with new Object
+Object given as a string
+*******************************************************************************/
+        int _updateObject(int xref, char *text)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
+            if (!pdf) return -2;                            /* not a pdf      */
+            pdf_obj *new_obj;
+            fz_try(gctx) {
+                /* create new object based on passed-in string          */
+                new_obj = pdf_new_obj_from_str(gctx, pdf, text);
+                pdf_update_object(gctx, pdf, xref, new_obj);
+            }
+            fz_catch(gctx) {
+                return gctx->error->errcode;
+            }
+            return 0;
+        }
+
+/*******************************************************************************
+Add or update metadata with provided raw string
+*******************************************************************************/
+        int _setMetadata(char *text)
+        {
+            pdf_document *pdf;
+            pdf = pdf_specifics(gctx, $self);
+            if (!pdf) return -2;
             pdf_obj *info, *new_info, *new_info_ind;
             int info_num;
             info_num = 0;              /* will contain xref no of info object */
             fz_try(gctx) {
-                /* create /Info object based on passed-in string              */
+                /* create new /Info object based on passed-in string          */
                 new_info = pdf_new_obj_from_str(gctx, pdf, text);
             }
             fz_catch(gctx) {
@@ -468,6 +560,9 @@ Add or update metadata with provided raw string
             return 0;
         }
 
+/*******************************************************************************
+Initialize document: set outline and metadata properties
+*******************************************************************************/
         %pythoncode %{
             def initData(self):
                 if self.isEncrypted:

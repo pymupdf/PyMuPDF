@@ -24,7 +24,10 @@ Pages not in the list will be deleted. Pages can occur multiple times and in any
     liste = arg[1]
     if not doc.name.lower().endswith(("/pdf", ".pdf")):
         raise ValueError("only PDF documents supported")
-    return doc._select(liste)
+    r = doc._select(liste)
+    if r == 0:
+        doc.initData()
+    return r
 
 #==============================================================================
 # A function for searching string occurrences on a page.
@@ -821,46 +824,147 @@ def point_abs(p):
 #==============================================================================
 # Document method Set Metadata
 #==============================================================================
-def setMetadata(doc, d):
+def setMetadata(doc, m):
+    '''Set a PDF document's metadata (/Info dictionary)\nParameters:\nm: a dictionary with valid metadata keys.\nAfter execution, the metadata property will be updated.
+    '''
     if not repr(doc).startswith("fitz.Document") or not doc.name.lower().endswith(("/pdf", ".pdf")):
         raise ValueError("argument 1 must be a PDF document")
     if doc.isClosed or doc.isEncrypted:
         raise ValueError("operation on closed or encrypted document")
-    if type(d) is not dict:
+    if type(m) is not dict:
         raise ValueError("argument 2 must be a dictionary")
-    for k in d.keys():
+    for k in m.keys():
         if not k in ["author", "producer", "creator", "title", "format", "encryption",
                      "creationDate", "modDate", "subject", "keywords"]:
             raise ValueError("invalid dictionary key: " + k)
-    # PDF /Info skeleton
-    m = """<</Author(%s) /CreationDate(%s) /Creator(%s) /Keywords(%s) /ModDate(%s)
-/Producer(%s) /Subject(%s) /Title(%s)>>"""
-    aut = "unspecified"
-    cre = "unspecified"
-    mod = "unspecified"
-    crd = "unspecified"
-    kew = "unspecified"
-    pro = "unspecified"
-    sub = "unspecified"
-    tit = "unspecified"
-    if "author" in d and d["author"] is not None:
-        aut = d["author"]
-    if "producer" in d and d["producer"] is not None:
-        pro = d["producer"]
-    if "creator" in d and d["creator"] is not None:
-        cre = d["creator"]
-    if "title" in d and d["title"] is not None:
-        tit = d["title"]
-    if "creationDate" in d and d["creationDate"] is not None:
-        crd = d["creationDate"]
-    if "modDate" in d and d["modDate"] is not None:
-        mod = d["modDate"]
-    if "subject" in d and d["subject"] is not None:
-        sub = d["subject"]
-    if "keywords" in d and d["keywords"] is not None:
-        kew = d["keywords"]
-    m = m % (aut, crd, cre, kew, mod, pro, sub, tit,)
-    r = doc._setMetadata(m)
+
+    d = "<</Author("
+    d += m.get("author", "unspecified")
+    d += ")/CreationDate("
+    d += m.get("creationDate","unspecified")
+    d += ")/Creator("
+    d += m.get("creator", "unspecified")
+    d += ")/Keywords("
+    d += m.get("keywords","unspecified")
+    d += ")/ModDate("
+    d += m.get("modDate","unspecified")
+    d += ")/Producer("
+    d += m.get("producer","unspecified")
+    d += ")/Subject("
+    d += m.get("subject","unspecified")
+    d += ")/Title("
+    d += m.get("title","unspecified")
+    d += ")>>"
+    r = doc._setMetadata(d)
     if r == 0:
         doc.initData()
     return r
+
+#==============================================================================
+# Document method set Table of Contents
+#==============================================================================
+def setToC(doc, toc):
+    '''Creates a new outline tree (table of contents) for a PDF document.\nParameters:
+    doc: a PDF document opened with PyMuPDF
+    toc: a Python list of lists. Each entry must contain level, title, page and optionally top margin on the page.
+    Returns zero (int) on success.
+    '''
+    if not repr(doc).startswith("fitz.Document"):
+        raise ValueError("arg1 not a document")
+    if not doc.name.lower().endswith(("/pdf", ".pdf")):
+        raise ValueError("not a PDF document")
+    if doc.isClosed or doc.isEncrypted:
+        raise ValueError("operation on closed or encrypted document")
+
+    doc._delToC()                      # delete existing outlines
+
+    xref = [0] * (1+len(toc))          # prepare table of new xref entries
+    xref[0] = doc._getOLRootNumber()   # entry zero is outline root xref#
+
+    for i in list(range(len(toc))):
+        xref[i+1] = doc._getNewXref()  # allocate new xref entries
+
+    lvltab = {0:0}                     # stores last entry per hierarchy level
+
+    # contains new outline objects as strings
+    olitems = [{"count":0, "first":-1, "last":-1, "xref":xref[0]}]
+
+    for i in list(range(len(toc))):
+        o = toc[i]
+        lvl = o[0] # level
+        title = o[1] # titel
+        pno = o[2] - 1 # page number
+        p = doc.loadPage(pno)
+        top = int(round(p.bound().y1) - 36)   # default top location on page
+        p = None                       # free page resources
+        if len(o) > 3:
+            if type(o[3]) is int or type(o[3]) is float:
+                top = int(round(o[3]))
+            else:
+                try:
+                    top = int(round(o[3]["to"][1])) # top
+                except: pass
+        d = {}
+        d["first"] = -1
+        d["count"] = 0
+        d["last"]  = -1
+        d["prev"]  = -1
+        d["next"]  = -1
+        d["page"]  = doc._getPageObjNumber(pno)
+        d["top"]   = top
+        d["title"] = title
+        d["parent"] = lvltab[lvl-1]
+        d["xref"] = xref[i + 1]
+        lvltab[lvl] = i+1
+        parent = olitems[lvltab[lvl-1]]
+        parent["count"] += 1
+
+        if parent["first"] == -1:
+            parent["first"] = i+1
+            parent["last"] = i+1
+        else:
+            d["prev"] = parent["last"]
+            prev = olitems[parent["last"]]
+            prev["next"]   = i+1
+            parent["last"] = i+1
+        olitems.append(d)
+
+    for i, ol in enumerate(olitems):
+        txt = "<<"
+        if ol["count"] > 0:
+            txt += "/Count " + str(ol["count"])
+        try:
+            txt += "/Dest[" + str(ol["page"][0]) + " " + str(ol["page"][1]) + " R/XYZ 0 " + str(ol["top"]) + " 0]"
+        except: pass
+        try:
+            if ol["first"] > -1:
+                txt += "/First " + str(xref[ol["first"]]) + " 0 R"
+        except: pass
+        try:
+            if ol["last"] > -1:
+                txt += "/Last " + str(xref[ol["last"]]) + " 0 R"
+        except: pass
+        try:
+            if ol["next"] > -1:
+                txt += "/Next " + str(xref[ol["next"]]) + " 0 R"
+        except: pass
+        try:
+            if ol["parent"] > -1:
+                txt += "/Parent " + str(xref[ol["parent"]]) + " 0 R"
+        except: pass
+        try:
+            if ol["prev"] > -1:
+                txt += "/Prev " + str(xref[ol["prev"]]) + " 0 R"
+        except: pass
+        try:
+            txt += "/Title(" + str(ol["title"]) + ")"
+        except: pass
+        if i == 0:
+            txt += "/Type/Outlines"
+        txt += ">>"
+        rc = doc._updateObject(xref[i], txt)
+        if rc != 0:
+            raise ValueError("outline insert error:\n" + txt)
+
+    doc.initData()
+    return 0

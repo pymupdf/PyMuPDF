@@ -99,7 +99,7 @@ except __builtin__.Exception:
 import os                     
 VersionFitz = "1.9a"          
 VersionBind = "1.9.1"         
-VersionDate = "2016-06-11 14:41:02"        
+VersionDate = "2016-06-20 08:45:17"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -333,18 +333,33 @@ class Document(_object):
 
 
     def _getPageObjNumber(self, pno):
-        """_getPageObjNumber(Document self, int pno) -> int"""
+        """_getPageObjNumber(Document self, int pno) -> PyObject *"""
         return _fitz.Document__getPageObjNumber(self, pno)
 
 
-    def _delOutlines(self):
-        """_delOutlines(Document self) -> int"""
-        val = _fitz.Document__delOutlines(self)
+    def _delToC(self):
+        """_delToC(Document self) -> int"""
+        val = _fitz.Document__delToC(self)
 
         self.initData()
 
 
         return val
+
+
+    def _getOLRootNumber(self):
+        """_getOLRootNumber(Document self) -> int"""
+        return _fitz.Document__getOLRootNumber(self)
+
+
+    def _getNewXref(self):
+        """_getNewXref(Document self) -> int"""
+        return _fitz.Document__getNewXref(self)
+
+
+    def _updateObject(self, xref, text):
+        """_updateObject(Document self, int xref, char * text) -> int"""
+        return _fitz.Document__updateObject(self, xref, text)
 
 
     def _setMetadata(self, text):

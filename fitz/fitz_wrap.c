@@ -3032,6 +3032,7 @@ static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
 
 
 #define SWIG_FILE_WITH_INIT
+#define SWIG_PYTHON_2_UNICODE
 #include <fitz.h>
 #include <pdf.h>
 void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page);
@@ -3048,8 +3049,12 @@ struct DeviceWrapper {
 
 /*******************************************************************************
 Fills table 'res' with outline object numbers
+'res' must be a correctly pre-allocated table of integers
+'obj' must be the first OL item
+returns (int) number of filled-in outline item numbers.
 *******************************************************************************/
-int fillOLNumbers(int *res, pdf_obj *obj, int oc, int argc) {
+int fillOLNumbers(int *res, pdf_obj *obj, int oc, int argc)
+{
     int onum;
     pdf_obj *first, *parent, *thisobj;
     if (!obj) return oc;
@@ -3067,10 +3072,13 @@ int fillOLNumbers(int *res, pdf_obj *obj, int oc, int argc) {
     }
     return oc;
 }
+
 /*******************************************************************************
-Returns number of outlines
+Returns (int) number of outlines
+'obj' must be first OL item
 *******************************************************************************/
-int countOutlines(pdf_obj *obj, int oc) {
+int countOutlines(pdf_obj *obj, int oc)
+{
     pdf_obj *first, *parent, *thisobj;
     if (!obj) return oc;
     thisobj = obj;
@@ -3089,11 +3097,10 @@ int countOutlines(pdf_obj *obj, int oc) {
 Read text from a document page - the short way.
 Main logic is contained in function fz_new_stext_page_from_page of file
 utils.c in the fitz directory.
-At its core, it creates an stext device, runs the stext page through it,
+In essence, it creates an stext device, runs the stext page through it,
 deletes the device and returns the text buffer in the requested format.
 A display list is not used in the process.
 *******************************************************************************/
-
 struct fz_buffer_s *readPageText(fz_page *page, int output) {
     fz_buffer *res;
     fz_output *out;
@@ -3126,7 +3133,6 @@ Helpers for document page selection - main logic was imported
 from pdf_clean_file.c. But instead of analyzing a string-based spefication of
 selected pages, we accept an integer array.
 *******************************************************************************/
-
 typedef struct globals_s
 {
     pdf_document *doc;
@@ -3213,7 +3219,7 @@ int strip_outline(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int pag
         int nc;
 
 /*******************************************************************************
-        Strip any children to start with. This takes care of 
+        Strip any children to start with. This takes care of
         First / Last / Count for us.
 *******************************************************************************/
         nc = strip_outlines(ctx, doc, current, page_count, page_object_nums, names_list);
@@ -3890,49 +3896,111 @@ SWIGINTERN int fz_document_s_getPermits(struct fz_document_s *self){
             if (fz_has_permission(gctx, self, FZ_PERMISSION_ANNOTATE)) permit += 32;
             return permit>>2;
         }
-SWIGINTERN int fz_document_s__getPageObjNumber(struct fz_document_s *self,int pno){
+SWIGINTERN PyObject *fz_document_s__getPageObjNumber(struct fz_document_s *self,int pno){
             /* cast-down fz_document to a pdf_document */
             int pageCount = fz_count_pages(gctx, self);
-            if ((pno < 0) | (pno >= pageCount)) return -1;
+            fz_try(gctx) {
+                if ((pno < 0) | (pno >= pageCount)) {
+                    fz_rethrow_message(gctx,"page number out of range");
+                }
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
             pdf_document *pdf = pdf_specifics(gctx, self);
-            if (!pdf) return -2;
+            fz_try(gctx) {
+                if (!pdf) {
+                    fz_rethrow_message(gctx,"not a PDF document");
+                }
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
             pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, pno);
-            int objnum = pdf_to_num(gctx, pageref);
-            return objnum;
+            long objnum = (long) pdf_to_num(gctx, pageref);
+            long objgen = (long) pdf_to_gen(gctx, pageref);
+            PyObject *res, *xrefnum_o, *gennum_o;
+            res = PyList_New(2);                        /* create Python list */
+            xrefnum_o = PyInt_FromLong(objnum);
+            gennum_o  = PyInt_FromLong(objgen);
+            PyList_SetItem(res, 0, xrefnum_o);
+            PyList_SetItem(res, 1, gennum_o);
+            return res;
         }
-SWIGINTERN int fz_document_s__delOutlines(struct fz_document_s *self){
+SWIGINTERN int fz_document_s__delToC(struct fz_document_s *self){
             pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
             if (!pdf) return -2;                            /* not a pdf      */
             pdf_obj *root, *olroot, *first;
-            /* main root */
+            /* get main root */
             root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root);
-            /* outline root */
+            /* get outline root */
             olroot = pdf_dict_get(gctx, root, PDF_NAME_Outlines);
             if (!olroot) return 0;                          /* no outlines    */
-            int olrootnum, objcount, argc, i;
+            int objcount, argc, i;
             int *res;
             objcount = 0;
             argc = 0;
-            olrootnum = pdf_to_num(gctx, olroot);           /* object number  */
             first = pdf_dict_get(gctx, olroot, PDF_NAME_First); /* first outl */
+            if (!first) return 0;
             argc = countOutlines(first, argc);         /* get number outlines */
+            if (argc < 1) return 0;
             res = malloc(argc * sizeof(int));          /* object number table */
             objcount = fillOLNumbers(res, first, objcount, argc);/* fill table*/
-            pdf_dict_del(gctx, root, PDF_NAME_Outlines);   /* del OL root ref */
-            pdf_delete_object(gctx, pdf, olrootnum);    /* del OL root object */
+            pdf_dict_del(gctx, olroot, PDF_NAME_First);
+            pdf_dict_del(gctx, olroot, PDF_NAME_Last);
+            pdf_dict_del(gctx, olroot, PDF_NAME_Count);
             for (i = 0; i < objcount; i++) {
                 pdf_delete_object(gctx, pdf, res[i]);     /* del all OL items */
             }
             return objcount;
         }
-SWIGINTERN int fz_document_s__setMetadata(struct fz_document_s *self,char *text){
+SWIGINTERN int fz_document_s__getOLRootNumber(struct fz_document_s *self){
             pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
             if (!pdf) return -2;                            /* not a pdf      */
+            pdf_obj *root, *olroot, *ind_obj;
+            /* get main root */
+            root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root);
+            /* get outline root */
+            olroot = pdf_dict_get(gctx, root, PDF_NAME_Outlines);
+            if (olroot == NULL)
+            {
+                olroot = pdf_new_dict(gctx, pdf, 4);
+                pdf_dict_put(gctx, olroot, PDF_NAME_Type, PDF_NAME_Outlines);
+                ind_obj = pdf_add_object(gctx, pdf, olroot);
+                pdf_dict_put(gctx, root, PDF_NAME_Outlines, ind_obj);
+                olroot = pdf_dict_get(gctx, root, PDF_NAME_Outlines);
+                pdf_drop_obj(gctx, ind_obj);
+            }
+            return pdf_to_num(gctx, olroot);
+        }
+SWIGINTERN int fz_document_s__getNewXref(struct fz_document_s *self){
+            pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
+            if (!pdf) return -2;                            /* not a pdf      */
+            return pdf_create_object(gctx, pdf);
+        }
+SWIGINTERN int fz_document_s__updateObject(struct fz_document_s *self,int xref,char *text){
+            pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
+            if (!pdf) return -2;                            /* not a pdf      */
+            pdf_obj *new_obj;
+            fz_try(gctx) {
+                /* create new object based on passed-in string          */
+                new_obj = pdf_new_obj_from_str(gctx, pdf, text);
+                pdf_update_object(gctx, pdf, xref, new_obj);
+            }
+            fz_catch(gctx) {
+                return gctx->error->errcode;
+            }
+            return 0;
+        }
+SWIGINTERN int fz_document_s__setMetadata(struct fz_document_s *self,char *text){
+            pdf_document *pdf;
+            pdf = pdf_specifics(gctx, self);
+            if (!pdf) return -2;
             pdf_obj *info, *new_info, *new_info_ind;
             int info_num;
             info_num = 0;              /* will contain xref no of info object */
             fz_try(gctx) {
-                /* create /Info object based on passed-in string              */
+                /* create new /Info object based on passed-in string          */
                 new_info = pdf_new_obj_from_str(gctx, pdf, text);
             }
             fz_catch(gctx) {
@@ -5262,7 +5330,7 @@ SWIGINTERN PyObject *_wrap_Document__select(PyObject *SWIGUNUSEDPARM(self), PyOb
       if (PyInt_Check(o)) {
         arg2[i] = (int) PyInt_AsLong(o);
         if ((arg2[i] < 0) | (arg2[i] >= pageCount)) {
-          PyErr_SetString(PyExc_ValueError,"page numbers outside range 0 <= n < pageCount");
+          PyErr_SetString(PyExc_ValueError,"page numbers not in range 0 <= n < pageCount");
           free(arg2);
           return NULL;
         }
@@ -5373,7 +5441,7 @@ SWIGINTERN PyObject *_wrap_Document__getPageObjNumber(PyObject *SWIGUNUSEDPARM(s
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  int result;
+  PyObject *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:Document__getPageObjNumber",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
@@ -5386,15 +5454,23 @@ SWIGINTERN PyObject *_wrap_Document__getPageObjNumber(PyObject *SWIGUNUSEDPARM(s
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document__getPageObjNumber" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = (int)(val2);
-  result = (int)fz_document_s__getPageObjNumber(arg1,arg2);
-  resultobj = SWIG_From_int((int)(result));
+  {
+    result = (PyObject *)fz_document_s__getPageObjNumber(arg1,arg2);
+    if(!result) {
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
+      return NULL;
+    }
+  }
+  resultobj = result;
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_Document__delOutlines(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_Document__delToC(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
   void *argp1 = 0 ;
@@ -5402,16 +5478,103 @@ SWIGINTERN PyObject *_wrap_Document__delOutlines(PyObject *SWIGUNUSEDPARM(self),
   PyObject * obj0 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:Document__delOutlines",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:Document__delToC",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__delOutlines" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__delToC" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
   }
   arg1 = (struct fz_document_s *)(argp1);
-  result = (int)fz_document_s__delOutlines(arg1);
+  result = (int)fz_document_s__delToC(arg1);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document__getOLRootNumber(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Document__getOLRootNumber",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__getOLRootNumber" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  result = (int)fz_document_s__getOLRootNumber(arg1);
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document__getNewXref(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Document__getNewXref",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__getNewXref" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  result = (int)fz_document_s__getNewXref(arg1);
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document__updateObject(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  int arg2 ;
+  char *arg3 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Document__updateObject",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__updateObject" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document__updateObject" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Document__updateObject" "', argument " "3"" of type '" "char *""'");
+  }
+  arg3 = (char *)(buf3);
+  result = (int)fz_document_s__updateObject(arg1,arg2,arg3);
+  resultobj = SWIG_From_int((int)(result));
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return resultobj;
+fail:
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return NULL;
 }
 
@@ -10404,8 +10567,11 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document__select", _wrap_Document__select, METH_VARARGS, (char *)"Document__select(Document self, int * liste) -> int"},
 	 { (char *)"Document__readPageText", _wrap_Document__readPageText, METH_VARARGS, (char *)"Document__readPageText(Document self, int pno, int output=0) -> struct fz_buffer_s *"},
 	 { (char *)"Document_getPermits", _wrap_Document_getPermits, METH_VARARGS, (char *)"getPermits(self) -> dictionary containing permissions"},
-	 { (char *)"Document__getPageObjNumber", _wrap_Document__getPageObjNumber, METH_VARARGS, (char *)"Document__getPageObjNumber(Document self, int pno) -> int"},
-	 { (char *)"Document__delOutlines", _wrap_Document__delOutlines, METH_VARARGS, (char *)"Document__delOutlines(Document self) -> int"},
+	 { (char *)"Document__getPageObjNumber", _wrap_Document__getPageObjNumber, METH_VARARGS, (char *)"Document__getPageObjNumber(Document self, int pno) -> PyObject *"},
+	 { (char *)"Document__delToC", _wrap_Document__delToC, METH_VARARGS, (char *)"Document__delToC(Document self) -> int"},
+	 { (char *)"Document__getOLRootNumber", _wrap_Document__getOLRootNumber, METH_VARARGS, (char *)"Document__getOLRootNumber(Document self) -> int"},
+	 { (char *)"Document__getNewXref", _wrap_Document__getNewXref, METH_VARARGS, (char *)"Document__getNewXref(Document self) -> int"},
+	 { (char *)"Document__updateObject", _wrap_Document__updateObject, METH_VARARGS, (char *)"Document__updateObject(Document self, int xref, char * text) -> int"},
 	 { (char *)"Document__setMetadata", _wrap_Document__setMetadata, METH_VARARGS, (char *)"Document__setMetadata(Document self, char * text) -> int"},
 	 { (char *)"delete_Document", _wrap_delete_Document, METH_VARARGS, (char *)"delete_Document(Document self)"},
 	 { (char *)"Document_swigregister", Document_swigregister, METH_VARARGS, NULL},

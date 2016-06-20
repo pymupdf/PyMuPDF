@@ -1,8 +1,12 @@
 %{
 /*******************************************************************************
 Fills table 'res' with outline object numbers
+'res' must be a correctly pre-allocated table of integers
+'obj' must be the first OL item
+returns (int) number of filled-in outline item numbers.
 *******************************************************************************/
-int fillOLNumbers(int *res, pdf_obj *obj, int oc, int argc) {
+int fillOLNumbers(int *res, pdf_obj *obj, int oc, int argc)
+{
     int onum;
     pdf_obj *first, *parent, *thisobj;
     if (!obj) return oc;
@@ -20,10 +24,13 @@ int fillOLNumbers(int *res, pdf_obj *obj, int oc, int argc) {
     }
     return oc;
 }
+
 /*******************************************************************************
-Returns number of outlines
+Returns (int) number of outlines
+'obj' must be first OL item
 *******************************************************************************/
-int countOutlines(pdf_obj *obj, int oc) {
+int countOutlines(pdf_obj *obj, int oc)
+{
     pdf_obj *first, *parent, *thisobj;
     if (!obj) return oc;
     thisobj = obj;
@@ -42,11 +49,10 @@ int countOutlines(pdf_obj *obj, int oc) {
 Read text from a document page - the short way.
 Main logic is contained in function fz_new_stext_page_from_page of file
 utils.c in the fitz directory.
-At its core, it creates an stext device, runs the stext page through it,
+In essence, it creates an stext device, runs the stext page through it,
 deletes the device and returns the text buffer in the requested format.
 A display list is not used in the process.
 *******************************************************************************/
-
 struct fz_buffer_s *readPageText(fz_page *page, int output) {
     fz_buffer *res;
     fz_output *out;
@@ -79,7 +85,6 @@ Helpers for document page selection - main logic was imported
 from pdf_clean_file.c. But instead of analyzing a string-based spefication of
 selected pages, we accept an integer array.
 *******************************************************************************/
-
 typedef struct globals_s
 {
     pdf_document *doc;
@@ -166,7 +171,7 @@ int strip_outline(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int pag
         int nc;
 
 /*******************************************************************************
-        Strip any children to start with. This takes care of 
+        Strip any children to start with. This takes care of
         First / Last / Count for us.
 *******************************************************************************/
         nc = strip_outlines(ctx, doc, current, page_count, page_object_nums, names_list);

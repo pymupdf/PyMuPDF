@@ -53,6 +53,7 @@
 <li><a class="reference internal" href="#remarks-on-select">Remarks on <code class="docutils literal"><span class="pre">select()</span></code></a></li>
 <li><a class="reference internal" href="#select-examples"><code class="docutils literal"><span class="pre">select()</span></code> Examples</a></li>
 <li><a class="reference internal" href="#setmetadata-example"><code class="docutils literal"><span class="pre">setMetadata()</span></code> Example</a></li>
+<li><a class="reference internal" href="#settoc-example"><code class="docutils literal"><span class="pre">setToC()</span></code> Example</a></li>
 </ul>
 </li>
 </ul>
@@ -133,31 +134,34 @@
 <tr class="row-odd"><td><a class="reference internal" href="#Document.setMetadata" title="Document.setMetadata"><code class="xref py py-meth docutils literal"><span class="pre">Document.setMetadata()</span></code></a></td>
 <td>set the metadata</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><code class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.setToC" title="Document.setToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.setToC()</span></code></a></td>
+<td>replace the table of contents (TOC)</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><code class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></code></a></td>
 <td>has document been closed?</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><code class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><code class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></code></a></td>
 <td>first <cite>Outline</cite> item</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.name" title="Document.name"><code class="xref py py-attr docutils literal"><span class="pre">Document.name</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.name" title="Document.name"><code class="xref py py-attr docutils literal"><span class="pre">Document.name</span></code></a></td>
 <td>filename of document</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.openErrCode" title="Document.openErrCode"><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrCode</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.openErrCode" title="Document.openErrCode"><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrCode</span></code></a></td>
 <td>&gt; 0 if repair occurred during open</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.openErrMsg" title="Document.openErrMsg"><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrMsg</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.openErrMsg" title="Document.openErrMsg"><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrMsg</span></code></a></td>
 <td>last error message if openErrCode &gt; 0</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
 <td>require password to access data?</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.isEncrypted" title="Document.isEncrypted"><code class="xref py py-attr docutils literal"><span class="pre">Document.isEncrypted</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.isEncrypted" title="Document.isEncrypted"><code class="xref py py-attr docutils literal"><span class="pre">Document.isEncrypted</span></code></a></td>
 <td>document still encrypted?</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
 <td>number of pages</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
 <td>metadata</td>
 </tr>
 </tbody>
@@ -351,7 +355,30 @@
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal"><span class="pre">0</span></code> upon successful execution and a negative value in case of errors. <code class="docutils literal"><span class="pre">doc.metadata</span></code> will be updated.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal"><span class="pre">0</span></code> upon successful execution, otherwise a non-zero integer. <code class="docutils literal"><span class="pre">doc.metadata</span></code> will be updated upon successful execution.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Document.setToC">
+<code class="descname">setToC</code><span class="sig-paren">(</span><em>toc</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.setToC" title="Permalink to this definition">¶</a></dt>
+<dd><p>PDF documents only: Replaces the complete current outline tree (table of contents) with a new one. After successful execution, the new outline tree can be accessed as usual via method <code class="docutils literal"><span class="pre">getToc()</span></code> or via property <code class="docutils literal"><span class="pre">outline</span></code>. Like with other output-oriented methods, changes must be made permanent via <code class="docutils literal"><span class="pre">save()</span></code> (incremental save supported). Internally, this method consists of the following two steps. For a demonstration see example below.</p>
+<blockquote>
+<div><p>Step 1 deletes all existing bookmarks.</p>
+<p>Step 2 creates a new table of contents from the entries contained in <code class="docutils literal"><span class="pre">toc</span></code>.</p>
+<p>Should anything go wrong in step 2, step 1 will <strong>not be reversed</strong>, i.e. the old bookmarks will <strong>remain deleted</strong>.</p>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>toc</strong> (<em>list</em>) &#8211; A Python list with all bookmark entries that should form the new table of contents. A list compatible with the results of <code class="docutils literal"><span class="pre">getToC()</span></code> (either <code class="docutils literal"><span class="pre">simple=True</span></code> or <code class="docutils literal"><span class="pre">simple=False</span></code> is fine) can be used. In fact, the most practical way to create a new TOC is appropiately modifying <code class="docutils literal"><span class="pre">getToC()</span></code>-output and using this as parameter. In any case, each list entry of <code class="docutils literal"><span class="pre">toc</span></code> must consist of 3 or 4 elements: <code class="docutils literal"><span class="pre">[lvl,</span> <span class="pre">title,</span> <span class="pre">pno,</span> <span class="pre">top]</span></code>. <code class="docutils literal"><span class="pre">lvl</span></code> is the hierarchy level (int) of the item, starting with <code class="docutils literal"><span class="pre">1</span></code>. <code class="docutils literal"><span class="pre">title</span></code> (str) is the title to be displayed. <code class="docutils literal"><span class="pre">pno</span></code> (int) is the target page number where the item points to <strong>(attention: 1-based to support getToC()-output)</strong>.  <code class="docutils literal"><span class="pre">top</span></code> (int / float) is a horizontal location on the page in pixel units. <code class="docutils literal"><span class="pre">top</span></code> is counted from bottom, so a zero points to the bottom of the target page. If <code class="docutils literal"><span class="pre">top</span></code> is omitted, it will be calculated as 36 pixels (half an inch) from top of the page. <code class="docutils literal"><span class="pre">top</span></code> may also be a dictionary (like from <code class="docutils literal"><span class="pre">getToC(simple=False)</span></code>) - in this case the value is extracted from its key <code class="docutils literal"><span class="pre">to</span></code> if present.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal"><span class="pre">0</span></code> upon successful execution, otherwise a non-zero integer. <code class="docutils literal"><span class="pre">doc.outline</span></code> will be updated upon successful execution and method <code class="docutils literal"><span class="pre">getToC(...)</span></code> will also reflect the new situation.</td>
 </tr>
 </tbody>
 </table>
@@ -360,14 +387,14 @@
 <dl class="method">
 <dt id="Document.save">
 <code class="descname">save</code><span class="sig-paren">(</span><em>outfile</em>, <em>garbage=0</em>, <em>clean=0</em>, <em>deflate=0</em>, <em>incremental=0</em>, <em>ascii=0</em>, <em>expand=0</em>, <em>linear=0</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>PDF documents only: Saves the <strong>current content of the document</strong> under the name <code class="docutils literal"><span class="pre">outfile</span></code> (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successfull <code class="docutils literal"><span class="pre">authenticate</span></code>, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed methods <code class="docutils literal"><span class="pre">select()</span></code> or <code class="docutils literal"><span class="pre">setMetadata()</span></code>, their results will also be reflected in the saved version.</p>
+<dd><p>PDF documents only: Saves the <strong>current content of the document</strong> under the name <code class="docutils literal"><span class="pre">outfile</span></code> (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successfull <code class="docutils literal"><span class="pre">authenticate</span></code>, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed methods <code class="docutils literal"><span class="pre">select()</span></code>, <code class="docutils literal"><span class="pre">setMetadata()</span></code> or <code class="docutils literal"><span class="pre">setToC()</span></code>, their results will also be reflected in the saved version.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>outfile</strong> (<em>string</em>) &#8211; The file name to save to. Must be different from the original <code class="docutils literal"><span class="pre">filename</span></code> value if <code class="docutils literal"><span class="pre">incremental=False</span></code> or else a ValueError will be raised. If saving incremental, then <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code> <strong>must be</strong> <code class="docutils literal"><span class="pre">False</span></code> and <code class="docutils literal"><span class="pre">outfile</span></code> <strong>must equal</strong> the original filename.</li>
-<li><strong>garbage</strong> (<em>int</em>) &#8211; Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition compact xref table, 3 = in addition merge duplicate objects. Excludes <code class="docutils literal"><span class="pre">incremental</span></code>.</li>
+<li><strong>garbage</strong> (<em>int</em>) &#8211; Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition to 1, compact xref table, 3 = in addition to 2, merge duplicate objects. Excludes <code class="docutils literal"><span class="pre">incremental</span></code>.</li>
 <li><strong>clean</strong> (<em>int</em>) &#8211; Clean content streams: 0 = False, 1 = True.</li>
 <li><strong>deflate</strong> (<em>int</em>) &#8211; Deflate uncompressed streams: 0 = False, 1 = True.</li>
 <li><strong>incremental</strong> (<em>int</em>) &#8211; Only save changed objects: 0 = False, 1 = True. Excludes <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code>. Cannot be used for decrypted files and for files that have been repaired during open (<code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>). In these cases saving to a new file is required.</li>
@@ -607,6 +634,34 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="settoc-example">
+<h2><code class="docutils literal"><span class="pre">setToC()</span></code> Example<a class="headerlink" href="#settoc-example" title="Permalink to this headline">¶</a></h2>
+<p>This shows how to modify or add a table of contents:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ py -3.5
+Python 3.5.1 (v3.5.1:37a07cee5969, Dec  6 2015, 01:54:25) [MSC v.1900 64 bit (AMD64)] on win32
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&gt;&gt;&gt; import fitz
+&gt;&gt;&gt; doc = fitz.open(&quot;test.pdf&quot;)
+&gt;&gt;&gt; toc = doc.getToC()
+&gt;&gt;&gt; for t in toc: print(t)                           # show what we have
+...
+[1, &#39;The PyMuPDF Documentation&#39;, 1]
+[2, &#39;Introduction&#39;, 1]
+[3, &#39;Note on the Name fitz&#39;, 1]
+[3, &#39;License&#39;, 1]
+&gt;&gt;&gt; toc[1][1] = &quot;Introduction modified by setToC&quot;    # modify anything
+&gt;&gt;&gt; doc.setToC(toc)                                  # replace outline tree
+0
+&gt;&gt;&gt; for t in doc.getToC(): print(t)                  # demonstrate it worked
+...
+[1, &#39;The PyMuPDF Documentation&#39;, 1]
+[2, &#39;Introduction modified by setToC&#39;, 1]            # &lt;&lt;&lt; this has changed
+[3, &#39;Note on the Name fitz&#39;, 1]
+[3, &#39;License&#39;, 1]
+&gt;&gt;&gt;
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -633,7 +688,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 13. Jun 2016.
+      Last updated on 20. Jun 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

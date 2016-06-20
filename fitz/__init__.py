@@ -46,6 +46,7 @@ fitz.Document.select        = fitz.utils.select
 fitz.Document.getPagePixmap = fitz.utils.getPagePixmap
 fitz.Document.getPageText   = fitz.utils.getPageText
 fitz.Document.setMetadata   = fitz.utils.setMetadata
+fitz.Document.setToC        = fitz.utils.setToC
 fitz.Page.getLinks          = fitz.utils.getLinks
 fitz.Page.getPixmap         = fitz.utils.getPixmap
 fitz.Page.getText           = fitz.utils.getText
