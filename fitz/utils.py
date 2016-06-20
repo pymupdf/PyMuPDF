@@ -839,21 +839,21 @@ def setMetadata(doc, m):
             raise ValueError("invalid dictionary key: " + k)
 
     d = "<</Author("
-    d += m.get("author", "unspecified")
+    d += "none" if not m.get("author") else m["author"]
     d += ")/CreationDate("
-    d += m.get("creationDate","unspecified")
+    d += "none" if not m.get("creationDate") else m["creationDate"]
     d += ")/Creator("
-    d += m.get("creator", "unspecified")
+    d += "none" if not m.get("creator") else m["creator"]
     d += ")/Keywords("
-    d += m.get("keywords","unspecified")
+    d += "none" if not m.get("keywords") else m["keywords"]
     d += ")/ModDate("
-    d += m.get("modDate","unspecified")
+    d += "none" if not m.get("modDate") else m["modDate"]
     d += ")/Producer("
-    d += m.get("producer","unspecified")
+    d += "none" if not m.get("producer") else m["producer"]
     d += ")/Subject("
-    d += m.get("subject","unspecified")
+    d += "none" if not m.get("subject") else m["subject"]
     d += ")/Title("
-    d += m.get("title","unspecified")
+    d += "none" if not m.get("title") else m["title"]
     d += ")>>"
     r = doc._setMetadata(d)
     if r == 0:
