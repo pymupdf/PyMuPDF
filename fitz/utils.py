@@ -880,6 +880,8 @@ def setToC(doc, toc):
     # check toc validity
     if type(toc) is not list:
         raise ValueError("arg2 must be a list")
+    if toclen == 0:
+        return doc._delToC()
     t0 = toc[0]
     if type(t0) is not list:
         raise ValueError("arg2 must be a list of lists of 3 or 4 items")
