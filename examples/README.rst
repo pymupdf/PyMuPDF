@@ -18,7 +18,7 @@ Files in this Directory
 File                    Purpose
 ======================= ====================================================================================
 PDF_Joiner.py           a full-featured program to join PDF files
-PDF_OLedit.py           a program to edit a PDF's table of contents
+PDFoledit.py            a program to edit a PDF's table of contents
 PDF2Text.py             a program to extract all text of a PDF
 PDF2TextJS.py           a program to extract all text of a PDF preserving normal reading sequence
 ParseTab.py             a function to parse tables within documents
