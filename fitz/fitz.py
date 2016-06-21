@@ -99,7 +99,7 @@ except __builtin__.Exception:
 import os                     
 VersionFitz = "1.9a"          
 VersionBind = "1.9.1"         
-VersionDate = "2016-06-20 13:43:02"        
+VersionDate = "2016-06-21 07:58:18"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""

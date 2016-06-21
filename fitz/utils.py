@@ -876,12 +876,31 @@ def setToC(doc, toc):
     if doc.isClosed or doc.isEncrypted:
         raise ValueError("operation on closed or encrypted document")
 
+    toclen = len(toc)
+    # check toc validity
+    if type(toc) is not list:
+        raise ValueError("arg2 must be a list")
+    t0 = toc[0]
+    if type(t0) is not list:
+        raise ValueError("arg2 must be a list of lists of 3 or 4 items")
+    if t0[0] != 1:
+        raise ValueError("item 0 must have hierarchy level 1")
+    for i in list(range(toclen-1)):
+        t1 = toc[i]
+        t2 = toc[i+1]
+        if (type(t2) is not list) or len(t2) < 3 or len(t2) > 4:
+            raise ValueError("arg2 must be a list of lists of 3 or 4 items")
+        if (type(t2[0]) is not int) or t2[0] < 1:
+            raise ValueError("hierarchy levels must be int > 0")
+        if t2[0] > t1[0] + 1:
+            raise ValueError("hierarchy steps must not be > 1")
+
     doc._delToC()                      # delete existing outlines
 
-    xref = [0] * (1+len(toc))          # prepare table of new xref entries
+    xref = [0] * (1+toclen)            # prepare table of new xref entries
     xref[0] = doc._getOLRootNumber()   # entry zero is outline root xref#
 
-    for i in list(range(len(toc))):
+    for i in list(range(toclen)):
         xref[i+1] = doc._getNewXref()  # allocate new xref entries
 
     lvltab = {0:0}                     # stores last entry per hierarchy level
@@ -889,21 +908,24 @@ def setToC(doc, toc):
     # contains new outline objects as strings
     olitems = [{"count":0, "first":-1, "last":-1, "xref":xref[0]}]
 
-    for i in list(range(len(toc))):
+    for i in list(range(toclen)):
         o = toc[i]
         lvl = o[0] # level
         title = o[1] # titel
         pno = o[2] - 1 # page number
         p = doc.loadPage(pno)
         top = int(round(p.bound().y1) - 36)   # default top location on page
-        p = None                       # free page resources
+        p = None                              # free page resources
+        top1 = top + 0                        # accept provided top parameter
         if len(o) > 3:
             if type(o[3]) is int or type(o[3]) is float:
-                top = int(round(o[3]))
+                top1 = int(round(o[3]))
             else:
                 try:
-                    top = int(round(o[3]["to"][1])) # top
+                    top1 = int(round(o[3]["to"][1])) # top
                 except: pass
+        if top1 >= 0 and top1 <= top:
+            top = top1
         d = {}
         d["first"] = -1
         d["count"] = 0
