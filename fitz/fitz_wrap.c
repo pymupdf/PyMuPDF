@@ -3901,7 +3901,7 @@ SWIGINTERN PyObject *fz_document_s__getPageObjNumber(struct fz_document_s *self,
             int pageCount = fz_count_pages(gctx, self);
             fz_try(gctx) {
                 if ((pno < 0) | (pno >= pageCount)) {
-                    fz_rethrow_message(gctx,"page number out of range");
+                    fz_throw(gctx, 1, "page number out of range");
                 }
             }
             fz_catch(gctx) {
@@ -3910,7 +3910,7 @@ SWIGINTERN PyObject *fz_document_s__getPageObjNumber(struct fz_document_s *self,
             pdf_document *pdf = pdf_specifics(gctx, self);
             fz_try(gctx) {
                 if (!pdf) {
-                    fz_rethrow_message(gctx,"not a PDF document");
+                    fz_throw(gctx, 1, "not a PDF document");
                 }
             }
             fz_catch(gctx) {
@@ -3956,7 +3956,12 @@ SWIGINTERN int fz_document_s__delToC(struct fz_document_s *self){
         }
 SWIGINTERN int fz_document_s__getOLRootNumber(struct fz_document_s *self){
             pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
-            if (!pdf) return -2;                            /* not a pdf      */
+            fz_try(gctx) {
+                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+            }
+            fz_catch(gctx) {
+                return 0;
+            }
             pdf_obj *root, *olroot, *ind_obj;
             /* get main root */
             root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root);
@@ -3975,12 +3980,22 @@ SWIGINTERN int fz_document_s__getOLRootNumber(struct fz_document_s *self){
         }
 SWIGINTERN int fz_document_s__getNewXref(struct fz_document_s *self){
             pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
-            if (!pdf) return -2;                            /* not a pdf      */
+            fz_try(gctx) {
+                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+            }
+            fz_catch(gctx) {
+                return 0;
+            }
             return pdf_create_object(gctx, pdf);
         }
 SWIGINTERN int fz_document_s__updateObject(struct fz_document_s *self,int xref,char *text){
             pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
-            if (!pdf) return -2;                            /* not a pdf      */
+            fz_try(gctx) {
+                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+            }
+            fz_catch(gctx) {
+                return 1;
+            }
             pdf_obj *new_obj;
             fz_try(gctx) {
                 /* create new object based on passed-in string          */
@@ -3993,9 +4008,13 @@ SWIGINTERN int fz_document_s__updateObject(struct fz_document_s *self,int xref,c
             return 0;
         }
 SWIGINTERN int fz_document_s__setMetadata(struct fz_document_s *self,char *text){
-            pdf_document *pdf;
-            pdf = pdf_specifics(gctx, self);
-            if (!pdf) return -2;
+            pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/         
+            fz_try(gctx) {
+                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+            }
+            fz_catch(gctx) {
+                return 1;
+            }
             pdf_obj *info, *new_info, *new_info_ind;
             int info_num;
             info_num = 0;              /* will contain xref no of info object */
@@ -5506,7 +5525,15 @@ SWIGINTERN PyObject *_wrap_Document__getOLRootNumber(PyObject *SWIGUNUSEDPARM(se
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__getOLRootNumber" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
   }
   arg1 = (struct fz_document_s *)(argp1);
-  result = (int)fz_document_s__getOLRootNumber(arg1);
+  {
+    result = (int)fz_document_s__getOLRootNumber(arg1);
+    if(!result) {
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
+      return NULL;
+    }
+  }
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
@@ -5528,7 +5555,15 @@ SWIGINTERN PyObject *_wrap_Document__getNewXref(PyObject *SWIGUNUSEDPARM(self), 
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__getNewXref" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
   }
   arg1 = (struct fz_document_s *)(argp1);
-  result = (int)fz_document_s__getNewXref(arg1);
+  {
+    result = (int)fz_document_s__getNewXref(arg1);
+    if(!result) {
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
+      return NULL;
+    }
+  }
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
@@ -5569,7 +5604,15 @@ SWIGINTERN PyObject *_wrap_Document__updateObject(PyObject *SWIGUNUSEDPARM(self)
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Document__updateObject" "', argument " "3"" of type '" "char *""'");
   }
   arg3 = (char *)(buf3);
-  result = (int)fz_document_s__updateObject(arg1,arg2,arg3);
+  {
+    result = (int)fz_document_s__updateObject(arg1,arg2,arg3);
+    if(result) {
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
+      return NULL;
+    }
+  }
   resultobj = SWIG_From_int((int)(result));
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return resultobj;

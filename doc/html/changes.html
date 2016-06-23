@@ -83,26 +83,27 @@
 <p>Changes in these bindings compared to version 1.8.0 are the following:</p>
 <ul class="simple">
 <li>New methods <code class="docutils literal"><span class="pre">getRectArea()</span></code> for both <code class="docutils literal"><span class="pre">fitz.Rect</span></code> and <code class="docutils literal"><span class="pre">fitz.IRect</span></code></li>
-<li>Pixmaps can now be created directly from files using the new constructor <code class="docutils literal"><span class="pre">fitz.Pixmap(filename)</span></code>. All of the following image formats covered by MuPDF are thus also supported as inputs for pixmaps: BMP, JPEG, JXR, PNG, GIF, TIFF.</li>
-<li>The Pixmap constructor <code class="docutils literal"><span class="pre">fitz.Pixmap(data,</span> <span class="pre">len(data))</span></code> has been extended accordingly to support the above image formats as well (not just PNG as it did in version 1.8.0).</li>
-<li><code class="docutils literal"><span class="pre">fitz.Rect</span></code> objects can now be created with all possible combinations of points and coordinates.</li>
+<li>Pixmaps can now be created directly from files using the new constructor <code class="docutils literal"><span class="pre">fitz.Pixmap(filename)</span></code>.</li>
+<li>The Pixmap constructor <code class="docutils literal"><span class="pre">fitz.Pixmap(data,</span> <span class="pre">len(data))</span></code> has been extended accordingly.</li>
+<li><code class="docutils literal"><span class="pre">fitz.Rect</span></code> can now be created with all possible combinations of points and coordinates.</li>
 <li>PyMuPDF classes and methods now all contain  __doc__ strings,  most of them created by SWIG automatically. While the PyMuPDF documentation certainly is more detailed, this feature should help a lot when programming in Python-aware IDEs.</li>
-<li>A new method of <code class="docutils literal"><span class="pre">fitz.Document.getPermits()</span></code> returns the permissions associated with the current access to the document (print, edit, annotate, copy), as a Python dictionary.</li>
+<li>A new document method of <code class="docutils literal"><span class="pre">getPermits()</span></code> returns the permissions associated with the current access to the document (print, edit, annotate, copy), as a Python dictionary.</li>
 <li>The identity matrix <code class="docutils literal"><span class="pre">fitz.Identity</span></code> is now <strong>immutable</strong>.</li>
-<li>The new method <code class="docutils literal"><span class="pre">fitz.Document.select(list)</span></code> removes all pages from an open document that are not contained in the list. Pages can also be duplicated and re-arranged.</li>
+<li>The new document method <code class="docutils literal"><span class="pre">select(list)</span></code> removes all pages from a document that are not contained in the list. Pages can also be duplicated and re-arranged.</li>
 <li>Various improvements and new members in our demo and examples collections. Perhaps most prominently: <code class="docutils literal"><span class="pre">PDF_display</span></code> now supports scrolling with the mouse wheel, and there is a new example program <code class="docutils literal"><span class="pre">wxTableExtract</span></code> which allows to graphically identify and extract table data in documents.</li>
-<li><code class="docutils literal"><span class="pre">fitz.open()</span></code> is an alias of <code class="docutils literal"><span class="pre">fitz.Document()</span></code>.</li>
-<li>New method <code class="docutils literal"><span class="pre">fitz.Pixmap.getPNGData()</span></code> which will return a memory area formatted as a PNG image of the pixmap.</li>
-<li>New technical method <code class="docutils literal"><span class="pre">fitz.Pixmap.samplesRGB()</span></code> providing a <code class="docutils literal"><span class="pre">samples</span></code> version with alpha bytes stripped off (RGB colorspaces only).</li>
-<li>New technical method <code class="docutils literal"><span class="pre">fitz.Pixmap.samplesAlpha()</span></code> providing the alpha bytes only of the <code class="docutils literal"><span class="pre">samples</span></code> area.</li>
-<li>New iterator over a document&#8217;s set of pages.</li>
+<li><code class="docutils literal"><span class="pre">fitz.open()</span></code> is now an alias of <code class="docutils literal"><span class="pre">fitz.Document()</span></code>.</li>
+<li>New pixmap method <code class="docutils literal"><span class="pre">getPNGData()</span></code> which will return a memory area formatted as a PNG image of the pixmap.</li>
+<li>New pixmap method <code class="docutils literal"><span class="pre">samplesRGB()</span></code> providing a <code class="docutils literal"><span class="pre">samples</span></code> version with alpha bytes stripped off (RGB colorspaces only).</li>
+<li>New pixmap method <code class="docutils literal"><span class="pre">samplesAlpha()</span></code> providing the alpha bytes only of the <code class="docutils literal"><span class="pre">samples</span></code> area.</li>
+<li>New iterator <code class="docutils literal"><span class="pre">fitz.Pages(doc)</span></code> over a document&#8217;s set of pages.</li>
 <li>New matrix methods <code class="docutils literal"><span class="pre">invert()</span></code> (calculate inverted matrix), <code class="docutils literal"><span class="pre">concat()</span></code> (calculate matrix product), <code class="docutils literal"><span class="pre">preTranslate()</span></code> (perform a shift operation).</li>
 <li>New <code class="docutils literal"><span class="pre">IRect</span></code> methods <code class="docutils literal"><span class="pre">intersect()</span></code> (intersection with another rectangle), <code class="docutils literal"><span class="pre">translate()</span></code> (perform a shift operation).</li>
 <li>New <code class="docutils literal"><span class="pre">Rect</span></code> methods <code class="docutils literal"><span class="pre">intersect()</span></code> (intersection with another rectangle), <code class="docutils literal"><span class="pre">transform()</span></code> (transformation with a matrix), <code class="docutils literal"><span class="pre">includePoint()</span></code> (enlarge rectangle to also contain a point), <code class="docutils literal"><span class="pre">includeRect()</span></code> (enlarge rectangle to also contain another one).</li>
 <li>Documented <code class="docutils literal"><span class="pre">Point.transform()</span></code> (transform a point with a matrix).</li>
-<li>Arithmetics introduced for <code class="docutils literal"><span class="pre">Matrix</span></code>, <code class="docutils literal"><span class="pre">IRect</span></code>, <code class="docutils literal"><span class="pre">Rect</span></code> and <code class="docutils literal"><span class="pre">Point</span></code> classes, allowing compact, algebraic formulations for manipulating such objects.</li>
-<li>Incremental saves for changes are possible now using this call pattern: <code class="docutils literal"><span class="pre">doc.save(doc.name,</span> <span class="pre">incremental=True)</span></code></li>
-<li>A PDF document&#8217;s metadata can now be set or changed by method <code class="docutils literal"><span class="pre">setMetadata()</span></code>. Any such changes can be made permanent by method <code class="docutils literal"><span class="pre">save(...,</span> <span class="pre">incremental=True)</span></code>. When data security considerations require it, all metadata can be deleted also by this method.</li>
+<li><code class="docutils literal"><span class="pre">Matrix</span></code>, <code class="docutils literal"><span class="pre">IRect</span></code>, <code class="docutils literal"><span class="pre">Rect</span></code> and <code class="docutils literal"><span class="pre">Point</span></code> classes now support compact, algebraic formulations for manipulating such objects.</li>
+<li>Incremental saves for changes are possible now using the call pattern <code class="docutils literal"><span class="pre">doc.save(doc.name,</span> <span class="pre">incremental=True)</span></code>.</li>
+<li>A PDF&#8217;s metadata can now be deleted, set or changed by document method <code class="docutils literal"><span class="pre">setMetadata()</span></code>. Supports incremental saves.</li>
+<li>A PDF&#8217;s bookmarks (or table of contents) can now be deleted, set or changed with the entries of a list using document method <code class="docutils literal"><span class="pre">setToC(list)</span></code>. Supports incremental saves.</li>
 </ul>
 </div>
 
@@ -129,7 +130,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 11. Jun 2016.
+      Last updated on 22. Jun 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

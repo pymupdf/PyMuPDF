@@ -111,16 +111,16 @@
 <td>read a page</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a></td>
-<td>save the document</td>
+<td>PDF only: save the document</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.getToC" title="Document.getToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.getToC()</span></code></a></td>
 <td>create a table of contents</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.getPagePixmap" title="Document.getPagePixmap"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPagePixmap()</span></code></a></td>
-<td>create a pixmap from a page by its number</td>
+<td>create a pixmap from a page by page number</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.getPageText" title="Document.getPageText"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPageText()</span></code></a></td>
-<td>extract the text of a page by its number</td>
+<td>extract the text of a page by page number</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.getPermits" title="Document.getPermits"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPermits()</span></code></a></td>
 <td>show permissions to access the document</td>
@@ -129,13 +129,13 @@
 <td>close the document</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a></td>
-<td>select a subset of pages</td>
+<td>PDF only: select a subset of pages</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.setMetadata" title="Document.setMetadata"><code class="xref py py-meth docutils literal"><span class="pre">Document.setMetadata()</span></code></a></td>
-<td>set the metadata</td>
+<td>PDF only: set the metadata</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.setToC" title="Document.setToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.setToC()</span></code></a></td>
-<td>replace the table of contents (TOC)</td>
+<td>PDF only: replace the table of contents (TOC)</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><code class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></code></a></td>
 <td>has document been closed?</td>
@@ -365,20 +365,34 @@
 <dt id="Document.setToC">
 <code class="descname">setToC</code><span class="sig-paren">(</span><em>toc</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.setToC" title="Permalink to this definition">¶</a></dt>
 <dd><p>PDF documents only: Replaces the complete current outline tree (table of contents) with a new one. After successful execution, the new outline tree can be accessed as usual via method <code class="docutils literal"><span class="pre">getToc()</span></code> or via property <code class="docutils literal"><span class="pre">outline</span></code>. Like with other output-oriented methods, changes must be made permanent via <code class="docutils literal"><span class="pre">save()</span></code> (incremental save supported). Internally, this method consists of the following two steps. For a demonstration see example below.</p>
-<blockquote>
-<div><p>Step 1 deletes all existing bookmarks.</p>
-<p>Step 2 creates a new table of contents from the entries contained in <code class="docutils literal"><span class="pre">toc</span></code>.</p>
-<p>Should anything go wrong in step 2, step 1 will <strong>not be reversed</strong>, i.e. the old bookmarks will <strong>remain deleted</strong>.</p>
-</div></blockquote>
+<ul class="simple">
+<li>Step 1 deletes all existing bookmarks.</li>
+<li>Step 2 creates a new table of contents from the entries contained in <code class="docutils literal"><span class="pre">toc</span></code>.</li>
+</ul>
+<p>Should anything go wrong in step 2, step 1 will <strong>not be rolled back</strong>, i.e. the old bookmarks will <strong>remain deleted</strong>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>toc</strong> (<em>list</em>) &#8211; A Python list with all bookmark entries that should form the new table of contents. A list compatible with the results of <code class="docutils literal"><span class="pre">getToC()</span></code> (either <code class="docutils literal"><span class="pre">simple=True</span></code> or <code class="docutils literal"><span class="pre">simple=False</span></code> is fine) can be used. In fact, the most practical way to create a new TOC is appropiately modifying <code class="docutils literal"><span class="pre">getToC()</span></code>-output and using this as parameter. In any case, each list entry of <code class="docutils literal"><span class="pre">toc</span></code> must consist of 3 or 4 elements: <code class="docutils literal"><span class="pre">[lvl,</span> <span class="pre">title,</span> <span class="pre">pno,</span> <span class="pre">top]</span></code>. <code class="docutils literal"><span class="pre">lvl</span></code> is the hierarchy level (int) of the item, starting with <code class="docutils literal"><span class="pre">1</span></code>. <code class="docutils literal"><span class="pre">title</span></code> (str) is the title to be displayed. <code class="docutils literal"><span class="pre">pno</span></code> (int) is the target page number where the item points to <strong>(attention: 1-based to support getToC()-output)</strong>.  <code class="docutils literal"><span class="pre">top</span></code> (int / float) is a horizontal location on the page in pixel units. <code class="docutils literal"><span class="pre">top</span></code> is counted from bottom, so a zero points to the bottom of the target page. If <code class="docutils literal"><span class="pre">top</span></code> is omitted, it will be calculated as 36 pixels (half an inch) from top of the page. <code class="docutils literal"><span class="pre">top</span></code> may also be a dictionary (like from <code class="docutils literal"><span class="pre">getToC(simple=False)</span></code>) - in this case the value is extracted from its key <code class="docutils literal"><span class="pre">to</span></code> if present.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>toc</strong> (<em>list</em>) &#8211; </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tbody>
+</table>
+<p>A Python list with all bookmark entries that should form the new table of contents. Each entry of this list again is a list with the following format. Output of method <code class="docutils literal"><span class="pre">getToc()</span></code> is acceptable.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">[lvl,</span> <span class="pre">title,</span> <span class="pre">pno,</span> <span class="pre">top]</span></code>, where</li>
+<li><code class="docutils literal"><span class="pre">lvl</span></code> is the hierarchy level (int &gt; 0) of the item, starting with <code class="docutils literal"><span class="pre">1</span></code> and being at most 1 higher than that of the predecessor,</li>
+<li><code class="docutils literal"><span class="pre">title</span></code> (str) is the title to be displayed,</li>
+<li><code class="docutils literal"><span class="pre">pno</span></code> (int) is the target page number <strong>(attention: 1-based to support getToC()-output)</strong>, must be in valid page range,</li>
+<li><code class="docutils literal"><span class="pre">top</span></code> (optional int / float) is a horizontal location on the page in pixel units. It is the distance from bottom, so a zero means bottom of the target page. Default value is 36 pixels (half an inch) below top of page. <code class="docutils literal"><span class="pre">top</span></code> may also be a dictionary (like from <code class="docutils literal"><span class="pre">getToC(simple=False)</span></code>) - in this case the value is extracted from its key <code class="docutils literal"><span class="pre">to</span></code> if present.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal"><span class="pre">0</span></code> upon successful execution, otherwise a non-zero integer. <code class="docutils literal"><span class="pre">doc.outline</span></code> will be updated upon successful execution and method <code class="docutils literal"><span class="pre">getToC(...)</span></code> will also reflect the new situation.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal"><span class="pre">doc.outline</span></code> and <code class="docutils literal"><span class="pre">getToC()</span></code> will be updated upon successful execution. The return code will either equal the number of inserted items <code class="docutils literal"><span class="pre">len(toc)</span></code> or the number of deleted items if <code class="docutils literal"><span class="pre">toc</span> <span class="pre">=</span> <span class="pre">[]</span></code>.</td>
 </tr>
 </tbody>
 </table>
@@ -481,12 +495,22 @@
 <code class="descname">metadata</code><a class="headerlink" href="#Document.metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Contains the document&#8217;s meta data as a Python dictionary or <code class="docutils literal"><span class="pre">None</span></code> (if encrypted <strong>and</strong> <code class="docutils literal"><span class="pre">needPass=True</span></code>). Keys are <code class="docutils literal"><span class="pre">format</span></code>, <code class="docutils literal"><span class="pre">encryption</span></code>, <code class="docutils literal"><span class="pre">title</span></code>, <code class="docutils literal"><span class="pre">author</span></code>, <code class="docutils literal"><span class="pre">subject</span></code>, <code class="docutils literal"><span class="pre">keywords</span></code>, <code class="docutils literal"><span class="pre">creator</span></code>, <code class="docutils literal"><span class="pre">producer</span></code>, <code class="docutils literal"><span class="pre">creationDate</span></code>, <code class="docutils literal"><span class="pre">modDate</span></code>. All item values are strings or <code class="docutils literal"><span class="pre">None</span></code>.</p>
 <p>Except <code class="docutils literal"><span class="pre">format</span></code> and <code class="docutils literal"><span class="pre">encryption</span></code>, the key names correspond in an obvious way to the PDF dictionary keys <code class="docutils literal"><span class="pre">/Creator</span></code>, <code class="docutils literal"><span class="pre">/Producer</span></code>, <code class="docutils literal"><span class="pre">/CreationDate</span></code>, <code class="docutils literal"><span class="pre">/ModDate</span></code>, <code class="docutils literal"><span class="pre">/Title</span></code>, <code class="docutils literal"><span class="pre">/Author</span></code>, <code class="docutils literal"><span class="pre">/Subject</span></code>, <code class="docutils literal"><span class="pre">/Keywords</span></code> respectively.</p>
-<p><code class="docutils literal"><span class="pre">format</span></code> contains the PDF version (e.g. &#8216;PDF-1.6&#8217;).</p>
-<p><code class="docutils literal"><span class="pre">encryption</span></code> either contains <code class="docutils literal"><span class="pre">None</span></code> (no encryption), or a string naming an encryption method (e.g. <code class="docutils literal"><span class="pre">'Standard</span> <span class="pre">V4</span> <span class="pre">R4</span> <span class="pre">128-bit</span> <span class="pre">RC4'</span></code>). Note that an encryption method may be specified for a readable document (i.e. <code class="docutils literal"><span class="pre">needsPass=False</span></code>). In such cases not all permissions will probably have been granted. Check dictionary <code class="docutils literal"><span class="pre">getPermits()</span></code> for details.</p>
-<p>If the date fields contain meaningful data (which need not be the case at all!), they are strings in the PDF-internal timestamp format &#8220;D:&lt;TS&gt;&lt;TZ&gt;&#8221;, where</p>
-<p>&lt;TS&gt; is the 12 character ISO timestamp <code class="docutils literal"><span class="pre">YYYMMDDhhmmss</span></code> (<code class="docutils literal"><span class="pre">YYYY</span></code> - year, <code class="docutils literal"><span class="pre">MM</span></code> - month, <code class="docutils literal"><span class="pre">DD</span></code> - day, <code class="docutils literal"><span class="pre">hh</span></code> - hour, <code class="docutils literal"><span class="pre">mm</span></code> - minute, <code class="docutils literal"><span class="pre">ss</span></code> - second), and</p>
-<p>&lt;TZ&gt; is a time zone value (time intervall relative to GMT) containing a sign (&#8216;+&#8217; or &#8216;-&#8216;), the hour (<code class="docutils literal"><span class="pre">hh</span></code>), and the minute (<code class="docutils literal"><span class="pre">'mm'</span></code>, note the apostrophies!).</p>
-<p>A Paraguayan value might hence look like <code class="docutils literal"><span class="pre">D:20150415131602-04'00'</span></code>, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Asuncion.</p>
+<ul>
+<li><p class="first"><code class="docutils literal"><span class="pre">format</span></code> contains the PDF version (e.g. &#8216;PDF-1.6&#8217;).</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">encryption</span></code> either contains <code class="docutils literal"><span class="pre">None</span></code> (no encryption), or a string naming an encryption method (e.g. <code class="docutils literal"><span class="pre">'Standard</span> <span class="pre">V4</span> <span class="pre">R4</span> <span class="pre">128-bit</span> <span class="pre">RC4'</span></code>). Note that an encryption method may be specified for a readable document (i.e. <code class="docutils literal"><span class="pre">needsPass=False</span></code>). In such cases not all permissions will probably have been granted. Check dictionary <code class="docutils literal"><span class="pre">getPermits()</span></code> for details.</p>
+</li>
+<li><p class="first">If the date fields contain meaningful data (which need not be the case at all!), they are strings in the PDF-internal timestamp format &#8220;D:&lt;TS&gt;&lt;TZ&gt;&#8221;, where</p>
+<blockquote>
+<div><ul class="simple">
+<li>&lt;TS&gt; is the 12 character ISO timestamp <code class="docutils literal"><span class="pre">YYYMMDDhhmmss</span></code> (<code class="docutils literal"><span class="pre">YYYY</span></code> - year, <code class="docutils literal"><span class="pre">MM</span></code> - month, <code class="docutils literal"><span class="pre">DD</span></code> - day, <code class="docutils literal"><span class="pre">hh</span></code> - hour, <code class="docutils literal"><span class="pre">mm</span></code> - minute, <code class="docutils literal"><span class="pre">ss</span></code> - second), and</li>
+<li>&lt;TZ&gt; is a time zone value (time intervall relative to GMT) containing a sign (&#8216;+&#8217; or &#8216;-&#8216;), the hour (<code class="docutils literal"><span class="pre">hh</span></code>), and the minute (<code class="docutils literal"><span class="pre">'mm'</span></code>, note the apostrophies!).</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">A Paraguayan value might hence look like <code class="docutils literal"><span class="pre">D:20150415131602-04'00'</span></code>, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Asuncion.</p>
+</li>
+</ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -637,28 +661,27 @@
 <div class="section" id="settoc-example">
 <h2><code class="docutils literal"><span class="pre">setToC()</span></code> Example<a class="headerlink" href="#settoc-example" title="Permalink to this headline">¶</a></h2>
 <p>This shows how to modify or add a table of contents:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ py -3.5
-Python 3.5.1 (v3.5.1:37a07cee5969, Dec  6 2015, 01:54:25) [MSC v.1900 64 bit (AMD64)] on win32
-Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
-&gt;&gt;&gt; import fitz
-&gt;&gt;&gt; doc = fitz.open(&quot;test.pdf&quot;)
-&gt;&gt;&gt; toc = doc.getToC()
-&gt;&gt;&gt; for t in toc: print(t)                           # show what we have
-...
-[1, &#39;The PyMuPDF Documentation&#39;, 1]
-[2, &#39;Introduction&#39;, 1]
-[3, &#39;Note on the Name fitz&#39;, 1]
-[3, &#39;License&#39;, 1]
-&gt;&gt;&gt; toc[1][1] = &quot;Introduction modified by setToC&quot;    # modify anything
-&gt;&gt;&gt; doc.setToC(toc)                                  # replace outline tree
-0
-&gt;&gt;&gt; for t in doc.getToC(): print(t)                  # demonstrate it worked
-...
-[1, &#39;The PyMuPDF Documentation&#39;, 1]
-[2, &#39;Introduction modified by setToC&#39;, 1]            # &lt;&lt;&lt; this has changed
-[3, &#39;Note on the Name fitz&#39;, 1]
-[3, &#39;License&#39;, 1]
-&gt;&gt;&gt;
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Python</span> <span class="mf">3.5</span><span class="o">.</span><span class="mi">1</span> <span class="p">(</span><span class="n">v3</span><span class="o">.</span><span class="mf">5.1</span><span class="p">:</span><span class="mi">37</span><span class="n">a07cee5969</span><span class="p">,</span> <span class="n">Dec</span>  <span class="mi">6</span> <span class="mi">2015</span><span class="p">,</span> <span class="mi">01</span><span class="p">:</span><span class="mi">54</span><span class="p">:</span><span class="mi">25</span><span class="p">)</span> <span class="p">[</span><span class="n">MSC</span> <span class="n">v</span><span class="o">.</span><span class="mi">1900</span> <span class="mi">64</span> <span class="n">bit</span> <span class="p">(</span><span class="n">AMD64</span><span class="p">)]</span> <span class="n">on</span> <span class="n">win32</span>
+<span class="n">Type</span> <span class="s2">&quot;help&quot;</span><span class="p">,</span> <span class="s2">&quot;copyright&quot;</span><span class="p">,</span> <span class="s2">&quot;credits&quot;</span> <span class="ow">or</span> <span class="s2">&quot;license&quot;</span> <span class="k">for</span> <span class="n">more</span> <span class="n">information</span><span class="o">.</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">fitz</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;test.pdf&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">toc</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getToC</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">toc</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>                           <span class="c1"># show what we have</span>
+<span class="o">...</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;The PyMuPDF Documentation&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Introduction&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Note on the Name fitz&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;License&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">toc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Introduction modified by setToC&quot;</span>    <span class="c1"># modify anything</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">doc</span><span class="o">.</span><span class="n">setToC</span><span class="p">(</span><span class="n">toc</span><span class="p">)</span>                                  <span class="c1"># replace outline tree</span>
+<span class="mi">0</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">getToC</span><span class="p">():</span> <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>                  <span class="c1"># demonstrate it worked</span>
+<span class="o">...</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;The PyMuPDF Documentation&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Introduction modified by setToC&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>            <span class="c1"># &lt;&lt;&lt; this has changed</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Note on the Name fitz&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;License&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
 </div>
@@ -688,7 +711,7 @@ Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;licen
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 20. Jun 2016.
+      Last updated on 23. Jun 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

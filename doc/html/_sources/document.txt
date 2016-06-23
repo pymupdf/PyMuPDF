@@ -17,15 +17,15 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 =============================== =====================================================
 :meth:`Document.authenticate`   decrypt the document
 :meth:`Document.loadPage`       read a page
-:meth:`Document.save`           save the document
+:meth:`Document.save`           PDF only: save the document
 :meth:`Document.getToC`         create a table of contents
-:meth:`Document.getPagePixmap`  create a pixmap from a page by its number
-:meth:`Document.getPageText`    extract the text of a page by its number
+:meth:`Document.getPagePixmap`  create a pixmap from a page by page number
+:meth:`Document.getPageText`    extract the text of a page by page number
 :meth:`Document.getPermits`     show permissions to access the document
 :meth:`Document.close`          close the document
-:meth:`Document.select`         select a subset of pages
-:meth:`Document.setMetadata`    set the metadata
-:meth:`Document.setToC`         replace the table of contents (TOC)
+:meth:`Document.select`         PDF only: select a subset of pages
+:meth:`Document.setMetadata`    PDF only: set the metadata
+:meth:`Document.setToC`         PDF only: replace the table of contents (TOC)
 :attr:`Document.isClosed`       has document been closed?
 :attr:`Document.outline`        first `Outline` item
 :attr:`Document.name`           filename of document
@@ -169,18 +169,29 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       PDF documents only: Replaces the complete current outline tree (table of contents) with a new one. After successful execution, the new outline tree can be accessed as usual via method ``getToc()`` or via property ``outline``. Like with other output-oriented methods, changes must be made permanent via ``save()`` (incremental save supported). Internally, this method consists of the following two steps. For a demonstration see example below.
 
-	  Step 1 deletes all existing bookmarks.
+      - Step 1 deletes all existing bookmarks.
 
-	  Step 2 creates a new table of contents from the entries contained in ``toc``.
+      - Step 2 creates a new table of contents from the entries contained in ``toc``.
 
-	  Should anything go wrong in step 2, step 1 will **not be reversed**, i.e. the old bookmarks will **remain deleted**.
+      Should anything go wrong in step 2, step 1 will **not be rolled back**, i.e. the old bookmarks will **remain deleted**.
 
-      :param `toc`: A Python list with all bookmark entries that should form the new table of contents. A list compatible with the results of ``getToC()`` (either ``simple=True`` or ``simple=False`` is fine) can be used. In fact, the most practical way to create a new TOC is appropiately modifying ``getToC()``-output and using this as parameter. In any case, each list entry of ``toc`` must consist of 3 or 4 elements: ``[lvl, title, pno, top]``. ``lvl`` is the hierarchy level (int) of the item, starting with ``1``. ``title`` (str) is the title to be displayed. ``pno`` (int) is the target page number where the item points to **(attention: 1-based to support getToC()-output)**.  ``top`` (int / float) is a horizontal location on the page in pixel units. ``top`` is counted from bottom, so a zero points to the bottom of the target page. If ``top`` is omitted, it will be calculated as 36 pixels (half an inch) from top of the page. ``top`` may also be a dictionary (like from ``getToC(simple=False)``) - in this case the value is extracted from its key ``to`` if present.
-
+      :param `toc`:
       :type `toc`: list
 
+      A Python list with all bookmark entries that should form the new table of contents. Each entry of this list again is a list with the following format. Output of method ``getToc()`` is acceptable.
+
+      - ``[lvl, title, pno, top]``, where
+
+      - ``lvl`` is the hierarchy level (int > 0) of the item, starting with ``1`` and being at most 1 higher than that of the predecessor,
+
+      - ``title`` (str) is the title to be displayed,
+
+      - ``pno`` (int) is the target page number **(attention: 1-based to support getToC()-output)**, must be in valid page range,
+
+      - ``top`` (optional int / float) is a horizontal location on the page in pixel units. It is the distance from bottom, so a zero means bottom of the target page. Default value is 36 pixels (half an inch) below top of page. ``top`` may also be a dictionary (like from ``getToC(simple=False)``) - in this case the value is extracted from its key ``to`` if present.
+
       :rtype: int
-      :returns: ``0`` upon successful execution, otherwise a non-zero integer. ``doc.outline`` will be updated upon successful execution and method ``getToC(...)`` will also reflect the new situation.
+      :returns: ``doc.outline`` and ``getToC()`` will be updated upon successful execution. The return code will either equal the number of inserted items ``len(toc)`` or the number of deleted items if ``toc = []``.
 
     .. method:: save(outfile, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0)
 
@@ -247,17 +258,17 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       Except ``format`` and ``encryption``, the key names correspond in an obvious way to the PDF dictionary keys ``/Creator``, ``/Producer``, ``/CreationDate``, ``/ModDate``, ``/Title``, ``/Author``, ``/Subject``, ``/Keywords`` respectively.
 
-      ``format`` contains the PDF version (e.g. 'PDF-1.6').
+      - ``format`` contains the PDF version (e.g. 'PDF-1.6').
 
-      ``encryption`` either contains ``None`` (no encryption), or a string naming an encryption method (e.g. ``'Standard V4 R4 128-bit RC4'``). Note that an encryption method may be specified for a readable document (i.e. ``needsPass=False``). In such cases not all permissions will probably have been granted. Check dictionary ``getPermits()`` for details.
+      - ``encryption`` either contains ``None`` (no encryption), or a string naming an encryption method (e.g. ``'Standard V4 R4 128-bit RC4'``). Note that an encryption method may be specified for a readable document (i.e. ``needsPass=False``). In such cases not all permissions will probably have been granted. Check dictionary ``getPermits()`` for details.
 
-      If the date fields contain meaningful data (which need not be the case at all!), they are strings in the PDF-internal timestamp format "D:<TS><TZ>", where
+      - If the date fields contain meaningful data (which need not be the case at all!), they are strings in the PDF-internal timestamp format "D:<TS><TZ>", where
 
-      <TS> is the 12 character ISO timestamp ``YYYMMDDhhmmss`` (``YYYY`` - year, ``MM`` - month, ``DD`` - day, ``hh`` - hour, ``mm`` - minute, ``ss`` - second), and
+          - <TS> is the 12 character ISO timestamp ``YYYMMDDhhmmss`` (``YYYY`` - year, ``MM`` - month, ``DD`` - day, ``hh`` - hour, ``mm`` - minute, ``ss`` - second), and
 
-      <TZ> is a time zone value (time intervall relative to GMT) containing a sign ('+' or '-'), the hour (``hh``), and the minute (``'mm'``, note the apostrophies!).
+          - <TZ> is a time zone value (time intervall relative to GMT) containing a sign ('+' or '-'), the hour (``hh``), and the minute (``'mm'``, note the apostrophies!).
 
-      A Paraguayan value might hence look like ``D:20150415131602-04'00'``, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Asuncion.
+      - A Paraguayan value might hence look like ``D:20150415131602-04'00'``, which corresponds to the timestamp April 15, 2015, at 1:16:02 pm local time Asuncion.
 
       :rtype: dict
 
@@ -371,7 +382,6 @@ Clear metadata information. If you do this out of privacy / data protection conc
 ----------------------------------
 This shows how to modify or add a table of contents:
 ::
- $ py -3.5
  Python 3.5.1 (v3.5.1:37a07cee5969, Dec  6 2015, 01:54:25) [MSC v.1900 64 bit (AMD64)] on win32
  Type "help", "copyright", "credits" or "license" for more information.
  >>> import fitz

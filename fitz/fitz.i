@@ -412,7 +412,7 @@ struct fz_document_s {
             int pageCount = fz_count_pages(gctx, $self);
             fz_try(gctx) {
                 if ((pno < 0) | (pno >= pageCount)) {
-                    fz_rethrow_message(gctx,"page number out of range");
+                    fz_throw(gctx, 1, "page number out of range");
                 }
             }
             fz_catch(gctx) {
@@ -421,7 +421,7 @@ struct fz_document_s {
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx) {
                 if (!pdf) {
-                    fz_rethrow_message(gctx,"not a PDF document");
+                    fz_throw(gctx, 1, "not a PDF document");
                 }
             }
             fz_catch(gctx) {
@@ -477,10 +477,25 @@ returns number of outline entries deleted
 Get Xref Number of Outline Root
 creates OL root if necessary
 *******************************************************************************/
+        %exception _getOLRootNumber {
+            $action
+            if(!result) {
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
+                return NULL;
+            }
+        }
+
         int _getOLRootNumber()
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
-            if (!pdf) return -2;                            /* not a pdf      */
+            fz_try(gctx) {
+                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+            }
+            fz_catch(gctx) {
+                return 0;
+            }
             pdf_obj *root, *olroot, *ind_obj;
             /* get main root */
             root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root);
@@ -501,10 +516,25 @@ creates OL root if necessary
 /*******************************************************************************
 Get New Xref Number
 *******************************************************************************/
+        %exception _getNewXref {
+            $action
+            if(!result) {
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
+                return NULL;
+            }
+        }
+
         int _getNewXref()
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
-            if (!pdf) return -2;                            /* not a pdf      */
+            fz_try(gctx) {
+                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+            }
+            fz_catch(gctx) {
+                return 0;
+            }
             return pdf_create_object(gctx, pdf);
         }
 
@@ -512,10 +542,25 @@ Get New Xref Number
 Update Xref Number with new Object
 Object given as a string
 *******************************************************************************/
+        %exception _updateObject {
+            $action
+            if(result) {
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_Exception, value);
+                return NULL;
+            }
+        }
+
         int _updateObject(int xref, char *text)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
-            if (!pdf) return -2;                            /* not a pdf      */
+            fz_try(gctx) {
+                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+            }
+            fz_catch(gctx) {
+                return 1;
+            }
             pdf_obj *new_obj;
             fz_try(gctx) {
                 /* create new object based on passed-in string          */
@@ -533,9 +578,13 @@ Add or update metadata with provided raw string
 *******************************************************************************/
         int _setMetadata(char *text)
         {
-            pdf_document *pdf;
-            pdf = pdf_specifics(gctx, $self);
-            if (!pdf) return -2;
+            pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/         
+            fz_try(gctx) {
+                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+            }
+            fz_catch(gctx) {
+                return 1;
+            }
             pdf_obj *info, *new_info, *new_info_ind;
             int info_num;
             info_num = 0;              /* will contain xref no of info object */

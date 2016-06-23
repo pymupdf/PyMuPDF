@@ -877,7 +877,7 @@ def setToC(doc, toc):
         raise ValueError("operation on closed or encrypted document")
 
     toclen = len(toc)
-    # check toc validity
+    # check toc validity ------------------------------------------------------
     if type(toc) is not list:
         raise ValueError("arg2 must be a list")
     if toclen == 0:
@@ -886,7 +886,7 @@ def setToC(doc, toc):
     if type(t0) is not list:
         raise ValueError("arg2 must be a list of lists of 3 or 4 items")
     if t0[0] != 1:
-        raise ValueError("item 0 must have hierarchy level 1")
+        raise ValueError("hierarchy level of item 0 must be 1")
     for i in list(range(toclen-1)):
         t1 = toc[i]
         t2 = toc[i+1]
@@ -896,7 +896,7 @@ def setToC(doc, toc):
             raise ValueError("hierarchy levels must be int > 0")
         if t2[0] > t1[0] + 1:
             raise ValueError("hierarchy steps must not be > 1")
-
+    # no formal errors found in toc -------------------------------------------
     doc._delToC()                      # delete existing outlines
 
     xref = [0] * (1+toclen)            # prepare table of new xref entries
@@ -907,9 +907,13 @@ def setToC(doc, toc):
 
     lvltab = {0:0}                     # stores last entry per hierarchy level
 
-    # contains new outline objects as strings
+#==============================================================================
+# contains new outline objects as strings - first one is outline root
+#==============================================================================
     olitems = [{"count":0, "first":-1, "last":-1, "xref":xref[0]}]
-
+#==============================================================================
+# build olitems as a list of PDF-like connnected dictionaries
+#==============================================================================
     for i in list(range(toclen)):
         o = toc[i]
         lvl = o[0] # level
@@ -926,7 +930,7 @@ def setToC(doc, toc):
                 try:
                     top1 = int(round(o[3]["to"][1])) # top
                 except: pass
-        if top1 >= 0 and top1 <= top:
+        if  0 <= top1 <= top + 36:
             top = top1
         d = {}
         d["first"] = -1
@@ -938,7 +942,7 @@ def setToC(doc, toc):
         d["top"]   = top
         d["title"] = title
         d["parent"] = lvltab[lvl-1]
-        d["xref"] = xref[i + 1]
+        d["xref"] = xref[i+1]
         lvltab[lvl] = i+1
         parent = olitems[lvltab[lvl-1]]
         parent["count"] += 1
@@ -953,6 +957,9 @@ def setToC(doc, toc):
             parent["last"] = i+1
         olitems.append(d)
 
+#==============================================================================
+# now create each ol item as a string and insert it in the PDF
+#==============================================================================
     for i, ol in enumerate(olitems):
         txt = "<<"
         if ol["count"] > 0:
@@ -983,12 +990,12 @@ def setToC(doc, toc):
         try:
             txt += "/Title(" + str(ol["title"]) + ")"
         except: pass
-        if i == 0:
+        if i == 0:           # special: this is the outline root
             txt += "/Type/Outlines"
         txt += ">>"
-        rc = doc._updateObject(xref[i], txt)
+        rc = doc._updateObject(xref[i], txt)     # insert the PDF object
         if rc != 0:
             raise ValueError("outline insert error:\n" + txt)
 
     doc.initData()
-    return 0
+    return toclen
