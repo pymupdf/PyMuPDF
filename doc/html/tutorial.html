@@ -419,23 +419,22 @@ You can write it&#8217;s image to files, extract text from it or search for text
 <span class="c1">#---------------------------------------</span>
 <span class="k">def</span> <span class="nf">reader</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
     <span class="n">ifile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
-    <span class="n">idata</span> <span class="o">=</span> <span class="n">ifile</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>                <span class="c1"># put in memory</span>
+    <span class="n">idata</span> <span class="o">=</span> <span class="n">ifile</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>                    <span class="c1"># put in memory</span>
     <span class="n">ifile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">ibuffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>           <span class="c1"># convert to stream</span>
+    <span class="n">ibuffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>               <span class="c1"># convert to stream</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">PdfReader</span><span class="p">(</span><span class="n">ibuffer</span><span class="p">)</span>       <span class="c1"># let us try</span>
-    <span class="k">except</span><span class="p">:</span>                             <span class="c1"># problem! see if PyMuPDF can heal it</span>
+        <span class="k">return</span> <span class="n">PdfReader</span><span class="p">(</span><span class="n">ibuffer</span><span class="p">)</span>           <span class="c1"># let us try</span>
+    <span class="k">except</span><span class="p">:</span>                                 <span class="c1"># problem! see if PyMuPDF can heal it</span>
         <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;application/pdf&quot;</span><span class="p">,</span>
-                        <span class="n">idata</span><span class="p">,</span>
-                        <span class="nb">len</span><span class="p">(</span><span class="n">idata</span><span class="p">))</span>     <span class="c1"># scan pdf data in memory</span>
-        <span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;test.pdf&quot;</span><span class="p">,</span>            <span class="c1"># may want to use a temp file</span>
+                        <span class="nb">bytearray</span><span class="p">(</span><span class="n">idata</span><span class="p">))</span>   <span class="c1"># scan pdf data in memory</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;temp.pdf&quot;</span><span class="p">,</span>
                  <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-                 <span class="n">deflate</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>             <span class="c1"># save a cleaned version</span>
-        <span class="n">ifile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;test.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>  <span class="c1"># open it</span>
-        <span class="n">idata</span> <span class="o">=</span> <span class="n">ifile</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>            <span class="c1"># put in memory</span>
+                 <span class="n">deflate</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>                 <span class="c1"># save a cleaned version</span>
+        <span class="n">ifile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;test.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>      <span class="c1"># open it</span>
+        <span class="n">idata</span> <span class="o">=</span> <span class="n">ifile</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>                <span class="c1"># put in memory</span>
         <span class="n">ifile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="n">ibuffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>       <span class="c1"># convert to stream</span>
-        <span class="k">return</span> <span class="n">PdfReader</span><span class="p">(</span><span class="n">ibuffer</span><span class="p">)</span>       <span class="c1"># let pdfrw retry</span>
+        <span class="n">ibuffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>           <span class="c1"># convert to stream</span>
+        <span class="k">return</span> <span class="n">PdfReader</span><span class="p">(</span><span class="n">ibuffer</span><span class="p">)</span>           <span class="c1"># let pdfrw retry</span>
 <span class="c1">#---------------------------------------</span>
 
 <span class="n">pdf</span> <span class="o">=</span> <span class="n">reader</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -470,7 +469,7 @@ You can write it&#8217;s image to files, extract text from it or search for text
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 27. May 2016.
+      Last updated on 25. Jun 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

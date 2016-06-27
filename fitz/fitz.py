@@ -99,7 +99,7 @@ except __builtin__.Exception:
 import os                     
 VersionFitz = "1.9a"          
 VersionBind = "1.9.1"         
-VersionDate = "2016-06-23 10:33:33"        
+VersionDate = "2016-06-27 06:17:35"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -110,26 +110,34 @@ class Document(_object):
     __getattr__ = lambda self, name: _swig_getattr(self, Document, name)
     __repr__ = _swig_repr
 
-    def __init__(self, filename, stream=None, streamlen=0):
-        """__init__(fz_document_s self, char const * filename, char * stream=None, int streamlen=0) -> Document"""
+    def __init__(self, *args):
+        """
+        __init__(fz_document_s self, char const * filename) -> Document
+        __init__(fz_document_s self, char const * filename, PyObject * stream) -> Document
+        """
 
+        filename = args[0]
+        stream = None
+        if len(args) > 1:
+            stream = args[1]
         if type(filename) == str:
             pass
         elif type(filename) == unicode:
             filename = filename.encode('utf8')
         else:
             raise TypeError("filename must be a string")
-        if not os.path.exists(filename) and streamlen == 0:
-            raise IOError("no such file: " + filename)
         self.name = filename
-        self.streamlen = streamlen
+        if stream:
+            self.streamlen = len(stream)
+        else:
+            self.streamlen = 0
         self.isClosed = 0
         self.isEncrypted = 0
         self.metadata = None
 
 
 
-        this = _fitz.new_Document(filename, stream, streamlen)
+        this = _fitz.new_Document(*args)
         try:
             self.this.append(this)
         except __builtin__.Exception:
@@ -381,7 +389,7 @@ class Document(_object):
     def __repr__(self):
         if self.streamlen == 0:
             return "fitz.Document('%s')" % (self.name,)
-        return "fitz.Document('%s', stream = <data>, streamlen = %s)" % (self.name, self.streamlen)
+        return "fitz.Document('%s', bytearray)" % (self.name,)
 
 
     __swig_destroy__ = _fitz.delete_Document
@@ -653,9 +661,9 @@ class Pixmap(_object):
     def __init__(self, *args):
         """
         __init__(fz_pixmap_s self, Colorspace cs, IRect bbox) -> Pixmap
-        __init__(fz_pixmap_s self, Colorspace cs, int w, int h, char * samples) -> Pixmap
+        __init__(fz_pixmap_s self, Colorspace cs, int w, int h, PyObject * samples) -> Pixmap
         __init__(fz_pixmap_s self, char * filename) -> Pixmap
-        __init__(fz_pixmap_s self, char * imagedata, int size) -> Pixmap
+        __init__(fz_pixmap_s self, PyObject * imagedata) -> Pixmap
         """
         this = _fitz.new_Pixmap(*args)
         try:
@@ -716,7 +724,7 @@ class Pixmap(_object):
 
 
     def getPNGData(self, savealpha=0):
-        """getPNGData(Pixmap self, int savealpha=0) -> struct fz_buffer_s *"""
+        """getPNGData(Pixmap self, int savealpha=0) -> PyObject *"""
         return _fitz.Pixmap_getPNGData(self, savealpha)
 
 

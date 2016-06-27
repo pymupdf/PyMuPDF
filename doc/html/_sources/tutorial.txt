@@ -258,23 +258,22 @@ If a PDF is broken or needs to be decrypted, one could dynamically invoke PyMuPD
  #---------------------------------------
  def reader(fname):
      ifile = open(fname, "rb")
-     idata = ifile.read()                # put in memory
+     idata = ifile.read()                    # put in memory
      ifile.close()
-     ibuffer = StringIO(idata)           # convert to stream
+     ibuffer = StringIO(idata)               # convert to stream
      try:
-         return PdfReader(ibuffer)       # let us try
-     except:                             # problem! see if PyMuPDF can heal it
+         return PdfReader(ibuffer)           # let us try
+     except:                                 # problem! see if PyMuPDF can heal it
          doc = fitz.open("application/pdf",
-                         idata,
-                         len(idata))     # scan pdf data in memory
-         doc.save("test.pdf",            # may want to use a temp file
+                         bytearray(idata))   # scan pdf data in memory
+         doc.save("temp.pdf",
                   garbage=3,
-                  deflate=1)             # save a cleaned version
-         ifile = open("test.pdf", "rb")  # open it
-         idata = ifile.read()            # put in memory
+                  deflate=1)                 # save a cleaned version
+         ifile = open("test.pdf", "rb")      # open it
+         idata = ifile.read()                # put in memory
          ifile.close()
-         ibuffer = StringIO(idata)       # convert to stream
-         return PdfReader(ibuffer)       # let pdfrw retry
+         ibuffer = StringIO(idata)           # convert to stream
+         return PdfReader(ibuffer)           # let pdfrw retry
  #---------------------------------------
 
  pdf = reader(sys.argv[1])

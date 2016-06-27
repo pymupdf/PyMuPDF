@@ -3032,7 +3032,6 @@ static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
 
 
 #define SWIG_FILE_WITH_INIT
-#define SWIG_PYTHON_2_UNICODE
 #include <fitz.h>
 #include <pdf.h>
 void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page);
@@ -3572,6 +3571,41 @@ SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
 
 
 
+SWIGINTERN struct fz_document_s *new_fz_document_s__SWIG_0(char const *filename){
+            struct fz_document_s *doc = NULL;
+            fz_try(gctx) {
+                doc = fz_open_document(gctx, filename);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return doc;
+        }
+SWIGINTERN struct fz_document_s *new_fz_document_s__SWIG_1(char const *filename,PyObject *stream){
+            struct fz_document_s *doc = NULL;
+            fz_stream *data = NULL;
+            char *streamdata;
+            size_t streamlen;
+            fz_try(gctx) {
+                streamdata = PyByteArray_AsString(stream);
+                streamlen = (size_t) PyByteArray_Size(stream);
+                data = fz_open_memory(gctx, streamdata, streamlen);
+                doc = fz_open_document_with_stream(gctx, filename, data);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return doc;
+        }
+SWIGINTERN void fz_document_s_close(struct fz_document_s *self){
+
+
+
+            while(self->refs > 1) {
+                fz_drop_document(gctx, self);
+            }
+            fz_drop_document(gctx, self);
+        }
 
 #include <limits.h>
 #if !defined(SWIG_NO_LLONG_MAX)
@@ -3723,30 +3757,6 @@ SWIG_AsVal_int (PyObject * obj, int *val)
   return res;
 }
 
-SWIGINTERN struct fz_document_s *new_fz_document_s(char const *filename,char *stream,int streamlen){
-            struct fz_document_s *doc = NULL;
-            fz_stream *data = NULL;
-            if (streamlen > 0)
-                data = fz_open_memory(gctx, stream, streamlen);
-            fz_try(gctx) {
-                if (streamlen == 0)
-                    doc = fz_open_document(gctx, filename);
-                else
-                    doc = fz_open_document_with_stream(gctx, filename, data);
-            }
-            fz_catch(gctx)
-                ;
-            return doc;
-        }
-SWIGINTERN void fz_document_s_close(struct fz_document_s *self){
-
-
-
-            while(self->refs > 1) {
-                fz_drop_document(gctx, self);
-            }
-            fz_drop_document(gctx, self);
-        }
 SWIGINTERN struct fz_page_s *fz_document_s_loadPage(struct fz_document_s *self,int number){
             struct fz_page_s *page = NULL;
             fz_try(gctx)
@@ -3862,7 +3872,7 @@ SWIGINTERN int fz_document_s__select(struct fz_document_s *self,int *liste,int a
             /* cast-down fz_document to a pdf_document */
             pdf_document *pdf = pdf_specifics(gctx, self);
             if (!pdf) {
-                PyErr_SetString(PyExc_ValueError,"not a valid pdf document");
+                PyErr_SetString(PyExc_ValueError,"not a pdf document");
                 free(liste);
                 return -2;
                 }
@@ -3901,7 +3911,7 @@ SWIGINTERN PyObject *fz_document_s__getPageObjNumber(struct fz_document_s *self,
             int pageCount = fz_count_pages(gctx, self);
             fz_try(gctx) {
                 if ((pno < 0) | (pno >= pageCount)) {
-                    fz_throw(gctx, 1, "page number out of range");
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range");
                 }
             }
             fz_catch(gctx) {
@@ -3910,7 +3920,7 @@ SWIGINTERN PyObject *fz_document_s__getPageObjNumber(struct fz_document_s *self,
             pdf_document *pdf = pdf_specifics(gctx, self);
             fz_try(gctx) {
                 if (!pdf) {
-                    fz_throw(gctx, 1, "not a PDF document");
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
                 }
             }
             fz_catch(gctx) {
@@ -3957,7 +3967,7 @@ SWIGINTERN int fz_document_s__delToC(struct fz_document_s *self){
 SWIGINTERN int fz_document_s__getOLRootNumber(struct fz_document_s *self){
             pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
             fz_try(gctx) {
-                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
             }
             fz_catch(gctx) {
                 return 0;
@@ -3981,7 +3991,7 @@ SWIGINTERN int fz_document_s__getOLRootNumber(struct fz_document_s *self){
 SWIGINTERN int fz_document_s__getNewXref(struct fz_document_s *self){
             pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
             fz_try(gctx) {
-                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
             }
             fz_catch(gctx) {
                 return 0;
@@ -3991,7 +4001,7 @@ SWIGINTERN int fz_document_s__getNewXref(struct fz_document_s *self){
 SWIGINTERN int fz_document_s__updateObject(struct fz_document_s *self,int xref,char *text){
             pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
             fz_try(gctx) {
-                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
             }
             fz_catch(gctx) {
                 return 1;
@@ -4008,9 +4018,9 @@ SWIGINTERN int fz_document_s__updateObject(struct fz_document_s *self,int xref,c
             return 0;
         }
 SWIGINTERN int fz_document_s__setMetadata(struct fz_document_s *self,char *text){
-            pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/         
+            pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
             fz_try(gctx) {
-                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
             }
             fz_catch(gctx) {
                 return 1;
@@ -4204,12 +4214,24 @@ SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_0(struct fz_colorspace_s *c
                 ;
             return pm;
         }
-SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_1(struct fz_colorspace_s *cs,int w,int h,char *samples){
+SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_1(struct fz_colorspace_s *cs,int w,int h,PyObject *samples){
+            char *data;
+            size_t size;
+            fz_try(gctx) {
+                data = PyByteArray_AsString(samples);
+                size = (size_t) PyByteArray_Size(samples);
+                if ((cs->n+1) * w * h != size) {
+                    fz_throw(gctx, FZ_ERROR_GENERIC,"invalid samples size");
+                    }
+                }
+            fz_catch(gctx) {
+                return NULL;
+                }
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
-                pm = fz_new_pixmap_with_data(gctx, cs, w, h, samples);
+                pm = fz_new_pixmap_with_data(gctx, cs, w, h, data);
             fz_catch(gctx)
-                ;
+                return NULL;
             return pm;
         }
 SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_2(char *filename){
@@ -4218,19 +4240,28 @@ SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_2(char *filename){
             fz_try(gctx) {
                 img = fz_new_image_from_file(gctx, filename);
                 pm = fz_get_pixmap_from_image(gctx, img, -1, 1);
-                }
+            }
             fz_catch(gctx) {
                 if (img) fz_drop_image(gctx, img);
                 return NULL;
-                }
+            }
             fz_drop_image(gctx, img);
             return pm;
         }
-SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_3(char *imagedata,int size){
+SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_3(PyObject *imagedata){
+            size_t size;
+            char *data;
+            fz_try(gctx) {
+                data = PyByteArray_AsString(imagedata);
+                size = (size_t) PyByteArray_Size(imagedata);
+                }
+            fz_catch(gctx) {
+                return NULL;
+                }
             struct fz_image_s *img = NULL;
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx) {
-                img = fz_new_image_from_data(gctx, imagedata, size);
+                img = fz_new_image_from_data(gctx, data, size);
                 pm = fz_get_pixmap_from_image(gctx, img, -1, -1);
                 }
             fz_catch(gctx) {
@@ -4272,7 +4303,7 @@ SWIGINTERN int fz_pixmap_s_writePNG(struct fz_pixmap_s *self,char *filename,int 
                 return 1;
             return 0;
         }
-SWIGINTERN struct fz_buffer_s *fz_pixmap_s_getPNGData(struct fz_pixmap_s *self,int savealpha){
+SWIGINTERN PyObject *fz_pixmap_s_getPNGData(struct fz_pixmap_s *self,int savealpha){
             struct fz_buffer_s *res = NULL;
             fz_output *out;
             fz_try(gctx) {
@@ -4283,7 +4314,7 @@ SWIGINTERN struct fz_buffer_s *fz_pixmap_s_getPNGData(struct fz_pixmap_s *self,i
             }
             fz_catch(gctx)
                  ;
-            return res;
+            return PyByteArray_FromStringAndSize((const char *)res->data, res->len);
         }
 SWIGINTERN PyObject *fz_pixmap_s_samplesRGB(struct fz_pixmap_s *self){
             if (self->n != 4) return NULL;  /* RGB colorspaces onbly */
@@ -4868,46 +4899,23 @@ SWIGINTERN struct fz_buffer_s *fz_stext_page_s_extractJSON(struct fz_stext_page_
 #ifdef __cplusplus
 extern "C" {
 #endif
-SWIGINTERN PyObject *_wrap_new_Document(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_new_Document__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
-  char *arg2 = (char *) NULL ;
-  int arg3 = (int) 0 ;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
-  int val3 ;
-  int ecode3 = 0 ;
   PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
   struct fz_document_s *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O|OO:new_Document",&obj0,&obj1,&obj2)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:new_Document",&obj0)) SWIG_fail;
   res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Document" "', argument " "1"" of type '" "char const *""'");
   }
   arg1 = (char *)(buf1);
-  if (obj1) {
-    res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_Document" "', argument " "2"" of type '" "char *""'");
-    }
-    arg2 = (char *)(buf2);
-  }
-  if (obj2) {
-    ecode3 = SWIG_AsVal_int(obj2, &val3);
-    if (!SWIG_IsOK(ecode3)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_Document" "', argument " "3"" of type '" "int""'");
-    } 
-    arg3 = (int)(val3);
-  }
   {
-    result = (struct fz_document_s *)new_fz_document_s((char const *)arg1,arg2,arg3);
+    result = (struct fz_document_s *)new_fz_document_s__SWIG_0((char const *)arg1);
     if(!result) {
       char *value;
       value = gctx->error->message;
@@ -4917,12 +4925,87 @@ SWIGINTERN PyObject *_wrap_new_Document(PyObject *SWIGUNUSEDPARM(self), PyObject
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_document_s, SWIG_POINTER_NEW |  0 );
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_Document__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *arg1 = (char *) 0 ;
+  PyObject *arg2 = (PyObject *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  struct fz_document_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_Document",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Document" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  arg2 = obj1;
+  {
+    result = (struct fz_document_s *)new_fz_document_s__SWIG_1((char const *)arg1,arg2);
+    if(!result) {
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_Exception, value);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_document_s, SWIG_POINTER_NEW |  0 );
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return resultobj;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_Document(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  Py_ssize_t ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 2) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 1) {
+    int _v;
+    int res = SWIG_AsCharPtrAndSize(argv[0], 0, NULL, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      return _wrap_new_Document__SWIG_0(self, args);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    int res = SWIG_AsCharPtrAndSize(argv[0], 0, NULL, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      _v = (argv[1] != 0);
+      if (_v) {
+        return _wrap_new_Document__SWIG_1(self, args);
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_Document'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    fz_document_s::fz_document_s(char const *)\n"
+    "    fz_document_s::fz_document_s(char const *,PyObject *)\n");
+  return 0;
 }
 
 
@@ -7461,16 +7544,13 @@ SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_1(PyObject *SWIGUNUSEDPARM(self), Py
   struct fz_colorspace_s *arg1 = (struct fz_colorspace_s *) 0 ;
   int arg2 ;
   int arg3 ;
-  char *arg4 = (char *) 0 ;
+  PyObject *arg4 = (PyObject *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
   int val3 ;
   int ecode3 = 0 ;
-  int res4 ;
-  char *buf4 = 0 ;
-  int alloc4 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -7493,11 +7573,7 @@ SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_1(PyObject *SWIGUNUSEDPARM(self), Py
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_Pixmap" "', argument " "3"" of type '" "int""'");
   } 
   arg3 = (int)(val3);
-  res4 = SWIG_AsCharPtrAndSize(obj3, &buf4, NULL, &alloc4);
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "new_Pixmap" "', argument " "4"" of type '" "char *""'");
-  }
-  arg4 = (char *)(buf4);
+  arg4 = obj3;
   {
     result = (struct fz_pixmap_s *)new_fz_pixmap_s__SWIG_1(arg1,arg2,arg3,arg4);
     if(!result) {
@@ -7508,10 +7584,8 @@ SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_1(PyObject *SWIGUNUSEDPARM(self), Py
     }
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_pixmap_s, SWIG_POINTER_NEW |  0 );
-  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
   return resultobj;
 fail:
-  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
   return NULL;
 }
 
@@ -7551,30 +7625,14 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  char *arg1 = (char *) 0 ;
-  int arg2 ;
-  int res1 ;
-  char *buf1 = 0 ;
-  int alloc1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
+  PyObject *arg1 = (PyObject *) 0 ;
   PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
   struct fz_pixmap_s *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:new_Pixmap",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Pixmap" "', argument " "1"" of type '" "char *""'");
-  }
-  arg1 = (char *)(buf1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_Pixmap" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = (int)(val2);
+  if (!PyArg_ParseTuple(args,(char *)"O:new_Pixmap",&obj0)) SWIG_fail;
+  arg1 = obj0;
   {
-    result = (struct fz_pixmap_s *)new_fz_pixmap_s__SWIG_3(arg1,arg2);
+    result = (struct fz_pixmap_s *)new_fz_pixmap_s__SWIG_3(arg1);
     if(!result) {
       char *value;
       value = gctx->error->message;
@@ -7583,10 +7641,8 @@ SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_3(PyObject *SWIGUNUSEDPARM(self), Py
     }
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_pixmap_s, SWIG_POINTER_NEW |  0 );
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return resultobj;
 fail:
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return NULL;
 }
 
@@ -7611,6 +7667,13 @@ SWIGINTERN PyObject *_wrap_new_Pixmap(PyObject *self, PyObject *args) {
       return _wrap_new_Pixmap__SWIG_2(self, args);
     }
   }
+  if (argc == 1) {
+    int _v;
+    _v = (argv[0] != 0);
+    if (_v) {
+      return _wrap_new_Pixmap__SWIG_3(self, args);
+    }
+  }
   if (argc == 2) {
     int _v;
     void *vptr = 0;
@@ -7622,20 +7685,6 @@ SWIGINTERN PyObject *_wrap_new_Pixmap(PyObject *self, PyObject *args) {
       _v = SWIG_CheckState(res);
       if (_v) {
         return _wrap_new_Pixmap__SWIG_0(self, args);
-      }
-    }
-  }
-  if (argc == 2) {
-    int _v;
-    int res = SWIG_AsCharPtrAndSize(argv[0], 0, NULL, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      {
-        int res = SWIG_AsVal_int(argv[1], NULL);
-        _v = SWIG_CheckState(res);
-      }
-      if (_v) {
-        return _wrap_new_Pixmap__SWIG_3(self, args);
       }
     }
   }
@@ -7655,8 +7704,7 @@ SWIGINTERN PyObject *_wrap_new_Pixmap(PyObject *self, PyObject *args) {
           _v = SWIG_CheckState(res);
         }
         if (_v) {
-          int res = SWIG_AsCharPtrAndSize(argv[3], 0, NULL, 0);
-          _v = SWIG_CheckState(res);
+          _v = (argv[3] != 0);
           if (_v) {
             return _wrap_new_Pixmap__SWIG_1(self, args);
           }
@@ -7669,9 +7717,9 @@ fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_Pixmap'.\n"
     "  Possible C/C++ prototypes are:\n"
     "    fz_pixmap_s::fz_pixmap_s(struct fz_colorspace_s *,struct fz_irect_s const *)\n"
-    "    fz_pixmap_s::fz_pixmap_s(struct fz_colorspace_s *,int,int,char *)\n"
+    "    fz_pixmap_s::fz_pixmap_s(struct fz_colorspace_s *,int,int,PyObject *)\n"
     "    fz_pixmap_s::fz_pixmap_s(char *)\n"
-    "    fz_pixmap_s::fz_pixmap_s(char *,int)\n");
+    "    fz_pixmap_s::fz_pixmap_s(PyObject *)\n");
   return 0;
 }
 
@@ -8025,7 +8073,7 @@ SWIGINTERN PyObject *_wrap_Pixmap_getPNGData(PyObject *SWIGUNUSEDPARM(self), PyO
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  struct fz_buffer_s *result = 0 ;
+  PyObject *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O|O:Pixmap_getPNGData",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
@@ -8040,11 +8088,8 @@ SWIGINTERN PyObject *_wrap_Pixmap_getPNGData(PyObject *SWIGUNUSEDPARM(self), PyO
     } 
     arg2 = (int)(val2);
   }
-  result = (struct fz_buffer_s *)fz_pixmap_s_getPNGData(arg1,arg2);
-  {
-    resultobj = SWIG_FromCharPtrAndSize((const char *)result->data, result->len);
-    fz_drop_buffer(gctx, result);
-  }
+  result = (PyObject *)fz_pixmap_s_getPNGData(arg1,arg2);
+  resultobj = result;
   return resultobj;
 fail:
   return NULL;
@@ -10595,7 +10640,10 @@ SWIGINTERN PyObject *TextPage_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObj
 
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
-	 { (char *)"new_Document", _wrap_new_Document, METH_VARARGS, (char *)"new_Document(char const * filename, char * stream=None, int streamlen=0) -> Document"},
+	 { (char *)"new_Document", _wrap_new_Document, METH_VARARGS, (char *)"\n"
+		"Document(char const * filename)\n"
+		"new_Document(char const * filename, PyObject * stream) -> Document\n"
+		""},
 	 { (char *)"Document_close", _wrap_Document_close, METH_VARARGS, (char *)"Document_close(Document self)"},
 	 { (char *)"Document_loadPage", _wrap_Document_loadPage, METH_VARARGS, (char *)"Document_loadPage(Document self, int number) -> Page"},
 	 { (char *)"Document__loadOutline", _wrap_Document__loadOutline, METH_VARARGS, (char *)"Document__loadOutline(Document self) -> Outline"},
@@ -10682,9 +10730,9 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Pixmap_yres_get", _wrap_Pixmap_yres_get, METH_VARARGS, (char *)"Pixmap_yres_get(Pixmap self) -> int"},
 	 { (char *)"new_Pixmap", _wrap_new_Pixmap, METH_VARARGS, (char *)"\n"
 		"Pixmap(Colorspace cs, IRect bbox)\n"
-		"Pixmap(Colorspace cs, int w, int h, char * samples)\n"
+		"Pixmap(Colorspace cs, int w, int h, PyObject * samples)\n"
 		"Pixmap(char * filename)\n"
-		"new_Pixmap(char * imagedata, int size) -> Pixmap\n"
+		"new_Pixmap(PyObject * imagedata) -> Pixmap\n"
 		""},
 	 { (char *)"delete_Pixmap", _wrap_delete_Pixmap, METH_VARARGS, (char *)"delete_Pixmap(Pixmap self)"},
 	 { (char *)"Pixmap_gammaWith", _wrap_Pixmap_gammaWith, METH_VARARGS, (char *)"Pixmap_gammaWith(Pixmap self, float gamma)"},
@@ -10696,7 +10744,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Pixmap_copyPixmap", _wrap_Pixmap_copyPixmap, METH_VARARGS, (char *)"Pixmap_copyPixmap(Pixmap self, Pixmap src, IRect bbox)"},
 	 { (char *)"Pixmap_getSize", _wrap_Pixmap_getSize, METH_VARARGS, (char *)"Pixmap_getSize(Pixmap self) -> int"},
 	 { (char *)"Pixmap_writePNG", _wrap_Pixmap_writePNG, METH_VARARGS, (char *)"Pixmap_writePNG(Pixmap self, char * filename, int savealpha=0) -> int"},
-	 { (char *)"Pixmap_getPNGData", _wrap_Pixmap_getPNGData, METH_VARARGS, (char *)"Pixmap_getPNGData(Pixmap self, int savealpha=0) -> struct fz_buffer_s *"},
+	 { (char *)"Pixmap_getPNGData", _wrap_Pixmap_getPNGData, METH_VARARGS, (char *)"Pixmap_getPNGData(Pixmap self, int savealpha=0) -> PyObject *"},
 	 { (char *)"Pixmap_samplesRGB", _wrap_Pixmap_samplesRGB, METH_VARARGS, (char *)"Pixmap_samplesRGB(Pixmap self) -> PyObject *"},
 	 { (char *)"Pixmap_samplesAlpha", _wrap_Pixmap_samplesAlpha, METH_VARARGS, (char *)"Pixmap_samplesAlpha(Pixmap self) -> PyObject *"},
 	 { (char *)"Pixmap__writeIMG", _wrap_Pixmap__writeIMG, METH_VARARGS, (char *)"Pixmap__writeIMG(Pixmap self, char * filename, int format, int savealpha=0) -> int"},

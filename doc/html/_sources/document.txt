@@ -12,9 +12,9 @@ This class represents a document. It can be constructed from a file or from memo
 
 Since version 1.9.0 there exists an alias ``open`` for this class.
 
-=============================== =====================================================
+=============================== ==========================================================
 **Method / Attribute**          **Short Description**
-=============================== =====================================================
+=============================== ==========================================================
 :meth:`Document.authenticate`   decrypt the document
 :meth:`Document.loadPage`       read a page
 :meth:`Document.save`           PDF only: save the document
@@ -35,7 +35,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 :attr:`Document.isEncrypted`    document still encrypted?
 :attr:`Document.pageCount`      number of pages
 :attr:`Document.metadata`       metadata
-=============================== =====================================================
+=============================== ==========================================================
 
 **Class API**
 
@@ -45,24 +45,21 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       Constructs a ``Document`` object from ``filename``.
 
-      :param `filename`: A string (UTF-8 or unicode) containing the path / name of the document file to be used. The file will be opened and remain open until either explicitely closed (see below) or until end of program.
+      :param `filename`: A string containing the path / name of the document file to be used. The file will be opened and remain open until either explicitely closed (see below) or until end of program.
       :type `filename`: string
 
-      :rtype: :ref:`Document`
+      :rtype: ``Document``
       :returns: A ``Document`` object.
 
-    .. method:: __init__(self, filetype, stream=data, streamlen=len(data))
+    .. method:: __init__(self, filetype, stream)
 
-      Constructs a ``Document`` object from memory ``data``.
+      Constructs a ``Document`` object from bytearray ``stream``.
 
       :param `filetype`: A string specifying the type of document contained in ``stream``. This may be either something that looks like a filename (e.g. ``x.pdf``), in which case MuPDF uses the extension to determine the type, or a mime type like ``application/pdf``. Recommended is using the filename scheme, or even the name of the original file for documentation purposes.
       :type `filetype`: string
 
-      :param `stream`: A string of data representing the content of a supported document type.
-      :type `stream`: string
-
-      :param `streamlen`: An integer specifying the length of the stream.
-      :type `streamlen`: int
+      :param `stream`: A bytearray representing the content of a supported document type.
+      :type `stream`: bytearray
 
       :rtype: :ref:`Document`
       :returns: A ``Document`` object.
@@ -173,7 +170,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       - Step 2 creates a new table of contents from the entries contained in ``toc``.
 
-      Should anything go wrong in step 2, step 1 will **not be rolled back**, i.e. the old bookmarks will **remain deleted**.
+      - Should anything go wrong in step 2, step 1 will **not be rolled back**, i.e. the old bookmarks will **remain deleted**.
 
       :param `toc`:
       :type `toc`: list

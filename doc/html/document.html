@@ -95,8 +95,8 @@
 <p>Since version 1.9.0 there exists an alias <code class="docutils literal"><span class="pre">open</span></code> for this class.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="37%" />
-<col width="63%" />
+<col width="35%" />
+<col width="65%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Method / Attribute</strong></th>
@@ -178,9 +178,9 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) &#8211; A string (UTF-8 or unicode) containing the path / name of the document file to be used. The file will be opened and remain open until either explicitely closed (see below) or until end of program.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) &#8211; A string containing the path / name of the document file to be used. The file will be opened and remain open until either explicitely closed (see below) or until end of program.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#document"><span class="std std-ref">Document</span></a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">Document</span></code></td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A <code class="docutils literal"><span class="pre">Document</span></code> object.</td>
 </tr>
@@ -190,16 +190,15 @@
 
 <dl class="method">
 <dt>
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>filetype</em>, <em>stream=data</em>, <em>streamlen=len(data)</em><span class="sig-paren">)</span></dt>
-<dd><p>Constructs a <code class="docutils literal"><span class="pre">Document</span></code> object from memory <code class="docutils literal"><span class="pre">data</span></code>.</p>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>filetype</em>, <em>stream</em><span class="sig-paren">)</span></dt>
+<dd><p>Constructs a <code class="docutils literal"><span class="pre">Document</span></code> object from bytearray <code class="docutils literal"><span class="pre">stream</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>filetype</strong> (<em>string</em>) &#8211; A string specifying the type of document contained in <code class="docutils literal"><span class="pre">stream</span></code>. This may be either something that looks like a filename (e.g. <code class="docutils literal"><span class="pre">x.pdf</span></code>), in which case MuPDF uses the extension to determine the type, or a mime type like <code class="docutils literal"><span class="pre">application/pdf</span></code>. Recommended is using the filename scheme, or even the name of the original file for documentation purposes.</li>
-<li><strong>stream</strong> (<em>string</em>) &#8211; A string of data representing the content of a supported document type.</li>
-<li><strong>streamlen</strong> (<em>int</em>) &#8211; An integer specifying the length of the stream.</li>
+<li><strong>stream</strong> (<em>bytearray</em>) &#8211; A bytearray representing the content of a supported document type.</li>
 </ul>
 </td>
 </tr>
@@ -368,8 +367,8 @@
 <ul class="simple">
 <li>Step 1 deletes all existing bookmarks.</li>
 <li>Step 2 creates a new table of contents from the entries contained in <code class="docutils literal"><span class="pre">toc</span></code>.</li>
+<li>Should anything go wrong in step 2, step 1 will <strong>not be rolled back</strong>, i.e. the old bookmarks will <strong>remain deleted</strong>.</li>
 </ul>
-<p>Should anything go wrong in step 2, step 1 will <strong>not be rolled back</strong>, i.e. the old bookmarks will <strong>remain deleted</strong>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -711,7 +710,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 23. Jun 2016.
+      Last updated on 27. Jun 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

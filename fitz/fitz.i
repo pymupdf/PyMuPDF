@@ -5,7 +5,6 @@
 %feature("autodoc","1");
 %{
 #define SWIG_FILE_WITH_INIT
-#define SWIG_PYTHON_2_UNICODE
 #include <fitz.h>
 #include <pdf.h>
 void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page);
@@ -57,23 +56,28 @@ struct fz_document_s {
                 return NULL;
             }
         }
-        %pythonprepend fz_document_s(const char *filename, char *stream=NULL, int streamlen=0) %{
+        %pythonprepend fz_document_s %{
+            filename = args[0]
+            stream = None
+            if len(args) > 1:
+                stream = args[1]
             if type(filename) == str:
                 pass
             elif type(filename) == unicode:
                 filename = filename.encode('utf8')
             else:
                 raise TypeError("filename must be a string")
-            if not os.path.exists(filename) and streamlen == 0:
-                raise IOError("no such file: " + filename)
             self.name = filename
-            self.streamlen = streamlen
+            if stream:
+                self.streamlen = len(stream)
+            else:
+                self.streamlen = 0
             self.isClosed = 0
             self.isEncrypted = 0
             self.metadata = None
 
         %}
-        %pythonappend fz_document_s(const char *filename, char *stream=NULL, int streamlen=0) %{
+        %pythonappend fz_document_s %{
             if this:
                 self.openErrCode = self._getGCTXerrcode();
                 self.openErrMsg  = self._getGCTXerrmsg();
@@ -84,19 +88,31 @@ struct fz_document_s {
                 self.initData()
                 self.thisown = False
         %}
-        fz_document_s(const char *filename, char *stream=NULL, int streamlen=0) {
+        fz_document_s(const char *filename) {
+            struct fz_document_s *doc = NULL;
+            fz_try(gctx) {
+                doc = fz_open_document(gctx, filename);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return doc;
+        }
+
+        fz_document_s(const char *filename, PyObject *stream) {
             struct fz_document_s *doc = NULL;
             fz_stream *data = NULL;
-            if (streamlen > 0)
-                data = fz_open_memory(gctx, stream, streamlen);
+            char *streamdata;
+            size_t streamlen;
             fz_try(gctx) {
-                if (streamlen == 0)
-                    doc = fz_open_document(gctx, filename);
-                else
-                    doc = fz_open_document_with_stream(gctx, filename, data);
+                streamdata = PyByteArray_AsString(stream);
+                streamlen = (size_t) PyByteArray_Size(stream);
+                data = fz_open_memory(gctx, streamdata, streamlen);
+                doc = fz_open_document_with_stream(gctx, filename, data);
             }
-            fz_catch(gctx)
-                ;
+            fz_catch(gctx) {
+                return NULL;
+            }
             return doc;
         }
 
@@ -318,7 +334,7 @@ struct fz_document_s {
             /* cast-down fz_document to a pdf_document */
             pdf_document *pdf = pdf_specifics(gctx, $self);
             if (!pdf) {
-                PyErr_SetString(PyExc_ValueError,"not a valid pdf document");
+                PyErr_SetString(PyExc_ValueError,"not a pdf document");
                 free(liste);
                 return -2;
                 }
@@ -412,7 +428,7 @@ struct fz_document_s {
             int pageCount = fz_count_pages(gctx, $self);
             fz_try(gctx) {
                 if ((pno < 0) | (pno >= pageCount)) {
-                    fz_throw(gctx, 1, "page number out of range");
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range");
                 }
             }
             fz_catch(gctx) {
@@ -421,7 +437,7 @@ struct fz_document_s {
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx) {
                 if (!pdf) {
-                    fz_throw(gctx, 1, "not a PDF document");
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
                 }
             }
             fz_catch(gctx) {
@@ -491,7 +507,7 @@ creates OL root if necessary
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
             fz_try(gctx) {
-                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
             }
             fz_catch(gctx) {
                 return 0;
@@ -530,7 +546,7 @@ Get New Xref Number
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
             fz_try(gctx) {
-                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
             }
             fz_catch(gctx) {
                 return 0;
@@ -556,7 +572,7 @@ Object given as a string
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
             fz_try(gctx) {
-                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
             }
             fz_catch(gctx) {
                 return 1;
@@ -578,9 +594,9 @@ Add or update metadata with provided raw string
 *******************************************************************************/
         int _setMetadata(char *text)
         {
-            pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/         
+            pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
             fz_try(gctx) {
-                if (!pdf) fz_throw(gctx, 1, "not a PDF document");
+                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
             }
             fz_catch(gctx) {
                 return 1;
@@ -627,7 +643,7 @@ Initialize document: set outline and metadata properties
             def __repr__(self):
                 if self.streamlen == 0:
                     return "fitz.Document('%s')" % (self.name,)
-                return "fitz.Document('%s', stream = <data>, streamlen = %s)" % (self.name, self.streamlen)
+                return "fitz.Document('%s', bytearray)" % (self.name,)
 
             %}
     }
@@ -924,12 +940,24 @@ struct fz_pixmap_s
         /***********************************************************/
         /* create a pixmap from samples data                       */
         /***********************************************************/
-        fz_pixmap_s(struct fz_colorspace_s *cs, int w, int h, char *samples) {
+        fz_pixmap_s(struct fz_colorspace_s *cs, int w, int h, PyObject *samples) {
+            char *data;
+            size_t size;
+            fz_try(gctx) {
+                data = PyByteArray_AsString(samples);
+                size = (size_t) PyByteArray_Size(samples);
+                if ((cs->n+1) * w * h != size) {
+                    fz_throw(gctx, FZ_ERROR_GENERIC,"invalid samples size");
+                    }
+                }
+            fz_catch(gctx) {
+                return NULL;
+                }
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
-                pm = fz_new_pixmap_with_data(gctx, cs, w, h, samples);
+                pm = fz_new_pixmap_with_data(gctx, cs, w, h, data);
             fz_catch(gctx)
-                ;
+                return NULL;
             return pm;
         }
 
@@ -942,23 +970,32 @@ struct fz_pixmap_s
             fz_try(gctx) {
                 img = fz_new_image_from_file(gctx, filename);
                 pm = fz_get_pixmap_from_image(gctx, img, -1, 1);
-                }
+            }
             fz_catch(gctx) {
                 if (img) fz_drop_image(gctx, img);
                 return NULL;
-                }
+            }
             fz_drop_image(gctx, img);
             return pm;
         }
 
         /******************************************/
-        /* create a pixmap from data area   */
+        /* create a pixmap from a bytearray       */
         /******************************************/
-        fz_pixmap_s(char *imagedata, int size) {
+        fz_pixmap_s(PyObject *imagedata) {
+            size_t size;
+            char *data;
+            fz_try(gctx) {
+                data = PyByteArray_AsString(imagedata);
+                size = (size_t) PyByteArray_Size(imagedata);
+                }
+            fz_catch(gctx) {
+                return NULL;
+                }
             struct fz_image_s *img = NULL;
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx) {
-                img = fz_new_image_from_data(gctx, imagedata, size);
+                img = fz_new_image_from_data(gctx, data, size);
                 pm = fz_get_pixmap_from_image(gctx, img, -1, -1);
                 }
             fz_catch(gctx) {
@@ -1055,7 +1092,7 @@ struct fz_pixmap_s
         /**********************/
         /* getPNGData         */
         /**********************/
-        struct fz_buffer_s *getPNGData(int savealpha=0) {
+        PyObject *getPNGData(int savealpha=0) {
             struct fz_buffer_s *res = NULL;
             fz_output *out;
             fz_try(gctx) {
@@ -1066,7 +1103,7 @@ struct fz_pixmap_s
             }
             fz_catch(gctx)
                  ;
-            return res;
+            return PyByteArray_FromStringAndSize((const char *)res->data, res->len);
         }
 
         /**************************************/

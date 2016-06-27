@@ -96,8 +96,8 @@
 <li>create a pixmap from a document page (via methods <a class="reference internal" href="page.html#Page.getPixmap" title="Page.getPixmap"><code class="xref py py-meth docutils literal"><span class="pre">Page.getPixmap()</span></code></a> or <a class="reference internal" href="document.html#Document.getPagePixmap" title="Document.getPagePixmap"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPagePixmap()</span></code></a>)</li>
 <li>create an empty pixmap based on <a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a> and <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> information</li>
 <li>create a pixmap from a file</li>
-<li>create a pixmap from an in-memory image</li>
-<li>create a pixmap from a memory area that contains plain pixels</li>
+<li>create a pixmap from an in-memory image (bytearray)</li>
+<li>create a pixmap from a memory area containing plain pixels</li>
 </ol>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -106,8 +106,8 @@
 <p>Have a look at the <strong>example</strong> section to see some pixmap usage &#8220;at work&#8221;.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="39%" />
-<col width="61%" />
+<col width="36%" />
+<col width="64%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Method / Attribute</strong></th>
@@ -190,7 +190,7 @@
 <dd><dl class="method">
 <dt id="Pixmap.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>colorspace</em>, <em>irect</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>This constructor creates an empty pixmap of a size and an origin specified by the irect object. So for a <code class="docutils literal"><span class="pre">fitz.IRect(x0,</span> <span class="pre">y0,</span> <span class="pre">x1,</span> <span class="pre">y1)</span></code>, <code class="docutils literal"><span class="pre">fitz.Point(x0,</span> <span class="pre">y0)</span></code> designates the top left corner of the pixmap.</p>
+<dd><p>This constructor creates an empty pixmap of a size and an origin specified by the irect object. So for a <code class="docutils literal"><span class="pre">fitz.IRect(x0,</span> <span class="pre">y0,</span> <span class="pre">x1,</span> <span class="pre">y1)</span></code>, <code class="docutils literal"><span class="pre">fitz.Point(x0,</span> <span class="pre">y0)</span></code> designates the top left corner of the pixmap. Note that the image area is <strong>not initialized</strong> and will contain crap data.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -208,7 +208,7 @@
 <dl class="method">
 <dt>
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>filename</em><span class="sig-paren">)</span></dt>
-<dd><p>This constructor creates a (non-empty) pixmap from file <code class="docutils literal"><span class="pre">filename</span></code>, which is assumed to contain a supported image.</p>
+<dd><p>This constructor creates a non-empty pixmap from the image contained in file <code class="docutils literal"><span class="pre">filename</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -221,17 +221,13 @@
 
 <dl class="method">
 <dt>
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>data</em>, <em>len</em><span class="sig-paren">)</span></dt>
-<dd><p>This constructor creates a (non-empty) pixmap from <code class="docutils literal"><span class="pre">data</span></code>, which is assumed to contain a supported image of <code class="docutils literal"><span class="pre">len</span></code> bytes.</p>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>img</em><span class="sig-paren">)</span></dt>
+<dd><p>This constructor creates a non-empty pixmap from <code class="docutils literal"><span class="pre">img</span></code>, which is assumed to contain a supported image as a bytearray.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (<em>string</em>) &#8211; Data containing a complete, valid image in the specified format. E.g. this may have been obtained from a statement like <code class="docutils literal"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">open('somepic.png',</span> <span class="pre">'rb').read()</span></code>. The origin of the resulting pixmap is (0,0).</li>
-<li><strong>len</strong> (<em>int</em>) &#8211; An integer specifying the length of <code class="docutils literal"><span class="pre">data</span></code>.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>img</strong> (<em>bytearray</em>) &#8211; Data containing a complete, valid image in the specified format. E.g. this may have been obtained from a statement like <code class="docutils literal"><span class="pre">img</span> <span class="pre">=</span> <span class="pre">bytearray(open('somepic.png',</span> <span class="pre">'rb').read())</span></code>. The origin of the resulting pixmap is (0,0).</td>
 </tr>
 </tbody>
 </table>
@@ -240,16 +236,16 @@
 <dl class="method">
 <dt>
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>colorspace</em>, <em>width</em>, <em>height</em>, <em>samples</em><span class="sig-paren">)</span></dt>
-<dd><p>This constructor creates a (non-empty) pixmap from <code class="docutils literal"><span class="pre">samples</span></code>, which is assumed to contain an image in &#8220;plain pixel&#8221; format. This means that each pixel is represented by n bytes (as controlled by the <code class="docutils literal"><span class="pre">colorspace</span></code> parameter). The origin of the resulting pixmap is (0,0). This method may be usefull to create a full copy of a given pixmap, or when raw image data are being provided by some other program - see examples below.</p>
+<dd><p>This constructor creates a non-empty pixmap from <code class="docutils literal"><span class="pre">samples</span></code>, which is assumed to contain an image in &#8220;plain pixel&#8221; format. This means that each pixel is represented by n bytes (as controlled by the <code class="docutils literal"><span class="pre">colorspace</span></code> parameter). The origin of the resulting pixmap is (0,0). This method is useful when raw image data are provided by some other program, or to create a copy of another pixmap, or - see examples below.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>colorspace</strong> (<a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a>) &#8211; Colorspace of the image. This crucial parameter controls the interpretation of the <code class="docutils literal"><span class="pre">samples</span></code> area: for <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a>, <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a> and <a class="reference internal" href="vars.html#CS_CMYK" title="CS_CMYK"><code class="xref py py-data docutils literal"><span class="pre">CS_CMYK</span></code></a>, 2, 4 or 5 bytes in samples will be assumed to define one pixel, respectively.</li>
+<li><strong>colorspace</strong> (<a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a>) &#8211; Colorspace of the image. This crucial parameter controls the interpretation of the <code class="docutils literal"><span class="pre">samples</span></code> area: for <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a>, <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a> and <a class="reference internal" href="vars.html#CS_CMYK" title="CS_CMYK"><code class="xref py py-data docutils literal"><span class="pre">CS_CMYK</span></code></a>, 2, 4 or 5 bytes in samples will be assumed to define one pixel, respectively. For this number n, the following must evaluate to <code class="docutils literal"><span class="pre">True</span></code>: <code class="docutils literal"><span class="pre">n</span> <span class="pre">*</span> <span class="pre">width</span> <span class="pre">*</span> <span class="pre">height</span> <span class="pre">==</span> <span class="pre">len(samples)</span></code>.</li>
 <li><strong>width</strong> (<em>int</em>) &#8211; Width of the image</li>
 <li><strong>height</strong> (<em>int</em>) &#8211; Height of the image</li>
-<li><strong>samples</strong> (<em>string</em>) &#8211; A string containing consecutive bytes describing all pixels of the image.</li>
+<li><strong>samples</strong> (<em>bytearray</em>) &#8211; A bytearray containing consecutive bytes describing all pixels of the image.</li>
 </ul>
 </td>
 </tr>
@@ -407,14 +403,14 @@
 <dl class="method">
 <dt id="Pixmap.getPNGData">
 <code class="descname">getPNGData</code><span class="sig-paren">(</span><em>savealpha=False</em><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.getPNGData" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the pixmap data as an image area in PNG format.</p>
+<dd><p>Returns the pixmap data as an image area (bytearray) in PNG format.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>savealpha</strong> (<em>bool</em>) &#8211; Also save the alpha channel (<code class="docutils literal"><span class="pre">True</span></code>) or not (<code class="docutils literal"><span class="pre">False</span></code> - the default).</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bytearray</td>
 </tr>
 </tbody>
 </table>
@@ -442,7 +438,7 @@
 <dl class="method">
 <dt id="Pixmap.samplesRGB">
 <code class="descname">samplesRGB</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Pixmap.samplesRGB" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the pixmap samples (see below) without alpha bytes (currently RGB only). This is a technical function: occasionally dialog managers cannot deal with the RGBA format and either expect RGB data only, or eventually a separate alpha channel alongside.</p>
+<dd><p>Returns the pixmap samples (see below) without alpha bytes (currently RGB only). This is a technical function: some dialog managers cannot deal with the RGBA format and either expect RGB data only, or eventually a separate alpha channel alongside.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -658,7 +654,7 @@
         <span class="c1"># one pixel (some fun coloring)</span>
         <span class="n">bild</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">)</span><span class="o">%</span><span class="mi">256</span><span class="p">,</span> <span class="n">i</span><span class="o">%</span><span class="mi">256</span><span class="p">,</span> <span class="n">j</span><span class="o">%</span><span class="mi">256</span><span class="p">,</span> <span class="mi">255</span><span class="p">]</span>
 
-<span class="n">samples</span> <span class="o">=</span> <span class="n">bild</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span>       <span class="c1"># get plain pixel data from numpy array</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">bild</span><span class="o">.</span><span class="n">tostring</span><span class="p">())</span>    <span class="c1"># get plain pixel data from numpy array</span>
 <span class="n">pix</span><span class="o">=</span><span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">Colorspace</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">CS_RGB</span><span class="p">),</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">samples</span><span class="p">)</span>
 <span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s2">&quot;test.png&quot;</span><span class="p">)</span>
 </pre></div>
@@ -678,7 +674,7 @@
 <span class="c1"># create a pixmap from any PIL-supported image file &quot;some_image.xxx&quot;</span>
 
 <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;some_image.xxx&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span><span class="p">)</span>
-<span class="n">samples</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span>
 <span class="n">pix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">csRGB</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">samples</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -709,7 +705,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 18. May 2016.
+      Last updated on 27. Jun 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

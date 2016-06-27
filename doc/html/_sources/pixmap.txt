@@ -15,16 +15,16 @@ In PyMuPDF, there exist several ways to create a pixmap:
 1. create a pixmap from a document page (via methods :meth:`Page.getPixmap` or :meth:`Document.getPagePixmap`)
 2. create an empty pixmap based on :ref:`Colorspace` and :ref:`IRect` information
 3. create a pixmap from a file
-4. create a pixmap from an in-memory image
-5. create a pixmap from a memory area that contains plain pixels
+4. create a pixmap from an in-memory image (bytearray)
+5. create a pixmap from a memory area containing plain pixels
 
 .. NOTE:: For supported image types using the **file** or **in-memory constructors**, see section below.
 
 Have a look at the **example** section to see some pixmap usage "at work".
 
-============================= ==============================================
+============================= ===================================================
 **Method / Attribute**        **Short Description**
-============================= ==============================================
+============================= ===================================================
 :meth:`Pixmap.clearWith`      clears (parts of) a pixmap
 :meth:`Pixmap.tintWith`       tints a pixmap with a color
 :meth:`Pixmap.gammaWith`      applies a gamma factor to the pixmap
@@ -47,7 +47,7 @@ Have a look at the **example** section to see some pixmap usage "at work".
 :attr:`Pixmap.xres`           resolution in X-direction
 :attr:`Pixmap.yres`           resolution in Y-direction
 :attr:`Pixmap.interpolate`    interpolation method indicator
-============================= ==============================================
+============================= ===================================================
 
 **Class API**
 
@@ -55,7 +55,7 @@ Have a look at the **example** section to see some pixmap usage "at work".
 
    .. method:: __init__(self, colorspace, irect)
 
-      This constructor creates an empty pixmap of a size and an origin specified by the irect object. So for a ``fitz.IRect(x0, y0, x1, y1)``, ``fitz.Point(x0, y0)`` designates the top left corner of the pixmap.
+      This constructor creates an empty pixmap of a size and an origin specified by the irect object. So for a ``fitz.IRect(x0, y0, x1, y1)``, ``fitz.Point(x0, y0)`` designates the top left corner of the pixmap. Note that the image area is **not initialized** and will contain crap data.
 
       :param `colorspace`: The colorspace of the pixmap.
       :type `colorspace`: :ref:`Colorspace`
@@ -65,26 +65,23 @@ Have a look at the **example** section to see some pixmap usage "at work".
 
    .. method:: __init__(self, filename)
 
-      This constructor creates a (non-empty) pixmap from file ``filename``, which is assumed to contain a supported image.
+      This constructor creates a non-empty pixmap from the image contained in file ``filename``.
 
       :param `filename`: Path / name of the file. The origin of the resulting pixmap is (0,0).
       :type `filename`: string
 
-   .. method:: __init__(self, data, len)
+   .. method:: __init__(self, img)
 
-      This constructor creates a (non-empty) pixmap from ``data``, which is assumed to contain a supported image of ``len`` bytes.
+      This constructor creates a non-empty pixmap from ``img``, which is assumed to contain a supported image as a bytearray.
 
-      :param `data`: Data containing a complete, valid image in the specified format. E.g. this may have been obtained from a statement like ``data = open('somepic.png', 'rb').read()``. The origin of the resulting pixmap is (0,0).
-      :type `data`: string
-
-      :param `len`: An integer specifying the length of ``data``.
-      :type `len`: int
+      :param `img`: Data containing a complete, valid image in the specified format. E.g. this may have been obtained from a statement like ``img = bytearray(open('somepic.png', 'rb').read())``. The origin of the resulting pixmap is (0,0).
+      :type `img`: bytearray
 
    .. method:: __init__(self, colorspace, width, height, samples)
 
-      This constructor creates a (non-empty) pixmap from ``samples``, which is assumed to contain an image in "plain pixel" format. This means that each pixel is represented by n bytes (as controlled by the ``colorspace`` parameter). The origin of the resulting pixmap is (0,0). This method may be usefull to create a full copy of a given pixmap, or when raw image data are being provided by some other program - see examples below.
+      This constructor creates a non-empty pixmap from ``samples``, which is assumed to contain an image in "plain pixel" format. This means that each pixel is represented by n bytes (as controlled by the ``colorspace`` parameter). The origin of the resulting pixmap is (0,0). This method is useful when raw image data are provided by some other program, or to create a copy of another pixmap, or - see examples below.
 
-      :param `colorspace`: Colorspace of the image. This crucial parameter controls the interpretation of the ``samples`` area: for :data:`CS_GRAY`, :data:`CS_RGB` and :data:`CS_CMYK`, 2, 4 or 5 bytes in samples will be assumed to define one pixel, respectively.
+      :param `colorspace`: Colorspace of the image. This crucial parameter controls the interpretation of the ``samples`` area: for :data:`CS_GRAY`, :data:`CS_RGB` and :data:`CS_CMYK`, 2, 4 or 5 bytes in samples will be assumed to define one pixel, respectively. For this number n, the following must evaluate to ``True``: ``n * width * height == len(samples)``.
       :type `colorspace`: :ref:`Colorspace`
 
       :param `width`: Width of the image
@@ -93,8 +90,8 @@ Have a look at the **example** section to see some pixmap usage "at work".
       :param `height`: Height of the image
       :type `height`: int
 
-      :param `samples`: A string containing consecutive bytes describing all pixels of the image.
-      :type `samples`: string
+      :param `samples`: A bytearray containing consecutive bytes describing all pixels of the image.
+      :type `samples`: bytearray
 
    .. method:: clearWith(value, [irect])
 
@@ -181,12 +178,12 @@ Have a look at the **example** section to see some pixmap usage "at work".
 
    .. method:: getPNGData(savealpha=False)
 
-      Returns the pixmap data as an image area in PNG format.
+      Returns the pixmap data as an image area (bytearray) in PNG format.
 
       :param `savealpha`: Also save the alpha channel (``True``) or not (``False`` - the default).
       :type `savealpha`: bool
 
-      :rtype: string
+      :rtype: bytearray
 
    .. method:: writeImage(filename, output="png", savealpha=False)
 
@@ -203,7 +200,7 @@ Have a look at the **example** section to see some pixmap usage "at work".
 
    .. method:: samplesRGB()
 
-      Returns the pixmap samples (see below) without alpha bytes (currently RGB only). This is a technical function: occasionally dialog managers cannot deal with the RGBA format and either expect RGB data only, or eventually a separate alpha channel alongside.
+      Returns the pixmap samples (see below) without alpha bytes (currently RGB only). This is a technical function: some dialog managers cannot deal with the RGBA format and either expect RGB data only, or eventually a separate alpha channel alongside.
 
       :rtype: bytearray
 
@@ -345,7 +342,7 @@ This shows how to create a PNG file from a numpy array (several times faster tha
          # one pixel (some fun coloring)
          bild[i, j] = [(i+j)%256, i%256, j%256, 255]
 
- samples = bild.tostring()       # get plain pixel data from numpy array
+ samples = bytearray(bild.tostring())    # get plain pixel data from numpy array
  pix=fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), width, height, samples)
  pix.writePNG("test.png")
 
@@ -367,5 +364,5 @@ This shows how to interface with ``PIL / Pillow`` (the Python Imaging Library), 
  # create a pixmap from any PIL-supported image file "some_image.xxx"
 
  img = Image.open("some_image.xxx").convert("RGBA")
- samples = img.tobytes()
+ samples = bytearray(img.tobytes())
  pix = fitz.Pixmap(fitz.csRGB, img.size[0], img.size[1], samples)
