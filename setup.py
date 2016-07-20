@@ -30,7 +30,7 @@ elif sys.platform.startswith('darwin'):
                                     #'/usr/local/Cellar/freetype/2.6.3/lib/',
                                     #'/usr/local/Cellar/jbig2dec/0.12/lib/'
                            #],
-                       libraries=['mupdf', 'crypto', 'jpeg', 'freetype', 'jbig2dec']
+                       libraries=['mupdf', 'crypto', 'jpeg', 'freetype', 'jbig2dec', 'mupdfthird']
                       )
 
 else:
