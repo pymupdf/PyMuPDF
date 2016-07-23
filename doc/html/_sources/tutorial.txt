@@ -7,9 +7,9 @@ Tutorial
 =========
 This tutorial will show you the use of MuPDF in Python step by step.
 
-Because MuPDF supports not only PDF, but also XPS, OpenXPS, CBZ and EPUB formats, so does PyMuPDF. Nevertheless we will only talk about PDF files for the sake of brevity. At places where only PDF files are supported, this will be mentioned explicitely.
+Because MuPDF supports not only PDF, but also XPS, OpenXPS, CBZ and EPUB formats, so does PyMuPDF. Nevertheless we will only talk about PDF files for the sake of brevity. At places where indeed only PDF files are supported, this will be mentioned explicitely.
 
-As for string handling, MuPDF will pass back any string as UTF-8 encoded - no exceptions. Where this binding has added functionality, we usually decode string to unicode.
+As for string handling, MuPDF will pass back any string as UTF-8 encoded - no exceptions.
 
 Import the Bindings
 ==========================
@@ -19,9 +19,9 @@ The Python bindings to MuPDF are made available by this import statement:
 
 You can check your version by printing the docstring:
 ::
- >>> print fitz.__doc__
- PyMuPDF 1.9.1: the Python bindings for the MuPDF 1.9a library,
- creation date 2016-05-10 18:09:34
+ >>> print (fitz.__doc__)
+ PyMuPDF 1.9.1: Python bindings for the MuPDF 1.9a library,
+ built on 2016-07-01 13:06:02
  >>>
 
 
@@ -33,9 +33,9 @@ In order to access a supported document, it must be opened with the following st
 
 This will create ``doc`` as a :ref:`Document` object. ``filename`` must be a Python string or unicode object that specifies the name of an existing file.
 
-It is also possible to open a document from memory data, i.e. without using a file. See :ref:`Document` for details.
+It is also possible to open a document from memory (bytearray) data, i.e. without using a file. See :ref:`Document` for details.
 
-A :ref:`Document` contains several attributes and functions. Among them are meta information (like "author" or "subject"), number of total pages, outline and encryption information.
+A :ref:`Document` contains many attributes and functions. Among them are meta information (like "author" or "subject"), number of total pages, outline and encryption information.
 
 Some :ref:`Document` Methods and Attributes
 =============================================
@@ -52,7 +52,7 @@ Some :ref:`Document` Methods and Attributes
 
 Access Meta Data
 ========================
-:attr:`Document.metadata` is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_. Further information can also be found in chapter :ref:`Document`. The meta data fields are of type string if not otherwise indicated. Be aware that not all of them may be present or contain meaningfull data.
+:attr:`Document.metadata` is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_. Further information can also be found in chapter :ref:`Document`. The meta data fields are of type string if not otherwise indicated. Be aware that not all of them may be present or do contain meaningfull data.
 
 ============== ==============================
 **Key**        **Value**
@@ -73,23 +73,18 @@ Work with Outlines
 =========================
 The easiest way to get all outlines of a document, is creating a table of contents:
 ::
- toc = doc.getToC(simple = True)       # the simple form, if False, link information is included
+ # the simple form, if False, link information is included
+ toc = doc.getToC(simple = True)
 
 This will return a Python list ``[[level, title, page, link], ...]`` (or ``[]``).
 
-``level`` is the hierarchy level of the entry (starting from 1), ``title`` is the entry's title (unicode), and ``page`` the page number (1-based). ``link`` is present if ``simple = False`` is specified. Its meaning can be look up under :meth:`Page.getLinks`.
-
-If you want a more detailed control of what you get, enter the document's outline tree like this:
-::
- olItem = doc.outline    # the document's first outline item
-
-This creates olItem as an :ref:`Outline` object. Look there for further details.
+``level`` is the hierarchy level of the entry (starting from 1), ``title`` is the entry's title, and ``page`` the page number (1-based). ``link`` is present if ``simple = False`` is specified. Its meaning can be looked up under :meth:`Page.getLinks`.
 
 
 Work with Pages
 ======================
 Tasks that can be performed with a :ref:`Page` are at the core of MuPDF's functionality.
-Among other things, you can render a page, optionally zooming, rotating or shearing it.
+Among other things, you can render a page, optionally zooming, rotating, shifting or shearing it.
 You can write it's image to files, extract text from it or search for text strings.
 
 At first, a page object must be created:
@@ -102,9 +97,7 @@ Inspect the Links on a Page
 ------------------------------------
 Here is how to get all links and their types:
 ::
- #-----------------------------------------------------------------------------------
- # Get all links of the current page
- #-----------------------------------------------------------------------------------
+ # get all links of the current page
  links = page.getLinks()
 
 ``links`` is a Python list containing Python dictionaries as entries. For details see :meth:`Page.getLinks`.
@@ -114,9 +107,7 @@ Render a Page
 This example creates an image out of a page's content:
 ::
  pix = page.getPixmap(matrix = fitz.Identity, colorspace = "RGB")
- #-----------------------------------------------------------------------------------
  # now pix contains an RGB image of the page, ready to be used
- #-----------------------------------------------------------------------------------
 
 Save the Page Image in a File
 -----------------------------------
@@ -179,22 +170,22 @@ Output capabilities of MuPDF (such as PDF generation) have improved in version 1
 
 Re-arrange and Delete Pages
 ----------------------------------
-Method :meth:`Document.select()` accepts a list (or tuple) of integers as an argument. These integers must be in the range ``0 <= i < pageCount``. When executed, all pages not occurring in this list will be deleted. Pages that do occur will remain - **in the sequence specified and as many times as specified in this list.**
+Method :meth:`Document.select()` accepts a list of integers as argument. These integers must be in the range ``0 <= i < pageCount``. When executed, all pages not occurring in this list will be deleted. Pages that do occur will remain - **in the sequence specified and as many times as specified**.
 
 So you can easily create sub-PDFs of the first / last 10 pages, only odd or even pages (for doing double-sided printing), pages that do (not) contain a certain text, ... whatever you may think of.
 
 To make any such changes permanent, execute :meth:`Document.save()` (see below) and then close / re-open the original document for any further processing.
 
-The saved document will contain all links, annotations and bookmarks referenced by its pages which still point to valid destinations.
+The saved document will contain all links, annotations and bookmarks referenced by its pages.
 
 Save
 -------
 
 If the document had been successfully decrypted before, ``save()`` will automatically save a decrypted copy.
 
-If you altered the document via :meth:`Document.select()`, then the resulting document will be saved. Do specify option ``garbage=3`` (see below) if many pages have been omitted by ``select()`` (and you have not chosen to save to the original file).
+If you altered the document via :meth:`Document.select()`, :meth:`Document.setToC()` or :meth:`Document.setMetadata()`, then the resulting document will be saved.
 
-Since MuPDF 1.9, you can also write changes back to the original file by specifying ``incremental = True / 1`` (if no PDF structure problems exist in the document - decrypted files will also need to be saved to a new file). This option excludes the ``garbage`` and ``linear`` options, and the specified **filename must equal the original** one. This process is **extremely fast**, since any changes are **appended to the original file** - it will not be rewritten as a whole.
+Since MuPDF 1.9, you can also write changes back to the original file by specifying ``incremental = True``. This process is **extremely fast**, since any changes are **appended to the original file** - it will not be rewritten as a whole.
 
 As part of ``save()``, some clean-up will always take place:
 
@@ -236,11 +227,11 @@ However, re-opening a previously closed file by a new :ref:`Document` is no prob
 ::
  doc = fitz.Document(f_old)           # open a document
  <... some statements ...>            # e.g. decryption
- doc.save(fnew, garbage=3, deflate=1) # save a decrypted / compressed version
+ doc.save(fnew, garbage=3, deflate=1) # save a cleaned version
  doc.close()                          # close input file
  os.remove(f_old)                     # remove it
- os.rename(f_new, f_old)              # rename the decrypted / cleaned version
- doc = fitz.Document(f_old)           # use it as input for MuPDF
+ os.rename(f_new, f_old)              # rename the cleaned version
+ doc = fitz.Document(f_old)           # use it as input
 
 Example: Dynamically Clean up Corrupt PDF Documents
 ========================================================
@@ -263,12 +254,12 @@ If a PDF is broken or needs to be decrypted, one could dynamically invoke PyMuPD
      ibuffer = StringIO(idata)               # convert to stream
      try:
          return PdfReader(ibuffer)           # let us try
-     except:                                 # problem! see if PyMuPDF can heal it
+     except:                                 # problem! heal it with PyMuPDF
          doc = fitz.open("application/pdf",
                          bytearray(idata))   # scan pdf data in memory
          doc.save("temp.pdf",
                   garbage=3,
-                  deflate=1)                 # save a cleaned version
+                  deflate=1)                 # save cleaned version
          ifile = open("test.pdf", "rb")      # open it
          idata = ifile.read()                # put in memory
          ifile.close()

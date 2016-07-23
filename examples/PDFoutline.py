@@ -11,25 +11,15 @@ The license of this program is governed by the GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007. See the "COPYING" file of this repository.
 
 Example program for the Python binding PyMuPDF of MuPDF.
-
-Changes in version 1.9.1
--------------------------
-- removed depedency on PyPDF2 by using PyMuPDF's new methods setMetadata() and 
-  setToC().
-
-- using incremental saves if output file equals input.
-
-Dependencies:
---------------
+Its dependencies are:
 PyMuPDF 1.9.1 or later
 wxPython 3.0 or later
 
 This is a program for editing a PDF file's table of contents (ToC).
 After choosing a file in a file selection dialog, its ToC is displayed
 in a grid, together with an image of the currently displayed PDF page.
-Entries in the grid can be edited, added, duplicated, deleted and moved.
-Permanent changes to the underlying file are made only when the SAVE button is
-pressed.
+ToC entries can be edited, added, deleted and moved.
+The thus modified PDF can be saved elsewhere or replace the original.
 
 The overall screen layout is as follows:
 
@@ -41,17 +31,17 @@ The overall screen layout is as follows:
 
 Layout of left sizer "le_szr"
 
-        +-----------------------------------------+
-        | szr10: Button "New Row", expl. text     |
-        +-----------------------------------------+
-        | szr20: MyGrid (table of contents)       |
-        +-----------------------------------------+
-        | szr30: PDF metadata                     |
-        +-----------------------------------------+
-        | szr31: check data fields                |
-        +-----------------------------------------+
-        | szr40: OK / Cancel buttons              |
-        +-----------------------------------------+
+        +--------------------------------------------+
+        | szr10:    Button "New Row", expl. text     |
+        +--------------------------------------------+
+        | tocgrid:  MyGrid (table of contents)       |
+        +--------------------------------------------+
+        | metagrid: PDF metadata                     |
+        +--------------------------------------------+
+        | szr31:    check data fields                |
+        +--------------------------------------------+
+        | szr40:    OK / Cancel buttons              |
+        +--------------------------------------------+
 
 Layout of right sizer "ri_szr"
 
@@ -62,17 +52,16 @@ Layout of right sizer "ri_szr"
         +-----------------------------------------+
 
 '''
-import os, sys
+import os, sys, traceback, json, time
 import wx
 import wx.grid as gridlib
 import wx.lib.gridmovers as gridmovers
 import fitz
-from icons import ico_pdf
-ENCODING = "latin-1"         # used for title only
+from icons import ico_pdf              # PDF icon in upper left screen corner
 
 def getint(v):
     import types
-    # extract digits from a string to form an integer
+    # extract digits from a string to form an integer >= 0
     try:
         return int(v)
     except ValueError:
@@ -86,20 +75,17 @@ def getint(v):
     return int(a)
 
 #==============================================================================
-# define scale factor for displaying page images (20% larger)
+# some abbreviations and global parameters
 #==============================================================================
-scaling = fitz.Matrix(1.2, 1.2)
-#==============================================================================
-# just abbreviations
-#==============================================================================
-defPos = wx.DefaultPosition
-defSiz = wx.DefaultSize
-khaki  = wx.Colour(240, 230, 140)
+ENCODING = "latin-1"                   # standard encoding
+defPos = wx.DefaultPosition            # just an abbreviation
+defSiz = wx.DefaultSize                # just an abbreviation
+khaki  = wx.Colour(240, 230, 140)      # our background color
 
 #==============================================================================
 # convenience class for storing information across functions
 #==============================================================================
-class PDFconfig():
+class ScratchPad():
     def __init__(self):
         self.doc = None                  # fitz.Document
         self.meta = {}                   # PDF meta information
@@ -107,22 +93,44 @@ class PDFconfig():
         self.inhalt = []                 # table of contents storage
         self.file = None                 # pdf filename
         self.oldpage = 0                 # stores displayed page number
+        self.encoding = "utf-8"
+        self.height = 0                  # store current page height
+        self.lastsave = -1.0
 
 #==============================================================================
-# render a PDF page and return wx.Bitmap
+# render a PDF page and return its wx.Bitmap
 #==============================================================================
-def pdf_show(seite):
-    page_idx = getint(seite) - 1
-    pix = PDFcfg.doc.getPagePixmap(page_idx, matrix = scaling)
-    # the following method returns just RGB data - no alpha bytes
-    # this seems to be required in Windows versions of wx.
-    # on other platforms try instead:
-    #bmp = wx.BitmapfromBufferRGBA(pix.w, pix.h, pix.samples)
+def pdf_show(dlg, seite):
+    pno = getint(seite) - 1
+    pix = spad.doc.getPagePixmap(pno)
+    spad.height = pix.h
     a = pix.samplesRGB()                  # samples without alpha bytes
     bmp = wx.BitmapFromBuffer(pix.w, pix.h, a)
     pix = None
     a   = None
     return bmp
+
+#==============================================================================
+# Slider dialog for vertical bookmark positions (Height column)
+#==============================================================================
+class Slider(wx.Dialog):
+    def __init__(self, parent, val, maxval):
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY,
+                   title = u"Slide", pos = defPos, size = (70, 340),
+                   style = wx.CLOSE_BOX|wx.DEFAULT_DIALOG_STYLE)
+        boxszr = wx.BoxSizer(wx.HORIZONTAL)
+        self.slider = wx.Slider( self, wx.ID_ANY, val, 1, maxval,
+                                   defPos, wx.Size(-1, 300),
+                                   wx.SL_RIGHT|wx.SL_LABELS|wx.SL_INVERSE)
+        boxszr.Add( self.slider, 0, 0, 5 )
+        self.slider.Bind(wx.EVT_SCROLL, self.scrolling)
+        self.SetSizer(boxszr)
+        self.Layout()
+        self.Centre(wx.BOTH)
+
+    def scrolling(self, evt):
+        self.GetParent().bookmark = self.slider.GetValue()
+        evt.Skip()
 
 #==============================================================================
 # PDFTable = a tabular grid class in wx
@@ -131,23 +139,32 @@ class PDFTable(gridlib.PyGridTableBase):
     def __init__(self):
         gridlib.PyGridTableBase.__init__(self)
 
-        self.colLabels = ['Level','Title','Page']
+        self.colLabels = ['Level','Title','Page','Height']
         self.dataTypes = [gridlib.GRID_VALUE_NUMBER,
                           gridlib.GRID_VALUE_STRING,
                           gridlib.GRID_VALUE_NUMBER,
+                          gridlib.GRID_VALUE_NUMBER,
                           ]
         # initial load of table with outline data
-        # each line consists of [lvl, title, page]
-        # for display, we "indent" the title with spaces
-        self.data = [[PDFcfg.inhalt[i][0],          # indentation level
-                      " "*(PDFcfg.inhalt[i][0] -1) + \
-                      PDFcfg.inhalt[i][1].decode("utf-8","ignore"),  # title
-                      PDFcfg.inhalt[i][2]] \
-                              for i in range(len(PDFcfg.inhalt))]
-        if not PDFcfg.inhalt:
-            self.data = [[0, "*** no outline ***", 0]]
-        # used for correctly placing new lines. insert at end = -1
-        self.cur_row = -1
+        # each line consists of [lvl, title, page, top (height)]
+        self.data = []
+        for z in spad.inhalt:
+            top = -1
+            lvl = z[0]
+            tit = z[1]
+            if spad.encoding != ENCODING:      # data comes from the PDF!
+                tit = tit.decode("utf-8","ignore")
+            pno = z[2]
+            if len(z) > 3:
+                if type(z[3]) is int or type(z[3]) is float:
+                    top = int(round(z[3]))
+                else:
+                    try:
+                        top = int(round(z[3]["to"][1]))
+                    except: pass
+            self.data.append([lvl, tit, pno, top])
+        if not spad.inhalt:
+            self.data = [[1, "*** contains no outline ***", 1, 0]]
 
 #==============================================================================
 # Methods required by wxPyGridTableBase interface.
@@ -165,19 +182,18 @@ class PDFTable(gridlib.PyGridTableBase):
         except IndexError:
             return True
 
-    def GetValue(self, row, col):      # get value (to be put into a cell)
-        if col == 1:                   # simulate indentation if title column
-            lvl = int(self.data[row][0]) - 1
-            value = "  " * lvl + self.data[row][1].strip()
-        else:
-            value = self.data[row][col]
-        return value
+    def GetValue(self, row, col):           # get value for display
+        if col != 1:
+            return self.data[row][col]
+        lvl = int(self.data[row][0]) - 1
+        val = " "*lvl + self.data[row][1]   # simulate hierarchy lvl by spaces
+        return val
 
-    def SetValue(self, row, col, value):    # put value from cell to data table
+    def SetValue(self, row, col, val):    # put value from cell to data table
         if col == 1:
-            x_val = value.strip()           # strip off simulated indentations
+            x_val = val.strip()           # strip off indentations
         else:
-            x_val = value
+            x_val = int(val)
         self.data[row][col] = x_val
 
 #==============================================================================
@@ -188,7 +204,7 @@ class PDFTable(gridlib.PyGridTableBase):
 
 #==============================================================================
 # set row names (just row counters in our case). Only needed, because we have
-# row-based operations (dragging, duplicating), and these require some label.
+# row-based operations (dragging, etc.), and these require some label.
 #==============================================================================
     def GetRowLabelValue(self,row):
         return str(row +1)
@@ -207,7 +223,6 @@ class PDFTable(gridlib.PyGridTableBase):
         grid = self.GetView()
 
         if grid and frm != to:                  # actually moving something?
-            self.cur_row = to
             # Move the data rows
             oldData = self.data[frm]            # list of row values
             del self.data[frm]                  # delete it from the data
@@ -229,42 +244,19 @@ class PDFTable(gridlib.PyGridTableBase):
             grid.EndBatch()
 
 #==============================================================================
-# insert a new row, called with the new cell value list (zeile).
-# we use self.cur_row to determine where to put it.
-#==============================================================================
-    def NewRow(self, zeile):
-        grid = self.GetView()
-        if grid:
-            if self.cur_row in range(len(self.data)): # insert in the middle?
-                self.data.insert(self.cur_row, zeile)
-                grid.BeginBatch()                     # inform the grid
-                msg = gridlib.GridTableMessage(self,
-                       gridlib.GRIDTABLE_NOTIFY_ROWS_INSERTED, self.cur_row, 1)
-                grid.ProcessTableMessage(msg)
-                grid.EndBatch()
-            else:                                     # insert at end (append)
-                self.data.append(zeile)
-                grid.BeginBatch()                     # inform grid
-                msg = gridlib.GridTableMessage(self,
-                       gridlib.GRIDTABLE_NOTIFY_ROWS_APPENDED, 1)
-                grid.ProcessTableMessage(msg)
-                grid.EndBatch()
-
-#==============================================================================
 # Duplicate a row, called with row number
 #==============================================================================
     def DuplicateRow(self, row):
         grid = self.GetView()
         if grid:
-            zeile = [self.data[row][0], self.data[row][1],
-                     self.data[row][2]]
+            zeile = [self.data[row][0], self.data[row][1], self.data[row][2],
+                     self.data[row][3], ]
             self.data.insert(row, zeile)
             grid.BeginBatch()
             msg = gridlib.GridTableMessage(self,
                         gridlib.GRIDTABLE_NOTIFY_ROWS_INSERTED, row, 1)
             grid.ProcessTableMessage(msg)
             grid.EndBatch()
-            self.cur_row = row
 
 #==============================================================================
 # Delete a row. called with row number.
@@ -278,8 +270,6 @@ class PDFTable(gridlib.PyGridTableBase):
                    gridlib.GRIDTABLE_NOTIFY_ROWS_DELETED, row, 1)
             grid.ProcessTableMessage(msg)
             grid.EndBatch()
-        if self.cur_row not in range(len(self.data)): # update indicator
-            self.cur_row = -1
 
 #==============================================================================
 # define Grid
@@ -287,9 +277,12 @@ class PDFTable(gridlib.PyGridTableBase):
 class MyGrid(gridlib.Grid):
     def __init__(self, parent):
         gridlib.Grid.__init__(self, parent, -1)
-
         table = PDFTable()             # initialize table
-
+        self.Bind(wx.EVT_IDLE, self.OnIdle)
+        self.do_title = False          # idling event: autosize title column
+        self.bookmark_page = 0         # idling event: redisplay PDF image
+        self.bookmark = -1             # idling event: bookmark position change
+        self.bookmark_row = 0          # idling event: row number
 #==============================================================================
 # announce table to Grid
 # 'True' = enable Grid to manage the table (destroy, etc.)
@@ -301,7 +294,7 @@ class MyGrid(gridlib.Grid):
         self.SetDefaultCellFont(wx.Font(wx.NORMAL_FONT.GetPointSize(),
                  70, 90, 90, False, "DejaVu Sans Mono"))
 
-        # center columns (indent level, delete check box)
+        # center columns (indent level)
         ct_al1 = gridlib.GridCellAttr()
         ct_al1.SetAlignment(wx.ALIGN_CENTER, wx.ALIGN_CENTER)
         self.SetColAttr(0, ct_al1)
@@ -316,53 +309,99 @@ class MyGrid(gridlib.Grid):
 #==============================================================================
         gridmovers.GridRowMover(self)
 
-#==============================================================================
-# Bind: move row
-#==============================================================================
-        self.Bind(gridmovers.EVT_GRID_ROW_MOVE, self.OnRowMove, self)
+        self.Bind(gridmovers.EVT_GRID_ROW_MOVE, self.OnRowMove)
+        self.Bind(gridlib.EVT_GRID_LABEL_LEFT_DCLICK, self.OnRowDup)
+        self.Bind(gridlib.EVT_GRID_LABEL_LEFT_CLICK, self.OnRowDel)
+        self.Bind(gridlib.EVT_GRID_CELL_LEFT_DCLICK, self.OnCellDClick)
+        self.Bind(gridlib.EVT_GRID_CELL_LEFT_CLICK, self.OnCellClick)
+        self.Bind(gridlib.EVT_GRID_CELL_CHANGING, self.OnCellChanging)
+        self.Bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
 
 #==============================================================================
-# Bind: duplicate a row
+# Event Method: handle key press events - only navigation tasks performed
 #==============================================================================
-        self.Bind(gridlib.EVT_GRID_LABEL_LEFT_DCLICK, self.OnRowDup, self)
+    def OnKeyDown(self, evt):
+        if evt.ControlDown() or evt.ShiftDown(): # ignore all CTRL+ / SHIFT+
+            evt.Skip()
+            return
+        key = evt.GetKeyCode()         # only handling UP, DOWN, ENTER
+        if key not in (wx.WXK_DOWN, wx.WXK_UP, wx.WXK_RETURN):
+            evt.Skip()
+            return
+        oldRow = self.GetGridCursorRow()
+        oldCol = self.GetGridCursorCol()
+        self.set_row_background(oldRow)     # ensure current row is khaki color
+        maxRow = self.GetTable().GetNumberRows()
+
+        if key == wx.WXK_UP:
+            if oldRow > 0:        # only handled if not past start of grid
+                self.set_row_background(oldRow - 1)
+                self.MakeCellVisible(oldRow - 1, oldCol)
+            evt.Skip()
+            return
+
+        if key == wx.WXK_DOWN:    # only handled if not past end of grid
+            if oldRow + 1 < maxRow:
+                self.set_row_background(oldRow + 1)
+                self.MakeCellVisible(oldRow + 1, oldCol)
+            evt.Skip()
+            return
+
+        self.DisableCellEditControl()
+        success = self.MoveCursorRight(False)
+        if not success:           # we are in last cell, so move to next row
+            newRow = self.GetGridCursorRow() + 1
+            if newRow >= maxRow:       # wrap to top if end of grid
+                newRow = 0
+            self.SetGridCursor(newRow, 0)
+            self.MakeCellVisible(newRow, 0)
+            self.set_row_background(newRow)       # recolor rows
+
+        return
 
 #==============================================================================
-# Bind: delete a row
+# Event Method: what to do if idling
 #==============================================================================
-        self.Bind(gridlib.EVT_GRID_LABEL_RIGHT_DCLICK, self.OnRowDel, self)
-
-#==============================================================================
-# Bind: (double) click a cell
-#==============================================================================
-        self.Bind(gridlib.EVT_GRID_CELL_LEFT_CLICK, self.OnCellClick, self)
-        self.Bind(gridlib.EVT_GRID_CELL_LEFT_DCLICK, self.OnCellDClick, self)
-
-#==============================================================================
-# Bind: cell is changing
-#==============================================================================
-        self.Bind(gridlib.EVT_GRID_CELL_CHANGING, self.OnCellChanging, self)
+    def OnIdle(self, evt):
+        dlg = self.GetParent()
+        if self.do_title:                   # did title changes happen?
+            self.AutoSizeColumn(1)          # resize title column
+            w1 = max(self.GetEffectiveMinSize()[0], dlg.minwidth)
+            w2 = dlg.PDFbild.Size[0]
+            h = dlg.Size[1]
+            dlg.Size = wx.Size(w1 + w2 + 60, h)
+            dlg.Layout()                    # adjust the grid
+            self.do_title = False
+        if self.bookmark > 0:               # did height changes happen?
+            self.GetTable().SetValue(self.bookmark_row, 3, self.bookmark)
+            self.Table.data[self.bookmark_row][3] = self.bookmark
+            spad.oldpage = 0              # make sure page re-display
+            PicRefresh(dlg, self.bookmark_page)
+            self.bookmark = -1
+        if (time.clock() - spad.lastsave) > 60.0 and spad.lastsave >= 0.0:
+            dlg.auto_save()
+        evt.Skip()
 
 #==============================================================================
 # Event Method: cell is changing
 #==============================================================================
     def OnCellChanging(self, evt):
-        if evt.GetCol() == 2:          # page number is changing
-            value = evt.GetString()    # new cell value
-            PicRefresh(value)          # we show corresponding image
-        self.AutoSizeColumn(1)         # as always: title width adjust
-        DisableOK()                    # check data before save is possible
+        DisableOK()                    # disable SAVE
+        if evt.GetCol() == 1:          # if title changes,
+            self.do_title = True       # trigger col resize when idle
+        elif evt.GetCol() == 3:        # trigger height changes when idle
+            self.bookmark      = int(evt.GetString())
+            self.bookmark_row  = evt.GetRow()
+            self.bookmark_page = self.GetTable().GetValue(self.bookmark_row, 2)
+        evt.Skip()
 
 #==============================================================================
 # Event Method: cell click
 #==============================================================================
     def OnCellClick(self, evt):
-        row = evt.GetRow()             # row
-        col = evt.GetCol()             # col
-        table = self.GetTable()
-        grid = table.GetView()
-        grid.GoToCell(row, col)        # force "select" for the cell
-        self.cur_row = row             # memorize current row
-        self.AutoSizeColumn(1)         # adjust title col width to content
+        row = evt.GetRow()
+        self.set_row_background(row)
+        evt.Skip()
 
 #==============================================================================
 # Event Method: cell double click
@@ -370,42 +409,79 @@ class MyGrid(gridlib.Grid):
     def OnCellDClick(self, evt):
         row = evt.GetRow()             # row
         col = evt.GetCol()             # col
-        table = self.GetTable()
-        if col == 1 or col == 2:       # refresh picture if title or page col
-            seite = table.GetValue(row, 2)
-            PicRefresh(seite)
-        grid = table.GetView()
-        grid.GoToCell(row, col)        # force "select" of that cell
-        self.cur_row = row             # memorize current row
-        self.AutoSizeColumn(1)
+        dlg = self.GetParent()
+        seite = self.GetTable().GetValue(row, 2) # make sure page is displayed
+        PicRefresh(dlg, seite)
+        if col != 3:                   # further handling only for height col
+            evt.Skip()
+            return
+        self.bookmark_page = self.GetTable().GetValue(row, 2)   # store page no
+        self.bookmark_row  = row                 # store grid row
+        self.MakeCellVisible(row, col)
+        h = self.GetTable().GetValue(row, 3)     # get current height value
+        h = max(int(h), 1)                       # should be > 0
+        maxh = spad.height                     # maxh is page height
+        d = Slider(self, h, maxh)                # create slider dialog
+        d.ShowModal()                            # show it
+        self.bookmark = d.slider.GetValue()      # extract & store value
+        evt.Skip()
+        return
 
 #==============================================================================
 # Event Method: move row
 #==============================================================================
     def OnRowMove(self,evt):
-        frm = evt.GetMoveRow()         # row being moved
-        to = evt.GetBeforeRow()        # before which row to insert
-        self.GetTable().MoveRow(frm,to)
+        frm = evt.GetMoveRow()               # the row to move
+        to = evt.GetBeforeRow()              # before which row to insert
+        self.GetTable().MoveRow(frm, to)
+        self.GetParent().Layout()            # adjust the grid
         DisableOK()
+        evt.Skip()
 
 #==============================================================================
 # Event Method: delete row
 #==============================================================================
     def OnRowDel(self, evt):
         row = evt.GetRow()
+        col = evt.GetCol()
+        if row < 0 or col >= 0 or not evt.ControlDown():
+            evt.Skip()
+            return
         self.GetTable().DeleteRow(row)
+        self.GetParent().Layout()            # adjust the grid
         DisableOK()
+        evt.Skip()
 
 #==============================================================================
-# Event Method: delete row
+# Event Method: duplicate row
 #==============================================================================
     def OnRowDup(self, evt):
         row = evt.GetRow()
         col = evt.GetCol()
-        if col < 0 and row >= 0:       # else this is not a row duplication!
+        if evt.ControlDown():
+            evt.Skip()
+            return
+        if col < 0 and row >= 0:                 # a row duplication?
             self.GetTable().DuplicateRow(row)    # duplicate the row and ...
-            self.GetParent().Layout()  # possibly enlarge the grid
-        DisableOK()
+            self.GetParent().Layout()            # adjust the grid
+            DisableOK()
+        evt.Skip()
+
+#==============================================================================
+# Change background to KHAKI and that of others to WHITE
+#==============================================================================
+    def set_row_background(self, row):
+        cols = self.GetNumberCols()
+        rows = self.GetNumberRows()
+        for i in list(range(rows)):
+            for j in list(range(cols)):
+                if i == row:
+                    self.SetCellBackgroundColour(i, j, khaki)
+                else:
+                    self.SetCellBackgroundColour(i, j, "WHITE")
+                self.RefreshAttr(i, j)
+        self.Refresh()
+        return
 
 #==============================================================================
 #
@@ -415,125 +491,117 @@ class MyGrid(gridlib.Grid):
 class PDFDialog (wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__ (self, parent, id = wx.ID_ANY,
-                             title = "Maintain the Table of Contents",
-                             pos = defPos, size = defSiz,
+                             title = "Maintain a PDF Table of Contents",
+                             pos = defPos, size = wx.Size(1250, 950),
                              style = wx.CAPTION|wx.CLOSE_BOX|
                                      wx.DEFAULT_DIALOG_STYLE|
                                      wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|
                                      wx.RESIZE_BORDER)
         self.SetIcon(ico_pdf.img.GetIcon())      # set a screen icon
         self.SetBackgroundColour(khaki)
-        # maximize the screen
-        #self.Maximize()
-        # alternatively, try more scrutiny:
-        width = wx.GetDisplaySize()[0]-500        # define maximum width
-        height = wx.GetDisplaySize()[1]-35       # define maximum height
-        self.SetSize(wx.Size(width, height))
 #==============================================================================
 # Sizer 10: Button 'new row' and an explaining text
 #==============================================================================
         self.szr10 = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.btn_neu = wx.Button(self, wx.ID_ANY, "New Row",
-                        defPos, defSiz, 0)
-        self.szr10.Add(self.btn_neu, 0, wx.ALIGN_CENTER|wx.ALL, 5)
-
-        msg_txt = """NEW rows will be inserted at the end, or before the row with a right-clicked field.\nDUPLICATE row: double-click its number.  DELETE row: right-double-click its number.\nDouble-click titles or page numbers to display the page image."""
+        msg_txt = """DUPLICATE row: DoubleClick its number.  DELETE row: CTRL+Click its number. MOVE row: grab row number. DoubleClick a not selected row cell to display page image."""
         explain = wx.StaticText(self, wx.ID_ANY, msg_txt,
-                      defPos, wx.Size(-1, 50), 0)
+                      defPos, wx.Size(-1, 40), 0)
         self.szr10.Add(explain, 0, wx.ALIGN_CENTER, 5)
 
 #==============================================================================
 # Sizer 20: define outline grid and do some layout adjustments
 #==============================================================================
-        self.szr20 = MyGrid(self)
-        self.szr20.AutoSizeColumn(0)
-        self.szr20.AutoSizeColumn(1)
-        self.szr20.SetColSize(2, 45)
-        self.szr20.SetRowLabelSize(30)
+        self.tocgrid = MyGrid(self)
+        self.tocgrid.AutoSizeColumn(0)
+        self.tocgrid.AutoSizeColumn(1)
+        self.tocgrid.SetColSize(2, 50)
+        self.tocgrid.SetColSize(3, 50)
+        self.tocgrid.SetRowLabelSize(30)
 
 #==============================================================================
 # Sizer 30: PDF meta information
 #==============================================================================
-        self.szr30 = wx.FlexGridSizer(6, 2, 0, 0)
-        self.szr30.SetFlexibleDirection(wx.BOTH)
-        self.szr30.SetNonFlexibleGrowMode(wx.FLEX_GROWMODE_SPECIFIED)
+        self.metagrid = wx.FlexGridSizer(7, 2, 0, 0)
+        self.metagrid.SetFlexibleDirection(wx.BOTH)
+        self.metagrid.SetNonFlexibleGrowMode(wx.FLEX_GROWMODE_SPECIFIED)
 
-        self.tx_input = wx.StaticText(self, wx.ID_ANY, "Input:",
+        tx_input = wx.StaticText(self, wx.ID_ANY, "Input:",
                             defPos, defSiz, 0)
-        self.tx_input.Wrap(-1)
-        self.szr30.Add(self.tx_input, 0, wx.ALIGN_CENTER, 5)
+        self.metagrid.Add(tx_input, 0, wx.ALIGN_RIGHT, 5)
 
-        self.tx_eindat = wx.StaticText(self, wx.ID_ANY,
-                            "  %s  (%s pages)" % (PDFcfg.file, str(PDFcfg.seiten)),
+        tx_eindat = wx.StaticText(self, wx.ID_ANY,
+                          "%s  (%s pages)" % (spad.file, str(spad.seiten)),
                             defPos, defSiz, 0)
-        self.tx_eindat.Wrap(-1)
-        self.szr30.Add(self.tx_eindat, 0, wx.ALL, 5)
+        self.metagrid.Add(tx_eindat, 0, wx.LEFT, 5)
 
-        self.tx_ausdat = wx.StaticText(self, wx.ID_ANY, "Output:",
+        tx_encoding = wx.StaticText(self, wx.ID_ANY, "Encoding:",
                             defPos, defSiz, 0)
-        self.tx_ausdat.Wrap(-1)
-        self.szr30.Add(self.tx_ausdat, 0, wx.ALIGN_CENTER, 5)
+        self.metagrid.Add(tx_encoding, 0, wx.ALIGN_RIGHT, 5)
 
-        self.btn_aus = wx.FilePickerCtrl(self, wx.ID_ANY,
-                        PDFcfg.file, "set output file", "*.pdf",
-                        defPos, wx.Size(480,-1),
-                        wx.FLP_OVERWRITE_PROMPT|wx.FLP_SAVE|
-                        wx.FLP_USE_TEXTCTRL)
-        self.szr30.Add(self.btn_aus, 0, wx.ALL, 5)
-        self.tx_autor = wx.StaticText(self, wx.ID_ANY, "Author:",
+        self.encoding = wx.TextCtrl(self, wx.ID_ANY, ENCODING,
+                       defPos, defSiz, wx.NO_BORDER)
+        self.metagrid.Add(self.encoding, 0, wx.LEFT, 5)
+
+        tx_autor = wx.StaticText(self, wx.ID_ANY, "Author:",
                          defPos, defSiz, 0)
-        self.tx_autor.Wrap(-1)
-        self.szr30.Add(self.tx_autor, 0, wx.ALIGN_CENTER, 5)
+        self.metagrid.Add(tx_autor, 0, wx.ALIGN_RIGHT, 5)
 
         self.ausaut = wx.TextCtrl(self, wx.ID_ANY,
-                       PDFcfg.meta["author"],
-                       defPos, wx.Size(480, -1), 0)
-        self.szr30.Add(self.ausaut, 0, wx.ALL, 5)
+                       spad.meta["author"],
+                       defPos, wx.Size(480, -1), wx.NO_BORDER)
+        self.metagrid.Add(self.ausaut, 0, wx.LEFT, 5)
 
-        self.pdf_titel = wx.StaticText(self, wx.ID_ANY, "Title:",
+        pdf_titel = wx.StaticText(self, wx.ID_ANY, "Title:",
                           defPos, defSiz, 0)
-        self.pdf_titel.Wrap(-1)
-        self.szr30.Add(self.pdf_titel, 0, wx.ALIGN_CENTER, 5)
+        self.metagrid.Add(pdf_titel, 0, wx.ALIGN_RIGHT, 5)
 
         self.austit = wx.TextCtrl(self, wx.ID_ANY,
-                       PDFcfg.meta["title"],
-                       defPos, wx.Size(480, -1), 0)
-        self.szr30.Add(self.austit, 0, wx.ALL, 5)
+                       spad.meta["title"],
+                       defPos, wx.Size(480, -1), wx.NO_BORDER)
+        self.metagrid.Add(self.austit, 0, wx.LEFT, 5)
 
-        self.tx_subject = wx.StaticText(self, wx.ID_ANY, "Subject:",
+        tx_subject = wx.StaticText(self, wx.ID_ANY, "Subject:",
                            defPos, defSiz, 0)
-        self.tx_subject.Wrap(-1)
-        self.szr30.Add(self.tx_subject, 0, wx.ALIGN_CENTER, 5)
+        self.metagrid.Add(tx_subject, 0, wx.ALIGN_RIGHT, 5)
 
         self.aussub = wx.TextCtrl(self, wx.ID_ANY,
-                       PDFcfg.meta["subject"],
-                       defPos, wx.Size(480, -1), 0)
-        self.szr30.Add(self.aussub, 0, wx.ALL, 5)
+                       spad.meta["subject"],
+                       defPos, wx.Size(480, -1), wx.NO_BORDER)
+        self.metagrid.Add(self.aussub, 0, wx.LEFT, 5)
+
+        tx_keywords = wx.StaticText(self, wx.ID_ANY, "Keywords:",
+                           defPos, defSiz, 0)
+        self.metagrid.Add(tx_keywords, 0, wx.ALIGN_RIGHT, 5)
+
+        self.keywords = wx.TextCtrl(self, wx.ID_ANY,
+                       spad.meta["keywords"],
+                       defPos, wx.Size(480, -1), wx.NO_BORDER)
+        self.metagrid.Add(self.keywords, 0, wx.LEFT, 5)
 
 #==============================================================================
 # Sizer 31: check data
 #==============================================================================
         self.szr31 = wx.FlexGridSizer(1, 2, 0, 0)
         self.btn_chk = wx.Button(self, wx.ID_ANY, "Check Data",
-                        defPos, defSiz, 0)
+                        defPos, defSiz, wx.BU_EXACTFIT)
         self.szr31.Add(self.btn_chk, 0, wx.ALIGN_TOP|wx.ALL, 5)
-        self.msg = wx.StaticText(self, wx.ID_ANY, "Before data can be saved, "\
-                    "they must be checked with this button.\n"\
-                    "Warning: Any original 'Output' file will be overwritten, "\
-                    "once you press SAVE!",
+        self.msg = wx.StaticText(self, wx.ID_ANY,
+                    "Before changes to the PDF can be saved, "\
+                    "you must check your input them with this button.",
                     defPos, defSiz, 0)
-        self.msg.Wrap(-1)
         self.szr31.Add(self.msg, 0, wx.ALL, 5)
 
 #==============================================================================
 # Sizer 40: OK / Cancel
 #==============================================================================
         self.szr40 = wx.StdDialogButtonSizer()
-        self.szr40OK = wx.Button(self, wx.ID_OK, label="SAVE")
+        self.szr40OK = wx.Button(self, wx.ID_OK, "SAVE",
+                        defPos, defSiz, wx.BU_EXACTFIT)
         self.szr40OK.Disable()
         self.szr40.AddButton(self.szr40OK)
-        self.szr40Cancel = wx.Button(self, wx.ID_CANCEL)
+        self.szr40Cancel = wx.Button(self, wx.ID_CANCEL, "QUIT",
+                            defPos, defSiz, wx.BU_EXACTFIT)
         self.szr40.AddButton(self.szr40Cancel)
         self.szr40.Realize()
 
@@ -554,14 +622,15 @@ class PDFDialog (wx.Dialog):
         le_szr.Add(self.szr10, 0, wx.EXPAND, 5)
         le_szr.Add(linie1, 0, wx.EXPAND|wx.ALL, 5)
 
-        le_szr.Add(self.szr20, 1, wx.EXPAND, 5)
+        le_szr.Add(self.tocgrid, 1, wx.EXPAND, 5)
         le_szr.Add(self.szr31, 0, wx.EXPAND, 5)
         le_szr.Add(linie2, 0, wx.EXPAND|wx.ALL, 5)
 
-        le_szr.Add(self.szr30, 0, wx.EXPAND, 5)
+        le_szr.Add(self.metagrid, 0, wx.EXPAND, 5)
         le_szr.Add(linie3, 0, wx.EXPAND|wx.ALL, 5)
 
         le_szr.Add(self.szr40, 0, wx.ALIGN_TOP|wx.ALIGN_CENTER_HORIZONTAL, 5)
+        le_szr.RecalcSizes()
 
 #==============================================================================
 # Right Sizer: display a PDF page image
@@ -570,21 +639,21 @@ class PDFDialog (wx.Dialog):
 
         ri_szr20 = wx.BoxSizer(wx.HORIZONTAL) # defines the control line
 
-        self.btn_vor = wx.Button(self, wx.ID_ANY, "forward",
-                           defPos, defSiz, 0)
+        self.btn_vor = wx.Button(self, wx.ID_ANY, "forw",
+                           defPos, defSiz, wx.BU_EXACTFIT)
         ri_szr20.Add(self.btn_vor, 0, wx.ALL, 5)
 
-        self.btn_zur = wx.Button(self, wx.ID_ANY, "backward",
-                           defPos, defSiz, 0)
+        self.btn_zur = wx.Button(self, wx.ID_ANY, "back",
+                           defPos, defSiz, wx.BU_EXACTFIT)
         ri_szr20.Add(self.btn_zur, 0, wx.ALL, 5)
 
         self.zuSeite = wx.TextCtrl(self, wx.ID_ANY, "1",
                              defPos, wx.Size(40, -1),
                              wx.TE_PROCESS_ENTER|wx.TE_RIGHT)
-        ri_szr20.Add(self.zuSeite, 0, wx.ALL, 5)
+        ri_szr20.Add(self.zuSeite, 0, wx.LEFT|wx.TOP|wx.RIGHT, 5)
 
         max_pages = wx.StaticText(self, wx.ID_ANY,
-                            "of %s pages" % (str(PDFcfg.seiten),),
+                            "of %s pages" % (str(spad.seiten),),
                             defPos, defSiz, 0)
         ri_szr20.Add(max_pages, 0, wx.ALIGN_CENTER, 5)
 
@@ -592,7 +661,7 @@ class PDFDialog (wx.Dialog):
         ri_szr.Add(ri_szr20, 0, wx.EXPAND, 5)
 
         # define the bitmap for the pdf image ...
-        bmp = pdf_show(1)
+        bmp = pdf_show(self, 1)
         self.PDFbild = wx.StaticBitmap(self, wx.ID_ANY, bmp,
                            defPos, defSiz, wx.BORDER_NONE)
         # ... and add it to the vertical sizer
@@ -606,13 +675,18 @@ class PDFDialog (wx.Dialog):
         mainszr.Add(ri_szr, 0, wx.ALL, 5)
 
         self.SetSizer(mainszr)
+        self.minwidth = self.metagrid.ComputeFittingWindowSize(self)[0]
+        w1 = max(self.tocgrid.GetEffectiveMinSize()[0], self.minwidth)
+        w2 = self.PDFbild.Size[0]
+        h = self.Size[1]
+        self.Size = wx.Size(w1 + w2 + 60, h)
         self.Layout()
         self.Centre(wx.BOTH)
+        bmp = None
 
 #==============================================================================
 # bind buttons
 #==============================================================================
-        self.btn_neu.Bind(wx.EVT_BUTTON, self.insertRow)      # "new row"
         self.btn_chk.Bind(wx.EVT_BUTTON, self.DataOK)         # "check data"
         self.btn_vor.Bind(wx.EVT_BUTTON, self.forwPage)       # "forward"
         self.btn_zur.Bind(wx.EVT_BUTTON, self.backPage)       # "backward"
@@ -622,180 +696,256 @@ class PDFDialog (wx.Dialog):
     def __del__(self):
         pass
 
-    def OnMouseWheel(self, event):
+    def OnMouseWheel(self, evt):
         # process wheel as paging operations
-        d = event.GetWheelRotation()     # int indicating direction
+        d = evt.GetWheelRotation()     # int indicating direction
         if d < 0:
-            self.forwPage(event)
+            self.forwPage(evt)
         elif d > 0:
-            self.backPage(event)
+            self.backPage(evt)
         return
 
-    def forwPage(self, event):
+    def forwPage(self, evt):
         seite = getint(self.zuSeite.Value) + 1
-        PicRefresh(seite)
-        event.Skip()
+        PicRefresh(self, seite)
+        evt.Skip()
 
-    def backPage(self, event):
+    def backPage(self, evt):
         seite = getint(self.zuSeite.Value) - 1
-        PicRefresh(seite)
-        event.Skip()
+        PicRefresh(self, seite)
+        evt.Skip()
 
-    def gotoPage(self, event):
+    def gotoPage(self, evt):
         seite = self.zuSeite.Value
-        PicRefresh(seite)
-        event.Skip()
-
-#==============================================================================
-# "insertRow" - Event Handler for new rows: insert a model row
-#==============================================================================
-    def insertRow(self, event):
-        zeile = [1, "*** new row ***", 1, ""]
-        self.szr20.Table.NewRow(zeile)
-        DisableOK()
-        self.Layout()
+        PicRefresh(self, seite)
+        evt.Skip()
 
 #==============================================================================
 # Check Data: enable / disable OK button
 #==============================================================================
-    def DataOK(self, event):
-        valide = True
+    def DataOK(self, evt):
+        self.auto_save()
+        clean = True
         self.msg.Label = "Data OK!"
-        d = self.szr20.GetTable()
-        for i in range(self.szr20.Table.GetNumberRows()):
+        d = self.tocgrid.GetTable()
+        for i in list(range(self.tocgrid.Table.GetNumberRows())):
             if i == 0 and int(d.GetValue(0, 0)) != 1:
-                valide = False
+                clean = False
                 self.msg.Label = "row 1 must have level 1"
                 break
             if int(d.GetValue(i, 0)) < 1:
-                valide = False
+                clean = False
                 self.msg.Label = "row %s: level < 1" % (str(i+1),)
                 break
-            if int(d.GetValue(i, 2)) > PDFcfg.seiten or \
-               int(d.GetValue(i, 2)) < 1:
-                valide = False
-                self.msg.Label = "row %s: page# out of range" \
-                                  % (str(i+1),)
+            if not (0 < int(d.GetValue(i, 2)) <= spad.seiten):
+                clean = False
+                self.msg.Label = "row %s: page# out of range" % (str(i+1),)
                 break
             if i > 0 and (int(d.GetValue(i, 0)) - int(d.GetValue(i-1, 0))) > 1:
-                valide = False
+                clean = False
                 self.msg.Label = "row %s: level stepping > 1" % (str(i+1),)
                 break
             if not d.GetValue(i, 1):
-                valide = False
+                clean = False
                 self.msg.Label = "row %s: missing title" % (str(i+1),)
                 break
+            h = spad.height
+            if d.GetValue(i, 3) < 1:
+                d.SetValue(i, 3, str(h - 36))
+                self.tocgrid.Table.data[i][3] = h - 36
+            if not (0 < int(d.GetValue(i, 3)) <= h):
+                clean = False
+                self.msg.Label = "row %s: height not in range" % (str(i+1),)
+                break
 
-        if valide and (self.btn_aus.GetPath() == PDFcfg.file):
-            if PDFcfg.doc.openErrCode > 0 or PDFcfg.doc.needsPass == 1:
-                valide = False
-                self.msg.Label = "repaired or encrypted document - choose a different Output"
-
-        if not valide:
+        if not clean:
             self.szr40OK.Disable()
         else:
             self.szr40OK.Enable()
-        self.Layout()
+
+        self.tocgrid.Refresh()
+        evt.Skip()
+        return
+
+    def auto_save(self):
+        f_toc = open(spad.file + ".json", "w")
+        d = {"encoding": self.encoding.Value, "toc": self.tocgrid.Table.data,
+             "author": self.ausaut.Value, "title": self.austit.Value,
+             "subject": self.aussub.Value, "keywords": self.keywords.Value}
+        json.dump(d, f_toc)
+        f_toc.close()
+        spad.lastsave = time.clock()
+        return
 
 #==============================================================================
 # display a PDF page
 #==============================================================================
-def PicRefresh(seite):
+def PicRefresh(dlg, seite):
     i_seite = getint(seite)
-    i_seite = max(1, i_seite)           # ensure page# is within boundaries
-    i_seite = min(PDFcfg.seiten, i_seite)
+    i_seite = max(1, i_seite)               # ensure page# is within boundaries
+    i_seite = min(spad.seiten, i_seite)
 
-    dlg.zuSeite.Value = str(i_seite)    # set page number in dialog fields
-    if PDFcfg.oldpage == i_seite:
+    dlg.zuSeite.Value = str(i_seite)        # set page number in dialog field
+    if spad.oldpage == i_seite:             # avoid effort if no page change
         return
-    PDFcfg.oldpage = i_seite
+    spad.oldpage = i_seite
 
-    bmp = pdf_show(i_seite)
-    dlg.PDFbild.SetSize(bmp.Size)
-    dlg.PDFbild.SetBitmap(bmp)
-    dlg.PDFbild.Refresh(True)
-    bmp = None
+    bmp = pdf_show(dlg, i_seite)            # get bitmap of page
+
+    dc = wx.MemoryDC()                      # make a device control out of img
+    dc.SelectObject(bmp)
+    dc.SetPen(wx.Pen("RED", width=1))
+    d = dlg.tocgrid.GetTable()              # get data of grid
+    ltab = dlg.tocgrid.Table.GetNumberRows()
+
+    # draw horizontal line for every bookmark to this page
+    # note that we don't assume any page number order!
+    for i in list(range(ltab)):
+        if int(d.GetValue(i, 2)) != i_seite:
+            continue
+        x1 = bmp.Size[0] - 1                # don't draw on last pixel
+        top = int(d.GetValue(i, 3))
+        # adjust to img dimension
+        t = float(bmp.Size[1]) * float(top) / float(spad.height)
+        t = bmp.Size[1] - int(t)            # DrawLine counts from top
+        dc.DrawLine(1, t, x1, t)            # don't draw on 1st pixel
+
+    dc.SelectObject(wx.NullBitmap)          # destroy MemoryDC
+    dc = None                               # before further use
+
+    dlg.PDFbild.SetSize(bmp.Size)           # update size
+    dlg.PDFbild.SetBitmap(bmp)              # and update the picture
     dlg.Layout()
-
+    bmp = None                              # destroy bitmap
+    return
 #==============================================================================
 # Disable OK button
 #==============================================================================
 def DisableOK():
     dlg.szr40OK.Disable()
-    dlg.msg.Label = "Data have changed.\nPress Check Data (again) " \
-                    + "before saving."
+    dlg.msg.Label = "Data have changed. Check them to enable SAVE button."
+    if spad.lastsave < 0.0:
+        spad.lastsave = 1.0
 
 #==============================================================================
 # Read PDF document information
 #==============================================================================
 def getPDFinfo():
-    PDFcfg.doc = fitz.open(PDFcfg.file)
-    if PDFcfg.doc.needsPass:
+    spad.doc = fitz.open(spad.file)
+    if spad.doc.needsPass:
         decrypt_doc()
-    if PDFcfg.doc.isEncrypted:
-        return True
-    PDFcfg.inhalt = PDFcfg.doc.getToC()
-    PDFcfg.seiten = PDFcfg.doc.pageCount
-    PDFmeta = {"author":"", "title":"", "subject":""}
-    for key, wert in PDFcfg.doc.metadata.items():
-        if wert:
-            PDFmeta[key] = wert.decode("utf-8", "ignore")
+        if spad.doc.isEncrypted:
+            return True
+    spad.seiten = spad.doc.pageCount
+    m = {"author":"", "title":"", "subject":""}
+    for key, wert in spad.doc.metadata.items():
+        m[key] = wert.decode("utf-8", "ignore") if wert else ""
+
+    spad.meta = m
+    spad.inhalt = spad.doc.getToC(simple = False)
+    tocfile = spad.file + ".json"
+    if os.path.exists(tocfile):
+        d = wx.MessageDialog(None,
+             "A saved Table-Of-Contents exists for this PDF - Use it instead?",
+             "ToC available from previous edit session",
+             wx.YES_NO | wx.ICON_QUESTION)
+        rc = d.ShowModal()
+        d.Destroy()
+        d = None
+        if rc == wx.ID_YES:
+            try:
+                f_toc = open(tocfile)
+                d = json.load(f_toc)
+                f_toc.close()
+                spad.encoding         = d["encoding"]
+                spad.inhalt           = d["toc"]
+                spad.meta["author"]   = d["author"]
+                spad.meta["title"]    = d["title"]
+                spad.meta["subject"]  = d["subject"]
+                spad.meta["keywords"] = d["keywords"]
+            except:
+                pass
         else:
-            PDFmeta[key] = ""
-    PDFcfg.meta = PDFmeta
+            os.remove(tocfile)
     return False
 
 def decrypt_doc():
     # let user enter document password
     pw = None
-    dlg = wx.TextEntryDialog(None, 'Please enter password below:',
+    dlg = wx.TextEntryDialog(None, 'Please enter the password below:',
              'Document is password protected', '',
              style = wx.TextEntryDialogStyle|wx.TE_PASSWORD)
     while pw is None:
         rc = dlg.ShowModal()
         if rc == wx.ID_OK:
-            pw = str(dlg.GetValue().encode("utf-8"))
-            PDFcfg.doc.authenticate(pw)
+            pw = dlg.GetValue().encode("latin-1")
+            spad.doc.authenticate(pw)
         else:
             return
-        if PDFcfg.doc.isEncrypted:
+        if spad.doc.isEncrypted:
             pw = None
-            dlg.SetTitle("Wrong password. Enter correct password or cancel.")
+            dlg.SetTitle("Wrong password. Enter correct one or cancel.")
     return
 
 #==============================================================================
 # Write the changed PDF file
 #============================================================================
 def make_pdf(dlg):
-    cdate = wx.DateTime.Now().Format("D:%Y%m%d%H%M%S-04'00'")
-    PDFmeta = {"creator":"PDFoutline.py",
-               "producer":"PyMuPDF",
-               "creationDate": cdate,
-               "modDate": cdate,
-               "title":dlg.austit.Value,
-               "author":dlg.ausaut.Value,
-               "subject":dlg.aussub.Value}
+    f = spad.file
+    indir, infile = os.path.split(f)
+    odir = indir
+    ofile = infile
+    if spad.doc.needsPass or spad.doc.openErrCode:
+        ofile = ""
+    sdlg = wx.FileDialog(None, "Specify Output", odir, ofile,
+                                   "PDF files (*.pdf)|*.pdf", wx.FD_SAVE)
 
-    PDFcfg.doc.setMetadata(PDFmeta)    # set new metadata
+    if sdlg.ShowModal() == wx.ID_CANCEL:
+        return None
+
+    outfile = sdlg.GetPath()
+    if spad.doc.needsPass or spad.doc.openErrCode:
+        title =  "Repaired / decrypted PDF requires a different output"
+        while outfile == spad.file:
+            sdlg = wx.FileDialog(None, title, odir, "",
+                                 "PDF files (*.pdf)|*.pdf", wx.FD_SAVE)
+            if sdlg.ShowModal() == wx.ID_CANCEL:
+                return None
+            outfile = sdlg.GetPath()
+
+    cdate = wx.DateTime.Now().Format("D:%Y%m%d%H%M%S-04'00'")
+    m = spad.meta
+    if not m["creationDate"].startswith("D:"):
+        m["creationDate"] = cdate
+    if m["producer"] in ["", "(none)", "unspecified", "none", "(unspecified)"]:
+        m["producer"] = "PyMuPDF"
+    if m["creator"] in ["", "(none)", "unspecified", "none", "(unspecified)"]:
+        m["creator"] = "PDFoutline.py"
+    m["modDate"]  = cdate
+    m["title"]    = dlg.austit.Value
+    m["author"]   = dlg.ausaut.Value
+    m["subject"]  = dlg.aussub.Value
+    m["keywords"] = dlg.keywords.Value
+
+    spad.doc.setMetadata(m)    # set new metadata
     newtoc = []
 #==============================================================================
 # store our outline entries as bookmarks
 #==============================================================================
-    for z in dlg.szr20.Table.data:
+    for z in dlg.tocgrid.Table.data:
         lvl = int(z[0])
         pno = int(z[2])
         tit = z[1].strip()
-        tit = tit.encode(ENCODING, "ignore")
-        newtoc.append([lvl, tit, pno])
+        #tit = tit.encode(ENCODING)
+        top = getint(z[3])
+        newtoc.append([lvl, tit, pno, top])
 
-    PDFcfg.doc.setToC(newtoc)
+    spad.doc.setToC(newtoc)
 
-    outfile = dlg.btn_aus.GetPath()         # get dir & name of file in screen
-
-    if outfile == PDFcfg.file:
-        PDFcfg.doc.save(outfile, incremental=True)
+    if outfile == spad.file:
+        spad.doc.save(outfile, incremental=True)
     else:                                   # equal: replace input file
-        PDFcfg.doc.save(outfile, garbage=3)
+        spad.doc.save(outfile, garbage=3)
 
     return
 
@@ -804,11 +954,7 @@ def make_pdf(dlg):
 # Main Program
 #
 #==============================================================================
-if wx.VERSION[0] >= 3:
-    pass
-else:
-    print "need wxPython version 3.0 or higher"
-    sys.exit(1)
+assert wx.VERSION[0] >= 3
 app = None
 app = wx.App()
 
@@ -826,27 +972,39 @@ else:
 # let user select the file. Can only allow true PDFs.
 #==============================================================================
 if not infile:
-    dlg = wx.FileDialog(None, message = "Choose a PDF file to edit",
+    d = wx.FileDialog(None, message = "Choose a PDF file to edit",
                         defaultDir = os.path.expanduser('~'),
                         defaultFile = wx.EmptyString,
                         wildcard = "PDF files (*.pdf)|*.pdf",
                         style=wx.OPEN | wx.CHANGE_DIR)
     # We got a file only when one was selected and OK pressed
-    if dlg.ShowModal() == wx.ID_OK:
+    if d.ShowModal() == wx.ID_OK:
         # This returns a Python list of selected files.
-        infile = dlg.GetPaths()[0]
+        infile = d.GetPath()
     else:
         infile = None
     # destroy this dialog
-    dlg.Destroy()
+    d.Destroy()
+    d = None
 
 if infile:                      # if we have a filename ...
-    PDFcfg = PDFconfig()        # create our PDF scratchpad
-    PDFcfg.file = infile
+    spad = ScratchPad()         # create our scratchpad
+    spad.file = infile
     if getPDFinfo() == 0:              # input is not encrypted
         dlg = PDFDialog(None)          # create dialog
         rc = dlg.ShowModal()           # show dialog
-        if rc == wx.ID_OK:           # output PDF if SAVE pressed
-            make_pdf(dlg)
+        if rc == wx.ID_OK:             # output PDF if SAVE pressed
+            try:
+                make_pdf(dlg)
+                if os.path.exists(infile + ".json"):
+                    os.remove(infile + ".json")
+            except:
+                f_exc = open(infile + ".log", "w")
+                txt = traceback.format_exc()
+                f_exc.write(txt)
+                f_exc.close()
+                wx.MessageBox(txt, "An exception occurred while making PDF")
+        #spad.doc.close()
         dlg.Destroy()
-        app = None
+
+app = None

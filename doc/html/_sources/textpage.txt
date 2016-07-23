@@ -61,3 +61,4 @@ TextPage
       :rtype: list
       :returns: A python list. If not empty, each element of the list is a :ref:`Rect` (without transformation) surrounding a found ``string`` occurrence.
 
+   .. note:: All of the above can be achieved by using the appropriate :meth:`Document.getPageText`, :meth:`Page.getText` and :meth:`Page.searchFor` methods.

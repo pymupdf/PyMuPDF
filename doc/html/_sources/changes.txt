@@ -13,7 +13,7 @@ Changes in these bindings compared to version 1.8.0 are the following:
 
 * New methods ``getRectArea()`` for both ``fitz.Rect`` and ``fitz.IRect``
 * Pixmaps can now be created directly from files using the new constructor ``fitz.Pixmap(filename)``.
-* The Pixmap constructor ``fitz.Pixmap(data, len(data))`` has been extended accordingly.
+* The Pixmap constructor ``fitz.Pixmap(image)`` has been extended accordingly.
 * ``fitz.Rect`` can now be created with all possible combinations of points and coordinates.
 * PyMuPDF classes and methods now all contain  __doc__ strings,  most of them created by SWIG automatically. While the PyMuPDF documentation certainly is more detailed, this feature should help a lot when programming in Python-aware IDEs.
 * A new document method of ``getPermits()`` returns the permissions associated with the current access to the document (print, edit, annotate, copy), as a Python dictionary.
@@ -21,7 +21,7 @@ Changes in these bindings compared to version 1.8.0 are the following:
 * The new document method ``select(list)`` removes all pages from a document that are not contained in the list. Pages can also be duplicated and re-arranged.
 * Various improvements and new members in our demo and examples collections. Perhaps most prominently: ``PDF_display`` now supports scrolling with the mouse wheel, and there is a new example program ``wxTableExtract`` which allows to graphically identify and extract table data in documents.
 * ``fitz.open()`` is now an alias of ``fitz.Document()``.
-* New pixmap method ``getPNGData()`` which will return a memory area formatted as a PNG image of the pixmap.
+* New pixmap method ``getPNGData()`` which will return a bytearray formatted as a PNG image of the pixmap.
 * New pixmap method ``samplesRGB()`` providing a ``samples`` version with alpha bytes stripped off (RGB colorspaces only).
 * New pixmap method ``samplesAlpha()`` providing the alpha bytes only of the ``samples`` area.
 * New iterator ``fitz.Pages(doc)`` over a document's set of pages.

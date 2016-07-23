@@ -96,13 +96,9 @@
 <p>While PyMuPDF has been available since several years for an earlier version of MuPDF (1.2), it was until only mid May 2015, that its creator and a few co-workers decided to elevate it to support the current release of MuPDF (first V1.7a  then V1.8 in November 2016, and V1.9 and V1.9a since April 2016).</p>
 <p>And we are determined to keep PyMuPDF also current in the future!</p>
 <p>PyMuPDF runs and has been tested on Mac, Linux, Windows 7, Windows 10, Python 2 and Python 3 (x86 and x64 versions). Other platforms should work too as long as MuPDF and Python support them.</p>
-<p>The main differences compared to version 1.2 are</p>
-<ul class="simple">
-<li>A greatly simplified installation procedure: For Windows and Linux platforms it should come down to running the usual <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> command once MuPDF has been installed. On Windows there also exist pre-generated binary versions, which simplify and speed up installation even more.</li>
-<li>The API has changed: it is now a lot simpler.</li>
-<li>The supported function set has been significantly increased: apart from rendering, MuPDF&#8217;s traditional strength, we now also offer a wide range of text extraction options.</li>
-<li>Demo code has been extended, and an additional <code class="docutils literal"><span class="pre">examples</span></code> directory is there to contain working programs. Among them are an editor for a document&#8217;s table of contents, a full featured document joiner and a document-to-text conversion utility.</li>
-</ul>
+<p>There exist several demo and example programs in the repository, ranging from simple code snippets to full-featured utilities, like text extraction, PDF joiners and bookmark maintenance.</p>
+<p>Several interesting PDF output functions have been added recently, covering metadata and bookmark maintenance and document restructuring.</p>
+<p>For installation, you can choose between generating from source code (which implies also compiling the MuPDF C library), or, under Windows only, installing pre-generated binaries.</p>
 <div class="section" id="note-on-the-name-fitz">
 <h2>Note on the Name <code class="docutils literal"><span class="pre">fitz</span></code><a class="headerlink" href="#note-on-the-name-fitz" title="Permalink to this headline">¶</a></h2>
 <p>The Python import statement for this library is <code class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></code>. Here is the reason why:</p>
@@ -111,8 +107,7 @@
 <div class="section" id="license">
 <h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
 <p>PyMuPDF is distributed under GNU GPL V3 or later.</p>
-<p>MuPDF is distributed under a variation of it: the <strong>GNU AFFERO GPL V3</strong>. While in earlier days this license has been more restrictive, version 3 is in effect not any more than GNU GPL. There are just some technical details on how / where you must make available any changes you might have made make to the <strong>MuPDF library</strong>. Other than that, nothing prevents you to distribute and even sell software you have built on the basis of MuPDF.</p>
-<p>If you use the pre-built Windows binary installation, then both, the GNU AFFERO GPL and the <a class="reference external" href="http://upx.sourceforge.net/upx-license.html">UPX license</a> automatically apply.</p>
+<p>MuPDF is distributed under a variation of it: the <strong>GNU AFFERO GPL V3</strong>. While in earlier days this license has been more restrictive, version 3 is in effect not any more than GNU GPL. There are just some technical details on how / where you must make available any changes you might have made to the <strong>MuPDF library</strong>. Other than that, nothing prevents you from distributing and even selling software you have built on the basis of MuPDF.</p>
 </div>
 </div>
 
@@ -138,8 +133,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 13. May 2016.
+        &copy; Copyright 2016, Jorj X. McKie.
+      Last updated on 22. Jul 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

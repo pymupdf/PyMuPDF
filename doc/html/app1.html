@@ -133,26 +133,26 @@
 </table>
 <p>This is how each of the tools was used:</p>
 <p><strong>PyMuPDF</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;input.pdf&quot;</span><span class="p">)</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;output.pdf&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;input.pdf&quot;</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;output.pdf&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>pdfrw</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">doc</span> <span class="o">=</span> <span class="n">PdfReader</span><span class="p">(</span><span class="s2">&quot;input.pdf&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">PdfReader</span><span class="p">(</span><span class="s">&quot;input.pdf&quot;</span><span class="p">)</span>
 <span class="n">writer</span> <span class="o">=</span> <span class="n">PdfWriter</span><span class="p">()</span>
 <span class="n">writer</span><span class="o">.</span><span class="n">trailer</span> <span class="o">=</span> <span class="n">doc</span>
-<span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.pdf&quot;</span><span class="p">)</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;output.pdf&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>PyPDF2</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pdfmerge</span> <span class="o">=</span> <span class="n">PyPDF2</span><span class="o">.</span><span class="n">PdfFileMerger</span><span class="p">()</span>
-<span class="n">pdfmerge</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;input.pdf&quot;</span><span class="p">)</span>
-<span class="n">pdfmerge</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.pdf&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">pdfmerge</span> <span class="o">=</span> <span class="n">PyPDF2</span><span class="o">.</span><span class="n">PdfFileMerger</span><span class="p">()</span>
+<span class="n">pdfmerge</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;input.pdf&quot;</span><span class="p">)</span>
+<span class="n">pdfmerge</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;output.pdf&quot;</span><span class="p">)</span>
 <span class="n">pdfmerge</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
 <p><strong>pdftk</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pdftk</span> <span class="nb">input</span><span class="o">.</span><span class="n">pdf</span> <span class="n">output</span> <span class="n">output</span><span class="o">.</span><span class="n">pdf</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">pdftk</span> <span class="nb">input</span><span class="o">.</span><span class="n">pdf</span> <span class="n">output</span> <span class="n">output</span><span class="o">.</span><span class="n">pdf</span>
 </pre></div>
 </div>
 <p><strong>Observations</strong></p>
@@ -190,25 +190,25 @@
 <h2>Part 3: Image Rendering<a class="headerlink" href="#part-3-image-rendering" title="Permalink to this headline">¶</a></h2>
 <p>We have tested rendering speed of MuPDF against the <code class="docutils literal"><span class="pre">pdftopng.exe</span></code>, a command lind tool of the <strong>Xpdf</strong> toolset (the PDF code basis of <strong>Poppler</strong>).</p>
 <p><strong>MuPDF invocation using a resolution of 150 pixels (Xpdf default):</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mutool</span> <span class="n">draw</span> <span class="o">-</span><span class="n">o</span> <span class="n">t</span><span class="o">%</span><span class="n">d</span><span class="o">.</span><span class="n">png</span> <span class="o">-</span><span class="n">r</span> <span class="mi">150</span> <span class="n">file</span><span class="o">.</span><span class="n">pdf</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">mutool</span> <span class="n">draw</span> <span class="o">-</span><span class="n">o</span> <span class="n">t</span><span class="o">%</span><span class="n">d</span><span class="o">.</span><span class="n">png</span> <span class="o">-</span><span class="n">r</span> <span class="mi">150</span> <span class="n">file</span><span class="o">.</span><span class="n">pdf</span>
 </pre></div>
 </div>
 <p><strong>PyMuPDF invocation:</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">zoom</span> <span class="o">=</span> <span class="mf">150.0</span> <span class="o">/</span> <span class="mf">72.0</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">zoom</span> <span class="o">=</span> <span class="mf">150.0</span> <span class="o">/</span> <span class="mf">72.0</span>
 <span class="n">mat</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="n">zoom</span><span class="p">,</span> <span class="n">zoom</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">ProcessFile</span><span class="p">(</span><span class="n">datei</span><span class="p">):</span>
-    <span class="nb">print</span> <span class="s2">&quot;processing:&quot;</span><span class="p">,</span> <span class="n">datei</span>
+    <span class="nb">print</span> <span class="s">&quot;processing:&quot;</span><span class="p">,</span> <span class="n">datei</span>
     <span class="n">doc</span><span class="o">=</span><span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">datei</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pages</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
         <span class="n">pix</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">getPixmap</span><span class="p">(</span><span class="n">matrix</span><span class="o">=</span><span class="n">mat</span><span class="p">)</span>
-        <span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s2">&quot;t-</span><span class="si">%s</span><span class="s2">.png&quot;</span> <span class="o">%</span> <span class="n">p</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
-        <span class="n">pix</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s">&quot;t-%s.png&quot;</span> <span class="o">%</span> <span class="n">p</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+        <span class="n">pix</span> <span class="o">=</span> <span class="k">None</span>
     <span class="n">doc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span>
 </pre></div>
 </div>
 <p><strong>Xpdf invocation:</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pdftopng</span><span class="o">.</span><span class="n">exe</span> <span class="n">file</span><span class="o">.</span><span class="n">pdf</span> <span class="o">./</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">pdftopng</span><span class="o">.</span><span class="n">exe</span> <span class="n">file</span><span class="o">.</span><span class="n">pdf</span> <span class="o">./</span>
 </pre></div>
 </div>
 <p>The resulting runtimes can be found here (again: meaning of decimal point and comma reversed):</p>
@@ -242,8 +242,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 13. May 2016.
+        &copy; Copyright 2016, Jorj X. McKie.
+      Last updated on 18. Jul 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

@@ -50,7 +50,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">IRect</a><ul>
-<li><a class="reference internal" href="#irect-arithmetics">IRect Arithmetics</a></li>
+<li><a class="reference internal" href="#irect-algebra">IRect Algebra</a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
 </li>
@@ -305,8 +305,8 @@
 
 </dd></dl>
 
-<div class="section" id="irect-arithmetics">
-<h2>IRect Arithmetics<a class="headerlink" href="#irect-arithmetics" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="irect-algebra">
+<h2>IRect Algebra<a class="headerlink" href="#irect-algebra" title="Permalink to this headline">¶</a></h2>
 <p>A number of arithmetics operations have been defined for the <code class="docutils literal"><span class="pre">IRect</span></code> class.</p>
 <ul class="simple">
 <li><strong>Addition:</strong> <code class="docutils literal"><span class="pre">ir</span> <span class="pre">+</span> <span class="pre">x</span></code> where <code class="docutils literal"><span class="pre">ir</span></code> is an <code class="docutils literal"><span class="pre">IRect</span></code> and <code class="docutils literal"><span class="pre">x</span></code> is a number, <code class="docutils literal"><span class="pre">Rect</span></code> or <code class="docutils literal"><span class="pre">IRect</span></code>. The result is a new <code class="docutils literal"><span class="pre">IRect</span></code> with added components of the operands. If <code class="docutils literal"><span class="pre">x</span></code> is a number, it is added to all components of <code class="docutils literal"><span class="pre">ir</span></code>.</li>
@@ -320,19 +320,19 @@
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p><strong>Example 1:</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ir</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">IRect</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">410</span><span class="p">,</span> <span class="mi">610</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ir</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">IRect</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">410</span><span class="p">,</span> <span class="mi">610</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ir</span>
 <span class="go">fitz.IRect(10, 10, 410, 610)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ir</span><span class="o">.</span><span class="n">height</span>
 <span class="go">600</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ir</span><span class="o">.</span><span class="n">width</span>
 <span class="go">400</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ir</span><span class="o">.</span><span class="n">getRectArea</span><span class="p">(</span><span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;mm&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ir</span><span class="o">.</span><span class="n">getRectArea</span><span class="p">(</span><span class="n">unit</span> <span class="o">=</span> <span class="s">&#39;mm&#39;</span><span class="p">)</span>
 <span class="go">29868.51852</span>
 </pre></div>
 </div>
 <p><strong>Example 2:</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ir</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">IRect</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">410</span><span class="p">,</span> <span class="mi">610</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ir</span> <span class="o">*</span> <span class="n">m</span>
 <span class="go">fitz.IRect(-425, 14, 283, 722)</span>
@@ -373,8 +373,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 26. May 2016.
+        &copy; Copyright 2016, Jorj X. McKie.
+      Last updated on 22. Jul 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

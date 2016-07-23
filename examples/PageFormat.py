@@ -78,7 +78,7 @@ def FindFit(w, h):
         ff = f + "-L"                  # else landscape
         ss = str(PaperSizes[f][1]) + " x " + str(PaperSizes[f][0])
 
-    if small == 0:                     # exact fit ?
+    if small < 2:                      # exact fit - allow rounnding errors
         return ff                      # done
     rtxt = "%s x %s (other), closest: %s = %s"   # else show best fit
     rtxt = rtxt % (sw, sh, ff, ss)

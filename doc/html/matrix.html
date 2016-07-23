@@ -51,7 +51,7 @@
   <ul>
 <li><a class="reference internal" href="#">Matrix</a><ul>
 <li><a class="reference internal" href="#remarks">Remarks</a></li>
-<li><a class="reference internal" href="#matrix-arithmetics">Matrix Arithmetics</a></li>
+<li><a class="reference internal" href="#matrix-algebra">Matrix Algebra</a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
 <li><a class="reference internal" href="#shifting">Shifting</a></li>
 <li><a class="reference internal" href="#flipping">Flipping</a></li>
@@ -404,8 +404,8 @@
 <li>Scale or shear (&#8220;skew&#8221;)</li>
 </ol>
 </div>
-<div class="section" id="matrix-arithmetics">
-<h2>Matrix Arithmetics<a class="headerlink" href="#matrix-arithmetics" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="matrix-algebra">
+<h2>Matrix Algebra<a class="headerlink" href="#matrix-algebra" title="Permalink to this headline">¶</a></h2>
 <p>A number of arithmetics operations have been defined for the <code class="docutils literal"><span class="pre">Matrix</span></code> class. In what follows, m, m1, m2 are matrices:</p>
 <ul class="simple">
 <li><strong>Addition:</strong> with <code class="docutils literal"><span class="pre">m1</span> <span class="pre">+</span> <span class="pre">m2</span></code> is a new matrix containing <code class="docutils literal"><span class="pre">[m1.a</span> <span class="pre">+</span> <span class="pre">m2.a,</span> <span class="pre">...,</span> <span class="pre">m1.f</span> <span class="pre">+</span> <span class="pre">m2.f]</span></code></li>
@@ -417,21 +417,21 @@
 <li><strong>Non-Zero-Test:</strong> You can test whether a matrix is all zero (<code class="docutils literal"><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0]</span></code>): <code class="docutils literal"><span class="pre">if</span> <span class="pre">not</span> <span class="pre">~m:</span> <span class="pre">print</span> <span class="pre">&quot;m</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">invertible&quot;</span></code></li>
 </ul>
 <p>This makes the following operations possible:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fitz</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m45p</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>            <span class="c1"># rotate 45 degrees counterclockwise</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m45m</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="o">-</span><span class="mi">45</span><span class="p">)</span>           <span class="c1"># rotate 45 degrees clockwise</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m90p</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>            <span class="c1"># rotate 90 degrees counterclockwise</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m45p</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>            <span class="c"># rotate 45 degrees counterclockwise</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m45m</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="o">-</span><span class="mi">45</span><span class="p">)</span>           <span class="c"># rotate 45 degrees clockwise</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m90p</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>            <span class="c"># rotate 90 degrees counterclockwise</span>
 <span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">abs</span><span class="p">(</span><span class="n">m90p</span> <span class="o">-</span> <span class="n">m45p</span> <span class="o">*</span> <span class="n">m45p</span><span class="p">)</span>           <span class="c1"># should be (close to) zero</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">abs</span><span class="p">(</span><span class="n">m90p</span> <span class="o">-</span> <span class="n">m45p</span> <span class="o">*</span> <span class="n">m45p</span><span class="p">)</span>           <span class="c"># should be (close to) zero</span>
 <span class="go">8.429369702178807e-08</span>
 <span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">abs</span><span class="p">(</span><span class="n">m45p</span> <span class="o">*</span> <span class="n">m45m</span> <span class="o">-</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Identity</span><span class="p">)</span>  <span class="c1"># should be (close to) zero</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">abs</span><span class="p">(</span><span class="n">m45p</span> <span class="o">*</span> <span class="n">m45m</span> <span class="o">-</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Identity</span><span class="p">)</span>  <span class="c"># should be (close to) zero</span>
 <span class="go">2.1073424255447017e-07</span>
 <span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">abs</span><span class="p">(</span><span class="n">m45p</span> <span class="o">-</span> <span class="o">~</span><span class="n">m45m</span><span class="p">)</span>                 <span class="c1"># should be (close to) zero</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">abs</span><span class="p">(</span><span class="n">m45p</span> <span class="o">-</span> <span class="o">~</span><span class="n">m45m</span><span class="p">)</span>                 <span class="c"># should be (close to) zero</span>
 <span class="go">2.384185791015625e-07</span>
 <span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m90p</span> <span class="o">*</span> <span class="n">m90p</span> <span class="o">*</span> <span class="n">m90p</span> <span class="o">*</span> <span class="n">m90p</span>         <span class="c1"># should be 360 degrees = fitz.Identity</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m90p</span> <span class="o">*</span> <span class="n">m90p</span> <span class="o">*</span> <span class="n">m90p</span> <span class="o">*</span> <span class="n">m90p</span>         <span class="c"># should be 360 degrees = fitz.Identity</span>
 <span class="go">fitz.Matrix(1.0, -0.0, 0.0, 1.0, 0.0, 0.0)</span>
 <span class="go">&gt;&gt;&gt;</span>
 </pre></div>
@@ -494,8 +494,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 27. May 2016.
+        &copy; Copyright 2016, Jorj X. McKie.
+      Last updated on 22. Jul 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

@@ -114,17 +114,17 @@
 <div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <p>The iterator object is constructed as follows:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="n">pages</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pages</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
 
-<span class="c1"># this will loop through all the pages</span>
+<span class="c"># this will loop through all the pages</span>
 <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">pages</span><span class="p">:</span>
-    <span class="c1"># do something with the page. page.number contains current page number</span>
+    <span class="c"># do something with the page. page.number contains current page number</span>
 
-<span class="c1"># a single page can now also be accessed by its index</span>
+<span class="c"># a single page can now also be accessed by its index</span>
 <span class="k">assert</span> <span class="n">pages</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span> <span class="o">==</span> <span class="n">doc</span><span class="o">.</span><span class="n">loadPage</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
 
-<span class="c1"># the len() function returns the number of pages</span>
+<span class="c"># the len() function returns the number of pages</span>
 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">Pages</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span> <span class="o">==</span> <span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span>
 </pre></div>
 </div>
@@ -154,8 +154,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 13. May 2016.
+        &copy; Copyright 2016, Jorj X. McKie.
+      Last updated on 18. Jul 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

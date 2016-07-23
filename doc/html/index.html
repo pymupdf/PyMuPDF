@@ -80,8 +80,20 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#option-1-install-from-sources">Option 1: Install from Sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#option-2-install-from-binaries">Option 2: Install from Binaries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#option-1-install-from-sources">Option 1: Install from Sources</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#step-1-download-pymupdf">Step 1: Download PyMuPDF</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#step-2-download-and-generate-mupdf-1-9">Step 2: Download and Generate MuPDF 1.9</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#step-3-build-setup-pymupdf">Step 3: Build / Setup PyMuPDF</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#using-upx">Using UPX</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#option-2-install-from-binaries">Option 2: Install from Binaries</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#step-1-download-optional-material">Step 1: Download Optional Material</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#step-2-install-pymupdf">Step 2: Install PyMuPDF</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#md5-checksums">MD5 Checksums</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#targeting-parallel-python-installations">Targeting Parallel Python Installations</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a><ul>
@@ -90,8 +102,20 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorial.html#some-document-methods-and-attributes">Some <code class="docutils literal"><span class="pre">Document</span></code> Methods and Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial.html#access-meta-data">Access Meta Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial.html#work-with-outlines">Work with Outlines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial.html#work-with-pages">Work with Pages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial.html#output">Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#work-with-pages">Work with Pages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorial.html#inspect-the-links-on-a-page">Inspect the Links on a Page</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial.html#render-a-page">Render a Page</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial.html#save-the-page-image-in-a-file">Save the Page Image in a File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial.html#display-the-image-in-dialog-managers">Display the Image in Dialog Managers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial.html#text-extraction">Text Extraction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial.html#text-searching">Text Searching</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial.html#output">Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorial.html#re-arrange-and-delete-pages">Re-arrange and Delete Pages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial.html#save">Save</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial.html#close">Close</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial.html#example-dynamically-clean-up-corrupt-pdf-documents">Example: Dynamically Clean up Corrupt PDF Documents</a></li>
 </ul>
@@ -100,18 +124,53 @@
 <li class="toctree-l2"><a class="reference internal" href="colorspace.html">Colorspace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
 <li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
-<li class="toctree-l2"><a class="reference internal" href="document.html">Document</a></li>
+<li class="toctree-l2"><a class="reference internal" href="document.html">Document</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="document.html#remarks-on-select">Remarks on <code class="docutils literal"><span class="pre">select()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="document.html#select-examples"><code class="docutils literal"><span class="pre">select()</span></code> Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="document.html#setmetadata-example"><code class="docutils literal"><span class="pre">setMetadata()</span></code> Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="document.html#settoc-example"><code class="docutils literal"><span class="pre">setToC()</span></code> Example</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="identity.html">Identity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="irect.html">IRect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="irect.html">IRect</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="irect.html#irect-algebra">IRect Algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="irect.html#examples">Examples</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="link.html">Link</a></li>
 <li class="toctree-l2"><a class="reference internal" href="linkdest.html">linkDest</a></li>
-<li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="matrix.html#remarks">Remarks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="matrix.html#matrix-algebra">Matrix Algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="matrix.html#examples">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="matrix.html#shifting">Shifting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="matrix.html#flipping">Flipping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="matrix.html#shearing">Shearing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="matrix.html#rotating">Rotating</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
-<li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages.html#usage">Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pixmap.html#supported-pixmap-construction-image-types">Supported Pixmap Construction Image Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pixmap.html#details-on-saving-images-with-writeimage">Details on Saving Images with <code class="docutils literal"><span class="pre">writeImage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pixmap.html#pixmap-example-code-snippets">Pixmap Example Code Snippets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="point.html">Point</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="point.html#point-algebra">Point Algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="point.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rect.html#rect-algebra">Rect Algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rect.html#examples">Examples</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="textpage.html">TextPage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="textsheet.html">TextSheet</a></li>
 </ul>
@@ -161,8 +220,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 27. Jun 2016.
+        &copy; Copyright 2016, Jorj X. McKie.
+      Last updated on 22. Jul 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

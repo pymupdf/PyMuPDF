@@ -50,7 +50,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Point</a><ul>
-<li><a class="reference internal" href="#point-arithmetics">Point Arithmetics</a></li>
+<li><a class="reference internal" href="#point-algebra">Point Algebra</a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
 </li>
@@ -167,8 +167,8 @@
 
 </dd></dl>
 
-<div class="section" id="point-arithmetics">
-<h2>Point Arithmetics<a class="headerlink" href="#point-arithmetics" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="point-algebra">
+<h2>Point Algebra<a class="headerlink" href="#point-algebra" title="Permalink to this headline">¶</a></h2>
 <p>A number of arithmetics operations have been defined for the <code class="docutils literal"><span class="pre">Point</span></code> class:</p>
 <ul class="simple">
 <li><strong>Addition:</strong> <code class="docutils literal"><span class="pre">p</span> <span class="pre">+</span> <span class="pre">x</span></code> is a new <code class="docutils literal"><span class="pre">Point</span></code> with added coordinates of <code class="docutils literal"><span class="pre">p</span></code> and <code class="docutils literal"><span class="pre">x</span></code> (another <code class="docutils literal"><span class="pre">Point</span></code> or a number). If <code class="docutils literal"><span class="pre">x</span></code> is a number, it is added to both components of <code class="docutils literal"><span class="pre">p</span></code>.</li>
@@ -181,7 +181,7 @@
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p><strong>Example 1:</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">point</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">point</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">point</span>
 <span class="go">fitz.Point(25.0, 30.0)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -191,7 +191,7 @@
 </pre></div>
 </div>
 <p><strong>Example 2:</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span> <span class="o">+</span> <span class="mi">5</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span> <span class="o">+</span> <span class="mi">5</span>
 <span class="go">fitz.Point(30.0, 35.0)</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span> <span class="o">+</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -228,8 +228,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 26. May 2016.
+        &copy; Copyright 2016, Jorj X. McKie.
+      Last updated on 22. Jul 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

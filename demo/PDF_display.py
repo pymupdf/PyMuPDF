@@ -110,7 +110,7 @@ class PDFdisplay (wx.Dialog):
         #======================================================================
         # open the document with MuPDF when dialog gets created
         #======================================================================
-        self.doc = fitz.Document(filename)
+        self.doc = fitz.open(filename)
         if self.doc.needsPass:
             self.decrypt_doc()
         if self.doc.isEncrypted:
@@ -121,7 +121,8 @@ class PDFdisplay (wx.Dialog):
         # define zooming matrix for displaying PDF page images
         # we increase images by 20%, so take 1.2 as scale factors
         #======================================================================
-        self.matrix = fitz.Matrix(1, 1).preScale(1.2, 1.2)
+        self.matrix = fitz.Matrix(1.2, 1.2)
+        self.oldpage = 0
 
         '''
         =======================================================================
@@ -249,6 +250,9 @@ class PDFdisplay (wx.Dialog):
 # Read / render a PDF page. Parameters are: pdf = document, page = page#
 #==============================================================================
     def NeuesImage(self, page):
+        if page == self.oldpage:                 # do not re-read
+            return
+        self.oldpage = page
         self.bitmap = self.pdf_show(page)        # read page image
         self.PDFimage.SetSize(self.bitmap.Size)  # adjust screen to image size
         self.PDFimage.SetBitmap(self.bitmap)     # put it in screen
@@ -258,19 +262,20 @@ class PDFdisplay (wx.Dialog):
         return
 
     def pdf_show(self, pg_nr):
-        page = self.doc.loadPage(int(pg_nr) - 1) # load the page & get Pixmap
-        pix = page.getPixmap(matrix = self.matrix)
-        a = str(pix.samples)                     # point to pixel area
+        pno = int(pg_nr) - 1
+        pix = self.doc.getPagePixmap(pno, matrix = self.matrix)
         # get the RGB sub area (without alpha)
-        a2 = "".join([a[4*i:4*i+3] for i in range(len(a)/4)])
-        bitmap = wx.BitmapFromBuffer(pix.width, pix.height, a2)
+        a = pix.samplesRGB()
+        bitmap = wx.BitmapFromBuffer(pix.width, pix.height, a)
+        pix = None
+        a = None
         return bitmap
 
     def decrypt_doc(self):
         # let user enter document password
         pw = None
-        dlg = wx.TextEntryDialog(self, 'Please enter password below:',
-                 'Document needs password to open', '',
+        dlg = wx.TextEntryDialog(self, 'Please enter the password below:',
+                 'Document needs a password to open', '',
                  style = wx.TextEntryDialogStyle|wx.TE_PASSWORD)
         while pw is None:
             rc = dlg.ShowModal()
@@ -281,7 +286,7 @@ class PDFdisplay (wx.Dialog):
                 return
             if self.doc.isEncrypted:
                 pw = None
-                dlg.SetTitle("Wrong password, enter correct password or cancel")
+                dlg.SetTitle("Wrong password, enter correct one or cancel")
         return
 
 #==============================================================================

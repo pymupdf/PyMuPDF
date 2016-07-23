@@ -18,7 +18,7 @@ Represents the color space of a :ref:`Pixmap`.
 
       :param `cno`: A number identifying the colorspace. Possible values are :data:`CS_RGB`, :data:`CS_GRAY` and :data:`CS_CMYK`.
 
-      :type `cbo`: int
+      :type `cno`: int
 
 
     **Predefined Colorspaces**

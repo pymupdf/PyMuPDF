@@ -42,7 +42,6 @@ import fitz.utils
 fitz.open                   = fitz.Document
 fitz.Document.getToC        = fitz.utils.getToC
 fitz.Pages                  = fitz.utils.Pages
-fitz.Document.select        = fitz.utils.select
 fitz.Document.getPagePixmap = fitz.utils.getPagePixmap
 fitz.Document.getPageText   = fitz.utils.getPageText
 fitz.Document.setMetadata   = fitz.utils.setMetadata
@@ -89,5 +88,5 @@ fitz.Point.__mul__          = fitz.utils.point_mul
 
 # ... and delete them from here
 del utils
-fitz.__doc__ = "PyMuPDF %s: the Python bindings for the MuPDF %s library,\ncreated on %s" \
+fitz.__doc__ = "PyMuPDF %s: Python bindings for the MuPDF %s library,\nbuilt on %s" \
                % (fitz.VersionBind, fitz.VersionFitz, fitz.VersionDate)

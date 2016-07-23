@@ -46,7 +46,7 @@ Point
      :param `m`: The matrix to be applied.
      :type `m`: :ref:`Matrix`
 
-Point Arithmetics
+Point Algebra
 ------------------
 A number of arithmetics operations have been defined for the ``Point`` class:
 

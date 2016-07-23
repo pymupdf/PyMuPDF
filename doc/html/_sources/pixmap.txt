@@ -288,10 +288,7 @@ This shows how pixmaps can be used for purely graphical, non-PDF purposes. The s
 ::
  import fitz
  # read in picture image and create a pixmap of it
- try:
-     pix0 = fitz.Pixmap("editra.png")
- except:
-     raise ValueError("file does not exist or has invalid format")
+ pix0 = fitz.Pixmap("editra.png")
 
  # calculate target colorspace and pixmap dimensions and create it
  tar_cs     = pix0.getColorspace()        # use colorspace of input

@@ -12,30 +12,30 @@ This class represents a document. It can be constructed from a file or from memo
 
 Since version 1.9.0 there exists an alias ``open`` for this class.
 
-=============================== ==========================================================
-**Method / Attribute**          **Short Description**
-=============================== ==========================================================
-:meth:`Document.authenticate`   decrypt the document
-:meth:`Document.loadPage`       read a page
-:meth:`Document.save`           PDF only: save the document
-:meth:`Document.getToC`         create a table of contents
-:meth:`Document.getPagePixmap`  create a pixmap from a page by page number
-:meth:`Document.getPageText`    extract the text of a page by page number
-:meth:`Document.getPermits`     show permissions to access the document
-:meth:`Document.close`          close the document
-:meth:`Document.select`         PDF only: select a subset of pages
-:meth:`Document.setMetadata`    PDF only: set the metadata
-:meth:`Document.setToC`         PDF only: replace the table of contents (TOC)
-:attr:`Document.isClosed`       has document been closed?
-:attr:`Document.outline`        first `Outline` item
-:attr:`Document.name`           filename of document
-:attr:`Document.openErrCode`    > 0 if repair occurred during open
-:attr:`Document.openErrMsg`     last error message if openErrCode > 0
-:attr:`Document.needsPass`      require password to access data?
-:attr:`Document.isEncrypted`    document still encrypted?
-:attr:`Document.pageCount`      number of pages
-:attr:`Document.metadata`       metadata
-=============================== ==========================================================
+===================================== ==========================================================
+**Method / Attribute**                **Short Description**
+===================================== ==========================================================
+:meth:`Document.authenticate`         decrypt the document
+:meth:`Document.loadPage`             read a page
+:meth:`Document.save`                 PDF only: save the document
+:meth:`Document.getToC`               create a table of contents
+:meth:`Document.getPagePixmap`        create a pixmap from a page by page number
+:meth:`Document.getPageText`          extract the text of a page by page number
+:meth:`Document.getPermits`           show permissions to access the document
+:meth:`Document.close`                close the document
+:meth:`Document.select`               PDF only: select a subset of pages
+:meth:`Document.setMetadata`          PDF only: set the metadata
+:meth:`Document.setToC`               PDF only: replace the table of contents (TOC)
+:attr:`Document.isClosed`             has document been closed?
+:attr:`Document.outline`              first `Outline` item
+:attr:`Document.name`                 filename of document
+:attr:`Document.openErrCode`          > 0 if repair occurred during open
+:attr:`Document.openErrMsg`           last error message if openErrCode > 0
+:attr:`Document.needsPass`            require password to access data?
+:attr:`Document.isEncrypted`          document still encrypted?
+:attr:`Document.pageCount`            number of pages
+:attr:`Document.metadata`             metadata
+===================================== ==========================================================
 
 **Class API**
 
@@ -61,18 +61,18 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
       :param `stream`: A bytearray representing the content of a supported document type.
       :type `stream`: bytearray
 
-      :rtype: :ref:`Document`
+      :rtype: ``Document``
       :returns: A ``Document`` object.
 
     .. method:: authenticate(password)
 
-      Decrypts the document with the string ``password``. If successfull, all of the document's data can be accessed (e.g. for rendering).
+      Decrypts the document with the string ``password``. If successful, all of the document's data can be accessed (e.g. for rendering).
 
       :param `password`: The password to be used.
       :type `password`: string
 
       :rtype: int
-      :returns: ``True (1)`` if decryption with ``password`` was successfull, ``False (0)`` otherwise.
+      :returns: ``True (1)`` if decryption with ``password`` was successful, ``False (0)`` otherwise. If successfull, indicator ``isEncrypted`` is set to ``False``.
 
     .. method:: loadPage(number)
 
@@ -109,7 +109,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       :type `colorspace`: string
 
-      :param `clip`: An ``Irect`` to restrict rendering of the page to the rectangle's area. If not specified, the complete page will be rendered.
+      :param `clip`: An :ref:`Irect` to restrict rendering of the page to the rectangle's area. If not specified, the complete page will be rendered.
 
       :type `clip`: :ref:`IRect`
 
@@ -143,39 +143,38 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
     .. method:: select(list)
 
-      PDF documents only: Retains only those pages of the document whose numbers occur in the list. Empty lists or elements outside the range ``0 <= page < doc.pageCount`` will cause a ``ValueError``. For more details see remarks at the bottom or this chapter.
+      PDF documents only: Keeps only those pages of the document whose numbers occur in the list. Empty lists or elements outside the range ``0 <= page < doc.pageCount`` will cause a ``ValueError``. For more details see remarks at the bottom or this chapter.
 
-      :param `list`: A list (or tuple) of page numbers (zero-based) to be included. Pages not in the list will be deleted (from memory) and become unavailable until the document is reopened. **Page numbers can occur multiple times and be in any order:** the resulting sub-document will reflect the list exactly as specified.
+      :param `list`: A list (or tuple) of page numbers (zero-based) to be included. Pages not in the list will be deleted (from memory) and become unavailable until the document is reopened. **Page numbers can occur multiple times and in any order:** the resulting sub-document will reflect the list exactly as specified.
 
       :type `list`: list
 
       :rtype: int
+      :returns: Zero upon successful execution. All document information will be updated to reflect the new state of the document, like outlines, number and sequence of pages, etc. Changes become permanent only after saving the document. Incremental save is supported.
 
     .. method:: setMetadata(m)
 
-      PDF documents only: Sets or updates the metadata of the document as specified in ``m``, a Python dictionary. As with method ``select()``, these changes become permanent only when you save the document.
+      PDF documents only: Sets or updates the metadata of the document as specified in ``m``, a Python dictionary. As with method ``select()``, these changes become permanent only when you save the document. Incremental save is supported.
 
-      :param `m`: A dictionary with keys ``title``, ``author``, ``subject``, ``keywords``, ``creator``, ``producer``, ``creationDate``, and ``modDate``. All keys are optional. A PDF's format and encryption method cannot be set or changed, these keys therefore have no effect and will be ignored. If any value should not contain data, do not specify its key or set the value to ``None``. If you use ``m = {}`` all metadata information will be cleared to ``unspecified``. If you want to selectively change only some values, modify ``doc.metadata`` directly and use it as the argument for this method.
+      :param `m`: A dictionary with the same keys as ``metadata`` (see below). All keys are optional. A PDF's format and encryption method cannot be set or changed, these keys therefore have no effect and will be ignored. If any value should not contain data, do not specify its key or set the value to ``None``. If you use ``m = {}`` all metadata information will be cleared to ``none``. If you want to selectively change only some values, modify ``doc.metadata`` directly and use it as the argument for this method.
 
       :type `m`: dict
 
       :rtype: int
-      :returns: ``0`` upon successful execution, otherwise a non-zero integer. ``doc.metadata`` will be updated upon successful execution.
+      :returns: Zero upon successful execution and ``doc.metadata`` will be updated.
 
     .. method:: setToC(toc)
 
-      PDF documents only: Replaces the complete current outline tree (table of contents) with a new one. After successful execution, the new outline tree can be accessed as usual via method ``getToc()`` or via property ``outline``. Like with other output-oriented methods, changes must be made permanent via ``save()`` (incremental save supported). Internally, this method consists of the following two steps. For a demonstration see example below.
+      PDF documents only: Replaces the complete current outline tree (table of contents) with a new one. After successful execution, the new outline tree can be accessed as usual via method ``getToc()`` or via property ``outline``. Like with other output-oriented methods, changes become permanent only via ``save()`` (incremental save is supported). Internally, this method consists of the following two steps. For a demonstration see example below.
 
       - Step 1 deletes all existing bookmarks.
 
       - Step 2 creates a new table of contents from the entries contained in ``toc``.
 
-      - Should anything go wrong in step 2, step 1 will **not be rolled back**, i.e. the old bookmarks will **remain deleted**.
-
       :param `toc`:
       :type `toc`: list
 
-      A Python list with all bookmark entries that should form the new table of contents. Each entry of this list again is a list with the following format. Output of method ``getToc()`` is acceptable.
+      A Python list with **all bookmark entries** that should form the new table of contents. Each entry of this list is again a list with the following format. Output variants of method ``getToc()`` are acceptable as input, too.
 
       - ``[lvl, title, pno, top]``, where
 
@@ -185,16 +184,16 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       - ``pno`` (int) is the target page number **(attention: 1-based to support getToC()-output)**, must be in valid page range,
 
-      - ``top`` (optional int / float) is a horizontal location on the page in pixel units. It is the distance from bottom, so a zero means bottom of the target page. Default value is 36 pixels (half an inch) below top of page. ``top`` may also be a dictionary (like from ``getToC(simple=False)``) - in this case the value is extracted from its key ``to`` if present.
+      - ``top`` (optional int / float) is a vertical location on the page in pixel units. It is the distance from bottom, so a zero means bottom of the target page. Default value is 36 pixels (half an inch) below top of page. A dictionary (like one contained in ``getToC(simple=False)``) may also be specified - in this case the value is the y-coordinate of the link destination, a point specified by key ``to``: ``d["to"][1]``.
 
       :rtype: int
-      :returns: ``doc.outline`` and ``getToC()`` will be updated upon successful execution. The return code will either equal the number of inserted items ``len(toc)`` or the number of deleted items if ``toc = []``.
+      :returns: ``outline`` and ``getToC()`` will be updated upon successful execution. The return code will either equal the number of inserted items (``len(toc)``) or the number of deleted items if ``toc = []``.
 
     .. method:: save(outfile, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0)
 
-      PDF documents only: Saves the **current content of the document** under the name ``outfile`` (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successfull ``authenticate``, a decrypted copy will be saved, and, in addition (even without any of the optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed methods ``select()``, ``setMetadata()`` or ``setToC()``, their results will also be reflected in the saved version.
+      PDF documents only: Saves the **current content of the document** under the name ``outfile`` (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successfull ``authenticate``, a decrypted copy will be saved, and, in addition (even without optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed methods ``select()``, ``setMetadata()`` or ``setToC()``, their results will also be reflected in the saved version.
 
-      :param `outfile`: The file name to save to. Must be different from the original ``filename`` value if ``incremental=False`` or else a ValueError will be raised. If saving incremental, then ``garbage`` and ``linear`` **must be** ``False`` and ``outfile`` **must equal** the original filename.
+      :param `outfile`: The file name to save to. Must be different from the original ``filename`` value if ``incremental=False`` or else a ValueError will be raised. If saving incrementally, then ``garbage`` and ``linear`` **must be** ``False`` and ``outfile`` **must equal** the original filename.
       :type `outfile`: string
 
       :param `garbage`: Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition to 1, compact xref table, 3 = in addition to 2, merge duplicate objects. Excludes ``incremental``.
@@ -219,11 +218,11 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
       :type `linear`: int
 
       :rtype: int
-      :returns: Count of errors that occurred during save. Note: PyMuPDF will recover from many errors encountered in a PDF and continue processing.
+      :returns: Zero upon successful execution.
 
     .. method:: close()
 
-      Releases space allocations associated with the document. If created from a file, also closes ``filename`` (releasing control the OS).
+      Releases space allocations associated with the document. If created from a file, also closes ``filename`` (releasing control to the OS).
 
     .. attribute:: outline
 
@@ -239,25 +238,25 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
     .. attribute:: needsPass
 
-      Contains an indicator showing whether the document is encrypted (``True = 1``) or not (``False = 0``). This indicator remains unchanged - even after the document has been authenticated.
+      Contains an indicator showing whether the document is encrypted (``True = 1``) or not (``False = 0``). This indicator remains unchanged - even after the document has been authenticated. Precludes incremental saves if set.
 
       :rtype: bool
 
     .. attribute:: isEncrypted
 
-      This indicator initially equals the value of ``needsPass``. After successful authentification, it is set to ``False = 0`` to reflect the situation.
+      This indicator initially equals ``needsPass``. After successful authentification, it is set to ``False = 0`` to reflect the situation.
 
       :rtype: bool
 
     .. Attribute:: metadata
 
-      Contains the document's meta data as a Python dictionary or ``None`` (if encrypted **and** ``needPass=True``). Keys are ``format``, ``encryption``, ``title``, ``author``, ``subject``, ``keywords``, ``creator``, ``producer``, ``creationDate``, ``modDate``. All item values are strings or ``None``.
+      Contains the document's meta data as a Python dictionary or ``None`` (if ``isEncrypted = True`` and ``needPass=True``). Keys are ``format``, ``encryption``, ``title``, ``author``, ``subject``, ``keywords``, ``creator``, ``producer``, ``creationDate``, ``modDate``. All item values are strings or ``None``.
 
-      Except ``format`` and ``encryption``, the key names correspond in an obvious way to the PDF dictionary keys ``/Creator``, ``/Producer``, ``/CreationDate``, ``/ModDate``, ``/Title``, ``/Author``, ``/Subject``, ``/Keywords`` respectively.
+      Except ``format`` and ``encryption``, the key names correspond in an obvious way to the PDF keys ``/Creator``, ``/Producer``, ``/CreationDate``, ``/ModDate``, ``/Title``, ``/Author``, ``/Subject``, and ``/Keywords`` respectively.
 
       - ``format`` contains the PDF version (e.g. 'PDF-1.6').
 
-      - ``encryption`` either contains ``None`` (no encryption), or a string naming an encryption method (e.g. ``'Standard V4 R4 128-bit RC4'``). Note that an encryption method may be specified for a readable document (i.e. ``needsPass=False``). In such cases not all permissions will probably have been granted. Check dictionary ``getPermits()`` for details.
+      - ``encryption`` either contains ``None`` (no encryption), or a string naming an encryption method (e.g. ``'Standard V4 R4 128-bit RC4'``). Note that an encryption method may be specified even if ``needsPass = False``. In such cases not all permissions will probably have been granted. Check dictionary ``getPermits()`` for details.
 
       - If the date fields contain meaningful data (which need not be the case at all!), they are strings in the PDF-internal timestamp format "D:<TS><TZ>", where
 
@@ -283,13 +282,13 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
     .. Attribute:: openErrCode
 
-      Shows whether a repair took place while opening the document. If ``openErrCode > 0``, the attribute ``openErrMsg`` contains the last repair message and also appears on ``SYSERR``. If an error occurred, any ``save()`` of the document must occur to a new file, incremental saves cannot be used.
+      If ``openErrCode > 0``, errors occurred while opening / parsing the document. In this case incremental save cannot be used.
 
       :rtype: int
 
     .. Attribute:: openErrMsg
 
-      Contains either an empty string or the last error message if ``openErrCode > 0``. Together with other error messages, it will also appear on ``SYSERR``.
+      Contains either an empty string or the last error message if ``openErrCode > 0``. Together with any other error messages of MuPDF's C library, it will also appear on ``SYSERR``.
 
       :rtype: string
 
@@ -300,11 +299,11 @@ Page numbers in the list need not be unique nor be in any particular sequence. T
 
 You can execute several selections in a row. The document structure will be kept updated.
 
-.. CAUTION:: This also means, that any document data from before this method must be assumed to be invalid. This is especially true for old page objects, table of contents and the ``pageCount`` property. If you plan to use the ``close()`` method, make sure you have deleted any page object created before (by ``page = None``).
+.. CAUTION:: This also means, that any document data from before this method must be assumed to be invalid. This is especially true for page objects, table of contents and the ``pageCount`` property. If you plan to use the ``close()`` method, make sure you have deleted any page object created before (by ``page = None``).
 
 Any of those changes will become permanent only with a ``doc.save()``. If you have de-selected many pages, consider specifying ``garbage=3`` option to eventually reduce the resulting document's size (when saving to a new file).
 
-Also note, that this method **preserves all links, annotations and bookmarks** that are still valid. In other words: deleting pages only deletes references that point to de-selected pages.
+Also note, that this method **preserves all links, annotations and bookmarks** that are still valid. In other words: deleting pages only deletes references pointing to de-selected pages.
 
 ``select()`` Examples
 ----------------------------------------
@@ -318,7 +317,7 @@ Create a document copy deleting pages with no text:
  for p in fitz.Pages(doc):
      if not p.getText():                    # contains no text
          r.remove(p.number)                 # remove page number from list
-     p = None                               # release page memory
+     p = None                               # delete page object
 
  doc.select(r)                              # apply the list
  doc.save("out.pdf", garbage=3)             # save the resulting PDF, OR
@@ -327,13 +326,13 @@ Create a document copy deleting pages with no text:
  doc.save("any.pdf", incremental = 1)       # excludes garbage collection
 
 
-Create a sub document with the odd pages:
+Create a sub document with the odd pages (note: this means even numbers!):
 ::
  import fitz
  doc = fitz.open("any.pdf")
- r = [i for i in list(range(doc.pageCount)) if i%2 > 0]
+ r = [i for i in list(range(doc.pageCount)) if i%2 == 0]
  doc.select(r)                              # apply the list
- doc.save("any-oddpages.pdf", garbage=3)    # save PDF with the odd pages
+ doc.save("oddpages.pdf", garbage=3)        # save sub-PDF of the odd pages
 
 
 Concatenate a document with itself:
@@ -349,9 +348,10 @@ Create document copy in reverse page order (well, don't try with a million pages
 ::
  import fitz
  doc = fitz.open("any.pdf")
- r = list(range(doc.pageCount-1, -1, -1))
+ r = list(range(doc.pageCount))
+ r.reverse()
  doc.select(r)
- doc.save("out.pdf")
+ doc.save("back-to-front.pdf")
 
 ``setMetadata()`` Example
 ----------------------------------------
@@ -367,10 +367,9 @@ Clear metadata information. If you do this out of privacy / data protection conc
  >>> doc.setMetadata({})
  0
  >>> doc.metadata
- {'producer': 'unspecified', 'format': 'PDF 1.4', 'encryption': None, 'author':
- 'unspecified', 'modDate': 'unspecified', 'keywords': 'unspecified', 'title':
- 'unspecified', 'creationDate': 'unspecified', 'creator': 'unspecified',
- 'subject': 'unspecified'}
+ {'producer': 'none', 'format': 'PDF 1.4', 'encryption': None, 'author': 'none',
+ 'modDate': 'none', 'keywords': 'none', 'title': 'none', 'creationDate': 'none',
+ 'creator': 'none', 'subject': 'none'}
  >>> doc.save("anonymous.pdf", garbage=3)
  0
  >>>
@@ -379,8 +378,6 @@ Clear metadata information. If you do this out of privacy / data protection conc
 ----------------------------------
 This shows how to modify or add a table of contents:
 ::
- Python 3.5.1 (v3.5.1:37a07cee5969, Dec  6 2015, 01:54:25) [MSC v.1900 64 bit (AMD64)] on win32
- Type "help", "copyright", "credits" or "license" for more information.
  >>> import fitz
  >>> doc = fitz.open("test.pdf")
  >>> toc = doc.getToC()
@@ -390,9 +387,9 @@ This shows how to modify or add a table of contents:
  [2, 'Introduction', 1]
  [3, 'Note on the Name fitz', 1]
  [3, 'License', 1]
- >>> toc[1][1] = "Introduction modified by setToC"    # modify anything
+ >>> toc[1][1] += " modified by setToC"               # modify something
  >>> doc.setToC(toc)                                  # replace outline tree
- 0
+ 3                                                    # number of bookmarks inserted
  >>> for t in doc.getToC(): print(t)                  # demonstrate it worked
  ...
  [1, 'The PyMuPDF Documentation', 1]

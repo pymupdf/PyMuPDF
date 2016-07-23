@@ -605,31 +605,28 @@
 <h2>Pixmap Example Code Snippets<a class="headerlink" href="#pixmap-example-code-snippets" title="Permalink to this headline">¶</a></h2>
 <p><strong>Example 1</strong></p>
 <p>This shows how pixmaps can be used for purely graphical, non-PDF purposes. The script reads a PNG picture and creates a new PNG file which consist of 3 * 4 tiles of the original one:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
-<span class="c1"># read in picture image and create a pixmap of it</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="n">pix0</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="s2">&quot;editra.png&quot;</span><span class="p">)</span>
-<span class="k">except</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;file does not exist or has invalid format&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="c"># read in picture image and create a pixmap of it</span>
+<span class="n">pix0</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="s">&quot;editra.png&quot;</span><span class="p">)</span>
 
-<span class="c1"># calculate target colorspace and pixmap dimensions and create it</span>
-<span class="n">tar_cs</span>     <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">getColorspace</span><span class="p">()</span>        <span class="c1"># use colorspace of input</span>
-<span class="n">tar_width</span>  <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="mi">3</span>              <span class="c1"># 3 tiles per row</span>
-<span class="n">tar_height</span> <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mi">4</span>             <span class="c1"># 4 tiles per column</span>
+<span class="c"># calculate target colorspace and pixmap dimensions and create it</span>
+<span class="n">tar_cs</span>     <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">getColorspace</span><span class="p">()</span>        <span class="c"># use colorspace of input</span>
+<span class="n">tar_width</span>  <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="mi">3</span>              <span class="c"># 3 tiles per row</span>
+<span class="n">tar_height</span> <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mi">4</span>             <span class="c"># 4 tiles per column</span>
 <span class="n">tar_irect</span>  <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">IRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tar_width</span><span class="p">,</span> <span class="n">tar_height</span><span class="p">)</span>
-<span class="c1"># create empty target pixmap</span>
+<span class="c"># create empty target pixmap</span>
 <span class="n">tar_pix</span>    <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">tar_cs</span><span class="p">,</span> <span class="n">tar_irect</span><span class="p">)</span>
-<span class="c1"># clear target with a very lively stone-gray (thanks and RIP, Loriot)</span>
+<span class="c"># clear target with a very lively stone-gray (thanks and RIP, Loriot)</span>
 <span class="n">tar_pix</span><span class="o">.</span><span class="n">clearWith</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
 
-<span class="c1"># now fill target with 3 * 4 tiles of input picture</span>
+<span class="c"># now fill target with 3 * 4 tiles of input picture</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)):</span>
-    <span class="n">pix0</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span>                          <span class="c1"># modify input&#39;s y coord</span>
+    <span class="n">pix0</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span>                          <span class="c"># modify input&#39;s y coord</span>
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)):</span>
-        <span class="n">pix0</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">j</span> <span class="o">*</span> <span class="n">pix0</span><span class="o">.</span><span class="n">width</span>                       <span class="c1"># modify input&#39;s x coord</span>
-        <span class="n">tar_pix</span><span class="o">.</span><span class="n">copyPixmap</span><span class="p">(</span><span class="n">pix0</span><span class="p">,</span> <span class="n">pix0</span><span class="o">.</span><span class="n">getIRect</span><span class="p">())</span>     <span class="c1"># copy input to new loc</span>
-        <span class="c1"># save intermediate image to show what is happening</span>
-        <span class="n">fn</span> <span class="o">=</span> <span class="s2">&quot;target-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span>
+        <span class="n">pix0</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">j</span> <span class="o">*</span> <span class="n">pix0</span><span class="o">.</span><span class="n">width</span>                       <span class="c"># modify input&#39;s x coord</span>
+        <span class="n">tar_pix</span><span class="o">.</span><span class="n">copyPixmap</span><span class="p">(</span><span class="n">pix0</span><span class="p">,</span> <span class="n">pix0</span><span class="o">.</span><span class="n">getIRect</span><span class="p">())</span>     <span class="c"># copy input to new loc</span>
+        <span class="c"># save intermediate image to show what is happening</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="s">&quot;target-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.png&quot;</span>
         <span class="n">tar_pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -640,40 +637,40 @@
 <img alt="_images/target-32.png" src="_images/target-32.png" />
 <p><strong>Example 2</strong></p>
 <p>This shows how to create a PNG file from a numpy array (several times faster than most other methods):</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">fitz</span>
-<span class="c1">#==============================================================================</span>
-<span class="c1"># create a fun-colored width * height PNG with fitz and numpy</span>
-<span class="c1">#==============================================================================</span>
+<span class="c">#==============================================================================</span>
+<span class="c"># create a fun-colored width * height PNG with fitz and numpy</span>
+<span class="c">#==============================================================================</span>
 <span class="n">height</span> <span class="o">=</span> <span class="mi">150</span>
 <span class="n">width</span>  <span class="o">=</span> <span class="mi">100</span>
 <span class="n">bild</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">height</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">width</span><span class="p">):</span>
-        <span class="c1"># one pixel (some fun coloring)</span>
+        <span class="c"># one pixel (some fun coloring)</span>
         <span class="n">bild</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">)</span><span class="o">%</span><span class="mi">256</span><span class="p">,</span> <span class="n">i</span><span class="o">%</span><span class="mi">256</span><span class="p">,</span> <span class="n">j</span><span class="o">%</span><span class="mi">256</span><span class="p">,</span> <span class="mi">255</span><span class="p">]</span>
 
-<span class="n">samples</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">bild</span><span class="o">.</span><span class="n">tostring</span><span class="p">())</span>    <span class="c1"># get plain pixel data from numpy array</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">bild</span><span class="o">.</span><span class="n">tostring</span><span class="p">())</span>    <span class="c"># get plain pixel data from numpy array</span>
 <span class="n">pix</span><span class="o">=</span><span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">Colorspace</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">CS_RGB</span><span class="p">),</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">samples</span><span class="p">)</span>
-<span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s2">&quot;test.png&quot;</span><span class="p">)</span>
+<span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s">&quot;test.png&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Example 3</strong></p>
 <p>This shows how to interface with <code class="docutils literal"><span class="pre">PIL</span> <span class="pre">/</span> <span class="pre">Pillow</span></code> (the Python Imaging Library), thereby extending the reach of image files that can be processed:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="k">import</span> <span class="n">Image</span>
 
 <span class="n">pix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="o">...</span> <span class="c1"># any code here</span>
-<span class="c1"># create and save a PIL image</span>
-<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">pix</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">pix</span><span class="o">.</span><span class="n">height</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">samples</span><span class="p">))</span>
-<span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;jpeg&#39;</span><span class="p">)</span>
+<span class="o">...</span> <span class="c"># any code here</span>
+<span class="c"># create and save a PIL image</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="s">&quot;RGBA&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">pix</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">pix</span><span class="o">.</span><span class="n">height</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">samples</span><span class="p">))</span>
+<span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;jpeg&#39;</span><span class="p">)</span>
 
-<span class="c1"># an example for the opposite direction</span>
-<span class="c1"># create a pixmap from any PIL-supported image file &quot;some_image.xxx&quot;</span>
+<span class="c"># an example for the opposite direction</span>
+<span class="c"># create a pixmap from any PIL-supported image file &quot;some_image.xxx&quot;</span>
 
-<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;some_image.xxx&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;some_image.xxx&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s">&quot;RGBA&quot;</span><span class="p">)</span>
 <span class="n">samples</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span>
 <span class="n">pix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">csRGB</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">samples</span><span class="p">)</span>
 </pre></div>
@@ -704,8 +701,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 27. Jun 2016.
+        &copy; Copyright 2016, Jorj X. McKie.
+      Last updated on 18. Jul 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

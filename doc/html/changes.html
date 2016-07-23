@@ -84,7 +84,7 @@
 <ul class="simple">
 <li>New methods <code class="docutils literal"><span class="pre">getRectArea()</span></code> for both <code class="docutils literal"><span class="pre">fitz.Rect</span></code> and <code class="docutils literal"><span class="pre">fitz.IRect</span></code></li>
 <li>Pixmaps can now be created directly from files using the new constructor <code class="docutils literal"><span class="pre">fitz.Pixmap(filename)</span></code>.</li>
-<li>The Pixmap constructor <code class="docutils literal"><span class="pre">fitz.Pixmap(data,</span> <span class="pre">len(data))</span></code> has been extended accordingly.</li>
+<li>The Pixmap constructor <code class="docutils literal"><span class="pre">fitz.Pixmap(image)</span></code> has been extended accordingly.</li>
 <li><code class="docutils literal"><span class="pre">fitz.Rect</span></code> can now be created with all possible combinations of points and coordinates.</li>
 <li>PyMuPDF classes and methods now all contain  __doc__ strings,  most of them created by SWIG automatically. While the PyMuPDF documentation certainly is more detailed, this feature should help a lot when programming in Python-aware IDEs.</li>
 <li>A new document method of <code class="docutils literal"><span class="pre">getPermits()</span></code> returns the permissions associated with the current access to the document (print, edit, annotate, copy), as a Python dictionary.</li>
@@ -92,7 +92,7 @@
 <li>The new document method <code class="docutils literal"><span class="pre">select(list)</span></code> removes all pages from a document that are not contained in the list. Pages can also be duplicated and re-arranged.</li>
 <li>Various improvements and new members in our demo and examples collections. Perhaps most prominently: <code class="docutils literal"><span class="pre">PDF_display</span></code> now supports scrolling with the mouse wheel, and there is a new example program <code class="docutils literal"><span class="pre">wxTableExtract</span></code> which allows to graphically identify and extract table data in documents.</li>
 <li><code class="docutils literal"><span class="pre">fitz.open()</span></code> is now an alias of <code class="docutils literal"><span class="pre">fitz.Document()</span></code>.</li>
-<li>New pixmap method <code class="docutils literal"><span class="pre">getPNGData()</span></code> which will return a memory area formatted as a PNG image of the pixmap.</li>
+<li>New pixmap method <code class="docutils literal"><span class="pre">getPNGData()</span></code> which will return a bytearray formatted as a PNG image of the pixmap.</li>
 <li>New pixmap method <code class="docutils literal"><span class="pre">samplesRGB()</span></code> providing a <code class="docutils literal"><span class="pre">samples</span></code> version with alpha bytes stripped off (RGB colorspaces only).</li>
 <li>New pixmap method <code class="docutils literal"><span class="pre">samplesAlpha()</span></code> providing the alpha bytes only of the <code class="docutils literal"><span class="pre">samples</span></code> area.</li>
 <li>New iterator <code class="docutils literal"><span class="pre">fitz.Pages(doc)</span></code> over a document&#8217;s set of pages.</li>
@@ -129,8 +129,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Ruikai Liu, Jorj McKie.
-      Last updated on 22. Jun 2016.
+        &copy; Copyright 2016, Jorj X. McKie.
+      Last updated on 22. Jul 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

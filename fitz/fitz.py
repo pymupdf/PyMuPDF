@@ -96,10 +96,9 @@ except __builtin__.Exception:
     _newclass = 0
 
 
-import os                     
 VersionFitz = "1.9a"          
 VersionBind = "1.9.1"         
-VersionDate = "2016-06-27 06:17:35"        
+VersionDate = "2016-07-23 03:54:43"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -294,9 +293,19 @@ class Document(_object):
         return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear)
 
 
-    def _select(self, liste):
-        """_select(Document self, int * liste) -> int"""
-        return _fitz.Document__select(self, liste)
+    def select(self, pyliste):
+        """select(list) -> int; build sub pdf with the pages in list"""
+
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation on closed or encrypted document")
+
+
+        val = _fitz.Document_select(self, pyliste)
+
+        self.initData()
+
+
+        return val
 
 
     def _readPageText(self, pno, output=0):
@@ -307,8 +316,8 @@ class Document(_object):
     def getPermits(self):
         """getPermits(self) -> dictionary containing permissions"""
 
-        if self.isClosed == 1:
-            raise ValueError("operation on closed document")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation on closed or encrypted document")
 
 
         val = _fitz.Document_getPermits(self)

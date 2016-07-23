@@ -132,7 +132,7 @@ A rectangle is called *empty* if x0 = x1 or y0 = y1, i.e. if its area is zero.
       :type: float
 
 
-Rect Arithmetics
+Rect Algebra
 -----------------
 A number of arithmetics operations have been defined for the ``Rect`` class.
 

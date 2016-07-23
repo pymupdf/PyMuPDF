@@ -5,6 +5,7 @@
 %feature("autodoc","1");
 %{
 #define SWIG_FILE_WITH_INIT
+#define SWIG_PYTHON_2_UNICODE
 #include <fitz.h>
 #include <pdf.h>
 void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page);
@@ -291,58 +292,76 @@ struct fz_document_s {
             return errors;
         }
 
-        /* typemap for Python list of integers (page numbers) as input */
-        %typemap(in) (int *liste, int argc) {
-            int i;
-            /* a little dirty: "arg1" is the document object */
-            int pageCount = fz_count_pages(gctx, arg1);
-            if (!PySequence_Check($input)) {
-                PyErr_SetString(PyExc_ValueError,"expected a sequence");
+/*******************************************************************************
+Reduce document to keep only selected pages
+Parameter is a Python list / tuple of integers (wanted page numbers).
+*******************************************************************************/
+        %exception select {
+            $action
+            if(result < 0) {
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_ValueError, value);
                 return NULL;
             }
-            $2 = PySequence_Size($input);
-            if (!$2) {
-                PyErr_SetString(PyExc_ValueError,"sequence is empty");
-                return NULL;
-            }
-            $1 = (int *) malloc($2*sizeof(int));
-            for (i = 0; i < $2; i++) {
-                PyObject *o = PySequence_GetItem($input,i);
-                if (PyInt_Check(o)) {
-                    $1[i] = (int) PyInt_AsLong(o);
-                    if (($1[i] < 0) | ($1[i] >= pageCount)) {
-                        PyErr_SetString(PyExc_ValueError,"page numbers not in range 0 <= n < pageCount");
-                        free($1);
-                        return NULL;
-                        }
-                    }
-                else {
-                    PyErr_SetString(PyExc_ValueError,"page numbers must be integers");
-                    free($1);
-                    return NULL;
-                    }
-            }
         }
-        %typemap(freearg) (int *liste, int argc) {
-            if ($1) free($1);
-        }
-
-        /************************************************/
-        /* reduce document to keep only selected pages  */
-        /************************************************/
-        int _select(int *liste, int argc) {
-            /* cast-down fz_document to a pdf_document */
+        %feature("autodoc","select(list) -> int; build sub pdf with the pages in list") select;
+        %pythonprepend select %{
+            if self.isClosed or self.isEncrypted:
+                raise ValueError("operation on closed or encrypted document")
+        %}
+        %pythonappend select %{
+            self.initData()
+        %}
+        int select(PyObject *pyliste) {
+        /* preparatory stuff: (1) get underlying pdf document, (2) transform
+           Python sequence into integer array
+        */
+            /* get underlying pdf_document, do some parm checks ***************/
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            if (!pdf) {
-                PyErr_SetString(PyExc_ValueError,"not a pdf document");
-                free(liste);
-                return -2;
+            int argc;
+            fz_try(gctx) {
+                if (pdf == NULL)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a pdf document");
+                if (!PySequence_Check(pyliste))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "expected a sequence");
+                argc = (int) PySequence_Size(pyliste);
+                if (argc < 1)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "sequence is empty");
+            }
+            fz_catch(gctx) {
+                return -1;
+            }
+            /* transform Python sequence into int array ***********************/
+            int pageCount = fz_count_pages(gctx, $self);
+            int i;
+            int *liste;
+            liste = malloc(argc * sizeof(int));
+            fz_try(gctx) {
+                for (i = 0; i < argc; i++) {
+                    PyObject *o = PySequence_GetItem(pyliste, i);
+                    if (PyInt_Check(o)) {
+                        liste[i] = (int) PyInt_AsLong(o);
+                        if ((liste[i] < 0) | (liste[i] >= pageCount)) {
+                            fz_throw(gctx, FZ_ERROR_GENERIC, "page numbers not in range");
+                            }
+                    }
+                    else {
+                        fz_throw(gctx, FZ_ERROR_GENERIC, "page numbers must be integers");
+                    }
                 }
+            }
+            fz_catch(gctx) {
+                if (liste) free (liste);
+                return -1;
+            }
+            /* finally we call retainpages                                    */
+            /* code of retainpages copied from fz_clean_file.c                */
             globals glo = { 0 };
             glo.ctx = gctx;
             glo.doc = pdf;
-            /* code of retainpages copied from fz_clean_file.c */
             retainpages(gctx, &glo, argc, liste);
+            free (liste);
             return 0;
         }
 
@@ -351,7 +370,7 @@ struct fz_document_s {
             if(!result) {
                 char *value;
                 value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_ValueError, value);
                 return NULL;
             }
         }
@@ -377,8 +396,8 @@ struct fz_document_s {
         /***************************************/
         %feature("autodoc","getPermits(self) -> dictionary containing permissions") getPermits;
         %pythonprepend getPermits() %{
-            if self.isClosed == 1:
-                raise ValueError("operation on closed document")
+            if self.isClosed or self.isEncrypted:
+                raise ValueError("operation on closed or encrypted document")
         %}
         %pythonappend getPermits() %{
             # transform bitfield response into dictionary
@@ -418,7 +437,7 @@ struct fz_document_s {
             if(!result) {
                 char *value;
                 value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_ValueError, value);
                 return NULL;
             }
         }
@@ -495,10 +514,10 @@ creates OL root if necessary
 *******************************************************************************/
         %exception _getOLRootNumber {
             $action
-            if(!result) {
+            if(result < 0) {
                 char *value;
                 value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_ValueError, value);
                 return NULL;
             }
         }
@@ -510,7 +529,7 @@ creates OL root if necessary
                 if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
             }
             fz_catch(gctx) {
-                return 0;
+                return -2;
             }
             pdf_obj *root, *olroot, *ind_obj;
             /* get main root */
@@ -534,10 +553,10 @@ Get New Xref Number
 *******************************************************************************/
         %exception _getNewXref {
             $action
-            if(!result) {
+            if(result < 0) {
                 char *value;
                 value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_ValueError, value);
                 return NULL;
             }
         }
@@ -549,21 +568,21 @@ Get New Xref Number
                 if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
             }
             fz_catch(gctx) {
-                return 0;
+                return -2;
             }
             return pdf_create_object(gctx, pdf);
         }
 
 /*******************************************************************************
-Update Xref Number with new Object
+Update an Xref Number with a new Object
 Object given as a string
 *******************************************************************************/
         %exception _updateObject {
             $action
-            if(result) {
+            if(result < 0) {
                 char *value;
                 value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_ValueError, value);
                 return NULL;
             }
         }
@@ -575,7 +594,7 @@ Object given as a string
                 if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
             }
             fz_catch(gctx) {
-                return 1;
+                return -2;
             }
             pdf_obj *new_obj;
             fz_try(gctx) {
@@ -592,6 +611,16 @@ Object given as a string
 /*******************************************************************************
 Add or update metadata with provided raw string
 *******************************************************************************/
+        %exception _setMetadata {
+            $action
+            if(result > 0) {
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_ValueError, value);
+                return NULL;
+            }
+        }
+
         int _setMetadata(char *text)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
@@ -721,7 +750,7 @@ struct fz_page_s {
             if(!result) {
                 char *value;
                 value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_ValueError, value);
                 return NULL;
             }
         }
@@ -921,7 +950,7 @@ struct fz_pixmap_s
             if(!result) {
                 char *value;
                 value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_ValueError, value);
                 return NULL;
             }
         }

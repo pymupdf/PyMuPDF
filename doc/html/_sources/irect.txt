@@ -120,7 +120,7 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
       :type: int
 
 
-IRect Arithmetics
+IRect Algebra
 ------------------
 A number of arithmetics operations have been defined for the ``IRect`` class.
 

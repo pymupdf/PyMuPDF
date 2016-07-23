@@ -1,34 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from . import fitz
-import math
+import math, sys, codecs
 '''
 The following is a collection of commodity functions to simplify the use of PyMupdf.
 '''
-#==============================================================================
-# A function to select certain document pages
-#==============================================================================
-#def select([list]):
-def select(*arg):
-    '''select([list of page numbers])\nSelect document pages.
-Parameters:\nlist: list of page numbers to retain.\n
-Pages not in the list will be deleted. Pages can occur multiple times and in any order.
-    '''
-    if len(arg) != 2:
-        raise ValueError("list of pages is required")
-    doc = arg[0]
-    if not repr(doc).startswith("fitz.Document"):
-        raise ValueError("invalid fitz.Document provided to select")
-    if doc.isClosed or doc.isEncrypted:
-        raise ValueError("operation on closed or encrypted document")
-    liste = arg[1]
-    if not doc.name.lower().endswith(("/pdf", ".pdf")):
-        raise ValueError("only PDF documents supported")
-    r = doc._select(liste)
-    if r == 0:
-        doc.initData()
-    return r
-
 #==============================================================================
 # A function for searching string occurrences on a page.
 #==============================================================================
@@ -49,7 +25,7 @@ Returns a list of rectangles, each of which surrounds a found occurrence.
 
     if not repr(page.parent).startswith("fitz.Document"):
         raise ValueError("invalid page object provided to searchFor")
-    if page.parent.isClosed or self.parent.isEncrypted:
+    if page.parent.isClosed or page.parent.isEncrypted:
         raise ValueError("page operation on closed or encrpted document")
 
     dl = fitz.DisplayList()                  # create DisplayList
@@ -822,39 +798,100 @@ def point_abs(p):
     return math.sqrt(p.x**2 + p.y**2)
 
 #==============================================================================
+# Returns a PDF string depending on its coding.
+# If only ascii then "(original)" is returned,
+# else if only 8 bit chars then "(original)" with interspersed octal strings
+# \nnn is returned,
+# else a string "<FEFF[hexstring]>" is returned, where [hexstring] is the
+# UTF-16BE encoding of the original.
+#==============================================================================
+def PDFstr(s):
+
+    #--------------------------------------------------------------------------
+    # internal function: returns bytes or bytearray as hex string
+    #--------------------------------------------------------------------------
+    def hexa(r):
+        s = ""
+        for i in range(len(r)):
+            h = hex(r[i])[2:]
+            x = h.rjust(2, "0")
+            s += x
+        return s
+    #--------------------------------------------------------------------------
+
+    try:
+        x = s.decode("utf-8")
+    except:
+        x = s
+
+    if isinstance(x, str) or sys.version_info[0] < 3 and isinstance(x, unicode):
+        pass
+    else:
+        raise ValueError("non-string provided to PDFstr function")
+
+    utf16 = False
+    # the following returns original chars for ascii and octal numbers else
+    r = ""
+    for i in range(len(x)):
+        if ord(x[i]) <= 127:
+            r += x[i]                             # copy over ascii chars
+        elif ord(x[i]) <= 255:
+            o = oct(ord(x[i]))                    # get octal w/o leading 0
+            if o.startswith("0o"):                # happens in Python 3
+                o = o[2:]
+            if o.startswith("0"):                 # happens in Python 2
+                o = o[1:]
+            r += "\\" + o                         # octal number prefix
+        else:
+            utf16 = True
+            break
+    if not utf16:
+        return "(" + r + ")"                          # result in brackets
+
+    # require full unicode: make a UTF-16BE hex string prefixed with "feff"
+    if sys.version_info[0] < 3:                       # Py 2: make bytearray
+        r = bytearray([254, 255]) + bytearray(x, "UTF-16BE")
+    else:
+        r = codecs.BOM_UTF16_BE + x.encode("UTF-16BE")
+    x = hexa(r)                                       # convert to hex string
+    return "<" + x + ">"                              # brackets indicate hex
+
+
+#==============================================================================
 # Document method Set Metadata
 #==============================================================================
 def setMetadata(doc, m):
     '''Set a PDF document's metadata (/Info dictionary)\nParameters:\nm: a dictionary with valid metadata keys.\nAfter execution, the metadata property will be updated.
     '''
     if not repr(doc).startswith("fitz.Document") or not doc.name.lower().endswith(("/pdf", ".pdf")):
-        raise ValueError("argument 1 must be a PDF document")
+        raise ValueError("arg1 must be a PDF document")
     if doc.isClosed or doc.isEncrypted:
         raise ValueError("operation on closed or encrypted document")
     if type(m) is not dict:
-        raise ValueError("argument 2 must be a dictionary")
+        raise ValueError("arg2 must be a dictionary")
     for k in m.keys():
-        if not k in ["author", "producer", "creator", "title", "format", "encryption",
-                     "creationDate", "modDate", "subject", "keywords"]:
+        if not k in ["author", "producer", "creator", "title", "format",
+                     "encryption", "creationDate", "modDate", "subject",
+                     "keywords"]:
             raise ValueError("invalid dictionary key: " + k)
 
-    d = "<</Author("
-    d += "none" if not m.get("author") else m["author"]
-    d += ")/CreationDate("
+    d = "<</Author"
+    d += "(none)" if not m.get("author") else PDFstr(m["author"])
+    d += "/CreationDate("
     d += "none" if not m.get("creationDate") else m["creationDate"]
-    d += ")/Creator("
-    d += "none" if not m.get("creator") else m["creator"]
-    d += ")/Keywords("
-    d += "none" if not m.get("keywords") else m["keywords"]
-    d += ")/ModDate("
+    d += ")/Creator"
+    d += "(none)" if not m.get("creator") else PDFstr(m["creator"])
+    d += "/Keywords"
+    d += "(none)" if not m.get("keywords") else PDFstr(m["keywords"])
+    d += "/ModDate("
     d += "none" if not m.get("modDate") else m["modDate"]
-    d += ")/Producer("
-    d += "none" if not m.get("producer") else m["producer"]
-    d += ")/Subject("
-    d += "none" if not m.get("subject") else m["subject"]
-    d += ")/Title("
-    d += "none" if not m.get("title") else m["title"]
-    d += ")>>"
+    d += ")/Producer"
+    d += "(none)" if not m.get("producer") else PDFstr(m["producer"])
+    d += "/Subject"
+    d += "(none)" if not m.get("subject") else PDFstr(m["subject"])
+    d += "/Title"
+    d += "(none)" if not m.get("title") else PDFstr(m["title"])
+    d += ">>"
     r = doc._setMetadata(d)
     if r == 0:
         doc.initData()
@@ -897,6 +934,7 @@ def setToC(doc, toc):
         if t2[0] > t1[0] + 1:
             raise ValueError("hierarchy steps must not be > 1")
     # no formal errors found in toc -------------------------------------------
+
     doc._delToC()                      # delete existing outlines
 
     xref = [0] * (1+toclen)            # prepare table of new xref entries
@@ -917,7 +955,7 @@ def setToC(doc, toc):
     for i in list(range(toclen)):
         o = toc[i]
         lvl = o[0] # level
-        title = o[1] # titel
+        title = PDFstr(o[1]) # titel
         pno = o[2] - 1 # page number
         p = doc.loadPage(pno)
         top = int(round(p.bound().y1) - 36)   # default top location on page
@@ -988,7 +1026,7 @@ def setToC(doc, toc):
                 txt += "/Prev " + str(xref[ol["prev"]]) + " 0 R"
         except: pass
         try:
-            txt += "/Title(" + str(ol["title"]) + ")"
+            txt += "/Title" + ol["title"]
         except: pass
         if i == 0:           # special: this is the outline root
             txt += "/Type/Outlines"

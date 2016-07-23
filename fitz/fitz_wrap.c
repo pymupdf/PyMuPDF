@@ -2997,9 +2997,8 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_fz_rect_s swig_types[14]
 #define SWIGTYPE_p_fz_stext_page_s swig_types[15]
 #define SWIGTYPE_p_fz_stext_sheet_s swig_types[16]
-#define SWIGTYPE_p_int swig_types[17]
-static swig_type_info *swig_types[19];
-static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
+static swig_type_info *swig_types[18];
+static swig_module_info swig_module = {swig_types, 17, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3032,6 +3031,7 @@ static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
 
 
 #define SWIG_FILE_WITH_INIT
+#define SWIG_PYTHON_2_UNICODE
 #include <fitz.h>
 #include <pdf.h>
 void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page);
@@ -3868,19 +3868,55 @@ SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename,int 
             }
             return errors;
         }
-SWIGINTERN int fz_document_s__select(struct fz_document_s *self,int *liste,int argc){
-            /* cast-down fz_document to a pdf_document */
+SWIGINTERN int fz_document_s_select(struct fz_document_s *self,PyObject *pyliste){
+        /* preparatory stuff: (1) get underlying pdf document, (2) transform
+           Python sequence into integer array
+        */
+            /* get underlying pdf_document, do some parm checks ***************/
             pdf_document *pdf = pdf_specifics(gctx, self);
-            if (!pdf) {
-                PyErr_SetString(PyExc_ValueError,"not a pdf document");
-                free(liste);
-                return -2;
+            int argc;
+            fz_try(gctx) {
+                if (pdf == NULL)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a pdf document");
+                if (!PySequence_Check(pyliste))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "expected a sequence");
+                argc = (int) PySequence_Size(pyliste);
+                if (argc < 1)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "sequence is empty");
+            }
+            fz_catch(gctx) {
+                return -1;
+            }
+            /* transform Python sequence into int array ***********************/
+            int pageCount = fz_count_pages(gctx, self);
+            int i;
+            int *liste;
+            liste = malloc(argc * sizeof(int));
+            fz_try(gctx) {
+                for (i = 0; i < argc; i++) {
+                    PyObject *o = PySequence_GetItem(pyliste, i);
+                    if (PyInt_Check(o)) {
+                        liste[i] = (int) PyInt_AsLong(o);
+                        if ((liste[i] < 0) | (liste[i] >= pageCount)) {
+                            fz_throw(gctx, FZ_ERROR_GENERIC, "page numbers not in range");
+                            }
+                    }
+                    else {
+                        fz_throw(gctx, FZ_ERROR_GENERIC, "page numbers must be integers");
+                    }
                 }
+            }
+            fz_catch(gctx) {
+                if (liste) free (liste);
+                return -1;
+            }
+            /* finally we call retainpages                                    */
+            /* code of retainpages copied from fz_clean_file.c                */
             globals glo = { 0 };
             glo.ctx = gctx;
             glo.doc = pdf;
-            /* code of retainpages copied from fz_clean_file.c */
             retainpages(gctx, &glo, argc, liste);
+            free (liste);
             return 0;
         }
 SWIGINTERN struct fz_buffer_s *fz_document_s__readPageText(struct fz_document_s *self,int pno,int output){
@@ -3970,7 +4006,7 @@ SWIGINTERN int fz_document_s__getOLRootNumber(struct fz_document_s *self){
                 if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
             }
             fz_catch(gctx) {
-                return 0;
+                return -2;
             }
             pdf_obj *root, *olroot, *ind_obj;
             /* get main root */
@@ -3994,7 +4030,7 @@ SWIGINTERN int fz_document_s__getNewXref(struct fz_document_s *self){
                 if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
             }
             fz_catch(gctx) {
-                return 0;
+                return -2;
             }
             return pdf_create_object(gctx, pdf);
         }
@@ -4004,7 +4040,7 @@ SWIGINTERN int fz_document_s__updateObject(struct fz_document_s *self,int xref,c
                 if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
             }
             fz_catch(gctx) {
-                return 1;
+                return -2;
             }
             pdf_obj *new_obj;
             fz_try(gctx) {
@@ -5396,64 +5432,35 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Document__select(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_Document_select(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
-  int *arg2 = (int *) 0 ;
-  int arg3 ;
+  PyObject *arg2 = (PyObject *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:Document__select",&obj0,&obj1)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO:Document_select",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__select" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_select" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
   }
   arg1 = (struct fz_document_s *)(argp1);
+  arg2 = obj1;
   {
-    int i;
-    /* a little dirty: "arg1" is the document object */
-    int pageCount = fz_count_pages(gctx, arg1);
-    if (!PySequence_Check(obj1)) {
-      PyErr_SetString(PyExc_ValueError,"expected a sequence");
+    result = (int)fz_document_s_select(arg1,arg2);
+    if(result < 0) {
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_ValueError, value);
       return NULL;
-    }
-    arg3 = PySequence_Size(obj1);
-    if (!arg3) {
-      PyErr_SetString(PyExc_ValueError,"sequence is empty");
-      return NULL;
-    }
-    arg2 = (int *) malloc(arg3*sizeof(int));
-    for (i = 0; i < arg3; i++) {
-      PyObject *o = PySequence_GetItem(obj1,i);
-      if (PyInt_Check(o)) {
-        arg2[i] = (int) PyInt_AsLong(o);
-        if ((arg2[i] < 0) | (arg2[i] >= pageCount)) {
-          PyErr_SetString(PyExc_ValueError,"page numbers not in range 0 <= n < pageCount");
-          free(arg2);
-          return NULL;
-        }
-      }
-      else {
-        PyErr_SetString(PyExc_ValueError,"page numbers must be integers");
-        free(arg2);
-        return NULL;
-      }
     }
   }
-  result = (int)fz_document_s__select(arg1,arg2,arg3);
   resultobj = SWIG_From_int((int)(result));
-  {
-    if (arg2) free(arg2);
-  }
   return resultobj;
 fail:
-  {
-    if (arg2) free(arg2);
-  }
   return NULL;
 }
 
@@ -5497,7 +5504,7 @@ SWIGINTERN PyObject *_wrap_Document__readPageText(PyObject *SWIGUNUSEDPARM(self)
     if(!result) {
       char *value;
       value = gctx->error->message;
-      PyErr_SetString(PyExc_Exception, value);
+      PyErr_SetString(PyExc_ValueError, value);
       return NULL;
     }
   }
@@ -5561,7 +5568,7 @@ SWIGINTERN PyObject *_wrap_Document__getPageObjNumber(PyObject *SWIGUNUSEDPARM(s
     if(!result) {
       char *value;
       value = gctx->error->message;
-      PyErr_SetString(PyExc_Exception, value);
+      PyErr_SetString(PyExc_ValueError, value);
       return NULL;
     }
   }
@@ -5610,10 +5617,10 @@ SWIGINTERN PyObject *_wrap_Document__getOLRootNumber(PyObject *SWIGUNUSEDPARM(se
   arg1 = (struct fz_document_s *)(argp1);
   {
     result = (int)fz_document_s__getOLRootNumber(arg1);
-    if(!result) {
+    if(result < 0) {
       char *value;
       value = gctx->error->message;
-      PyErr_SetString(PyExc_Exception, value);
+      PyErr_SetString(PyExc_ValueError, value);
       return NULL;
     }
   }
@@ -5640,10 +5647,10 @@ SWIGINTERN PyObject *_wrap_Document__getNewXref(PyObject *SWIGUNUSEDPARM(self), 
   arg1 = (struct fz_document_s *)(argp1);
   {
     result = (int)fz_document_s__getNewXref(arg1);
-    if(!result) {
+    if(result < 0) {
       char *value;
       value = gctx->error->message;
-      PyErr_SetString(PyExc_Exception, value);
+      PyErr_SetString(PyExc_ValueError, value);
       return NULL;
     }
   }
@@ -5689,10 +5696,10 @@ SWIGINTERN PyObject *_wrap_Document__updateObject(PyObject *SWIGUNUSEDPARM(self)
   arg3 = (char *)(buf3);
   {
     result = (int)fz_document_s__updateObject(arg1,arg2,arg3);
-    if(result) {
+    if(result < 0) {
       char *value;
       value = gctx->error->message;
-      PyErr_SetString(PyExc_Exception, value);
+      PyErr_SetString(PyExc_ValueError, value);
       return NULL;
     }
   }
@@ -5729,7 +5736,15 @@ SWIGINTERN PyObject *_wrap_Document__setMetadata(PyObject *SWIGUNUSEDPARM(self),
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Document__setMetadata" "', argument " "2"" of type '" "char *""'");
   }
   arg2 = (char *)(buf2);
-  result = (int)fz_document_s__setMetadata(arg1,arg2);
+  {
+    result = (int)fz_document_s__setMetadata(arg1,arg2);
+    if(result > 0) {
+      char *value;
+      value = gctx->error->message;
+      PyErr_SetString(PyExc_ValueError, value);
+      return NULL;
+    }
+  }
   resultobj = SWIG_From_int((int)(result));
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
@@ -5910,7 +5925,7 @@ SWIGINTERN PyObject *_wrap_Page__readPageText(PyObject *SWIGUNUSEDPARM(self), Py
     if(!result) {
       char *value;
       value = gctx->error->message;
-      PyErr_SetString(PyExc_Exception, value);
+      PyErr_SetString(PyExc_ValueError, value);
       return NULL;
     }
   }
@@ -7528,7 +7543,7 @@ SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_0(PyObject *SWIGUNUSEDPARM(self), Py
     if(!result) {
       char *value;
       value = gctx->error->message;
-      PyErr_SetString(PyExc_Exception, value);
+      PyErr_SetString(PyExc_ValueError, value);
       return NULL;
     }
   }
@@ -7579,7 +7594,7 @@ SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_1(PyObject *SWIGUNUSEDPARM(self), Py
     if(!result) {
       char *value;
       value = gctx->error->message;
-      PyErr_SetString(PyExc_Exception, value);
+      PyErr_SetString(PyExc_ValueError, value);
       return NULL;
     }
   }
@@ -7610,7 +7625,7 @@ SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_2(PyObject *SWIGUNUSEDPARM(self), Py
     if(!result) {
       char *value;
       value = gctx->error->message;
-      PyErr_SetString(PyExc_Exception, value);
+      PyErr_SetString(PyExc_ValueError, value);
       return NULL;
     }
   }
@@ -7636,7 +7651,7 @@ SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_3(PyObject *SWIGUNUSEDPARM(self), Py
     if(!result) {
       char *value;
       value = gctx->error->message;
-      PyErr_SetString(PyExc_Exception, value);
+      PyErr_SetString(PyExc_ValueError, value);
       return NULL;
     }
   }
@@ -10655,7 +10670,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document__getGCTXerrmsg", _wrap_Document__getGCTXerrmsg, METH_VARARGS, (char *)"Document__getGCTXerrmsg(Document self) -> char *"},
 	 { (char *)"Document_authenticate", _wrap_Document_authenticate, METH_VARARGS, (char *)"Document_authenticate(Document self, char const * arg3) -> int"},
 	 { (char *)"Document_save", _wrap_Document_save, METH_VARARGS, (char *)"Document_save(Document self, char * filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) -> int"},
-	 { (char *)"Document__select", _wrap_Document__select, METH_VARARGS, (char *)"Document__select(Document self, int * liste) -> int"},
+	 { (char *)"Document_select", _wrap_Document_select, METH_VARARGS, (char *)"select(list) -> int; build sub pdf with the pages in list"},
 	 { (char *)"Document__readPageText", _wrap_Document__readPageText, METH_VARARGS, (char *)"Document__readPageText(Document self, int pno, int output=0) -> struct fz_buffer_s *"},
 	 { (char *)"Document_getPermits", _wrap_Document_getPermits, METH_VARARGS, (char *)"getPermits(self) -> dictionary containing permissions"},
 	 { (char *)"Document__getPageObjNumber", _wrap_Document__getPageObjNumber, METH_VARARGS, (char *)"Document__getPageObjNumber(Document self, int pno) -> PyObject *"},
@@ -10870,7 +10885,6 @@ static swig_type_info _swigt__p_fz_point_s = {"_p_fz_point_s", "struct fz_point_
 static swig_type_info _swigt__p_fz_rect_s = {"_p_fz_rect_s", "struct fz_rect_s *|fz_rect_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_fz_stext_page_s = {"_p_fz_stext_page_s", "struct fz_stext_page_s *|fz_stext_page_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_fz_stext_sheet_s = {"_p_fz_stext_sheet_s", "struct fz_stext_sheet_s *|fz_stext_sheet_s *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_int = {"_p_int", "int *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_DeviceWrapper,
@@ -10890,7 +10904,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_fz_rect_s,
   &_swigt__p_fz_stext_page_s,
   &_swigt__p_fz_stext_sheet_s,
-  &_swigt__p_int,
 };
 
 static swig_cast_info _swigc__p_DeviceWrapper[] = {  {&_swigt__p_DeviceWrapper, 0, 0, 0},{0, 0, 0, 0}};
@@ -10910,7 +10923,6 @@ static swig_cast_info _swigc__p_fz_point_s[] = {  {&_swigt__p_fz_point_s, 0, 0, 
 static swig_cast_info _swigc__p_fz_rect_s[] = {  {&_swigt__p_fz_rect_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_stext_page_s[] = {  {&_swigt__p_fz_stext_page_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_fz_stext_sheet_s[] = {  {&_swigt__p_fz_stext_sheet_s, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_DeviceWrapper,
@@ -10930,7 +10942,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_fz_rect_s,
   _swigc__p_fz_stext_page_s,
   _swigc__p_fz_stext_sheet_s,
-  _swigc__p_int,
 };
 
 

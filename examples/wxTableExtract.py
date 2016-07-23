@@ -675,7 +675,7 @@ class PDFdisplay (wx.Dialog):
         pix = p.getPixmap()
         a = pix.samplesRGB()
         bitmap = wx.BitmapFromBuffer(pix.width, pix.height, a)
-        self.paperform.Label = "Paper format: " + FindFit(pix.w, pix.h)
+        self.paperform.Label = "Format: " + FindFit(pix.w, pix.h)
         return bitmap
 
     def decrypt_doc(self):
@@ -693,7 +693,7 @@ class PDFdisplay (wx.Dialog):
                 return
             if self.doc.isEncrypted:
                 pw = None
-                dlg.SetTitle("Wrong password, enter correct password or cancel")
+                dlg.SetTitle("Wrong password, enter correct one or cancel")
         return
 
 #==============================================================================
