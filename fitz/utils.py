@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from . import fitz
-import math, sys, codecs
+import math, sys
+from binascii import hexlify
 '''
 The following is a collection of commodity functions to simplify the use of PyMupdf.
 '''
@@ -806,19 +807,6 @@ def point_abs(p):
 # UTF-16BE encoding of the original.
 #==============================================================================
 def PDFstr(s):
-
-    #--------------------------------------------------------------------------
-    # internal function: returns bytes or bytearray as hex string
-    #--------------------------------------------------------------------------
-    def hexa(r):
-        s = ""
-        for i in range(len(r)):
-            h = hex(r[i])[2:]
-            x = h.rjust(2, "0")
-            s += x
-        return s
-    #--------------------------------------------------------------------------
-
     try:
         x = s.decode("utf-8")
     except:
@@ -830,31 +818,23 @@ def PDFstr(s):
         raise ValueError("non-string provided to PDFstr function")
 
     utf16 = False
-    # the following returns original chars for ascii and octal numbers else
+    # following returns ascii original chars or octal numbers \nnn
     r = ""
     for i in range(len(x)):
         if ord(x[i]) <= 127:
-            r += x[i]                             # copy over ascii chars
+            r += x[i]                            # copy over ascii chars
         elif ord(x[i]) <= 255:
-            o = oct(ord(x[i]))                    # get octal w/o leading 0
-            if o.startswith("0o"):                # happens in Python 3
-                o = o[2:]
-            if o.startswith("0"):                 # happens in Python 2
-                o = o[1:]
-            r += "\\" + o                         # octal number prefix
+            r += "\\" + oct(ord(x[i]))[-3:]      # octal number with backslash
         else:
             utf16 = True
             break
     if not utf16:
-        return "(" + r + ")"                          # result in brackets
+        return "(" + r + ")"                     # result in brackets
 
     # require full unicode: make a UTF-16BE hex string prefixed with "feff"
-    if sys.version_info[0] < 3:                       # Py 2: make bytearray
-        r = bytearray([254, 255]) + bytearray(x, "UTF-16BE")
-    else:
-        r = codecs.BOM_UTF16_BE + x.encode("UTF-16BE")
-    x = hexa(r)                                       # convert to hex string
-    return "<" + x + ">"                              # brackets indicate hex
+    r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
+    t = r.decode("UTF-8")                        # make str in Python 3
+    return "<" + t + ">"                         # brackets indicate hex
 
 
 #==============================================================================

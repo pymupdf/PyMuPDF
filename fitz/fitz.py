@@ -98,7 +98,7 @@ except __builtin__.Exception:
 
 VersionFitz = "1.9a"          
 VersionBind = "1.9.1"         
-VersionDate = "2016-07-23 03:54:43"        
+VersionDate = "2016-07-24 02:27:40"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
