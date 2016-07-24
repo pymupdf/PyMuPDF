@@ -77,7 +77,6 @@ def getint(v):
 #==============================================================================
 # some abbreviations and global parameters
 #==============================================================================
-ENCODING = "latin-1"                   # standard encoding
 defPos = wx.DefaultPosition            # just an abbreviation
 defSiz = wx.DefaultSize                # just an abbreviation
 khaki  = wx.Colour(240, 230, 140)      # our background color
@@ -93,9 +92,10 @@ class ScratchPad():
         self.inhalt = []                 # table of contents storage
         self.file = None                 # pdf filename
         self.oldpage = 0                 # stores displayed page number
-        self.encoding = "utf-8"
+        self.fromjson = False            # autosaved input switch
         self.height = 0                  # store current page height
-        self.lastsave = -1.0
+        self.lastsave = -1.0             # stores last save time
+        self.grid_changed = False        # did TOC change?
 
 #==============================================================================
 # render a PDF page and return its wx.Bitmap
@@ -152,7 +152,7 @@ class PDFTable(gridlib.PyGridTableBase):
             top = -1
             lvl = z[0]
             tit = z[1]
-            if spad.encoding != ENCODING:      # data comes from the PDF!
+            if not spad.fromjson:                # data comes from the PDF!
                 tit = tit.decode("utf-8","ignore")
             pno = z[2]
             if len(z) > 3:
@@ -535,14 +535,6 @@ class PDFDialog (wx.Dialog):
                             defPos, defSiz, 0)
         self.metagrid.Add(tx_eindat, 0, wx.LEFT, 5)
 
-        tx_encoding = wx.StaticText(self, wx.ID_ANY, "Encoding:",
-                            defPos, defSiz, 0)
-        self.metagrid.Add(tx_encoding, 0, wx.ALIGN_RIGHT, 5)
-
-        self.encoding = wx.TextCtrl(self, wx.ID_ANY, ENCODING,
-                       defPos, defSiz, wx.NO_BORDER)
-        self.metagrid.Add(self.encoding, 0, wx.LEFT, 5)
-
         tx_autor = wx.StaticText(self, wx.ID_ANY, "Author:",
                          defPos, defSiz, 0)
         self.metagrid.Add(tx_autor, 0, wx.ALIGN_RIGHT, 5)
@@ -769,7 +761,7 @@ class PDFDialog (wx.Dialog):
 
     def auto_save(self):
         f_toc = open(spad.file + ".json", "w")
-        d = {"encoding": self.encoding.Value, "toc": self.tocgrid.Table.data,
+        d = {"toc": self.tocgrid.Table.data,
              "author": self.ausaut.Value, "title": self.austit.Value,
              "subject": self.aussub.Value, "keywords": self.keywords.Value}
         json.dump(d, f_toc)
@@ -824,6 +816,7 @@ def PicRefresh(dlg, seite):
 def DisableOK():
     dlg.szr40OK.Disable()
     dlg.msg.Label = "Data have changed. Check them to enable SAVE button."
+    spad.grid_changed = True
     if spad.lastsave < 0.0:
         spad.lastsave = 1.0
 
@@ -837,17 +830,18 @@ def getPDFinfo():
         if spad.doc.isEncrypted:
             return True
     spad.seiten = spad.doc.pageCount
-    m = {"author":"", "title":"", "subject":""}
-    for key, wert in spad.doc.metadata.items():
-        m[key] = wert.decode("utf-8", "ignore") if wert else ""
+    spad.meta = {"author":"", "title":"", "subject":""}
 
-    spad.meta = m
+    for key, wert in spad.doc.metadata.items():
+        spad.meta[key] = wert.decode("utf-8", "ignore") if wert else ""
+
+    spad.fromjson = False
     spad.inhalt = spad.doc.getToC(simple = False)
     tocfile = spad.file + ".json"
     if os.path.exists(tocfile):
         d = wx.MessageDialog(None,
-             "A saved Table-Of-Contents exists for this PDF - Use it instead?",
-             "ToC available from previous edit session",
+             "Saved data exist for this PDF - Use them instead?",
+             "Input available from previous edit session",
              wx.YES_NO | wx.ICON_QUESTION)
         rc = d.ShowModal()
         d.Destroy()
@@ -857,13 +851,18 @@ def getPDFinfo():
                 f_toc = open(tocfile)
                 d = json.load(f_toc)
                 f_toc.close()
-                spad.encoding         = d["encoding"]
+                spad.fromjson         = True
                 spad.inhalt           = d["toc"]
                 spad.meta["author"]   = d["author"]
                 spad.meta["title"]    = d["title"]
                 spad.meta["subject"]  = d["subject"]
                 spad.meta["keywords"] = d["keywords"]
             except:
+                d = wx.MessageDialog(None, "Ignoring saved data",
+                      "Invalid input from previous session")
+                d.ShowModal()
+                d.Destroy()
+                d = None
                 pass
         else:
             os.remove(tocfile)
@@ -928,19 +927,16 @@ def make_pdf(dlg):
     m["keywords"] = dlg.keywords.Value
 
     spad.doc.setMetadata(m)    # set new metadata
-    newtoc = []
-#==============================================================================
-# store our outline entries as bookmarks
-#==============================================================================
-    for z in dlg.tocgrid.Table.data:
-        lvl = int(z[0])
-        pno = int(z[2])
-        tit = z[1].strip()
-        #tit = tit.encode(ENCODING)
-        top = getint(z[3])
-        newtoc.append([lvl, tit, pno, top])
-
-    spad.doc.setToC(newtoc)
+    # store our outline entries as bookmarks
+    if spad.grid_changed:
+        newtoc = []
+        for z in dlg.tocgrid.Table.data:
+            lvl = int(z[0])
+            pno = int(z[2])
+            tit = z[1].strip()
+            top = getint(z[3])
+            newtoc.append([lvl, tit, pno, top])
+        spad.doc.setToC(newtoc)
 
     if outfile == spad.file:
         spad.doc.save(outfile, incremental=True)
