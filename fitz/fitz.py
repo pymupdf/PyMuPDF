@@ -98,7 +98,7 @@ except __builtin__.Exception:
 
 VersionFitz = "1.9a"          
 VersionBind = "1.9.1"         
-VersionDate = "2016-07-24 02:27:40"        
+VersionDate = "2016-07-27 10:17:10"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -112,13 +112,15 @@ class Document(_object):
     def __init__(self, *args):
         """
         __init__(fz_document_s self, char const * filename) -> Document
-        __init__(fz_document_s self, char const * filename, PyObject * stream) -> Document
+        __init__(fz_document_s self, char const * filetype, PyObject * stream) -> Document
         """
 
         filename = args[0]
         stream = None
         if len(args) > 1:
             stream = args[1]
+            if not type(stream) is bytearray:
+                raise ValueError("type(arg2) must be bytearray")
         if type(filename) == str:
             pass
         elif type(filename) == unicode:

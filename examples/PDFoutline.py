@@ -91,11 +91,20 @@ class ScratchPad():
         self.seiten = 0                  # max pages
         self.inhalt = []                 # table of contents storage
         self.file = None                 # pdf filename
-        self.oldpage = 0                 # stores displayed page number
+        self.oldpage = 0                 # stores last displayed page number
         self.fromjson = False            # autosaved input switch
         self.height = 0                  # store current page height
         self.lastsave = -1.0             # stores last save time
-        self.grid_changed = False        # did TOC change?
+        self.grid_changed = False        # any TOC changes?
+        self.timezone = "%s'%s'" % (str(time.timezone / 3600).rjust(2,"0"),
+                                    str((time.timezone / 60)%60).rjust(2, "0"))
+        if time.timezone > 0:
+            self.timezone = "-" + self.timezone
+        elif time.timezone < 0:
+            self.timezone = "+" + self.timezone
+        else:
+            self.timezone = ""
+
 
 #==============================================================================
 # render a PDF page and return its wx.Bitmap
@@ -904,15 +913,15 @@ def make_pdf(dlg):
 
     outfile = sdlg.GetPath()
     if spad.doc.needsPass or spad.doc.openErrCode:
-        title =  "Repaired / decrypted PDF requires a different output"
+        title =  "Repaired / decrypted PDF requires new output file"
         while outfile == spad.file:
             sdlg = wx.FileDialog(None, title, odir, "",
                                  "PDF files (*.pdf)|*.pdf", wx.FD_SAVE)
             if sdlg.ShowModal() == wx.ID_CANCEL:
                 return None
             outfile = sdlg.GetPath()
+    cdate = time.strftime("D:%Y%m%d%H%M%S",time.localtime()) + spad.timezone
 
-    cdate = wx.DateTime.Now().Format("D:%Y%m%d%H%M%S-04'00'")
     m = spad.meta
     if not m["creationDate"].startswith("D:"):
         m["creationDate"] = cdate

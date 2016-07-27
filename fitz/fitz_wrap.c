@@ -3581,16 +3581,17 @@ SWIGINTERN struct fz_document_s *new_fz_document_s__SWIG_0(char const *filename)
             }
             return doc;
         }
-SWIGINTERN struct fz_document_s *new_fz_document_s__SWIG_1(char const *filename,PyObject *stream){
+SWIGINTERN struct fz_document_s *new_fz_document_s__SWIG_1(char const *filetype,PyObject *stream){
             struct fz_document_s *doc = NULL;
             fz_stream *data = NULL;
             char *streamdata;
             size_t streamlen;
+
             fz_try(gctx) {
                 streamdata = PyByteArray_AsString(stream);
                 streamlen = (size_t) PyByteArray_Size(stream);
                 data = fz_open_memory(gctx, streamdata, streamlen);
-                doc = fz_open_document_with_stream(gctx, filename, data);
+                doc = fz_open_document_with_stream(gctx, filetype, data);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -10657,7 +10658,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { (char *)"new_Document", _wrap_new_Document, METH_VARARGS, (char *)"\n"
 		"Document(char const * filename)\n"
-		"new_Document(char const * filename, PyObject * stream) -> Document\n"
+		"new_Document(char const * filetype, PyObject * stream) -> Document\n"
 		""},
 	 { (char *)"Document_close", _wrap_Document_close, METH_VARARGS, (char *)"Document_close(Document self)"},
 	 { (char *)"Document_loadPage", _wrap_Document_loadPage, METH_VARARGS, (char *)"Document_loadPage(Document self, int number) -> Page"},

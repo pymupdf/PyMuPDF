@@ -62,6 +62,8 @@ struct fz_document_s {
             stream = None
             if len(args) > 1:
                 stream = args[1]
+                if not type(stream) is bytearray:
+                    raise ValueError("type(arg2) must be bytearray")
             if type(filename) == str:
                 pass
             elif type(filename) == unicode:
@@ -100,16 +102,17 @@ struct fz_document_s {
             return doc;
         }
 
-        fz_document_s(const char *filename, PyObject *stream) {
+        fz_document_s(const char *filetype, PyObject *stream) {
             struct fz_document_s *doc = NULL;
             fz_stream *data = NULL;
             char *streamdata;
             size_t streamlen;
+
             fz_try(gctx) {
                 streamdata = PyByteArray_AsString(stream);
                 streamlen = (size_t) PyByteArray_Size(stream);
                 data = fz_open_memory(gctx, streamdata, streamlen);
-                doc = fz_open_document_with_stream(gctx, filename, data);
+                doc = fz_open_document_with_stream(gctx, filetype, data);
             }
             fz_catch(gctx) {
                 return NULL;
