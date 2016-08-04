@@ -25,9 +25,13 @@ See the `Wiki <https://github.com/rk700/PyMuPDF/wiki>`_ for more info/news/relea
 Installation
 ============
 
-Normally it should be as easy as running ``python setup.py install`` once MuPDF is in place (i.e. its binaries have been built / generated or have been made available otherwise).
+Like v1.9.1, this version 1.9.2 is also based on MuPDF version 1.9a. Therefore, generating MuPDF is not required to make use of it.
 
-Refer to this `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
+If you had not previously installed MuPDF, you must first do this. This process highly depends on your system. For most platforms, MuPDF source contains prepared procedures on how to do this. Linux distributions usually also provide their own ways on how to install MuPDF. See below for more details.
+
+Once MuPDF is in place, installing PyMuPDF comes down to running the usual ``python setup.py install``.
+
+Also refer to this `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
 
 Arch Linux
 ----------
@@ -58,7 +62,7 @@ Usage
 
 Please have a look at the basic `demos <https://github.com/rk700/PyMuPDF/tree/master/demo>`_ or the `examples <https://github.com/rk700/PyMuPDF/tree/master/examples>`_ which contain complete, working programs.
 
-You can also access the complete documentation as a `PDF <https://github.com/rk700/PyMuPDF/tree/master/doc/PyMuPDF.pdf>`_ or as a `Windows compiled html <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm>`_.
+You can access the complete documentation (which contains a detailed tutorial) as a `PDF <https://github.com/rk700/PyMuPDF/tree/master/doc/PyMuPDF.pdf>`_, as a `Windows compiled html <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm>`_ or at `PyPI <http://pythonhosted.org/PyMuPDF/>`_.
 
 Legacy Support
 ==============
