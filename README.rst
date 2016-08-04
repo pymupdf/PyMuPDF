@@ -1,6 +1,7 @@
-PyMuPDF 1.9.1
+PyMuPDF 1.9.2
+==============
 
-Release date: May, 2016
+Release date: August, 2016
 
 Authors
 =======
@@ -12,7 +13,7 @@ Authors
 Introduction
 ============
 
-This is **version 1.9.1 of PyMuPDF (formerly python-fitz)**, a Python binding which supports `MuPDF 1.9a <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
+This is **version 1.9.2 of PyMuPDF (formerly python-fitz)**, a Python binding which supports `MuPDF 1.9a <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS and EPUB (e-book) formats, and it is known for its top performance and high rendering quality.
 
@@ -61,6 +62,8 @@ You can also access the complete documentation as a `PDF <https://github.com/rk7
 
 Legacy Support
 ==============
+* `PyMuPDF Version 1.9.1 <https://github.com/rk700/PyMuPDF/releases/tag/v1.9.1>`_
+
 * `Code compatible with MuPDF v1.8 <https://github.com/rk700/PyMuPDF/releases/tag/v1.8>`_
 
 * `Code compatible with MuPDF v1.7a <https://github.com/rk700/PyMuPDF/releases/tag/v1.7>`_
@@ -75,7 +78,7 @@ PyMuPDF is distributed under GNU GPL V3.
 Contact
 =======
 
-You can also find PyMuPDF on the Python Package Index `PyPI <https://pypi.python.org/pypi/PyMuPDF/1.9.1>`_.
+You can also find PyMuPDF on the Python Package Index `PyPI <https://pypi.python.org/pypi/PyMuPDF/1.9.2>`_.
 
 We invite you to join our efforts by contributing to the the wiki pages.
 
