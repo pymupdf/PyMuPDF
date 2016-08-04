@@ -52,7 +52,7 @@ Some :ref:`Document` Methods and Attributes
 
 Access Meta Data
 ========================
-:attr:`Document.metadata` is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_. Further information can also be found in chapter :ref:`Document`. The meta data fields are of type string if not otherwise indicated. Be aware that not all of them may be present or do contain meaningfull data.
+:attr:`Document.metadata` is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_. Further information can also be found in chapter :ref:`Document`. The meta data fields are of type string if not otherwise indicated. Be aware that not all of them may be present or do contain meaningful data.
 
 ============== ==============================
 **Key**        **Value**
@@ -166,7 +166,7 @@ Please also do have a look at the demo program ``demo.py``. Among others it cont
 
 Output
 =======
-Output capabilities of MuPDF (such as PDF generation) have improved in version 1.9. Output is supported for PDF documents only.
+Output capabilities of MuPDF (such as PDF generation) have improved in version 1.9. Output is supported for **PDF documents only**. Obviously, results of any of the following methods will become permanent only, if the PDF is saved. Just closing it is equivalent to cancelling such changes.
 
 Re-arrange and Delete Pages
 ----------------------------------
@@ -178,14 +178,27 @@ To make any such changes permanent, execute :meth:`Document.save()` (see below) 
 
 The saved document will contain all links, annotations and bookmarks referenced by its pages.
 
+Join PDF Documents
+-----------------------
+Method :meth:`Document.insertPDF()` inserts (part of) another PDF document at a specified place of the current one. Here are some examples:
+::
+ # append complete doc2 at the end of doc1
+ doc1.insertPDF(doc2)        # also appends doc2's table of content
+
+ # insert 5 pages of doc2, where source page 21 becomes page 15 in doc1
+ doc1.insertPDF(doc2, from_page = 21, to_page = 25, start_at = 15)
+
+ # same example, but source pages are inserted rotated and in reversed order
+ doc1.insertPDF(doc2, from_page = 25, to_page = 21, start_at = 15, rotate = 90)
+
 Save
 -------
 
 If the document had been successfully decrypted before, ``save()`` will automatically save a decrypted copy.
 
-If you altered the document via :meth:`Document.select()`, :meth:`Document.setToC()` or :meth:`Document.setMetadata()`, then the resulting document will be saved.
+If you altered the document via :meth:`Document.select()`, :meth:`Document.setToC()`, :meth:`Document.insertPDF()` or :meth:`Document.setMetadata()`, then the resulting document will be saved.
 
-Since MuPDF 1.9, you can also write changes back to the original file by specifying ``incremental = True``. This process is **extremely fast**, since any changes are **appended to the original file** - it will not be rewritten as a whole.
+Since MuPDF 1.9, you can also write changes **back to the original file** by specifying ``incremental = True``. This process is **extremely fast**, since any changes are **appended to the original file** - it will not be rewritten as a whole.
 
 As part of ``save()``, some clean-up will always take place:
 

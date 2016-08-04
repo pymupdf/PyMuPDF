@@ -26,6 +26,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 :meth:`Document.select`               PDF only: select a subset of pages
 :meth:`Document.setMetadata`          PDF only: set the metadata
 :meth:`Document.setToC`               PDF only: replace the table of contents (TOC)
+:meth:`Document.insertPDF`            insert a PDF's page range
 :attr:`Document.isClosed`             has document been closed?
 :attr:`Document.outline`              first `Outline` item
 :attr:`Document.name`                 filename of document
@@ -53,13 +54,13 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
     .. method:: __init__(self, filetype, stream)
 
-      Constructs a ``Document`` object from bytearray ``stream``.
+      Constructs a ``Document`` object from memory ``stream``.
 
       :param `filetype`: A string specifying the type of document contained in ``stream``. This may be either something that looks like a filename (e.g. ``x.pdf``), in which case MuPDF uses the extension to determine the type, or a mime type like ``application/pdf``. Recommended is using the filename scheme, or even the name of the original file for documentation purposes.
       :type `filetype`: string
 
-      :param `stream`: A bytearray representing the content of a supported document type.
-      :type `stream`: bytearray
+      :param `stream`: A memory area representing the content of a supported document type.
+      :type `stream`: bytearray, bytes or (Python 2 only) str
 
       :rtype: ``Document``
       :returns: A ``Document`` object.
@@ -219,6 +220,35 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       :rtype: int
       :returns: Zero upon successful execution.
+
+    .. method:: insertPDF(doc2, from_page = -1, to_page = -1, start_at = -1, rotate = -1, links = True)
+
+      PDF documents only: Copies the page range [from_page, to_page] (including both) of the PDF document object ``doc2`` into the current PDF. ``from_page`` will start with page number ``start_at``. All pages thus copied will be rotated as specified. Links can be excluded in the target. See details at explanations below.
+
+      :param `doc2`: An opened PDF document.
+      :type `doc2`: ``Document``
+
+      :param `from_page`: Zero-based page number in ``doc2`` to start with. Default is zero.
+      :type `from_page`: int
+
+      :param `to_page`: The last page number in ``doc2`` to copy. Default is the last page.
+      :type `to_page`: int
+
+      :param `start_at`: Page number ``from_page`` will become page ``start_at`` in the destination. If omitted, the page range will be appended. If zero, the page range will be inserted before current first page.
+      :type `start_at`: int
+
+      :param `rotate`: All copied pages will be rotated by the provided value (degrees). If you do not specify a value, the original will not be changed. This must be a (positive or negative) integer multiple of 90. The validity of this parameter will not be checked - it is your responsibility to provide meaningful values.
+      :type `rotate`: int
+
+      :param `links`: Choose whether links should be included with the copy. Default is ``True``.
+      :type `links`: bool
+
+      :rtype: int
+      :returns: Zero upon successful execution.
+
+    .. note:: Page range values may be specified **reversed**, i.e. ``from_page > to_page`` is valid. In this case pages will be copied back to front, starting with ``to_page``.
+
+    .. note:: The functionality of this method is a conversion of MuPDF's CLI utility ``mutool merge``. Due to current restrictions of this tool, ``doc2`` annotations will **not** be copied. However, relevant **links will be copied** (actually reconstructed), if ``links = True`` (default) and if they do not point to source pages outside the copied range. Bookmarks (table of contents) are copied if and only if the complete ``doc2`` is appended to the complete current document, like e.g. ``doc1.insertPDF(doc2)``. But look at the example program ``PDF_joiner.py``, which can join PDF documents and at the same time piece together respective parts of the tables of contents.
 
     .. method:: close()
 

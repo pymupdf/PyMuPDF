@@ -41,6 +41,7 @@ import fitz.utils
 # copy functions to their respective fitz classes
 fitz.open                   = fitz.Document
 fitz.Document.getToC        = fitz.utils.getToC
+fitz.Document._do_links     = fitz.utils.do_links
 fitz.Pages                  = fitz.utils.Pages
 fitz.Document.getPagePixmap = fitz.utils.getPagePixmap
 fitz.Document.getPageText   = fitz.utils.getPageText

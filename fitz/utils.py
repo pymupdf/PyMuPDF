@@ -289,8 +289,12 @@ The presence of other keys depends on this kind - see PyMuPDF's ducmentation for
     while ln:
         nl = {"kind":ln.dest.kind, "from": ln.rect}
         flags = bin(ln.dest.flags)[2:].rjust(8, "0")
-        if flags[6:] == "11":
-            nl["to"] = fitz.Point(ln.dest.lt.x, ln.dest.lt.y)
+        pnt = fitz.Point(0, 0)
+        if flags[7:] == "1":
+            pnt.x = ln.dest.lt.x
+        if flags[6:7] == "1":
+            pnt.y = ln.dest.lt.y
+        nl["to"] = pnt
 
         if ln.dest.kind == fitz.LINK_URI:
             nl["type"] = "uri"
@@ -354,8 +358,12 @@ and link destination (if simple = False). For details see PyMuPDF's documentatio
             if not simple:
                 link = {"kind": olItem.dest.kind}
                 flags = bin(olItem.dest.flags)[2:].rjust(8, "0")
-                if flags[6:] == "11":       # valid target top-left coordinate
-                    link["to"] = [round(olItem.dest.lt.x, 4), round(olItem.dest.lt.y, 4)]
+                pnt = fitz.Point(0, -1)
+                if flags[7:] == "1":
+                    pnt.x = olItem.dest.lt.x
+                if flags[6:7] == "1":
+                    pnt.y = olItem.dest.lt.y
+                link["to"] = [pnt.x, pnt.y]
                 page = olItem.dest.page + 1
                 if olItem.dest.kind == fitz.LINK_GOTO:
                     link["type"] = "goto"
@@ -1017,3 +1025,111 @@ def setToC(doc, toc):
 
     doc.initData()
     return toclen
+
+def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
+    '''Insert links contained in copied page range into destination PDF.
+    Parameter values **must** equal those of method insertPDF() - which must have been previously executed.'''
+    #--------------------------------------------------------------------------
+    # internal function to create the actual "/Annots" object string
+    #--------------------------------------------------------------------------
+    def cre_annot(lnk, xref_dst, list_src, height):
+        '''Create annotation object string for a passed-in link.'''
+
+        annot_goto ='''<</Dest[%s 0 R /XYZ %s %s 0]/Rect[%s]/Type/Annot
+    /Border[0 0 0]/Subtype/Link>>'''
+
+        annot_gotor = '''<</A<</D[%s /XYZ %s %s null]/F<</F(%s)/UF(%s)/Type/Filespec
+    >>/S/GoToR>>/Rect[%s]/Type/Annot/Border[0 0 0]/Subtype/Link>>'''
+
+        annot_launch = '''<</A<</F<</F(%s)/UF(%s)/Type/Filespec>>/S/Launch
+    >>/Rect[%s]/Type/Annot/Border[0 0 0]/Subtype/Link>>'''
+
+        annot_uri = '''<</A<</S/URI/URI(%s)/Type/Action>>/Rect[%s]
+    /Type/Annot/Border[0 0 0]/Subtype/Link>>'''
+
+        # "from" rectangle is always there. Note: y-coords are from bottom!
+        r = lnk["from"]
+        rect = "%s %s %s %s" % (str(round(r.x0, 4)),
+                                str(round(height - r.y0, 4)),   # correct y0
+                                str(round(r.x1, 4)),
+                                str(round(height - r.y1, 4)))   # correct y1
+        if lnk["type"] == "goto":
+            txt = annot_goto
+            idx = list_src.index(lnk["page"])
+            annot = txt % (str(xref_dst[idx]), str(round(lnk["to"].x, 4)),
+                           str(round(lnk["to"].y, 4)), rect)
+        elif lnk["type"] == "gotor":
+            txt = annot_gotor
+            annot = txt % (str(lnk["page"]), str(round(lnk["to"].x, 4)),
+                           str(round(lnk["to"].y, 4)),
+                           lnk["file"], lnk["file"],
+                           rect)
+        elif lnk["type"] == "launch":
+            txt = annot_launch
+            annot = txt % (lnk["file"], lnk["file"], rect)
+        elif lnk["type"] == "uri":
+            txt = annot_uri
+            annot = txt % (lnk["uri"], rect)
+        else:
+            annot = ""
+
+        return annot
+    #--------------------------------------------------------------------------
+
+    # normalize / validate parameters
+    if from_page < 0:
+        fp = 0
+    elif from_page >= doc2.pageCount:
+        from_page = doc2.page_count - 1
+    else:
+        fp = from_page
+
+    if to_page < 0 or to_page >= doc2.pageCount:
+        tp = doc2.pageCount - 1
+    else:
+        tp = to_page
+
+    if start_at < 0:
+        raise ValueError("do_links: 'start_at' arg must be >= 0")
+    sa = start_at
+
+    incr = 1 if fp <= tp else -1            # page range could be reversed
+    # lists of source / destination page numbers
+    list_src = list(range(fp, tp + incr, incr))
+    list_dst = [sa + i for i in range(len(list_src))]
+    # lists of source / destination page xref numbers
+    xref_src = []
+    xref_dst = []
+    for i in range(len(list_src)):
+        p_src = list_src[i]
+        p_dst = list_dst[i]
+        old_xref = doc2._getPageObjNumber(p_src)[0]
+        new_xref = doc1._getPageObjNumber(p_dst)[0]
+        xref_src.append(old_xref)
+        xref_dst.append(new_xref)
+
+    # create /Annots per page in destination PDF
+    for i in range(len(xref_src)):
+        page = doc2.loadPage(list_src[i])
+        height = page.bound().y1
+        links = page.getLinks()
+        p_annots = ""
+        p_txt = doc1._getObjectString(xref_dst[i])
+        #print "checking page", list_dst[i], xref_dst[i]
+        for l in links:
+            if l["type"] == "goto" and (l["page"] not in list_src):
+                continue
+            annot_text = cre_annot(l, xref_dst, list_src, height)
+            if not annot_text:
+                raise ValueError("cannot create /Annot for type: " + l["type"])
+            annot_xref = doc1._getNewXref()
+            doc1._updateObject(annot_xref, annot_text)
+            #print "created annot:", annot_xref, "\n", annot_text
+            p_annots += str(annot_xref) + " 0 R "
+        if p_annots:
+            p_annots = "/Annots[" + p_annots + "]"
+            p_txt = p_txt[:-2] + p_annots + ">>"
+            doc1._updateObject(xref_dst[i], p_txt)
+            #print "updated page with:\n", p_txt
+
+    return

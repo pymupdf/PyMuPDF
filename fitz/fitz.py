@@ -98,7 +98,7 @@ except __builtin__.Exception:
 
 VersionFitz = "1.9a"          
 VersionBind = "1.9.1"         
-VersionDate = "2016-07-27 10:17:10"        
+VersionDate = "2016-08-03 16:04:13"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -109,18 +109,9 @@ class Document(_object):
     __getattr__ = lambda self, name: _swig_getattr(self, Document, name)
     __repr__ = _swig_repr
 
-    def __init__(self, *args):
-        """
-        __init__(fz_document_s self, char const * filename) -> Document
-        __init__(fz_document_s self, char const * filetype, PyObject * stream) -> Document
-        """
+    def __init__(self, filename, stream=None):
+        """__init__(fz_document_s self, char const * filename, PyObject * stream=None) -> Document"""
 
-        filename = args[0]
-        stream = None
-        if len(args) > 1:
-            stream = args[1]
-            if not type(stream) is bytearray:
-                raise ValueError("type(arg2) must be bytearray")
         if type(filename) == str:
             pass
         elif type(filename) == unicode:
@@ -138,15 +129,15 @@ class Document(_object):
 
 
 
-        this = _fitz.new_Document(*args)
+        this = _fitz.new_Document(filename, stream)
         try:
             self.this.append(this)
         except __builtin__.Exception:
             self.this = this
 
         if this:
-            self.openErrCode = self._getGCTXerrcode();
-            self.openErrMsg  = self._getGCTXerrmsg();
+            self.openErrCode = self._getGCTXerrcode()
+            self.openErrMsg  = self._getGCTXerrmsg()
         if this and self.needsPass:
             self.isEncrypted = 1
         # we won't init encrypted doc until it is decrypted
@@ -280,19 +271,57 @@ class Document(_object):
             raise TypeError("filename must be a string")
         if filename == self.name and incremental == 0:
             raise ValueError("cannot save to input file")
-        if not self.name.lower().endswith(("/pdf", ".pdf")):
+        if not self.name.lower().endswith("pdf"):
             raise ValueError("can only save PDF files")
         if incremental and (self.name != filename or self.streamlen > 0):
             raise ValueError("incremental save to original file only")
         if incremental and (garbage > 0 or linear > 0):
             raise ValueError("incremental excludes garbage and linear")
         if incremental and self.openErrCode > 0:
-            raise ValueError("error '%s' during open - save to new file" % (self.openErrMsg,))
+            raise ValueError("open error '%s' - save to new file" % (self.openErrMsg,))
         if incremental and self.needsPass > 0:
-            raise ValueError("decrypted files must be saved to new file")
+            raise ValueError("decrypted - save to new file")
 
 
         return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear)
+
+
+    def insertPDF(self, docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=1):
+        """
+        insertPDF(PDFsrc, from_page, to_page, start_at, rotate, links) -> int
+        Insert page range [from, to] of source PDF, starting as page number start_at.
+        """
+
+        sa = start_at
+        fp = from_page
+        tp = to_page
+        if sa < 0:
+            sa = self.pageCount
+        if fp <= 0:
+            fp = 0
+        if tp <= 0 or tp >= docsrc.pageCount:
+            tp = docsrc.pageCount - 1
+
+        newtoc = (0 == fp <= tp == docsrc.pageCount-1) and sa == self.pageCount
+
+        if newtoc:
+            toc1 = self.getToC(simple = False)
+            toc2 = docsrc.getToC(simple = False)
+            for t in toc2:
+                t[2] = t[2] + sa
+            toc = toc1 + toc2
+
+
+        val = _fitz.Document_insertPDF(self, docsrc, from_page, to_page, start_at, rotate, links)
+
+        if links:
+            self._do_links(docsrc, from_page=from_page, to_page = to_page,
+                           start_at = sa)
+        if newtoc:
+            self.setToC(toc)
+
+
+        return val
 
 
     def select(self, pyliste):
@@ -374,6 +403,21 @@ class Document(_object):
     def _getNewXref(self):
         """_getNewXref(Document self) -> int"""
         return _fitz.Document__getNewXref(self)
+
+
+    def _getXrefLength(self):
+        """_getXrefLength(Document self) -> int"""
+        return _fitz.Document__getXrefLength(self)
+
+
+    def _getObjectString(self, xnum):
+        """_getObjectString(Document self, int xnum) -> struct fz_buffer_s *"""
+        return _fitz.Document__getObjectString(self, xnum)
+
+
+    def _delObject(self, num):
+        """_delObject(Document self, int num) -> int"""
+        return _fitz.Document__delObject(self, num)
 
 
     def _updateObject(self, xref, text):

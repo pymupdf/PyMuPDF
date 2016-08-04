@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Changes in Version 1.9.1 &mdash; PyMuPDF 1.9.1 documentation</title>
+    <title>Changes in Version 1.9.2 &mdash; PyMuPDF 1.9.1 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -45,6 +45,12 @@
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Changes in Version 1.9.2</a></li>
+<li><a class="reference internal" href="#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="intro.html"
                         title="previous chapter">Introduction</a></p>
@@ -76,11 +82,19 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="changes-in-version-1-9-1">
-<h1>Changes in Version 1.9.1<a class="headerlink" href="#changes-in-version-1-9-1" title="Permalink to this headline">¶</a></h1>
-<p>This version of PyMuPDF is based on MuPDF library source code version 1.9a published on April 21, 2016.</p>
+  <p>This version of PyMuPDF is based on MuPDF library source code version 1.9a published on April 21, 2016.</p>
 <p>Please have a look at MuPDF&#8217;s website to see which changes and enhancements are contained herein.</p>
-<p>Changes in these bindings compared to version 1.8.0 are the following:</p>
+<div class="section" id="changes-in-version-1-9-2">
+<h1>Changes in Version 1.9.2<a class="headerlink" href="#changes-in-version-1-9-2" title="Permalink to this headline">¶</a></h1>
+<p>Changes compared to version 1.9.1:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">fitz.open()</span></code> now accepts all of the formats <code class="docutils literal"><span class="pre">open(filename)</span></code>, <code class="docutils literal"><span class="pre">open(filename,</span> <span class="pre">None)</span></code>, <code class="docutils literal"><span class="pre">open(filetype,</span> <span class="pre">stream)</span></code>. Type of memory area <code class="docutils literal"><span class="pre">stream</span></code> may be <code class="docutils literal"><span class="pre">str</span></code> (Python 2), <code class="docutils literal"><span class="pre">bytes</span></code> (Python 3) or <code class="docutils literal"><span class="pre">bytearray</span></code> (Python 2 and 3).</li>
+<li>New method <code class="docutils literal"><span class="pre">Document.insertPDF()</span></code> (PDFs only) inserts a range of pages of another PDF.</li>
+</ul>
+</div>
+<div class="section" id="changes-in-version-1-9-1">
+<h1>Changes in Version 1.9.1<a class="headerlink" href="#changes-in-version-1-9-1" title="Permalink to this headline">¶</a></h1>
+<p>Changes compared to version 1.8.0:</p>
 <ul class="simple">
 <li>New methods <code class="docutils literal"><span class="pre">getRectArea()</span></code> for both <code class="docutils literal"><span class="pre">fitz.Rect</span></code> and <code class="docutils literal"><span class="pre">fitz.IRect</span></code></li>
 <li>Pixmaps can now be created directly from files using the new constructor <code class="docutils literal"><span class="pre">fitz.Pixmap(filename)</span></code>.</li>
@@ -130,7 +144,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 22. Jul 2016.
+      Last updated on 03. Aug 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

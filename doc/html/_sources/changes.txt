@@ -2,14 +2,22 @@
 
     PageBreak
 
-=========================
-Changes in Version 1.9.1
-=========================
 This version of PyMuPDF is based on MuPDF library source code version 1.9a published on April 21, 2016.
 
 Please have a look at MuPDF's website to see which changes and enhancements are contained herein.
 
-Changes in these bindings compared to version 1.8.0 are the following:
+Changes in Version 1.9.2
+=========================
+Changes compared to version 1.9.1:
+
+* ``fitz.open()`` now accepts all of the formats ``open(filename)``, ``open(filename, None)``, ``open(filetype, stream)``. Type of memory area ``stream`` may be ``str`` (Python 2), ``bytes`` (Python 3) or ``bytearray`` (Python 2 and 3).
+
+* New method ``Document.insertPDF()`` (PDFs only) inserts a range of pages of another PDF.
+
+
+Changes in Version 1.9.1
+=========================
+Changes compared to version 1.8.0:
 
 * New methods ``getRectArea()`` for both ``fitz.Rect`` and ``fitz.IRect``
 * Pixmaps can now be created directly from files using the new constructor ``fitz.Pixmap(filename)``.

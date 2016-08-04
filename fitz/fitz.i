@@ -58,12 +58,6 @@ struct fz_document_s {
             }
         }
         %pythonprepend fz_document_s %{
-            filename = args[0]
-            stream = None
-            if len(args) > 1:
-                stream = args[1]
-                if not type(stream) is bytearray:
-                    raise ValueError("type(arg2) must be bytearray")
             if type(filename) == str:
                 pass
             elif type(filename) == unicode:
@@ -82,8 +76,8 @@ struct fz_document_s {
         %}
         %pythonappend fz_document_s %{
             if this:
-                self.openErrCode = self._getGCTXerrcode();
-                self.openErrMsg  = self._getGCTXerrmsg();
+                self.openErrCode = self._getGCTXerrcode()
+                self.openErrMsg  = self._getGCTXerrmsg()
             if this and self.needsPass:
                 self.isEncrypted = 1
             # we won't init encrypted doc until it is decrypted
@@ -91,28 +85,27 @@ struct fz_document_s {
                 self.initData()
                 self.thisown = False
         %}
-        fz_document_s(const char *filename) {
-            struct fz_document_s *doc = NULL;
-            fz_try(gctx) {
-                doc = fz_open_document(gctx, filename);
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            return doc;
-        }
 
-        fz_document_s(const char *filetype, PyObject *stream) {
+        fz_document_s(const char *filename, PyObject *stream=NULL) {
             struct fz_document_s *doc = NULL;
             fz_stream *data = NULL;
             char *streamdata;
-            size_t streamlen;
-
-            fz_try(gctx) {
+            size_t streamlen = 0;
+            if (PyByteArray_Check(stream)){
                 streamdata = PyByteArray_AsString(stream);
                 streamlen = (size_t) PyByteArray_Size(stream);
-                data = fz_open_memory(gctx, streamdata, streamlen);
-                doc = fz_open_document_with_stream(gctx, filetype, data);
+            }
+            if (PyBytes_Check(stream)){
+                streamdata = PyBytes_AsString(stream);
+                streamlen = (size_t) PyBytes_Size(stream);
+            }
+
+            fz_try(gctx) {
+                if (streamlen > 0){
+                    data = fz_open_memory(gctx, streamdata, streamlen);
+                    doc = fz_open_document_with_stream(gctx, filename, data);
+                }
+                else doc = fz_open_document(gctx, filename);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -252,16 +245,16 @@ struct fz_document_s {
                 raise TypeError("filename must be a string")
             if filename == self.name and incremental == 0:
                 raise ValueError("cannot save to input file")
-            if not self.name.lower().endswith(("/pdf", ".pdf")):
+            if not self.name.lower().endswith("pdf"):
                 raise ValueError("can only save PDF files")
             if incremental and (self.name != filename or self.streamlen > 0):
                 raise ValueError("incremental save to original file only")
             if incremental and (garbage > 0 or linear > 0):
                 raise ValueError("incremental excludes garbage and linear")
             if incremental and self.openErrCode > 0:
-                raise ValueError("error '%s' during open - save to new file" % (self.openErrMsg,))
+                raise ValueError("open error '%s' - save to new file" % (self.openErrMsg,))
             if incremental and self.needsPass > 0:
-                raise ValueError("decrypted files must be saved to new file")
+                raise ValueError("decrypted - save to new file")
         %}
         %exception save {
             $action
@@ -275,7 +268,7 @@ struct fz_document_s {
         int save(char *filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) {
             /* cast-down fz_document to a pdf_document */
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            if (!pdf) return -2;             // not a valid pdf structure, return
+            if (!pdf) return -2;                 /* not a valid pdf structure */
             int errors = 0;
             pdf_write_options opts;
             opts.do_incremental = incremental;
@@ -292,12 +285,86 @@ struct fz_document_s {
             fz_catch(gctx) {
                 return gctx->error->errcode;
             }
-            return errors;
+            return 0;
+        }
+
+
+/*******************************************************************************
+Insert pages from a source PDF to this PDF
+*******************************************************************************/
+        %pythonprepend insertPDF %{
+            sa = start_at
+            fp = from_page
+            tp = to_page
+            if sa < 0:
+                sa = self.pageCount
+            if fp <= 0:
+                fp = 0
+            if tp <= 0 or tp >= docsrc.pageCount:
+                tp = docsrc.pageCount - 1
+
+            newtoc = (0 == fp <= tp == docsrc.pageCount-1) and sa == self.pageCount
+            
+            if newtoc:
+                toc1 = self.getToC(simple = False)
+                toc2 = docsrc.getToC(simple = False)
+                for t in toc2:
+                    t[2] = t[2] + sa
+                toc = toc1 + toc2
+        %}
+        
+        %pythonappend insertPDF %{
+            if links:
+                self._do_links(docsrc, from_page=from_page, to_page = to_page,
+                               start_at = sa)
+            if newtoc:
+                self.setToC(toc)
+        %}
+
+        %exception insertPDF {
+            $action
+            if(result < 0) {
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_ValueError, value);
+                return NULL;
+            }
+        }
+        %feature("autodoc","insertPDF(PDFsrc, from_page, to_page, start_at, rotate, links) -> int\nInsert page range [from, to] of source PDF, starting as page number start_at.") insertPDF;
+
+        int insertPDF(struct fz_document_s *docsrc, int from_page=-1, int to_page=-1, int start_at=-1, int rotate=-1, int links = 1) {
+            pdf_document *pdfout = pdf_specifics(gctx, $self);
+            pdf_document *pdfsrc = pdf_specifics(gctx, docsrc);
+            int outCount = fz_count_pages(gctx, $self);
+            int srcCount = fz_count_pages(gctx, docsrc);
+            int fp, tp, sa;
+            /* local copy of page specifications */
+            fp = from_page;
+            tp = to_page;
+            sa = start_at;
+            /* normalize page specifications */
+            if (fp < 0) fp = 0;
+            if (fp > srcCount - 1) fp = srcCount - 1;
+            if (tp < 0) tp = srcCount - 1;
+            if (tp > srcCount - 1) tp = srcCount - 1;
+            if (sa < 0) sa = outCount;
+            if (sa > outCount) sa = outCount;
+            fz_try(gctx) {
+                if (pdfout == NULL)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "target is not a PDF document");
+                if (pdfsrc == NULL)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "source is not a PDF document");
+                merge_range(pdfout, pdfsrc, fp, tp, sa, rotate);
+            }
+            fz_catch(gctx){
+                return -1;
+            }
+            return 0;
         }
 
 /*******************************************************************************
 Reduce document to keep only selected pages
-Parameter is a Python list / tuple of integers (wanted page numbers).
+Parameter is a Python list / tuple of integers (the wanted page numbers).
 *******************************************************************************/
         %exception select {
             $action
@@ -574,6 +641,92 @@ Get New Xref Number
                 return -2;
             }
             return pdf_create_object(gctx, pdf);
+        }
+
+/*******************************************************************************
+Get Length of Xref
+*******************************************************************************/
+        %exception _getXrefLength {
+            $action
+            if(result < 0) {
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_ValueError, value);
+                return NULL;
+            }
+        }
+
+        int _getXrefLength()
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
+            fz_try(gctx) {
+                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+            }
+            fz_catch(gctx) {
+                return -2;
+            }
+            return pdf_xref_len(gctx, pdf);
+        }
+
+/*******************************************************************************
+Get Object String by Xref Number
+*******************************************************************************/
+        %exception _getObjectString {
+            $action
+            if(!result) {
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_ValueError, value);
+                return NULL;
+            }
+        }
+
+        struct fz_buffer_s *_getObjectString(int xnum)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
+            pdf_obj *obj;
+            struct fz_buffer_s *res = NULL;
+            fz_output *out;
+            fz_try(gctx) {
+                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                res = fz_new_buffer(gctx, 1024);
+                out = fz_new_output_with_buffer(gctx, res);
+                obj = pdf_load_object(gctx, pdf, xnum, 0);
+                pdf_print_obj(gctx, out, pdf_resolve_indirect(gctx, obj), 1);
+            }
+            fz_always(gctx) {
+                if (obj) pdf_drop_obj(gctx, obj);
+                if (out) fz_drop_output(gctx, out);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return res;
+        }
+
+/*******************************************************************************
+Delete Object by Xref Number
+*******************************************************************************/
+        %exception _delObject {
+            $action
+            if(result < 0) {
+                char *value;
+                value = gctx->error->message;
+                PyErr_SetString(PyExc_ValueError, value);
+                return NULL;
+            }
+        }
+
+        int _delObject(int num)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
+            fz_try(gctx) {
+                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+            }
+            fz_catch(gctx) {
+                return -2;
+            }
+            return pdf_xref_len(gctx, pdf);
         }
 
 /*******************************************************************************
@@ -1012,21 +1165,25 @@ struct fz_pixmap_s
         }
 
         /******************************************/
-        /* create a pixmap from a bytearray       */
+        /* create a pixmap from bytes / bytearray */
         /******************************************/
         fz_pixmap_s(PyObject *imagedata) {
             size_t size;
+            size = 0;
             char *data;
-            fz_try(gctx) {
+            if (PyByteArray_Check(imagedata)){
                 data = PyByteArray_AsString(imagedata);
                 size = (size_t) PyByteArray_Size(imagedata);
-                }
-            fz_catch(gctx) {
-                return NULL;
-                }
+            }
+            if (PyBytes_Check(imagedata)){
+                data = PyBytes_AsString(imagedata);
+                size = (size_t) PyBytes_Size(imagedata);
+            }
             struct fz_image_s *img = NULL;
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx) {
+                if (size == 0)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "invalid argument type imagedata");
                 img = fz_new_image_from_data(gctx, data, size);
                 pm = fz_get_pixmap_from_image(gctx, img, -1, -1);
                 }

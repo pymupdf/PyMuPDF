@@ -64,6 +64,7 @@
 </li>
 <li><a class="reference internal" href="#output">Output</a><ul>
 <li><a class="reference internal" href="#re-arrange-and-delete-pages">Re-arrange and Delete Pages</a></li>
+<li><a class="reference internal" href="#join-pdf-documents">Join PDF Documents</a></li>
 <li><a class="reference internal" href="#save">Save</a></li>
 </ul>
 </li>
@@ -166,7 +167,7 @@
 </div>
 <div class="section" id="access-meta-data">
 <h2>Access Meta Data<a class="headerlink" href="#access-meta-data" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="document.html#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a> is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. <a class="reference external" href="http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf">Adobe PDF Reference sixth edition 1.7 November 2006</a>. Further information can also be found in chapter <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a>. The meta data fields are of type string if not otherwise indicated. Be aware that not all of them may be present or do contain meaningfull data.</p>
+<p><a class="reference internal" href="document.html#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a> is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. <a class="reference external" href="http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf">Adobe PDF Reference sixth edition 1.7 November 2006</a>. Further information can also be found in chapter <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a>. The meta data fields are of type string if not otherwise indicated. Be aware that not all of them may be present or do contain meaningful data.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="32%" />
@@ -299,7 +300,7 @@ You can write it&#8217;s image to files, extract text from it or search for text
 </div>
 <div class="section" id="output">
 <h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
-<p>Output capabilities of MuPDF (such as PDF generation) have improved in version 1.9. Output is supported for PDF documents only.</p>
+<p>Output capabilities of MuPDF (such as PDF generation) have improved in version 1.9. Output is supported for <strong>PDF documents only</strong>. Obviously, results of any of the following methods will become permanent only, if the PDF is saved. Just closing it is equivalent to cancelling such changes.</p>
 <div class="section" id="re-arrange-and-delete-pages">
 <h3>Re-arrange and Delete Pages<a class="headerlink" href="#re-arrange-and-delete-pages" title="Permalink to this headline">¶</a></h3>
 <p>Method <a class="reference internal" href="document.html#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a> accepts a list of integers as argument. These integers must be in the range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>. When executed, all pages not occurring in this list will be deleted. Pages that do occur will remain - <strong>in the sequence specified and as many times as specified</strong>.</p>
@@ -307,11 +308,25 @@ You can write it&#8217;s image to files, extract text from it or search for text
 <p>To make any such changes permanent, execute <a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> (see below) and then close / re-open the original document for any further processing.</p>
 <p>The saved document will contain all links, annotations and bookmarks referenced by its pages.</p>
 </div>
+<div class="section" id="join-pdf-documents">
+<h3>Join PDF Documents<a class="headerlink" href="#join-pdf-documents" title="Permalink to this headline">¶</a></h3>
+<p>Method <a class="reference internal" href="document.html#Document.insertPDF" title="Document.insertPDF"><code class="xref py py-meth docutils literal"><span class="pre">Document.insertPDF()</span></code></a> inserts (part of) another PDF document at a specified place of the current one. Here are some examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span class="c"># append complete doc2 at the end of doc1</span>
+<span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">)</span>        <span class="c"># also appends doc2&#39;s table of content</span>
+
+<span class="c"># insert 5 pages of doc2, where source page 21 becomes page 15 in doc1</span>
+<span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">from_page</span> <span class="o">=</span> <span class="mi">21</span><span class="p">,</span> <span class="n">to_page</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">start_at</span> <span class="o">=</span> <span class="mi">15</span><span class="p">)</span>
+
+<span class="c"># same example, but source pages are inserted rotated and in reversed order</span>
+<span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">from_page</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">to_page</span> <span class="o">=</span> <span class="mi">21</span><span class="p">,</span> <span class="n">start_at</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span> <span class="n">rotate</span> <span class="o">=</span> <span class="mi">90</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="save">
 <h3>Save<a class="headerlink" href="#save" title="Permalink to this headline">¶</a></h3>
 <p>If the document had been successfully decrypted before, <code class="docutils literal"><span class="pre">save()</span></code> will automatically save a decrypted copy.</p>
-<p>If you altered the document via <a class="reference internal" href="document.html#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a>, <a class="reference internal" href="document.html#Document.setToC" title="Document.setToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.setToC()</span></code></a> or <a class="reference internal" href="document.html#Document.setMetadata" title="Document.setMetadata"><code class="xref py py-meth docutils literal"><span class="pre">Document.setMetadata()</span></code></a>, then the resulting document will be saved.</p>
-<p>Since MuPDF 1.9, you can also write changes back to the original file by specifying <code class="docutils literal"><span class="pre">incremental</span> <span class="pre">=</span> <span class="pre">True</span></code>. This process is <strong>extremely fast</strong>, since any changes are <strong>appended to the original file</strong> - it will not be rewritten as a whole.</p>
+<p>If you altered the document via <a class="reference internal" href="document.html#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a>, <a class="reference internal" href="document.html#Document.setToC" title="Document.setToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.setToC()</span></code></a>, <a class="reference internal" href="document.html#Document.insertPDF" title="Document.insertPDF"><code class="xref py py-meth docutils literal"><span class="pre">Document.insertPDF()</span></code></a> or <a class="reference internal" href="document.html#Document.setMetadata" title="Document.setMetadata"><code class="xref py py-meth docutils literal"><span class="pre">Document.setMetadata()</span></code></a>, then the resulting document will be saved.</p>
+<p>Since MuPDF 1.9, you can also write changes <strong>back to the original file</strong> by specifying <code class="docutils literal"><span class="pre">incremental</span> <span class="pre">=</span> <span class="pre">True</span></code>. This process is <strong>extremely fast</strong>, since any changes are <strong>appended to the original file</strong> - it will not be rewritten as a whole.</p>
 <p>As part of <code class="docutils literal"><span class="pre">save()</span></code>, some clean-up will always take place:</p>
 <p>If the document containes invalid or broken xrefs, the saved version will have them automatically corrected (thus making it readable by other Python PDF software, like <a class="reference external" href="https://github.com/pmaupin/pdfrw">pdfrw</a> or <a class="reference external" href="http://mstamy2.github.io/PyPDF2">PyPDF2</a>). In many cases, the saved copy will also be smaller than the original.</p>
 <p><a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> supports all options of MuPDF&#8217;s command line utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>, see the following table (mutool clean option = &#8220;MCO&#8221;).</p>
@@ -461,7 +476,7 @@ You can write it&#8217;s image to files, extract text from it or search for text
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 22. Jul 2016.
+      Last updated on 03. Aug 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

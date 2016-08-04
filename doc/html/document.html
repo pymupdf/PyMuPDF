@@ -137,31 +137,34 @@
 <tr class="row-even"><td><a class="reference internal" href="#Document.setToC" title="Document.setToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.setToC()</span></code></a></td>
 <td>PDF only: replace the table of contents (TOC)</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><code class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.insertPDF" title="Document.insertPDF"><code class="xref py py-meth docutils literal"><span class="pre">Document.insertPDF()</span></code></a></td>
+<td>insert a PDF&#8217;s page range</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><code class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></code></a></td>
 <td>has document been closed?</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><code class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><code class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></code></a></td>
 <td>first <cite>Outline</cite> item</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.name" title="Document.name"><code class="xref py py-attr docutils literal"><span class="pre">Document.name</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.name" title="Document.name"><code class="xref py py-attr docutils literal"><span class="pre">Document.name</span></code></a></td>
 <td>filename of document</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.openErrCode" title="Document.openErrCode"><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrCode</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.openErrCode" title="Document.openErrCode"><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrCode</span></code></a></td>
 <td>&gt; 0 if repair occurred during open</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.openErrMsg" title="Document.openErrMsg"><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrMsg</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.openErrMsg" title="Document.openErrMsg"><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrMsg</span></code></a></td>
 <td>last error message if openErrCode &gt; 0</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
 <td>require password to access data?</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.isEncrypted" title="Document.isEncrypted"><code class="xref py py-attr docutils literal"><span class="pre">Document.isEncrypted</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.isEncrypted" title="Document.isEncrypted"><code class="xref py py-attr docutils literal"><span class="pre">Document.isEncrypted</span></code></a></td>
 <td>document still encrypted?</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
 <td>number of pages</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
 <td>metadata</td>
 </tr>
 </tbody>
@@ -191,14 +194,14 @@
 <dl class="method">
 <dt>
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>filetype</em>, <em>stream</em><span class="sig-paren">)</span></dt>
-<dd><p>Constructs a <code class="docutils literal"><span class="pre">Document</span></code> object from bytearray <code class="docutils literal"><span class="pre">stream</span></code>.</p>
+<dd><p>Constructs a <code class="docutils literal"><span class="pre">Document</span></code> object from memory <code class="docutils literal"><span class="pre">stream</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>filetype</strong> (<em>string</em>) &#8211; A string specifying the type of document contained in <code class="docutils literal"><span class="pre">stream</span></code>. This may be either something that looks like a filename (e.g. <code class="docutils literal"><span class="pre">x.pdf</span></code>), in which case MuPDF uses the extension to determine the type, or a mime type like <code class="docutils literal"><span class="pre">application/pdf</span></code>. Recommended is using the filename scheme, or even the name of the original file for documentation purposes.</li>
-<li><strong>stream</strong> (<em>bytearray</em>) &#8211; A bytearray representing the content of a supported document type.</li>
+<li><strong>stream</strong> (<em>bytearray, bytes or (Python 2 only) str</em>) &#8211; A memory area representing the content of a supported document type.</li>
 </ul>
 </td>
 </tr>
@@ -428,6 +431,42 @@
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="Document.insertPDF">
+<code class="descname">insertPDF</code><span class="sig-paren">(</span><em>doc2</em>, <em>from_page = -1</em>, <em>to_page = -1</em>, <em>start_at = -1</em>, <em>rotate = -1</em>, <em>links = True</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.insertPDF" title="Permalink to this definition">¶</a></dt>
+<dd><p>PDF documents only: Copies the page range [from_page, to_page] (including both) of the PDF document object <code class="docutils literal"><span class="pre">doc2</span></code> into the current PDF. <code class="docutils literal"><span class="pre">from_page</span></code> will start with page number <code class="docutils literal"><span class="pre">start_at</span></code>. All pages thus copied will be rotated as specified. Links can be excluded in the target. See details at explanations below.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>doc2</strong> (<code class="docutils literal"><span class="pre">Document</span></code>) &#8211; An opened PDF document.</li>
+<li><strong>from_page</strong> (<em>int</em>) &#8211; Zero-based page number in <code class="docutils literal"><span class="pre">doc2</span></code> to start with. Default is zero.</li>
+<li><strong>to_page</strong> (<em>int</em>) &#8211; The last page number in <code class="docutils literal"><span class="pre">doc2</span></code> to copy. Default is the last page.</li>
+<li><strong>start_at</strong> (<em>int</em>) &#8211; Page number <code class="docutils literal"><span class="pre">from_page</span></code> will become page <code class="docutils literal"><span class="pre">start_at</span></code> in the destination. If omitted, the page range will be appended. If zero, the page range will be inserted before current first page.</li>
+<li><strong>rotate</strong> (<em>int</em>) &#8211; All copied pages will be rotated by the provided value (degrees). If you do not specify a value, the original will not be changed. This must be a (positive or negative) integer multiple of 90. The validity of this parameter will not be checked - it is your responsibility to provide meaningful values.</li>
+<li><strong>links</strong> (<em>bool</em>) &#8211; Choose whether links should be included with the copy. Default is <code class="docutils literal"><span class="pre">True</span></code>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">int</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Zero upon successful execution.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Page range values may be specified <strong>reversed</strong>, i.e. <code class="docutils literal"><span class="pre">from_page</span> <span class="pre">&gt;</span> <span class="pre">to_page</span></code> is valid. In this case pages will be copied back to front, starting with <code class="docutils literal"><span class="pre">to_page</span></code>.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The functionality of this method is a conversion of MuPDF&#8217;s CLI utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">merge</span></code>. Due to current restrictions of this tool, <code class="docutils literal"><span class="pre">doc2</span></code> annotations will <strong>not</strong> be copied. However, relevant <strong>links will be copied</strong> (actually reconstructed), if <code class="docutils literal"><span class="pre">links</span> <span class="pre">=</span> <span class="pre">True</span></code> (default) and if they do not point to source pages outside the copied range. Bookmarks (table of contents) are copied if and only if the complete <code class="docutils literal"><span class="pre">doc2</span></code> is appended to the complete current document, like e.g. <code class="docutils literal"><span class="pre">doc1.insertPDF(doc2)</span></code>. But look at the example program <code class="docutils literal"><span class="pre">PDF_joiner.py</span></code>, which can join PDF documents and at the same time piece together respective parts of the tables of contents.</p>
+</div>
 <dl class="method">
 <dt id="Document.close">
 <code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Document.close" title="Permalink to this definition">¶</a></dt>
@@ -709,7 +748,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 22. Jul 2016.
+      Last updated on 03. Aug 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

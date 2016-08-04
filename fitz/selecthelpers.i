@@ -1,5 +1,110 @@
 %{
 /*******************************************************************************
+Deep-copies a specified source page to the target location.
+*******************************************************************************/
+void page_merge(pdf_document* doc_des, pdf_document* doc_src, int page_from, int page_to, int rotate, pdf_graft_map *graft_map)
+{
+    pdf_obj *pageref = NULL;
+    pdf_obj *page_dict;
+    pdf_obj *obj = NULL, *ref = NULL;
+    /***************************************************************************
+    Include minimal number of objects for page.  Do not include items that
+    reference other pages.
+    ***************************************************************************/
+    pdf_obj *known_page_objs[] = {PDF_NAME_Contents, PDF_NAME_Resources,
+        PDF_NAME_MediaBox, PDF_NAME_CropBox, PDF_NAME_BleedBox,
+        PDF_NAME_TrimBox, PDF_NAME_ArtBox, PDF_NAME_Rotate, PDF_NAME_UserUnit};
+    int n = nelem(known_page_objs);
+    int i;
+    int num;
+    fz_var(obj);
+    fz_var(ref);
+
+    fz_try(gctx)
+    {
+        pageref = pdf_lookup_page_obj(gctx, doc_src, page_from);
+
+        /* Make a new dictionary and copy over the items from the source object to
+        * the new dict that we want to deep copy. */
+        page_dict = pdf_new_dict(gctx, doc_des, 4);
+
+        pdf_dict_put_drop(gctx, page_dict, PDF_NAME_Type, PDF_NAME_Page);
+
+        for (i = 0; i < n; i++)
+        {
+            obj = pdf_dict_get(gctx, pageref, known_page_objs[i]);
+            if (obj != NULL)
+                pdf_dict_put_drop(gctx, page_dict, known_page_objs[i], pdf_graft_object(gctx, doc_des, doc_src, obj, graft_map));
+        }
+        /***********************************************************************
+        Make page rotate as specified
+        ***********************************************************************/
+        if (rotate != -1) {
+            pdf_obj *rotateobj = pdf_new_int(gctx, doc_des, rotate);
+            pdf_dict_put_drop(gctx, page_dict, PDF_NAME_Rotate, rotateobj);
+        }
+        /***********************************************************************
+        Now add the page dictionary to dest PDF
+        ***********************************************************************/
+        obj = pdf_add_object_drop(gctx, doc_des, page_dict);
+
+        /***********************************************************************
+        Get indirect ref of the page
+        ***********************************************************************/
+        num = pdf_to_num(gctx, obj);
+        ref = pdf_new_indirect(gctx, doc_des, num, 0);
+
+        /***********************************************************************
+        Insert new page at specified location
+        ***********************************************************************/
+        pdf_insert_page(gctx, doc_des, page_to, ref);
+
+    }
+    fz_always(gctx)
+    {
+        pdf_drop_obj(gctx, obj);
+        pdf_drop_obj(gctx, ref);
+    }
+    fz_catch(gctx)
+    {
+        fz_rethrow(gctx);
+    }
+}
+
+/*******************************************************************************
+Copy a range of pages (spage, epage) from a source PDF to a specified location
+(apage) of the target PDF.
+If spage > epage, the sequence of source pages is reversed.
+*******************************************************************************/
+void merge_range(pdf_document* doc_des, pdf_document* doc_src, int spage, int epage, int apage, int rotate)
+{
+    int page, afterpage;
+    pdf_graft_map *graft_map;
+    afterpage = apage;
+
+    graft_map = pdf_new_graft_map(gctx, doc_src);
+
+    fz_try(gctx)
+    {
+        if (spage < epage)
+            for (page = spage; page <= epage; page++, afterpage++)
+                page_merge(doc_des, doc_src, page, afterpage, rotate, graft_map);
+        else
+            for (page = spage; page >= epage; page--, afterpage++)
+                page_merge(doc_des, doc_src, page, afterpage, rotate, graft_map);
+    }
+
+    fz_always(gctx)
+    {
+        pdf_drop_graft_map(gctx, graft_map);
+    }
+    fz_catch(gctx)
+    {
+        fz_rethrow(gctx);
+    }
+}
+
+/*******************************************************************************
 Fills table 'res' with outline object numbers
 'res' must be a correctly pre-allocated table of integers
 'obj' must be the first OL item
