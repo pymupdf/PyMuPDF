@@ -58,17 +58,16 @@ struct fz_document_s {
             }
         }
         %pythonprepend fz_document_s %{
-            if type(filename) == str:
+            if not filename or type(filename) == str:
                 pass
             elif type(filename) == unicode:
                 filename = filename.encode('utf8')
             else:
                 raise TypeError("filename must be a string")
-            self.name = filename
-            if stream:
-                self.streamlen = len(stream)
-            else:
-                self.streamlen = 0
+            self.name = filename if filename else ""
+            self.streamlen = len(stream) if stream else 0
+            if stream and not filename:
+                raise ValueError("filetype missing with stream specified")
             self.isClosed = 0
             self.isEncrypted = 0
             self.metadata = None
@@ -86,7 +85,7 @@ struct fz_document_s {
                 self.thisown = False
         %}
 
-        fz_document_s(const char *filename, PyObject *stream=NULL) {
+        fz_document_s(const char *filename = NULL, PyObject *stream=NULL) {
             struct fz_document_s *doc = NULL;
             fz_stream *data = NULL;
             char *streamdata;
@@ -105,7 +104,12 @@ struct fz_document_s {
                     data = fz_open_memory(gctx, streamdata, streamlen);
                     doc = fz_open_document_with_stream(gctx, filename, data);
                 }
-                else doc = fz_open_document(gctx, filename);
+                else {
+                    if (filename)
+                        doc = fz_open_document(gctx, filename);
+                    else
+                        doc = (fz_document *) pdf_create_document(gctx);
+                }
             }
             fz_catch(gctx) {
                 return NULL;
@@ -245,7 +249,7 @@ struct fz_document_s {
                 raise TypeError("filename must be a string")
             if filename == self.name and incremental == 0:
                 raise ValueError("cannot save to input file")
-            if not self.name.lower().endswith("pdf"):
+            if len(self.name) > 0 and not self.name.lower().endswith("pdf"):
                 raise ValueError("can only save PDF files")
             if incremental and (self.name != filename or self.streamlen > 0):
                 raise ValueError("incremental save to original file only")
@@ -294,31 +298,14 @@ Insert pages from a source PDF to this PDF
 *******************************************************************************/
         %pythonprepend insertPDF %{
             sa = start_at
-            fp = from_page
-            tp = to_page
             if sa < 0:
                 sa = self.pageCount
-            if fp <= 0:
-                fp = 0
-            if tp <= 0 or tp >= docsrc.pageCount:
-                tp = docsrc.pageCount - 1
-
-            newtoc = (0 == fp <= tp == docsrc.pageCount-1) and sa == self.pageCount
-            
-            if newtoc:
-                toc1 = self.getToC(simple = False)
-                toc2 = docsrc.getToC(simple = False)
-                for t in toc2:
-                    t[2] = t[2] + sa
-                toc = toc1 + toc2
         %}
         
         %pythonappend insertPDF %{
             if links:
                 self._do_links(docsrc, from_page=from_page, to_page = to_page,
                                start_at = sa)
-            if newtoc:
-                self.setToC(toc)
         %}
 
         %exception insertPDF {
@@ -705,37 +692,12 @@ Get Object String by Xref Number
         }
 
 /*******************************************************************************
-Delete Object by Xref Number
-*******************************************************************************/
-        %exception _delObject {
-            $action
-            if(result < 0) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_ValueError, value);
-                return NULL;
-            }
-        }
-
-        int _delObject(int num)
-        {
-            pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
-            fz_try(gctx) {
-                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
-            }
-            fz_catch(gctx) {
-                return -2;
-            }
-            return pdf_xref_len(gctx, pdf);
-        }
-
-/*******************************************************************************
 Update an Xref Number with a new Object
 Object given as a string
 *******************************************************************************/
         %exception _updateObject {
             $action
-            if(result < 0) {
+            if(result != 0) {
                 char *value;
                 value = gctx->error->message;
                 PyErr_SetString(PyExc_ValueError, value);
@@ -829,6 +791,9 @@ Initialize document: set outline and metadata properties
                 if self.streamlen == 0:
                     return "fitz.Document('%s')" % (self.name,)
                 return "fitz.Document('%s', bytearray)" % (self.name,)
+
+            def __len__(self):
+                return self.pageCount
 
             %}
     }

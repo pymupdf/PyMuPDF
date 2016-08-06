@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Changes in Version 1.9.2 &mdash; PyMuPDF 1.9.1 documentation</title>
+    <title>Changes in Version 1.9.2 &mdash; PyMuPDF 1.9.2 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.9.1',
+        VERSION:     '1.9.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.1 documentation" href="index.html" />
+    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html" />
     <link rel="next" title="Installation" href="installation.html" />
     <link rel="prev" title="Introduction" href="intro.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="intro.html" title="Introduction"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -86,10 +86,11 @@
 <p>Please have a look at MuPDF&#8217;s website to see which changes and enhancements are contained herein.</p>
 <div class="section" id="changes-in-version-1-9-2">
 <h1>Changes in Version 1.9.2<a class="headerlink" href="#changes-in-version-1-9-2" title="Permalink to this headline">¶</a></h1>
-<p>Changes compared to version 1.9.1:</p>
+<p>This version is based on MuPDF v1.9a, too. Changes compared to version 1.9.1 are:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">fitz.open()</span></code> now accepts all of the formats <code class="docutils literal"><span class="pre">open(filename)</span></code>, <code class="docutils literal"><span class="pre">open(filename,</span> <span class="pre">None)</span></code>, <code class="docutils literal"><span class="pre">open(filetype,</span> <span class="pre">stream)</span></code>. Type of memory area <code class="docutils literal"><span class="pre">stream</span></code> may be <code class="docutils literal"><span class="pre">str</span></code> (Python 2), <code class="docutils literal"><span class="pre">bytes</span></code> (Python 3) or <code class="docutils literal"><span class="pre">bytearray</span></code> (Python 2 and 3).</li>
-<li>New method <code class="docutils literal"><span class="pre">Document.insertPDF()</span></code> (PDFs only) inserts a range of pages of another PDF.</li>
+<li><a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> now accepts all of the following formats (<code class="docutils literal"><span class="pre">Document</span></code> and <code class="docutils literal"><span class="pre">open</span></code> are synonyms) <code class="docutils literal"><span class="pre">open()</span></code>, <code class="docutils literal"><span class="pre">open(filename)</span></code>, <code class="docutils literal"><span class="pre">open(filename,</span> <span class="pre">None)</span></code>, <code class="docutils literal"><span class="pre">open(filetype,</span> <span class="pre">stream)</span></code>, <code class="docutils literal"><span class="pre">open(filetype,</span> <span class="pre">stream</span> <span class="pre">=</span> <span class="pre">area)</span></code>. Type of memory area <code class="docutils literal"><span class="pre">stream</span></code> may be <code class="docutils literal"><span class="pre">str</span></code> (Python 2), <code class="docutils literal"><span class="pre">bytes</span></code> (Python 3) or <code class="docutils literal"><span class="pre">bytearray</span></code> (Python 2 and 3). Thus, e.g. <code class="docutils literal"><span class="pre">stream</span> <span class="pre">=</span> <span class="pre">open(&quot;file.pdf&quot;,</span> <span class="pre">&quot;rb&quot;).read()</span></code> may be used directly, without first converting it to <code class="docutils literal"><span class="pre">bytearray</span></code>.</li>
+<li>New method <code class="docutils literal"><span class="pre">Document.insertPDF()</span></code> (PDFs only) inserts a range of pages from another PDF.</li>
+<li><code class="docutils literal"><span class="pre">Document</span></code> objects <code class="docutils literal"><span class="pre">doc</span></code> now support the <code class="docutils literal"><span class="pre">len()</span></code> function: <code class="docutils literal"><span class="pre">len(doc)</span> <span class="pre">==</span> <span class="pre">doc.pageCount</span></code>.</li>
 </ul>
 </div>
 <div class="section" id="changes-in-version-1-9-1">
@@ -139,12 +140,12 @@
         <li class="right" >
           <a href="intro.html" title="Introduction"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 03. Aug 2016.
+      Last updated on 06. Aug 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

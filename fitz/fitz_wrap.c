@@ -3695,7 +3695,12 @@ SWIGINTERN struct fz_document_s *new_fz_document_s(char const *filename,PyObject
                     data = fz_open_memory(gctx, streamdata, streamlen);
                     doc = fz_open_document_with_stream(gctx, filename, data);
                 }
-                else doc = fz_open_document(gctx, filename);
+                else {
+                    if (filename)
+                        doc = fz_open_document(gctx, filename);
+                    else
+                        doc = (fz_document *) pdf_create_document(gctx);
+                }
             }
             fz_catch(gctx) {
                 return NULL;
@@ -4198,16 +4203,6 @@ SWIGINTERN struct fz_buffer_s *fz_document_s__getObjectString(struct fz_document
                 return NULL;
             }
             return res;
-        }
-SWIGINTERN int fz_document_s__delObject(struct fz_document_s *self,int num){
-            pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
-            fz_try(gctx) {
-                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
-            }
-            fz_catch(gctx) {
-                return -2;
-            }
-            return pdf_xref_len(gctx, pdf);
         }
 SWIGINTERN int fz_document_s__updateObject(struct fz_document_s *self,int xref,char *text){
             pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
@@ -5116,7 +5111,7 @@ extern "C" {
 #endif
 SWIGINTERN PyObject *_wrap_new_Document(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  char *arg1 = (char *) 0 ;
+  char *arg1 = (char *) NULL ;
   PyObject *arg2 = (PyObject *) NULL ;
   int res1 ;
   char *buf1 = 0 ;
@@ -5125,12 +5120,14 @@ SWIGINTERN PyObject *_wrap_new_Document(PyObject *SWIGUNUSEDPARM(self), PyObject
   PyObject * obj1 = 0 ;
   struct fz_document_s *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O|O:new_Document",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Document" "', argument " "1"" of type '" "char const *""'");
+  if (!PyArg_ParseTuple(args,(char *)"|OO:new_Document",&obj0,&obj1)) SWIG_fail;
+  if (obj0) {
+    res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Document" "', argument " "1"" of type '" "char const *""'");
+    }
+    arg1 = (char *)(buf1);
   }
-  arg1 = (char *)(buf1);
   if (obj1) {
     arg2 = obj1;
   }
@@ -5934,45 +5931,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Document__delObject(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
-  int arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:Document__delObject",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__delObject" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
-  }
-  arg1 = (struct fz_document_s *)(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document__delObject" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = (int)(val2);
-  {
-    result = (int)fz_document_s__delObject(arg1,arg2);
-    if(result < 0) {
-      char *value;
-      value = gctx->error->message;
-      PyErr_SetString(PyExc_ValueError, value);
-      return NULL;
-    }
-  }
-  resultobj = SWIG_From_int((int)(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_Document__updateObject(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
@@ -6008,7 +5966,7 @@ SWIGINTERN PyObject *_wrap_Document__updateObject(PyObject *SWIGUNUSEDPARM(self)
   arg3 = (char *)(buf3);
   {
     result = (int)fz_document_s__updateObject(arg1,arg2,arg3);
-    if(result < 0) {
+    if(result != 0) {
       char *value;
       value = gctx->error->message;
       PyErr_SetString(PyExc_ValueError, value);
@@ -10967,7 +10925,7 @@ SWIGINTERN PyObject *TextPage_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObj
 
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
-	 { (char *)"new_Document", _wrap_new_Document, METH_VARARGS, (char *)"new_Document(char const * filename, PyObject * stream=None) -> Document"},
+	 { (char *)"new_Document", _wrap_new_Document, METH_VARARGS, (char *)"new_Document(char const * filename=None, PyObject * stream=None) -> Document"},
 	 { (char *)"Document_close", _wrap_Document_close, METH_VARARGS, (char *)"Document_close(Document self)"},
 	 { (char *)"Document_loadPage", _wrap_Document_loadPage, METH_VARARGS, (char *)"Document_loadPage(Document self, int number) -> Page"},
 	 { (char *)"Document__loadOutline", _wrap_Document__loadOutline, METH_VARARGS, (char *)"Document__loadOutline(Document self) -> Outline"},
@@ -10992,7 +10950,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document__getNewXref", _wrap_Document__getNewXref, METH_VARARGS, (char *)"Document__getNewXref(Document self) -> int"},
 	 { (char *)"Document__getXrefLength", _wrap_Document__getXrefLength, METH_VARARGS, (char *)"Document__getXrefLength(Document self) -> int"},
 	 { (char *)"Document__getObjectString", _wrap_Document__getObjectString, METH_VARARGS, (char *)"Document__getObjectString(Document self, int xnum) -> struct fz_buffer_s *"},
-	 { (char *)"Document__delObject", _wrap_Document__delObject, METH_VARARGS, (char *)"Document__delObject(Document self, int num) -> int"},
 	 { (char *)"Document__updateObject", _wrap_Document__updateObject, METH_VARARGS, (char *)"Document__updateObject(Document self, int xref, char * text) -> int"},
 	 { (char *)"Document__setMetadata", _wrap_Document__setMetadata, METH_VARARGS, (char *)"Document__setMetadata(Document self, char * text) -> int"},
 	 { (char *)"delete_Document", _wrap_delete_Document, METH_VARARGS, (char *)"delete_Document(Document self)"},

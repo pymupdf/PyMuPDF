@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Document &mdash; PyMuPDF 1.9.1 documentation</title>
+    <title>Document &mdash; PyMuPDF 1.9.2 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.9.1',
+        VERSION:     '1.9.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.1 documentation" href="index.html" />
+    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html" />
     <link rel="up" title="Classes" href="classes.html" />
     <link rel="next" title="Identity" href="identity.html" />
     <link rel="prev" title="DisplayList" href="displaylist.html" /> 
@@ -41,7 +41,7 @@
         <li class="right" >
           <a href="displaylist.html" title="DisplayList"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="classes.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>
@@ -54,6 +54,7 @@
 <li><a class="reference internal" href="#select-examples"><code class="docutils literal"><span class="pre">select()</span></code> Examples</a></li>
 <li><a class="reference internal" href="#setmetadata-example"><code class="docutils literal"><span class="pre">setMetadata()</span></code> Example</a></li>
 <li><a class="reference internal" href="#settoc-example"><code class="docutils literal"><span class="pre">setToC()</span></code> Example</a></li>
+<li><a class="reference internal" href="#insertpdf-examples"><code class="docutils literal"><span class="pre">insertPDF()</span></code> Examples</a></li>
 </ul>
 </li>
 </ul>
@@ -176,12 +177,12 @@
 <dd><dl class="method">
 <dt id="Document.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructs a <code class="docutils literal"><span class="pre">Document</span></code> object from <code class="docutils literal"><span class="pre">filename</span></code>.</p>
+<dd><p>Constructs a <code class="docutils literal"><span class="pre">Document</span></code> object from <code class="docutils literal"><span class="pre">filename</span></code>. The type of document is determined by its extension, therefore a filename with a wrong extension will not be recognised. If none is specified, an new empty <strong>PDF document</strong> will be created.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) &#8211; A string containing the path / name of the document file to be used. The file will be opened and remain open until either explicitely closed (see below) or until end of program.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) &#8211; <code class="docutils literal"><span class="pre">None</span></code> or a string containing the path / name of the document file to be used. The file will be opened and remain open until either explicitely closed (see below) or until end of program.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">Document</span></code></td>
 </tr>
@@ -200,7 +201,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>filetype</strong> (<em>string</em>) &#8211; A string specifying the type of document contained in <code class="docutils literal"><span class="pre">stream</span></code>. This may be either something that looks like a filename (e.g. <code class="docutils literal"><span class="pre">x.pdf</span></code>), in which case MuPDF uses the extension to determine the type, or a mime type like <code class="docutils literal"><span class="pre">application/pdf</span></code>. Recommended is using the filename scheme, or even the name of the original file for documentation purposes.</li>
+<li><strong>filetype</strong> (<em>string</em>) &#8211; A string specifying the type of document contained in <code class="docutils literal"><span class="pre">stream</span></code>. This may be either something that looks like a filename (e.g. <code class="docutils literal"><span class="pre">x.pdf</span></code> or just <code class="docutils literal"><span class="pre">pdf</span></code>), in which case MuPDF uses the extension to determine the type, or a mime type like <code class="docutils literal"><span class="pre">application/pdf</span></code>. Recommended is using the filename scheme, or even the name of the original file for documentation purposes.</li>
 <li><strong>stream</strong> (<em>bytearray, bytes or (Python 2 only) str</em>) &#8211; A memory area representing the content of a supported document type.</li>
 </ul>
 </td>
@@ -465,7 +466,7 @@
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The functionality of this method is a conversion of MuPDF&#8217;s CLI utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">merge</span></code>. Due to current restrictions of this tool, <code class="docutils literal"><span class="pre">doc2</span></code> annotations will <strong>not</strong> be copied. However, relevant <strong>links will be copied</strong> (actually reconstructed), if <code class="docutils literal"><span class="pre">links</span> <span class="pre">=</span> <span class="pre">True</span></code> (default) and if they do not point to source pages outside the copied range. Bookmarks (table of contents) are copied if and only if the complete <code class="docutils literal"><span class="pre">doc2</span></code> is appended to the complete current document, like e.g. <code class="docutils literal"><span class="pre">doc1.insertPDF(doc2)</span></code>. But look at the example program <code class="docutils literal"><span class="pre">PDF_joiner.py</span></code>, which can join PDF documents and at the same time piece together respective parts of the tables of contents.</p>
+<p class="last">The functionality of this method is a conversion of MuPDF&#8217;s CLI utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">merge</span></code>. Due to current restrictions of this tool, <code class="docutils literal"><span class="pre">doc2</span></code> annotations will <strong>not</strong> be copied. However, relevant <strong>links will be copied</strong> (actually reconstructed), if <code class="docutils literal"><span class="pre">links</span> <span class="pre">=</span> <span class="pre">True</span></code> (default) and if they do not point to source pages outside the copied range. Bookmarks (table of contents) of <code class="docutils literal"><span class="pre">doc2</span></code> are not copied either. But look at the example at the bottom of this page for a solution in simple cases and for complexer situations at program <code class="docutils literal"><span class="pre">PDFjoiner.py</span></code> (examples directory), which can join PDF documents and at the same time piece together respective parts of the tables of contents.</p>
 </div>
 <dl class="method">
 <dt id="Document.close">
@@ -563,7 +564,7 @@
 <dl class="attribute">
 <dt id="Document.name">
 <code class="descname">name</code><a class="headerlink" href="#Document.name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the <code class="docutils literal"><span class="pre">filename</span></code> or <code class="docutils literal"><span class="pre">filetype</span></code> value with which <code class="docutils literal"><span class="pre">Document</span></code> was created.</p>
+<dd><p>Contains an empty string or the <code class="docutils literal"><span class="pre">filename</span></code> / <code class="docutils literal"><span class="pre">filetype</span></code> value with which the document was created.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -577,7 +578,7 @@
 <dl class="attribute">
 <dt id="Document.pageCount">
 <code class="descname">pageCount</code><a class="headerlink" href="#Document.pageCount" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the number of pages of the document. May return 0 for documents with no pages.</p>
+<dd><p>Contains the number of pages of the document. May return 0 for documents with no pages. Equals <code class="docutils literal"><span class="pre">len(Document)</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -715,10 +716,39 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">getToC</span><span class="p">():</span> <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>                  <span class="c"># demonstrate it worked</span>
 <span class="gp">...</span>
 <span class="go">[1, &#39;The PyMuPDF Documentation&#39;, 1]</span>
-<span class="go">[2, &#39;Introduction modified by setToC&#39;, 1]            # &lt;&lt;&lt; this has changed</span>
+<span class="go">[2, &#39;Introduction modified by setToC&#39;, 1]            # &lt;== this has changed</span>
 <span class="go">[3, &#39;Note on the Name fitz&#39;, 1]</span>
 <span class="go">[3, &#39;License&#39;, 1]</span>
 <span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="insertpdf-examples">
+<h2><code class="docutils literal"><span class="pre">insertPDF()</span></code> Examples<a class="headerlink" href="#insertpdf-examples" title="Permalink to this headline">¶</a></h2>
+<p><strong>(1) Concatenate two documents including their tables of content:</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">doc1</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;file1.pdf&quot;</span><span class="p">)</span>       <span class="c"># must be a PDF</span>
+<span class="n">doc2</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;file2.pdf&quot;</span><span class="p">)</span>       <span class="c"># must be a PDF</span>
+<span class="n">pages1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc1</span><span class="p">)</span>                  <span class="c"># save doc1&#39;s page count</span>
+<span class="n">toc1</span> <span class="o">=</span> <span class="n">doc1</span><span class="o">.</span><span class="n">getToC</span><span class="p">(</span><span class="n">simple</span> <span class="o">=</span> <span class="k">False</span><span class="p">)</span>  <span class="c"># save TOC</span>
+<span class="n">toc2</span> <span class="o">=</span> <span class="n">doc2</span><span class="o">.</span><span class="n">getToC</span><span class="p">(</span><span class="n">simple</span> <span class="o">=</span> <span class="k">False</span><span class="p">)</span>  <span class="c"># save TOC</span>
+<span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">)</span>                <span class="c"># doc2 at end of doc1</span>
+
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">toc2</span><span class="p">:</span>                      <span class="c"># increase toc2 page num&#39;s</span>
+    <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">pages1</span>                  <span class="c"># by old len(doc1)</span>
+
+<span class="n">doc1</span><span class="o">.</span><span class="n">setToC</span><span class="p">(</span><span class="n">toc1</span> <span class="o">+</span> <span class="n">toc2</span><span class="p">)</span>            <span class="c"># result PDF has total toc</span>
+</pre></div>
+</div>
+<p>Obviously, similar ways can be found in more general situations. The only thing to watch out for is, that hierarchy levels must never increase by more than one. Inserting dummy entries between toc1 / toc2 and toc2 / toc1 would heal such cases.</p>
+<p><strong>(2) More examples:</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span class="c"># insert 5 pages of doc2, where source page 21 becomes page 15 in doc1</span>
+<span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">from_page</span> <span class="o">=</span> <span class="mi">21</span><span class="p">,</span> <span class="n">to_page</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">start_at</span> <span class="o">=</span> <span class="mi">15</span><span class="p">)</span>
+
+<span class="c"># same example, but source pages are inserted rotated and in reversed order</span>
+<span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">from_page</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">to_page</span> <span class="o">=</span> <span class="mi">21</span><span class="p">,</span> <span class="n">start_at</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span> <span class="n">rotate</span> <span class="o">=</span> <span class="mi">90</span><span class="p">)</span>
+
+<span class="c"># insert doc2 pages in front of doc1</span>
+<span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">from_page</span> <span class="o">=</span> <span class="mi">21</span><span class="p">,</span> <span class="n">to_page</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">start_at</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -742,13 +772,13 @@
         <li class="right" >
           <a href="displaylist.html" title="DisplayList"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="classes.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 03. Aug 2016.
+      Last updated on 06. Aug 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

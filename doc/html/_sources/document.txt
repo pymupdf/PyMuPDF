@@ -44,10 +44,10 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
     .. method:: __init__(self, filename)
 
-      Constructs a ``Document`` object from ``filename``.
+      Constructs a ``Document`` object from ``filename``. The type of document is determined by its extension, therefore a filename with a wrong extension will not be recognised. If none is specified, an new empty **PDF document** will be created.
 
-      :param `filename`: A string containing the path / name of the document file to be used. The file will be opened and remain open until either explicitely closed (see below) or until end of program.
-      :type `filename`: string
+      :param `filename`: ``None`` or a string containing the path / name of the document file to be used. The file will be opened and remain open until either explicitely closed (see below) or until end of program.
+      :type `filename`: str
 
       :rtype: ``Document``
       :returns: A ``Document`` object.
@@ -56,7 +56,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       Constructs a ``Document`` object from memory ``stream``.
 
-      :param `filetype`: A string specifying the type of document contained in ``stream``. This may be either something that looks like a filename (e.g. ``x.pdf``), in which case MuPDF uses the extension to determine the type, or a mime type like ``application/pdf``. Recommended is using the filename scheme, or even the name of the original file for documentation purposes.
+      :param `filetype`: A string specifying the type of document contained in ``stream``. This may be either something that looks like a filename (e.g. ``x.pdf`` or just ``pdf``), in which case MuPDF uses the extension to determine the type, or a mime type like ``application/pdf``. Recommended is using the filename scheme, or even the name of the original file for documentation purposes.
       :type `filetype`: string
 
       :param `stream`: A memory area representing the content of a supported document type.
@@ -248,7 +248,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
     .. note:: Page range values may be specified **reversed**, i.e. ``from_page > to_page`` is valid. In this case pages will be copied back to front, starting with ``to_page``.
 
-    .. note:: The functionality of this method is a conversion of MuPDF's CLI utility ``mutool merge``. Due to current restrictions of this tool, ``doc2`` annotations will **not** be copied. However, relevant **links will be copied** (actually reconstructed), if ``links = True`` (default) and if they do not point to source pages outside the copied range. Bookmarks (table of contents) are copied if and only if the complete ``doc2`` is appended to the complete current document, like e.g. ``doc1.insertPDF(doc2)``. But look at the example program ``PDF_joiner.py``, which can join PDF documents and at the same time piece together respective parts of the tables of contents.
+    .. note:: The functionality of this method is a conversion of MuPDF's CLI utility ``mutool merge``. Due to current restrictions of this tool, ``doc2`` annotations will **not** be copied. However, relevant **links will be copied** (actually reconstructed), if ``links = True`` (default) and if they do not point to source pages outside the copied range. Bookmarks (table of contents) of ``doc2`` are not copied either. But look at the example at the bottom of this page for a solution in simple cases and for complexer situations at program ``PDFjoiner.py`` (examples directory), which can join PDF documents and at the same time piece together respective parts of the tables of contents.
 
     .. method:: close()
 
@@ -300,13 +300,13 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
     .. Attribute:: name
 
-      Contains the ``filename`` or ``filetype`` value with which ``Document`` was created.
+      Contains an empty string or the ``filename`` / ``filetype`` value with which the document was created.
 
       :rtype: string
 
     .. Attribute:: pageCount
 
-      Contains the number of pages of the document. May return 0 for documents with no pages.
+      Contains the number of pages of the document. May return 0 for documents with no pages. Equals ``len(Document)``.
 
       :rtype: int
 
@@ -423,7 +423,37 @@ This shows how to modify or add a table of contents:
  >>> for t in doc.getToC(): print(t)                  # demonstrate it worked
  ...
  [1, 'The PyMuPDF Documentation', 1]
- [2, 'Introduction modified by setToC', 1]            # <<< this has changed
+ [2, 'Introduction modified by setToC', 1]            # <== this has changed
  [3, 'Note on the Name fitz', 1]
  [3, 'License', 1]
  >>>
+
+
+``insertPDF()`` Examples
+-------------------------
+**(1) Concatenate two documents including their tables of content:**
+::
+ doc1 = fitz.open("file1.pdf")       # must be a PDF
+ doc2 = fitz.open("file2.pdf")       # must be a PDF
+ pages1 = len(doc1)                  # save doc1's page count
+ toc1 = doc1.getToC(simple = False)  # save TOC
+ toc2 = doc2.getToC(simple = False)  # save TOC
+ doc1.insertPDF(doc2)                # doc2 at end of doc1
+
+ for t in toc2:                      # increase toc2 page num's
+     t[2] += pages1                  # by old len(doc1)
+
+ doc1.setToC(toc1 + toc2)            # result PDF has total toc
+
+Obviously, similar ways can be found in more general situations. The only thing to watch out for is, that hierarchy levels must never increase by more than one. Inserting dummy entries between toc1 / toc2 and toc2 / toc1 would heal such cases.
+
+**(2) More examples:**
+::
+ # insert 5 pages of doc2, where source page 21 becomes page 15 in doc1
+ doc1.insertPDF(doc2, from_page = 21, to_page = 25, start_at = 15)
+
+ # same example, but source pages are inserted rotated and in reversed order
+ doc1.insertPDF(doc2, from_page = 25, to_page = 21, start_at = 15, rotate = 90)
+
+ # insert doc2 pages in front of doc1
+ doc1.insertPDF(doc2, from_page = 21, to_page = 25, start_at = 0)

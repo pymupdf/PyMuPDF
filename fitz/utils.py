@@ -288,11 +288,10 @@ The presence of other keys depends on this kind - see PyMuPDF's ducmentation for
     links = []
     while ln:
         nl = {"kind":ln.dest.kind, "from": ln.rect}
-        flags = bin(ln.dest.flags)[2:].rjust(8, "0")
         pnt = fitz.Point(0, 0)
-        if flags[7:] == "1":
+        if ln.dest.flags & fitz.LINK_FLAG_L_VALID:
             pnt.x = ln.dest.lt.x
-        if flags[6:7] == "1":
+        if ln.dest.flags & fitz.LINK_FLAG_T_VALID:
             pnt.y = ln.dest.lt.y
         nl["to"] = pnt
 
@@ -357,11 +356,10 @@ and link destination (if simple = False). For details see PyMuPDF's documentatio
             page = olItem.dest.page + 1
             if not simple:
                 link = {"kind": olItem.dest.kind}
-                flags = bin(olItem.dest.flags)[2:].rjust(8, "0")
                 pnt = fitz.Point(0, -1)
-                if flags[7:] == "1":
+                if olItem.dest.flags & fitz.LINK_FLAG_L_VALID:
                     pnt.x = olItem.dest.lt.x
-                if flags[6:7] == "1":
+                if olItem.dest.flags & fitz.LINK_FLAG_T_VALID:
                     pnt.y = olItem.dest.lt.y
                 link["to"] = [pnt.x, pnt.y]
                 page = olItem.dest.page + 1
@@ -851,8 +849,6 @@ def PDFstr(s):
 def setMetadata(doc, m):
     '''Set a PDF document's metadata (/Info dictionary)\nParameters:\nm: a dictionary with valid metadata keys.\nAfter execution, the metadata property will be updated.
     '''
-    if not repr(doc).startswith("fitz.Document") or not doc.name.lower().endswith(("/pdf", ".pdf")):
-        raise ValueError("arg1 must be a PDF document")
     if doc.isClosed or doc.isEncrypted:
         raise ValueError("operation on closed or encrypted document")
     if type(m) is not dict:
@@ -896,7 +892,7 @@ def setToC(doc, toc):
     '''
     if not repr(doc).startswith("fitz.Document"):
         raise ValueError("arg1 not a document")
-    if not doc.name.lower().endswith(("/pdf", ".pdf")):
+    if not doc.name.lower().endswith(("/pdf", ".pdf")) and len(doc.name) > 0:
         raise ValueError("not a PDF document")
     if doc.isClosed or doc.isEncrypted:
         raise ValueError("operation on closed or encrypted document")
@@ -944,7 +940,7 @@ def setToC(doc, toc):
         o = toc[i]
         lvl = o[0] # level
         title = PDFstr(o[1]) # titel
-        pno = o[2] - 1 # page number
+        pno = min(doc.pageCount - 1, max(0, o[2] - 1)) # page number
         p = doc.loadPage(pno)
         top = int(round(p.bound().y1) - 36)   # default top location on page
         p = None                              # free page resources
@@ -1108,7 +1104,7 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
         xref_src.append(old_xref)
         xref_dst.append(new_xref)
 
-    # create /Annots per page in destination PDF
+    # create /Annots per copied page in destination PDF
     for i in range(len(xref_src)):
         page = doc2.loadPage(list_src[i])
         height = page.bound().y1

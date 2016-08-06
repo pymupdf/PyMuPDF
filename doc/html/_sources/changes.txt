@@ -8,11 +8,13 @@ Please have a look at MuPDF's website to see which changes and enhancements are 
 
 Changes in Version 1.9.2
 =========================
-Changes compared to version 1.9.1:
+This version is based on MuPDF v1.9a, too. Changes compared to version 1.9.1 are:
 
-* ``fitz.open()`` now accepts all of the formats ``open(filename)``, ``open(filename, None)``, ``open(filetype, stream)``. Type of memory area ``stream`` may be ``str`` (Python 2), ``bytes`` (Python 3) or ``bytearray`` (Python 2 and 3).
+* :ref:`Document` now accepts all of the following formats (``Document`` and ``open`` are synonyms) ``open()``, ``open(filename)``, ``open(filename, None)``, ``open(filetype, stream)``, ``open(filetype, stream = area)``. Type of memory area ``stream`` may be ``str`` (Python 2), ``bytes`` (Python 3) or ``bytearray`` (Python 2 and 3). Thus, e.g. ``stream = open("file.pdf", "rb").read()`` may be used directly, without first converting it to ``bytearray``.
 
-* New method ``Document.insertPDF()`` (PDFs only) inserts a range of pages of another PDF.
+* New method ``Document.insertPDF()`` (PDFs only) inserts a range of pages from another PDF.
+
+* ``Document`` objects ``doc`` now support the ``len()`` function: ``len(doc) == doc.pageCount``.
 
 
 Changes in Version 1.9.1

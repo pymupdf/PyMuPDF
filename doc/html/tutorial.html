@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Tutorial &mdash; PyMuPDF 1.9.1 documentation</title>
+    <title>Tutorial &mdash; PyMuPDF 1.9.2 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.9.1',
+        VERSION:     '1.9.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.1 documentation" href="index.html" />
+    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html" />
     <link rel="next" title="Classes" href="classes.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -310,17 +310,12 @@ You can write it&#8217;s image to files, extract text from it or search for text
 </div>
 <div class="section" id="join-pdf-documents">
 <h3>Join PDF Documents<a class="headerlink" href="#join-pdf-documents" title="Permalink to this headline">¶</a></h3>
-<p>Method <a class="reference internal" href="document.html#Document.insertPDF" title="Document.insertPDF"><code class="xref py py-meth docutils literal"><span class="pre">Document.insertPDF()</span></code></a> inserts (part of) another PDF document at a specified place of the current one. Here are some examples:</p>
+<p>Method <a class="reference internal" href="document.html#Document.insertPDF" title="Document.insertPDF"><code class="xref py py-meth docutils literal"><span class="pre">Document.insertPDF()</span></code></a> inserts another PDF document at a specified place of the current one. Here is an example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span class="c"># append complete doc2 at the end of doc1</span>
-<span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">)</span>        <span class="c"># also appends doc2&#39;s table of content</span>
-
-<span class="c"># insert 5 pages of doc2, where source page 21 becomes page 15 in doc1</span>
-<span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">from_page</span> <span class="o">=</span> <span class="mi">21</span><span class="p">,</span> <span class="n">to_page</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">start_at</span> <span class="o">=</span> <span class="mi">15</span><span class="p">)</span>
-
-<span class="c"># same example, but source pages are inserted rotated and in reversed order</span>
-<span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">from_page</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">to_page</span> <span class="o">=</span> <span class="mi">21</span><span class="p">,</span> <span class="n">start_at</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span> <span class="n">rotate</span> <span class="o">=</span> <span class="mi">90</span><span class="p">)</span>
+<span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>More examples can be found under <a class="reference internal" href="document.html#Document.insertPDF" title="Document.insertPDF"><code class="xref py py-meth docutils literal"><span class="pre">Document.insertPDF()</span></code></a>. Also have a look at <code class="docutils literal"><span class="pre">PDFjoiner.py</span></code> in the repository&#8217;s <em>example</em> directory.</p>
 </div>
 <div class="section" id="save">
 <h3>Save<a class="headerlink" href="#save" title="Permalink to this headline">¶</a></h3>
@@ -471,12 +466,12 @@ You can write it&#8217;s image to files, extract text from it or search for text
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 03. Aug 2016.
+      Last updated on 06. Aug 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

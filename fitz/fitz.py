@@ -97,8 +97,8 @@ except __builtin__.Exception:
 
 
 VersionFitz = "1.9a"          
-VersionBind = "1.9.1"         
-VersionDate = "2016-08-03 16:04:13"        
+VersionBind = "1.9.2"         
+VersionDate = "2016-08-06 08:58:48"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -109,20 +109,19 @@ class Document(_object):
     __getattr__ = lambda self, name: _swig_getattr(self, Document, name)
     __repr__ = _swig_repr
 
-    def __init__(self, filename, stream=None):
-        """__init__(fz_document_s self, char const * filename, PyObject * stream=None) -> Document"""
+    def __init__(self, filename=None, stream=None):
+        """__init__(fz_document_s self, char const * filename=None, PyObject * stream=None) -> Document"""
 
-        if type(filename) == str:
+        if not filename or type(filename) == str:
             pass
         elif type(filename) == unicode:
             filename = filename.encode('utf8')
         else:
             raise TypeError("filename must be a string")
-        self.name = filename
-        if stream:
-            self.streamlen = len(stream)
-        else:
-            self.streamlen = 0
+        self.name = filename if filename else ""
+        self.streamlen = len(stream) if stream else 0
+        if stream and not filename:
+            raise ValueError("filetype missing with stream specified")
         self.isClosed = 0
         self.isEncrypted = 0
         self.metadata = None
@@ -271,7 +270,7 @@ class Document(_object):
             raise TypeError("filename must be a string")
         if filename == self.name and incremental == 0:
             raise ValueError("cannot save to input file")
-        if not self.name.lower().endswith("pdf"):
+        if len(self.name) > 0 and not self.name.lower().endswith("pdf"):
             raise ValueError("can only save PDF files")
         if incremental and (self.name != filename or self.streamlen > 0):
             raise ValueError("incremental save to original file only")
@@ -293,23 +292,8 @@ class Document(_object):
         """
 
         sa = start_at
-        fp = from_page
-        tp = to_page
         if sa < 0:
             sa = self.pageCount
-        if fp <= 0:
-            fp = 0
-        if tp <= 0 or tp >= docsrc.pageCount:
-            tp = docsrc.pageCount - 1
-
-        newtoc = (0 == fp <= tp == docsrc.pageCount-1) and sa == self.pageCount
-
-        if newtoc:
-            toc1 = self.getToC(simple = False)
-            toc2 = docsrc.getToC(simple = False)
-            for t in toc2:
-                t[2] = t[2] + sa
-            toc = toc1 + toc2
 
 
         val = _fitz.Document_insertPDF(self, docsrc, from_page, to_page, start_at, rotate, links)
@@ -317,8 +301,6 @@ class Document(_object):
         if links:
             self._do_links(docsrc, from_page=from_page, to_page = to_page,
                            start_at = sa)
-        if newtoc:
-            self.setToC(toc)
 
 
         return val
@@ -415,11 +397,6 @@ class Document(_object):
         return _fitz.Document__getObjectString(self, xnum)
 
 
-    def _delObject(self, num):
-        """_delObject(Document self, int num) -> int"""
-        return _fitz.Document__delObject(self, num)
-
-
     def _updateObject(self, xref, text):
         """_updateObject(Document self, int xref, char * text) -> int"""
         return _fitz.Document__updateObject(self, xref, text)
@@ -445,6 +422,9 @@ class Document(_object):
         if self.streamlen == 0:
             return "fitz.Document('%s')" % (self.name,)
         return "fitz.Document('%s', bytearray)" % (self.name,)
+
+    def __len__(self):
+        return self.pageCount
 
 
     __swig_destroy__ = _fitz.delete_Document

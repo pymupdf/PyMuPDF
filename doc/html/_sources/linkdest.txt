@@ -33,13 +33,13 @@ Class representing the `dest` property of an outline entry or a link. Describes 
 
    .. attribute:: dest
 
-      Target destination name if specified (only if :attr:`linkDest.kind` = :data:`LINK_GOTOR`).
+      Target destination name if specified (only if :attr:`linkDest.kind` == :data:`LINK_GOTOR`).
 
       :rtype: string
 
    .. attribute:: fileSpec
 
-      Contains the filename (including any path specifications) this link points to, if applicable (only if :attr:`linkDest.kind` = :data:`LINK_GOTOR`).
+      Contains the filename (including any path specifications) this link points to, if applicable (only if :attr:`linkDest.kind` == :data:`LINK_GOTOR` or :attr:`linkDest.kind` == :data:`LINK_LAUNCH`).
 
       :rtype: string
 

@@ -180,16 +180,13 @@ The saved document will contain all links, annotations and bookmarks referenced 
 
 Join PDF Documents
 -----------------------
-Method :meth:`Document.insertPDF()` inserts (part of) another PDF document at a specified place of the current one. Here are some examples:
+Method :meth:`Document.insertPDF()` inserts another PDF document at a specified place of the current one. Here is an example:
 ::
  # append complete doc2 at the end of doc1
- doc1.insertPDF(doc2)        # also appends doc2's table of content
+ doc1.insertPDF(doc2)
 
- # insert 5 pages of doc2, where source page 21 becomes page 15 in doc1
- doc1.insertPDF(doc2, from_page = 21, to_page = 25, start_at = 15)
+More examples can be found under :meth:`Document.insertPDF()`. Also have a look at ``PDFjoiner.py`` in the repository's *example* directory.
 
- # same example, but source pages are inserted rotated and in reversed order
- doc1.insertPDF(doc2, from_page = 25, to_page = 21, start_at = 15, rotate = 90)
 
 Save
 -------
