@@ -17,7 +17,7 @@ Files in this Directory
 ======================= ====================================================================================
 File                    Purpose
 ======================= ====================================================================================
-PDF_Joiner.py           a full-featured program to join PDF files
+PDFjoiner.py            a full-featured program to join PDF files
 PDFoutline.py           a program to edit a PDF's table of contents
 PDFoutlineHelp.html     help for PDFoutline.py
 PDF2Text.py             a program to extract all text of a PDF
