@@ -10,21 +10,22 @@ Copyright (c) 2015 Jorj X. McKie
 The license of this program is governed by the GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007. See the "COPYING" file of this repository.
 
-This is an example for using the Python binding PyMuPDF for MuPDF.
+This is an example for using the Python bindings PyMuPDF for MuPDF.
 
 This program joins PDF files into one output file. Its features include:
-* Selection of page ranges
+* Selection of page ranges - in ascending or descending sequence
 * Optional rotation in steps of 90 degrees
-* Copy any table of contents to the output (default - can be switched off)
-* Editable PDF metadata
+* Copy any table of content segments to the output (can be switched off)
+* Specify PDF metadata
 
 Dependencies:
 wxPython v3.x, PyMuPDF v1.9.2
 
 Changes 2016-08-06
 -------------------
-Dependency on PyPDF2 has been removed, since v1.9.2 of PyMuPDF has all
+Dependency on PyPDF2 has been removed, because v1.9.2 of PyMuPDF now has all
 required functionality.
+This also has generated a **huge** speed improvement!
 """
 
 import os, sys, time
@@ -354,7 +355,7 @@ class PDFDialog (wx.Dialog):
                            defPos, defSiz, wx.ALIGN_RIGHT)
         szr03.Add( tx_blank, 0, wx.RIGHT, 5 )
         self.noToC = wx.CheckBox( self, wx.ID_ANY,
-                           u"check to ignore table of contents",
+                           u"no table of content",
                            defPos, defSiz, wx.ALIGN_LEFT)
         szr03.Add( self.noToC, 0, wx.ALL, 5 )
 
@@ -417,7 +418,7 @@ class PDFDialog (wx.Dialog):
                 doc.close()
                 event.Skip()
                 return
-            self.FileList[pdf] = doc.pageCount
+            self.FileList[pdf] = len(doc)
             doc.close()
         seiten = self.FileList[pdf]
         zeile = [pdf, str(seiten), 1, str(seiten), -1]
@@ -436,23 +437,23 @@ class PDFDialog (wx.Dialog):
 # Create the joined PDF
 #==============================================================================
 def make_pdf(dlg):
-    # no file selected: treat like "Cancel"
-    if not len(dlg.szr02.Table.data):       # no files there
+    # no file selected: treat like "QUIT"
+    if not len(dlg.szr02.Table.data):       # no files there - quit
         return None
-
+    # create time zone value in PDF format
     tz = "%s'%s'" % (str(time.timezone / 3600).rjust(2,"0"),
                                 str((time.timezone / 60)%60).rjust(2, "0"))
-    if time.timezone > 0:
+    if time.timezone > 0:              # east of Greenwich
         tz = "-" + tz
-    elif time.timezone < 0:
+    elif time.timezone < 0:            # west of Greenwich
         tz = "+" + tz
-    else:
+    else:                              # GMT - omit time zone
         tz = ""
 
     cdate = time.strftime("D:%Y%m%d%H%M%S",time.localtime()) + tz
     ausgabe = dlg.btn_aus.GetPath()
-    pdf_out = fitz.open()
-    aus_nr = 0                              # current page number in output
+    pdf_out = fitz.open()              # empty new PDF document
+    aus_nr = 0                         # current page number in output
     pdf_dict = {"creator": "PDF Joiner",
                 "producer": "PyMuPDF",
                 "creationDate": cdate,
@@ -461,8 +462,8 @@ def make_pdf(dlg):
                 "author": dlg.ausaut.Value,
                 "subject": dlg.aussub.Value,
                 "keywords": dlg.keywords.Value}
-    pdf_out.setMetadata(pdf_dict)
-    total_toc = []
+    pdf_out.setMetadata(pdf_dict)      # put in meta data
+    total_toc = []                     # initialize TOC
 #==============================================================================
 # process one input file
 #==============================================================================
@@ -474,40 +475,46 @@ def make_pdf(dlg):
 # user input minus 1, PDF pages count from zero
 # also correct any inconsistent input
 #==============================================================================
-        von = int(zeile[2]) - 1
-        bis = int(zeile[3]) - 1
+        von = int(zeile[2]) - 1             # first PDF page number
+        bis = int(zeile[3]) - 1             # last PDF page number
 
-        von = max(0, von)                   # "from" must not be < 0
-        bis = min(max_seiten - 1, bis)      # "to" must not be > max pages - 1
-        bis = max(von, bis)                 # "to" cannot be < "from"
+        von = min(max(0, von), max_seiten - 1)   # "from" must be in range
+        bis = min(max(0, bis), max_seiten - 1)   # "to" must be in range
         rot = int(zeile[4])                 # get rotation angle
-
+        # now copy the page range
         pdf_out.insertPDF(doc, from_page = von, to_page = bis,
                           rotate = rot)
-
-        # title = "infile [from-to (max.pages)]"
-        if dlg.noToC.Value:                # no ToC wanted
+        if dlg.noToC.Value:                 # no ToC wanted - get next file
             continue
-        bm_main_title = "%s [%s-%s (%s)]" % \
+
+        incr = 1                            # standard increment for page range
+        if bis < von:
+            incr = -1                       # increment for reversed sequence
+        # list of page numbers in range
+        pno_range = list(range(von, bis + incr, incr))
+        # standard bokkmark title = "infile [pp from-to of max.pages]"
+        bm_main_title = "%s [pp. %s-%s of %s]" % \
               (os.path.basename(dateiname[:-4]).encode("latin-1"), von + 1,
                bis + 1, max_seiten)
-
+        # insert standard bookmark ahead of any page range
         total_toc.append([1, bm_main_title, aus_nr + 1])
-        toc = doc.getToC(simple = False)
-        last_lvl = 1
+        toc = doc.getToC(simple = False)    # get file's TOC
+        last_lvl = 1                        # immunize against hierarchy gaps
         for t in toc:
-            if t[2] < von + 1 or t[2] > bis + 1:
+            if (t[2] - 1) not in pno_range: # bookmark outside range
                 continue
+            pno = pno_range.index(t[2] - 1) + aus_nr + 1
+            # repair hierarchy gaps by filler bookmarks
             while (t[0] > last_lvl + 1):
-                total_toc.append([last_lvl + 1, "<>", t[2] + aus_nr - von, t[3]])
+                total_toc.append([last_lvl + 1, "<>", pno, t[3]])
                 last_lvl += 1
             last_lvl = t[0]
-            t[2] += aus_nr - von
+            t[2] = pno
             total_toc.append(t)
 
-        aus_nr += (bis - von + 1)      # increase output counter
+        aus_nr += len(pno_range)       # increase output counter
         doc.close()
-
+        doc = None
 
 #==============================================================================
 # all input files processed
@@ -543,7 +550,7 @@ dlg = PDFDialog(None)
 rc = dlg.ShowModal()
 
 #==============================================================================
-# if OK pressed, create output PDF
+# if SAVE pressed, create output PDF
 #==============================================================================
 if rc == wx.ID_OK:
     ausgabe = make_pdf(dlg)
