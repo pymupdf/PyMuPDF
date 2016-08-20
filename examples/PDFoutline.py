@@ -588,8 +588,8 @@ class PDFDialog (wx.Dialog):
                         defPos, defSiz, wx.BU_EXACTFIT)
         self.szr31.Add(self.btn_chk, 0, wx.ALIGN_TOP|wx.ALL, 5)
         self.msg = wx.StaticText(self, wx.ID_ANY,
-                    "Before changes to the PDF can be saved, "\
-                    "you must check your input them with this button.",
+                    "Before changes to the PDF can be saved, "
+                    "you must check your input with this button.",
                     defPos, defSiz, 0)
         self.szr31.Add(self.msg, 0, wx.ALL, 5)
 
