@@ -162,7 +162,6 @@ Examples
  >>>
  >>> fitz.Rect(p1, 300, 450)
  fitz.Rect(10.0, 10.0, 300.0, 450.0)
- >>>
 
 **Example 2:**
 ::
@@ -173,7 +172,6 @@ Examples
  >>>
  >>> r.round()
  fitz.IRect(0, -1, 124, 456)
- >>>
 
 **Example 3:**
 ::

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Changes in Version 1.9.1 &mdash; PyMuPDF 1.9.1 documentation</title>
+    <title>Changes in Version 1.9.2 &mdash; PyMuPDF 1.9.2 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.9.1',
+        VERSION:     '1.9.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.1 documentation" href="index.html" />
+    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html" />
     <link rel="next" title="Installation" href="installation.html" />
     <link rel="prev" title="Introduction" href="intro.html" /> 
   </head>
@@ -40,11 +40,17 @@
         <li class="right" >
           <a href="intro.html" title="Introduction"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Changes in Version 1.9.2</a></li>
+<li><a class="reference internal" href="#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="intro.html"
                         title="previous chapter">Introduction</a></p>
@@ -76,11 +82,41 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="changes-in-version-1-9-1">
+  <div class="section" id="changes-in-version-1-9-2">
+<h1>Changes in Version 1.9.2<a class="headerlink" href="#changes-in-version-1-9-2" title="Permalink to this headline">¶</a></h1>
+<p>This version is also based on MuPDF v1.9a. Changes compared to version 1.9.1:</p>
+<ul>
+<li><p class="first"><code class="docutils literal"><span class="pre">fitz.open()</span></code> (no parameters) creates a new empty <strong>PDF</strong> document. If saved afterwards, it must be given a <code class="docutils literal"><span class="pre">.pdf</span></code> extension.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> now accepts all of the following formats (<code class="docutils literal"><span class="pre">Document</span></code> and <code class="docutils literal"><span class="pre">open</span></code> are synonyms):</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">open()</span></code>,</li>
+<li><code class="docutils literal"><span class="pre">open(filename)</span></code> (equivalent to <code class="docutils literal"><span class="pre">open(filename,</span> <span class="pre">None)</span></code>),</li>
+<li><code class="docutils literal"><span class="pre">open(filetype,</span> <span class="pre">area)</span></code> (equivalent to <code class="docutils literal"><span class="pre">open(filetype,</span> <span class="pre">stream</span> <span class="pre">=</span> <span class="pre">area)</span></code>).</li>
+</ul>
+<p>Type of memory area <code class="docutils literal"><span class="pre">stream</span></code> may be <code class="docutils literal"><span class="pre">str</span></code> (Python 2), <code class="docutils literal"><span class="pre">bytes</span></code> (Python 3) or <code class="docutils literal"><span class="pre">bytearray</span></code> (Python 2 and 3). Thus, e.g. <code class="docutils literal"><span class="pre">stream</span> <span class="pre">=</span> <span class="pre">open(&quot;file.pdf&quot;,</span> <span class="pre">&quot;rb&quot;).read()</span></code> may be used directly (without first converting it to bytearray).</p>
+</li>
+<li><p class="first">New method <code class="docutils literal"><span class="pre">Document.insertPDF()</span></code> (PDFs only) inserts a range of pages from another PDF.</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">Document</span></code> objects doc now support the <code class="docutils literal"><span class="pre">len()</span></code> function: <code class="docutils literal"><span class="pre">len(doc)</span> <span class="pre">==</span> <span class="pre">doc.pageCount</span></code>.</p>
+</li>
+<li><p class="first">New method <code class="docutils literal"><span class="pre">Document.getPageImageList()</span></code> creates a list of images used on a page.</p>
+</li>
+<li><p class="first">New method <code class="docutils literal"><span class="pre">Document.getPageFontList()</span></code> creates a list of fonts referenced by a page.</p>
+</li>
+<li><p class="first">New pixmap constructor <code class="docutils literal"><span class="pre">fitz.Pixmap(doc,</span> <span class="pre">xref)</span></code> creates a pixmap based on an opened PDF document and an XREF number of the image.</p>
+</li>
+<li><p class="first">New pixmap constructor <code class="docutils literal"><span class="pre">fitz.Pixmap(cspace,</span> <span class="pre">spix)</span></code> creates a pixmap as a copy of another one <code class="docutils literal"><span class="pre">spix</span></code> with the colorspace converted to <code class="docutils literal"><span class="pre">cspace</span></code>. This works for all colorspace combinations.</p>
+</li>
+<li><p class="first">Pixmap constructor <code class="docutils literal"><span class="pre">fitz.Pixmap(colorspace,</span> <span class="pre">width,</span> <span class="pre">height,</span> <span class="pre">samples)</span></code> now allows <code class="docutils literal"><span class="pre">samples</span></code> to also be <code class="docutils literal"><span class="pre">str</span></code> (Python 2) or <code class="docutils literal"><span class="pre">bytes</span></code> (Python 3), not only <code class="docutils literal"><span class="pre">bytearray</span></code>.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="changes-in-version-1-9-1">
 <h1>Changes in Version 1.9.1<a class="headerlink" href="#changes-in-version-1-9-1" title="Permalink to this headline">¶</a></h1>
 <p>This version of PyMuPDF is based on MuPDF library source code version 1.9a published on April 21, 2016.</p>
 <p>Please have a look at MuPDF&#8217;s website to see which changes and enhancements are contained herein.</p>
-<p>Changes in these bindings compared to version 1.8.0 are the following:</p>
+<p>Changes in version 1.9.1 compared to version 1.8.0 are the following:</p>
 <ul class="simple">
 <li>New methods <code class="docutils literal"><span class="pre">getRectArea()</span></code> for both <code class="docutils literal"><span class="pre">fitz.Rect</span></code> and <code class="docutils literal"><span class="pre">fitz.IRect</span></code></li>
 <li>Pixmaps can now be created directly from files using the new constructor <code class="docutils literal"><span class="pre">fitz.Pixmap(filename)</span></code>.</li>
@@ -125,12 +161,12 @@
         <li class="right" >
           <a href="intro.html" title="Introduction"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 22. Jul 2016.
+      Last updated on 18. Aug 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

@@ -31,10 +31,9 @@ struct DeviceWrapper {
 };
 %}
 
-/* include version information */
+/* include version information and several helpers */
 %include version.i
-
-%include selecthelpers.i
+%include helpers.i
 
 /*******************************************************************************
 out-typemap: convert return fz_buffers to strings and drop them
@@ -46,44 +45,40 @@ out-typemap: convert return fz_buffers to strings and drop them
 
 /* fz_document */
 %rename(Document) fz_document_s;
-struct fz_document_s {
-    %extend {
-        %exception fz_document_s {
+struct fz_document_s
+{
+    %extend
+    {
+        %exception fz_document_s
+        {
             $action
             if(!result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
         %pythonprepend fz_document_s %{
-            filename = args[0]
-            stream = None
-            if len(args) > 1:
-                stream = args[1]
-                if not type(stream) is bytearray:
-                    raise ValueError("type(arg2) must be bytearray")
-            if type(filename) == str:
+            if not filename or type(filename) == str:
                 pass
             elif type(filename) == unicode:
                 filename = filename.encode('utf8')
             else:
-                raise TypeError("filename must be a string")
-            self.name = filename
-            if stream:
-                self.streamlen = len(stream)
-            else:
-                self.streamlen = 0
-            self.isClosed = 0
+                raise TypeError("if specified, filename must be a string.")
+            self.name = filename if filename else ""
+            self.streamlen = len(stream) if stream else 0
+            if stream and not filename:
+                raise ValueError("filetype missing with stream specified")
+            self.isClosed    = 0
             self.isEncrypted = 0
-            self.metadata = None
+            self.metadata    = None
+            self.openErrCode = 0
+            self.openErrMsg  = ''
 
         %}
         %pythonappend fz_document_s %{
             if this:
-                self.openErrCode = self._getGCTXerrcode();
-                self.openErrMsg  = self._getGCTXerrmsg();
+                self.openErrCode = self._getGCTXerrcode()
+                self.openErrMsg  = self._getGCTXerrmsg()
             if this and self.needsPass:
                 self.isEncrypted = 1
             # we won't init encrypted doc until it is decrypted
@@ -91,32 +86,41 @@ struct fz_document_s {
                 self.initData()
                 self.thisown = False
         %}
-        fz_document_s(const char *filename) {
-            struct fz_document_s *doc = NULL;
-            fz_try(gctx) {
-                doc = fz_open_document(gctx, filename);
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
-            return doc;
-        }
 
-        fz_document_s(const char *filetype, PyObject *stream) {
+        fz_document_s(const char *filename = NULL, PyObject *stream=NULL)
+        {
             struct fz_document_s *doc = NULL;
             fz_stream *data = NULL;
             char *streamdata;
-            size_t streamlen;
-
-            fz_try(gctx) {
+            size_t streamlen = 0;
+            if (PyByteArray_Check(stream))
+            {
                 streamdata = PyByteArray_AsString(stream);
                 streamlen = (size_t) PyByteArray_Size(stream);
-                data = fz_open_memory(gctx, streamdata, streamlen);
-                doc = fz_open_document_with_stream(gctx, filetype, data);
             }
-            fz_catch(gctx) {
+            if (PyBytes_Check(stream))
+            {
+                streamdata = PyBytes_AsString(stream);
+                streamlen = (size_t) PyBytes_Size(stream);
+            }
+
+            fz_try(gctx)
+            {
+                if (streamlen > 0)
+                {
+                    data = fz_open_memory(gctx, streamdata, streamlen);
+                    doc = fz_open_document_with_stream(gctx, filename, data);
+                }
+                else
+                {
+                    if (filename)
+                        doc = fz_open_document(gctx, filename);
+                    else
+                        doc = (fz_document *) pdf_create_document(gctx);
+                }
+            }
+            fz_catch(gctx)
                 return NULL;
-            }
             return doc;
         }
 
@@ -126,10 +130,13 @@ struct fz_document_s {
             if hasattr(self, '_outline') and self._outline:
                 self._dropOutline(self._outline)
                 self._outline = None
-            self.metadata = None
-            self.isClosed = 1
+            self.metadata    = None
+            self.isClosed    = 1
+            self.openErrCode = 0
+            self.openErrMsg  = ''
         %}
-        void close() {
+        void close()
+        {
 #ifdef MEMDEBUG
             fprintf(stderr, "[DEBUG]free doc\n");
 #endif
@@ -138,12 +145,12 @@ struct fz_document_s {
             }
             fz_drop_document(gctx, $self);
         }
-        %exception loadPage {
+
+        %exception loadPage
+        {
             $action
             if(!result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
@@ -157,12 +164,13 @@ struct fz_document_s {
                 val.number = number
                 val.parent = self
         %}
-        struct fz_page_s *loadPage(int number) {
+        struct fz_page_s *loadPage(int number)
+        {
             struct fz_page_s *page = NULL;
             fz_try(gctx)
                 page = fz_load_page(gctx, $self, number);
             fz_catch(gctx)
-                ;
+                return NULL;
             return page;
         }
 
@@ -170,7 +178,8 @@ struct fz_document_s {
             if self.isClosed:
                 raise ValueError("operation on closed document")
         %}
-        struct fz_outline_s *_loadOutline() {
+        struct fz_outline_s *_loadOutline()
+        {
             return fz_load_outline(gctx, $self);
         }
         %pythonprepend _dropOutline(struct fz_outline_s *ol) %{
@@ -215,7 +224,6 @@ struct fz_document_s {
             return fz_needs_password(gctx, $self);
         }
 
-
         int _getGCTXerrcode() {
             return gctx->error->errcode;
         }
@@ -252,30 +260,30 @@ struct fz_document_s {
                 raise TypeError("filename must be a string")
             if filename == self.name and incremental == 0:
                 raise ValueError("cannot save to input file")
-            if not self.name.lower().endswith(("/pdf", ".pdf")):
+            if len(self.name) > 0 and not self.name.lower().endswith("pdf"):
                 raise ValueError("can only save PDF files")
             if incremental and (self.name != filename or self.streamlen > 0):
                 raise ValueError("incremental save to original file only")
             if incremental and (garbage > 0 or linear > 0):
                 raise ValueError("incremental excludes garbage and linear")
             if incremental and self.openErrCode > 0:
-                raise ValueError("error '%s' during open - save to new file" % (self.openErrMsg,))
+                raise ValueError("open error '%s' - save to new file" % (self.openErrMsg,))
             if incremental and self.needsPass > 0:
-                raise ValueError("decrypted files must be saved to new file")
+                raise ValueError("decrypted - save to new file")
         %}
-        %exception save {
+        %exception save
+        {
             $action
             if(result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
-        int save(char *filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) {
+        int save(char *filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0)
+        {
             /* cast-down fz_document to a pdf_document */
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            if (!pdf) return -2;             // not a valid pdf structure, return
+            if (!pdf) return -2;                 /* not a valid pdf structure */
             int errors = 0;
             pdf_write_options opts;
             opts.do_incremental = incremental;
@@ -292,23 +300,82 @@ struct fz_document_s {
             fz_catch(gctx) {
                 return gctx->error->errcode;
             }
-            return errors;
+            return 0;
         }
 
-/*******************************************************************************
-Reduce document to keep only selected pages
-Parameter is a Python list / tuple of integers (wanted page numbers).
-*******************************************************************************/
-        %exception select {
+
+        /***********************************************************************
+        Insert pages from a source PDF to this PDF.
+        For reconstructing the links (_do_links method), we must save the
+        insertion point (start_at) if it was specified as -1.
+        ***********************************************************************/
+        %pythonprepend insertPDF %{
+            sa = start_at
+            if sa < 0:
+                sa = self.pageCount
+        %}
+
+        %pythonappend insertPDF %{
+            if links:
+                self._do_links(docsrc, from_page = from_page, to_page = to_page,
+                               start_at = sa)
+        %}
+
+        %exception insertPDF
+        {
             $action
             if(result < 0) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_ValueError, value);
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
                 return NULL;
             }
         }
-        %feature("autodoc","select(list) -> int; build sub pdf with the pages in list") select;
+        %feature("autodoc","insertPDF(PDFsrc, from_page, to_page, start_at, rotate, links) -> int\nInsert page range [from, to] of source PDF, starting as page number start_at.") insertPDF;
+
+        int insertPDF(struct fz_document_s *docsrc, int from_page=-1, int to_page=-1, int start_at=-1, int rotate=-1, int links = 1)
+        {
+            pdf_document *pdfout = pdf_specifics(gctx, $self);
+            pdf_document *pdfsrc = pdf_specifics(gctx, docsrc);
+            int outCount = fz_count_pages(gctx, $self);
+            int srcCount = fz_count_pages(gctx, docsrc);
+            int fp, tp, sa;
+            /* local copy of page specifications */
+            fp = from_page;
+            tp = to_page;
+            sa = start_at;
+            /* normalize page specifications */
+            if (fp < 0) fp = 0;
+            if (fp > srcCount - 1) fp = srcCount - 1;
+            if (tp < 0) tp = srcCount - 1;
+            if (tp > srcCount - 1) tp = srcCount - 1;
+            if (sa < 0) sa = outCount;
+            if (sa > outCount) sa = outCount;
+            fz_try(gctx)
+            {
+                if (pdfout == NULL)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "target is not a PDF document");
+                if (pdfsrc == NULL)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "source is not a PDF document");
+                merge_range(pdfout, pdfsrc, fp, tp, sa, rotate);
+            }
+            fz_catch(gctx){
+                return -1;
+            }
+            return 0;
+        }
+
+        /***********************************************************************
+        Create sub-document to keep only selected pages.
+        Parameter is a Python list of the wanted page numbers.
+        ***********************************************************************/
+        %exception select
+        {
+            $action
+            if(result < 0) {
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
+                return NULL;
+            }
+        }
+        %feature("autodoc","select(list) -> int; build sub-pdf with listed pages") select;
         %pythonprepend select %{
             if self.isClosed or self.isEncrypted:
                 raise ValueError("operation on closed or encrypted document")
@@ -316,14 +383,17 @@ Parameter is a Python list / tuple of integers (wanted page numbers).
         %pythonappend select %{
             self.initData()
         %}
-        int select(PyObject *pyliste) {
-        /* preparatory stuff: (1) get underlying pdf document, (2) transform
-           Python sequence into integer array
-        */
+        int select(PyObject *pyliste)
+        {
+            /* preparatory stuff:
+            (1) get underlying pdf document,
+            (2) transform Python list into integer array
+            */
             /* get underlying pdf_document, do some parm checks ***************/
             pdf_document *pdf = pdf_specifics(gctx, $self);
             int argc;
-            fz_try(gctx) {
+            fz_try(gctx)
+            {
                 if (pdf == NULL)
                     fz_throw(gctx, FZ_ERROR_GENERIC, "not a pdf document");
                 if (!PySequence_Check(pyliste))
@@ -335,26 +405,28 @@ Parameter is a Python list / tuple of integers (wanted page numbers).
             fz_catch(gctx) {
                 return -1;
             }
-            /* transform Python sequence into int array ***********************/
+            /* transform Python list into int array ***********************/
             int pageCount = fz_count_pages(gctx, $self);
             int i;
             int *liste;
             liste = malloc(argc * sizeof(int));
-            fz_try(gctx) {
-                for (i = 0; i < argc; i++) {
+            fz_try(gctx)
+            {
+                for (i = 0; i < argc; i++)
+                {
                     PyObject *o = PySequence_GetItem(pyliste, i);
-                    if (PyInt_Check(o)) {
+                    if (PyInt_Check(o))
+                    {
                         liste[i] = (int) PyInt_AsLong(o);
-                        if ((liste[i] < 0) | (liste[i] >= pageCount)) {
+                        if ((liste[i] < 0) | (liste[i] >= pageCount))
                             fz_throw(gctx, FZ_ERROR_GENERIC, "page numbers not in range");
-                            }
                     }
-                    else {
+                    else
                         fz_throw(gctx, FZ_ERROR_GENERIC, "page numbers must be integers");
-                    }
                 }
             }
-            fz_catch(gctx) {
+            fz_catch(gctx)
+            {
                 if (liste) free (liste);
                 return -1;
             }
@@ -368,25 +440,27 @@ Parameter is a Python list / tuple of integers (wanted page numbers).
             return 0;
         }
 
-        %exception _readPageText {
+        %exception _readPageText
+        {
             $action
             if(!result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_ValueError, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
 
-        struct fz_buffer_s *_readPageText(int pno, int output=0) {
+        struct fz_buffer_s *_readPageText(int pno, int output=0)
+        {
             fz_page *page;
             fz_buffer *res;
-            fz_try(gctx) {
+            fz_try(gctx)
+            {
                 page = fz_load_page(gctx, $self, pno);
                 res = readPageText(page, output);
                 fz_drop_page(gctx, page);
             }
-            fz_catch(gctx) {
+            fz_catch(gctx)
+            {
                 if (page) fz_drop_page(gctx, page);
                 if (res) fz_drop_buffer(gctx, res);
                 return NULL;
@@ -426,7 +500,8 @@ Parameter is a Python list / tuple of integers (wanted page numbers).
                 d["note"] = False
             val = d
         %}
-        int getPermits() {
+        int getPermits()
+        {
             int permit = 0;
             if (fz_has_permission(gctx, $self, FZ_PERMISSION_PRINT))    permit += 4;
             if (fz_has_permission(gctx, $self, FZ_PERMISSION_EDIT))     permit += 8;
@@ -435,32 +510,26 @@ Parameter is a Python list / tuple of integers (wanted page numbers).
             return permit>>2;
         }
 
-        %exception _getPageObjNumber {
+        %exception _getPageObjNumber
+        {
             $action
             if(!result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_ValueError, value);
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
                 return NULL;
             }
         }
 
-        PyObject *_getPageObjNumber(int pno) {
+        PyObject *_getPageObjNumber(int pno)
+        {
             /* cast-down fz_document to a pdf_document */
             int pageCount = fz_count_pages(gctx, $self);
-            fz_try(gctx) {
-                if ((pno < 0) | (pno >= pageCount)) {
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range");
-                }
-            }
-            fz_catch(gctx) {
-                return NULL;
-            }
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            fz_try(gctx) {
-                if (!pdf) {
+            fz_try(gctx)
+            {
+                if ((pno < 0) | (pno >= pageCount))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range");
+                if (!pdf)
                     fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
-                }
             }
             fz_catch(gctx) {
                 return NULL;
@@ -476,14 +545,182 @@ Parameter is a Python list / tuple of integers (wanted page numbers).
             PyList_SetItem(res, 1, gennum_o);
             return res;
         }
-/*******************************************************************************
-Delete all bookmarks (table of contents)
-returns number of outline entries deleted
-*******************************************************************************/
+
+        /***********************************************************************
+        Returns the images used on a page as a nested list of lists.
+        Each image entry contains
+        [xref#, gen#, width, height, bpc, colorspace, altcs]
+        ***********************************************************************/
+        %exception getPageImageList
+        {
+            $action
+            if(!result) {
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
+                return NULL;
+            }
+        }
+
+        PyObject *getPageImageList(int pno)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            int pageCount = fz_count_pages(gctx, $self);
+            fz_try(gctx)
+            {
+                if ((pno < 0) | (pno >= pageCount))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range");
+                if (!pdf)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+            }
+            fz_catch(gctx)
+            {
+                return NULL;
+            }
+            PyObject *imglist = PyList_New(0);        /* returned Python list */
+            pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, pno);
+            pdf_obj *pageobj = pdf_resolve_indirect(gctx, pageref);
+            pdf_obj *rsrc = pdf_dict_get(gctx, pageobj, PDF_NAME_Resources);
+            pdf_obj *dict = pdf_dict_get(gctx, rsrc, PDF_NAME_XObject);
+            int n = pdf_dict_len(gctx, dict);
+            int i;
+            for (i = 0; i < n; i++)       /* do this for each img of the page */
+            {
+                pdf_obj *imagedict;
+                pdf_obj *type;
+                pdf_obj *cs = NULL;
+                pdf_obj *altcs;
+                pdf_obj *o;
+
+                imagedict = pdf_dict_get_val(gctx, dict, i);
+                if (!pdf_is_dict(gctx, imagedict)) continue;
+
+                type = pdf_dict_get(gctx, imagedict, PDF_NAME_Subtype);
+                if (!pdf_name_eq(gctx, type, PDF_NAME_Image)) continue;
+
+                long xref = (long) pdf_to_num(gctx, imagedict);
+                long gen  = (long) pdf_to_gen(gctx, imagedict);
+                PyObject *xref_py = PyInt_FromLong(xref);      /* xref number */
+                PyObject *gen_py  = PyInt_FromLong(gen);        /* gen number */
+
+                o = pdf_dict_get(gctx, imagedict, PDF_NAME_Width);
+                long width = (long) pdf_to_int(gctx, o);
+                PyObject *width_py = PyInt_FromLong(width);
+
+                o = pdf_dict_get(gctx, imagedict, PDF_NAME_Height);
+                long height = (long) pdf_to_int(gctx, o);
+                PyObject *height_py = PyInt_FromLong(height);
+
+                o = pdf_dict_get(gctx, imagedict, PDF_NAME_BitsPerComponent);
+                long bpc = (long) pdf_to_int(gctx, o);
+                PyObject *bpc_py = PyInt_FromLong(bpc);
+
+                cs = pdf_dict_get(gctx, imagedict, PDF_NAME_ColorSpace);
+                altcs = NULL;
+                if (pdf_is_array(gctx, cs))
+                {
+                    pdf_obj *cses = cs;
+                    cs = pdf_array_get(gctx, cses, 0);
+                    if (pdf_name_eq(gctx, cs, PDF_NAME_DeviceN) || pdf_name_eq(gctx, cs, PDF_NAME_Separation))
+                    {
+                        altcs = pdf_array_get(gctx, cses, 2);
+                        if (pdf_is_array(gctx, altcs))
+                            altcs = pdf_array_get(gctx, altcs, 0);
+                    }
+                }
+
+                PyObject *cs_py = PyString_FromString(pdf_to_name(gctx, cs));
+                PyObject *altcs_py = PyString_FromString(pdf_to_name(gctx, altcs));
+
+                PyObject *img = PyList_New(7);         /* Python list per img */
+                PyList_SetItem(img, 0, xref_py);
+                PyList_SetItem(img, 1, gen_py);
+                PyList_SetItem(img, 2, width_py);
+                PyList_SetItem(img, 3, height_py);
+                PyList_SetItem(img, 4, bpc_py);
+                PyList_SetItem(img, 5, cs_py);
+                PyList_SetItem(img, 6, altcs_py);
+                PyList_Append(imglist, img);
+            }
+            return imglist;
+        }
+
+        /***********************************************************************
+        Returns the fonts used on a page as a nested list of lists.
+        Each font entry contains [xref#, gen#, type, basename, name]
+        ***********************************************************************/
+        %exception getPageFontList
+        {
+            $action
+            if(!result) {
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
+                return NULL;
+            }
+        }
+
+        PyObject *getPageFontList(int pno)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            int pageCount = fz_count_pages(gctx, $self);
+            fz_try(gctx)
+            {
+                if ((pno < 0) | (pno >= pageCount))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range");
+                if (!pdf)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+            }
+            fz_catch(gctx)
+            {
+                return NULL;
+            }
+            PyObject *fontlist = PyList_New(0);       /* returned Python list */
+            pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, pno);
+            pdf_obj *pageobj = pdf_resolve_indirect(gctx, pageref);
+            pdf_obj *rsrc = pdf_dict_get(gctx, pageobj, PDF_NAME_Resources);
+            pdf_obj *dict = pdf_dict_get(gctx, rsrc, PDF_NAME_Font);
+            int n = pdf_dict_len(gctx, dict);
+            int i;
+            for (i = 0; i < n; i++)      /* do this for each font of the page */
+            {
+                pdf_obj *fontdict = NULL;
+                pdf_obj *subtype = NULL;
+                pdf_obj *basefont = NULL;
+                pdf_obj *name = NULL;
+                pdf_obj *bname = NULL;
+                fontdict = pdf_dict_get_val(gctx, dict, i);
+                if (!pdf_is_dict(gctx, fontdict)) continue;  /* no valid font */
+                long xref = (long) pdf_to_num(gctx, fontdict);
+                long gen  = (long) pdf_to_gen(gctx, fontdict);
+                PyObject *xref_py = PyInt_FromLong(xref);      /* xref number */
+                PyObject *gen_py  = PyInt_FromLong(gen);        /* gen number */
+                subtype = pdf_dict_get(gctx, fontdict, PDF_NAME_Subtype);
+                basefont = pdf_dict_get(gctx, fontdict, PDF_NAME_BaseFont);
+                if (!basefont || pdf_is_null(gctx, basefont))
+                    bname = pdf_dict_get(gctx, fontdict, PDF_NAME_Name);
+                else
+                    bname = basefont;
+                name = pdf_dict_get(gctx, fontdict, PDF_NAME_Name);
+                PyObject *type_py = PyString_FromString(pdf_to_name(gctx, subtype));
+                PyObject *bname_py = PyString_FromString(pdf_to_name(gctx, bname));
+                PyObject *name_py = PyString_FromString(pdf_to_name(gctx, name));
+                PyObject *font = PyList_New(5);      /* Python list per fornt */
+                PyList_SetItem(font, 0, xref_py);
+                PyList_SetItem(font, 1, gen_py);
+                PyList_SetItem(font, 2, type_py);
+                PyList_SetItem(font, 3, bname_py);
+                PyList_SetItem(font, 4, name_py);
+                PyList_Append(fontlist, font);
+            }
+            return fontlist;
+        }
+
+        /***********************************************************************
+        Delete all bookmarks (table of contents)
+        returns number of outline entries deleted
+        ***********************************************************************/
         %pythonappend _delToC() %{
             self.initData()
         %}
-        int _delToC() {
+        int _delToC()
+        {
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
             if (!pdf) return -2;                            /* not a pdf      */
             pdf_obj *root, *olroot, *first;
@@ -505,9 +742,10 @@ returns number of outline entries deleted
             pdf_dict_del(gctx, olroot, PDF_NAME_First);
             pdf_dict_del(gctx, olroot, PDF_NAME_Last);
             pdf_dict_del(gctx, olroot, PDF_NAME_Count);
-            for (i = 0; i < objcount; i++) {
+
+            for (i = 0; i < objcount; i++)
                 pdf_delete_object(gctx, pdf, res[i]);     /* del all OL items */
-            }
+
             return objcount;
         }
 
@@ -515,12 +753,11 @@ returns number of outline entries deleted
 Get Xref Number of Outline Root
 creates OL root if necessary
 *******************************************************************************/
-        %exception _getOLRootNumber {
+        %exception _getOLRootNumber
+        {
             $action
             if(result < 0) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_ValueError, value);
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
                 return NULL;
             }
         }
@@ -554,12 +791,11 @@ creates OL root if necessary
 /*******************************************************************************
 Get New Xref Number
 *******************************************************************************/
-        %exception _getNewXref {
+        %exception _getNewXref
+        {
             $action
             if(result < 0) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_ValueError, value);
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
                 return NULL;
             }
         }
@@ -577,20 +813,18 @@ Get New Xref Number
         }
 
 /*******************************************************************************
-Update an Xref Number with a new Object
-Object given as a string
+Get Length of Xref
 *******************************************************************************/
-        %exception _updateObject {
+        %exception _getXrefLength
+        {
             $action
             if(result < 0) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_ValueError, value);
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
                 return NULL;
             }
         }
 
-        int _updateObject(int xref, char *text)
+        int _getXrefLength()
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
             fz_try(gctx) {
@@ -599,14 +833,79 @@ Object given as a string
             fz_catch(gctx) {
                 return -2;
             }
+            return pdf_xref_len(gctx, pdf);
+        }
+
+/*******************************************************************************
+Get Object String by Xref Number
+*******************************************************************************/
+        %exception _getObjectString
+        {
+            $action
+            if(!result) {
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
+                return NULL;
+            }
+        }
+
+        struct fz_buffer_s *_getObjectString(int xnum)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
+            pdf_obj *obj;
+            struct fz_buffer_s *res = NULL;
+            fz_output *out;
+            fz_try(gctx)
+            {
+                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                int xreflen = pdf_xref_len(gctx, pdf);
+                if ((xnum < 1) | (xnum >= xreflen))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "xref number out of range");
+                res = fz_new_buffer(gctx, 1024);
+                out = fz_new_output_with_buffer(gctx, res);
+                obj = pdf_load_object(gctx, pdf, xnum, 0);
+                pdf_print_obj(gctx, out, pdf_resolve_indirect(gctx, obj), 1);
+            }
+            fz_always(gctx)
+            {
+                if (obj) pdf_drop_obj(gctx, obj);
+                if (out) fz_drop_output(gctx, out);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return res;
+        }
+
+/*******************************************************************************
+Update an Xref Number with a new Object
+Object given as a string
+*******************************************************************************/
+        %exception _updateObject
+        {
+            $action
+            if(result != 0) {
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
+                return NULL;
+            }
+        }
+
+        int _updateObject(int xref, char *text)
+        {
             pdf_obj *new_obj;
-            fz_try(gctx) {
+            pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
+            fz_try(gctx)
+            {
+                if (!pdf)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                int xreflen = pdf_xref_len(gctx, pdf);
+                if ((xref < 1) | (xref >= xreflen))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "xref number out of range");
                 /* create new object based on passed-in string          */
                 new_obj = pdf_new_obj_from_str(gctx, pdf, text);
                 pdf_update_object(gctx, pdf, xref, new_obj);
             }
             fz_catch(gctx) {
-                return gctx->error->errcode;
+                return -1;
             }
             return 0;
         }
@@ -614,12 +913,11 @@ Object given as a string
 /*******************************************************************************
 Add or update metadata with provided raw string
 *******************************************************************************/
-        %exception _setMetadata {
+        %exception _setMetadata
+        {
             $action
             if(result > 0) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_ValueError, value);
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
                 return NULL;
             }
         }
@@ -636,7 +934,8 @@ Add or update metadata with provided raw string
             pdf_obj *info, *new_info, *new_info_ind;
             int info_num;
             info_num = 0;              /* will contain xref no of info object */
-            fz_try(gctx) {
+            fz_try(gctx)
+            {
                 /* create new /Info object based on passed-in string          */
                 new_info = pdf_new_obj_from_str(gctx, pdf, text);
             }
@@ -645,7 +944,8 @@ Add or update metadata with provided raw string
             }
             /* replace existing /Info object                                  */
             info = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Info);
-            if (info) {
+            if (info)
+            {
                 info_num = pdf_to_num(gctx, info); /* get xref no of old info */
                 pdf_update_object(gctx, pdf, info_num, new_info);/* put new in*/
                 return 0;
@@ -676,6 +976,9 @@ Initialize document: set outline and metadata properties
                 if self.streamlen == 0:
                     return "fitz.Document('%s')" % (self.name,)
                 return "fitz.Document('%s', bytearray)" % (self.name,)
+
+            def __len__(self):
+                return self.pageCount
 
             %}
     }
@@ -711,9 +1014,7 @@ struct fz_page_s {
         %exception run {
             $action
             if(result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
@@ -751,9 +1052,7 @@ struct fz_page_s {
         %exception _readPageText {
             $action
             if(!result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_ValueError, value);
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
                 return NULL;
             }
         }
@@ -948,19 +1247,19 @@ struct fz_pixmap_s
     int interpolate;
     int xres, yres;
     %extend {
-        %exception fz_pixmap_s {
+        %exception fz_pixmap_s
+        {
             $action
             if(!result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_ValueError, value);
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
                 return NULL;
             }
         }
         /***********************************************************/
         /* create empty pixmap with colorspace and IRect specified */
         /***********************************************************/
-        fz_pixmap_s(struct fz_colorspace_s *cs, const struct fz_irect_s *bbox) {
+        fz_pixmap_s(struct fz_colorspace_s *cs, const struct fz_irect_s *bbox)
+        {
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
                 pm = fz_new_pixmap_with_bbox(gctx, cs, bbox);
@@ -970,16 +1269,44 @@ struct fz_pixmap_s
         }
 
         /***********************************************************/
+        /* create new pixmap as converted copy of another one      */
+        /***********************************************************/
+        fz_pixmap_s(struct fz_colorspace_s *cs, struct fz_pixmap_s *spix)
+        {
+            struct fz_pixmap_s *pm = NULL;
+            fz_try(gctx)
+            {
+                pm = fz_new_pixmap(gctx, cs, spix->w, spix->h);
+                pm->x = 0;
+                pm->y = 0;
+                fz_convert_pixmap(gctx, pm, spix);
+            }
+            fz_catch(gctx)
+                return NULL;
+            return pm;
+        }
+
+        /***********************************************************/
         /* create a pixmap from samples data                       */
         /***********************************************************/
-        fz_pixmap_s(struct fz_colorspace_s *cs, int w, int h, PyObject *samples) {
+        fz_pixmap_s(struct fz_colorspace_s *cs, int w, int h, PyObject *samples)
+        {
             char *data;
             size_t size;
-            fz_try(gctx) {
+            size = 0;
+            if (PyByteArray_Check(samples)){
                 data = PyByteArray_AsString(samples);
                 size = (size_t) PyByteArray_Size(samples);
+            }
+            if (PyBytes_Check(samples)){
+                data = PyBytes_AsString(samples);
+                size = (size_t) PyBytes_Size(samples);
+            }
+            fz_try(gctx) {
+                if (size == 0)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "type(samples) invalid");
                 if ((cs->n+1) * w * h != size) {
-                    fz_throw(gctx, FZ_ERROR_GENERIC,"invalid samples size");
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "len(samples) invalid");
                     }
                 }
             fz_catch(gctx) {
@@ -996,7 +1323,8 @@ struct fz_pixmap_s
         /******************************************/
         /* create a pixmap from filename          */
         /******************************************/
-        fz_pixmap_s(char *filename) {
+        fz_pixmap_s(char *filename)
+        {
             struct fz_image_s *img = NULL;
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx) {
@@ -1012,31 +1340,71 @@ struct fz_pixmap_s
         }
 
         /******************************************/
-        /* create a pixmap from a bytearray       */
+        /* create a pixmap from bytes / bytearray */
         /******************************************/
-        fz_pixmap_s(PyObject *imagedata) {
+        fz_pixmap_s(PyObject *imagedata)
+        {
             size_t size;
+            size = 0;
             char *data;
-            fz_try(gctx) {
+            if (PyByteArray_Check(imagedata)){
                 data = PyByteArray_AsString(imagedata);
                 size = (size_t) PyByteArray_Size(imagedata);
-                }
-            fz_catch(gctx) {
-                return NULL;
-                }
+            }
+            if (PyBytes_Check(imagedata)){
+                data = PyBytes_AsString(imagedata);
+                size = (size_t) PyBytes_Size(imagedata);
+            }
             struct fz_image_s *img = NULL;
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx) {
+                if (size == 0)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "type(imagedata) invalid");
                 img = fz_new_image_from_data(gctx, data, size);
                 pm = fz_get_pixmap_from_image(gctx, img, -1, -1);
+                fz_drop_image(gctx, img);
                 }
             fz_catch(gctx) {
                 if (img) fz_drop_image(gctx, img);
                 return NULL;
                 }
-            fz_drop_image(gctx, img);
+
             return pm;
         }
+
+        /***********************************************************************
+        Create pixmap from an image identified by XREF number
+        ***********************************************************************/
+        fz_pixmap_s(struct fz_document_s *doc, int xref)
+        {
+            struct fz_image_s *img = NULL;
+            struct fz_pixmap_s *pix = NULL;
+            pdf_obj *ref = NULL;
+            pdf_document *pdf = pdf_specifics(gctx, doc);
+
+            fz_try(gctx)
+            {
+                if (!pdf)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                int xreflen = pdf_xref_len(gctx, pdf);
+                if ((xref < 1) | (xref >= xreflen))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "xref number out of range");
+                ref = pdf_new_indirect(gctx, pdf, xref, 0);
+                img = pdf_load_image(gctx, pdf, ref);
+                pdf_drop_obj(gctx, ref);
+                pix = fz_get_pixmap_from_image(gctx, img, 0, 0);
+                fz_drop_image(gctx,img);
+            }
+            fz_catch(gctx)
+            {
+                if (img) fz_drop_image(gctx, img);
+                if (pix) fz_drop_pixmap(gctx, pix);
+                if (ref) pdf_drop_obj(gctx, ref);
+                return NULL;
+            }
+            return pix;
+        }
+
         ~fz_pixmap_s() {
 #ifdef MEMDEBUG
             fprintf(stderr, "[DEBUG]free pixmap\n");
@@ -1079,7 +1447,8 @@ struct fz_pixmap_s
         /***********************************/
         /* copy pixmaps                    */
         /***********************************/
-        void copyPixmap(struct fz_pixmap_s *src, const struct fz_irect_s *bbox) {
+        void copyPixmap(struct fz_pixmap_s *src, const struct fz_irect_s *bbox)
+        {
             fz_copy_pixmap_rect(gctx, $self, src, bbox);
         }
 
@@ -1096,9 +1465,7 @@ struct fz_pixmap_s
         %exception writePNG {
             $action
             if(result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
@@ -1114,6 +1481,8 @@ struct fz_pixmap_s
         %}
         int writePNG(char *filename, int savealpha=0) {
             fz_try(gctx) {
+                if ($self->n > 4)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "PNG not supported for CMYK");
                 fz_save_pixmap_as_png(gctx, $self, filename, savealpha);
             }
             fz_catch(gctx)
@@ -1124,10 +1493,13 @@ struct fz_pixmap_s
         /**********************/
         /* getPNGData         */
         /**********************/
-        PyObject *getPNGData(int savealpha=0) {
+        PyObject *getPNGData(int savealpha=0)
+        {
             struct fz_buffer_s *res = NULL;
             fz_output *out;
             fz_try(gctx) {
+                if ($self->n > 4)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "PNG not supported for CMYK");
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 fz_write_pixmap_as_png(gctx, out, $self, savealpha);
@@ -1144,7 +1516,8 @@ struct fz_pixmap_s
         /* without the alpha bytes (RGB only) */
         /**************************************/
 
-        PyObject *samplesRGB() {
+        PyObject *samplesRGB()
+        {
             if ($self->n != 4) return NULL;  /* RGB colorspaces onbly */
             char *t;
             char *s;
@@ -1181,7 +1554,8 @@ struct fz_pixmap_s
         /* out of the samples area            */
         /**************************************/
 
-        PyObject *samplesAlpha() {
+        PyObject *samplesAlpha()
+        {
             char *t;
             char *s;
             char *out;
@@ -1212,12 +1586,11 @@ struct fz_pixmap_s
         /************************/
         /* _writeIMG            */
         /************************/
-        %exception _writeIMG {
+        %exception _writeIMG
+        {
             $action
             if(result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
@@ -1229,7 +1602,8 @@ struct fz_pixmap_s
             else:
                 raise TypeError("filename must be a string")
         %}
-        int _writeIMG(char *filename, int format, int savealpha=0) {
+        int _writeIMG(char *filename, int format, int savealpha=0)
+        {
             fz_try(gctx) {
                 switch(format)
                 {
@@ -1255,19 +1629,23 @@ struct fz_pixmap_s
         /******************************/
         /* invertIRect (total pixmap) */
         /******************************/
-        void invertIRect() {
+        void invertIRect()
+        {
             fz_invert_pixmap(gctx, $self);
         }
         /*************************/
         /* invertIRect           */
         /*************************/
-        void invertIRect(const struct fz_irect_s *irect) {
+        void invertIRect(const struct fz_irect_s *irect)
+        {
             fz_invert_pixmap_rect(gctx, $self, irect);
         }
 
-        PyObject *_getSamples() {
+        PyObject *_getSamples()
+        {
             return PyByteArray_FromStringAndSize((const char *)$self->samples, ($self->w)*($self->h)*($self->n));
         }
+
         %pythoncode %{
             samples = property(lambda self: self._getSamples())
             __len__ = getSize
@@ -1275,8 +1653,9 @@ struct fz_pixmap_s
             height = h
 
             def __repr__(self):
-                cs = {2:"GRAY", 4:"RGB", 5:"CMYK"}
-                return "fitz.Pixmap(fitz.cs%s, fitz.IRect(%s, %s, %s, %s))" % (cs[self.n], self.x, self.y, self.x + self.width, self.y + self.height)
+                cs = {2:"fitz.csGRAY", 4:"fitz.csRGB", 5:"fitz.csCMYK"}
+                cspace = "unsupp:" + str(self.n) if not cs.get(self.n) else cs[self.n]
+                return "fitz.Pixmap(%s, fitz.IRect(%s, %s, %s, %s))" % (cspace, self.x, self.y, self.x + self.width, self.y + self.height)
 
         %}
     }
@@ -1296,7 +1675,8 @@ struct fz_pixmap_s
 struct fz_colorspace_s
 {
     %extend {
-        fz_colorspace_s(int type) {
+        fz_colorspace_s(int type)
+        {
             switch(type) {
                 case CS_GRAY:
                     return fz_device_gray(gctx);
@@ -1328,9 +1708,7 @@ struct DeviceWrapper
         %exception DeviceWrapper {
             $action
             if(!result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
@@ -1515,9 +1893,7 @@ struct fz_outline_s {
         %exception saveXML {
             $action
             if(result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
@@ -1545,9 +1921,7 @@ struct fz_outline_s {
         %exception saveText {
             $action
             if(result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
@@ -1769,9 +2143,7 @@ struct fz_display_list_s {
         %exception run {
             $action
             if(result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
@@ -1794,9 +2166,7 @@ struct fz_stext_sheet_s {
         %exception fz_stext_sheet_s {
             $action
             if(!result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
@@ -2019,9 +2389,7 @@ struct fz_stext_page_s {
         %exception fz_stext_page_s {
             $action
             if(!result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
@@ -2061,9 +2429,7 @@ struct fz_stext_page_s {
         %exception extractText {
             $action
             if(!result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
@@ -2088,9 +2454,7 @@ struct fz_stext_page_s {
         %exception extractXML {
             $action
             if(!result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
@@ -2115,9 +2479,7 @@ struct fz_stext_page_s {
         %exception extractHTML {
             $action
             if(!result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
@@ -2142,9 +2504,7 @@ struct fz_stext_page_s {
         %exception extractJSON {
             $action
             if(!result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }

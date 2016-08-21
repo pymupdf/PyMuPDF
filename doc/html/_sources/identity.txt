@@ -16,5 +16,4 @@ If you need a do-nothing matrix as a starting point, use ``fitz.Matrix(1, 1)`` o
 ::
  >>> fitz.Matrix(0).preTranslate(2, 5)
  fitz.Matrix(1.0, 0.0, -0.0, 1.0, 2.0, 5.0)
- >>>
 

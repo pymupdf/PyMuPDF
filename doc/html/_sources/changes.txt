@@ -2,14 +2,34 @@
 
     PageBreak
 
+Changes in Version 1.9.2
 =========================
+This version is also based on MuPDF v1.9a. Changes compared to version 1.9.1:
+
+* ``fitz.open()`` (no parameters) creates a new empty **PDF** document. If saved afterwards, it must be given a ``.pdf`` extension.
+* :ref:`Document` now accepts all of the following formats (``Document`` and ``open`` are synonyms):
+
+  - ``open()``,
+  - ``open(filename)`` (equivalent to ``open(filename, None)``),
+  - ``open(filetype, area)`` (equivalent to ``open(filetype, stream = area)``).
+
+  Type of memory area ``stream`` may be ``str`` (Python 2), ``bytes`` (Python 3) or ``bytearray`` (Python 2 and 3). Thus, e.g. ``stream = open("file.pdf", "rb").read()`` may be used directly (without first converting it to bytearray).
+* New method ``Document.insertPDF()`` (PDFs only) inserts a range of pages from another PDF.
+* ``Document`` objects doc now support the ``len()`` function: ``len(doc) == doc.pageCount``.
+* New method ``Document.getPageImageList()`` creates a list of images used on a page.
+* New method ``Document.getPageFontList()`` creates a list of fonts referenced by a page.
+* New pixmap constructor ``fitz.Pixmap(doc, xref)`` creates a pixmap based on an opened PDF document and an XREF number of the image.
+* New pixmap constructor ``fitz.Pixmap(cspace, spix)`` creates a pixmap as a copy of another one ``spix`` with the colorspace converted to ``cspace``. This works for all colorspace combinations.
+* Pixmap constructor ``fitz.Pixmap(colorspace, width, height, samples)`` now allows ``samples`` to also be ``str`` (Python 2) or ``bytes`` (Python 3), not only ``bytearray``.
+
+
 Changes in Version 1.9.1
 =========================
 This version of PyMuPDF is based on MuPDF library source code version 1.9a published on April 21, 2016.
 
 Please have a look at MuPDF's website to see which changes and enhancements are contained herein.
 
-Changes in these bindings compared to version 1.8.0 are the following:
+Changes in version 1.9.1 compared to version 1.8.0 are the following:
 
 * New methods ``getRectArea()`` for both ``fitz.Rect`` and ``fitz.IRect``
 * Pixmaps can now be created directly from files using the new constructor ``fitz.Pixmap(filename)``.

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Constants and Enumerations &mdash; PyMuPDF 1.9.1 documentation</title>
+    <title>Constants and Enumerations &mdash; PyMuPDF 1.9.2 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.9.1',
+        VERSION:     '1.9.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.1 documentation" href="index.html" />
+    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html" />
     <link rel="next" title="Appendix 1: Performance" href="app1.html" />
     <link rel="prev" title="Functions" href="functions.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="functions.html" title="Functions"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -50,7 +50,7 @@
 <li><a class="reference internal" href="#">Constants and Enumerations</a><ul>
 <li><a class="reference internal" href="#constants">Constants</a></li>
 <li><a class="reference internal" href="#enumerations">Enumerations</a></li>
-<li><a class="reference internal" href="#possible-values-of-linkdest-flags-link-destination-flags">Possible values of <code class="docutils literal"><span class="pre">linkDest.flags</span></code> (link destination flags)</a></li>
+<li><a class="reference internal" href="#link-destination-flags">Link Destination Flags</a></li>
 </ul>
 </li>
 </ul>
@@ -88,7 +88,7 @@
             
   <div class="section" id="constants-and-enumerations">
 <h1>Constants and Enumerations<a class="headerlink" href="#constants-and-enumerations" title="Permalink to this headline">¶</a></h1>
-<p>Constants and enumerations of MuPDF as implemented by PyMuPDF. If your import statement was <code class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></code> then each of the following variables <code class="docutils literal"><span class="pre">var</span></code> is accessible as <code class="docutils literal"><span class="pre">fitz.var</span></code>.</p>
+<p>Constants and enumerations of MuPDF as implemented by PyMuPDF. If your import statement was <code class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></code> then each of the following variables is accessible as <code class="docutils literal"><span class="pre">fitz.variable</span></code>.</p>
 <div class="section" id="constants">
 <h2>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h2>
 <dl class="data">
@@ -178,7 +178,7 @@
 <dl class="data">
 <dt id="VersionBind">
 <code class="descname">VersionBind</code><a class="headerlink" href="#VersionBind" title="Permalink to this definition">¶</a></dt>
-<dd><p>&#8216;1.9.1&#8217; - version of PyMuPDF (these bindings)</p>
+<dd><p>&#8216;1.9.2&#8217; - version of PyMuPDF (these bindings)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -219,7 +219,7 @@
 
 </div>
 <div class="section" id="enumerations">
-<h2>Enumerations<a class="headerlink" href="#enumerations" title="Permalink to this headline">¶</a></h2>
+<span id="linkdest-kinds"></span><h2>Enumerations<a class="headerlink" href="#enumerations" title="Permalink to this headline">¶</a></h2>
 <p>Possible values of <a class="reference internal" href="linkdest.html#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> (link destination type). For details consult <a class="reference external" href="http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf">Adobe PDF Reference sixth edition 1.7 November 2006</a>, chapter 8.2 on pp. 581.</p>
 <dl class="data">
 <dt id="LINK_NONE">
@@ -238,7 +238,7 @@
 <dl class="data">
 <dt id="LINK_GOTO">
 <code class="descname">LINK_GOTO</code><a class="headerlink" href="#LINK_GOTO" title="Permalink to this definition">¶</a></dt>
-<dd><p>1 - Points to a place in this document</p>
+<dd><p>1 - Points to a place in this document.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -252,7 +252,7 @@
 <dl class="data">
 <dt id="LINK_URI">
 <code class="descname">LINK_URI</code><a class="headerlink" href="#LINK_URI" title="Permalink to this definition">¶</a></dt>
-<dd><p>2 - Points to a URI</p>
+<dd><p>2 - Points to a URI - typically an internet resource.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -266,7 +266,7 @@
 <dl class="data">
 <dt id="LINK_LAUNCH">
 <code class="descname">LINK_LAUNCH</code><a class="headerlink" href="#LINK_LAUNCH" title="Permalink to this definition">¶</a></dt>
-<dd><p>3 - Launch (open) another document</p>
+<dd><p>3 - Launch (open) another document.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -280,7 +280,7 @@
 <dl class="data">
 <dt id="LINK_NAMED">
 <code class="descname">LINK_NAMED</code><a class="headerlink" href="#LINK_NAMED" title="Permalink to this definition">¶</a></dt>
-<dd><p>4 - Perform some action</p>
+<dd><p>4 - Perform some action, like &#8220;FirstPage&#8221;, &#8220;NextPage&#8221;, etc.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -294,7 +294,7 @@
 <dl class="data">
 <dt id="LINK_GOTOR">
 <code class="descname">LINK_GOTOR</code><a class="headerlink" href="#LINK_GOTOR" title="Permalink to this definition">¶</a></dt>
-<dd><p>5 - Points to another document</p>
+<dd><p>5 - Points to a place in another document.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -306,11 +306,11 @@
 </dd></dl>
 
 </div>
-<div class="section" id="possible-values-of-linkdest-flags-link-destination-flags">
-<h2>Possible values of <a class="reference internal" href="linkdest.html#linkDest.flags" title="linkDest.flags"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.flags</span></code></a> (link destination flags)<a class="headerlink" href="#possible-values-of-linkdest-flags-link-destination-flags" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="link-destination-flags">
+<span id="linkdest-flags"></span><h2>Link Destination Flags<a class="headerlink" href="#link-destination-flags" title="Permalink to this headline">¶</a></h2>
 <div class="admonition caution">
 <p class="first admonition-title">Caution</p>
-<p class="last">The rightmost byte of this integer is a bit field. The values represent boolean indicators showing whether the associated statements are <code class="docutils literal"><span class="pre">True</span></code> (may be more than one).</p>
+<p class="last">The rightmost byte of this integer is a bit field, so test the truth of these bits with the <code class="docutils literal"><span class="pre">&amp;</span></code> operator.</p>
 </div>
 <dl class="data">
 <dt id="LINK_FLAG_L_VALID">
@@ -431,12 +431,12 @@
         <li class="right" >
           <a href="functions.html" title="Functions"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 18. Jul 2016.
+      Last updated on 21. Aug 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

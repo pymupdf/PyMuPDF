@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>linkDest &mdash; PyMuPDF 1.9.1 documentation</title>
+    <title>linkDest &mdash; PyMuPDF 1.9.2 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.9.1',
+        VERSION:     '1.9.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.1 documentation" href="index.html" />
+    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html" />
     <link rel="up" title="Classes" href="classes.html" />
     <link rel="next" title="Matrix" href="matrix.html" />
     <link rel="prev" title="Link" href="link.html" /> 
@@ -41,7 +41,7 @@
         <li class="right" >
           <a href="link.html" title="Link"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="classes.html" accesskey="U">Classes</a> &raquo;</li> 
       </ul>
     </div>
@@ -137,7 +137,7 @@
 <dd><dl class="attribute">
 <dt id="linkDest.dest">
 <code class="descname">dest</code><a class="headerlink" href="#linkDest.dest" title="Permalink to this definition">¶</a></dt>
-<dd><p>Target destination name if specified (only if <a class="reference internal" href="#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> = <a class="reference internal" href="vars.html#LINK_GOTOR" title="LINK_GOTOR"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTOR</span></code></a>).</p>
+<dd><p>Target destination name if <a class="reference internal" href="#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> is <a class="reference internal" href="vars.html#LINK_GOTOR" title="LINK_GOTOR"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTOR</span></code></a> and <a class="reference internal" href="#linkDest.page" title="linkDest.page"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.page</span></code></a> is <code class="docutils literal"><span class="pre">-1</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -151,7 +151,7 @@
 <dl class="attribute">
 <dt id="linkDest.fileSpec">
 <code class="descname">fileSpec</code><a class="headerlink" href="#linkDest.fileSpec" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the filename (including any path specifications) this link points to, if applicable (only if <a class="reference internal" href="#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> = <a class="reference internal" href="vars.html#LINK_GOTOR" title="LINK_GOTOR"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTOR</span></code></a>).</p>
+<dd><p>Contains the filename and path this link points to, if <a class="reference internal" href="#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> is <a class="reference internal" href="vars.html#LINK_GOTOR" title="LINK_GOTOR"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTOR</span></code></a> or <a class="reference internal" href="vars.html#LINK_LAUNCH" title="LINK_LAUNCH"><code class="xref py py-data docutils literal"><span class="pre">LINK_LAUNCH</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -165,7 +165,7 @@
 <dl class="attribute">
 <dt id="linkDest.flags">
 <code class="descname">flags</code><a class="headerlink" href="#linkDest.flags" title="Permalink to this definition">¶</a></dt>
-<dd><p>A one-byte bitfield consisting of indicators describing the validity and meaning of the different aspects of the destination. As far as possible, link destinations are constructed such that e.g. <a class="reference internal" href="#linkDest.lt" title="linkDest.lt"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.lt</span></code></a> and <a class="reference internal" href="#linkDest.rb" title="linkDest.rb"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.rb</span></code></a> can be treated as defining a bounding box, though the validity flags (see <code class="docutils literal"><span class="pre">LINK_FLAG_*</span></code> values) indicate which of the values were actually specified. Note that the numerical values for each of the LINK_FLAGs are powers of 2 and thus indicate the position of the bit to be tested. More than one bit can be <code class="docutils literal"><span class="pre">True</span></code>, so do not test for the value of the integer.</p>
+<dd><p>A bitfield describing the validity and meaning of the different aspects of the destination. As far as possible, link destinations are constructed such that e.g. <a class="reference internal" href="#linkDest.lt" title="linkDest.lt"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.lt</span></code></a> and <a class="reference internal" href="#linkDest.rb" title="linkDest.rb"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.rb</span></code></a> can be treated as defining a bounding box. But the flags indicate which of the values were actually specified, see <a class="reference internal" href="vars.html#linkdest-flags"><span class="std std-ref">Link Destination Flags</span></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -193,7 +193,7 @@
 <dl class="attribute">
 <dt id="linkDest.isUri">
 <code class="descname">isUri</code><a class="headerlink" href="#linkDest.isUri" title="Permalink to this definition">¶</a></dt>
-<dd><p>Specifies whether this destination is an internet resource.</p>
+<dd><p>Specifies whether this destination is an internet resource (as opposed to e.g. a local file specification in URI format).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -207,7 +207,7 @@
 <dl class="attribute">
 <dt id="linkDest.kind">
 <code class="descname">kind</code><a class="headerlink" href="#linkDest.kind" title="Permalink to this definition">¶</a></dt>
-<dd><p>Indicates the type of this destination, like a place in this document, a URI, a file launch, an action or a place in another file. Look at index entries <code class="docutils literal"><span class="pre">FZ_LINK_*</span></code> to see the names and numerical values.</p>
+<dd><p>Indicates the type of this destination, like a place in this document, a URI, a file launch, an action or a place in another file. Look at <a class="reference internal" href="vars.html#linkdest-kinds"><span class="std std-ref">Enumerations</span></a> to see the names and numerical values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -235,7 +235,7 @@
 <dl class="attribute">
 <dt id="linkDest.named">
 <code class="descname">named</code><a class="headerlink" href="#linkDest.named" title="Permalink to this definition">¶</a></dt>
-<dd><p>This destination refers to some named action to perform (e.g. a javascript, see Adobe PDF documentation).</p>
+<dd><p>This destination refers to some named action to perform (e.g. a javascript, see Adobe PDF documentation). Standard actions provided are <code class="docutils literal"><span class="pre">NextPage</span></code>, <code class="docutils literal"><span class="pre">PrevPage</span></code>, <code class="docutils literal"><span class="pre">FirstPage</span></code>,  and <code class="docutils literal"><span class="pre">LastPage</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -263,7 +263,7 @@
 <dl class="attribute">
 <dt id="linkDest.page">
 <code class="descname">page</code><a class="headerlink" href="#linkDest.page" title="Permalink to this definition">¶</a></dt>
-<dd><p>The page number (in this or the target document) this destination points to. Only set if <a class="reference internal" href="#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> = <a class="reference internal" href="vars.html#LINK_GOTOR" title="LINK_GOTOR"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTOR</span></code></a> or <a class="reference internal" href="#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> = <a class="reference internal" href="vars.html#LINK_GOTO" title="LINK_GOTO"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTO</span></code></a>. Can be <code class="docutils literal"><span class="pre">-1</span></code> if <a class="reference internal" href="#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> = <a class="reference internal" href="vars.html#LINK_GOTOR" title="LINK_GOTOR"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTOR</span></code></a>, in which case <a class="reference internal" href="#linkDest.dest" title="linkDest.dest"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.dest</span></code></a> determines where to go (to be resolved by target document).</p>
+<dd><p>The page number (in this or the target document) this destination points to. Only set if <a class="reference internal" href="#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> is <a class="reference internal" href="vars.html#LINK_GOTOR" title="LINK_GOTOR"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTOR</span></code></a> or <a class="reference internal" href="vars.html#LINK_GOTO" title="LINK_GOTO"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTO</span></code></a>. May be <code class="docutils literal"><span class="pre">-1</span></code> if <a class="reference internal" href="#linkDest.kind" title="linkDest.kind"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.kind</span></code></a> is <a class="reference internal" href="vars.html#LINK_GOTOR" title="LINK_GOTOR"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTOR</span></code></a>. In this case <a class="reference internal" href="#linkDest.dest" title="linkDest.dest"><code class="xref py py-attr docutils literal"><span class="pre">linkDest.dest</span></code></a> contains the <strong>name</strong> of a destination in the target document.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -324,13 +324,13 @@
         <li class="right" >
           <a href="link.html" title="Link"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="classes.html" >Classes</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 18. Jul 2016.
+      Last updated on 21. Aug 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>

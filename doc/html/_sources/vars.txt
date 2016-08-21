@@ -5,7 +5,7 @@
 ===============================
 Constants and Enumerations
 ===============================
-Constants and enumerations of MuPDF as implemented by PyMuPDF. If your import statement was ``import fitz`` then each of the following variables ``var`` is accessible as ``fitz.var``.
+Constants and enumerations of MuPDF as implemented by PyMuPDF. If your import statement was ``import fitz`` then each of the following variables is accessible as ``fitz.variable``.
 
 
 Constants
@@ -49,7 +49,7 @@ Constants
 
 .. py:data:: VersionBind
 
-    '1.9.1' - version of PyMuPDF (these bindings)
+    '1.9.2' - version of PyMuPDF (these bindings)
 
     :rtype: string
 
@@ -65,6 +65,8 @@ Constants
 
     :rtype: string
 
+.. _linkDest Kinds:
+
 Enumerations
 -------------
 Possible values of :attr:`linkDest.kind` (link destination type). For details consult `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_, chapter 8.2 on pp. 581.
@@ -77,39 +79,40 @@ Possible values of :attr:`linkDest.kind` (link destination type). For details co
 
 .. py:data:: LINK_GOTO
 
-    1 - Points to a place in this document
+    1 - Points to a place in this document.
 
     :rtype: int
 
 .. py:data:: LINK_URI
 
-    2 - Points to a URI
+    2 - Points to a URI - typically an internet resource.
 
     :rtype: int
 
 .. py:data:: LINK_LAUNCH
 
-    3 - Launch (open) another document
+    3 - Launch (open) another document.
 
     :rtype: int
 
 .. py:data:: LINK_NAMED
 
-    4 - Perform some action
+    4 - Perform some action, like "FirstPage", "NextPage", etc.
 
     :rtype: int
 
 .. py:data:: LINK_GOTOR
 
-    5 - Points to another document
+    5 - Points to a place in another document.
 
     :rtype: int
 
+.. _linkDest Flags:
 
-Possible values of :attr:`linkDest.flags` (link destination flags)
-------------------------------------------------------------------
+Link Destination Flags
+-------------------------
 
-.. caution:: The rightmost byte of this integer is a bit field. The values represent boolean indicators showing whether the associated statements are ``True`` (may be more than one).
+.. caution:: The rightmost byte of this integer is a bit field, so test the truth of these bits with the ``&`` operator.
 
 .. py:data:: LINK_FLAG_L_VALID
 

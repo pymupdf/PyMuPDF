@@ -10,13 +10,15 @@ Pixmap
 
 Pixmaps ("pixel maps") are objects at the heart of MuPDF's rendering capabilities. They represent plane rectangular sets of pixels. Each pixel is described by a number of bytes ("components") plus an alpha (transparency) byte.
 
-In PyMuPDF, there exist several ways to create a pixmap:
+In PyMuPDF, there exist several ways to create a pixmap. Except one, all of them are available as overloaded constructors. A pixmap can be created ...
 
-1. create a pixmap from a document page (via methods :meth:`Page.getPixmap` or :meth:`Document.getPagePixmap`)
-2. create an empty pixmap based on :ref:`Colorspace` and :ref:`IRect` information
-3. create a pixmap from a file
-4. create a pixmap from an in-memory image (bytearray)
-5. create a pixmap from a memory area containing plain pixels
+1. from a document page (via methods :meth:`Page.getPixmap` or :meth:`Document.getPagePixmap`)
+2. empty based on :ref:`Colorspace` and :ref:`IRect` information
+3. from an image file
+4. from an in-memory image (bytearray)
+5. from a memory area of plain pixels
+6. from an image inside the PDF document
+7. as a copy of another pixmap
 
 .. NOTE:: For supported image types using the **file** or **in-memory constructors**, see section below.
 
@@ -63,11 +65,31 @@ Have a look at the **example** section to see some pixmap usage "at work".
       :param `irect`: Specifies the pixmap's area and its location.
       :type `irect`: :ref:`IRect`
 
+   .. method:: __init__(self, doc, xref)
+
+      This constructor creates a pixmap with origin ``(0, 0)`` from an image contained in PDF document ``doc`` identified by its XREF number.
+
+      :param `doc`: an opened **PDF** document.
+      :type `doc`: :ref:`Document`
+
+      :param `xref`: the XREF number of the image.
+      :type `xref`: int
+
+   .. method:: __init__(self, colorspace, sourcepix)
+
+      This constructor creates a new pixmap as a copy of another one, ``sourcepix``. If the two colorspaces differ, a conversion will take place. Any colorspace combination is possible.
+
+      :param `colorspace`: The colorspace of the pixmap.
+      :type `colorspace`: :ref:`Colorspace`
+
+      :param `sourcepix`: the source pixmap.
+      :type `sourcepix`: ``Pixmap``
+
    .. method:: __init__(self, filename)
 
       This constructor creates a non-empty pixmap from the image contained in file ``filename``.
 
-      :param `filename`: Path / name of the file. The origin of the resulting pixmap is (0,0).
+      :param `filename`: Path / name of the file. The origin of the resulting pixmap is ``(0, 0)``.
       :type `filename`: string
 
    .. method:: __init__(self, img)
@@ -79,7 +101,7 @@ Have a look at the **example** section to see some pixmap usage "at work".
 
    .. method:: __init__(self, colorspace, width, height, samples)
 
-      This constructor creates a non-empty pixmap from ``samples``, which is assumed to contain an image in "plain pixel" format. This means that each pixel is represented by n bytes (as controlled by the ``colorspace`` parameter). The origin of the resulting pixmap is (0,0). This method is useful when raw image data are provided by some other program, or to create a copy of another pixmap, or - see examples below.
+      This constructor creates a non-empty pixmap from ``samples``, which is assumed to contain an image in "plain pixel" format. This means that each pixel is represented by n bytes (as controlled by the ``colorspace`` parameter). The origin of the resulting pixmap is (0,0). This method is useful when raw image data are provided by some other program - see examples below.
 
       :param `colorspace`: Colorspace of the image. This crucial parameter controls the interpretation of the ``samples`` area: for :data:`CS_GRAY`, :data:`CS_RGB` and :data:`CS_CMYK`, 2, 4 or 5 bytes in samples will be assumed to define one pixel, respectively. For this number n, the following must evaluate to ``True``: ``n * width * height == len(samples)``.
       :type `colorspace`: :ref:`Colorspace`
@@ -90,8 +112,8 @@ Have a look at the **example** section to see some pixmap usage "at work".
       :param `height`: Height of the image
       :type `height`: int
 
-      :param `samples`: A bytearray containing consecutive bytes describing all pixels of the image.
-      :type `samples`: bytearray
+      :param `samples`: bytearray, bytes (Python 3) or string (Python 2) containing consecutive bytes describing all pixels of the image.
+      :type `samples`: bytearray, bytes or str
 
    .. method:: clearWith(value, [irect])
 
@@ -168,7 +190,7 @@ Have a look at the **example** section to see some pixmap usage "at work".
 
    .. method:: writePNG(filename, savealpha=False)
 
-      Saves a pixmap as a PNG file. Please note that only grayscale and RGB colorspaces can be saved in PNG format (this is not a PyMuPDF restriction).
+      Saves a pixmap as a PNG file. Please note that only grayscale and RGB colorspaces can be saved in PNG format (this is not a PyMuPDF restriction). CMYK colorspaces must either be saved as ``*.pam`` files or first be converted.
 
       :param `filename`: The filename to save as (the extension ``png`` must be specified).
       :type `filename`: string
@@ -277,7 +299,7 @@ The following table shows possible combinations of file extensions, output forma
 
 .. image:: writeimage.png
 
-
+.. note:: Not all image file types are available, or at least common on all platforms, e.g. PAM is mostly unknown on Windows. Especially pertaining to CMYK colorspaces, you can always convert a CMYK pixmap to an RGB-pixmap with ``rgb_pix = fitz.Pixmap(fitz.csRGB, cmyk_pix)`` and then save that as a PNG.
 
 Pixmap Example Code Snippets
 -----------------------------
@@ -297,7 +319,7 @@ This shows how pixmaps can be used for purely graphical, non-PDF purposes. The s
  tar_irect  = fitz.IRect(0, 0, tar_width, tar_height)
  # create empty target pixmap
  tar_pix    = fitz.Pixmap(tar_cs, tar_irect)
- # clear target with a very lively stone-gray (thanks and RIP, Loriot)
+ # clear target with a very lively stone-gray (thanks and R.I.P., Loriot)
  tar_pix.clearWith(90)
 
  # now fill target with 3 * 4 tiles of input picture
@@ -306,7 +328,7 @@ This shows how pixmaps can be used for purely graphical, non-PDF purposes. The s
      for j in list(range(3)):
          pix0.x = j * pix0.width                       # modify input's x coord
          tar_pix.copyPixmap(pix0, pix0.getIRect())     # copy input to new loc
-         # save intermediate image to show what is happening
+         # save all intermediate images to show what is happening
          fn = "target-" + str(i) + str(j) + ".png"
          tar_pix.writePNG(fn)
 
@@ -340,7 +362,7 @@ This shows how to create a PNG file from a numpy array (several times faster tha
          bild[i, j] = [(i+j)%256, i%256, j%256, 255]
 
  samples = bytearray(bild.tostring())    # get plain pixel data from numpy array
- pix=fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), width, height, samples)
+ pix=fitz.Pixmap(fitz.csRGB, width, height, samples)
  pix.writePNG("test.png")
 
 
@@ -363,3 +385,4 @@ This shows how to interface with ``PIL / Pillow`` (the Python Imaging Library), 
  img = Image.open("some_image.xxx").convert("RGBA")
  samples = bytearray(img.tobytes())
  pix = fitz.Pixmap(fitz.csRGB, img.size[0], img.size[1], samples)
+

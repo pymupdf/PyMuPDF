@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Tutorial &mdash; PyMuPDF 1.9.1 documentation</title>
+    <title>Tutorial &mdash; PyMuPDF 1.9.2 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.9.1',
+        VERSION:     '1.9.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.1 documentation" href="index.html" />
+    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html" />
     <link rel="next" title="Classes" href="classes.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
   </head>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="installation.html" title="Installation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -48,27 +48,28 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Tutorial</a><ul>
-<li><a class="reference internal" href="#import-the-bindings">Import the Bindings</a></li>
-<li><a class="reference internal" href="#open-a-document">Open a Document</a></li>
+<li><a class="reference internal" href="#importing-the-bindings">Importing the Bindings</a></li>
+<li><a class="reference internal" href="#opening-a-document">Opening a Document</a></li>
 <li><a class="reference internal" href="#some-document-methods-and-attributes">Some <code class="docutils literal"><span class="pre">Document</span></code> Methods and Attributes</a></li>
-<li><a class="reference internal" href="#access-meta-data">Access Meta Data</a></li>
-<li><a class="reference internal" href="#work-with-outlines">Work with Outlines</a></li>
-<li><a class="reference internal" href="#work-with-pages">Work with Pages</a><ul>
-<li><a class="reference internal" href="#inspect-the-links-on-a-page">Inspect the Links on a Page</a></li>
-<li><a class="reference internal" href="#render-a-page">Render a Page</a></li>
-<li><a class="reference internal" href="#save-the-page-image-in-a-file">Save the Page Image in a File</a></li>
-<li><a class="reference internal" href="#display-the-image-in-dialog-managers">Display the Image in Dialog Managers</a></li>
-<li><a class="reference internal" href="#text-extraction">Text Extraction</a></li>
-<li><a class="reference internal" href="#text-searching">Text Searching</a></li>
+<li><a class="reference internal" href="#accessing-meta-data">Accessing Meta Data</a></li>
+<li><a class="reference internal" href="#working-with-outlines">Working with Outlines</a></li>
+<li><a class="reference internal" href="#working-with-pages">Working with Pages</a><ul>
+<li><a class="reference internal" href="#inspecting-the-links-of-a-page">Inspecting the Links of a Page</a></li>
+<li><a class="reference internal" href="#rendering-a-page">Rendering a Page</a></li>
+<li><a class="reference internal" href="#saving-the-page-image-in-a-file">Saving the Page Image in a File</a></li>
+<li><a class="reference internal" href="#displaying-the-image-in-dialog-managers">Displaying the Image in Dialog Managers</a></li>
+<li><a class="reference internal" href="#extracting-text">Extracting Text</a></li>
+<li><a class="reference internal" href="#searching-text">Searching Text</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#output">Output</a><ul>
-<li><a class="reference internal" href="#re-arrange-and-delete-pages">Re-arrange and Delete Pages</a></li>
-<li><a class="reference internal" href="#save">Save</a></li>
+<li><a class="reference internal" href="#pdf-output">PDF Output</a><ul>
+<li><a class="reference internal" href="#re-arranging-and-deleting-pages">Re-arranging and Deleting Pages</a></li>
+<li><a class="reference internal" href="#joining-pdf-documents">Joining PDF Documents</a></li>
+<li><a class="reference internal" href="#saving">Saving</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#close">Close</a></li>
-<li><a class="reference internal" href="#example-dynamically-clean-up-corrupt-pdf-documents">Example: Dynamically Clean up Corrupt PDF Documents</a></li>
+<li><a class="reference internal" href="#closing">Closing</a></li>
+<li><a class="reference internal" href="#example-dynamically-cleaning-up-corrupt-pdf-documents">Example: Dynamically Cleaning up Corrupt PDF Documents</a></li>
 </ul>
 </li>
 </ul>
@@ -109,8 +110,8 @@
 <p>This tutorial will show you the use of MuPDF in Python step by step.</p>
 <p>Because MuPDF supports not only PDF, but also XPS, OpenXPS, CBZ and EPUB formats, so does PyMuPDF. Nevertheless we will only talk about PDF files for the sake of brevity. At places where indeed only PDF files are supported, this will be mentioned explicitely.</p>
 <p>As for string handling, MuPDF will pass back any string as UTF-8 encoded - no exceptions.</p>
-<div class="section" id="import-the-bindings">
-<h2>Import the Bindings<a class="headerlink" href="#import-the-bindings" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="importing-the-bindings">
+<h2>Importing the Bindings<a class="headerlink" href="#importing-the-bindings" title="Permalink to this headline">¶</a></h2>
 <p>The Python bindings to MuPDF are made available by this import statement:</p>
 <div class="highlight-default"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
 </pre></div>
@@ -123,15 +124,15 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="open-a-document">
-<h2>Open a Document<a class="headerlink" href="#open-a-document" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="opening-a-document">
+<h2>Opening a Document<a class="headerlink" href="#opening-a-document" title="Permalink to this headline">¶</a></h2>
 <p>In order to access a supported document, it must be opened with the following statement:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>     <span class="c"># or fitz.open(filename) (since V1.9.0)</span>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>     <span class="c"># or fitz.Document(filename)</span>
 </pre></div>
 </div>
 <p>This will create <code class="docutils literal"><span class="pre">doc</span></code> as a <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> object. <code class="docutils literal"><span class="pre">filename</span></code> must be a Python string or unicode object that specifies the name of an existing file.</p>
 <p>It is also possible to open a document from memory (bytearray) data, i.e. without using a file. See <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> for details.</p>
-<p>A <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> contains many attributes and functions. Among them are meta information (like &#8220;author&#8221; or &#8220;subject&#8221;), number of total pages, outline and encryption information.</p>
+<p>A document contains many attributes and functions. Among them are meta information (like &#8220;author&#8221; or &#8220;subject&#8221;), number of total pages, outline and encryption information.</p>
 </div>
 <div class="section" id="some-document-methods-and-attributes">
 <h2>Some <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> Methods and Attributes<a class="headerlink" href="#some-document-methods-and-attributes" title="Permalink to this headline">¶</a></h2>
@@ -164,8 +165,8 @@
 </tbody>
 </table>
 </div>
-<div class="section" id="access-meta-data">
-<h2>Access Meta Data<a class="headerlink" href="#access-meta-data" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="accessing-meta-data">
+<h2>Accessing Meta Data<a class="headerlink" href="#accessing-meta-data" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="document.html#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a> is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. <a class="reference external" href="http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf">Adobe PDF Reference sixth edition 1.7 November 2006</a>. Further information can also be found in chapter <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a>. The meta data fields are of type string if not otherwise indicated. Be aware that not all of them may be present or do contain meaningfull data.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -211,8 +212,8 @@
 </tbody>
 </table>
 </div>
-<div class="section" id="work-with-outlines">
-<h2>Work with Outlines<a class="headerlink" href="#work-with-outlines" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="working-with-outlines">
+<h2>Working with Outlines<a class="headerlink" href="#working-with-outlines" title="Permalink to this headline">¶</a></h2>
 <p>The easiest way to get all outlines of a document, is creating a table of contents:</p>
 <div class="highlight-default"><div class="highlight"><pre><span class="c"># the simple form, if False, link information is included</span>
 <span class="n">toc</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getToC</span><span class="p">(</span><span class="n">simple</span> <span class="o">=</span> <span class="k">True</span><span class="p">)</span>
@@ -221,8 +222,8 @@
 <p>This will return a Python list <code class="docutils literal"><span class="pre">[[level,</span> <span class="pre">title,</span> <span class="pre">page,</span> <span class="pre">link],</span> <span class="pre">...]</span></code> (or <code class="docutils literal"><span class="pre">[]</span></code>).</p>
 <p><code class="docutils literal"><span class="pre">level</span></code> is the hierarchy level of the entry (starting from 1), <code class="docutils literal"><span class="pre">title</span></code> is the entry&#8217;s title, and <code class="docutils literal"><span class="pre">page</span></code> the page number (1-based). <code class="docutils literal"><span class="pre">link</span></code> is present if <code class="docutils literal"><span class="pre">simple</span> <span class="pre">=</span> <span class="pre">False</span></code> is specified. Its meaning can be looked up under <a class="reference internal" href="page.html#Page.getLinks" title="Page.getLinks"><code class="xref py py-meth docutils literal"><span class="pre">Page.getLinks()</span></code></a>.</p>
 </div>
-<div class="section" id="work-with-pages">
-<h2>Work with Pages<a class="headerlink" href="#work-with-pages" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="working-with-pages">
+<h2>Working with Pages<a class="headerlink" href="#working-with-pages" title="Permalink to this headline">¶</a></h2>
 <p>Tasks that can be performed with a <a class="reference internal" href="page.html#page"><span class="std std-ref">Page</span></a> are at the core of MuPDF&#8217;s functionality.
 Among other things, you can render a page, optionally zooming, rotating, shifting or shearing it.
 You can write it&#8217;s image to files, extract text from it or search for text strings.</p>
@@ -231,8 +232,8 @@ You can write it&#8217;s image to files, extract text from it or search for text
 </pre></div>
 </div>
 <p>Some typical uses of <a class="reference internal" href="page.html#page"><span class="std std-ref">Page</span></a> objects follow:</p>
-<div class="section" id="inspect-the-links-on-a-page">
-<h3>Inspect the Links on a Page<a class="headerlink" href="#inspect-the-links-on-a-page" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="inspecting-the-links-of-a-page">
+<h3>Inspecting the Links of a Page<a class="headerlink" href="#inspecting-the-links-of-a-page" title="Permalink to this headline">¶</a></h3>
 <p>Here is how to get all links and their types:</p>
 <div class="highlight-default"><div class="highlight"><pre><span class="c"># get all links of the current page</span>
 <span class="n">links</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">getLinks</span><span class="p">()</span>
@@ -240,23 +241,23 @@ You can write it&#8217;s image to files, extract text from it or search for text
 </div>
 <p><code class="docutils literal"><span class="pre">links</span></code> is a Python list containing Python dictionaries as entries. For details see <a class="reference internal" href="page.html#Page.getLinks" title="Page.getLinks"><code class="xref py py-meth docutils literal"><span class="pre">Page.getLinks()</span></code></a>.</p>
 </div>
-<div class="section" id="render-a-page">
-<h3>Render a Page<a class="headerlink" href="#render-a-page" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="rendering-a-page">
+<h3>Rendering a Page<a class="headerlink" href="#rendering-a-page" title="Permalink to this headline">¶</a></h3>
 <p>This example creates an image out of a page&#8217;s content:</p>
 <div class="highlight-default"><div class="highlight"><pre><span class="n">pix</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">getPixmap</span><span class="p">(</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Identity</span><span class="p">,</span> <span class="n">colorspace</span> <span class="o">=</span> <span class="s">&quot;RGB&quot;</span><span class="p">)</span>
 <span class="c"># now pix contains an RGB image of the page, ready to be used</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="save-the-page-image-in-a-file">
-<h3>Save the Page Image in a File<a class="headerlink" href="#save-the-page-image-in-a-file" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="saving-the-page-image-in-a-file">
+<h3>Saving the Page Image in a File<a class="headerlink" href="#saving-the-page-image-in-a-file" title="Permalink to this headline">¶</a></h3>
 <p>We can simply store the image in a PNG file:</p>
 <div class="highlight-default"><div class="highlight"><pre><span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s">&quot;test.png&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="display-the-image-in-dialog-managers">
-<h3>Display the Image in Dialog Managers<a class="headerlink" href="#display-the-image-in-dialog-managers" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="displaying-the-image-in-dialog-managers">
+<h3>Displaying the Image in Dialog Managers<a class="headerlink" href="#displaying-the-image-in-dialog-managers" title="Permalink to this headline">¶</a></h3>
 <p>We can also use the image in a dialog. <a class="reference internal" href="pixmap.html#Pixmap.samples" title="Pixmap.samples"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.samples</span></code></a> represents the area of bytes of all the pixels as a Python bytearray. This area (or its <code class="docutils literal"><span class="pre">str()</span></code>-version), is directly usable by presumably most dialog managers. Here are two examples. Please also have a look at the examples directory of this repository.</p>
 <p><strong>wxPython</strong>:</p>
 <div class="highlight-default"><div class="highlight"><pre><span class="n">bitmap</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BitmapFromBufferRGBA</span><span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="c"># image width</span>
@@ -272,8 +273,8 @@ You can write it&#8217;s image to files, extract text from it or search for text
 </div>
 <p>Now, <code class="docutils literal"><span class="pre">photo</span></code> can be used as an image in TK.</p>
 </div>
-<div class="section" id="text-extraction">
-<h3>Text Extraction<a class="headerlink" href="#text-extraction" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="extracting-text">
+<h3>Extracting Text<a class="headerlink" href="#extracting-text" title="Permalink to this headline">¶</a></h3>
 <p>We can also extract all text of a page in one chunk of string:</p>
 <div class="highlight-default"><div class="highlight"><pre><span class="n">text</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">getText</span><span class="p">(</span><span class="n">output</span> <span class="o">=</span> <span class="s">&quot;text&quot;</span><span class="p">)</span>
 </pre></div>
@@ -287,8 +288,8 @@ You can write it&#8217;s image to files, extract text from it or search for text
 </ul>
 <p>To give you an idea about the output of these alternatives, we did text example extracts. See the Appendix 2.</p>
 </div>
-<div class="section" id="text-searching">
-<h3>Text Searching<a class="headerlink" href="#text-searching" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="searching-text">
+<h3>Searching Text<a class="headerlink" href="#searching-text" title="Permalink to this headline">¶</a></h3>
 <p>You can find out, exactly where on a page a certain string appears like this:</p>
 <div class="highlight-default"><div class="highlight"><pre><span class="n">areas</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">searchFor</span><span class="p">(</span><span class="s">&quot;mupdf&quot;</span><span class="p">,</span> <span class="n">hit_max</span> <span class="o">=</span> <span class="mi">32</span><span class="p">)</span>
 </pre></div>
@@ -297,24 +298,38 @@ You can write it&#8217;s image to files, extract text from it or search for text
 <p>Please also do have a look at the demo program <code class="docutils literal"><span class="pre">demo.py</span></code>. Among others it contains details on how the <a class="reference internal" href="textpage.html#textpage"><span class="std std-ref">TextPage</span></a>, <a class="reference internal" href="textsheet.html#textsheet"><span class="std std-ref">TextSheet</span></a>, <a class="reference internal" href="device.html#device"><span class="std std-ref">Device</span></a> and <a class="reference internal" href="displaylist.html#displaylist"><span class="std std-ref">DisplayList</span></a> classes can be used for a more direct control, e.g. when performance considerations require it.</p>
 </div>
 </div>
-<div class="section" id="output">
-<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
-<p>Output capabilities of MuPDF (such as PDF generation) have improved in version 1.9. Output is supported for PDF documents only.</p>
-<div class="section" id="re-arrange-and-delete-pages">
-<h3>Re-arrange and Delete Pages<a class="headerlink" href="#re-arrange-and-delete-pages" title="Permalink to this headline">¶</a></h3>
-<p>Method <a class="reference internal" href="document.html#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a> accepts a list of integers as argument. These integers must be in the range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>. When executed, all pages not occurring in this list will be deleted. Pages that do occur will remain - <strong>in the sequence specified and as many times as specified</strong>.</p>
-<p>So you can easily create sub-PDFs of the first / last 10 pages, only odd or even pages (for doing double-sided printing), pages that do (not) contain a certain text, ... whatever you may think of.</p>
-<p>To make any such changes permanent, execute <a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> (see below) and then close / re-open the original document for any further processing.</p>
-<p>The saved document will contain all links, annotations and bookmarks referenced by its pages.</p>
+<div class="section" id="pdf-output">
+<h2>PDF Output<a class="headerlink" href="#pdf-output" title="Permalink to this headline">¶</a></h2>
+<p>Since version 1.9, PyMuPDF provides several options to modify PDF documents. The <a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> method automatically stores a document in its current state on disk. Output is supported for PDF documents only.</p>
+<p>A PDF document can be modified unnoticed by the user in two ways:</p>
+<ul class="simple">
+<li>During open, integrity checks are used to determine the health of the PDF structure. Any errors will automatically be corrected to present a repaired document in memory for further processing. If this is the case, the document counts as being modified.</li>
+<li>After a document has been decrypted, the document in memory has obviously changed and also counts as being modified.</li>
+</ul>
+<p>In these cases, the save method will store a repaired and / or decrypted version, and saving must occur to a new file.</p>
+<p>The following describe some more intentional ways to manipulate PDF documents. Beyond these, you can also modify the table of contents and meta information.</p>
+<div class="section" id="re-arranging-and-deleting-pages">
+<h3>Re-arranging and Deleting Pages<a class="headerlink" href="#re-arranging-and-deleting-pages" title="Permalink to this headline">¶</a></h3>
+<p>Method <a class="reference internal" href="document.html#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a> accepts a list of integers as argument. These integers must be in the range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>. When executed, all pages not occurring in this list will be deleted. Only pages that do occur will remain - <strong>in the sequence specified and as many times as specified</strong>.</p>
+<p>So you can easily create sub-PDFs of the first / last 10 pages, only odd or even pages (for doing double-sided printing), pages that do or do not contain a certain text, ... whatever you may think of.</p>
+<p>The saved sub-document will contain all still valid links, annotations and bookmarks.</p>
 </div>
-<div class="section" id="save">
-<h3>Save<a class="headerlink" href="#save" title="Permalink to this headline">¶</a></h3>
-<p>If the document had been successfully decrypted before, <code class="docutils literal"><span class="pre">save()</span></code> will automatically save a decrypted copy.</p>
-<p>If you altered the document via <a class="reference internal" href="document.html#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a>, <a class="reference internal" href="document.html#Document.setToC" title="Document.setToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.setToC()</span></code></a> or <a class="reference internal" href="document.html#Document.setMetadata" title="Document.setMetadata"><code class="xref py py-meth docutils literal"><span class="pre">Document.setMetadata()</span></code></a>, then the resulting document will be saved.</p>
+<div class="section" id="joining-pdf-documents">
+<h3>Joining PDF Documents<a class="headerlink" href="#joining-pdf-documents" title="Permalink to this headline">¶</a></h3>
+<p>Method <a class="reference internal" href="document.html#Document.insertPDF" title="Document.insertPDF"><code class="xref py py-meth docutils literal"><span class="pre">Document.insertPDF()</span></code></a> inserts another PDF document at a specified place of the current one. Here is a simple example (<code class="docutils literal"><span class="pre">doc1</span></code> and <code class="docutils literal"><span class="pre">doc2</span></code> are openend PDF documents):</p>
+<div class="highlight-default"><div class="highlight"><pre><span class="c"># append complete doc2 to the end of doc1</span>
+<span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>More can be found in the <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> chapter. Also have a look at PDFjoiner.py in
+the repository?s <em>example</em> directory.</p>
+</div>
+<div class="section" id="saving">
+<h3>Saving<a class="headerlink" href="#saving" title="Permalink to this headline">¶</a></h3>
+<p>As mentioned before, <code class="docutils literal"><span class="pre">save()</span></code> will automatically save a decrypted and repaired copy.</p>
+<p>If you altered something, then the resulting document will be saved.</p>
 <p>Since MuPDF 1.9, you can also write changes back to the original file by specifying <code class="docutils literal"><span class="pre">incremental</span> <span class="pre">=</span> <span class="pre">True</span></code>. This process is <strong>extremely fast</strong>, since any changes are <strong>appended to the original file</strong> - it will not be rewritten as a whole.</p>
-<p>As part of <code class="docutils literal"><span class="pre">save()</span></code>, some clean-up will always take place:</p>
-<p>If the document containes invalid or broken xrefs, the saved version will have them automatically corrected (thus making it readable by other Python PDF software, like <a class="reference external" href="https://github.com/pmaupin/pdfrw">pdfrw</a> or <a class="reference external" href="http://mstamy2.github.io/PyPDF2">PyPDF2</a>). In many cases, the saved copy will also be smaller than the original.</p>
-<p><a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> supports all options of MuPDF&#8217;s command line utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>, see the following table (mutool clean option = &#8220;MCO&#8221;).</p>
+<p><a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> supports all options of MuPDF&#8217;s command line utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>, see the following table (corresponding mutool clean option indicated as &#8220;mco&#8221;).</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="24%" />
@@ -323,7 +338,7 @@ You can write it&#8217;s image to files, extract text from it or search for text
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Option</strong></th>
-<th class="head"><strong>MCO</strong></th>
+<th class="head"><strong>mco</strong></th>
 <th class="head"><strong>Effect</strong></th>
 </tr>
 </thead>
@@ -370,7 +385,7 @@ You can write it&#8217;s image to files, extract text from it or search for text
 </tr>
 <tr class="row-even"><td>incremental = 1</td>
 <td>n/a</td>
-<td>only save data that have changed</td>
+<td>only append changes to the original</td>
 </tr>
 </tbody>
 </table>
@@ -378,9 +393,9 @@ You can write it&#8217;s image to files, extract text from it or search for text
 <p>We have found, that the fastest, yet very stable combination is <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span> <span class="pre">-ggg</span> <span class="pre">-z</span></code>, giving good compression results. In PyMuPDF this corresponds to <code class="docutils literal"><span class="pre">doc.save(filename,</span> <span class="pre">garbage=3,</span> <span class="pre">deflate=1)</span></code>.</p>
 </div>
 </div>
-<div class="section" id="close">
-<h2>Close<a class="headerlink" href="#close" title="Permalink to this headline">¶</a></h2>
-<p>In some situations it is desirable to &#8220;close&#8221; a <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> such that it becomes fully available again to the OS while your program is still running.</p>
+<div class="section" id="closing">
+<h2>Closing<a class="headerlink" href="#closing" title="Permalink to this headline">¶</a></h2>
+<p>In some situations it is desirable to &#8220;close&#8221; a document such that it becomes fully available again to the OS while your program is still running.</p>
 <p>This can be achieved by the <a class="reference internal" href="document.html#Document.close" title="Document.close"><code class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></code></a> method. Apart from closing the underlying file, buffer areas associated with the document will be freed. If the document has been created from memory data, no underlying file is opened by MuPDF, so only the buffer release will take place.</p>
 <div class="admonition caution">
 <p class="first admonition-title">Caution</p>
@@ -397,8 +412,8 @@ You can write it&#8217;s image to files, extract text from it or search for text
 </pre></div>
 </div>
 </div>
-<div class="section" id="example-dynamically-clean-up-corrupt-pdf-documents">
-<h2>Example: Dynamically Clean up Corrupt PDF Documents<a class="headerlink" href="#example-dynamically-clean-up-corrupt-pdf-documents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="example-dynamically-cleaning-up-corrupt-pdf-documents">
+<h2>Example: Dynamically Cleaning up Corrupt PDF Documents<a class="headerlink" href="#example-dynamically-cleaning-up-corrupt-pdf-documents" title="Permalink to this headline">¶</a></h2>
 <p>This shows a potential use of PyMuPDF with another Python PDF library (<code class="docutils literal"><span class="pre">pdfrw</span></code>).</p>
 <p>If a PDF is broken or needs to be decrypted, one could dynamically invoke PyMuPDF to recover from problems like so:</p>
 <div class="highlight-default"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span>
@@ -456,12 +471,12 @@ You can write it&#8217;s image to files, extract text from it or search for text
         <li class="right" >
           <a href="installation.html" title="Installation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 22. Jul 2016.
+      Last updated on 16. Aug 2016.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
     </div>
   </body>
