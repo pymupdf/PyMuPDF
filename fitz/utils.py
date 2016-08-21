@@ -265,6 +265,61 @@ clip: a fitz.IRect to restrict rendering to this area
     return pix
 
 #==============================================================================
+# An internal function to create a link info dictionary for getToC and getLinks
+#==============================================================================
+def getLinkDict(ln):
+    nl = {"kind": ln.dest.kind}
+    try:
+        nl["from"] = ln.rect
+    except:
+        pass
+    pnt = fitz.Point(0, 0)
+    if ln.dest.flags & fitz.LINK_FLAG_L_VALID:
+        pnt.x = ln.dest.lt.x
+    if ln.dest.flags & fitz.LINK_FLAG_T_VALID:
+        pnt.y = ln.dest.lt.y
+
+    if ln.dest.kind == fitz.LINK_URI:
+        nl["type"] = "uri"
+        nl["uri"] = ln.dest.uri
+
+    elif ln.dest.kind == fitz.LINK_GOTO:
+        nl["type"] = "goto"
+        nl["page"] = ln.dest.page
+        nl["to"] = pnt
+        if ln.dest.flags & fitz.LINK_FLAG_R_IS_ZOOM:
+            nl["zoom"] = ln.dest.rb.x
+        else:
+            nl["zoom"] = 0.0
+
+    elif ln.dest.kind == fitz.LINK_GOTOR:
+        nl["type"] = "gotor"
+        nl["file"] = ln.dest.fileSpec.replace("\\", "/")
+        nl["page"] = ln.dest.page
+        if ln.dest.page < 0:
+            nl["to"] = ln.dest.dest
+        else:
+            nl["to"] = pnt
+            if ln.dest.flags & fitz.LINK_FLAG_R_IS_ZOOM:
+                nl["zoom"] = ln.dest.rb.x
+            else:
+                nl["zoom"] = 0.0
+
+    elif ln.dest.kind == fitz.LINK_LAUNCH:
+        nl["type"] = "launch"
+        nl["file"] = ln.dest.fileSpec.replace("\\", "/")
+
+    elif ln.dest.kind == fitz.LINK_NAMED:
+        nl["type"] = "named"
+        nl["name"] = ln.dest.named
+
+    else:
+        nl["type"] = "none"
+        nl["page"] = ln.dest.page
+
+    return nl
+
+#==============================================================================
 # A function to collect all links of a PDF page.
 # Required is a page object previously created by the
 # loadPage() method of a document.
@@ -287,41 +342,7 @@ The presence of other keys depends on this kind - see PyMuPDF's ducmentation for
     ln = page.loadLinks()
     links = []
     while ln:
-        nl = {"kind":ln.dest.kind, "from": ln.rect}
-        pnt = fitz.Point(0, 0)
-        if ln.dest.flags & fitz.LINK_FLAG_L_VALID:
-            pnt.x = ln.dest.lt.x
-        if ln.dest.flags & fitz.LINK_FLAG_T_VALID:
-            pnt.y = ln.dest.lt.y
-        nl["to"] = pnt
-
-        if ln.dest.kind == fitz.LINK_URI:
-            nl["type"] = "uri"
-            nl["uri"] =  ln.dest.uri
-
-        elif ln.dest.kind == fitz.LINK_GOTO:
-            nl["type"] = "goto"
-            nl["page"] = ln.dest.page
-
-        elif ln.dest.kind == fitz.LINK_GOTOR:
-            nl["type"] = "gotor"
-            nl["file"] = ln.dest.fileSpec
-            nl["page"] = ln.dest.page
-
-        elif ln.dest.kind == fitz.LINK_LAUNCH:
-            nl["type"] = "launch"
-            nl["file"] = ln.dest.fileSpec
-
-        elif ln.dest.kind == fitz.LINK_NAMED:
-            nl["type"] = "named"
-            nl["name"] = ln.dest.named
-
-        elif ln.dest.kind == fitz.LINK_NONE:
-            nl["type"] = "none"
-            nl["page"] = ln.dest.page
-
-        else:
-            pass
+        nl = getLinkDict(ln)
         links.append(nl)
         ln = ln.next
     return links
@@ -353,44 +374,18 @@ and link destination (if simple = False). For details see PyMuPDF's documentatio
                 title = olItem.title
             else:
                 title = " "
-            page = olItem.dest.page + 1
-            if not simple:
-                link = {"kind": olItem.dest.kind}
-                pnt = fitz.Point(0, -1)
-                if olItem.dest.flags & fitz.LINK_FLAG_L_VALID:
-                    pnt.x = olItem.dest.lt.x
-                if olItem.dest.flags & fitz.LINK_FLAG_T_VALID:
-                    pnt.y = olItem.dest.lt.y
-                link["to"] = [pnt.x, pnt.y]
+
+            if olItem.dest.kind != fitz.LINK_GOTO:
+                page = 0
+            else:
                 page = olItem.dest.page + 1
-                if olItem.dest.kind == fitz.LINK_GOTO:
-                    link["type"] = "goto"
-                    link["page"] = olItem.dest.page
 
-                elif olItem.dest.kind == fitz.LINK_GOTOR:
-                    link["type"] = "gotor"
-                    link["file"] = olItem.dest.fileSpec
-                    link["page"] = olItem.dest.page
-
-                elif olItem.dest.kind == fitz.LINK_LAUNCH:
-                    link["type"] = "launch"
-                    link["file"] = olItem.dest.fileSpec
-
-                elif olItem.dest.kind == fitz.LINK_URI:
-                    link["type"] = "uri"
-                    link["uri"] = olItem.dest.uri
-
-                elif olItem.dest.kind == fitz.LINK_NAMED:
-                    link["type"] = "named"
-                    link["name"] = olItem.dest.named
-
-                elif olItem.dest.kind == fitz.LINK_NONE:
-                    link["type"] = "none"
-                    link["page"] = olItem.dest.page
-
+            if not simple:
+                link = getLinkDict(olItem)
                 liste.append([lvl, title, page, link])
             else:
-                liste.append([lvl, title, olItem.dest.page + 1])
+                liste.append([lvl, title, page])
+
             if olItem.down:
                 liste = recurse(olItem.down, liste, lvl+1)
             olItem = olItem.next
@@ -824,14 +819,15 @@ def PDFstr(s):
         raise ValueError("non-string provided to PDFstr function")
 
     utf16 = False
-    # following returns ascii original chars or octal numbers \nnn
+    # following returns ascii original string with mixed-in octal numbers \nnn
+    # for chr(128) - chr(255)
     r = ""
     for i in range(len(x)):
         if ord(x[i]) <= 127:
             r += x[i]                            # copy over ascii chars
         elif ord(x[i]) <= 255:
             r += "\\" + oct(ord(x[i]))[-3:]      # octal number with backslash
-        else:
+        else:                                    # skip to UTF16_BE case
             utf16 = True
             break
     if not utf16:
@@ -839,9 +835,8 @@ def PDFstr(s):
 
     # require full unicode: make a UTF-16BE hex string prefixed with "feff"
     r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
-    t = r.decode("UTF-8")                        # make str in Python 3
+    t = r.decode("utf-8")                        # make str in Python 3
     return "<" + t + ">"                         # brackets indicate hex
-
 
 #==============================================================================
 # Document method Set Metadata
@@ -881,6 +876,54 @@ def setMetadata(doc, m):
         doc.initData()
     return r
 
+def getDestStr(xref, ddict):
+    str_goto = "/Dest[%s %s R/XYZ %s %s %s]"
+
+    if type(ddict) is int or type(ddict) is float:
+        dest = str_goto % (xref[0], xref[1], 0, str(ddict), 0)
+        return dest
+
+    d_kind = ddict["kind"]
+
+    if d_kind == fitz.LINK_NONE:
+        return ""
+
+    if ddict["kind"] == fitz.LINK_GOTO:
+        d_zoom = ddict["zoom"]
+        d_left = ddict["to"].x
+        d_top  = ddict["to"].y
+        dest = str_goto % (xref[0], xref[1], str(d_left), str(d_top),
+                           str(d_zoom))
+        return dest
+
+    str_gotor1 = "/A<</D[%s /XYZ %s %s %s]/F<</F%s/UF%s/Type/Filespec>>" \
+                 "/S/GoToR>>"
+    str_gotor2 = "/A<</D%s/F<</F%s/UF%s/Type/Filespec>>/S/GoToR>>"
+    str_launch = "/A<</F<</F%s/UF%s/Type/Filespec>>/S/Launch>>"
+    str_uri    = "/A<</S/URI/URI%s/Type/Action>>"
+
+    if ddict["kind"] == fitz.LINK_URI:
+        dest = str_uri % (PDFstr(ddict["uri"]),)
+        return dest
+
+    if ddict["kind"] == fitz.LINK_LAUNCH:
+        fspec = PDFstr(ddict["file"])
+        dest = str_launch % (fspec, fspec)
+        return dest
+
+    if ddict["kind"] == fitz.LINK_GOTOR and ddict["page"] < 0:
+        fspec = PDFstr(ddict["file"])
+        dest = str_gotor2 % (PDFstr(ddict["to"]), fspec, fspec)
+        return dest
+
+    if ddict["kind"] == fitz.LINK_GOTOR and ddict["page"] >= 0:
+        fspec = PDFstr(ddict["file"])
+        dest = str_gotor1 % (ddict["page"], ddict["to"].x, ddict["to"].y,
+                                   ddict["zoom"], fspec, fspec)
+        return dest
+
+    return ""
+
 #==============================================================================
 # Document method set Table of Contents
 #==============================================================================
@@ -912,7 +955,7 @@ def setToC(doc, toc):
         t1 = toc[i]
         t2 = toc[i+1]
         if (type(t2) is not list) or len(t2) < 3 or len(t2) > 4:
-            raise ValueError("arg2 must be a list of lists of 3 or 4 items")
+            raise ValueError("arg2 must be list of lists of 3 or 4 items")
         if (type(t2[0]) is not int) or t2[0] < 1:
             raise ValueError("hierarchy levels must be int > 0")
         if t2[0] > t1[0] + 1:
@@ -936,22 +979,29 @@ def setToC(doc, toc):
 #==============================================================================
 # build olitems as a list of PDF-like connnected dictionaries
 #==============================================================================
-    for i in list(range(toclen)):
+    for i in range(toclen):
         o = toc[i]
         lvl = o[0] # level
         title = PDFstr(o[1]) # titel
         pno = min(doc.pageCount - 1, max(0, o[2] - 1)) # page number
-        p = doc.loadPage(pno)
-        top = int(round(p.bound().y1) - 36)   # default top location on page
-        p = None                              # free page resources
+        top = 0
+        if len(o) < 4:
+            p = doc.loadPage(pno)
+            top = int(round(p.bound().y1) - 36)  # default top location on page
+            p = None                             # free page resources
         top1 = top + 0                        # accept provided top parameter
+        dest_dict = {}
         if len(o) > 3:
             if type(o[3]) is int or type(o[3]) is float:
                 top1 = int(round(o[3]))
+                dest_dict = o[3]
             else:
+                dest_dict = o[3] if type(o[3]) is dict else {}
                 try:
-                    top1 = int(round(o[3]["to"][1])) # top
+                    top1 = int(round(o[3]["to"].y)) # top
                 except: pass
+        else:
+            dest_dict = top
         if  0 <= top1 <= top + 36:
             top = top1
         d = {}
@@ -960,7 +1010,7 @@ def setToC(doc, toc):
         d["last"]  = -1
         d["prev"]  = -1
         d["next"]  = -1
-        d["page"]  = doc._getPageObjNumber(pno)
+        d["dest"]  = getDestStr(doc._getPageObjNumber(pno), dest_dict)
         d["top"]   = top
         d["title"] = title
         d["parent"] = lvltab[lvl-1]
@@ -987,7 +1037,7 @@ def setToC(doc, toc):
         if ol["count"] > 0:
             txt += "/Count " + str(ol["count"])
         try:
-            txt += "/Dest[" + str(ol["page"][0]) + " " + str(ol["page"][1]) + " R/XYZ 0 " + str(ol["top"]) + " 0]"
+            txt += ol["dest"]
         except: pass
         try:
             if ol["first"] > -1:
@@ -1034,7 +1084,7 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
         annot_goto ='''<</Dest[%s 0 R /XYZ %s %s 0]/Rect[%s]/Type/Annot
     /Border[0 0 0]/Subtype/Link>>'''
 
-        annot_gotor = '''<</A<</D[%s /XYZ %s %s null]/F<</F(%s)/UF(%s)/Type/Filespec
+        annot_gotor = '''<</A<</D[%s /XYZ %s %s 0]/F<</F(%s)/UF(%s)/Type/Filespec
     >>/S/GoToR>>/Rect[%s]/Type/Annot/Border[0 0 0]/Subtype/Link>>'''
 
         annot_launch = '''<</A<</F<</F(%s)/UF(%s)/Type/Filespec>>/S/Launch
@@ -1072,7 +1122,7 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
         return annot
     #--------------------------------------------------------------------------
 
-    # normalize / validate parameters
+    # validate & normalize parameters
     if from_page < 0:
         fp = 0
     elif from_page >= doc2.pageCount:
@@ -1111,7 +1161,6 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
         links = page.getLinks()
         p_annots = ""
         p_txt = doc1._getObjectString(xref_dst[i])
-        #print "checking page", list_dst[i], xref_dst[i]
         for l in links:
             if l["type"] == "goto" and (l["page"] not in list_src):
                 continue
@@ -1120,12 +1169,9 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
                 raise ValueError("cannot create /Annot for type: " + l["type"])
             annot_xref = doc1._getNewXref()
             doc1._updateObject(annot_xref, annot_text)
-            #print "created annot:", annot_xref, "\n", annot_text
             p_annots += str(annot_xref) + " 0 R "
         if p_annots:
             p_annots = "/Annots[" + p_annots + "]"
             p_txt = p_txt[:-2] + p_annots + ">>"
             doc1._updateObject(xref_dst[i], p_txt)
-            #print "updated page with:\n", p_txt
-
     return

@@ -181,6 +181,7 @@ struct fz_buffer_s *readPageText(fz_page *page, int output) {
         if (tp)  fz_drop_stext_page(gctx, tp);
         if (ts)  fz_drop_stext_sheet(gctx, ts);
         if (res) fz_drop_buffer(gctx, res);
+        fz_rethrow(gctx);
     }
     return res;
 }

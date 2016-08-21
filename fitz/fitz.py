@@ -98,7 +98,7 @@ except __builtin__.Exception:
 
 VersionFitz = "1.9a"          
 VersionBind = "1.9.2"         
-VersionDate = "2016-08-06 08:58:48"        
+VersionDate = "2016-08-20 14:44:46"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -117,14 +117,16 @@ class Document(_object):
         elif type(filename) == unicode:
             filename = filename.encode('utf8')
         else:
-            raise TypeError("filename must be a string")
+            raise TypeError("if specified, filename must be a string.")
         self.name = filename if filename else ""
         self.streamlen = len(stream) if stream else 0
         if stream and not filename:
             raise ValueError("filetype missing with stream specified")
-        self.isClosed = 0
+        self.isClosed    = 0
         self.isEncrypted = 0
-        self.metadata = None
+        self.metadata    = None
+        self.openErrCode = 0
+        self.openErrMsg  = ''
 
 
 
@@ -155,8 +157,10 @@ class Document(_object):
         if hasattr(self, '_outline') and self._outline:
             self._dropOutline(self._outline)
             self._outline = None
-        self.metadata = None
-        self.isClosed = 1
+        self.metadata    = None
+        self.isClosed    = 1
+        self.openErrCode = 0
+        self.openErrMsg  = ''
 
 
         return _fitz.Document_close(self)
@@ -299,7 +303,7 @@ class Document(_object):
         val = _fitz.Document_insertPDF(self, docsrc, from_page, to_page, start_at, rotate, links)
 
         if links:
-            self._do_links(docsrc, from_page=from_page, to_page = to_page,
+            self._do_links(docsrc, from_page = from_page, to_page = to_page,
                            start_at = sa)
 
 
@@ -307,7 +311,7 @@ class Document(_object):
 
 
     def select(self, pyliste):
-        """select(list) -> int; build sub pdf with the pages in list"""
+        """select(list) -> int; build sub-pdf with listed pages"""
 
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation on closed or encrypted document")
@@ -365,6 +369,16 @@ class Document(_object):
     def _getPageObjNumber(self, pno):
         """_getPageObjNumber(Document self, int pno) -> PyObject *"""
         return _fitz.Document__getPageObjNumber(self, pno)
+
+
+    def getPageImageList(self, pno):
+        """getPageImageList(Document self, int pno) -> PyObject *"""
+        return _fitz.Document_getPageImageList(self, pno)
+
+
+    def getPageFontList(self, pno):
+        """getPageFontList(Document self, int pno) -> PyObject *"""
+        return _fitz.Document_getPageFontList(self, pno)
 
 
     def _delToC(self):
@@ -696,9 +710,11 @@ class Pixmap(_object):
     def __init__(self, *args):
         """
         __init__(fz_pixmap_s self, Colorspace cs, IRect bbox) -> Pixmap
+        __init__(fz_pixmap_s self, Colorspace cs, Pixmap spix) -> Pixmap
         __init__(fz_pixmap_s self, Colorspace cs, int w, int h, PyObject * samples) -> Pixmap
         __init__(fz_pixmap_s self, char * filename) -> Pixmap
         __init__(fz_pixmap_s self, PyObject * imagedata) -> Pixmap
+        __init__(fz_pixmap_s self, Document doc, int xref) -> Pixmap
         """
         this = _fitz.new_Pixmap(*args)
         try:
@@ -797,8 +813,9 @@ class Pixmap(_object):
     height = h
 
     def __repr__(self):
-        cs = {2:"GRAY", 4:"RGB", 5:"CMYK"}
-        return "fitz.Pixmap(fitz.cs%s, fitz.IRect(%s, %s, %s, %s))" % (cs[self.n], self.x, self.y, self.x + self.width, self.y + self.height)
+        cs = {2:"fitz.csGRAY", 4:"fitz.csRGB", 5:"fitz.csCMYK"}
+        cspace = "unsupp:" + str(self.n) if not cs.get(self.n) else cs[self.n]
+        return "fitz.Pixmap(%s, fitz.IRect(%s, %s, %s, %s))" % (cspace, self.x, self.y, self.x + self.width, self.y + self.height)
 
 
 Pixmap_swigregister = _fitz.Pixmap_swigregister

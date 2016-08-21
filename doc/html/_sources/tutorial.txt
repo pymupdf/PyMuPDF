@@ -11,7 +11,7 @@ Because MuPDF supports not only PDF, but also XPS, OpenXPS, CBZ and EPUB formats
 
 As for string handling, MuPDF will pass back any string as UTF-8 encoded - no exceptions.
 
-Import the Bindings
+Importing the Bindings
 ==========================
 The Python bindings to MuPDF are made available by this import statement:
 ::
@@ -24,18 +24,17 @@ You can check your version by printing the docstring:
  built on 2016-07-01 13:06:02
  >>>
 
-
-Open a Document
+Opening a Document
 ======================
 In order to access a supported document, it must be opened with the following statement:
 ::
- doc = fitz.Document(filename)     # or fitz.open(filename) (since V1.9.0)
+ doc = fitz.open(filename)     # or fitz.Document(filename)
 
 This will create ``doc`` as a :ref:`Document` object. ``filename`` must be a Python string or unicode object that specifies the name of an existing file.
 
 It is also possible to open a document from memory (bytearray) data, i.e. without using a file. See :ref:`Document` for details.
 
-A :ref:`Document` contains many attributes and functions. Among them are meta information (like "author" or "subject"), number of total pages, outline and encryption information.
+A document contains many attributes and functions. Among them are meta information (like "author" or "subject"), number of total pages, outline and encryption information.
 
 Some :ref:`Document` Methods and Attributes
 =============================================
@@ -50,9 +49,9 @@ Some :ref:`Document` Methods and Attributes
 :meth:`Document.loadPage`   Create a ``Page`` object.
 =========================== ==========================================
 
-Access Meta Data
+Accessing Meta Data
 ========================
-:attr:`Document.metadata` is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_. Further information can also be found in chapter :ref:`Document`. The meta data fields are of type string if not otherwise indicated. Be aware that not all of them may be present or do contain meaningful data.
+:attr:`Document.metadata` is a Python dictionary with the following keys. For details of their meanings and formats consult the PDF manuals, e.g. `Adobe PDF Reference sixth edition 1.7 November 2006 <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_. Further information can also be found in chapter :ref:`Document`. The meta data fields are of type string if not otherwise indicated. Be aware that not all of them may be present or do contain meaningfull data.
 
 ============== ==============================
 **Key**        **Value**
@@ -69,7 +68,7 @@ creator        Creating application
 subject        Subject
 ============== ==============================
 
-Work with Outlines
+Working with Outlines
 =========================
 The easiest way to get all outlines of a document, is creating a table of contents:
 ::
@@ -81,7 +80,7 @@ This will return a Python list ``[[level, title, page, link], ...]`` (or ``[]``)
 ``level`` is the hierarchy level of the entry (starting from 1), ``title`` is the entry's title, and ``page`` the page number (1-based). ``link`` is present if ``simple = False`` is specified. Its meaning can be looked up under :meth:`Page.getLinks`.
 
 
-Work with Pages
+Working with Pages
 ======================
 Tasks that can be performed with a :ref:`Page` are at the core of MuPDF's functionality.
 Among other things, you can render a page, optionally zooming, rotating, shifting or shearing it.
@@ -93,7 +92,7 @@ At first, a page object must be created:
 
 Some typical uses of :ref:`Page` objects follow:
 
-Inspect the Links on a Page
+Inspecting the Links of a Page
 ------------------------------------
 Here is how to get all links and their types:
 ::
@@ -102,22 +101,22 @@ Here is how to get all links and their types:
 
 ``links`` is a Python list containing Python dictionaries as entries. For details see :meth:`Page.getLinks`.
 
-Render a Page
+Rendering a Page
 -----------------------
 This example creates an image out of a page's content:
 ::
  pix = page.getPixmap(matrix = fitz.Identity, colorspace = "RGB")
  # now pix contains an RGB image of the page, ready to be used
 
-Save the Page Image in a File
+Saving the Page Image in a File
 -----------------------------------
 We can simply store the image in a PNG file:
 ::
  pix.writePNG("test.png")
 
 
-Display the Image in Dialog Managers
---------------------------------------
+Displaying the Image in Dialog Managers
+-------------------------------------------
 We can also use the image in a dialog. :attr:`Pixmap.samples` represents the area of bytes of all the pixels as a Python bytearray. This area (or its ``str()``-version), is directly usable by presumably most dialog managers. Here are two examples. Please also have a look at the examples directory of this repository.
 
 **wxPython**:
@@ -134,7 +133,7 @@ We can also use the image in a dialog. :attr:`Pixmap.samples` represents the are
 
 Now, ``photo`` can be used as an image in TK.
 
-Text Extraction
+Extracting Text
 ----------------
 We can also extract all text of a page in one chunk of string:
 ::
@@ -152,7 +151,7 @@ For the ``output`` parameter, the following values can be specified:
 
 To give you an idea about the output of these alternatives, we did text example extracts. See the Appendix 2.
 
-Text Searching
+Searching Text
 ---------------
 You can find out, exactly where on a page a certain string appears like this:
 ::
@@ -164,47 +163,52 @@ The variable ``areas`` will now contain a list of up to 32 :ref:`Rect` rectangle
 Please also do have a look at the demo program ``demo.py``. Among others it contains details on how the :ref:`TextPage`, :ref:`TextSheet`, :ref:`Device` and :ref:`DisplayList` classes can be used for a more direct control, e.g. when performance considerations require it.
 
 
-Output
-=======
-Output capabilities of MuPDF (such as PDF generation) have improved in version 1.9. Output is supported for **PDF documents only**. Obviously, results of any of the following methods will become permanent only, if the PDF is saved. Just closing it is equivalent to cancelling such changes.
+PDF Output
+===========
+Since version 1.9, PyMuPDF provides several options to modify PDF documents. The :meth:`Document.save()` method automatically stores a document in its current state on disk. Output is supported for PDF documents only.
 
-Re-arrange and Delete Pages
+A PDF document can be modified unnoticed by the user in two ways:
+
+* During open, integrity checks are used to determine the health of the PDF structure. Any errors will automatically be corrected to present a repaired document in memory for further processing. If this is the case, the document counts as being modified.
+
+* After a document has been decrypted, the document in memory has obviously changed and also counts as being modified.
+
+In these cases, the save method will store a repaired and / or decrypted version, and saving must occur to a new file.
+
+The following describe some more intentional ways to manipulate PDF documents. Beyond these, you can also modify the table of contents and meta information.
+
+Re-arranging and Deleting Pages
 ----------------------------------
-Method :meth:`Document.select()` accepts a list of integers as argument. These integers must be in the range ``0 <= i < pageCount``. When executed, all pages not occurring in this list will be deleted. Pages that do occur will remain - **in the sequence specified and as many times as specified**.
+Method :meth:`Document.select()` accepts a list of integers as argument. These integers must be in the range ``0 <= i < pageCount``. When executed, all pages not occurring in this list will be deleted. Only pages that do occur will remain - **in the sequence specified and as many times as specified**.
 
-So you can easily create sub-PDFs of the first / last 10 pages, only odd or even pages (for doing double-sided printing), pages that do (not) contain a certain text, ... whatever you may think of.
+So you can easily create sub-PDFs of the first / last 10 pages, only odd or even pages (for doing double-sided printing), pages that do or do not contain a certain text, ... whatever you may think of.
 
-To make any such changes permanent, execute :meth:`Document.save()` (see below) and then close / re-open the original document for any further processing.
+The saved sub-document will contain all still valid links, annotations and bookmarks.
 
-The saved document will contain all links, annotations and bookmarks referenced by its pages.
-
-Join PDF Documents
+Joining PDF Documents
 -----------------------
-Method :meth:`Document.insertPDF()` inserts another PDF document at a specified place of the current one. Here is an example:
+
+Method :meth:`Document.insertPDF()` inserts another PDF document at a specified place of the current one. Here is a simple example (``doc1`` and ``doc2`` are openend PDF documents):
 ::
- # append complete doc2 at the end of doc1
+ # append complete doc2 to the end of doc1
  doc1.insertPDF(doc2)
 
-More examples can be found under :meth:`Document.insertPDF()`. Also have a look at ``PDFjoiner.py`` in the repository's *example* directory.
+More can be found in the :ref:`Document` chapter. Also have a look at PDFjoiner.py in
+the repository’s *example* directory.
 
-
-Save
+Saving
 -------
 
-If the document had been successfully decrypted before, ``save()`` will automatically save a decrypted copy.
+As mentioned before, ``save()`` will automatically save a decrypted and repaired copy.
 
-If you altered the document via :meth:`Document.select()`, :meth:`Document.setToC()`, :meth:`Document.insertPDF()` or :meth:`Document.setMetadata()`, then the resulting document will be saved.
+If you altered something, then the resulting document will be saved.
 
-Since MuPDF 1.9, you can also write changes **back to the original file** by specifying ``incremental = True``. This process is **extremely fast**, since any changes are **appended to the original file** - it will not be rewritten as a whole.
+Since MuPDF 1.9, you can also write changes back to the original file by specifying ``incremental = True``. This process is **extremely fast**, since any changes are **appended to the original file** - it will not be rewritten as a whole.
 
-As part of ``save()``, some clean-up will always take place:
-
-If the document containes invalid or broken xrefs, the saved version will have them automatically corrected (thus making it readable by other Python PDF software, like `pdfrw <https://github.com/pmaupin/pdfrw>`_ or `PyPDF2 <http://mstamy2.github.io/PyPDF2>`_). In many cases, the saved copy will also be smaller than the original.
-
-:meth:`Document.save` supports all options of MuPDF's command line utility ``mutool clean``, see the following table (mutool clean option = "MCO").
+:meth:`Document.save` supports all options of MuPDF's command line utility ``mutool clean``, see the following table (corresponding mutool clean option indicated as "mco").
 
 ================== ======= ==================================================
-**Option**         **MCO** **Effect**
+**Option**         **mco** **Effect**
 ================== ======= ==================================================
 garbage = 1         -g     garbage collect unused objects
 garbage = 2         -gg    in addition to 1, compact xref tables
@@ -216,18 +220,16 @@ linear = 1          -l     create a linearized version (do not use yet)
 expand = 1          -i     decompress images
 expand = 2          -f     decompress fonts
 expand = 255        -d     decompress all
-incremental = 1     n/a    only save data that have changed
+incremental = 1     n/a    only append changes to the original
 ================== ======= ==================================================
 
 Be ready to experiment a little if you want to fully exploit above options: like with ``mutool clean``, not all combinations may always work: there are just too many ill-constructed PDF files out there ...
 
 We have found, that the fastest, yet very stable combination is ``mutool clean -ggg -z``, giving good compression results. In PyMuPDF this corresponds to ``doc.save(filename, garbage=3, deflate=1)``.
 
-
-
-Close
-======
-In some situations it is desirable to "close" a :ref:`Document` such that it becomes fully available again to the OS while your program is still running.
+Closing
+=========
+In some situations it is desirable to "close" a document such that it becomes fully available again to the OS while your program is still running.
 
 This can be achieved by the :meth:`Document.close` method. Apart from closing the underlying file, buffer areas associated with the document will be freed. If the document has been created from memory data, no underlying file is opened by MuPDF, so only the buffer release will take place.
 
@@ -243,7 +245,7 @@ However, re-opening a previously closed file by a new :ref:`Document` is no prob
  os.rename(f_new, f_old)              # rename the cleaned version
  doc = fitz.Document(f_old)           # use it as input
 
-Example: Dynamically Clean up Corrupt PDF Documents
+Example: Dynamically Cleaning up Corrupt PDF Documents
 ========================================================
 This shows a potential use of PyMuPDF with another Python PDF library (``pdfrw``).
 

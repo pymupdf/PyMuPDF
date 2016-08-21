@@ -66,7 +66,6 @@ Examples
  >>> m = fitz.Matrix(2, 2)
  >>> point.transform(m)
  fitz.Point(50.0, 60.0)
- >>>
 
 **Example 2:**
 ::
@@ -78,4 +77,3 @@ Examples
  >>>
  >>> abs(fitz.Point(25, 30))
  39.05124837953327
- >>>

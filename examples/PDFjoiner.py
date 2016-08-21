@@ -494,16 +494,18 @@ def make_pdf(dlg):
         pno_range = list(range(von, bis + incr, incr))
         # standard bokkmark title = "infile [pp from-to of max.pages]"
         bm_main_title = "%s [pp. %s-%s of %s]" % \
-              (os.path.basename(dateiname[:-4]).encode("latin-1"), von + 1,
+              (os.path.basename(dateiname[:-4]), von + 1,
                bis + 1, max_seiten)
         # insert standard bookmark ahead of any page range
         total_toc.append([1, bm_main_title, aus_nr + 1])
         toc = doc.getToC(simple = False)    # get file's TOC
         last_lvl = 1                        # immunize against hierarchy gaps
         for t in toc:
-            if (t[2] - 1) not in pno_range: # bookmark outside range
+            lnk_type = t[3]["type"]         # if "goto", page must be in range
+            if (t[2] - 1) not in pno_range and lnk_type == "goto":
                 continue
-            pno = pno_range.index(t[2] - 1) + aus_nr + 1
+            if lnk_type == "goto":
+                pno = pno_range.index(t[2] - 1) + aus_nr + 1
             # repair hierarchy gaps by filler bookmarks
             while (t[0] > last_lvl + 1):
                 total_toc.append([last_lvl + 1, "<>", pno, t[3]])

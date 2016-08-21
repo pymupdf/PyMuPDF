@@ -204,7 +204,7 @@ This makes the following operations possible:
  >>>
  >>> m90p * m90p * m90p * m90p         # should be 360 degrees = fitz.Identity
  fitz.Matrix(1.0, -0.0, 0.0, 1.0, 0.0, 0.0)
- >>>
+
 
 Examples
 -------------
