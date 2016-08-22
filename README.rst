@@ -25,7 +25,7 @@ See the `Wiki <https://github.com/rk700/PyMuPDF/wiki>`_ for more info/news/relea
 Installation
 ============
 
-Like v1.9.1, this version 1.9.2 is also based on MuPDF version 1.9a. Therefore, generating MuPDF is not required to make use of it.
+Like v1.9.1, this version 1.9.2 is also based on MuPDF version 1.9a. Therefore, generating MuPDF again is not required to make use of it.
 
 If you had not previously installed MuPDF, you must first do this. This process highly depends on your system. For most platforms, MuPDF source contains prepared procedures on how to do this. Linux distributions usually also provide their own ways on how to install MuPDF. See below for more details.
 
