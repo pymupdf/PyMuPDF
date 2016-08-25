@@ -31,6 +31,6 @@ for i in list(range(4)):
     for j in list(range(3)):
         pix0.x = j * pix0.width                       # modify input's x coord
         tar_pix.copyPixmap(pix0, pix0.getIRect())     # copy input to new loc
-        # save also intermediate images to show what is happening
+        # save all intermediate images to show what is happening
         fn = "target-" + str(i) + str(j) + ".png"
         tar_pix.writePNG(fn)
