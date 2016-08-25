@@ -169,7 +169,7 @@ class PDFTable(gridlib.PyGridTableBase):
                     top = int(round(z[3]))
                 else:
                     try:
-                        top = int(round(z[3]["to"][1]))
+                        top = int(round(z[3]["to"].y))
                     except: pass
             self.data.append([lvl, tit, pno, top])
         if not spad.inhalt:

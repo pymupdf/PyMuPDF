@@ -945,7 +945,7 @@ def setToC(doc, toc):
     if type(toc) is not list:
         raise ValueError("arg2 must be a list")
     if toclen == 0:
-        return doc._delToC()
+        return len(doc._delToC())
     t0 = toc[0]
     if type(t0) is not list:
         raise ValueError("arg2 must be a list of lists of 3 or 4 items")
@@ -960,17 +960,17 @@ def setToC(doc, toc):
             raise ValueError("hierarchy levels must be int > 0")
         if t2[0] > t1[0] + 1:
             raise ValueError("hierarchy steps must not be > 1")
-    # no formal errors found in toc -------------------------------------------
+    # no formal errors in toc --------------------------------------------------
 
-    doc._delToC()                      # delete existing outlines
+    old_xrefs = doc._delToC()          # del old outlines, get xref numbers
+    # prepare table of xrefs for new bookmarks
+    xref = [0] + old_xrefs
+    xref[0] = doc._getOLRootNumber()        # entry zero is outline root xref#
+    if toclen > len(old_xrefs):             # too few old xrefs?
+        for i in range((toclen - len(old_xrefs))):
+            xref.append(doc._getNewXref())  # acquire new ones
 
-    xref = [0] * (1+toclen)            # prepare table of new xref entries
-    xref[0] = doc._getOLRootNumber()   # entry zero is outline root xref#
-
-    for i in list(range(toclen)):
-        xref[i+1] = doc._getNewXref()  # allocate new xref entries
-
-    lvltab = {0:0}                     # stores last entry per hierarchy level
+    lvltab = {0:0}                     # to store last entry per hierarchy level
 
 #==============================================================================
 # contains new outline objects as strings - first one is outline root

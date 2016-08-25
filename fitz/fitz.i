@@ -701,7 +701,7 @@ struct fz_document_s
                 PyObject *type_py = PyString_FromString(pdf_to_name(gctx, subtype));
                 PyObject *bname_py = PyString_FromString(pdf_to_name(gctx, bname));
                 PyObject *name_py = PyString_FromString(pdf_to_name(gctx, name));
-                PyObject *font = PyList_New(5);      /* Python list per fornt */
+                PyObject *font = PyList_New(5);      /* Python list per font */
                 PyList_SetItem(font, 0, xref_py);
                 PyList_SetItem(font, 1, gen_py);
                 PyList_SetItem(font, 2, type_py);
@@ -714,29 +714,31 @@ struct fz_document_s
 
         /***********************************************************************
         Delete all bookmarks (table of contents)
-        returns number of outline entries deleted
+        returns a list of deleted xref outline entries
         ***********************************************************************/
         %pythonappend _delToC() %{
             self.initData()
         %}
-        int _delToC()
+        PyObject *_delToC()
         {
+            PyObject *xrefs = PyList_New(0);         /* create Python list */
+        
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
-            if (!pdf) return -2;                            /* not a pdf      */
+            if (!pdf) return NULL;                          /* not a pdf      */
             pdf_obj *root, *olroot, *first;
             /* get main root */
             root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root);
             /* get outline root */
             olroot = pdf_dict_get(gctx, root, PDF_NAME_Outlines);
-            if (!olroot) return 0;                          /* no outlines    */
+            if (!olroot) return xrefs;                      /* no outlines    */
             int objcount, argc, i;
             int *res;
             objcount = 0;
             argc = 0;
             first = pdf_dict_get(gctx, olroot, PDF_NAME_First); /* first outl */
-            if (!first) return 0;
+            if (!first) return xrefs;
             argc = countOutlines(first, argc);         /* get number outlines */
-            if (argc < 1) return 0;
+            if (argc < 1) return xrefs;
             res = malloc(argc * sizeof(int));          /* object number table */
             objcount = fillOLNumbers(res, first, objcount, argc);/* fill table*/
             pdf_dict_del(gctx, olroot, PDF_NAME_First);
@@ -745,8 +747,13 @@ struct fz_document_s
 
             for (i = 0; i < objcount; i++)
                 pdf_delete_object(gctx, pdf, res[i]);     /* del all OL items */
-
-            return objcount;
+            
+            for (i = 0; i < argc; i++)
+            {
+                PyObject *xref = PyInt_FromLong((long) res[i]);
+                PyList_Append(xrefs, xref);
+            }
+            return xrefs;
         }
 
 /*******************************************************************************
@@ -1276,6 +1283,8 @@ struct fz_pixmap_s
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
             {
+                if ((spix->n < 2) | (spix->n > 5))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "unsupported source colorspace");
                 pm = fz_new_pixmap(gctx, cs, spix->w, spix->h);
                 pm->x = 0;
                 pm->y = 0;

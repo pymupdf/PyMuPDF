@@ -98,7 +98,7 @@ except __builtin__.Exception:
 
 VersionFitz = "1.9a"          
 VersionBind = "1.9.2"         
-VersionDate = "2016-08-20 14:44:46"        
+VersionDate = "2016-08-25 16:19:40"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -382,7 +382,7 @@ class Document(_object):
 
 
     def _delToC(self):
-        """_delToC(Document self) -> int"""
+        """_delToC(Document self) -> PyObject *"""
         val = _fitz.Document__delToC(self)
 
         self.initData()
