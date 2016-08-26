@@ -9,5 +9,5 @@ Given any pixmap, use Pil / Pillow to save it in a different format
 Example: JPEG
 '''
 pix = fitz.Pixmap(...)
-img = Image.frombytes("RGBA",[pix.width, pix.height], str(pix.samples))
+img = Image.frombuffer("RGBA", [pix.width, pix.height], pix.samples, "raw", "RGBA", 0, 1)
 img.save("filename.jpg", "jpeg")
