@@ -1,10 +1,10 @@
 #! python
 '''
-This demo will extract all images of a PDF as PNG files that are referenced
+This demo extracts all images of a PDF as PNG files that are referenced
 by pages.
 Runtime is determined by number of pages and volume of stored images.
 Usage:
-extract_img1.py <input file>
+extract_img1.py input.pdf
 '''
 from __future__ import print_function
 import fitz
@@ -18,6 +18,8 @@ t0 = time.clock()
 doc = fitz.open(sys.argv[1])
 imgcount = 0
 lenXREF = doc._getXrefLength()
+
+# display some file info
 print("file: %s, pages: %s, objects: %s" % (sys.argv[1], len(doc), lenXREF-1))
 
 for i in range(len(doc)):
