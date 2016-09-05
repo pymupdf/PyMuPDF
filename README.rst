@@ -45,7 +45,7 @@ When MuPDF is ready, edit ``setup.py`` in PyMuPDF and comment out the line of ``
 
 OSX
 ---
-First please make sure that the dependencies are satisfied: ``brew install mupdf-tools jpeg jbig2dec freetype openssl``
+First, install the MuPDF headers and libraries, which are provided by mupdf-tools: ``brew install mupdf-tools``
 
 Then you might need to ``export ARCHFLAGS='-arch x86_64'`` since ``libmupdf.a`` is for x86_64 only.
 
