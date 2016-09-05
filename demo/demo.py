@@ -103,10 +103,10 @@ pm = fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), rect.round())
 # clear it with 0xff white
 pm.clearWith(0xff)
 
-# fitz.Device(pm) is a device for drawing
+# fitz.Device(pm, None) is a device for drawing
 # we run the display list above through this drawing device
 # with area provided
-dl.run(fitz.Device(pm), fitz.Identity, rect)
+dl.run(fitz.Device(pm, None), fitz.Identity, rect)
 
 # the drawing device save the result into the pixmap
 # and we save the pixmap as a PNG file
@@ -123,7 +123,7 @@ pm = None
 pm1 = fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), rect.round())
 pm1.clearWith(0xff)
 # then, run the display list, which already contains drawing commands
-dl.run(fitz.Device(pm1), fitz.Identity, rect)
+dl.run(fitz.Device(pm1, None), fitz.Identity, rect)
 
 # now let's do text search
 # first, we need text sheet and text page
