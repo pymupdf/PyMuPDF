@@ -217,13 +217,13 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       - ``[lvl, title, pno, top]``, where
 
-      - ``lvl`` is the hierarchy level (int > 0) of the item, starting with ``1`` and being at most 1 higher than that of the predecessor,
+        - ``lvl`` is the hierarchy level (int > 0) of the item, starting with ``1`` and being at most 1 higher than that of the predecessor,
 
-      - ``title`` (str) is the title to be displayed,
+        - ``title`` (str) is the title to be displayed,
 
-      - ``pno`` (int) is the target page number **(attention: 1-based to support getToC()-output)**, must be in valid page range,
+        - ``pno`` (int) is the target page number **(attention: 1-based to support getToC()-output)**, must be in valid page range,
 
-      - ``top`` (optional int / float) is a vertical location on the page in pixel units. It is the distance from bottom, so a zero means bottom of the target page. Default value is 36 pixels (half an inch) below top of page. A dictionary (like one contained in ``getToC(simple=False)``) may also be specified - in this case the value is the y-coordinate of the link destination, a point specified by key ``to``: ``d["to"].y``.
+        - ``top`` (optional int / float) is a vertical location on the page in pixel units. It is the distance from bottom, so a zero means bottom of the target page. Default value is 36 pixels (half an inch) below top of page. A dictionary (like one contained in ``getToC(simple=False)``) may also be specified - in this case the value is the y-coordinate of the link destination, a point specified by key ``to``: ``d["to"].y``.
 
       :rtype: int
       :returns: ``outline`` and ``getToC()`` will be updated upon successful execution. The return code will either equal the number of inserted items (``len(toc)``) or the number of deleted items if ``toc = []``.
@@ -232,10 +232,10 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       PDF documents only: Saves the **current content of the document** under the name ``outfile`` (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successful ``authenticate``, a decrypted copy will be saved, and, in addition (even without optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed methods ``select()``, ``setMetadata()``, ``setToC()`` or ``insertPDF()``, their results will also be reflected in the saved version.
 
-      :param `outfile`: The file name to save to. Must be different from the original value value if ``incremental=False``. If saving incrementally, then ``garbage`` and ``linear`` **must be** ``False`` and ``outfile`` **must equal** the original filename.
+      :param `outfile`: The file name to save to. Must be different from the original value value if ``incremental=False``. When saving incrementally, ``garbage`` and ``linear`` **must be** ``False`` and ``outfile`` **must equal** the original filename.
       :type `outfile`: string
 
-      :param `garbage`: Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition to 1, compact xref table, 3 = in addition to 2, merge duplicate objects. Excludes ``incremental``.
+      :param `garbage`: Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition to 1, compact xref table, 3 = in addition to 2, merge duplicate objects, 4 = in addition to 3, check streams for duplication. Excludes ``incremental``.
       :type `garbage`: int
 
       :param `clean`: Clean content streams: 0 = False, 1 = True.
@@ -263,7 +263,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       PDF documents only: Copies the page range **[from_page, to_page]** (including both) of the PDF document object ``doc2`` into the current PDF. ``from_page`` will start with page number ``start_at``. Negative values can be used to indicate default values. All pages thus copied will be rotated as specified. Links can be excluded in the target, see below. All page numbers are zero-based.
 
-      :param `doc2`: An opened PDF document.
+      :param `doc2`: An opened PDF document. The ``doc2`` object **must not be the current document**. It may, however, refer to the same PDF file opened as a separate ``fitz.Document``.
       :type `doc2`: ``Document``
 
       :param `from_page`: First page number in ``doc2``. Default is zero.
@@ -284,9 +284,9 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
       :rtype: int
       :returns: Zero upon successful execution.
 
-    .. note:: If ``from_page > to_page``, pages will be copied back to front. If these parameter are equal and ``>= 0``, then one page will be copied.
+    .. note:: If ``from_page > to_page``, pages will be copied back to front. If ``0 <= from_page == to_page``, then one page will be copied.
 
-    .. note:: The functionality of this method is a conversion of the MuPDF CLI utility ``mutool merge``. Due to current restrictions, ``doc2`` annotations other than links **will be dropped**. Links of kind :data:`LINK_GOTO` will be copied only if the destination is within the copied page range. Bookmarks pointing to the page range will not be copied either. But look at the examples below and at program ``PDFjoiner.py`` in the *examples* directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.
+    .. note:: The functionality of this method is a conversion of the MuPDF CLI utility ``mutool merge``. Due to its current restrictions, ``doc2`` annotations and bookmarks **will not be copied**. Links however **will be copied** (kind :data:`LINK_GOTO` links only of course, if their destination is within the copied page range). It is easy to recover a table of contents for the resulting document. Look at the examples below and at program ``PDFjoiner.py`` in the *examples* directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.
 
     .. method:: close()
 
@@ -328,7 +328,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       - If the date fields contain meaningful data (which need not be the case at all!), they are strings in the PDF-internal timestamp format "D:<TS><TZ>", where
 
-          - <TS> is the 12 character ISO timestamp ``YYYMMDDhhmmss`` (``YYYY`` - year, ``MM`` - month, ``DD`` - day, ``hh`` - hour, ``mm`` - minute, ``ss`` - second), and
+          - <TS> is the 12 character ISO timestamp ``YYYYMMDDhhmmss`` (``YYYY`` - year, ``MM`` - month, ``DD`` - day, ``hh`` - hour, ``mm`` - minute, ``ss`` - second), and
 
           - <TZ> is a time zone value (time intervall relative to GMT) containing a sign ('+' or '-'), the hour (``hh``), and the minute (``'mm'``, note the apostrophies!).
 
@@ -390,7 +390,7 @@ Create a document copy deleting pages with no text:
      p = None                               # delete page object
 
  doc.select(r)                              # apply the list
- doc.save("out.pdf", garbage=3)             # save the resulting PDF, OR
+ doc.save("out.pdf", garbage = 4)           # save the resulting PDF, OR
 
  # overwrite the original document ... *** VERY FAST! ***
  doc.save("any.pdf", incremental = 1)       # excludes garbage collection
@@ -402,7 +402,7 @@ Create a sub document with the odd pages:
  doc = fitz.open("any.pdf")
  r = list(range(0, len(doc), 2))
  doc.select(r)                              # apply the list
- doc.save("oddpages.pdf", garbage=3)        # save sub-PDF of the odd pages
+ doc.save("oddpages.pdf", garbage = 4)      # save sub-PDF of the odd pages
 
 
 Concatenate a document with itself:
@@ -439,7 +439,7 @@ Clear metadata information. If you do this out of privacy / data protection conc
  {'producer': 'none', 'format': 'PDF 1.4', 'encryption': None, 'author': 'none',
  'modDate': 'none', 'keywords': 'none', 'title': 'none', 'creationDate': 'none',
  'creator': 'none', 'subject': 'none'}
- >>> doc.save("anonymous.pdf", garbage=3)
+ >>> doc.save("anonymous.pdf", garbage = 4)
  0
 
 
@@ -494,16 +494,19 @@ Obviously, similar ways can be found in more general situations. Just watch out 
  doc1.insertPDF(doc2, from_page = 21, to_page = 25, start_at = 0)
 
 
-More Examples
+Other Examples
 ----------------
-**Extract images of a page into separate image files:**
+**Extract all images of a PDF into separate PNG files:**
 ::
- imglist = doc.getImageList(pno)
- for img in imagelist:
-     xref = img[0]                      # xref number
-     pix = fitz.Pixmap(doc, xref)       # make pixmap out of image with xref
-     if pix.n < 5:
-         pix.writePNG("p%s-%s.png" % (pno, xref))
-     else:
-         pix.writeImage("p%s-%s.pam" % (pno, xref), output = "pam")
-     pix = None
+ for i in range(len(doc)):
+     imglist = doc.getPageImageList(i)
+     for img in imglist:
+         xref = img[0]                  # xref number
+         pix = fitz.Pixmap(doc, xref)   # make pixmap from image
+         if pix.n < 5:                  # can be saved as PNG
+             pix.writePNG("p%s-%s.png" % (i, xref))
+         else:                          # must convert CMYK first
+             pix0 = fitz.Pixmap(fitz.csRGB, pix)
+             pix0.writePNG("p%s-%s.png" % (i, xref))
+             pix0 = None                # free Pixmap resources
+         pix = None                     # free Pixmap resources

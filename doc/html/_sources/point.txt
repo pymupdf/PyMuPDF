@@ -46,6 +46,10 @@ Point
      :param `m`: The matrix to be applied.
      :type `m`: :ref:`Matrix`
 
+Remark
+------
+A point's ``p`` attributes ``x`` and ``y`` can also be accessed as indices, e.g. ``p.x == p[0]``.
+
 Point Algebra
 ------------------
 A number of arithmetics operations have been defined for the ``Point`` class:

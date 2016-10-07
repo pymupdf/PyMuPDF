@@ -162,8 +162,12 @@ It should be noted, that
 
       :type: float
 
-Remarks
---------
+Remarks 1
+---------
+For a matrix ``m``, properties ``a`` to ``f`` can also be accessed by index, e.g. ``m.a == m[0]``.
+
+Remarks 2
+---------
 Obviously, changes of matrix properties and execution of matrix methods can be combined, i.e. executed consecutively. This is done by multiplying the respective matrices.
 
 Matrix multiplications are **not commutative**, i.e. execution sequence determines the result: a **shift-rotate** is not equal a **rotate-shift** in general. So it can easily become unclear which result a transformation will yield. E.g. if you apply ``preRotate(x)`` to an arbitrary matrix ``[a, b, c, d, e, f]`` you will get the matrix ``[a*cos(x)+c*sin(x), b*cos(x)+d*sin(x), -a*sin(x)+c*cos(x), -b*sin(x)+d*cos(x), e, f]`` ...

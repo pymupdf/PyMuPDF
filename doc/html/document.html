@@ -1,95 +1,170 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Document &mdash; PyMuPDF 1.9.2 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
     
-    <title>Document &mdash; PyMuPDF 1.9.2 documentation</title>
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+        <link rel="up" title="Classes" href="classes.html"/>
+        <link rel="next" title="Identity" href="identity.html"/>
+        <link rel="prev" title="DisplayList" href="displaylist.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
     
-    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.9.2',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html" />
-    <link rel="up" title="Classes" href="classes.html" />
-    <link rel="next" title="Identity" href="identity.html" />
-    <link rel="prev" title="DisplayList" href="displaylist.html" /> 
-  </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="identity.html" title="Identity"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="displaylist.html" title="DisplayList"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="classes.html" accesskey="U">Classes</a> &raquo;</li> 
-      </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Document</a><ul>
-<li><a class="reference internal" href="#remarks-on-select">Remarks on <code class="docutils literal"><span class="pre">select()</span></code></a></li>
-<li><a class="reference internal" href="#select-examples"><code class="docutils literal"><span class="pre">select()</span></code> Examples</a></li>
-<li><a class="reference internal" href="#setmetadata-example"><code class="docutils literal"><span class="pre">setMetadata()</span></code> Example</a></li>
-<li><a class="reference internal" href="#settoc-example"><code class="docutils literal"><span class="pre">setToC()</span></code> Example</a></li>
-<li><a class="reference internal" href="#insertpdf-examples"><code class="docutils literal"><span class="pre">insertPDF()</span></code> Examples</a></li>
-<li><a class="reference internal" href="#more-examples">More Examples</a></li>
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PyMuPDF
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">Colorspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Document</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#remarks-on-select">Remarks on <code class="docutils literal"><span class="pre">select()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#select-examples"><code class="docutils literal"><span class="pre">select()</span></code> Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setmetadata-example"><code class="docutils literal"><span class="pre">setMetadata()</span></code> Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#settoc-example"><code class="docutils literal"><span class="pre">setToC()</span></code> Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#insertpdf-examples"><code class="docutils literal"><span class="pre">insertPDF()</span></code> Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-examples">Other Examples</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="identity.html">Identity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="irect.html">IRect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="link.html">Link</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linkdest.html">linkDest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="textpage.html">TextPage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="textsheet.html">TextSheet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="displaylist.html"
-                        title="previous chapter">DisplayList</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="identity.html"
-                        title="next chapter">Identity</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/document.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+            
+          
         </div>
       </div>
+    </nav>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">PyMuPDF</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="classes.html">Classes</a> &raquo;</li>
+      
+    <li>Document</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/document.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="document">
 <span id="id1"></span><h1>Document<a class="headerlink" href="#document" title="Permalink to this headline">¶</a></h1>
@@ -308,7 +383,7 @@
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of images shown on this page. Each entry looks like <code class="docutils literal"><span class="pre">[xref,</span> <span class="pre">gen,</span> <span class="pre">width,</span> <span class="pre">height,</span> <span class="pre">bpc,</span> <span class="pre">colorspace,</span> <span class="pre">alt.</span> <span class="pre">colorspace]</span></code>. Where <code class="docutils literal"><span class="pre">xref</span></code> is the image object number, <code class="docutils literal"><span class="pre">gen</span></code> its generation number (should usually be zero), <code class="docutils literal"><span class="pre">width</span></code> and <code class="docutils literal"><span class="pre">height</span></code> are the image dimensions, <code class="docutils literal"><span class="pre">bpc</span></code> denotes the number of bits per component (a typical value is 8), <code class="docutils literal"><span class="pre">colorspace</span></code> a string naming the colorspace (like <code class="docutils literal"><span class="pre">DeviceRGB</span></code>), and <code class="docutils literal"><span class="pre">alt.</span> <span class="pre">colorspace</span></code> is any alternate colorspace depending on the value of <code class="docutils literal"><span class="pre">colorspace</span></code>. See below how this information can be used to extract pages images as separate files. Another demonstration:<div class="highlight-default"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;pymupdf.pdf&quot;</span><span class="p">)</span>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of images shown on this page. Each entry looks like <code class="docutils literal"><span class="pre">[xref,</span> <span class="pre">gen,</span> <span class="pre">width,</span> <span class="pre">height,</span> <span class="pre">bpc,</span> <span class="pre">colorspace,</span> <span class="pre">alt.</span> <span class="pre">colorspace]</span></code>. Where <code class="docutils literal"><span class="pre">xref</span></code> is the image object number, <code class="docutils literal"><span class="pre">gen</span></code> its generation number (should usually be zero), <code class="docutils literal"><span class="pre">width</span></code> and <code class="docutils literal"><span class="pre">height</span></code> are the image dimensions, <code class="docutils literal"><span class="pre">bpc</span></code> denotes the number of bits per component (a typical value is 8), <code class="docutils literal"><span class="pre">colorspace</span></code> a string naming the colorspace (like <code class="docutils literal"><span class="pre">DeviceRGB</span></code>), and <code class="docutils literal"><span class="pre">alt.</span> <span class="pre">colorspace</span></code> is any alternate colorspace depending on the value of <code class="docutils literal"><span class="pre">colorspace</span></code>. See below how this information can be used to extract pages images as separate files. Another demonstration:<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;pymupdf.pdf&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">imglist</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getPageImageList</span><span class="p">(</span><span class="mi">85</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">imglist</span><span class="p">:</span> <span class="nb">print</span> <span class="n">img</span>
 <span class="go">[1052, 0, 365, 414, 8, &#39;DeviceRGB&#39;, &#39;&#39;]</span>
@@ -335,7 +410,7 @@
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of fonts referenced by this page. Each entry looks like <code class="docutils literal"><span class="pre">[xref,</span> <span class="pre">gen,</span> <span class="pre">type,</span> <span class="pre">basefont,</span> <span class="pre">name]</span></code>. Where <code class="docutils literal"><span class="pre">xref</span></code> is the image object number, <code class="docutils literal"><span class="pre">gen</span></code> its generation number (should usually be zero), <code class="docutils literal"><span class="pre">type</span></code> is the font type (like <code class="docutils literal"><span class="pre">Type1</span></code>, <code class="docutils literal"><span class="pre">TrueType</span></code>), <code class="docutils literal"><span class="pre">basefont</span></code> is the base font name und <code class="docutils literal"><span class="pre">name</span></code> is the PDF name of this font if given:<div class="highlight-default"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;pymupdf.pdf&quot;</span><span class="p">)</span>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of fonts referenced by this page. Each entry looks like <code class="docutils literal"><span class="pre">[xref,</span> <span class="pre">gen,</span> <span class="pre">type,</span> <span class="pre">basefont,</span> <span class="pre">name]</span></code>. Where <code class="docutils literal"><span class="pre">xref</span></code> is the image object number, <code class="docutils literal"><span class="pre">gen</span></code> its generation number (should usually be zero), <code class="docutils literal"><span class="pre">type</span></code> is the font type (like <code class="docutils literal"><span class="pre">Type1</span></code>, <code class="docutils literal"><span class="pre">TrueType</span></code>), <code class="docutils literal"><span class="pre">basefont</span></code> is the base font name und <code class="docutils literal"><span class="pre">name</span></code> is the PDF name of this font if given:<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;pymupdf.pdf&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fontlist</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getPageFontList</span><span class="p">(</span><span class="mi">85</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">font</span> <span class="ow">in</span> <span class="n">fontlist</span><span class="p">:</span> <span class="nb">print</span> <span class="n">font</span>
 <span class="go">[100, 0, &#39;Type1&#39;, &#39;BVGEBM+NimbusSanL-Bold&#39;, &#39;&#39;]</span>
@@ -373,7 +448,7 @@
 <dt id="Document.getPermits">
 <code class="descname">getPermits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Document.getPermits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shows the permissions to access the document. Returns a dictionary likes this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">getPermits</span><span class="p">()</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">getPermits</span><span class="p">()</span>
 <span class="go">{&#39;print&#39;: True, &#39;edit&#39;: True, &#39;note&#39;: True, &#39;copy&#39;: True}</span>
 </pre></div>
 </div>
@@ -442,11 +517,13 @@
 </table>
 <p>A Python list with <strong>all bookmark entries</strong> that should form the new table of contents. Each entry of this list is again a list with the following format. Output variants of method <code class="docutils literal"><span class="pre">getToc()</span></code> are acceptable as input, too.</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">[lvl,</span> <span class="pre">title,</span> <span class="pre">pno,</span> <span class="pre">top]</span></code>, where</li>
+<li><code class="docutils literal"><span class="pre">[lvl,</span> <span class="pre">title,</span> <span class="pre">pno,</span> <span class="pre">top]</span></code>, where<ul>
 <li><code class="docutils literal"><span class="pre">lvl</span></code> is the hierarchy level (int &gt; 0) of the item, starting with <code class="docutils literal"><span class="pre">1</span></code> and being at most 1 higher than that of the predecessor,</li>
 <li><code class="docutils literal"><span class="pre">title</span></code> (str) is the title to be displayed,</li>
 <li><code class="docutils literal"><span class="pre">pno</span></code> (int) is the target page number <strong>(attention: 1-based to support getToC()-output)</strong>, must be in valid page range,</li>
 <li><code class="docutils literal"><span class="pre">top</span></code> (optional int / float) is a vertical location on the page in pixel units. It is the distance from bottom, so a zero means bottom of the target page. Default value is 36 pixels (half an inch) below top of page. A dictionary (like one contained in <code class="docutils literal"><span class="pre">getToC(simple=False)</span></code>) may also be specified - in this case the value is the y-coordinate of the link destination, a point specified by key <code class="docutils literal"><span class="pre">to</span></code>: <code class="docutils literal"><span class="pre">d[&quot;to&quot;].y</span></code>.</li>
+</ul>
+</li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -469,8 +546,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outfile</strong> (<em>string</em>) &#8211; The file name to save to. Must be different from the original value value if <code class="docutils literal"><span class="pre">incremental=False</span></code>. If saving incrementally, then <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code> <strong>must be</strong> <code class="docutils literal"><span class="pre">False</span></code> and <code class="docutils literal"><span class="pre">outfile</span></code> <strong>must equal</strong> the original filename.</li>
-<li><strong>garbage</strong> (<em>int</em>) &#8211; Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition to 1, compact xref table, 3 = in addition to 2, merge duplicate objects. Excludes <code class="docutils literal"><span class="pre">incremental</span></code>.</li>
+<li><strong>outfile</strong> (<em>string</em>) &#8211; The file name to save to. Must be different from the original value value if <code class="docutils literal"><span class="pre">incremental=False</span></code>. When saving incrementally, <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code> <strong>must be</strong> <code class="docutils literal"><span class="pre">False</span></code> and <code class="docutils literal"><span class="pre">outfile</span></code> <strong>must equal</strong> the original filename.</li>
+<li><strong>garbage</strong> (<em>int</em>) &#8211; Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition to 1, compact xref table, 3 = in addition to 2, merge duplicate objects, 4 = in addition to 3, check streams for duplication. Excludes <code class="docutils literal"><span class="pre">incremental</span></code>.</li>
 <li><strong>clean</strong> (<em>int</em>) &#8211; Clean content streams: 0 = False, 1 = True.</li>
 <li><strong>deflate</strong> (<em>int</em>) &#8211; Deflate uncompressed streams: 0 = False, 1 = True.</li>
 <li><strong>incremental</strong> (<em>int</em>) &#8211; Only save changed objects: 0 = False, 1 = True. Excludes <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code>. Cannot be used for decrypted files and for files opened in repair mode (<code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>). In these cases saving to a new file is required.</li>
@@ -499,7 +576,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>doc2</strong> (<code class="docutils literal"><span class="pre">Document</span></code>) &#8211; An opened PDF document.</li>
+<li><strong>doc2</strong> (<code class="docutils literal"><span class="pre">Document</span></code>) &#8211; An opened PDF document. The <code class="docutils literal"><span class="pre">doc2</span></code> object <strong>must not be the current document</strong>. It may, however, refer to the same PDF file opened as a separate <code class="docutils literal"><span class="pre">fitz.Document</span></code>.</li>
 <li><strong>from_page</strong> (<em>int</em>) &#8211; First page number in <code class="docutils literal"><span class="pre">doc2</span></code>. Default is zero.</li>
 <li><strong>to_page</strong> (<em>int</em>) &#8211; Last page number in <code class="docutils literal"><span class="pre">doc2</span></code> to copy. Default is the last page.</li>
 <li><strong>start_at</strong> (<em>int</em>) &#8211; First copied page will become page number <code class="docutils literal"><span class="pre">start_at</span></code> in the destination. If omitted, the page range will be appended. If zero, the page range will be inserted before current first page.</li>
@@ -520,11 +597,11 @@
 
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">If <code class="docutils literal"><span class="pre">from_page</span> <span class="pre">&gt;</span> <span class="pre">to_page</span></code>, pages will be copied back to front. If these parameter are equal and <code class="docutils literal"><span class="pre">&gt;=</span> <span class="pre">0</span></code>, then one page will be copied.</p>
+<p class="last">If <code class="docutils literal"><span class="pre">from_page</span> <span class="pre">&gt;</span> <span class="pre">to_page</span></code>, pages will be copied back to front. If <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">from_page</span> <span class="pre">==</span> <span class="pre">to_page</span></code>, then one page will be copied.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The functionality of this method is a conversion of the MuPDF CLI utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">merge</span></code>. Due to current restrictions, <code class="docutils literal"><span class="pre">doc2</span></code> annotations other than links <strong>will be dropped</strong>. Links of kind <a class="reference internal" href="vars.html#LINK_GOTO" title="LINK_GOTO"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTO</span></code></a> will be copied only if the destination is within the copied page range. Bookmarks pointing to the page range will not be copied either. But look at the examples below and at program <code class="docutils literal"><span class="pre">PDFjoiner.py</span></code> in the <em>examples</em> directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.</p>
+<p class="last">The functionality of this method is a conversion of the MuPDF CLI utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">merge</span></code>. Due to its current restrictions, <code class="docutils literal"><span class="pre">doc2</span></code> annotations and bookmarks <strong>will not be copied</strong>. Links however <strong>will be copied</strong> (kind <a class="reference internal" href="vars.html#LINK_GOTO" title="LINK_GOTO"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTO</span></code></a> links only of course, if their destination is within the copied page range). It is easy to recover a table of contents for the resulting document. Look at the examples below and at program <code class="docutils literal"><span class="pre">PDFjoiner.py</span></code> in the <em>examples</em> directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.</p>
 </div>
 <dl class="method">
 <dt id="Document.close">
@@ -601,7 +678,7 @@
 <li><p class="first">If the date fields contain meaningful data (which need not be the case at all!), they are strings in the PDF-internal timestamp format &#8220;D:&lt;TS&gt;&lt;TZ&gt;&#8221;, where</p>
 <blockquote>
 <div><ul class="simple">
-<li>&lt;TS&gt; is the 12 character ISO timestamp <code class="docutils literal"><span class="pre">YYYMMDDhhmmss</span></code> (<code class="docutils literal"><span class="pre">YYYY</span></code> - year, <code class="docutils literal"><span class="pre">MM</span></code> - month, <code class="docutils literal"><span class="pre">DD</span></code> - day, <code class="docutils literal"><span class="pre">hh</span></code> - hour, <code class="docutils literal"><span class="pre">mm</span></code> - minute, <code class="docutils literal"><span class="pre">ss</span></code> - second), and</li>
+<li>&lt;TS&gt; is the 12 character ISO timestamp <code class="docutils literal"><span class="pre">YYYYMMDDhhmmss</span></code> (<code class="docutils literal"><span class="pre">YYYY</span></code> - year, <code class="docutils literal"><span class="pre">MM</span></code> - month, <code class="docutils literal"><span class="pre">DD</span></code> - day, <code class="docutils literal"><span class="pre">hh</span></code> - hour, <code class="docutils literal"><span class="pre">mm</span></code> - minute, <code class="docutils literal"><span class="pre">ss</span></code> - second), and</li>
 <li>&lt;TZ&gt; is a time zone value (time intervall relative to GMT) containing a sign (&#8216;+&#8217; or &#8216;-&#8216;), the hour (<code class="docutils literal"><span class="pre">hh</span></code>), and the minute (<code class="docutils literal"><span class="pre">'mm'</span></code>, note the apostrophies!).</li>
 </ul>
 </div></blockquote>
@@ -692,53 +769,53 @@
 <h2><code class="docutils literal"><span class="pre">select()</span></code> Examples<a class="headerlink" href="#select-examples" title="Permalink to this headline">¶</a></h2>
 <p>In general, any list containing integers within the document&#8217;s page range can be used as an argument. Here are just some illustrations.</p>
 <p>Create a document copy deleting pages with no text:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
-<span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;any.pdf&quot;</span><span class="p">)</span>
-<span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="p">))</span>             <span class="c"># list of all pages</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="p">))</span>             <span class="c1"># list of all pages</span>
 
 <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pages</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">getText</span><span class="p">():</span>                    <span class="c"># contains no text</span>
-        <span class="n">r</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>                 <span class="c"># remove page number from list</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="k">None</span>                               <span class="c"># delete page object</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">getText</span><span class="p">():</span>                    <span class="c1"># contains no text</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>                 <span class="c1"># remove page number from list</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="kc">None</span>                               <span class="c1"># delete page object</span>
 
-<span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>                              <span class="c"># apply the list</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;out.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>             <span class="c"># save the resulting PDF, OR</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>                              <span class="c1"># apply the list</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>           <span class="c1"># save the resulting PDF, OR</span>
 
-<span class="c"># overwrite the original document ... *** VERY FAST! ***</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;any.pdf&quot;</span><span class="p">,</span> <span class="n">incremental</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>       <span class="c"># excludes garbage collection</span>
+<span class="c1"># overwrite the original document ... *** VERY FAST! ***</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">,</span> <span class="n">incremental</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>       <span class="c1"># excludes garbage collection</span>
 </pre></div>
 </div>
 <p>Create a sub document with the odd pages:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
-<span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;any.pdf&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
 <span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>                              <span class="c"># apply the list</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;oddpages.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>        <span class="c"># save sub-PDF of the odd pages</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>                              <span class="c1"># apply the list</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;oddpages.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>      <span class="c1"># save sub-PDF of the odd pages</span>
 </pre></div>
 </div>
 <p>Concatenate a document with itself:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
-<span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;any.pdf&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
 <span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)))</span>
-<span class="n">r</span> <span class="o">+=</span> <span class="n">r</span>                                     <span class="c"># turn PDF into a copy of itself</span>
+<span class="n">r</span> <span class="o">+=</span> <span class="n">r</span>                                     <span class="c1"># turn PDF into a copy of itself</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;any-any.pdf&quot;</span><span class="p">)</span>                    <span class="c"># contains doubled &lt;any.pdf&gt;</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;any-any.pdf&quot;</span><span class="p">)</span>                    <span class="c1"># contains doubled &lt;any.pdf&gt;</span>
 </pre></div>
 </div>
 <p>Create document copy in reverse page order (well, don&#8217;t try with a million pages):</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
-<span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;any.pdf&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
 <span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;back-to-front.pdf&quot;</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;back-to-front.pdf&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="setmetadata-example">
 <h2><code class="docutils literal"><span class="pre">setMetadata()</span></code> Example<a class="headerlink" href="#setmetadata-example" title="Permalink to this headline">¶</a></h2>
 <p>Clear metadata information. If you do this out of privacy / data protection concerns, make sure you save the document as a new file with <code class="docutils literal"><span class="pre">garbage</span></code> option specified. Only then the old <code class="docutils literal"><span class="pre">/Info</span></code> object will also be physically removed from the file:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fitz</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">=</span><span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;pymupdf.pdf&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">=</span><span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;pymupdf.pdf&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">metadata</span>
 <span class="go">{&#39;producer&#39;: &#39;rst2pdf, reportlab&#39;, &#39;format&#39;: &#39;PDF 1.4&#39;, &#39;encryption&#39;: None, &#39;author&#39;:</span>
 <span class="go">&#39;Jorj X. McKie&#39;, &#39;modDate&#39;: &quot;D:20160611145816-04&#39;00&#39;&quot;, &#39;keywords&#39;: &#39;PDF, XPS, EPUB, CBZ&#39;,</span>
@@ -750,7 +827,7 @@
 <span class="go">{&#39;producer&#39;: &#39;none&#39;, &#39;format&#39;: &#39;PDF 1.4&#39;, &#39;encryption&#39;: None, &#39;author&#39;: &#39;none&#39;,</span>
 <span class="go">&#39;modDate&#39;: &#39;none&#39;, &#39;keywords&#39;: &#39;none&#39;, &#39;title&#39;: &#39;none&#39;, &#39;creationDate&#39;: &#39;none&#39;,</span>
 <span class="go">&#39;creator&#39;: &#39;none&#39;, &#39;subject&#39;: &#39;none&#39;}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;anonymous.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;anonymous.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
 <span class="go">0</span>
 </pre></div>
 </div>
@@ -758,19 +835,19 @@
 <div class="section" id="settoc-example">
 <h2><code class="docutils literal"><span class="pre">setToC()</span></code> Example<a class="headerlink" href="#settoc-example" title="Permalink to this headline">¶</a></h2>
 <p>This shows how to modify or add a table of contents:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fitz</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;test.pdf&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;test.pdf&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">toc</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getToC</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">toc</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>                           <span class="c"># show what we have</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">toc</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>                           <span class="c1"># show what we have</span>
 <span class="gp">...</span>
 <span class="go">[1, &#39;The PyMuPDF Documentation&#39;, 1]</span>
 <span class="go">[2, &#39;Introduction&#39;, 1]</span>
 <span class="go">[3, &#39;Note on the Name fitz&#39;, 1]</span>
 <span class="go">[3, &#39;License&#39;, 1]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">toc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="s">&quot; modified by setToC&quot;</span>               <span class="c"># modify something</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">setToC</span><span class="p">(</span><span class="n">toc</span><span class="p">)</span>                                  <span class="c"># replace outline tree</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">toc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot; modified by setToC&quot;</span>               <span class="c1"># modify something</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">setToC</span><span class="p">(</span><span class="n">toc</span><span class="p">)</span>                                  <span class="c1"># replace outline tree</span>
 <span class="go">3                                                    # number of bookmarks inserted</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">getToC</span><span class="p">():</span> <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>                  <span class="c"># demonstrate it worked</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">getToC</span><span class="p">():</span> <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>                  <span class="c1"># demonstrate it worked</span>
 <span class="gp">...</span>
 <span class="go">[1, &#39;The PyMuPDF Documentation&#39;, 1]</span>
 <span class="go">[2, &#39;Introduction modified by setToC&#39;, 1]            # &lt;&lt;&lt; this has changed</span>
@@ -782,73 +859,117 @@
 <div class="section" id="insertpdf-examples">
 <h2><code class="docutils literal"><span class="pre">insertPDF()</span></code> Examples<a class="headerlink" href="#insertpdf-examples" title="Permalink to this headline">¶</a></h2>
 <p><strong>(1) Concatenate two documents including their tables of content:</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span class="n">doc1</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;file1.pdf&quot;</span><span class="p">)</span>          <span class="c"># must be a PDF</span>
-<span class="n">doc2</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;file2.pdf&quot;</span><span class="p">)</span>          <span class="c"># must be a PDF</span>
-<span class="n">pages1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc1</span><span class="p">)</span>                     <span class="c"># save doc1&#39;s page count</span>
-<span class="n">toc1</span> <span class="o">=</span> <span class="n">doc1</span><span class="o">.</span><span class="n">getToC</span><span class="p">(</span><span class="n">simple</span> <span class="o">=</span> <span class="k">False</span><span class="p">)</span>     <span class="c"># save TOC</span>
-<span class="n">toc2</span> <span class="o">=</span> <span class="n">doc2</span><span class="o">.</span><span class="n">getToC</span><span class="p">(</span><span class="n">simple</span> <span class="o">=</span> <span class="k">False</span><span class="p">)</span>     <span class="c"># save TOC</span>
-<span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">)</span>                   <span class="c"># doc2 at end of doc1</span>
-<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">toc2</span><span class="p">:</span>                         <span class="c"># increase toc2 page num&#39;s</span>
-    <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">pages1</span>                     <span class="c"># by old len(doc1)</span>
-<span class="n">doc1</span><span class="o">.</span><span class="n">setToC</span><span class="p">(</span><span class="n">toc1</span> <span class="o">+</span> <span class="n">toc2</span><span class="p">)</span>               <span class="c"># now result has total TOC</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">doc1</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;file1.pdf&quot;</span><span class="p">)</span>          <span class="c1"># must be a PDF</span>
+<span class="n">doc2</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;file2.pdf&quot;</span><span class="p">)</span>          <span class="c1"># must be a PDF</span>
+<span class="n">pages1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc1</span><span class="p">)</span>                     <span class="c1"># save doc1&#39;s page count</span>
+<span class="n">toc1</span> <span class="o">=</span> <span class="n">doc1</span><span class="o">.</span><span class="n">getToC</span><span class="p">(</span><span class="n">simple</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>     <span class="c1"># save TOC</span>
+<span class="n">toc2</span> <span class="o">=</span> <span class="n">doc2</span><span class="o">.</span><span class="n">getToC</span><span class="p">(</span><span class="n">simple</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>     <span class="c1"># save TOC</span>
+<span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">)</span>                   <span class="c1"># doc2 at end of doc1</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">toc2</span><span class="p">:</span>                         <span class="c1"># increase toc2 page num&#39;s</span>
+    <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">pages1</span>                     <span class="c1"># by old len(doc1)</span>
+<span class="n">doc1</span><span class="o">.</span><span class="n">setToC</span><span class="p">(</span><span class="n">toc1</span> <span class="o">+</span> <span class="n">toc2</span><span class="p">)</span>               <span class="c1"># now result has total TOC</span>
 </pre></div>
 </div>
 <p>Obviously, similar ways can be found in more general situations. Just watch out that hierarchy level steps do not exceed one. Inserting dummy entries before and after the <code class="docutils literal"><span class="pre">toc2</span></code> segment would heal such cases.</p>
 <p><strong>(2) More examples:</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span class="c"># insert 5 pages of doc2, where source page 21 becomes page 15 in doc1</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># insert 5 pages of doc2, where source page 21 becomes page 15 in doc1</span>
 <span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">from_page</span> <span class="o">=</span> <span class="mi">21</span><span class="p">,</span> <span class="n">to_page</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">start_at</span> <span class="o">=</span> <span class="mi">15</span><span class="p">)</span>
 
-<span class="c"># same example, but source pages are rotated and in reversed order</span>
+<span class="c1"># same example, but source pages are rotated and in reversed order</span>
 <span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">from_page</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">to_page</span> <span class="o">=</span> <span class="mi">21</span><span class="p">,</span> <span class="n">start_at</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span> <span class="n">rotate</span> <span class="o">=</span> <span class="mi">90</span><span class="p">)</span>
 
-<span class="c"># insert doc2 pages in front of doc1</span>
+<span class="c1"># insert doc2 pages in front of doc1</span>
 <span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">from_page</span> <span class="o">=</span> <span class="mi">21</span><span class="p">,</span> <span class="n">to_page</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">start_at</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="more-examples">
-<h2>More Examples<a class="headerlink" href="#more-examples" title="Permalink to this headline">¶</a></h2>
-<p><strong>Extract images of a page into separate image files:</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span class="n">imglist</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getImageList</span><span class="p">(</span><span class="n">pno</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">imagelist</span><span class="p">:</span>
-    <span class="n">xref</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>                      <span class="c"># xref number</span>
-    <span class="n">pix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">xref</span><span class="p">)</span>       <span class="c"># make pixmap out of image with xref</span>
-    <span class="k">if</span> <span class="n">pix</span><span class="o">.</span><span class="n">n</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
-        <span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s">&quot;p%s-%s.png&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pno</span><span class="p">,</span> <span class="n">xref</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">pix</span><span class="o">.</span><span class="n">writeImage</span><span class="p">(</span><span class="s">&quot;p%s-%s.pam&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pno</span><span class="p">,</span> <span class="n">xref</span><span class="p">),</span> <span class="n">output</span> <span class="o">=</span> <span class="s">&quot;pam&quot;</span><span class="p">)</span>
-    <span class="n">pix</span> <span class="o">=</span> <span class="k">None</span>
+<div class="section" id="other-examples">
+<h2>Other Examples<a class="headerlink" href="#other-examples" title="Permalink to this headline">¶</a></h2>
+<p><strong>Extract all images of a PDF into separate PNG files:</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)):</span>
+    <span class="n">imglist</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getPageImageList</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">imglist</span><span class="p">:</span>
+        <span class="n">xref</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>                  <span class="c1"># xref number</span>
+        <span class="n">pix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">xref</span><span class="p">)</span>   <span class="c1"># make pixmap from image</span>
+        <span class="k">if</span> <span class="n">pix</span><span class="o">.</span><span class="n">n</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>                  <span class="c1"># can be saved as PNG</span>
+            <span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s2">&quot;p</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">.png&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">xref</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>                          <span class="c1"># must convert CMYK first</span>
+            <span class="n">pix0</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">csRGB</span><span class="p">,</span> <span class="n">pix</span><span class="p">)</span>
+            <span class="n">pix0</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s2">&quot;p</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">.png&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">xref</span><span class="p">))</span>
+            <span class="n">pix0</span> <span class="o">=</span> <span class="kc">None</span>                <span class="c1"># free Pixmap resources</span>
+        <span class="n">pix</span> <span class="o">=</span> <span class="kc">None</span>                     <span class="c1"># free Pixmap resources</span>
 </pre></div>
 </div>
 </div>
 </div>
 
 
+           </div>
           </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="identity.html" class="btn btn-neutral float-right" title="Identity" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="displaylist.html" class="btn btn-neutral" title="DisplayList" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Jorj X. McKie.
+      Last updated on 06. Oct 2016.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="identity.html" title="Identity"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="displaylist.html" title="DisplayList"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="classes.html" >Classes</a> &raquo;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 18. Aug 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.9.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>

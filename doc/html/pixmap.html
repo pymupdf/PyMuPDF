@@ -1,92 +1,167 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Pixmap &mdash; PyMuPDF 1.9.2 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
     
-    <title>Pixmap &mdash; PyMuPDF 1.9.2 documentation</title>
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+        <link rel="up" title="Classes" href="classes.html"/>
+        <link rel="next" title="Point" href="point.html"/>
+        <link rel="prev" title="Pages" href="pages.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
     
-    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.9.2',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html" />
-    <link rel="up" title="Classes" href="classes.html" />
-    <link rel="next" title="Point" href="point.html" />
-    <link rel="prev" title="Pages" href="pages.html" /> 
-  </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="point.html" title="Point"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="pages.html" title="Pages"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="classes.html" accesskey="U">Classes</a> &raquo;</li> 
-      </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Pixmap</a><ul>
-<li><a class="reference internal" href="#supported-pixmap-construction-image-types">Supported Pixmap Construction Image Types</a></li>
-<li><a class="reference internal" href="#details-on-saving-images-with-writeimage">Details on Saving Images with <code class="docutils literal"><span class="pre">writeImage()</span></code></a></li>
-<li><a class="reference internal" href="#pixmap-example-code-snippets">Pixmap Example Code Snippets</a></li>
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PyMuPDF
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">Colorspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="document.html">Document</a></li>
+<li class="toctree-l2"><a class="reference internal" href="identity.html">Identity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="irect.html">IRect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="link.html">Link</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linkdest.html">linkDest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Pixmap</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#supported-pixmap-construction-image-types">Supported Pixmap Construction Image Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#details-on-saving-images-with-writeimage">Details on Saving Images with <code class="docutils literal"><span class="pre">writeImage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pixmap-example-code-snippets">Pixmap Example Code Snippets</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="textpage.html">TextPage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="textsheet.html">TextSheet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="pages.html"
-                        title="previous chapter">Pages</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="point.html"
-                        title="next chapter">Point</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/pixmap.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+            
+          
         </div>
       </div>
+    </nav>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">PyMuPDF</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="classes.html">Classes</a> &raquo;</li>
+      
+    <li>Pixmap</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/pixmap.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="pixmap">
 <span id="id1"></span><h1>Pixmap<a class="headerlink" href="#pixmap" title="Permalink to this headline">¶</a></h1>
@@ -98,7 +173,7 @@
 <li>from an image file</li>
 <li>from an in-memory image (bytearray)</li>
 <li>from a memory area of plain pixels</li>
-<li>from an image inside the PDF document</li>
+<li>from an image inside a PDF document</li>
 <li>as a copy of another pixmap</li>
 </ol>
 <div class="admonition note">
@@ -228,7 +303,7 @@
 <dl class="method">
 <dt>
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>colorspace</em>, <em>sourcepix</em><span class="sig-paren">)</span></dt>
-<dd><p>This constructor creates a new pixmap as a copy of another one, <code class="docutils literal"><span class="pre">sourcepix</span></code>. If the two colorspaces differ, a conversion will take place. Any colorspace combination is possible.</p>
+<dd><p>This constructor creates a new pixmap as a copy of another one, <code class="docutils literal"><span class="pre">sourcepix</span></code>. If the two colorspaces differ, a conversion will take place. Any combination of supported colorspaces is possible.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -647,28 +722,28 @@
 <h2>Pixmap Example Code Snippets<a class="headerlink" href="#pixmap-example-code-snippets" title="Permalink to this headline">¶</a></h2>
 <p><strong>Example 1</strong></p>
 <p>This shows how pixmaps can be used for purely graphical, non-PDF purposes. The script reads a PNG picture and creates a new PNG file which consist of 3 * 4 tiles of the original one:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
-<span class="c"># read in picture image and create a pixmap of it</span>
-<span class="n">pix0</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="s">&quot;editra.png&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
+<span class="c1"># read in picture image and create a pixmap of it</span>
+<span class="n">pix0</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="s2">&quot;editra.png&quot;</span><span class="p">)</span>
 
-<span class="c"># calculate target colorspace and pixmap dimensions and create it</span>
-<span class="n">tar_cs</span>     <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">getColorspace</span><span class="p">()</span>        <span class="c"># use colorspace of input</span>
-<span class="n">tar_width</span>  <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="mi">3</span>              <span class="c"># 3 tiles per row</span>
-<span class="n">tar_height</span> <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mi">4</span>             <span class="c"># 4 tiles per column</span>
+<span class="c1"># calculate target colorspace and pixmap dimensions and create it</span>
+<span class="n">tar_cs</span>     <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">getColorspace</span><span class="p">()</span>        <span class="c1"># use colorspace of input</span>
+<span class="n">tar_width</span>  <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="mi">3</span>              <span class="c1"># 3 tiles per row</span>
+<span class="n">tar_height</span> <span class="o">=</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mi">4</span>             <span class="c1"># 4 tiles per column</span>
 <span class="n">tar_irect</span>  <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">IRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tar_width</span><span class="p">,</span> <span class="n">tar_height</span><span class="p">)</span>
-<span class="c"># create empty target pixmap</span>
+<span class="c1"># create empty target pixmap</span>
 <span class="n">tar_pix</span>    <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">tar_cs</span><span class="p">,</span> <span class="n">tar_irect</span><span class="p">)</span>
-<span class="c"># clear target with a very lively stone-gray (thanks and R.I.P., Loriot)</span>
+<span class="c1"># clear target with a very lively stone-gray (thanks and R.I.P., Loriot)</span>
 <span class="n">tar_pix</span><span class="o">.</span><span class="n">clearWith</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
 
-<span class="c"># now fill target with 3 * 4 tiles of input picture</span>
+<span class="c1"># now fill target with 3 * 4 tiles of input picture</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)):</span>
-    <span class="n">pix0</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span>                          <span class="c"># modify input&#39;s y coord</span>
+    <span class="n">pix0</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">pix0</span><span class="o">.</span><span class="n">height</span>                          <span class="c1"># modify input&#39;s y coord</span>
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)):</span>
-        <span class="n">pix0</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">j</span> <span class="o">*</span> <span class="n">pix0</span><span class="o">.</span><span class="n">width</span>                       <span class="c"># modify input&#39;s x coord</span>
-        <span class="n">tar_pix</span><span class="o">.</span><span class="n">copyPixmap</span><span class="p">(</span><span class="n">pix0</span><span class="p">,</span> <span class="n">pix0</span><span class="o">.</span><span class="n">getIRect</span><span class="p">())</span>     <span class="c"># copy input to new loc</span>
-        <span class="c"># save all intermediate images to show what is happening</span>
-        <span class="n">fn</span> <span class="o">=</span> <span class="s">&quot;target-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;.png&quot;</span>
+        <span class="n">pix0</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">j</span> <span class="o">*</span> <span class="n">pix0</span><span class="o">.</span><span class="n">width</span>                       <span class="c1"># modify input&#39;s x coord</span>
+        <span class="n">tar_pix</span><span class="o">.</span><span class="n">copyPixmap</span><span class="p">(</span><span class="n">pix0</span><span class="p">,</span> <span class="n">pix0</span><span class="o">.</span><span class="n">getIRect</span><span class="p">())</span>     <span class="c1"># copy input to new loc</span>
+        <span class="c1"># save all intermediate images to show what is happening</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="s2">&quot;target-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span>
         <span class="n">tar_pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -679,40 +754,40 @@
 <img alt="_images/target-32.png" src="_images/target-32.png" />
 <p><strong>Example 2</strong></p>
 <p>This shows how to create a PNG file from a numpy array (several times faster than most other methods):</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">fitz</span>
-<span class="c">#==============================================================================</span>
-<span class="c"># create a fun-colored width * height PNG with fitz and numpy</span>
-<span class="c">#==============================================================================</span>
+<span class="c1">#==============================================================================</span>
+<span class="c1"># create a fun-colored width * height PNG with fitz and numpy</span>
+<span class="c1">#==============================================================================</span>
 <span class="n">height</span> <span class="o">=</span> <span class="mi">150</span>
 <span class="n">width</span>  <span class="o">=</span> <span class="mi">100</span>
 <span class="n">bild</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">((</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">height</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">width</span><span class="p">):</span>
-        <span class="c"># one pixel (some fun coloring)</span>
+        <span class="c1"># one pixel (some fun coloring)</span>
         <span class="n">bild</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">)</span><span class="o">%</span><span class="mi">256</span><span class="p">,</span> <span class="n">i</span><span class="o">%</span><span class="mi">256</span><span class="p">,</span> <span class="n">j</span><span class="o">%</span><span class="mi">256</span><span class="p">,</span> <span class="mi">255</span><span class="p">]</span>
 
-<span class="n">samples</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">bild</span><span class="o">.</span><span class="n">tostring</span><span class="p">())</span>    <span class="c"># get plain pixel data from numpy array</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">bild</span><span class="o">.</span><span class="n">tostring</span><span class="p">())</span>    <span class="c1"># get plain pixel data from numpy array</span>
 <span class="n">pix</span><span class="o">=</span><span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">csRGB</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">samples</span><span class="p">)</span>
-<span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s">&quot;test.png&quot;</span><span class="p">)</span>
+<span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s2">&quot;test.png&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Example 3</strong></p>
 <p>This shows how to interface with <code class="docutils literal"><span class="pre">PIL</span> <span class="pre">/</span> <span class="pre">Pillow</span></code> (the Python Imaging Library), thereby extending the reach of image files that can be processed:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">fitz</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="k">import</span> <span class="n">Image</span>
 
 <span class="n">pix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="o">...</span> <span class="c"># any code here</span>
-<span class="c"># create and save a PIL image</span>
-<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="s">&quot;RGBA&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">pix</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">pix</span><span class="o">.</span><span class="n">height</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">samples</span><span class="p">))</span>
-<span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;jpeg&#39;</span><span class="p">)</span>
+<span class="o">...</span> <span class="c1"># any code here</span>
+<span class="c1"># create and save a PIL image</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">pix</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">pix</span><span class="o">.</span><span class="n">height</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">samples</span><span class="p">))</span>
+<span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;jpeg&#39;</span><span class="p">)</span>
 
-<span class="c"># an example for the opposite direction</span>
-<span class="c"># create a pixmap from any PIL-supported image file &quot;some_image.xxx&quot;</span>
+<span class="c1"># an example for the opposite direction</span>
+<span class="c1"># create a pixmap from any PIL-supported image file &quot;some_image.xxx&quot;</span>
 
-<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;some_image.xxx&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s">&quot;RGBA&quot;</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;some_image.xxx&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span><span class="p">)</span>
 <span class="n">samples</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span>
 <span class="n">pix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">csRGB</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">samples</span><span class="p">)</span>
 </pre></div>
@@ -721,31 +796,72 @@
 </div>
 
 
+           </div>
           </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="point.html" class="btn btn-neutral float-right" title="Point" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pages.html" class="btn btn-neutral" title="Pages" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Jorj X. McKie.
+      Last updated on 02. Oct 2016.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="point.html" title="Point"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="pages.html" title="Pages"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="classes.html" >Classes</a> &raquo;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 21. Aug 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.9.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>

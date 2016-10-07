@@ -1,82 +1,162 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>TextSheet &mdash; PyMuPDF 1.9.2 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
     
-    <title>TextSheet &mdash; PyMuPDF 1.9.2 documentation</title>
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+        <link rel="up" title="Classes" href="classes.html"/>
+        <link rel="next" title="Functions" href="functions.html"/>
+        <link rel="prev" title="TextPage" href="textpage.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
     
-    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.9.2',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html" />
-    <link rel="up" title="Classes" href="classes.html" />
-    <link rel="next" title="Functions" href="functions.html" />
-    <link rel="prev" title="TextPage" href="textpage.html" /> 
-  </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="functions.html" title="Functions"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="textpage.html" title="TextPage"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="classes.html" accesskey="U">Classes</a> &raquo;</li> 
-      </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="textpage.html"
-                        title="previous chapter">TextPage</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="functions.html"
-                        title="next chapter">Functions</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/textsheet.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PyMuPDF
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">Colorspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="document.html">Document</a></li>
+<li class="toctree-l2"><a class="reference internal" href="identity.html">Identity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="irect.html">IRect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="link.html">Link</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linkdest.html">linkDest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="textpage.html">TextPage</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">TextSheet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
+</ul>
+
+            
+          
         </div>
       </div>
+    </nav>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">PyMuPDF</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="classes.html">Classes</a> &raquo;</li>
+      
+    <li>TextSheet</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/textsheet.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="textsheet">
 <span id="id1"></span><h1>TextSheet<a class="headerlink" href="#textsheet" title="Permalink to this headline">¶</a></h1>
@@ -84,31 +164,72 @@
 </div>
 
 
+           </div>
           </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="functions.html" class="btn btn-neutral float-right" title="Functions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="textpage.html" class="btn btn-neutral" title="TextPage" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Jorj X. McKie.
+      Last updated on 02. Oct 2016.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="functions.html" title="Functions"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="textpage.html" title="TextPage"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="classes.html" >Classes</a> &raquo;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 15. Aug 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.9.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>

@@ -229,9 +229,7 @@ struct fz_document_s
         }
 
         char *_getGCTXerrmsg() {
-            char *value;
-            value = gctx->error->message;
-            return value;
+            return gctx->error->message;
         }
 
         %pythonprepend authenticate(const char *pass) %{
@@ -1176,6 +1174,10 @@ struct fz_rect_s
                 _fitz._fz_transform_rect(self, m)
                 return self
 
+            def __getitem__(self, i):
+                a = [self.x0, self.y0, self.x1, self.y1]
+                return a[i]
+
             def __len__(self):
                 return 4
 
@@ -1234,6 +1236,10 @@ struct fz_irect_s
 
             def getRect(self):
                 return Rect(self.x0, self.y0, self.x1, self.y1)
+
+            def __getitem__(self, i):
+                a = [self.x0, self.y0, self.x1, self.y1]
+                return a[i]
 
             def __len__(self):
                 return 4
@@ -1842,6 +1848,10 @@ struct fz_matrix_s
                 """preRotate(Matrix self, float degree) -> Matrix self updated"""
                 _fitz._fz_pre_rotate(self, degree)
                 return self
+            def __getitem__(self, i):
+                m = [self.a, self.b, self.c, self.d, self.e, self.f]
+                return m[i]
+
             def __len__(self):
                 return 6
             def __repr__(self):
@@ -2069,6 +2079,10 @@ struct fz_point_s
                 _fitz._fz_transform_point(self, m)
                 return self
 
+            def __getitem__(self, i):
+                a = [self.x, self.y]
+                return a[i]
+
             def __len__(self):
                 return 2
 
@@ -2125,16 +2139,16 @@ struct fz_link_s
 %rename(DisplayList) fz_display_list_s;
 struct fz_display_list_s {
     %extend {
-        %exception fz_display_list_s {
+        %exception fz_display_list_s
+        {
             $action
             if(!result) {
-                char *value;
-                value = gctx->error->message;
-                PyErr_SetString(PyExc_Exception, value);
+                PyErr_SetString(PyExc_Exception, gctx->error->message);
                 return NULL;
             }
         }
-        fz_display_list_s() {
+        fz_display_list_s()
+        {
             struct fz_display_list_s *dl = NULL;
             fz_try(gctx)
                 dl = fz_new_display_list(gctx);

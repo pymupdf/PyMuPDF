@@ -120,6 +120,10 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
       :type: int
 
 
+Remark
+------
+A rectangle's coordinates can also be accessed via index, e.g. ``r.x0 == r[0]``.
+
 IRect Algebra
 ------------------
 A number of arithmetics operations have been defined for the ``IRect`` class.

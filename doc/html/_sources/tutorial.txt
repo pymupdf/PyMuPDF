@@ -213,6 +213,7 @@ Since MuPDF 1.9, you can also write changes back to the original file by specify
 garbage = 1         -g     garbage collect unused objects
 garbage = 2         -gg    in addition to 1, compact xref tables
 garbage = 3         -ggg   in addition to 2, merge duplicate objects
+garbage = 4         -gggg  in addition to 3, check for duplicate streams
 clean = 1           -s     clean content streams
 deflate = 1         -z     deflate uncompressed streams
 ascii = 1           -a     convert data to ASCII format
@@ -223,23 +224,23 @@ expand = 255        -d     decompress all
 incremental = 1     n/a    only append changes to the original
 ================== ======= ==================================================
 
-Be ready to experiment a little if you want to fully exploit above options: like with ``mutool clean``, not all combinations may always work: there are just too many ill-constructed PDF files out there ...
+Be ready to experiment a little if you want to fully exploit above options: like with ``mutool clean``, not all combinations may always work (or work as expected): there are just too many ill-constructed PDF files out there ...
 
-We have found, that the fastest, yet very stable combination is ``mutool clean -ggg -z``, giving good compression results. In PyMuPDF this corresponds to ``doc.save(filename, garbage=3, deflate=1)``.
+We have found, that the combination ``mutool clean -gggg -z -s`` yields excellent compression results and is very stable. In PyMuPDF this corresponds to ``doc.save(filename, garbage=4, deflate=1, clean = 1)``.
 
 Closing
 =========
-In some situations it is desirable to "close" a document such that it becomes fully available again to the OS while your program is still running.
+It is often desirable to "close" a document to relinquish control of the underlying file to the OS, while your program is still running.
 
-This can be achieved by the :meth:`Document.close` method. Apart from closing the underlying file, buffer areas associated with the document will be freed. If the document has been created from memory data, no underlying file is opened by MuPDF, so only the buffer release will take place.
+This can be achieved by the :meth:`Document.close` method. Apart from closing the underlying file, buffer areas associated with the document will be freed (if the document has been created from memory data, only the buffer release will take place).
 
-.. CAUTION:: As with normal file objects, after close, the document and all objects referencing it will be invalid  and **must no longer be used**. This bindings protect against most such invalid uses by disabling properties and methods of the :ref:`Document` and any associated :meth:`Document.loadPage` objects.
+.. CAUTION:: As with normal file objects, after close, the document and all objects referencing it will be invalid  and **must no longer be used**. These bindings protect against most such invalid uses by disabling properties and methods of the :ref:`Document` and any associated :meth:`Document.loadPage` objects.
 
 However, re-opening a previously closed file by a new :ref:`Document` is no problem. Have a look at the following valid example:
 ::
  doc = fitz.Document(f_old)           # open a document
  <... some statements ...>            # e.g. decryption
- doc.save(fnew, garbage=3, deflate=1) # save a cleaned version
+ doc.save(fnew, garbage=4, deflate=1) # save a cleaned version
  doc.close()                          # close input file
  os.remove(f_old)                     # remove it
  os.rename(f_new, f_old)              # rename the cleaned version

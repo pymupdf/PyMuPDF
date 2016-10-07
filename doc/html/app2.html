@@ -1,86 +1,147 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Appendix 2: Details on Text Extraction &mdash; PyMuPDF 1.9.2 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
     
-    <title>Appendix 2: Details on Text Extraction &mdash; PyMuPDF 1.9.2 documentation</title>
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+        <link rel="prev" title="Appendix 1: Performance" href="app1.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
     
-    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.9.2',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html" />
-    <link rel="prev" title="Appendix 1: Performance" href="app1.html" /> 
-  </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="app1.html" title="Appendix 1: Performance"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li> 
-      </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Appendix 2: Details on Text Extraction</a><ul>
-<li><a class="reference internal" href="#general-structure-of-a-textpage">General structure of a TextPage</a></li>
-<li><a class="reference internal" href="#output-of-gettext-output-text">Output of <code class="docutils literal"><span class="pre">getText(output=&quot;text&quot;)</span></code></a></li>
-<li><a class="reference internal" href="#output-of-gettext-output-html">Output of <code class="docutils literal"><span class="pre">getText(output=&quot;html&quot;)</span></code></a></li>
-<li><a class="reference internal" href="#output-of-gettext-output-json">Output of <code class="docutils literal"><span class="pre">getText(output=&quot;json&quot;)</span></code></a></li>
-<li><a class="reference internal" href="#output-of-gettext-output-xml">Output of <code class="docutils literal"><span class="pre">getText(output=&quot;xml&quot;)</span></code></a></li>
-<li><a class="reference internal" href="#performance">Performance</a></li>
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PyMuPDF
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Appendix 2: Details on Text Extraction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#general-structure-of-a-textpage">General structure of a TextPage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output-of-gettext-output-text">Output of <code class="docutils literal"><span class="pre">getText(output=&quot;text&quot;)</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output-of-gettext-output-html">Output of <code class="docutils literal"><span class="pre">getText(output=&quot;html&quot;)</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output-of-gettext-output-json">Output of <code class="docutils literal"><span class="pre">getText(output=&quot;json&quot;)</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output-of-gettext-output-xml">Output of <code class="docutils literal"><span class="pre">getText(output=&quot;xml&quot;)</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance">Performance</a></li>
 </ul>
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="app1.html"
-                        title="previous chapter">Appendix 1: Performance</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/app2.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+            
+          
         </div>
       </div>
+    </nav>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">PyMuPDF</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Appendix 2: Details on Text Extraction</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/app2.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="appendix-2-details-on-text-extraction">
 <h1>Appendix 2: Details on Text Extraction<a class="headerlink" href="#appendix-2-details-on-text-extraction" title="Permalink to this headline">¶</a></h1>
@@ -93,7 +154,7 @@
 <div class="section" id="general-structure-of-a-textpage">
 <h2>General structure of a TextPage<a class="headerlink" href="#general-structure-of-a-textpage" title="Permalink to this headline">¶</a></h2>
 <p>Text information contained in a <a class="reference internal" href="textpage.html#textpage"><span class="std std-ref">TextPage</span></a> adheres to the following hierarchy:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="o">&lt;</span><span class="n">page</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">width</span> <span class="ow">and</span> <span class="n">height</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">page</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">width</span> <span class="ow">and</span> <span class="n">height</span><span class="p">)</span>
     <span class="o">&lt;</span><span class="n">block</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">its</span> <span class="n">rectangle</span><span class="p">)</span>
         <span class="o">&lt;</span><span class="n">line</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">its</span> <span class="n">rectangle</span><span class="p">)</span>
             <span class="o">&lt;</span><span class="n">span</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">its</span> <span class="n">rectangle</span> <span class="ow">and</span> <span class="n">font</span> <span class="n">information</span><span class="p">)</span>
@@ -109,7 +170,7 @@
 <h2>Output of <code class="docutils literal"><span class="pre">getText(output=&quot;text&quot;)</span></code><a class="headerlink" href="#output-of-gettext-output-text" title="Permalink to this headline">¶</a></h2>
 <p>This function extracts a page&#8217;s plain <strong>text in original order</strong> as specified by the creator of the document (which may not be equal to a natural reading order!).</p>
 <p>An example output of this tutorial&#8217;s PDF version:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="n">Tutorial</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Tutorial</span>
 
 <span class="n">This</span> <span class="n">tutorial</span> <span class="n">will</span> <span class="n">show</span> <span class="n">you</span> <span class="n">the</span> <span class="n">use</span> <span class="n">of</span> <span class="n">MuPDF</span> <span class="ow">in</span> <span class="n">Python</span> <span class="n">step</span> <span class="n">by</span> <span class="n">step</span><span class="o">.</span>
 
@@ -123,16 +184,16 @@
 <div class="section" id="output-of-gettext-output-html">
 <h2>Output of <code class="docutils literal"><span class="pre">getText(output=&quot;html&quot;)</span></code><a class="headerlink" href="#output-of-gettext-output-html" title="Permalink to this headline">¶</a></h2>
 <p>HTML output reflects the structure of the page&#8217;s <code class="docutils literal"><span class="pre">TextPage</span></code> - without adding much other benefit. Again an example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;page&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;block&quot;</span><span class="o">&gt;&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;metaline&quot;</span><span class="o">&gt;&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;line&quot;</span><span class="o">&gt;&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;cell&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;width:0%;align:left&quot;</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;s0&quot;</span><span class="o">&gt;</span><span class="n">Tutorial</span><span class="o">&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;page&quot;</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;block&quot;</span><span class="o">&gt;&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;metaline&quot;</span><span class="o">&gt;&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;line&quot;</span><span class="o">&gt;&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;cell&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;width:0%;align:left&quot;</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;s0&quot;</span><span class="o">&gt;</span><span class="n">Tutorial</span><span class="o">&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;block&quot;</span><span class="o">&gt;&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;line&quot;</span><span class="o">&gt;&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;cell&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;width:0%;align:left&quot;</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;s1&quot;</span><span class="o">&gt;</span><span class="n">This</span> <span class="n">tutorial</span> <span class="n">will</span> <span class="n">show</span> <span class="n">you</span> <span class="n">the</span> <span class="n">use</span> <span class="n">of</span> <span class="n">MuPDF</span> <span class="ow">in</span> <span class="n">Python</span> <span class="n">step</span> <span class="n">by</span> <span class="n">step</span><span class="o">.&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;block&quot;</span><span class="o">&gt;&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;line&quot;</span><span class="o">&gt;&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;cell&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;width:0%;align:left&quot;</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;s1&quot;</span><span class="o">&gt;</span><span class="n">This</span> <span class="n">tutorial</span> <span class="n">will</span> <span class="n">show</span> <span class="n">you</span> <span class="n">the</span> <span class="n">use</span> <span class="n">of</span> <span class="n">MuPDF</span> <span class="ow">in</span> <span class="n">Python</span> <span class="n">step</span> <span class="n">by</span> <span class="n">step</span><span class="o">.&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;block&quot;</span><span class="o">&gt;&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;line&quot;</span><span class="o">&gt;&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;cell&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;width:0%;align:left&quot;</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;s1&quot;</span><span class="o">&gt;</span><span class="n">Because</span> <span class="n">MuPDF</span> <span class="n">supports</span> <span class="ow">not</span> <span class="n">only</span> <span class="n">PDF</span><span class="p">,</span> <span class="n">but</span> <span class="n">also</span> <span class="n">XPS</span><span class="p">,</span> <span class="n">OpenXPS</span> <span class="ow">and</span> <span class="n">EPUB</span> <span class="n">formats</span><span class="p">,</span> <span class="n">so</span> <span class="n">does</span> <span class="n">PyMuPDF</span><span class="o">.&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;line&quot;</span><span class="o">&gt;&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;cell&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;width:0%;align:left&quot;</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;s1&quot;</span><span class="o">&gt;</span><span class="n">Nevertheless</span> <span class="n">we</span> <span class="n">will</span> <span class="n">only</span> <span class="n">talk</span> <span class="n">about</span> <span class="n">PDF</span> <span class="n">files</span> <span class="k">for</span> <span class="n">the</span> <span class="n">sake</span> <span class="n">of</span> <span class="n">brevity</span><span class="o">.&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;block&quot;</span><span class="o">&gt;&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;line&quot;</span><span class="o">&gt;&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;cell&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;width:0%;align:left&quot;</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;s1&quot;</span><span class="o">&gt;</span><span class="n">Because</span> <span class="n">MuPDF</span> <span class="n">supports</span> <span class="ow">not</span> <span class="n">only</span> <span class="n">PDF</span><span class="p">,</span> <span class="n">but</span> <span class="n">also</span> <span class="n">XPS</span><span class="p">,</span> <span class="n">OpenXPS</span> <span class="ow">and</span> <span class="n">EPUB</span> <span class="n">formats</span><span class="p">,</span> <span class="n">so</span> <span class="n">does</span> <span class="n">PyMuPDF</span><span class="o">.&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;line&quot;</span><span class="o">&gt;&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;cell&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;width:0%;align:left&quot;</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;s1&quot;</span><span class="o">&gt;</span><span class="n">Nevertheless</span> <span class="n">we</span> <span class="n">will</span> <span class="n">only</span> <span class="n">talk</span> <span class="n">about</span> <span class="n">PDF</span> <span class="n">files</span> <span class="k">for</span> <span class="n">the</span> <span class="n">sake</span> <span class="n">of</span> <span class="n">brevity</span><span class="o">.&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
 <span class="o">...</span>
 </pre></div>
@@ -141,26 +202,26 @@
 <div class="section" id="output-of-gettext-output-json">
 <h2>Output of <code class="docutils literal"><span class="pre">getText(output=&quot;json&quot;)</span></code><a class="headerlink" href="#output-of-gettext-output-json" title="Permalink to this headline">¶</a></h2>
 <p>JSON output reflects the structure of a <code class="docutils literal"><span class="pre">TextPage</span></code> and provides position details (<code class="docutils literal"><span class="pre">bbox</span></code> - boundary boxes in pixel units) for every block, line and span. This is enough information to present a page&#8217;s text in any required reading order (e.g. from top-left to bottom-right). The output can obviously be made usable by <code class="docutils literal"><span class="pre">text_dict</span> <span class="pre">=</span> <span class="pre">json.loads(text)</span></code>. Have a look at our example program <code class="docutils literal"><span class="pre">PDF2textJS.py</span></code>. Here is how it looks like:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span>
- <span class="s">&quot;len&quot;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span><span class="s">&quot;width&quot;</span><span class="p">:</span><span class="mf">595.2756</span><span class="p">,</span><span class="s">&quot;height&quot;</span><span class="p">:</span><span class="mf">841.8898</span><span class="p">,</span>
- <span class="s">&quot;blocks&quot;</span><span class="p">:[</span>
-  <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span><span class="s">&quot;text&quot;</span><span class="p">,</span><span class="s">&quot;bbox&quot;</span><span class="p">:[</span><span class="mf">40.01575</span><span class="p">,</span> <span class="mf">53.730354</span><span class="p">,</span> <span class="mf">98.68775</span><span class="p">,</span> <span class="mf">76.08236</span><span class="p">],</span>
-   <span class="s">&quot;lines&quot;</span><span class="p">:[</span>
-      <span class="p">{</span><span class="s">&quot;bbox&quot;</span><span class="p">:[</span><span class="mf">40.01575</span><span class="p">,</span> <span class="mf">53.730354</span><span class="p">,</span> <span class="mf">98.68775</span><span class="p">,</span> <span class="mf">76.08236</span><span class="p">],</span>
-       <span class="s">&quot;spans&quot;</span><span class="p">:[</span>
-         <span class="p">{</span><span class="s">&quot;bbox&quot;</span><span class="p">:[</span><span class="mf">40.01575</span><span class="p">,</span> <span class="mf">53.730354</span><span class="p">,</span> <span class="mf">98.68775</span><span class="p">,</span> <span class="mf">76.08236</span><span class="p">],</span>
-          <span class="s">&quot;text&quot;</span><span class="p">:</span><span class="s">&quot;Tutorial&quot;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+ <span class="s2">&quot;len&quot;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span><span class="s2">&quot;width&quot;</span><span class="p">:</span><span class="mf">595.2756</span><span class="p">,</span><span class="s2">&quot;height&quot;</span><span class="p">:</span><span class="mf">841.8898</span><span class="p">,</span>
+ <span class="s2">&quot;blocks&quot;</span><span class="p">:[</span>
+  <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;text&quot;</span><span class="p">,</span><span class="s2">&quot;bbox&quot;</span><span class="p">:[</span><span class="mf">40.01575</span><span class="p">,</span> <span class="mf">53.730354</span><span class="p">,</span> <span class="mf">98.68775</span><span class="p">,</span> <span class="mf">76.08236</span><span class="p">],</span>
+   <span class="s2">&quot;lines&quot;</span><span class="p">:[</span>
+      <span class="p">{</span><span class="s2">&quot;bbox&quot;</span><span class="p">:[</span><span class="mf">40.01575</span><span class="p">,</span> <span class="mf">53.730354</span><span class="p">,</span> <span class="mf">98.68775</span><span class="p">,</span> <span class="mf">76.08236</span><span class="p">],</span>
+       <span class="s2">&quot;spans&quot;</span><span class="p">:[</span>
+         <span class="p">{</span><span class="s2">&quot;bbox&quot;</span><span class="p">:[</span><span class="mf">40.01575</span><span class="p">,</span> <span class="mf">53.730354</span><span class="p">,</span> <span class="mf">98.68775</span><span class="p">,</span> <span class="mf">76.08236</span><span class="p">],</span>
+          <span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;Tutorial&quot;</span>
          <span class="p">}</span>
        <span class="p">]</span>
       <span class="p">}</span>
    <span class="p">]</span>
   <span class="p">},</span>
-  <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span><span class="s">&quot;text&quot;</span><span class="p">,</span><span class="s">&quot;bbox&quot;</span><span class="p">:[</span><span class="mf">40.01575</span><span class="p">,</span> <span class="mf">79.300354</span><span class="p">,</span> <span class="mf">340.6957</span><span class="p">,</span> <span class="mf">93.04035</span><span class="p">],</span>
-   <span class="s">&quot;lines&quot;</span><span class="p">:[</span>
-      <span class="p">{</span><span class="s">&quot;bbox&quot;</span><span class="p">:[</span><span class="mf">40.01575</span><span class="p">,</span> <span class="mf">79.300354</span><span class="p">,</span> <span class="mf">340.6957</span><span class="p">,</span> <span class="mf">93.04035</span><span class="p">],</span>
-       <span class="s">&quot;spans&quot;</span><span class="p">:[</span>
-         <span class="p">{</span><span class="s">&quot;bbox&quot;</span><span class="p">:[</span><span class="mf">40.01575</span><span class="p">,</span> <span class="mf">79.300354</span><span class="p">,</span> <span class="mf">340.6957</span><span class="p">,</span> <span class="mf">93.04035</span><span class="p">],</span>
-          <span class="s">&quot;text&quot;</span><span class="p">:</span><span class="s">&quot;This tutorial will show you the use of MuPDF in Python step by step.&quot;</span>
+  <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;text&quot;</span><span class="p">,</span><span class="s2">&quot;bbox&quot;</span><span class="p">:[</span><span class="mf">40.01575</span><span class="p">,</span> <span class="mf">79.300354</span><span class="p">,</span> <span class="mf">340.6957</span><span class="p">,</span> <span class="mf">93.04035</span><span class="p">],</span>
+   <span class="s2">&quot;lines&quot;</span><span class="p">:[</span>
+      <span class="p">{</span><span class="s2">&quot;bbox&quot;</span><span class="p">:[</span><span class="mf">40.01575</span><span class="p">,</span> <span class="mf">79.300354</span><span class="p">,</span> <span class="mf">340.6957</span><span class="p">,</span> <span class="mf">93.04035</span><span class="p">],</span>
+       <span class="s2">&quot;spans&quot;</span><span class="p">:[</span>
+         <span class="p">{</span><span class="s2">&quot;bbox&quot;</span><span class="p">:[</span><span class="mf">40.01575</span><span class="p">,</span> <span class="mf">79.300354</span><span class="p">,</span> <span class="mf">340.6957</span><span class="p">,</span> <span class="mf">93.04035</span><span class="p">],</span>
+          <span class="s2">&quot;text&quot;</span><span class="p">:</span><span class="s2">&quot;This tutorial will show you the use of MuPDF in Python step by step.&quot;</span>
          <span class="p">}</span>
        <span class="p">]</span>
       <span class="p">}</span>
@@ -173,35 +234,35 @@
 <div class="section" id="output-of-gettext-output-xml">
 <h2>Output of <code class="docutils literal"><span class="pre">getText(output=&quot;xml&quot;)</span></code><a class="headerlink" href="#output-of-gettext-output-xml" title="Permalink to this headline">¶</a></h2>
 <p>The XML version takes the level of detail even a lot deeper: every single character is provided with its position detail, and every span also contains font information:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="o">&lt;</span><span class="n">page</span> <span class="n">width</span><span class="o">=</span><span class="s">&quot;595.2756&quot;</span> <span class="n">height</span><span class="o">=</span><span class="s">&quot;841.8898&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">block</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;40.01575 53.730354 98.68775 76.08236&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">line</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;40.01575 53.730354 98.68775 76.08236&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">span</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;40.01575 53.730354 98.68775 76.08236&quot;</span> <span class="n">font</span><span class="o">=</span><span class="s">&quot;Helvetica-Bold&quot;</span> <span class="n">size</span><span class="o">=</span><span class="s">&quot;16&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;40.01575 53.730354 49.79175 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;40.01575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;T&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;49.79175 53.730354 59.56775 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;49.79175&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;u&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;59.56775 53.730354 64.89575 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;59.56775&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;t&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;64.89575 53.730354 74.67175 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;64.89575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;o&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;74.67175 53.730354 80.89575 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;74.67175&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;r&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;80.89575 53.730354 85.34375 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;80.89575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;i&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;85.34375 53.730354 94.23975 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;85.34375&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;a&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;94.23975 53.730354 98.68775 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;94.23975&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;l&quot;</span><span class="o">/&gt;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">page</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;595.2756&quot;</span> <span class="n">height</span><span class="o">=</span><span class="s2">&quot;841.8898&quot;</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">block</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;40.01575 53.730354 98.68775 76.08236&quot;</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">line</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;40.01575 53.730354 98.68775 76.08236&quot;</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">span</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;40.01575 53.730354 98.68775 76.08236&quot;</span> <span class="n">font</span><span class="o">=</span><span class="s2">&quot;Helvetica-Bold&quot;</span> <span class="n">size</span><span class="o">=</span><span class="s2">&quot;16&quot;</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;40.01575 53.730354 49.79175 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;40.01575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;T&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;49.79175 53.730354 59.56775 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;49.79175&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;u&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;59.56775 53.730354 64.89575 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;59.56775&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;t&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;64.89575 53.730354 74.67175 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;64.89575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;74.67175 53.730354 80.89575 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;74.67175&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;80.89575 53.730354 85.34375 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;80.89575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;i&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;85.34375 53.730354 94.23975 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;85.34375&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;94.23975 53.730354 98.68775 76.08236&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;94.23975&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;70.85036&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;l&quot;</span><span class="o">/&gt;</span>
 <span class="o">&lt;/</span><span class="n">span</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">line</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">block</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">block</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;40.01575 79.300354 340.6957 93.04035&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">line</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;40.01575 79.300354 340.6957 93.04035&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">span</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;40.01575 79.300354 340.6957 93.04035&quot;</span> <span class="n">font</span><span class="o">=</span><span class="s">&quot;Helvetica&quot;</span> <span class="n">size</span><span class="o">=</span><span class="s">&quot;10&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;40.01575 79.300354 46.12575 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;40.01575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;T&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;46.12575 79.300354 51.685753 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;46.12575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;h&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;51.685753 79.300354 53.90575 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;51.685753&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;i&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;53.90575 79.300354 58.90575 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;53.90575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;s&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;58.90575 79.300354 61.685753 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;58.90575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot; &quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;61.685753 79.300354 64.46575 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;61.685753&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;t&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;64.46575 79.300354 70.02576 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;64.46575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;u&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;70.02576 79.300354 72.805756 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;70.02576&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;t&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;72.805756 79.300354 78.36575 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;72.805756&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;o&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;78.36575 79.300354 81.695755 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;78.36575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;r&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s">&quot;81.695755 79.300354 83.91576 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s">&quot;81.695755&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s">&quot;i&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">block</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;40.01575 79.300354 340.6957 93.04035&quot;</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">line</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;40.01575 79.300354 340.6957 93.04035&quot;</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">span</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;40.01575 79.300354 340.6957 93.04035&quot;</span> <span class="n">font</span><span class="o">=</span><span class="s2">&quot;Helvetica&quot;</span> <span class="n">size</span><span class="o">=</span><span class="s2">&quot;10&quot;</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;40.01575 79.300354 46.12575 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;40.01575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;T&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;46.12575 79.300354 51.685753 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;46.12575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;h&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;51.685753 79.300354 53.90575 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;51.685753&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;i&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;53.90575 79.300354 58.90575 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;53.90575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;58.90575 79.300354 61.685753 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;58.90575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;61.685753 79.300354 64.46575 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;61.685753&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;t&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;64.46575 79.300354 70.02576 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;64.46575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;u&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;70.02576 79.300354 72.805756 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;70.02576&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;t&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;72.805756 79.300354 78.36575 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;72.805756&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;78.36575 79.300354 81.695755 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;78.36575&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">char</span> <span class="n">bbox</span><span class="o">=</span><span class="s2">&quot;81.695755 79.300354 83.91576 93.04035&quot;</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;81.695755&quot;</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;90.050354&quot;</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;i&quot;</span><span class="o">/&gt;</span>
 <span class="o">...</span>
 </pre></div>
 </div>
@@ -217,27 +278,70 @@
 </div>
 
 
+           </div>
           </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="app1.html" class="btn btn-neutral" title="Appendix 1: Performance" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Jorj X. McKie.
+      Last updated on 02. Oct 2016.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="app1.html" title="Appendix 1: Performance"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 15. Aug 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.9.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>

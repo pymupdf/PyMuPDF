@@ -132,6 +132,10 @@ A rectangle is called *empty* if x0 = x1 or y0 = y1, i.e. if its area is zero.
       :type: float
 
 
+Remark
+------
+A rectangle's coordinates can also be accessed via index, e.g. ``r.x0 == r[0]``.
+
 Rect Algebra
 -----------------
 A number of arithmetics operations have been defined for the ``Rect`` class.

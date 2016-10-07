@@ -17,7 +17,7 @@ In PyMuPDF, there exist several ways to create a pixmap. Except one, all of them
 3. from an image file
 4. from an in-memory image (bytearray)
 5. from a memory area of plain pixels
-6. from an image inside the PDF document
+6. from an image inside a PDF document
 7. as a copy of another pixmap
 
 .. NOTE:: For supported image types using the **file** or **in-memory constructors**, see section below.
@@ -77,7 +77,7 @@ Have a look at the **example** section to see some pixmap usage "at work".
 
    .. method:: __init__(self, colorspace, sourcepix)
 
-      This constructor creates a new pixmap as a copy of another one, ``sourcepix``. If the two colorspaces differ, a conversion will take place. Any colorspace combination is possible.
+      This constructor creates a new pixmap as a copy of another one, ``sourcepix``. If the two colorspaces differ, a conversion will take place. Any combination of supported colorspaces is possible.
 
       :param `colorspace`: The colorspace of the pixmap.
       :type `colorspace`: :ref:`Colorspace`

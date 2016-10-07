@@ -10,18 +10,14 @@ class M_Identity(fitz.Matrix):
         else:
             super(fitz.Matrix, self).__setattr__(name, value)
 
-    def preRotate(*args):
+    def checkargs(*args):
         raise NotImplementedError("Identity is readonly")
-    def preShear(*args):
-        raise NotImplementedError("Identity is readonly")
-    def preScale(*args):
-        raise NotImplementedError("Identity is readonly")
-    def preTranslate(*args):
-        raise NotImplementedError("Identity is readonly")
-    def concat(*args):
-        raise NotImplementedError("Identity is readonly")
-    def invert(*args):
-        raise NotImplementedError("Identity is readonly")
+    preRotate    = checkargs
+    preShear     = checkargs
+    preScale     = checkargs
+    preTranslate = checkargs
+    concat       = checkargs
+    invert       = checkargs
     def __repr__(self):
         return "fitz.Identity"
         

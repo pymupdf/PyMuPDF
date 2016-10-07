@@ -86,7 +86,7 @@ MD5 Checksums
 ~~~~~~~~~~~~~~
 Binary download setup scripts contain an integrity check based on MD5 check sums.
 
-The directory structure of each zip file ``pymupdf-1.9.?-py??-x??.zip`` is as follows:
+The directory structure of each zip file ``pymupdf-1.9.?.?-py??-x??.zip`` is as follows:
 
 .. image:: binsetupdirs.png
 

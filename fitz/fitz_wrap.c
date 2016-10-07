@@ -3954,9 +3954,7 @@ SWIGINTERN int fz_document_s__getGCTXerrcode(struct fz_document_s *self){
             return gctx->error->errcode;
         }
 SWIGINTERN char *fz_document_s__getGCTXerrmsg(struct fz_document_s *self){
-            char *value;
-            value = gctx->error->message;
-            return value;
+            return gctx->error->message;
         }
 SWIGINTERN int fz_document_s_authenticate(struct fz_document_s *self,char const *pass){
             return fz_authenticate_password(gctx, self, pass);
@@ -10826,9 +10824,7 @@ SWIGINTERN PyObject *_wrap_new_DisplayList(PyObject *SWIGUNUSEDPARM(self), PyObj
   {
     result = (struct fz_display_list_s *)new_fz_display_list_s();
     if(!result) {
-      char *value;
-      value = gctx->error->message;
-      PyErr_SetString(PyExc_Exception, value);
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
       return NULL;
     }
   }

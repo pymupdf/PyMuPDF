@@ -1,90 +1,145 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Appendix 1: Performance &mdash; PyMuPDF 1.9.2 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
     
-    <title>Appendix 1: Performance &mdash; PyMuPDF 1.9.2 documentation</title>
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+        <link rel="next" title="Appendix 2: Details on Text Extraction" href="app2.html"/>
+        <link rel="prev" title="Constants and Enumerations" href="vars.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
     
-    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.9.2',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html" />
-    <link rel="next" title="Appendix 2: Details on Text Extraction" href="app2.html" />
-    <link rel="prev" title="Constants and Enumerations" href="vars.html" /> 
-  </head>
-  <body role="document">
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="app2.html" title="Appendix 2: Details on Text Extraction"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="vars.html" title="Constants and Enumerations"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li> 
-      </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Appendix 1: Performance</a><ul>
-<li><a class="reference internal" href="#part-1-parsing">Part 1: Parsing</a></li>
-<li><a class="reference internal" href="#part-2-text-extraction">Part 2: Text Extraction</a></li>
-<li><a class="reference internal" href="#part-3-image-rendering">Part 3: Image Rendering</a></li>
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PyMuPDF
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Appendix 1: Performance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#part-1-parsing">Part 1: Parsing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#part-2-text-extraction">Part 2: Text Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#part-3-image-rendering">Part 3: Image Rendering</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="vars.html"
-                        title="previous chapter">Constants and Enumerations</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="app2.html"
-                        title="next chapter">Appendix 2: Details on Text Extraction</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/app1.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+            
+          
         </div>
       </div>
+    </nav>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">PyMuPDF</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Appendix 1: Performance</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/app1.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="appendix-1-performance">
 <h1>Appendix 1: Performance<a class="headerlink" href="#appendix-1-performance" title="Permalink to this headline">¶</a></h1>
@@ -133,26 +188,26 @@
 </table>
 <p>This is how each of the tools was used:</p>
 <p><strong>PyMuPDF</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;input.pdf&quot;</span><span class="p">)</span>
-<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;output.pdf&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;input.pdf&quot;</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;output.pdf&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>pdfrw</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="n">doc</span> <span class="o">=</span> <span class="n">PdfReader</span><span class="p">(</span><span class="s">&quot;input.pdf&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">doc</span> <span class="o">=</span> <span class="n">PdfReader</span><span class="p">(</span><span class="s2">&quot;input.pdf&quot;</span><span class="p">)</span>
 <span class="n">writer</span> <span class="o">=</span> <span class="n">PdfWriter</span><span class="p">()</span>
 <span class="n">writer</span><span class="o">.</span><span class="n">trailer</span> <span class="o">=</span> <span class="n">doc</span>
-<span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;output.pdf&quot;</span><span class="p">)</span>
+<span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.pdf&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>PyPDF2</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="n">pdfmerge</span> <span class="o">=</span> <span class="n">PyPDF2</span><span class="o">.</span><span class="n">PdfFileMerger</span><span class="p">()</span>
-<span class="n">pdfmerge</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;input.pdf&quot;</span><span class="p">)</span>
-<span class="n">pdfmerge</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;output.pdf&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pdfmerge</span> <span class="o">=</span> <span class="n">PyPDF2</span><span class="o">.</span><span class="n">PdfFileMerger</span><span class="p">()</span>
+<span class="n">pdfmerge</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;input.pdf&quot;</span><span class="p">)</span>
+<span class="n">pdfmerge</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.pdf&quot;</span><span class="p">)</span>
 <span class="n">pdfmerge</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
 <p><strong>pdftk</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span class="n">pdftk</span> <span class="nb">input</span><span class="o">.</span><span class="n">pdf</span> <span class="n">output</span> <span class="n">output</span><span class="o">.</span><span class="n">pdf</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pdftk</span> <span class="nb">input</span><span class="o">.</span><span class="n">pdf</span> <span class="n">output</span> <span class="n">output</span><span class="o">.</span><span class="n">pdf</span>
 </pre></div>
 </div>
 <p><strong>Observations</strong></p>
@@ -190,25 +245,25 @@
 <h2>Part 3: Image Rendering<a class="headerlink" href="#part-3-image-rendering" title="Permalink to this headline">¶</a></h2>
 <p>We have tested rendering speed of MuPDF against the <code class="docutils literal"><span class="pre">pdftopng.exe</span></code>, a command lind tool of the <strong>Xpdf</strong> toolset (the PDF code basis of <strong>Poppler</strong>).</p>
 <p><strong>MuPDF invocation using a resolution of 150 pixels (Xpdf default):</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span class="n">mutool</span> <span class="n">draw</span> <span class="o">-</span><span class="n">o</span> <span class="n">t</span><span class="o">%</span><span class="n">d</span><span class="o">.</span><span class="n">png</span> <span class="o">-</span><span class="n">r</span> <span class="mi">150</span> <span class="n">file</span><span class="o">.</span><span class="n">pdf</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mutool</span> <span class="n">draw</span> <span class="o">-</span><span class="n">o</span> <span class="n">t</span><span class="o">%</span><span class="n">d</span><span class="o">.</span><span class="n">png</span> <span class="o">-</span><span class="n">r</span> <span class="mi">150</span> <span class="n">file</span><span class="o">.</span><span class="n">pdf</span>
 </pre></div>
 </div>
 <p><strong>PyMuPDF invocation:</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span class="n">zoom</span> <span class="o">=</span> <span class="mf">150.0</span> <span class="o">/</span> <span class="mf">72.0</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">zoom</span> <span class="o">=</span> <span class="mf">150.0</span> <span class="o">/</span> <span class="mf">72.0</span>
 <span class="n">mat</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="n">zoom</span><span class="p">,</span> <span class="n">zoom</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">ProcessFile</span><span class="p">(</span><span class="n">datei</span><span class="p">):</span>
-    <span class="nb">print</span> <span class="s">&quot;processing:&quot;</span><span class="p">,</span> <span class="n">datei</span>
+    <span class="nb">print</span> <span class="s2">&quot;processing:&quot;</span><span class="p">,</span> <span class="n">datei</span>
     <span class="n">doc</span><span class="o">=</span><span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">datei</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pages</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
         <span class="n">pix</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">getPixmap</span><span class="p">(</span><span class="n">matrix</span><span class="o">=</span><span class="n">mat</span><span class="p">)</span>
-        <span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s">&quot;t-%s.png&quot;</span> <span class="o">%</span> <span class="n">p</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
-        <span class="n">pix</span> <span class="o">=</span> <span class="k">None</span>
+        <span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s2">&quot;t-</span><span class="si">%s</span><span class="s2">.png&quot;</span> <span class="o">%</span> <span class="n">p</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+        <span class="n">pix</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">doc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span>
 </pre></div>
 </div>
 <p><strong>Xpdf invocation:</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span class="n">pdftopng</span><span class="o">.</span><span class="n">exe</span> <span class="n">file</span><span class="o">.</span><span class="n">pdf</span> <span class="o">./</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pdftopng</span><span class="o">.</span><span class="n">exe</span> <span class="n">file</span><span class="o">.</span><span class="n">pdf</span> <span class="o">./</span>
 </pre></div>
 </div>
 <p>The resulting runtimes can be found here (again: meaning of decimal point and comma reversed):</p>
@@ -221,30 +276,72 @@
 </div>
 
 
+           </div>
           </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="app2.html" class="btn btn-neutral float-right" title="Appendix 2: Details on Text Extraction" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="vars.html" class="btn btn-neutral" title="Constants and Enumerations" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Jorj X. McKie.
+      Last updated on 02. Oct 2016.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="app2.html" title="Appendix 2: Details on Text Extraction"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="vars.html" title="Constants and Enumerations"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PyMuPDF 1.9.2 documentation</a> &raquo;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 15. Aug 2016.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.1.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.9.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>

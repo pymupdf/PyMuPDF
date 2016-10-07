@@ -98,7 +98,7 @@ except __builtin__.Exception:
 
 VersionFitz = "1.9a"          
 VersionBind = "1.9.2"         
-VersionDate = "2016-08-25 16:19:40"        
+VersionDate = "2016-10-02 10:55:36"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -588,6 +588,10 @@ class Rect(_object):
         _fitz._fz_transform_rect(self, m)
         return self
 
+    def __getitem__(self, i):
+        a = [self.x0, self.y0, self.x1, self.y1]
+        return a[i]
+
     def __len__(self):
         return 4
 
@@ -654,6 +658,10 @@ class IRect(_object):
 
     def getRect(self):
         return Rect(self.x0, self.y0, self.x1, self.y1)
+
+    def __getitem__(self, i):
+        a = [self.x0, self.y0, self.x1, self.y1]
+        return a[i]
 
     def __len__(self):
         return 4
@@ -955,6 +963,10 @@ class Matrix(_object):
         """preRotate(Matrix self, float degree) -> Matrix self updated"""
         _fitz._fz_pre_rotate(self, degree)
         return self
+    def __getitem__(self, i):
+        m = [self.a, self.b, self.c, self.d, self.e, self.f]
+        return m[i]
+
     def __len__(self):
         return 6
     def __repr__(self):
@@ -1153,6 +1165,10 @@ class Point(_object):
     def transform(self, m):
         _fitz._fz_transform_point(self, m)
         return self
+
+    def __getitem__(self, i):
+        a = [self.x, self.y]
+        return a[i]
 
     def __len__(self):
         return 2

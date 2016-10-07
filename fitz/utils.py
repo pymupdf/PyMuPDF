@@ -856,15 +856,15 @@ def setMetadata(doc, m):
 
     d = "<</Author"
     d += "(none)" if not m.get("author") else PDFstr(m["author"])
-    d += "/CreationDate("
-    d += "none" if not m.get("creationDate") else m["creationDate"]
-    d += ")/Creator"
+    d += "/CreationDate"
+    d += "(none)" if not m.get("creationDate") else PDFstr(m["creationDate"])
+    d += "/Creator"
     d += "(none)" if not m.get("creator") else PDFstr(m["creator"])
     d += "/Keywords"
     d += "(none)" if not m.get("keywords") else PDFstr(m["keywords"])
-    d += "/ModDate("
-    d += "none" if not m.get("modDate") else m["modDate"]
-    d += ")/Producer"
+    d += "/ModDate"
+    d += "(none)" if not m.get("modDate") else PDFstr(m["modDate"])
+    d += "/Producer"
     d += "(none)" if not m.get("producer") else PDFstr(m["producer"])
     d += "/Subject"
     d += "(none)" if not m.get("subject") else PDFstr(m["subject"])

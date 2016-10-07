@@ -21,7 +21,7 @@ def ParseTab(doc, page, bbox, columns = None):
         print("Warning: incorrect rectangle coordinates!")
         return []
 
-    if type(page) == type(1):
+    if type(page) is int:
         txt = doc.getPageText(page, output="json") # page text in JSON format
     else:
         txt = page.getText(output = "json")
