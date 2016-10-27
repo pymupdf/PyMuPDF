@@ -9,10 +9,16 @@
 Display and parse tables of a document.
 
 Dependencies:
-PyMuPDF, wxPython 3.x, json, sqlite3
+-------------
+PyMuPDF v1.9.2+, wxPython v3.0.2+, json, sqlite3
+
+Changes:
+--------
+Now supporting all versions of PyMuPDF, Python and wxPython.
 
 License:
- GNU GPL V3
+--------
+GNU GPL V3
 
 """
 from __future__ import print_function
@@ -20,45 +26,17 @@ import fitz
 import wx
 import os
 from ParseTab import ParseTab
-from PageFormat import FindFit
-from wx.lib.embeddedimage import PyEmbeddedImage
-#==============================================================================
-# The following data has been created by the wxPython tool img2py.py
-# It contains SumatraPDF's icon (only for demonstration purposes) as a base64
-# version (like PyMuPDF, SumatraPDF software is licensed under GNU GPL V3).
-#==============================================================================
-img = PyEmbeddedImage(
-    "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")
+try:
+    from PageFormat import FindFit
+except:
+    def FindFit(*args):
+        return "not implemented"
+
+try:
+    from icons import ico_pdf
+    show_icon = True
+except:
+    show_icon = False
 
 def getint(v):
     import types
@@ -74,6 +52,24 @@ def getint(v):
         if d in "0123456789":
             a += d
     return int(a)
+
+# start the wx application
+app = None
+app = wx.App()
+
+# do some wxPython version adjustments
+if wx.version() >= "3.0.3":
+    cursor_hand  = wx.Cursor(wx.CURSOR_HAND)
+    cursor_cross = wx.Cursor(wx.CURSOR_CROSS)
+    cursor_vert  = wx.Cursor(wx.CURSOR_SIZENS)
+    cursor_norm  = wx.Cursor(wx.CURSOR_DEFAULT)
+    bmp_from_buffer = wx.Bitmap.FromBuffer
+else:
+    cursor_hand  = wx.StockCursor(wx.CURSOR_CLOSED_HAND)
+    cursor_cross = wx.StockCursor(wx.CURSOR_CROSS)
+    cursor_vert  = wx.StockCursor(wx.CURSOR_SIZENS)
+    cursor_norm  = wx.StockCursor(wx.CURSOR_DEFAULT)
+    bmp_from_buffer = wx.BitmapFromBuffer
 
 # some abbreviations to get rid of those long pesky names ...
 defPos = wx.DefaultPosition
@@ -94,14 +90,10 @@ class PDFdisplay (wx.Dialog):
         #======================================================================
         # display an icon top left of dialog, append filename to title
         #======================================================================
-        self.SetIcon(img.GetIcon())
+        if show_icon: self.SetIcon(ico_pdf.img.GetIcon())  # set a screen icon
         self.SetBackgroundColour(khaki)
         self.SetTitle(self.Title + filename)
         self.set_rectangle = False
-        self.cursor_hand  = wx.StockCursor(wx.CURSOR_CLOSED_HAND)
-        self.cursor_cross = wx.StockCursor(wx.CURSOR_CROSS)
-        self.cursor_vert  = wx.StockCursor(wx.CURSOR_SIZENS)
-        self.cursor_norm  = wx.StockCursor(wx.CURSOR_DEFAULT)
 
         #======================================================================
         # open the document with MuPDF when dialog gets created
@@ -115,12 +107,12 @@ class PDFdisplay (wx.Dialog):
         #======================================================================
         # forward button
         #======================================================================
-        self.BtnNext = wx.Button(self, wx.ID_ANY, u"Forward",
+        self.BtnNext = wx.Button(self, wx.ID_ANY, "Forward",
                            defPos, defSiz, wx.BU_EXACTFIT)
         #======================================================================
         # backward button
         #======================================================================
-        self.BtnPrev = wx.Button(self, wx.ID_ANY, u"Backward",
+        self.BtnPrev = wx.Button(self, wx.ID_ANY, "Backward",
                            defPos, defSiz, wx.BU_EXACTFIT)
         #======================================================================
         # text field for entering a target page. wx.TE_PROCESS_ENTER is
@@ -148,59 +140,59 @@ class PDFdisplay (wx.Dialog):
         # "Left" literal
         #======================================================================
         self.statLeft = wx.StaticText(self, wx.ID_ANY,
-                              u"Left:", defPos, wx.Size(50, -1), 0)
+                              "Left:", defPos, wx.Size(50, -1), 0)
         #======================================================================
         # modify rectangle left
         #======================================================================
-        self.CtrlLeft = wx.SpinCtrl( self, wx.ID_ANY, u"0", defPos,
+        self.CtrlLeft = wx.SpinCtrl( self, wx.ID_ANY, "0", defPos,
                         wx.Size(50, -1),
                         wx.SP_ARROW_KEYS|wx.TE_PROCESS_ENTER, 0, 999, 0 )
         #======================================================================
         # "Top" literal
         #======================================================================
-        self.statTop = wx.StaticText(self, wx.ID_ANY, u"Top:", defPos,
+        self.statTop = wx.StaticText(self, wx.ID_ANY, "Top:", defPos,
                               wx.Size(50, -1), 0)
         #======================================================================
         # modify rectangle top
         #======================================================================
-        self.CtrlTop = wx.SpinCtrl( self, wx.ID_ANY, u"0", defPos,
+        self.CtrlTop = wx.SpinCtrl( self, wx.ID_ANY, "0", defPos,
                         wx.Size(50, -1),
                         wx.SP_ARROW_KEYS|wx.TE_PROCESS_ENTER, 0, 999, 0 )
         #======================================================================
         # "Height" literal
         #======================================================================
-        self.statHeight = wx.StaticText(self, wx.ID_ANY, u"Height:", defPos,
+        self.statHeight = wx.StaticText(self, wx.ID_ANY, "Height:", defPos,
                               wx.Size(50, -1), 0)
         #======================================================================
         # modify rectangle Height
         #======================================================================
-        self.CtrlHeight = wx.SpinCtrl( self, wx.ID_ANY, u"0", defPos,
+        self.CtrlHeight = wx.SpinCtrl( self, wx.ID_ANY, "0", defPos,
                         wx.Size(50, -1),
                         wx.SP_ARROW_KEYS|wx.TE_PROCESS_ENTER, 0, 999, 0 )
         #======================================================================
         # "Width" literal
         #======================================================================
-        self.statWidth = wx.StaticText(self, wx.ID_ANY, u"Width:", defPos,
+        self.statWidth = wx.StaticText(self, wx.ID_ANY, "Width:", defPos,
                               wx.Size(50, -1), 0)
         #======================================================================
         # modify rectangle Width
         #======================================================================
-        self.CtrlWidth = wx.SpinCtrl( self, wx.ID_ANY, u"0", defPos,
+        self.CtrlWidth = wx.SpinCtrl( self, wx.ID_ANY, "0", defPos,
                         wx.Size(50, -1),
                         wx.SP_ARROW_KEYS|wx.TE_PROCESS_ENTER, 0, 999, 0 )
         #======================================================================
         # parse table within rectangle
         #======================================================================
-        self.BtnMatrix = wx.Button(self, wx.ID_ANY, u"Get Table",
+        self.BtnMatrix = wx.Button(self, wx.ID_ANY, "Get Table",
                            defPos, defSiz, wx.BU_EXACTFIT)
         #======================================================================
         # column controls
         #======================================================================
-        self.BtnNewCol = wx.Button(self, wx.ID_ANY, u"New Col",
+        self.BtnNewCol = wx.Button(self, wx.ID_ANY, "New Col",
                            defPos, defSiz, wx.BU_EXACTFIT)
         self.col_coords = {}
         self.ColList = wx.Choice( self, wx.ID_ANY, defPos, wx.Size(50, -1))
-        self.CtrlCols = wx.SpinCtrl( self, wx.ID_ANY, u"0", defPos,
+        self.CtrlCols = wx.SpinCtrl( self, wx.ID_ANY, "0", defPos,
                            wx.Size(50, -1),
                            wx.SP_ARROW_KEYS|wx.TE_PROCESS_ENTER, 0, 999, 0)
         #======================================================================
@@ -352,7 +344,7 @@ class PDFdisplay (wx.Dialog):
         self.rect_w           = 0
         self.rect_h           = 0
         self.ColList.Clear()
-        self.PDFimage.SetCursor(self.cursor_norm)
+        self.PDFimage.SetCursor(cursor_norm)
         return
 
     def enable_fields(self):
@@ -497,7 +489,7 @@ class PDFdisplay (wx.Dialog):
 
         if not self.set_rectangle:          # only handle making a rectangle
             return
-        self.PDFimage.SetCursor(self.cursor_norm)     # cursor default again
+        self.PDFimage.SetCursor(cursor_norm)     # cursor default again
         pos = evt.GetPosition()
         self.rect_w = abs(pos.x - self.rect_x)        # get width
         self.rect_h = abs(pos.y - self.rect_y)        # get height
@@ -515,14 +507,14 @@ class PDFdisplay (wx.Dialog):
         pos = evt.GetPosition()
         if not (self.adding_column or self.set_rectangle):
             if self.cursor_in_rect(pos):    # only adjust cursor
-                self.PDFimage.SetCursor(self.cursor_hand)
+                self.PDFimage.SetCursor(cursor_hand)
             else:
-                self.PDFimage.SetCursor(self.cursor_norm)
+                self.PDFimage.SetCursor(cursor_norm)
         if self.adding_column:
             if self.cursor_in_rect(pos):
-                self.PDFimage.SetCursor(self.cursor_vert)
+                self.PDFimage.SetCursor(cursor_vert)
             else:
-                self.PDFimage.SetCursor(self.cursor_norm)
+                self.PDFimage.SetCursor(cursor_norm)
             return
         if self.set_rectangle and evt.LeftIsDown():   # if making a rectangle
             w = abs(pos.x - self.rect_x)
@@ -600,7 +592,7 @@ class PDFdisplay (wx.Dialog):
         y0 = self.rect_y
         x1 = x0 + self.rect_w
         y1 = y0 + self.rect_h
-        cols = self.col_coords.values()
+        cols = list(self.col_coords.values())
         cols.sort()
         pg = getint(self.TextToPage.Value) - 1
         self.parsed_table = ParseTab(self.doc, pg, [x0, y0, x1, y1],
@@ -608,10 +600,11 @@ class PDFdisplay (wx.Dialog):
         if self.parsed_table:
             r = len(self.parsed_table)
             c = len(self.parsed_table[0])
-            t = "\nContents of (%s x %s) table at [%s,%s] on page %s"
+            t = "\nContents of (%s x %s)-table at [%s,%s] on page %s"
             print(t % (r, c, x0, y0, pg + 1))
             for t in self.parsed_table:
-                print(t)
+                xt = [str(t[i].encode("utf-8", "ignore")) for i in range(len(t))]
+                print("|".join(xt))
         else:
             print("No text found in rectangle")
 
@@ -629,7 +622,7 @@ class PDFdisplay (wx.Dialog):
         # Start drawing a rectangle
         self.disable_fields()
         self.set_rectangle = True
-        self.PDFimage.SetCursor(self.cursor_cross)
+        self.PDFimage.SetCursor(cursor_cross)
 
 
     def NextPage(self, event):                   # means: page forward
@@ -674,7 +667,7 @@ class PDFdisplay (wx.Dialog):
         p = self.doc.loadPage(pg_nr - 1)
         pix = p.getPixmap()
         a = pix.samplesRGB()
-        bitmap = wx.BitmapFromBuffer(pix.width, pix.height, a)
+        bitmap = bmp_from_buffer(pix.width, pix.height, a)
         self.paperform.Label = "Format: " + FindFit(pix.w, pix.h)
         return bitmap
 
@@ -699,9 +692,6 @@ class PDFdisplay (wx.Dialog):
 #==============================================================================
 # main program
 #==============================================================================
-# start the wx application
-app = None
-app = wx.App()
 #==============================================================================
 # Show a FileSelect dialog to choose a file
 #==============================================================================
@@ -715,12 +705,12 @@ wild = "supported files|*.pdf;*.xps;*.oxps;*.epub;*.cbz"
 dlg = wx.FileDialog(None, message = "Choose a document",
                     defaultDir = os.path.expanduser("~"),
                     defaultFile = "",
-                    wildcard = wild, style=wx.OPEN|wx.CHANGE_DIR)
+                    wildcard = wild, style=wx.FD_OPEN|wx.FD_CHANGE_DIR)
 
 #==============================================================================
 # gimmick: provide an icon
 #==============================================================================
-dlg.SetIcon(img.GetIcon())
+if show_icon: dlg.SetIcon(ico_pdf.img.GetIcon())  # set a screen icon
 
 #==============================================================================
 # now display and ask for return code in one go
@@ -735,9 +725,6 @@ else:
 # destroy this dialog
 dlg.Destroy()
 
-if filename:
-    if not os.path.exists(filename):   # should not happen actually
-        filename = None
 #==============================================================================
 # only continue if we have a filename
 #==============================================================================

@@ -11,9 +11,13 @@ The license of this program is governed by the GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007. See the "COPYING" file of this repository.
 
 Example program for the Python binding PyMuPDF of MuPDF.
-Its dependencies are:
-PyMuPDF 1.9.1 or later
-wxPython 3.0 or later
+
+Dependencies:
+-------------
+PyMuPDF v1.9.2 or later
+wxPython v3.0.2 or later
+All Python and bitness versions are now supported that are also supported by
+PyMuPDF, MuPDF and wxPython.
 
 This is a program for editing a PDF file's table of contents (ToC).
 After choosing a file in a file selection dialog, its ToC is displayed
@@ -57,8 +61,22 @@ import wx
 import wx.grid as gridlib
 import wx.lib.gridmovers as gridmovers
 import fitz
-from icons import ico_pdf              # PDF icon in upper left screen corner
+try:
+    from icons import ico_pdf          # PDF icon in upper left screen corner
+    show_icon = True
+except:
+    show_icon = False
+    
+pyversion = sys.version_info[0]
 
+# make some adjustments between wxPython versions
+if wx.version() >= "3.0.3":
+    table_base = gridlib.GridTableBase
+    bmp_from_buffer = wx.Bitmap.FromBuffer
+else:
+    table_base = gridlib.PyGridTableBase
+    bmp_from_buffer = wx.BitmapFromBuffer
+ 
 def getint(v):
     import types
     # extract digits from a string to form an integer >= 0
@@ -114,7 +132,7 @@ def pdf_show(dlg, seite):
     pix = spad.doc.getPagePixmap(pno)
     spad.height = pix.h
     a = pix.samplesRGB()                  # samples without alpha bytes
-    bmp = wx.BitmapFromBuffer(pix.w, pix.h, a)
+    bmp = bmp_from_buffer(pix.w, pix.h, a)
     pix = None
     a   = None
     return bmp
@@ -144,9 +162,9 @@ class Slider(wx.Dialog):
 #==============================================================================
 # PDFTable = a tabular grid class in wx
 #==============================================================================
-class PDFTable(gridlib.PyGridTableBase):
+class PDFTable(table_base):
     def __init__(self):
-        gridlib.PyGridTableBase.__init__(self)
+        table_base.__init__(self)
 
         self.colLabels = ['Level','Title','Page','Height']
         self.dataTypes = [gridlib.GRID_VALUE_NUMBER,
@@ -161,7 +179,7 @@ class PDFTable(gridlib.PyGridTableBase):
             top = -1
             lvl = z[0]
             tit = z[1]
-            if not spad.fromjson:                # data comes from the PDF!
+            if pyversion < 3 and not spad.fromjson:   # data comes from the PDF!
                 tit = tit.decode("utf-8","ignore")
             pno = z[2]
             if len(z) > 3:
@@ -193,7 +211,7 @@ class PDFTable(gridlib.PyGridTableBase):
 
     def GetValue(self, row, col):           # get value for display
         if col != 1:
-            return self.data[row][col]
+            return str(self.data[row][col])
         lvl = int(self.data[row][0]) - 1
         val = " "*lvl + self.data[row][1]   # simulate hierarchy lvl by spaces
         return val
@@ -506,7 +524,7 @@ class PDFDialog (wx.Dialog):
                                      wx.DEFAULT_DIALOG_STYLE|
                                      wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|
                                      wx.RESIZE_BORDER)
-        self.SetIcon(ico_pdf.img.GetIcon())      # set a screen icon
+        if show_icon: self.SetIcon(ico_pdf.img.GetIcon())  # set a screen icon
         self.SetBackgroundColour(khaki)
 #==============================================================================
 # Sizer 10: Button 'new row' and an explaining text
@@ -751,7 +769,7 @@ class PDFDialog (wx.Dialog):
                 self.msg.Label = "row %s: missing title" % (str(i+1),)
                 break
             h = spad.height
-            if d.GetValue(i, 3) < 1:
+            if int(d.GetValue(i, 3)) < 1:
                 d.SetValue(i, 3, str(h - 36))
                 self.tocgrid.Table.data[i][3] = h - 36
             if not (0 < int(d.GetValue(i, 3)) <= h):
@@ -793,7 +811,7 @@ def PicRefresh(dlg, seite):
 
     bmp = pdf_show(dlg, i_seite)            # get bitmap of page
 
-    dc = wx.MemoryDC()                      # make a device control out of img
+    dc = wx.MemoryDC()                      # make a device control out of bmp
     dc.SelectObject(bmp)
     dc.SetPen(wx.Pen("RED", width=1))
     d = dlg.tocgrid.GetTable()              # get data of grid
@@ -842,7 +860,13 @@ def getPDFinfo():
     spad.meta = {"author":"", "title":"", "subject":""}
 
     for key, wert in spad.doc.metadata.items():
-        spad.meta[key] = wert.decode("utf-8", "ignore") if wert else ""
+        if wert:
+            if pyversion < 3:
+                spad.meta[key] = wert.decode("utf-8", "ignore")
+            else:
+                spad.meta[key] = wert
+        else:
+            spad.meta[key] = ""
 
     spad.fromjson = False
     spad.inhalt = spad.doc.getToC(simple = False)
@@ -959,7 +983,7 @@ def make_pdf(dlg):
 # Main Program
 #
 #==============================================================================
-assert wx.VERSION[0] >= 3
+assert wx.version() >= "3.0.2"
 app = None
 app = wx.App()
 
@@ -981,7 +1005,7 @@ if not infile:
                         defaultDir = os.path.expanduser('~'),
                         defaultFile = wx.EmptyString,
                         wildcard = "PDF files (*.pdf)|*.pdf",
-                        style=wx.OPEN | wx.CHANGE_DIR)
+                        style = wx.FD_OPEN | wx.FD_CHANGE_DIR)
     # We got a file only when one was selected and OK pressed
     if d.ShowModal() == wx.ID_OK:
         # This returns a Python list of selected files.

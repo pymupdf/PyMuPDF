@@ -69,7 +69,7 @@ def FindFit(w, h):
     stab = [abs(w1-s[0])+abs(h1-s[1]) for s in PaperSizes.values()]
     small = min(stab)                  # minimum deviation
     idx = stab.index(small)            # its index
-    f = PaperSizes.keys()[idx]         # name of found paper format
+    f = list(PaperSizes.keys())[idx]   # name of found paper format
 
     if w <= h:                         # if input width <= height,
         ff = f + "-P"                  # it is a portait

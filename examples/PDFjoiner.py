@@ -19,7 +19,11 @@ This program joins PDF files into one output file. Its features include:
 * Specify PDF metadata
 
 Dependencies:
-wxPython v3.x, PyMuPDF v1.9.2
+wxPython v3.0.x, PyMuPDF v1.9.2
+
+Changes 2016-10-27
+------------------
+Now also runs under Python 3, since wxPython supports it.
 
 Changes 2016-08-06
 -------------------
@@ -27,22 +31,31 @@ Dependency on PyPDF2 has been removed, because v1.9.2 of PyMuPDF now has all
 required functionality.
 This also has generated a **huge** speed improvement!
 """
-
 import os, sys, time
 import wx
 import wx.grid as gridlib
 import wx.lib.gridmovers as gridmovers
 import fitz
-from icons import ico_pdf
+try:
+    from icons import ico_pdf
+    show_icon = True
+except:
+    show_icon = False
 
 # some abbreviations
 defPos = wx.DefaultPosition
 defSiz = wx.DefaultSize
 khaki  = wx.Colour(240, 230, 140)
 
-class PDFTable(gridlib.PyGridTableBase):
+# make some adjustments between wxPython versions
+if wx.version() >= "3.0.3":
+    table_base = gridlib.GridTableBase
+else:
+    table_base = gridlib.PyGridTableBase
+    
+class PDFTable(table_base):
     def __init__(self):
-        gridlib.PyGridTableBase.__init__(self)
+        table_base.__init__(self)
 
         self.colLabels = ['File','Pages','from','to','rotate']
         self.dataTypes = [gridlib.GRID_VALUE_STRING,
@@ -71,7 +84,7 @@ class PDFTable(gridlib.PyGridTableBase):
             return True
 
     def GetValue(self, row, col):
-        return self.data[row][col]
+        return str(self.data[row][col])
 
     def SetValue(self, row, col, value):
         self.data[row][col] = value
@@ -254,10 +267,8 @@ class PDFDialog (wx.Dialog):
                                      wx.MAXIMIZE_BOX|
                                      wx.MINIMIZE_BOX|
                                      wx.RESIZE_BORDER)
-
-        self.SetSizeHintsSz(defSiz, defSiz)
         self.FileList = {}
-        self.SetIcon(ico_pdf.img.GetIcon())
+        if show_icon: self.SetIcon(ico_pdf.img.GetIcon())
         self.SetBackgroundColour(khaki)
 
 #==============================================================================
@@ -301,7 +312,7 @@ class PDFDialog (wx.Dialog):
 #==============================================================================
 # Create Sizer 03 (output parameters)
 #==============================================================================
-        szr03 = wx.FlexGridSizer( 6, 2, 0, 0 )   # 5 rows, 2 cols, gap sizes 0
+        szr03 = wx.FlexGridSizer( 6, 2, 0, 0 )   # 6 rows, 2 cols, gap sizes 0
         szr03.SetFlexibleDirection( wx.BOTH )
         szr03.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 
@@ -532,11 +543,7 @@ def make_pdf(dlg):
 # Main program
 #
 #==============================================================================
-if wx.VERSION[0] >= 3:
-    pass
-else:
-    print "need wxPython version 3.0.2 or higher"
-    sys.exit(1)
+assert wx.version() >= "3.0.2"
 app = None
 app = wx.App()
 this_dir = os.getcwd()

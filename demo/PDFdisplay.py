@@ -16,6 +16,7 @@ License:
 
 Changes in PyMuPDF 1.9.2
 ------------------------
+- supporting Python 3 as wxPython now supports it
 - optionally show links in displayed pages
 - when clicking on a link, attempt to follow the link
 - remove inline code for dialog icon and import from a library
@@ -37,6 +38,19 @@ try:
 except:
     do_icon = False
 
+app = None
+app = wx.App()
+
+# make some adjustments for differences between wxPython versions 3.0.2 / 3.0.3
+if wx.version() >= "3.0.3":
+    cursor_hand  = wx.Cursor(wx.CURSOR_HAND)
+    cursor_norm  = wx.Cursor(wx.CURSOR_DEFAULT)
+    bmp_buffer = wx.Bitmap.FromBuffer
+else:
+    cursor_hand  = wx.StockCursor(wx.CURSOR_HAND)
+    cursor_norm  = wx.StockCursor(wx.CURSOR_DEFAULT)
+    bmp_buffer = wx.BitmapFromBuffer
+    
 def getint(v):
     import types
     try:
@@ -90,8 +104,6 @@ class PDFdisplay (wx.Dialog):
         self.link_texts = []           # store link texts here
         self.current_idx = -1          # store entry of found rectangle
         self.current_lnks = []         # store entry of found rectangle
-        self.cursor_hand  = wx.StockCursor(wx.CURSOR_HAND)
-        self.cursor_norm  = wx.StockCursor(wx.CURSOR_DEFAULT)
 
         #======================================================================
         # define zooming matrix for displaying PDF page images
@@ -157,6 +169,7 @@ class PDFdisplay (wx.Dialog):
         self.links = wx.CheckBox( self, wx.ID_ANY,
                            u"show links",
                            defPos, defSiz, wx.ALIGN_LEFT)
+        self.links.Value = True
         szr20.Add( self.links, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 
         self.paperform = wx.StaticText(self, wx.ID_ANY,
@@ -255,11 +268,14 @@ class PDFdisplay (wx.Dialog):
                 self.current_idx = i
                 break
         if in_rect:
-            self.PDFimage.SetCursor(self.cursor_hand)
-            self.PDFimage.SetToolTipString(self.link_texts[i])
+            self.PDFimage.SetCursor(cursor_hand)
+            if wx.version() >= "3.0.3":
+                self.PDFimage.SetToolTip(self.link_texts[i])
+            else:
+                self.PDFimage.SetToolTipString(self.link_texts[i])
             self.current_idx = i
         else:
-            self.PDFimage.SetCursor(self.cursor_norm)
+            self.PDFimage.SetCursor(cursor_norm)
             self.PDFimage.UnsetToolTip()
             self.current_idx = -1
         evt.Skip()
@@ -347,7 +363,7 @@ class PDFdisplay (wx.Dialog):
     def pdf_show(self, pg_nr):
         page = self.doc.loadPage(int(pg_nr) - 1) # load the page & get Pixmap
         pix = page.getPixmap(matrix = self.matrix)
-        bmp = wx.BitmapFromBuffer(pix.w, pix.h, pix.samplesRGB())
+        bmp = bmp_buffer(pix.w, pix.h, pix.samplesRGB())
         paper = FindFit(page.bound().x1, page.bound().y1)
         self.paperform.Label = "Page format: " + paper
         if self.links.Value:
@@ -378,9 +394,6 @@ class PDFdisplay (wx.Dialog):
 #==============================================================================
 # main program
 #==============================================================================
-# start the wx application
-app = None
-app = wx.App()
 #==============================================================================
 # Show a FileSelect dialog to choose a file for display
 #==============================================================================
@@ -394,7 +407,7 @@ wild = "supported files|*.pdf;*.xps;*.oxps;*.epub;*.cbz"
 dlg = wx.FileDialog(None, message = "Choose a file to display",
                     defaultDir = os.path.expanduser("~"),
                     defaultFile = "",
-                    wildcard = wild, style=wx.OPEN|wx.CHANGE_DIR)
+                    wildcard = wild, style=wx.FD_OPEN|wx.FD_CHANGE_DIR)
 
 #==============================================================================
 # now display and ask for return code in one go
