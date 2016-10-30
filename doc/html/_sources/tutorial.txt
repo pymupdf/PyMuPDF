@@ -165,20 +165,26 @@ Please also do have a look at the demo program ``demo.py``. Among others it cont
 
 PDF Output
 ===========
-Since version 1.9, PyMuPDF provides several options to modify PDF documents. The :meth:`Document.save()` method automatically stores a document in its current state on disk. Output is supported for PDF documents only.
+Since version 1.9, PyMuPDF provides several options to modify PDF documents (only). The :meth:`Document.save()` method automatically stores a document in its current (potentially modified) state on disk.
 
 A PDF document can be modified unnoticed by the user in two ways:
 
 * During open, integrity checks are used to determine the health of the PDF structure. Any errors will automatically be corrected to present a repaired document in memory for further processing. If this is the case, the document counts as being modified.
 
-* After a document has been decrypted, the document in memory has obviously changed and also counts as being modified.
+* After a document has been decrypted, the document in memory obviously has changed and also counts as being modified.
 
-In these cases, the save method will store a repaired and / or decrypted version, and saving must occur to a new file.
+In these cases, the save method will store a repaired and / or decrypted version, and saving **must occur to a new file**.
 
 The following describe some more intentional ways to manipulate PDF documents. Beyond these, you can also modify the table of contents and meta information.
 
 Re-arranging and Deleting Pages
 ----------------------------------
+There are several ways to manipulate the page tree of a PDF:
+
+Methods :meth:`Document.deletePage()` and :meth:`Document.deletePageRange()` delete a page (range) specified by zero-based number(s).
+
+Methods :meth:`Document.copyPage()` and :meth:`Document.movePage()` copy or move a page to another location of the document.
+
 Method :meth:`Document.select()` accepts a list of integers as argument. These integers must be in the range ``0 <= i < pageCount``. When executed, all pages not occurring in this list will be deleted. Only pages that do occur will remain - **in the sequence specified and as many times as specified**.
 
 So you can easily create sub-PDFs of the first / last 10 pages, only odd or even pages (for doing double-sided printing), pages that do or do not contain a certain text, ... whatever you may think of.
@@ -199,30 +205,30 @@ the repository’s *example* directory.
 Saving
 -------
 
-As mentioned before, ``save()`` will automatically save a decrypted and repaired copy.
+As mentioned before, ``save()`` will automatically save a decrypted and / or repaired copy.
 
 If you altered something, then the resulting document will be saved.
 
 Since MuPDF 1.9, you can also write changes back to the original file by specifying ``incremental = True``. This process is **extremely fast**, since any changes are **appended to the original file** - it will not be rewritten as a whole.
 
-:meth:`Document.save` supports all options of MuPDF's command line utility ``mutool clean``, see the following table (corresponding mutool clean option indicated as "mco").
+:meth:`Document.save` supports all options of MuPDF's command line utility ``mutool clean``, see the following table (corresponding ``mutool clean`` option is indicated as "mco").
 
-================== ======= ==================================================
-**Option**         **mco** **Effect**
-================== ======= ==================================================
-garbage = 1         -g     garbage collect unused objects
-garbage = 2         -gg    in addition to 1, compact xref tables
-garbage = 3         -ggg   in addition to 2, merge duplicate objects
-garbage = 4         -gggg  in addition to 3, check for duplicate streams
-clean = 1           -s     clean content streams
-deflate = 1         -z     deflate uncompressed streams
-ascii = 1           -a     convert data to ASCII format
-linear = 1          -l     create a linearized version (do not use yet)
-expand = 1          -i     decompress images
-expand = 2          -f     decompress fonts
-expand = 255        -d     decompress all
-incremental = 1     n/a    only append changes to the original
-================== ======= ==================================================
+================== ========= ==================================================
+**Option**         **mco**   **Effect**
+================== ========= ==================================================
+garbage = 1         -g       garbage collect unused objects
+garbage = 2         -gg      in addition to 1, compact xref tables
+garbage = 3         -ggg     in addition to 2, merge duplicate objects
+garbage = 4         -gggg    in addition to 3, check for duplicate streams
+clean = 1           -s       clean content streams
+deflate = 1         -z       deflate uncompressed streams
+ascii = 1           -a       convert data to ASCII format
+linear = 1          -l       create a linearized version (do not use yet)
+expand = 1          -i       decompress images
+expand = 2          -f       decompress fonts
+expand = 255        -d       decompress all
+incremental = 1     n/a      append changes to the original
+================== ========= ==================================================
 
 Be ready to experiment a little if you want to fully exploit above options: like with ``mutool clean``, not all combinations may always work (or work as expected): there are just too many ill-constructed PDF files out there ...
 
@@ -284,4 +290,4 @@ If a PDF is broken or needs to be decrypted, one could dynamically invoke PyMuPD
  print pdf.Info
  # do further processing
 
-With the command line utility ``pdftk`` a similar result can be achieved, see `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. It even supports buffers for input **and** output. However you must invoke it as a separate process via ``subprocess.Popen``, using stdin and stdout as communication vehicles.
+With the command line utility ``pdftk`` (`available <https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/>`_ for Windows only) a similar result can be achieved, see `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. It even supports buffers for input **and** output. However, you must invoke it as a separate process via ``subprocess.Popen``, using stdin and stdout as communication vehicles.

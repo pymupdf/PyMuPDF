@@ -221,7 +221,19 @@
 <td>PDF only: replace the table of contents (TOC)</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.insertPDF" title="Document.insertPDF"><code class="xref py py-meth docutils literal"><span class="pre">Document.insertPDF()</span></code></a></td>
-<td>insert a page range from another PDF</td>
+<td>PDF only: insert a page range from another PDF</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.deletePage" title="Document.deletePage"><code class="xref py py-meth docutils literal"><span class="pre">Document.deletePage()</span></code></a></td>
+<td>PDF only: delete a page by its number</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.deletePageRange" title="Document.deletePageRange"><code class="xref py py-meth docutils literal"><span class="pre">Document.deletePageRange()</span></code></a></td>
+<td>PDF only: delete a range of pages</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.copyPage" title="Document.copyPage"><code class="xref py py-meth docutils literal"><span class="pre">Document.copyPage()</span></code></a></td>
+<td>PDF only: copy a page to another location</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.movePage" title="Document.movePage"><code class="xref py py-meth docutils literal"><span class="pre">Document.movePage()</span></code></a></td>
+<td>PDF only: move a page to another location</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><code class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></code></a></td>
 <td>has document been closed?</td>
@@ -540,18 +552,18 @@
 <dl class="method">
 <dt id="Document.save">
 <code class="descname">save</code><span class="sig-paren">(</span><em>outfile</em>, <em>garbage=0</em>, <em>clean=0</em>, <em>deflate=0</em>, <em>incremental=0</em>, <em>ascii=0</em>, <em>expand=0</em>, <em>linear=0</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>PDF documents only: Saves the <strong>current content of the document</strong> under the name <code class="docutils literal"><span class="pre">outfile</span></code> (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successful <code class="docutils literal"><span class="pre">authenticate</span></code>, a decrypted copy will be saved, and, in addition (even without optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed methods <code class="docutils literal"><span class="pre">select()</span></code>, <code class="docutils literal"><span class="pre">setMetadata()</span></code>, <code class="docutils literal"><span class="pre">setToC()</span></code> or <code class="docutils literal"><span class="pre">insertPDF()</span></code>, their results will also be reflected in the saved version.</p>
+<dd><p>PDF documents only: Saves the <strong>current content of the document</strong> under the name <code class="docutils literal"><span class="pre">outfile</span></code> (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successful <code class="docutils literal"><span class="pre">authenticate</span></code>, a decrypted copy will be saved, and, in addition (even without optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed any modifying methods like <code class="docutils literal"><span class="pre">select()</span></code>, <code class="docutils literal"><span class="pre">setMetadata()</span></code>, <code class="docutils literal"><span class="pre">setToC()</span></code>, etc., their results will also be reflected in the saved version.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outfile</strong> (<em>string</em>) &#8211; The file name to save to. Must be different from the original value value if <code class="docutils literal"><span class="pre">incremental=False</span></code>. When saving incrementally, <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code> <strong>must be</strong> <code class="docutils literal"><span class="pre">False</span></code> and <code class="docutils literal"><span class="pre">outfile</span></code> <strong>must equal</strong> the original filename.</li>
+<li><strong>outfile</strong> (<em>string</em>) &#8211; The file name to save to. Must be different from the original value value if <code class="docutils literal"><span class="pre">incremental=False</span></code>. When saving incrementally, <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code> <strong>must be</strong> <code class="docutils literal"><span class="pre">False</span> <span class="pre">/</span> <span class="pre">0</span></code> and <code class="docutils literal"><span class="pre">outfile</span></code> <strong>must equal</strong> the original filename (for convenience use <code class="docutils literal"><span class="pre">doc.name</span></code>).</li>
 <li><strong>garbage</strong> (<em>int</em>) &#8211; Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition to 1, compact xref table, 3 = in addition to 2, merge duplicate objects, 4 = in addition to 3, check streams for duplication. Excludes <code class="docutils literal"><span class="pre">incremental</span></code>.</li>
-<li><strong>clean</strong> (<em>int</em>) &#8211; Clean content streams: 0 = False, 1 = True.</li>
-<li><strong>deflate</strong> (<em>int</em>) &#8211; Deflate uncompressed streams: 0 = False, 1 = True.</li>
-<li><strong>incremental</strong> (<em>int</em>) &#8211; Only save changed objects: 0 = False, 1 = True. Excludes <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code>. Cannot be used for decrypted files and for files opened in repair mode (<code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>). In these cases saving to a new file is required.</li>
-<li><strong>ascii</strong> (<em>int</em>) &#8211; Where possible make the output ASCII: 0 = False, 1 = True.</li>
+<li><strong>clean</strong> (<em>int</em>) &#8211; Clean content streams: 0 / False, 1 / True.</li>
+<li><strong>deflate</strong> (<em>int</em>) &#8211; Deflate uncompressed streams: 0 / False, 1 / True.</li>
+<li><strong>incremental</strong> (<em>int</em>) &#8211; Only save changed objects: 0 / False, 1 / True. Excludes <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code>. Cannot be used for decrypted files and for files opened in repair mode (<code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>). In these cases saving to a new file is required.</li>
+<li><strong>ascii</strong> (<em>int</em>) &#8211; Where possible make the output ASCII: 0 / False, 1 / True.</li>
 <li><strong>expand</strong> (<em>int</em>) &#8211; Decompress contents: 0 = none, 1 = images, 2 = fonts, 255 = all. This convenience option generates a decompressed file version that can be better read by some other programs.</li>
 <li><strong>linear</strong> (<em>int</em>) &#8211; Save a linearised version of the document: 0 = False, 1 = True. This option creates a file format for improved performance when read via internet connections. Excludes <code class="docutils literal"><span class="pre">incremental</span></code>.</li>
 </ul>
@@ -576,7 +588,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>doc2</strong> (<code class="docutils literal"><span class="pre">Document</span></code>) &#8211; An opened PDF document. The <code class="docutils literal"><span class="pre">doc2</span></code> object <strong>must not be the current document</strong>. It may, however, refer to the same PDF file opened as a separate <code class="docutils literal"><span class="pre">fitz.Document</span></code>.</li>
+<li><strong>doc2</strong> (<code class="docutils literal"><span class="pre">Document</span></code>) &#8211; An opened PDF document. The <code class="docutils literal"><span class="pre">doc2</span></code> object <strong>must not be the current document</strong>. It may, however, refer to the same PDF file opened as a separate <code class="docutils literal"><span class="pre">fitz.Document</span></code>. The reason is, that separate documents have their own separate buffer areas and are thus treated as different beasts that just happen to have the same filename.</li>
 <li><strong>from_page</strong> (<em>int</em>) &#8211; First page number in <code class="docutils literal"><span class="pre">doc2</span></code>. Default is zero.</li>
 <li><strong>to_page</strong> (<em>int</em>) &#8211; Last page number in <code class="docutils literal"><span class="pre">doc2</span></code> to copy. Default is the last page.</li>
 <li><strong>start_at</strong> (<em>int</em>) &#8211; First copied page will become page number <code class="docutils literal"><span class="pre">start_at</span></code> in the destination. If omitted, the page range will be appended. If zero, the page range will be inserted before current first page.</li>
@@ -597,12 +609,80 @@
 
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">If <code class="docutils literal"><span class="pre">from_page</span> <span class="pre">&gt;</span> <span class="pre">to_page</span></code>, pages will be copied back to front. If <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">from_page</span> <span class="pre">==</span> <span class="pre">to_page</span></code>, then one page will be copied.</p>
+<p class="last">If <code class="docutils literal"><span class="pre">from_page</span> <span class="pre">&gt;</span> <span class="pre">to_page</span></code>, pages will be copied in reverse order. If <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">from_page</span> <span class="pre">==</span> <span class="pre">to_page</span></code>, then one page will be copied.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The functionality of this method is a conversion of the MuPDF CLI utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">merge</span></code>. Due to its current restrictions, <code class="docutils literal"><span class="pre">doc2</span></code> annotations and bookmarks <strong>will not be copied</strong>. Links however <strong>will be copied</strong> (kind <a class="reference internal" href="vars.html#LINK_GOTO" title="LINK_GOTO"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTO</span></code></a> links only of course, if their destination is within the copied page range). It is easy to recover a table of contents for the resulting document. Look at the examples below and at program <code class="docutils literal"><span class="pre">PDFjoiner.py</span></code> in the <em>examples</em> directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.</p>
+<p class="last">The functionality of this method is a conversion of the MuPDF CLI utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">merge</span></code>. Due to its current restrictions, <code class="docutils literal"><span class="pre">doc2</span></code> annotations and bookmarks <strong>will not be copied</strong>. Links however <strong>will be copied</strong> (kind <a class="reference internal" href="vars.html#LINK_GOTO" title="LINK_GOTO"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTO</span></code></a> links of course only then, if their destination is within the copied page range). It is easy to recover a table of contents for the resulting document. Look at the examples below and at program <code class="docutils literal"><span class="pre">PDFjoiner.py</span></code> in the <em>examples</em> directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.</p>
 </div>
+<dl class="method">
+<dt id="Document.deletePage">
+<code class="descname">deletePage</code><span class="sig-paren">(</span><em>pno</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.deletePage" title="Permalink to this definition">¶</a></dt>
+<dd><p>PDF only: Deletes a page specified by its zero-based number in range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">pno</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pno</strong> (<em>int</em>) &#8211; the page to be deleted.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Document.deletePageRange">
+<code class="descname">deletePageRange</code><span class="sig-paren">(</span><em>from_page = -1</em>, <em>to_page = -1</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.deletePageRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>PDF only: Deletes a range of pages specified as zero-based page numbers. Any negative value will be replaced with <code class="docutils literal"><span class="pre">pageCount</span> <span class="pre">-</span> <span class="pre">1</span></code>. After that, condition <code class="docutils literal"><span class="pre">from_page</span> <span class="pre">&lt;=</span> <span class="pre">to_page</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code> must be true. If the parameters are equal, one page will be deleted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>from_page</strong> (<em>int</em>) &#8211; the first page to be deleted.</li>
+<li><strong>to_page</strong> (<em>int</em>) &#8211; the last page to be deleted.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Document.copyPage">
+<code class="descname">copyPage</code><span class="sig-paren">(</span><em>pno</em>, <em>to = -1</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.copyPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>PDF only: Copies a page to another location.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pno</strong> (<em>int</em>) &#8211; the page to be copied. Number must be in range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">pno</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>.</li>
+<li><strong>to</strong> (<em>int</em>) &#8211; the page number in front of which to insert the copied page. To insert at end of document (default), specify a negative value.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Document.movePage">
+<code class="descname">movePage</code><span class="sig-paren">(</span><em>pno</em>, <em>to = -1</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.movePage" title="Permalink to this definition">¶</a></dt>
+<dd><p>PDF only: Moves (copies and then deletes) a page to another location.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pno</strong> (<em>int</em>) &#8211; the page to be moved. Number must be in range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">pno</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>.</li>
+<li><strong>to</strong> (<em>int</em>) &#8211; the page number in front of which to insert the moved page. To insert at end of document (default), specify a negative value. Must be <code class="docutils literal"><span class="pre">&lt;</span> <span class="pre">pno</span></code> or <code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">pno</span> <span class="pre">+</span> <span class="pre">1</span></code>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="Document.close">
 <code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Document.close" title="Permalink to this definition">¶</a></dt>
@@ -754,29 +834,28 @@
 
 </dd></dl>
 
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For methods that change the structure of a PDF (<code class="docutils literal"><span class="pre">insertPDF()</span></code>, <code class="docutils literal"><span class="pre">select()</span></code>, <code class="docutils literal"><span class="pre">copyPage()</span></code>, <code class="docutils literal"><span class="pre">deletePage()</span></code>, <code class="docutils literal"><span class="pre">deletePageRange()</span></code>), be aware that objects or properties in your program may have been invalidated or orphaned by them. Examples are <a class="reference internal" href="page.html#page"><span class="std std-ref">Page</span></a> objects, variables holding old page counts and the like. Remember to keep such variables up to date or delete orphaned objects.</p>
+</div>
 <div class="section" id="remarks-on-select">
 <h2>Remarks on <code class="docutils literal"><span class="pre">select()</span></code><a class="headerlink" href="#remarks-on-select" title="Permalink to this headline">¶</a></h2>
-<p>Page numbers in the list need not be unique nor be in any particular sequence. This makes the method a versatile utility to e.g. select only even or odd pages, re-arrange a document from back to front, duplicate it, and so forth. In combination with text extraction you can also omit / include pages with no text or a certain text, etc.</p>
-<p>You can execute several selections in a row. The document structure will be kept updated.</p>
-<div class="admonition caution">
-<p class="first admonition-title">Caution</p>
-<p class="last">This also means, that any document data from before this method must be assumed to be invalid. This is especially true for page objects, table of contents and the <code class="docutils literal"><span class="pre">pageCount</span></code> property. If you plan to use the <code class="docutils literal"><span class="pre">close()</span></code> method, make sure you have deleted any page object created before (by <code class="docutils literal"><span class="pre">page</span> <span class="pre">=</span> <span class="pre">None</span></code>).</p>
-</div>
-<p>Any of those changes will become permanent only with a <code class="docutils literal"><span class="pre">doc.save()</span></code>. If you have de-selected many pages, consider specifying <code class="docutils literal"><span class="pre">garbage</span></code> option to eventually reduce the resulting document&#8217;s size (when saving to a new file).</p>
+<p>Page numbers in the list need not be unique nor be in any particular sequence. This makes the method a versatile utility to e.g. select only the even or the odd pages, re-arrange a document from back to front, duplicate it, and so forth. In combination with text extraction you can also omit / include pages with no text or containing a certain text, etc.</p>
+<p>You can execute several selections in a row. The document structure will be up to date after each method execution.</p>
+<p>Any of those changes will become permanent only with a <code class="docutils literal"><span class="pre">doc.save()</span></code>. If you have de-selected many pages, consider specifying the <code class="docutils literal"><span class="pre">garbage</span></code> option to eventually reduce the resulting document&#8217;s size (when saving to a new file).</p>
 <p>Also note, that this method <strong>preserves all links, annotations and bookmarks</strong> that are still valid. In other words: deleting pages only deletes references pointing to de-selected pages.</p>
 </div>
 <div class="section" id="select-examples">
 <h2><code class="docutils literal"><span class="pre">select()</span></code> Examples<a class="headerlink" href="#select-examples" title="Permalink to this headline">¶</a></h2>
-<p>In general, any list containing integers within the document&#8217;s page range can be used as an argument. Here are just some illustrations.</p>
+<p>In general, any list of integers within the document&#8217;s page range can be used as an argument. Here are just some illustrations.</p>
 <p>Create a document copy deleting pages with no text:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
-<span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">pageCount</span><span class="p">))</span>             <span class="c1"># list of all pages</span>
+<span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)))</span>                  <span class="c1"># list of all pages</span>
 
-<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pages</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">getText</span><span class="p">():</span>                    <span class="c1"># contains no text</span>
-        <span class="n">r</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>                 <span class="c1"># remove page number from list</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="kc">None</span>                               <span class="c1"># delete page object</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">doc</span><span class="o">.</span><span class="n">getPageText</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>             <span class="c1"># contains no text</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>                        <span class="c1"># remove page number from list</span>
 
 <span class="n">doc</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>                              <span class="c1"># apply the list</span>
 <span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;out.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>           <span class="c1"># save the resulting PDF, OR</span>
@@ -813,7 +892,7 @@
 </div>
 <div class="section" id="setmetadata-example">
 <h2><code class="docutils literal"><span class="pre">setMetadata()</span></code> Example<a class="headerlink" href="#setmetadata-example" title="Permalink to this headline">¶</a></h2>
-<p>Clear metadata information. If you do this out of privacy / data protection concerns, make sure you save the document as a new file with <code class="docutils literal"><span class="pre">garbage</span></code> option specified. Only then the old <code class="docutils literal"><span class="pre">/Info</span></code> object will also be physically removed from the file:</p>
+<p>Clear metadata information. If you do this out of privacy / data protection concerns, make sure you save the document as a new file with <code class="docutils literal"><span class="pre">garbage</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> option specified. Only then the old <code class="docutils literal"><span class="pre">/Info</span></code> object will also be physically removed from the file:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">=</span><span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;pymupdf.pdf&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">metadata</span>
@@ -870,9 +949,9 @@
 <span class="n">doc1</span><span class="o">.</span><span class="n">setToC</span><span class="p">(</span><span class="n">toc1</span> <span class="o">+</span> <span class="n">toc2</span><span class="p">)</span>               <span class="c1"># now result has total TOC</span>
 </pre></div>
 </div>
-<p>Obviously, similar ways can be found in more general situations. Just watch out that hierarchy level steps do not exceed one. Inserting dummy entries before and after the <code class="docutils literal"><span class="pre">toc2</span></code> segment would heal such cases.</p>
+<p>Obviously, similar ways can be found in more general situations. Just watch out that hierarchy level steps in a row do not increase by more than one. Inserting dummy entries before and after the <code class="docutils literal"><span class="pre">toc2</span></code> segment would heal such cases.</p>
 <p><strong>(2) More examples:</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># insert 5 pages of doc2, where source page 21 becomes page 15 in doc1</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># insert 5 pages of doc2, where its page 21 becomes page 15 in doc1</span>
 <span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">from_page</span> <span class="o">=</span> <span class="mi">21</span><span class="p">,</span> <span class="n">to_page</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">start_at</span> <span class="o">=</span> <span class="mi">15</span><span class="p">)</span>
 
 <span class="c1"># same example, but source pages are rotated and in reversed order</span>
@@ -923,7 +1002,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 06. Oct 2016.
+      Last updated on 29. Oct 2016.
 
     </p>
   </div>

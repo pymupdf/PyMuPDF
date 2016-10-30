@@ -4011,6 +4011,83 @@ SWIGINTERN int fz_document_s_insertPDF(struct fz_document_s *self,struct fz_docu
             }
             return 0;
         }
+SWIGINTERN int fz_document_s_deletePage(struct fz_document_s *self,int pno){
+            pdf_document *pdf = pdf_specifics(gctx, self);
+            fz_try(gctx)
+            {
+                if (pdf == NULL)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a pdf document");
+                pdf_delete_page(gctx, pdf, pno);
+            }
+            fz_catch(gctx) {
+                return -1;
+            }
+            return 0;
+        }
+SWIGINTERN int fz_document_s_deletePageRange(struct fz_document_s *self,int from_page,int to_page){
+            pdf_document *pdf = pdf_specifics(gctx, self);
+            fz_try(gctx)
+            {
+                if (pdf == NULL)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a pdf document");
+                int pageCount = fz_count_pages(gctx, self);
+                int f = from_page;
+                int t = to_page;
+                if (f < 0) f = pageCount - 1;
+                if (t < 0) t = pageCount - 1;
+                if ((t >= pageCount) | (f > t))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "invalid page range");
+                int i = t + 1 - f;
+                while (i > 0)
+                {
+                    pdf_delete_page(gctx, pdf, f);
+                    i -= 1;
+                }
+            }
+            fz_catch(gctx) {
+                return -1;
+            }
+            return 0;
+        }
+SWIGINTERN int fz_document_s_copyPage(struct fz_document_s *self,int pno,int to){
+            pdf_document *pdf = pdf_specifics(gctx, self);
+            fz_try(gctx)
+            {
+                if (pdf == NULL)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a pdf document");
+                pdf_obj *page = pdf_lookup_page_obj(gctx, pdf, pno);
+                pdf_insert_page(gctx, pdf, to, page);
+            }
+            fz_catch(gctx) {
+                return -1;
+            }
+            return 0;
+        }
+SWIGINTERN int fz_document_s_movePage(struct fz_document_s *self,int pno,int to){
+            pdf_document *pdf = pdf_specifics(gctx, self);
+            fz_try(gctx)
+            {
+                if (pdf == NULL)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a pdf document");
+                int pageCount = fz_count_pages(gctx, self);
+                if ((pno < 0) | (pno >= pageCount))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "source page out of range");
+                int t = to;
+                if (t < 0) t = pageCount;
+                if ((t == pno) | (pno == t - 1))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "source and target too close");
+                pdf_obj *page = pdf_lookup_page_obj(gctx, pdf, pno);
+                pdf_insert_page(gctx, pdf, t, page);
+                if (pno < t)
+                    pdf_delete_page(gctx, pdf, pno);
+                else
+                    pdf_delete_page(gctx, pdf, pno+1);
+            }
+            fz_catch(gctx) {
+                return -1;
+            }
+            return 0;
+        }
 SWIGINTERN int fz_document_s_select(struct fz_document_s *self,PyObject *pyliste){
             /* preparatory stuff:
             (1) get underlying pdf document,
@@ -4253,7 +4330,7 @@ SWIGINTERN PyObject *fz_document_s_getPageFontList(struct fz_document_s *self,in
         }
 SWIGINTERN PyObject *fz_document_s__delToC(struct fz_document_s *self){
             PyObject *xrefs = PyList_New(0);         /* create Python list */
-        
+
             pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
             if (!pdf) return NULL;                          /* not a pdf      */
             pdf_obj *root, *olroot, *first;
@@ -4278,7 +4355,7 @@ SWIGINTERN PyObject *fz_document_s__delToC(struct fz_document_s *self){
 
             for (i = 0; i < objcount; i++)
                 pdf_delete_object(gctx, pdf, res[i]);     /* del all OL items */
-            
+
             for (i = 0; i < argc; i++)
             {
                 PyObject *xref = PyInt_FromLong((long) res[i]);
@@ -5821,6 +5898,189 @@ SWIGINTERN PyObject *_wrap_Document_insertPDF(PyObject *SWIGUNUSEDPARM(self), Py
   }
   {
     result = (int)fz_document_s_insertPDF(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
+    if(result < 0) {
+      PyErr_SetString(PyExc_ValueError, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document_deletePage(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Document_deletePage",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_deletePage" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document_deletePage" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  {
+    result = (int)fz_document_s_deletePage(arg1,arg2);
+    if(result < 0) {
+      PyErr_SetString(PyExc_ValueError, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document_deletePageRange(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  int arg2 = (int) -1 ;
+  int arg3 = (int) -1 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O|OO:Document_deletePageRange",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_deletePageRange" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  if (obj1) {
+    ecode2 = SWIG_AsVal_int(obj1, &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document_deletePageRange" "', argument " "2"" of type '" "int""'");
+    } 
+    arg2 = (int)(val2);
+  }
+  if (obj2) {
+    ecode3 = SWIG_AsVal_int(obj2, &val3);
+    if (!SWIG_IsOK(ecode3)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Document_deletePageRange" "', argument " "3"" of type '" "int""'");
+    } 
+    arg3 = (int)(val3);
+  }
+  {
+    result = (int)fz_document_s_deletePageRange(arg1,arg2,arg3);
+    if(result < 0) {
+      PyErr_SetString(PyExc_ValueError, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document_copyPage(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  int arg2 ;
+  int arg3 = (int) -1 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO|O:Document_copyPage",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_copyPage" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document_copyPage" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  if (obj2) {
+    ecode3 = SWIG_AsVal_int(obj2, &val3);
+    if (!SWIG_IsOK(ecode3)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Document_copyPage" "', argument " "3"" of type '" "int""'");
+    } 
+    arg3 = (int)(val3);
+  }
+  {
+    result = (int)fz_document_s_copyPage(arg1,arg2,arg3);
+    if(result < 0) {
+      PyErr_SetString(PyExc_ValueError, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document_movePage(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  int arg2 ;
+  int arg3 = (int) -1 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO|O:Document_movePage",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_movePage" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document_movePage" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  if (obj2) {
+    ecode3 = SWIG_AsVal_int(obj2, &val3);
+    if (!SWIG_IsOK(ecode3)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Document_movePage" "', argument " "3"" of type '" "int""'");
+    } 
+    arg3 = (int)(val3);
+  }
+  {
+    result = (int)fz_document_s_movePage(arg1,arg2,arg3);
     if(result < 0) {
       PyErr_SetString(PyExc_ValueError, gctx->error->message);
       return NULL;
@@ -11263,6 +11523,10 @@ static PyMethodDef SwigMethods[] = {
 		"insertPDF(PDFsrc, from_page, to_page, start_at, rotate, links) -> int\n"
 		"Insert page range [from, to] of source PDF, starting as page number start_at.\n"
 		""},
+	 { (char *)"Document_deletePage", _wrap_Document_deletePage, METH_VARARGS, (char *)"Document_deletePage(Document self, int pno) -> int"},
+	 { (char *)"Document_deletePageRange", _wrap_Document_deletePageRange, METH_VARARGS, (char *)"Document_deletePageRange(Document self, int from_page=-1, int to_page=-1) -> int"},
+	 { (char *)"Document_copyPage", _wrap_Document_copyPage, METH_VARARGS, (char *)"Document_copyPage(Document self, int pno, int to=-1) -> int"},
+	 { (char *)"Document_movePage", _wrap_Document_movePage, METH_VARARGS, (char *)"Document_movePage(Document self, int pno, int to=-1) -> int"},
 	 { (char *)"Document_select", _wrap_Document_select, METH_VARARGS, (char *)"select(list) -> int; build sub-pdf with listed pages"},
 	 { (char *)"Document__readPageText", _wrap_Document__readPageText, METH_VARARGS, (char *)"Document__readPageText(Document self, int pno, int output=0) -> struct fz_buffer_s *"},
 	 { (char *)"Document_getPermits", _wrap_Document_getPermits, METH_VARARGS, (char *)"getPermits(self) -> dictionary containing permissions"},

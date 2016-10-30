@@ -28,7 +28,11 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 :meth:`Document.select`               PDF only: select a subset of pages
 :meth:`Document.setMetadata`          PDF only: set the metadata
 :meth:`Document.setToC`               PDF only: replace the table of contents (TOC)
-:meth:`Document.insertPDF`            insert a page range from another PDF
+:meth:`Document.insertPDF`            PDF only: insert a page range from another PDF
+:meth:`Document.deletePage`           PDF only: delete a page by its number
+:meth:`Document.deletePageRange`      PDF only: delete a range of pages
+:meth:`Document.copyPage`             PDF only: copy a page to another location
+:meth:`Document.movePage`             PDF only: move a page to another location
 :attr:`Document.isClosed`             has document been closed?
 :attr:`Document.outline`              first `Outline` item
 :attr:`Document.name`                 filename of document
@@ -230,24 +234,24 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
     .. method:: save(outfile, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0)
 
-      PDF documents only: Saves the **current content of the document** under the name ``outfile`` (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successful ``authenticate``, a decrypted copy will be saved, and, in addition (even without optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed methods ``select()``, ``setMetadata()``, ``setToC()`` or ``insertPDF()``, their results will also be reflected in the saved version.
+      PDF documents only: Saves the **current content of the document** under the name ``outfile`` (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successful ``authenticate``, a decrypted copy will be saved, and, in addition (even without optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed any modifying methods like ``select()``, ``setMetadata()``, ``setToC()``, etc., their results will also be reflected in the saved version.
 
-      :param `outfile`: The file name to save to. Must be different from the original value value if ``incremental=False``. When saving incrementally, ``garbage`` and ``linear`` **must be** ``False`` and ``outfile`` **must equal** the original filename.
+      :param `outfile`: The file name to save to. Must be different from the original value value if ``incremental=False``. When saving incrementally, ``garbage`` and ``linear`` **must be** ``False / 0`` and ``outfile`` **must equal** the original filename (for convenience use ``doc.name``).
       :type `outfile`: string
 
       :param `garbage`: Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition to 1, compact xref table, 3 = in addition to 2, merge duplicate objects, 4 = in addition to 3, check streams for duplication. Excludes ``incremental``.
       :type `garbage`: int
 
-      :param `clean`: Clean content streams: 0 = False, 1 = True.
+      :param `clean`: Clean content streams: 0 / False, 1 / True.
       :type `clean`: int
 
-      :param `deflate`: Deflate uncompressed streams: 0 = False, 1 = True.
+      :param `deflate`: Deflate uncompressed streams: 0 / False, 1 / True.
       :type `deflate`: int
 
-      :param `incremental`: Only save changed objects: 0 = False, 1 = True. Excludes ``garbage`` and ``linear``. Cannot be used for decrypted files and for files opened in repair mode (``openErrCode > 0``). In these cases saving to a new file is required.
+      :param `incremental`: Only save changed objects: 0 / False, 1 / True. Excludes ``garbage`` and ``linear``. Cannot be used for decrypted files and for files opened in repair mode (``openErrCode > 0``). In these cases saving to a new file is required.
       :type `incremental`: int
 
-      :param `ascii`: Where possible make the output ASCII: 0 = False, 1 = True.
+      :param `ascii`: Where possible make the output ASCII: 0 / False, 1 / True.
       :type `ascii`: int
 
       :param `expand`: Decompress contents: 0 = none, 1 = images, 2 = fonts, 255 = all. This convenience option generates a decompressed file version that can be better read by some other programs.
@@ -263,7 +267,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       PDF documents only: Copies the page range **[from_page, to_page]** (including both) of the PDF document object ``doc2`` into the current PDF. ``from_page`` will start with page number ``start_at``. Negative values can be used to indicate default values. All pages thus copied will be rotated as specified. Links can be excluded in the target, see below. All page numbers are zero-based.
 
-      :param `doc2`: An opened PDF document. The ``doc2`` object **must not be the current document**. It may, however, refer to the same PDF file opened as a separate ``fitz.Document``.
+      :param `doc2`: An opened PDF document. The ``doc2`` object **must not be the current document**. It may, however, refer to the same PDF file opened as a separate ``fitz.Document``. The reason is, that separate documents have their own separate buffer areas and are thus treated as different beasts that just happen to have the same filename.
       :type `doc2`: ``Document``
 
       :param `from_page`: First page number in ``doc2``. Default is zero.
@@ -284,9 +288,46 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
       :rtype: int
       :returns: Zero upon successful execution.
 
-    .. note:: If ``from_page > to_page``, pages will be copied back to front. If ``0 <= from_page == to_page``, then one page will be copied.
+    .. note:: If ``from_page > to_page``, pages will be copied in reverse order. If ``0 <= from_page == to_page``, then one page will be copied.
 
-    .. note:: The functionality of this method is a conversion of the MuPDF CLI utility ``mutool merge``. Due to its current restrictions, ``doc2`` annotations and bookmarks **will not be copied**. Links however **will be copied** (kind :data:`LINK_GOTO` links only of course, if their destination is within the copied page range). It is easy to recover a table of contents for the resulting document. Look at the examples below and at program ``PDFjoiner.py`` in the *examples* directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.
+    .. note:: The functionality of this method is a conversion of the MuPDF CLI utility ``mutool merge``. Due to its current restrictions, ``doc2`` annotations and bookmarks **will not be copied**. Links however **will be copied** (kind :data:`LINK_GOTO` links of course only then, if their destination is within the copied page range). It is easy to recover a table of contents for the resulting document. Look at the examples below and at program ``PDFjoiner.py`` in the *examples* directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.
+
+    .. method:: deletePage(pno)
+
+      PDF only: Deletes a page specified by its zero-based number in range ``0 <= pno < pageCount``.
+
+      :param `pno`: the page to be deleted.
+      :type `pno`: int
+
+    .. method:: deletePageRange(from_page = -1, to_page = -1)
+
+      PDF only: Deletes a range of pages specified as zero-based page numbers. Any negative value will be replaced with ``pageCount - 1``. After that, condition ``from_page <= to_page < pageCount`` must be true. If the parameters are equal, one page will be deleted.
+
+      :param `from_page`: the first page to be deleted.
+      :type `from_page`: int
+
+      :param `to_page`: the last page to be deleted.
+      :type `to_page`: int
+
+    .. method:: copyPage(pno, to = -1)
+
+      PDF only: Copies a page to another location.
+
+      :param `pno`: the page to be copied. Number must be in range ``0 <= pno < pageCount``.
+      :type `pno`: int
+
+      :param `to`: the page number in front of which to insert the copied page. To insert at end of document (default), specify a negative value.
+      :type `to`: int
+
+    .. method:: movePage(pno, to = -1)
+
+      PDF only: Moves (copies and then deletes) a page to another location.
+
+      :param `pno`: the page to be moved. Number must be in range ``0 <= pno < pageCount``.
+      :type `pno`: int
+
+      :param `to`: the page number in front of which to insert the moved page. To insert at end of document (default), specify a negative value. Must be ``< pno`` or ``> pno + 1``.
+      :type `to`: int
 
     .. method:: close()
 
@@ -360,34 +401,34 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       :rtype: string
 
+.. NOTE:: For methods that change the structure of a PDF (``insertPDF()``, ``select()``, ``copyPage()``, ``deletePage()``, ``deletePageRange()``), be aware that objects or properties in your program may have been invalidated or orphaned by them. Examples are :ref:`Page` objects, variables holding old page counts and the like. Remember to keep such variables up to date or delete orphaned objects.
+
+
 Remarks on ``select()``
 ------------------------
 
-Page numbers in the list need not be unique nor be in any particular sequence. This makes the method a versatile utility to e.g. select only even or odd pages, re-arrange a document from back to front, duplicate it, and so forth. In combination with text extraction you can also omit / include pages with no text or a certain text, etc.
+Page numbers in the list need not be unique nor be in any particular sequence. This makes the method a versatile utility to e.g. select only the even or the odd pages, re-arrange a document from back to front, duplicate it, and so forth. In combination with text extraction you can also omit / include pages with no text or containing a certain text, etc.
 
-You can execute several selections in a row. The document structure will be kept updated.
+You can execute several selections in a row. The document structure will be up to date after each method execution.
 
-.. CAUTION:: This also means, that any document data from before this method must be assumed to be invalid. This is especially true for page objects, table of contents and the ``pageCount`` property. If you plan to use the ``close()`` method, make sure you have deleted any page object created before (by ``page = None``).
-
-Any of those changes will become permanent only with a ``doc.save()``. If you have de-selected many pages, consider specifying ``garbage`` option to eventually reduce the resulting document's size (when saving to a new file).
+Any of those changes will become permanent only with a ``doc.save()``. If you have de-selected many pages, consider specifying the ``garbage`` option to eventually reduce the resulting document's size (when saving to a new file).
 
 Also note, that this method **preserves all links, annotations and bookmarks** that are still valid. In other words: deleting pages only deletes references pointing to de-selected pages.
 
 ``select()`` Examples
 ----------------------------------------
 
-In general, any list containing integers within the document's page range can be used as an argument. Here are just some illustrations.
+In general, any list of integers within the document's page range can be used as an argument. Here are just some illustrations.
 
 Create a document copy deleting pages with no text:
 ::
  import fitz
  doc = fitz.open("any.pdf")
- r = list(range(doc.pageCount))             # list of all pages
+ r = list(range(len(doc)))                  # list of all pages
 
- for p in fitz.Pages(doc):
-     if not p.getText():                    # contains no text
-         r.remove(p.number)                 # remove page number from list
-     p = None                               # delete page object
+ for i in range(len(doc)):
+     if not doc.getPageText(i):             # contains no text
+         r.remove(i)                        # remove page number from list
 
  doc.select(r)                              # apply the list
  doc.save("out.pdf", garbage = 4)           # save the resulting PDF, OR
@@ -424,7 +465,7 @@ Create document copy in reverse page order (well, don't try with a million pages
 
 ``setMetadata()`` Example
 ----------------------------------------
-Clear metadata information. If you do this out of privacy / data protection concerns, make sure you save the document as a new file with ``garbage`` option specified. Only then the old ``/Info`` object will also be physically removed from the file:
+Clear metadata information. If you do this out of privacy / data protection concerns, make sure you save the document as a new file with ``garbage > 0`` option specified. Only then the old ``/Info`` object will also be physically removed from the file:
 ::
  >>> import fitz
  >>> doc=fitz.open("pymupdf.pdf")
@@ -480,11 +521,11 @@ This shows how to modify or add a table of contents:
      t[2] += pages1                     # by old len(doc1)
  doc1.setToC(toc1 + toc2)               # now result has total TOC
 
-Obviously, similar ways can be found in more general situations. Just watch out that hierarchy level steps do not exceed one. Inserting dummy entries before and after the ``toc2`` segment would heal such cases.
+Obviously, similar ways can be found in more general situations. Just watch out that hierarchy level steps in a row do not increase by more than one. Inserting dummy entries before and after the ``toc2`` segment would heal such cases.
 
 **(2) More examples:**
 ::
- # insert 5 pages of doc2, where source page 21 becomes page 15 in doc1
+ # insert 5 pages of doc2, where its page 21 becomes page 15 in doc1
  doc1.insertPDF(doc2, from_page = 21, to_page = 25, start_at = 15)
 
  # same example, but source pages are rotated and in reversed order

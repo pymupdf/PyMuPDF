@@ -350,12 +350,162 @@ struct fz_document_s
             fz_try(gctx)
             {
                 if (pdfout == NULL)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "target is not a PDF document");
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "target document not a PDF");
                 if (pdfsrc == NULL)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "source is not a PDF document");
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "source document not a PDF");
                 merge_range(pdfout, pdfsrc, fp, tp, sa, rotate);
             }
             fz_catch(gctx){
+                return -1;
+            }
+            return 0;
+        }
+
+        /***********************************************************************
+        Delete a page from a PDF given by its number
+        ***********************************************************************/
+        %exception deletePage
+        {
+            $action
+            if(result < 0) {
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
+                return NULL;
+            }
+        }
+        %pythonprepend deletePage %{
+            if self.isClosed or self.isEncrypted:
+                raise ValueError("operation on closed or encrypted document")
+        %}
+        int deletePage(int pno)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            fz_try(gctx)
+            {
+                if (pdf == NULL)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a pdf document");
+                int pageCount = fz_count_pages(gctx, $self);
+                if ((pno < 0) | (pno >= pageCount))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range");
+                pdf_delete_page(gctx, pdf, pno);
+            }
+            fz_catch(gctx) {
+                return -1;
+            }
+            return 0;
+        }
+
+        /***********************************************************************
+        Delete a page range from a PDF
+        ***********************************************************************/
+        %exception deletePageRange
+        {
+            $action
+            if(result < 0) {
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
+                return NULL;
+            }
+        }
+        %pythonprepend deletePageRange %{
+            if self.isClosed or self.isEncrypted:
+                raise ValueError("operation on closed or encrypted document")
+        %}
+        int deletePageRange(int from_page = -1, int to_page = -1)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            fz_try(gctx)
+            {
+                if (pdf == NULL)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                int pageCount = fz_count_pages(gctx, $self);
+                int f = from_page;
+                int t = to_page;
+                if (f < 0) f = pageCount - 1;
+                if (t < 0) t = pageCount - 1;
+                if ((t >= pageCount) | (f > t))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "invalid page range");
+                int i = t + 1 - f;
+                while (i > 0)
+                {
+                    pdf_delete_page(gctx, pdf, f);
+                    i -= 1;
+                }
+            }
+            fz_catch(gctx) {
+                return -1;
+            }
+            return 0;
+        }
+
+        /***********************************************************************
+        Copy a page from a PDF to another location of it
+        ***********************************************************************/
+        %exception copyPage
+        {
+            $action
+            if(result < 0) {
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
+                return NULL;
+            }
+        }
+        %pythonprepend copyPage %{
+            if self.isClosed or self.isEncrypted:
+                raise ValueError("operation on closed or encrypted document")
+        %}
+        int copyPage(int pno, int to = -1)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            fz_try(gctx)
+            {
+                if (pdf == NULL)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                if ((pno < 0) | (pno >= pageCount))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "source page out of range");
+                pdf_obj *page = pdf_lookup_page_obj(gctx, pdf, pno);
+                pdf_insert_page(gctx, pdf, to, page);
+            }
+            fz_catch(gctx) {
+                return -1;
+            }
+            return 0;
+        }
+
+        /***********************************************************************
+        Move a page from a PDF to another location of it
+        ***********************************************************************/
+        %exception movePage
+        {
+            $action
+            if(result < 0) {
+                PyErr_SetString(PyExc_ValueError, gctx->error->message);
+                return NULL;
+            }
+        }
+        %pythonprepend movePage %{
+            if self.isClosed or self.isEncrypted:
+                raise ValueError("operation on closed or encrypted document")
+        %}
+        int movePage(int pno, int to = -1)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            fz_try(gctx)
+            {
+                if (pdf == NULL)
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                int pageCount = fz_count_pages(gctx, $self);
+                if ((pno < 0) | (pno >= pageCount))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "source page out of range");
+                int t = to;
+                if (t < 0) t = pageCount;
+                if ((t == pno) | (pno == t - 1))
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "source and target too close");
+                pdf_obj *page = pdf_lookup_page_obj(gctx, pdf, pno);
+                pdf_insert_page(gctx, pdf, t, page);
+                if (pno < t)
+                    pdf_delete_page(gctx, pdf, pno);
+                else
+                    pdf_delete_page(gctx, pdf, pno+1);
+            }
+            fz_catch(gctx) {
                 return -1;
             }
             return 0;
@@ -438,6 +588,9 @@ struct fz_document_s
             return 0;
         }
 
+        /***********************************************************************
+        Extract the text of a page given its number.
+        ***********************************************************************/
         %exception _readPageText
         {
             $action
@@ -720,7 +873,7 @@ struct fz_document_s
         PyObject *_delToC()
         {
             PyObject *xrefs = PyList_New(0);         /* create Python list */
-        
+
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
             if (!pdf) return NULL;                          /* not a pdf      */
             pdf_obj *root, *olroot, *first;
@@ -745,7 +898,7 @@ struct fz_document_s
 
             for (i = 0; i < objcount; i++)
                 pdf_delete_object(gctx, pdf, res[i]);     /* del all OL items */
-            
+
             for (i = 0; i < argc; i++)
             {
                 PyObject *xref = PyInt_FromLong((long) res[i]);
@@ -754,10 +907,9 @@ struct fz_document_s
             return xrefs;
         }
 
-/*******************************************************************************
-Get Xref Number of Outline Root
-creates OL root if necessary
-*******************************************************************************/
+        /**********************************************************************
+        Get Xref Number of Outline Root, create it if missing
+        **********************************************************************/
         %exception _getOLRootNumber
         {
             $action
@@ -793,9 +945,9 @@ creates OL root if necessary
             return pdf_to_num(gctx, olroot);
         }
 
-/*******************************************************************************
-Get New Xref Number
-*******************************************************************************/
+        /**********************************************************************
+        Get a New Xref Number
+        **********************************************************************/
         %exception _getNewXref
         {
             $action
@@ -882,8 +1034,7 @@ Get Object String by Xref Number
         }
 
 /*******************************************************************************
-Update an Xref Number with a new Object
-Object given as a string
+Update an Xref Number with a new Object given as a string
 *******************************************************************************/
         %exception _updateObject
         {

@@ -355,16 +355,19 @@ You can write it&#8217;s image to files, extract text from it or search for text
 </div>
 <div class="section" id="pdf-output">
 <h2>PDF Output<a class="headerlink" href="#pdf-output" title="Permalink to this headline">¶</a></h2>
-<p>Since version 1.9, PyMuPDF provides several options to modify PDF documents. The <a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> method automatically stores a document in its current state on disk. Output is supported for PDF documents only.</p>
+<p>Since version 1.9, PyMuPDF provides several options to modify PDF documents (only). The <a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> method automatically stores a document in its current (potentially modified) state on disk.</p>
 <p>A PDF document can be modified unnoticed by the user in two ways:</p>
 <ul class="simple">
 <li>During open, integrity checks are used to determine the health of the PDF structure. Any errors will automatically be corrected to present a repaired document in memory for further processing. If this is the case, the document counts as being modified.</li>
-<li>After a document has been decrypted, the document in memory has obviously changed and also counts as being modified.</li>
+<li>After a document has been decrypted, the document in memory obviously has changed and also counts as being modified.</li>
 </ul>
-<p>In these cases, the save method will store a repaired and / or decrypted version, and saving must occur to a new file.</p>
+<p>In these cases, the save method will store a repaired and / or decrypted version, and saving <strong>must occur to a new file</strong>.</p>
 <p>The following describe some more intentional ways to manipulate PDF documents. Beyond these, you can also modify the table of contents and meta information.</p>
 <div class="section" id="re-arranging-and-deleting-pages">
 <h3>Re-arranging and Deleting Pages<a class="headerlink" href="#re-arranging-and-deleting-pages" title="Permalink to this headline">¶</a></h3>
+<p>There are several ways to manipulate the page tree of a PDF:</p>
+<p>Methods <a class="reference internal" href="document.html#Document.deletePage" title="Document.deletePage"><code class="xref py py-meth docutils literal"><span class="pre">Document.deletePage()</span></code></a> and <a class="reference internal" href="document.html#Document.deletePageRange" title="Document.deletePageRange"><code class="xref py py-meth docutils literal"><span class="pre">Document.deletePageRange()</span></code></a> delete a page (range) specified by zero-based number(s).</p>
+<p>Methods <a class="reference internal" href="document.html#Document.copyPage" title="Document.copyPage"><code class="xref py py-meth docutils literal"><span class="pre">Document.copyPage()</span></code></a> and <a class="reference internal" href="document.html#Document.movePage" title="Document.movePage"><code class="xref py py-meth docutils literal"><span class="pre">Document.movePage()</span></code></a> copy or move a page to another location of the document.</p>
 <p>Method <a class="reference internal" href="document.html#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a> accepts a list of integers as argument. These integers must be in the range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>. When executed, all pages not occurring in this list will be deleted. Only pages that do occur will remain - <strong>in the sequence specified and as many times as specified</strong>.</p>
 <p>So you can easily create sub-PDFs of the first / last 10 pages, only odd or even pages (for doing double-sided printing), pages that do or do not contain a certain text, ... whatever you may think of.</p>
 <p>The saved sub-document will contain all still valid links, annotations and bookmarks.</p>
@@ -381,15 +384,15 @@ the repository?s <em>example</em> directory.</p>
 </div>
 <div class="section" id="saving">
 <h3>Saving<a class="headerlink" href="#saving" title="Permalink to this headline">¶</a></h3>
-<p>As mentioned before, <code class="docutils literal"><span class="pre">save()</span></code> will automatically save a decrypted and repaired copy.</p>
+<p>As mentioned before, <code class="docutils literal"><span class="pre">save()</span></code> will automatically save a decrypted and / or repaired copy.</p>
 <p>If you altered something, then the resulting document will be saved.</p>
 <p>Since MuPDF 1.9, you can also write changes back to the original file by specifying <code class="docutils literal"><span class="pre">incremental</span> <span class="pre">=</span> <span class="pre">True</span></code>. This process is <strong>extremely fast</strong>, since any changes are <strong>appended to the original file</strong> - it will not be rewritten as a whole.</p>
-<p><a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> supports all options of MuPDF&#8217;s command line utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>, see the following table (corresponding mutool clean option indicated as &#8220;mco&#8221;).</p>
+<p><a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> supports all options of MuPDF&#8217;s command line utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>, see the following table (corresponding <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code> option is indicated as &#8220;mco&#8221;).</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="24%" />
-<col width="9%" />
-<col width="67%" />
+<col width="23%" />
+<col width="12%" />
+<col width="65%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Option</strong></th>
@@ -444,7 +447,7 @@ the repository?s <em>example</em> directory.</p>
 </tr>
 <tr class="row-odd"><td>incremental = 1</td>
 <td>n/a</td>
-<td>only append changes to the original</td>
+<td>append changes to the original</td>
 </tr>
 </tbody>
 </table>
@@ -508,7 +511,7 @@ the repository?s <em>example</em> directory.</p>
 <span class="c1"># do further processing</span>
 </pre></div>
 </div>
-<p>With the command line utility <code class="docutils literal"><span class="pre">pdftk</span></code> a similar result can be achieved, see <a class="reference external" href="http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/">here</a>. It even supports buffers for input <strong>and</strong> output. However you must invoke it as a separate process via <code class="docutils literal"><span class="pre">subprocess.Popen</span></code>, using stdin and stdout as communication vehicles.</p>
+<p>With the command line utility <code class="docutils literal"><span class="pre">pdftk</span></code> (<a class="reference external" href="https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/">available</a> for Windows only) a similar result can be achieved, see <a class="reference external" href="http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/">here</a>. It even supports buffers for input <strong>and</strong> output. However, you must invoke it as a separate process via <code class="docutils literal"><span class="pre">subprocess.Popen</span></code>, using stdin and stdout as communication vehicles.</p>
 </div>
 </div>
 
@@ -532,7 +535,7 @@ the repository?s <em>example</em> directory.</p>
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 06. Oct 2016.
+      Last updated on 29. Oct 2016.
 
     </p>
   </div>

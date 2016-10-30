@@ -98,7 +98,7 @@ except __builtin__.Exception:
 
 VersionFitz = "1.9a"          
 VersionBind = "1.9.2"         
-VersionDate = "2016-10-02 10:55:36"        
+VersionDate = "2016-10-29 11:25:54"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -308,6 +308,50 @@ class Document(_object):
 
 
         return val
+
+
+    def deletePage(self, pno):
+        """deletePage(Document self, int pno) -> int"""
+
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation on closed or encrypted document")
+        if pno < 0 or pno >= self.pageCount:
+            raise ValueError("page number out of range")
+
+
+        return _fitz.Document_deletePage(self, pno)
+
+
+    def deletePageRange(self, from_page=-1, to_page=-1):
+        """deletePageRange(Document self, int from_page=-1, int to_page=-1) -> int"""
+
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation on closed or encrypted document")
+
+
+        return _fitz.Document_deletePageRange(self, from_page, to_page)
+
+
+    def copyPage(self, pno, to=-1):
+        """copyPage(Document self, int pno, int to=-1) -> int"""
+
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation on closed or encrypted document")
+        if pno < 0 or pno >= self.pageCount:
+            raise ValueError("source page number out of range")
+
+
+        return _fitz.Document_copyPage(self, pno, to)
+
+
+    def movePage(self, pno, to=-1):
+        """movePage(Document self, int pno, int to=-1) -> int"""
+
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation on closed or encrypted document")
+
+
+        return _fitz.Document_movePage(self, pno, to)
 
 
     def select(self, pyliste):
