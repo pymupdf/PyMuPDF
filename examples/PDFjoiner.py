@@ -543,7 +543,8 @@ def make_pdf(dlg):
 # Main program
 #
 #==============================================================================
-assert wx.version() >= "3.0.2"
+assert wx.version() >= "3.0.2", "need at least wxPython v3.0.2"
+assert fitz.VersionBind >= "1.9.2", "need at least PyMuPDF v1.9.2"
 app = None
 app = wx.App()
 this_dir = os.getcwd()

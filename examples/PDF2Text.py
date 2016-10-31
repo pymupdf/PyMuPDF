@@ -22,15 +22,15 @@ import fitz
 import sys
 
 ENCODING = "utf-8"
-
+assert len(sys.argv) == 2, "need filename as parameter"
 #==============================================================================
 # Main Program
 #==============================================================================
 ifile = sys.argv[1]
 ofile = ifile + ".txt"
 
-doc = fitz.Document(ifile)
-pages = doc.pageCount
+doc = fitz.open(ifile)
+pages = len(doc)
 
 fout = open(ofile,"w")
 

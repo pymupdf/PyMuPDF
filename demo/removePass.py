@@ -7,19 +7,17 @@
 import fitz
 import sys
 
-if len(sys.argv) != 4:
-    print('Usage: %s <input file> <password> <output file>' % sys.argv[0])
-    exit(0)
+assert len(sys.argv) == 4, \
+ 'Usage: %s <input file> <password> <output file>' % sys.argv[0]
 
 doc = fitz.Document(sys.argv[1])
 #the document should be password protected
-assert doc.needsPass
+assert doc.needsPass, sys.argv[0] + " not password protected"
 
 #decrypt the document
 #return non-zero if failed
-if not doc.authenticate(sys.argv[2]):
-    print('cannot decrypt %s with password %s' % (sys.argv[1], sys.argv[2]))
-    exit(1)
+assert doc.authenticate(sys.argv[2]), \
+ 'cannot decrypt %s with password "%s"' % (sys.argv[1], sys.argv[2])
 
 #save as a new PDF
 doc.save(sys.argv[3])

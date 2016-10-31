@@ -14,9 +14,7 @@ import sys, time, re
 checkXO = r"/Type(?= */XObject)"       # finds "/Type/XObject"   
 checkIM = r"/Subtype(?= */Image)"      # finds "/Subtype/Image"
 
-if len(sys.argv) != 2:
-    print('Usage: %s <input file>' % sys.argv[0])
-    exit(0)
+assert len(sys.argv) == 2, 'Usage: %s <input file>' % sys.argv[0]
     
 t0 = time.clock()
 doc = fitz.open(sys.argv[1])

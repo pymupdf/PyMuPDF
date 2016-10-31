@@ -2,9 +2,7 @@
 import fitz
 import sys
 
-if len(sys.argv) != 3:
-    print('Usage: %s <input file> <page num>' % sys.argv[0])
-    exit(0)
+assert len(sys.argv) == 3, 'Usage: %s <input file> <page num>' % sys.argv[0]
 
 #get the page
 d = fitz.Document(sys.argv[1])

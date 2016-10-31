@@ -1076,22 +1076,25 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
     '''Insert links contained in copied page range into destination PDF.
     Parameter values **must** equal those of method insertPDF() - which must have been previously executed.'''
     #--------------------------------------------------------------------------
+    # define skeletons for /Annots object texts
+    #--------------------------------------------------------------------------
+    annot_goto ='''<</Dest[%s 0 R /XYZ %s %s 0]/Rect[%s]/Type/Annot
+    /Border[0 0 0]/Subtype/Link>>'''
+
+    annot_gotor = '''<</A<</D[%s /XYZ %s %s 0]/F<</F(%s)/UF(%s)/Type/Filespec
+    >>/S/GoToR>>/Rect[%s]/Type/Annot/Border[0 0 0]/Subtype/Link>>'''
+
+    annot_launch = '''<</A<</F<</F(%s)/UF(%s)/Type/Filespec>>/S/Launch
+    >>/Rect[%s]/Type/Annot/Border[0 0 0]/Subtype/Link>>'''
+
+    annot_uri = '''<</A<</S/URI/URI(%s)/Type/Action>>/Rect[%s]
+    /Type/Annot/Border[0 0 0]/Subtype/Link>>'''
+
+    #--------------------------------------------------------------------------
     # internal function to create the actual "/Annots" object string
     #--------------------------------------------------------------------------
     def cre_annot(lnk, xref_dst, list_src, height):
         '''Create annotation object string for a passed-in link.'''
-
-        annot_goto ='''<</Dest[%s 0 R /XYZ %s %s 0]/Rect[%s]/Type/Annot
-    /Border[0 0 0]/Subtype/Link>>'''
-
-        annot_gotor = '''<</A<</D[%s /XYZ %s %s 0]/F<</F(%s)/UF(%s)/Type/Filespec
-    >>/S/GoToR>>/Rect[%s]/Type/Annot/Border[0 0 0]/Subtype/Link>>'''
-
-        annot_launch = '''<</A<</F<</F(%s)/UF(%s)/Type/Filespec>>/S/Launch
-    >>/Rect[%s]/Type/Annot/Border[0 0 0]/Subtype/Link>>'''
-
-        annot_uri = '''<</A<</S/URI/URI(%s)/Type/Action>>/Rect[%s]
-    /Type/Annot/Border[0 0 0]/Subtype/Link>>'''
 
         # "from" rectangle is always there. Note: y-coords are from bottom!
         r = lnk["from"]
@@ -1163,7 +1166,7 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
         p_txt = doc1._getObjectString(xref_dst[i])
         for l in links:
             if l["type"] == "goto" and (l["page"] not in list_src):
-                continue
+                continue          # target not in copied pages
             annot_text = cre_annot(l, xref_dst, list_src, height)
             if not annot_text:
                 raise ValueError("cannot create /Annot for type: " + l["type"])

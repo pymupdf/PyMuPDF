@@ -26,6 +26,9 @@ import fitz
 import wx
 import os
 from ParseTab import ParseTab
+assert wx.version() >= "3.0.2", "need at least wxPython v3.0.2"
+assert fitz.VersionBind >= "1.9.2", "need at least PyMuPDF v1.9.2"
+
 try:
     from PageFormat import FindFit
 except:

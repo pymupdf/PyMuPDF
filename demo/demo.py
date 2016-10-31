@@ -6,16 +6,11 @@
 import fitz
 import sys
 
-if len(sys.argv) != 7:
-    print('Usage: %s <filename> <page> <zoom> <degree> <output filename> <needle>' % sys.argv[0])
-    exit(0)
+assert len(sys.argv) == 7,\
+ 'Usage: %s <filename> <page> <zoom> <degree> <output filename> <needle>' % sys.argv[0]
 
 # create a document object from the file path
 doc = fitz.Document(sys.argv[1])
-# SWIG returns high level python proxy class and .this points to the underlying C object
-if not doc.this:
-    print('cannot open document')
-    exit(1)
 
 '''
 The metadata is a python dict, whose keys are:

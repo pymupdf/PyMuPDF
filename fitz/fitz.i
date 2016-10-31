@@ -36,7 +36,7 @@ struct DeviceWrapper {
 %include helpers.i
 
 /*******************************************************************************
-out-typemap: convert return fz_buffers to strings and drop them
+out-typemap: convert a return fz_buffer to string, then drop it
 *******************************************************************************/
 %typemap(out) struct fz_buffer_s * {
     $result = SWIG_FromCharPtrAndSize((const char *)$1->data, $1->len);
@@ -303,7 +303,7 @@ struct fz_document_s
 
 
         /***********************************************************************
-        Insert pages from a source PDF to this PDF.
+        Insert pages from a source PDF into this PDF.
         For reconstructing the links (_do_links method), we must save the
         insertion point (start_at) if it was specified as -1.
         ***********************************************************************/
@@ -458,6 +458,7 @@ struct fz_document_s
             {
                 if (pdf == NULL)
                     fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                int pageCount = fz_count_pages(gctx, $self);
                 if ((pno < 0) | (pno >= pageCount))
                     fz_throw(gctx, FZ_ERROR_GENERIC, "source page out of range");
                 pdf_obj *page = pdf_lookup_page_obj(gctx, pdf, pno);
@@ -969,9 +970,9 @@ struct fz_document_s
             return pdf_create_object(gctx, pdf);
         }
 
-/*******************************************************************************
-Get Length of Xref
-*******************************************************************************/
+        /**********************************************************************
+        Get Length of Xref
+        **********************************************************************/
         %exception _getXrefLength
         {
             $action
@@ -993,9 +994,9 @@ Get Length of Xref
             return pdf_xref_len(gctx, pdf);
         }
 
-/*******************************************************************************
-Get Object String by Xref Number
-*******************************************************************************/
+        /**********************************************************************
+        Get Object String by Xref Number
+        **********************************************************************/
         %exception _getObjectString
         {
             $action
@@ -1033,9 +1034,9 @@ Get Object String by Xref Number
             return res;
         }
 
-/*******************************************************************************
-Update an Xref Number with a new Object given as a string
-*******************************************************************************/
+        /**********************************************************************
+        Update an Xref Number with a new Object given as a string
+        **********************************************************************/
         %exception _updateObject
         {
             $action
@@ -1066,9 +1067,9 @@ Update an Xref Number with a new Object given as a string
             return 0;
         }
 
-/*******************************************************************************
-Add or update metadata with provided raw string
-*******************************************************************************/
+        /**********************************************************************
+        Add or update metadata with provided raw string
+        **********************************************************************/
         %exception _setMetadata
         {
             $action
@@ -1113,9 +1114,9 @@ Add or update metadata with provided raw string
             return 0;
         }
 
-/*******************************************************************************
-Initialize document: set outline and metadata properties
-*******************************************************************************/
+        /**********************************************************************
+        Initialize document: set outline and metadata properties
+        **********************************************************************/
         %pythoncode %{
             def initData(self):
                 if self.isEncrypted:
@@ -1140,8 +1141,9 @@ Initialize document: set outline and metadata properties
     }
 };
 
-
-/* fz_page */
+/******************************************************************************
+fz_page
+******************************************************************************/
 %nodefaultctor;
 %rename(Page) fz_page_s;
 struct fz_page_s {

@@ -21,6 +21,7 @@ import fitz
 import sys, json
 
 ENCODING = "latin-1"
+assert len(sys.argv) == 2, "need filename as parameter"
 
 def SortBlocks(blocks):
     '''

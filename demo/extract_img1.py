@@ -10,9 +10,7 @@ from __future__ import print_function
 import fitz
 import sys, time
 
-if len(sys.argv) != 2:
-    print('Usage: %s <input file>' % sys.argv[0])
-    exit(0)
+assert len(sys.argv) == 2, 'Usage: %s <input file>' % sys.argv[0]
     
 t0 = time.clock()
 doc = fitz.open(sys.argv[1])
