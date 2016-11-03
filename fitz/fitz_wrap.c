@@ -12506,7 +12506,7 @@ SWIG_init(void) {
   SWIG_InstallConstants(d,swig_const_table);
   
   
-  gctx = fz_new_context(NULL, NULL, FZ_STORE_UNLIMITED);
+  gctx = fz_new_context(NULL, NULL, FZ_STORE_DEFAULT);
   if(!gctx) {
     fprintf(stderr, "[ERROR]gctx is NULL\n");
     exit(1);

@@ -14,7 +14,7 @@ void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *pa
 
 /* global context */
 %init %{
-    gctx = fz_new_context(NULL, NULL, FZ_STORE_UNLIMITED);
+    gctx = fz_new_context(NULL, NULL, FZ_STORE_DEFAULT);
     if(!gctx) {
         fprintf(stderr, "[ERROR]gctx is NULL\n");
         exit(1);
@@ -36,7 +36,7 @@ struct DeviceWrapper {
 %include helpers.i
 
 /*******************************************************************************
-out-typemap: convert a return fz_buffer to string, then drop it
+out-typemap: convert return fz_buffers to strings and drop them
 *******************************************************************************/
 %typemap(out) struct fz_buffer_s * {
     $result = SWIG_FromCharPtrAndSize((const char *)$1->data, $1->len);
@@ -303,7 +303,7 @@ struct fz_document_s
 
 
         /***********************************************************************
-        Insert pages from a source PDF into this PDF.
+        Insert pages from a source PDF to this PDF.
         For reconstructing the links (_do_links method), we must save the
         insertion point (start_at) if it was specified as -1.
         ***********************************************************************/
@@ -970,9 +970,9 @@ struct fz_document_s
             return pdf_create_object(gctx, pdf);
         }
 
-        /**********************************************************************
-        Get Length of Xref
-        **********************************************************************/
+/*******************************************************************************
+Get Length of Xref
+*******************************************************************************/
         %exception _getXrefLength
         {
             $action
@@ -994,9 +994,9 @@ struct fz_document_s
             return pdf_xref_len(gctx, pdf);
         }
 
-        /**********************************************************************
-        Get Object String by Xref Number
-        **********************************************************************/
+/*******************************************************************************
+Get Object String by Xref Number
+*******************************************************************************/
         %exception _getObjectString
         {
             $action
@@ -1034,9 +1034,9 @@ struct fz_document_s
             return res;
         }
 
-        /**********************************************************************
-        Update an Xref Number with a new Object given as a string
-        **********************************************************************/
+/*******************************************************************************
+Update an Xref Number with a new Object given as a string
+*******************************************************************************/
         %exception _updateObject
         {
             $action
@@ -1067,9 +1067,9 @@ struct fz_document_s
             return 0;
         }
 
-        /**********************************************************************
-        Add or update metadata with provided raw string
-        **********************************************************************/
+/*******************************************************************************
+Add or update metadata with provided raw string
+*******************************************************************************/
         %exception _setMetadata
         {
             $action
@@ -1114,9 +1114,9 @@ struct fz_document_s
             return 0;
         }
 
-        /**********************************************************************
-        Initialize document: set outline and metadata properties
-        **********************************************************************/
+/*******************************************************************************
+Initialize document: set outline and metadata properties
+*******************************************************************************/
         %pythoncode %{
             def initData(self):
                 if self.isEncrypted:
@@ -1141,9 +1141,8 @@ struct fz_document_s
     }
 };
 
-/******************************************************************************
-fz_page
-******************************************************************************/
+
+/* fz_page */
 %nodefaultctor;
 %rename(Page) fz_page_s;
 struct fz_page_s {
