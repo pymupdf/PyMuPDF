@@ -1,7 +1,7 @@
 PyMuPDF 1.9.3
 ==============
 
-Release date: August, 2016
+Release date: November, 2016
 
 Authors
 =======
