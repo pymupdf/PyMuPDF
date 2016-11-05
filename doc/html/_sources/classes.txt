@@ -9,6 +9,7 @@ Classes
 .. toctree::
    :maxdepth: 1
 
+   annot.txt
    colorspace.txt
    device.txt
    displaylist.txt

@@ -84,11 +84,13 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="annot.html">Annot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="colorspace.html">Colorspace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
 <li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
@@ -160,11 +162,11 @@
             
   <div class="section" id="page">
 <span id="id1"></span><h1>Page<a class="headerlink" href="#page" title="Permalink to this headline">¶</a></h1>
-<p>Class representing one document page. Can only be created by <a class="reference internal" href="document.html#Document.loadPage" title="Document.loadPage"><code class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></code></a>, there is no separate constructor defined.</p>
+<p>Class representing one document page. There is no separate constructor defined. It can only be created by <a class="reference internal" href="document.html#Document.loadPage" title="Document.loadPage"><code class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></code></a> or via indexing the document (like <code class="docutils literal"><span class="pre">doc[n]</span></code>).</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="40%" />
-<col width="60%" />
+<col width="37%" />
+<col width="63%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Method / Attribute</strong></th>
@@ -176,22 +178,34 @@
 <td>the page&#8217;s rectangle</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Page.loadLinks" title="Page.loadLinks"><code class="xref py py-meth docutils literal"><span class="pre">Page.loadLinks()</span></code></a></td>
-<td>get the first link of the page</td>
+<td>get the first <a class="reference internal" href="link.html#link"><span class="std std-ref">Link</span></a></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Page.getLinks" title="Page.getLinks"><code class="xref py py-meth docutils literal"><span class="pre">Page.getLinks()</span></code></a></td>
-<td>get all links of the page</td>
+<td>get all links</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Page.getText" title="Page.getText"><code class="xref py py-meth docutils literal"><span class="pre">Page.getText()</span></code></a></td>
-<td>extract the text of the page</td>
+<td>extract the text</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Page.getPixmap" title="Page.getPixmap"><code class="xref py py-meth docutils literal"><span class="pre">Page.getPixmap()</span></code></a></td>
-<td>create a <code class="docutils literal"><span class="pre">Pixmap</span></code> from the page</td>
+<td>create a <code class="docutils literal"><span class="pre">Pixmap</span></code></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Page.getRotate" title="Page.getRotate"><code class="xref py py-meth docutils literal"><span class="pre">Page.getRotate()</span></code></a></td>
+<td>PDF only: get page rotation</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Page.setRotate" title="Page.setRotate"><code class="xref py py-meth docutils literal"><span class="pre">Page.setRotate()</span></code></a></td>
+<td>PDF only: set page rotation</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Page.searchFor" title="Page.searchFor"><code class="xref py py-meth docutils literal"><span class="pre">Page.searchFor()</span></code></a></td>
-<td>search for a string on the page</td>
+<td>search for a string</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Page.run" title="Page.run"><code class="xref py py-meth docutils literal"><span class="pre">Page.run()</span></code></a></td>
 <td>run a page through a device</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Page.firstLink" title="Page.firstLink"><code class="xref py py-attr docutils literal"><span class="pre">Page.firstLink</span></code></a></td>
+<td>first <a class="reference internal" href="link.html#link"><span class="std std-ref">Link</span></a> on the page</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Page.firstAnnot" title="Page.firstAnnot"><code class="xref py py-attr docutils literal"><span class="pre">Page.firstAnnot</span></code></a></td>
+<td>first <a class="reference internal" href="annot.html#annot"><span class="std std-ref">Annot</span></a> on the page</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Page.number" title="Page.number"><code class="xref py py-attr docutils literal"><span class="pre">Page.number</span></code></a></td>
 <td>page number</td>
@@ -296,6 +310,36 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="Page.getRotate">
+<code class="descname">getRotate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Page.getRotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>PDF only: Returns the rotation of the page in degrees.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">An integer representing the value of <code class="docutils literal"><span class="pre">/Rotate</span></code> in the PDF object definition. It should be a multiple of 90.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Page.setRotate">
+<code class="descname">setRotate</code><span class="sig-paren">(</span><em>rot</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.setRotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>PDF only: Sets the rotation of the page.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rot</strong> (<em>int</em>) &#8211; An integer specifying the required rotation in degrees. It must be a (positive or negative) multiple of 90.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="Page.searchFor">
 <code class="descname">searchFor</code><span class="sig-paren">(</span><em>text</em>, <em>hit_max = 16</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.searchFor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Searches for <code class="docutils literal"><span class="pre">text</span></code> on a page. Identical to <a class="reference internal" href="textpage.html#TextPage.search" title="TextPage.search"><code class="xref py py-meth docutils literal"><span class="pre">TextPage.search()</span></code></a>.</p>
@@ -335,6 +379,18 @@
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Page.firstLink">
+<code class="descname">firstLink</code><a class="headerlink" href="#Page.firstLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the first <a class="reference internal" href="link.html#link"><span class="std std-ref">Link</span></a> of a page or <code class="docutils literal"><span class="pre">None</span></code> if the page has no links. Is the same as result of method <code class="docutils literal"><span class="pre">loadLinks()</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Page.firstAnnot">
+<code class="descname">firstAnnot</code><a class="headerlink" href="#Page.firstAnnot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the first <a class="reference internal" href="annot.html#annot"><span class="std std-ref">Annot</span></a> of a page or <code class="docutils literal"><span class="pre">None</span></code> if the page has no annotations.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -389,7 +445,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Oct 2016.
+      Last updated on 05. Nov 2016.
 
     </p>
   </div>

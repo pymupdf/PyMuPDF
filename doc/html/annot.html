@@ -1,0 +1,467 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Annot &mdash; PyMuPDF 1.9.2 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+        <link rel="up" title="Classes" href="classes.html"/>
+        <link rel="next" title="Colorspace" href="colorspace.html"/>
+        <link rel="prev" title="Classes" href="classes.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PyMuPDF
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Annot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">Colorspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="document.html">Document</a></li>
+<li class="toctree-l2"><a class="reference internal" href="identity.html">Identity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="irect.html">IRect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="link.html">Link</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linkdest.html">linkDest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="textpage.html">TextPage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="textsheet.html">TextSheet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">PyMuPDF</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="classes.html">Classes</a> &raquo;</li>
+      
+    <li>Annot</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/annot.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="annot">
+<span id="id1"></span><h1>Annot<a class="headerlink" href="#annot" title="Permalink to this headline">¶</a></h1>
+<p>Quote from the Adobe manual: &#8220;An annotation associates an object such as a note, sound, or movie with a location on a page of a PDF document, or provides a way to interact with the user by means of the mouse and keyboard.&#8221;</p>
+<p>This class supports accessing such annotations - not only for PDF files, but for all MuPDF supported document types. However, a minority of properties applies to non-PDF documents.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="71%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><strong>Attribute</strong></th>
+<th class="head"><strong>Short Description</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference internal" href="#Annot.getPixmap" title="Annot.getPixmap"><code class="xref py py-meth docutils literal"><span class="pre">Annot.getPixmap()</span></code></a></td>
+<td>image of the annotation as a pixmap</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.rect" title="Annot.rect"><code class="xref py py-attr docutils literal"><span class="pre">Annot.rect</span></code></a></td>
+<td>rectangle containing the annotation</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.next" title="Annot.next"><code class="xref py py-attr docutils literal"><span class="pre">Annot.next</span></code></a></td>
+<td>link to the next annotation</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.type" title="Annot.type"><code class="xref py py-attr docutils literal"><span class="pre">Annot.type</span></code></a></td>
+<td>PDF only: type of the annotation</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.content" title="Annot.content"><code class="xref py py-attr docutils literal"><span class="pre">Annot.content</span></code></a></td>
+<td>PDF only: content of a text annotation</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.name" title="Annot.name"><code class="xref py py-attr docutils literal"><span class="pre">Annot.name</span></code></a></td>
+<td>PDF only: name of an annotation</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.title" title="Annot.title"><code class="xref py py-attr docutils literal"><span class="pre">Annot.title</span></code></a></td>
+<td>PDF only: title of the pop-up window</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.date" title="Annot.date"><code class="xref py py-attr docutils literal"><span class="pre">Annot.date</span></code></a></td>
+<td>PDF only: timestamp of last modification</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.flags" title="Annot.flags"><code class="xref py py-attr docutils literal"><span class="pre">Annot.flags</span></code></a></td>
+<td>PDF only: annotation flags</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.lineEnds" title="Annot.lineEnds"><code class="xref py py-attr docutils literal"><span class="pre">Annot.lineEnds</span></code></a></td>
+<td>PDF only: start / end appearance of line-type annotations</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.vertices" title="Annot.vertices"><code class="xref py py-attr docutils literal"><span class="pre">Annot.vertices</span></code></a></td>
+<td>PDF only: coordinates of polygon vertices</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.inkList" title="Annot.inkList"><code class="xref py py-attr docutils literal"><span class="pre">Annot.inkList</span></code></a></td>
+<td>PDF only: coordinates of free hand drawings</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Class API</strong></p>
+<dl class="class">
+<dt id="Annot">
+<em class="property">class </em><code class="descname">Annot</code><a class="headerlink" href="#Annot" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Annot.getPixmap">
+<code class="descname">getPixmap</code><span class="sig-paren">(</span><em>matrix = fitz.Ientity</em>, <em>colorspace = fitz.csRGB</em><span class="sig-paren">)</span><a class="headerlink" href="#Annot.getPixmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a pixmap from the annotation as it appears on the page in untransformed coordinates. The pixmap&#8217;s <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> is equal to <code class="docutils literal"><span class="pre">Annot.rect.round()</span></code> (see below).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>matrix</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; a matrix to be used for image creation. Default value is the <code class="docutils literal"><span class="pre">fitz.Identity</span></code> matrix.</li>
+<li><strong>cspace</strong> (<a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a>) &#8211; a colorspace to be used for image creation. Default value is <code class="docutils literal"><span class="pre">fitz.csRGB</span></code>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="pixmap.html#pixmap"><span class="std std-ref">Pixmap</span></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Annot.rect">
+<code class="descname">rect</code><a class="headerlink" href="#Annot.rect" title="Permalink to this definition">¶</a></dt>
+<dd><p>The rectangle containing the annotation in untransformed coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Annot.next">
+<code class="descname">next</code><a class="headerlink" href="#Annot.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>The next annotation on this page or <code class="docutils literal"><span class="pre">None</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">Annot</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Annot.type">
+<code class="descname">type</code><a class="headerlink" href="#Annot.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meaningful for PDF only: A number and a string describing the annotation type, e.g. <code class="docutils literal"><span class="pre">[12,</span> <span class="pre">'Stamp']</span></code>. If not PDF, it will contain <code class="docutils literal"><span class="pre">[]</span></code>. See the appendix <a class="reference internal" href="vars.html#annotation-types"><span class="std std-ref">Annotation Types</span></a> for a list of possible values and their meanings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Annot.content">
+<code class="descname">content</code><a class="headerlink" href="#Annot.content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meaningful for PDF only: A string containing the text for type <code class="docutils literal"><span class="pre">Text</span></code> and <code class="docutils literal"><span class="pre">FreeText</span></code> annotations. For other types the entry is optional. Contains an empty string if not specified or not a PDF.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Annot.name">
+<code class="descname">name</code><a class="headerlink" href="#Annot.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meaningful for PDF only: A string containing the name of the annotation. Contains an empty string if not specified or not a PDF. For e.g. <code class="docutils literal"><span class="pre">[12,</span> <span class="pre">'Stamp']</span></code> type annotations it will contain the stamp text like <code class="docutils literal"><span class="pre">Sold</span></code> or <code class="docutils literal"><span class="pre">Experimental</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Annot.title">
+<code class="descname">title</code><a class="headerlink" href="#Annot.title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meaningful for PDF only: A string containing the title of the annotation&#8217;s pop-up window. By convention, this is normally used for the name of the user who entered the annotation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Annot.date">
+<code class="descname">date</code><a class="headerlink" href="#Annot.date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meaningful for PDF only: A string containing the PDF timestamp of the annotation&#8217;s last modification.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Annot.flags">
+<code class="descname">flags</code><a class="headerlink" href="#Annot.flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meaningful for PDF only: An integer with its low order byte containing flags for how the annotation should be presented. See section <a class="reference internal" href="vars.html#annotation-flags"><span class="std std-ref">Annotation Flags</span></a> for details.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Annot.lineEnds">
+<code class="descname">lineEnds</code><a class="headerlink" href="#Annot.lineEnds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meaningful for PDF only: A list specifying the starting and the ending appearance of annotations of types <code class="docutils literal"><span class="pre">Line</span></code>, <code class="docutils literal"><span class="pre">PolyLine</span></code>, etc. An example would be <code class="docutils literal"><span class="pre">['None',</span> <span class="pre">'OpenArrow']</span></code>. If not specified or not applicable, it contains an empty list <code class="docutils literal"><span class="pre">[]</span></code>. For possible values and descriptions in this list, see the Adobe manual, table 8.27 on page 630.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Annot.vertices">
+<code class="descname">vertices</code><a class="headerlink" href="#Annot.vertices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meaningful for PDF only: A list of float coordinates for annotations of type <code class="docutils literal"><span class="pre">PolyLine</span></code> and <code class="docutils literal"><span class="pre">Polygon</span></code>. Every pair of floats specifies a point (&#8220;vertex&#8221;) of the annotation graph. Contains an empty list <code class="docutils literal"><span class="pre">[]</span></code> when not applicable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Annot.inkList">
+<code class="descname">inkList</code><a class="headerlink" href="#Annot.inkList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meaningful for PDF only: ... work in progress ...</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="colorspace.html" class="btn btn-neutral float-right" title="Colorspace" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="classes.html" class="btn btn-neutral" title="Classes" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Jorj X. McKie.
+      Last updated on 04. Nov 2016.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.9.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -2,18 +2,34 @@
 
     PageBreak
 
+Changes in Version 1.9.3
+=========================
+This version is also based on MuPDF v1.9a. Changes compared to version 1.9.2:
+
+* As a major enhancement, accessing annotations for display is now supported for all MuPDF supported document types. Annotations can be displayed (i.e. extracted as pixmaps), located on a page and many of their properties are being made available. We plan to extend this support in future releases in terms information breadth as well as supporting updating annotations.
+* In addition to the document ``select()`` method, methods are now available that cover more elementary requirements for manipulating a PDF file:
+
+    - ``copyPage()`` copies a page within a document.
+    - ``movePage()`` is similar, except that the original is deleted.
+    - ``deletePage()`` deletes a page
+    - ``deletePageRange()`` deletes several pages
+
+* ``getRotate()`` or ``setRotate()`` access or change a PDF page's rotation, respectively.
+* Available but undocumented before, :ref:`IRect`, :ref:`Rect`, :ref:`Point` and :ref:`Matrix` support the ``len()`` method and their coordinate properties can be accessed via indices, e.g. ``IRect.x1 == IRect[2]``.
+* For convenience, documents now support simple indexing: ``doc.loadPage(n) == doc[n]``. The index may however be in range ``-pageCount < n < pageCount``, such that ``doc[-1]`` is the last page of the document.
+
 Changes in Version 1.9.2
 =========================
 This version is also based on MuPDF v1.9a. Changes compared to version 1.9.1:
 
-* ``fitz.open()`` (no parameters) creates a new empty **PDF** document. If saved afterwards, it must be given a ``.pdf`` extension.
+* ``fitz.open()`` (no parameters) creates a new empty **PDF** document, i.e. if saved afterwards, it must be given a ``.pdf`` extension.
 * :ref:`Document` now accepts all of the following formats (``Document`` and ``open`` are synonyms):
 
   - ``open()``,
   - ``open(filename)`` (equivalent to ``open(filename, None)``),
   - ``open(filetype, area)`` (equivalent to ``open(filetype, stream = area)``).
 
-  Type of memory area ``stream`` may be ``str`` (Python 2), ``bytes`` (Python 3) or ``bytearray`` (Python 2 and 3). Thus, e.g. ``stream = open("file.pdf", "rb").read()`` may be used directly (without first converting it to bytearray).
+  Type of memory area ``stream`` may be ``str`` (Python 2), ``bytes`` (Python 3) or ``bytearray`` (Python 2 and 3). Thus, e.g. ``area = open("file.pdf", "rb").read()`` may be used directly (without first converting it to bytearray).
 * New method ``Document.insertPDF()`` (PDFs only) inserts a range of pages from another PDF.
 * ``Document`` objects doc now support the ``len()`` function: ``len(doc) == doc.pageCount``.
 * New method ``Document.getPageImageList()`` creates a list of images used on a page.

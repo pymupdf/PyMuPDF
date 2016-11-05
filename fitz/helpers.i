@@ -1,4 +1,37 @@
 %{
+char *annot_type_str(int type)
+{
+	switch (type)
+	{
+	case FZ_ANNOT_TEXT: return "Text";
+	case FZ_ANNOT_LINK: return "Link";
+	case FZ_ANNOT_FREETEXT: return "FreeText";
+	case FZ_ANNOT_LINE: return "Line";
+	case FZ_ANNOT_SQUARE: return "Square";
+	case FZ_ANNOT_CIRCLE: return "Circle";
+	case FZ_ANNOT_POLYGON: return "Polygon";
+	case FZ_ANNOT_POLYLINE: return "PolyLine";
+	case FZ_ANNOT_HIGHLIGHT: return "Highlight";
+	case FZ_ANNOT_UNDERLINE: return "Underline";
+	case FZ_ANNOT_SQUIGGLY: return "Squiggly";
+	case FZ_ANNOT_STRIKEOUT: return "StrikeOut";
+	case FZ_ANNOT_STAMP: return "Stamp";
+	case FZ_ANNOT_CARET: return "Caret";
+	case FZ_ANNOT_INK: return "Ink";
+	case FZ_ANNOT_POPUP: return "Popup";
+	case FZ_ANNOT_FILEATTACHMENT: return "FileAttachment";
+	case FZ_ANNOT_SOUND: return "Sound";
+	case FZ_ANNOT_MOVIE: return "Movie";
+	case FZ_ANNOT_WIDGET: return "Widget";
+	case FZ_ANNOT_SCREEN: return "Screen";
+	case FZ_ANNOT_PRINTERMARK: return "PrinterMark";
+	case FZ_ANNOT_TRAPNET: return "TrapNet";
+	case FZ_ANNOT_WATERMARK: return "Watermark";
+	case FZ_ANNOT_3D: return "3D";
+	default: return "";
+	}
+}
+
 /*******************************************************************************
 Deep-copies a specified source page to the target location.
 *******************************************************************************/
@@ -499,5 +532,185 @@ void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
     fz_free(ctx, page_object_nums);
     pdf_drop_obj(ctx, names_list);
     pdf_drop_obj(ctx, root);
+}
+
+/*****************************************************************************/
+/* C helper functions for extractJSON */
+/*****************************************************************************/
+
+void
+fz_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox) {
+    char buf[128];
+    /* no buffer overflow! */
+    snprintf(buf, sizeof(buf), "\"bbox\":[%g, %g, %g, %g],",
+                        bbox->x0, bbox->y0, bbox->x1, bbox->y1);
+
+    fz_printf(ctx, out, "%s", buf);
+}
+
+void
+fz_print_utf8(fz_context *ctx, fz_output *out, int rune) {
+    int i, n;
+    char utf[10];
+    n = fz_runetochar(utf, rune);
+    for (i = 0; i < n; i++) {
+        fz_printf(ctx, out, "%c", utf[i]);
+    }
+}
+
+void
+fz_print_span_stext_json(fz_context *ctx, fz_output *out, fz_stext_span *span) {
+    fz_stext_char *ch;
+
+    for (ch = span->text; ch < span->text + span->len; ch++)
+    {
+        switch (ch->c)
+        {
+            case '\\': fz_printf(ctx, out, "\\\\"); break;
+            case '\'': fz_printf(ctx, out, "\\u0027"); break;
+            case '"': fz_printf(ctx, out, "\\\""); break;
+            case '\b': fz_printf(ctx, out, "\\b"); break;
+            case '\f': fz_printf(ctx, out, "\\f"); break;
+            case '\n': fz_printf(ctx, out, "\\n"); break;
+            case '\r': fz_printf(ctx, out, "\\r"); break;
+            case '\t': fz_printf(ctx, out, "\\t"); break;
+            default:
+                if (ch->c >= 32 && ch->c <= 127) {
+                    fz_printf(ctx, out, "%c", ch->c);
+                } else {
+                    fz_printf(ctx, out, "\\u%04x", ch->c);
+                    /*fz_print_utf8(ctx, out, ch->c);*/
+                }
+                break;
+        }
+    }
+}
+
+void
+fz_send_data_base64(fz_context *ctx, fz_output *out, fz_buffer *buffer)
+{
+    int i, len;
+    static const char set[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+    len = buffer->len/3;
+    for (i = 0; i < len; i++)
+    {
+        int c = buffer->data[3*i];
+        int d = buffer->data[3*i+1];
+        int e = buffer->data[3*i+2];
+        /**************************************************/
+        /* JSON decoders do not like "\n" in base64 data! */
+        /* ==> next 2 lines commented out                 */
+        /**************************************************/
+        //if ((i & 15) == 0)
+        //    fz_printf(ctx, out, "\n");
+        fz_printf(ctx, out, "%c%c%c%c", set[c>>2], set[((c&3)<<4)|(d>>4)], set[((d&15)<<2)|(e>>6)], set[e & 63]);
+    }
+    i *= 3;
+    switch (buffer->len-i)
+    {
+        case 2:
+        {
+            int c = buffer->data[i];
+            int d = buffer->data[i+1];
+            fz_printf(ctx, out, "%c%c%c=", set[c>>2], set[((c&3)<<4)|(d>>4)], set[((d&15)<<2)]);
+            break;
+        }
+    case 1:
+        {
+            int c = buffer->data[i];
+            fz_printf(ctx, out, "%c%c==", set[c>>2], set[(c&3)<<4]);
+            break;
+        }
+    default:
+    case 0:
+        break;
+    }
+}
+
+void
+fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page)
+{
+    int block_n;
+
+    fz_printf(ctx, out, "{\n \"len\":%d,\"width\":%g,\"height\":%g,\n \"blocks\":[\n",
+                        page->len,
+                        page->mediabox.x1 - page->mediabox.x0,
+                        page->mediabox.y1 - page->mediabox.y0);
+
+    for (block_n = 0; block_n < page->len; block_n++)
+    {
+        fz_page_block * page_block = &(page->blocks[block_n]);
+
+        fz_printf(ctx, out, "  {\"type\":%s,", page_block->type == FZ_PAGE_BLOCK_TEXT ? "\"text\"": "\"image\"");
+
+        switch (page->blocks[block_n].type)
+        {
+            case FZ_PAGE_BLOCK_TEXT:
+            {
+                fz_stext_block *block = page->blocks[block_n].u.text;
+                fz_stext_line *line;
+
+                fz_print_rect_json(ctx, out, &(block->bbox));
+
+                fz_printf(ctx, out, "\n   \"lines\":[\n");
+
+                for (line = block->lines; line < block->lines + block->len; line++)
+                {
+                    fz_stext_span *span;
+                    fz_printf(ctx, out, "      {");
+                    fz_print_rect_json(ctx, out, &(line->bbox));
+
+                    fz_printf(ctx, out, "\n       \"spans\":[\n");
+                    for (span = line->first_span; span; span = span->next)
+                    {
+                        fz_printf(ctx, out, "         {");
+                        fz_print_rect_json(ctx, out, &(span->bbox));
+                        fz_printf(ctx, out, "\n          \"text\":\"");
+
+                        fz_print_span_stext_json(ctx, out, span);
+
+                        fz_printf(ctx, out, "\"\n         }");
+                        if (span && (span->next)) {
+                            fz_printf(ctx, out, ",\n");
+                        }
+                    }
+                    fz_printf(ctx, out, "\n       ]");  /* spans end */
+
+                    fz_printf(ctx, out, "\n      }");
+                    if (line < (block->lines + block->len - 1)) {
+                        fz_printf(ctx, out, ",\n");
+                    }
+                }
+                fz_printf(ctx, out, "\n   ]");      /* lines end */
+                break;
+            }
+            case FZ_PAGE_BLOCK_IMAGE:
+            {
+                fz_image_block *image = page->blocks[block_n].u.image;
+
+                fz_print_rect_json(ctx, out, &(image->bbox));
+                fz_printf(ctx, out, "\"imgtype\":%d,\"width\":%d,\"height\":%d,",
+                                    image->image->buffer->params.type,
+                                    image->image->w,
+                                    image->image->h);
+                fz_printf(ctx, out, "\"image\":\n");
+                if (image->image->buffer == NULL) {
+                    fz_printf(ctx, out, "null");
+                } else {
+                    fz_printf(ctx, out, "\"");
+                    fz_send_data_base64(ctx, out, image->image->buffer->buffer);
+                    fz_printf(ctx, out, "\"");
+                }
+                break;
+            }
+        }
+
+        fz_printf(ctx, out, "\n  }");  /* blocks end */
+        if (block_n < (page->len - 1)) {
+            fz_printf(ctx, out, ",\n");
+        }
+    }
+    fz_printf(ctx, out, "\n ]\n}");  /* page end */
 }
 %}

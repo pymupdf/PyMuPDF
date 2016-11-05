@@ -93,6 +93,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#enumerations">Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#link-destination-flags">Link Destination Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#annotation-types">Annotation Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#annotation-flags">Annotation Flags</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
@@ -363,8 +365,8 @@
 </div>
 <div class="section" id="link-destination-flags">
 <span id="linkdest-flags"></span><h2>Link Destination Flags<a class="headerlink" href="#link-destination-flags" title="Permalink to this headline">¶</a></h2>
-<div class="admonition caution">
-<p class="first admonition-title">Caution</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
 <p class="last">The rightmost byte of this integer is a bit field, so test the truth of these bits with the <code class="docutils literal"><span class="pre">&amp;</span></code> operator.</p>
 </div>
 <dl class="data">
@@ -466,6 +468,228 @@
 </dd></dl>
 
 </div>
+<div class="section" id="annotation-types">
+<span id="id1"></span><h2>Annotation Types<a class="headerlink" href="#annotation-types" title="Permalink to this headline">¶</a></h2>
+<p>Possible values (integer) for PDF annotation types. See chapter 8.4.5, pp. 615 of the Adobe manual for more details.</p>
+<dl class="data">
+<dt id="ANNOT_TEXT">
+<code class="descname">ANNOT_TEXT</code><a class="headerlink" href="#ANNOT_TEXT" title="Permalink to this definition">¶</a></dt>
+<dd><p>0 - Text annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_LINK">
+<code class="descname">ANNOT_LINK</code><a class="headerlink" href="#ANNOT_LINK" title="Permalink to this definition">¶</a></dt>
+<dd><p>1 - Link annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_FREETEXT">
+<code class="descname">ANNOT_FREETEXT</code><a class="headerlink" href="#ANNOT_FREETEXT" title="Permalink to this definition">¶</a></dt>
+<dd><p>2 -  Free text annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_LINE">
+<code class="descname">ANNOT_LINE</code><a class="headerlink" href="#ANNOT_LINE" title="Permalink to this definition">¶</a></dt>
+<dd><p>3 - Line annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_SQUARE">
+<code class="descname">ANNOT_SQUARE</code><a class="headerlink" href="#ANNOT_SQUARE" title="Permalink to this definition">¶</a></dt>
+<dd><p>4 -  Square annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_CIRCLE">
+<code class="descname">ANNOT_CIRCLE</code><a class="headerlink" href="#ANNOT_CIRCLE" title="Permalink to this definition">¶</a></dt>
+<dd><p>5 -  Circle annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_POLYGON">
+<code class="descname">ANNOT_POLYGON</code><a class="headerlink" href="#ANNOT_POLYGON" title="Permalink to this definition">¶</a></dt>
+<dd><p>6 - Polygon annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_POLYLINE">
+<code class="descname">ANNOT_POLYLINE</code><a class="headerlink" href="#ANNOT_POLYLINE" title="Permalink to this definition">¶</a></dt>
+<dd><p>7 - Polyline annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_HIGHLIGHT">
+<code class="descname">ANNOT_HIGHLIGHT</code><a class="headerlink" href="#ANNOT_HIGHLIGHT" title="Permalink to this definition">¶</a></dt>
+<dd><p>8 -  Highlight annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_UNDERLINE">
+<code class="descname">ANNOT_UNDERLINE</code><a class="headerlink" href="#ANNOT_UNDERLINE" title="Permalink to this definition">¶</a></dt>
+<dd><p>9 - Underline annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_SQUIGGLY">
+<code class="descname">ANNOT_SQUIGGLY</code><a class="headerlink" href="#ANNOT_SQUIGGLY" title="Permalink to this definition">¶</a></dt>
+<dd><p>10 -  Squiggly-underline annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_STRIKEOUT">
+<code class="descname">ANNOT_STRIKEOUT</code><a class="headerlink" href="#ANNOT_STRIKEOUT" title="Permalink to this definition">¶</a></dt>
+<dd><p>11 - Strikeout annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_STAMP">
+<code class="descname">ANNOT_STAMP</code><a class="headerlink" href="#ANNOT_STAMP" title="Permalink to this definition">¶</a></dt>
+<dd><p>12 -  Rubber stamp annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_CARET">
+<code class="descname">ANNOT_CARET</code><a class="headerlink" href="#ANNOT_CARET" title="Permalink to this definition">¶</a></dt>
+<dd><p>13 - Caret annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_INK">
+<code class="descname">ANNOT_INK</code><a class="headerlink" href="#ANNOT_INK" title="Permalink to this definition">¶</a></dt>
+<dd><p>14 -  Ink annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_POPUP">
+<code class="descname">ANNOT_POPUP</code><a class="headerlink" href="#ANNOT_POPUP" title="Permalink to this definition">¶</a></dt>
+<dd><p>15 -  Pop-up annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_FILEATTACHMENT">
+<code class="descname">ANNOT_FILEATTACHMENT</code><a class="headerlink" href="#ANNOT_FILEATTACHMENT" title="Permalink to this definition">¶</a></dt>
+<dd><p>16 - File attachment annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_SOUND">
+<code class="descname">ANNOT_SOUND</code><a class="headerlink" href="#ANNOT_SOUND" title="Permalink to this definition">¶</a></dt>
+<dd><p>17 - Sound annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_MOVIE">
+<code class="descname">ANNOT_MOVIE</code><a class="headerlink" href="#ANNOT_MOVIE" title="Permalink to this definition">¶</a></dt>
+<dd><p>18 - Movie annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_WIDGET">
+<code class="descname">ANNOT_WIDGET</code><a class="headerlink" href="#ANNOT_WIDGET" title="Permalink to this definition">¶</a></dt>
+<dd><p>19 - Widget annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_SCREEN">
+<code class="descname">ANNOT_SCREEN</code><a class="headerlink" href="#ANNOT_SCREEN" title="Permalink to this definition">¶</a></dt>
+<dd><p>20 - Screen annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_PRINTERMARK">
+<code class="descname">ANNOT_PRINTERMARK</code><a class="headerlink" href="#ANNOT_PRINTERMARK" title="Permalink to this definition">¶</a></dt>
+<dd><p>21 - Printer?s mark annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_TRAPNET">
+<code class="descname">ANNOT_TRAPNET</code><a class="headerlink" href="#ANNOT_TRAPNET" title="Permalink to this definition">¶</a></dt>
+<dd><p>22 - Trap network annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_WATERMARK">
+<code class="descname">ANNOT_WATERMARK</code><a class="headerlink" href="#ANNOT_WATERMARK" title="Permalink to this definition">¶</a></dt>
+<dd><p>23 - Watermark annotation</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_3D">
+<code class="descname">ANNOT_3D</code><a class="headerlink" href="#ANNOT_3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>24 - 3D annotation</p>
+</dd></dl>
+
+</div>
+<div class="section" id="annotation-flags">
+<span id="id2"></span><h2>Annotation Flags<a class="headerlink" href="#annotation-flags" title="Permalink to this headline">¶</a></h2>
+<p>Possible mask values for PDF annotation flags.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Annotation flags is a bit field, so test the truth of its bits with the <code class="docutils literal"><span class="pre">&amp;</span></code> operator. The following descriptions were extracted from the Adobe manual, pages 608 pp.</p>
+</div>
+<dl class="data">
+<dt id="ANNOT_XF_Invisible">
+<code class="descname">ANNOT_XF_Invisible</code><a class="headerlink" href="#ANNOT_XF_Invisible" title="Permalink to this definition">¶</a></dt>
+<dd><p>1 - If set, do not display the annotation if it does not belong to one of the standard annotation types and no annotation handler is available. If clear, display such an unknown annotation using an appearance stream specified by its appearance dictionary, if any.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_XF_Hidden">
+<code class="descname">ANNOT_XF_Hidden</code><a class="headerlink" href="#ANNOT_XF_Hidden" title="Permalink to this definition">¶</a></dt>
+<dd><p>2 -  If set, do not display or print the annotation or allow it to interact with the user, regardless of its annotation type or whether an annotation handler is available. In cases where screen space is limited, the ability to hide and show annotations selectively can be used in combination with appearance streams to display auxiliary pop-up information similar in function to online help systems.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_XF_Print">
+<code class="descname">ANNOT_XF_Print</code><a class="headerlink" href="#ANNOT_XF_Print" title="Permalink to this definition">¶</a></dt>
+<dd><p>4 - If set, print the annotation when the page is printed. If clear, never print the annotation, regardless of whether it is displayed on the screen. This can be useful, for example, for annotations representing interactive pushbuttons, which would serve no meaningful purpose on the printed page.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_XF_NoZoom">
+<code class="descname">ANNOT_XF_NoZoom</code><a class="headerlink" href="#ANNOT_XF_NoZoom" title="Permalink to this definition">¶</a></dt>
+<dd><p>8 -  If set, do not scale the annotation?s appearance to match the magnification of the page. The location of the annotation on the page (defined by the upper-left corner of its annotation rectangle) remains fixed, regardless of the page magnification.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_XF_NoRotate">
+<code class="descname">ANNOT_XF_NoRotate</code><a class="headerlink" href="#ANNOT_XF_NoRotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>16 -  If set, do not rotate the annotation?s appearance to match the rotation of the page. The upper-left corner of the annotation rectangle remains in a fixed location on the page, regardless of the page rotation.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_XF_NoView">
+<code class="descname">ANNOT_XF_NoView</code><a class="headerlink" href="#ANNOT_XF_NoView" title="Permalink to this definition">¶</a></dt>
+<dd><p>32 -  If set, do not display the annotation on the screen or allow it to interact with the user. The annotation may be printed (depending on the setting of the Print flag) but should be considered hidden for purposes of on-screen display and user interaction.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_XF_ReadOnly">
+<code class="descname">ANNOT_XF_ReadOnly</code><a class="headerlink" href="#ANNOT_XF_ReadOnly" title="Permalink to this definition">¶</a></dt>
+<dd><p>64 - If set, do not allow the annotation to interact with the user. The annotation may be displayed or printed (depending on the settings of the NoView and Print flags) but should not respond to mouse clicks or change its appearance in response to mouse motions.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_XF_Locked">
+<code class="descname">ANNOT_XF_Locked</code><a class="headerlink" href="#ANNOT_XF_Locked" title="Permalink to this definition">¶</a></dt>
+<dd><p>128 - If set, do not allow the annotation to be deleted or its properties (including position and size) to be modified by the user. However, this flag does not restrict changes to the annotation?s contents, such as the value of a form field.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_XF_ToggleNoView">
+<code class="descname">ANNOT_XF_ToggleNoView</code><a class="headerlink" href="#ANNOT_XF_ToggleNoView" title="Permalink to this definition">¶</a></dt>
+<dd><p>256 - If set, invert the interpretation of the NoView flag for certain events. A typical use is to have an annotation that appears only when a mouse cursor is held over it.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_XF_LockedContents">
+<code class="descname">ANNOT_XF_LockedContents</code><a class="headerlink" href="#ANNOT_XF_LockedContents" title="Permalink to this definition">¶</a></dt>
+<dd><p>512 - If set, do not allow the contents of the annotation to be modified by the user. This flag does not restrict deletion of the annotation or changes to other annotation properties, such as position and size.</p>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -488,7 +712,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Oct 2016.
+      Last updated on 04. Nov 2016.
 
     </p>
   </div>
