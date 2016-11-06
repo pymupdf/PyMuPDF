@@ -5366,6 +5366,7 @@ SWIGINTERN void delete_pdf_annot_s(struct pdf_annot_s *self){
 
 
 
+            fz_drop_annot(gctx, (fz_annot*)&self->super);
             fz_drop_annot(gctx, (fz_annot*)self);
         }
 SWIGINTERN struct fz_rect_s *pdf_annot_s__getRect(struct pdf_annot_s *self){   // use the fz_annot for this ...
@@ -5392,6 +5393,88 @@ SWIGINTERN PyObject *pdf_annot_s__getVertices(struct pdf_annot_s *self){
                     PyList_Append(res, coord_o);
                 }
             return res;
+        }
+SWIGINTERN PyObject *pdf_annot_s__getInkList(struct pdf_annot_s *self){
+            PyObject *res, *coord_o;
+            res = PyList_New(0);                      // create Python list
+            if (self->page == NULL) return res;      // not a PDF!
+            float coord = 0.0;
+            pdf_obj *vert_o;
+            vert_o = pdf_dict_get(gctx, self->obj, PDF_NAME_InkList);
+            if (!vert_o) return res;                  // no inkList entry there
+            int n = pdf_array_len(gctx, vert_o);
+            int i, j;
+            if (n < 1) return res;                    // no inkList entry there
+            for (i = 0; i < n; i++)
+                {
+                    PyObject *list = PyList_New(0);
+                    pdf_obj *o = pdf_array_get(gctx, vert_o, i);
+                    int m = pdf_array_len(gctx, o);
+                    for (j = 0; j < m; j++)
+                        {
+                        coord = pdf_to_real(gctx, pdf_array_get(gctx, o, j));
+                        coord_o = PyFloat_FromDouble((double) coord);
+                        PyList_Append(list, coord_o);
+                        }
+                    PyList_Append(res, list);
+                }
+            return res;
+        }
+SWIGINTERN PyObject *pdf_annot_s__getBorderColor(struct pdf_annot_s *self){
+            PyObject *res, *col_o;
+            res = PyList_New(0);                      // create Python list
+            if (self->page == NULL) return res;      // not a PDF!
+            int i;
+            float col;
+            pdf_obj *IC_o;
+            IC_o = pdf_dict_get(gctx, self->obj, PDF_NAME_C);
+            if (!IC_o) return res;                    // no IC entry there
+            if (!pdf_is_array(gctx, IC_o)) return res;     // IC no an array
+            int n = pdf_array_len(gctx, IC_o);
+            if (n < 1) return res;
+
+            for (i = 0; i < n; i++)
+                {
+                col = pdf_to_real(gctx, pdf_array_get(gctx, IC_o, i));
+                col_o = PyFloat_FromDouble((double) col);
+                PyList_Append(res, col_o);
+                }
+            
+            return res;
+        }
+SWIGINTERN PyObject *pdf_annot_s__getfillColor(struct pdf_annot_s *self){
+            PyObject *res, *col_o;
+            res = PyList_New(0);                      // create Python list
+            if (self->page == NULL) return res;      // not a PDF!
+            int i;
+            float col;
+            pdf_obj *IC_o;
+            const char *IC_str = "IC";
+            IC_o = pdf_dict_gets(gctx, self->obj, IC_str);
+            if (!IC_o) return res;                    // no IC entry there
+            if (!pdf_is_array(gctx, IC_o)) return res;     // IC no an array
+            int n = pdf_array_len(gctx, IC_o);
+            if (n < 1) return res;
+
+            for (i = 0; i < n; i++)
+                {
+                col = pdf_to_real(gctx, pdf_array_get(gctx, IC_o, i));
+                col_o = PyFloat_FromDouble((double) col);
+                PyList_Append(res, col_o);
+                }
+            
+            return res;
+        }
+SWIGINTERN char *pdf_annot_s__getIntentType(struct pdf_annot_s *self){
+            char *it = "";
+            if (self->page == NULL) return it;      // not a PDF!
+            pdf_obj *IT_o;
+            const char *IT_str = "IT";
+            IT_o = pdf_dict_gets(gctx, self->obj, IT_str);
+            if (!IT_o) return it;                    // no LE entry there
+            if (!pdf_is_name(gctx, IT_o)) return it;
+            it = pdf_to_name(gctx, IT_o);
+            return it;
         }
 SWIGINTERN PyObject *pdf_annot_s__getLineEnds(struct pdf_annot_s *self){
             PyObject *res, *lstart_o, *lend_o;
@@ -5464,7 +5547,17 @@ SWIGINTERN char *pdf_annot_s__getTitle(struct pdf_annot_s *self){
             title = pdf_to_str_buf(gctx, title_o);
             return title;
         }
-SWIGINTERN char *pdf_annot_s__getDate(struct pdf_annot_s *self){
+SWIGINTERN char *pdf_annot_s__creationDate(struct pdf_annot_s *self){
+            char *date = "";
+            char *date_str = "CreationDate";
+            if (self->page == NULL) return date;   // not a PDF!
+            pdf_obj *date_o;
+            date_o = pdf_dict_gets(gctx, self->obj, date_str);
+            if (date_o == NULL) return date;
+            date = pdf_to_str_buf(gctx, date_o);
+            return date;
+        }
+SWIGINTERN char *pdf_annot_s__modDate(struct pdf_annot_s *self){
             char *date = "";
             if (self->page == NULL) return date;   // not a PDF!
             pdf_obj *date_o;
@@ -11517,6 +11610,94 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Annot__getInkList(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct pdf_annot_s *arg1 = (struct pdf_annot_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Annot__getInkList",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_pdf_annot_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot__getInkList" "', argument " "1"" of type '" "struct pdf_annot_s *""'"); 
+  }
+  arg1 = (struct pdf_annot_s *)(argp1);
+  result = (PyObject *)pdf_annot_s__getInkList(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Annot__getBorderColor(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct pdf_annot_s *arg1 = (struct pdf_annot_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Annot__getBorderColor",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_pdf_annot_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot__getBorderColor" "', argument " "1"" of type '" "struct pdf_annot_s *""'"); 
+  }
+  arg1 = (struct pdf_annot_s *)(argp1);
+  result = (PyObject *)pdf_annot_s__getBorderColor(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Annot__getfillColor(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct pdf_annot_s *arg1 = (struct pdf_annot_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Annot__getfillColor",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_pdf_annot_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot__getfillColor" "', argument " "1"" of type '" "struct pdf_annot_s *""'"); 
+  }
+  arg1 = (struct pdf_annot_s *)(argp1);
+  result = (PyObject *)pdf_annot_s__getfillColor(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Annot__getIntentType(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct pdf_annot_s *arg1 = (struct pdf_annot_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Annot__getIntentType",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_pdf_annot_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot__getIntentType" "', argument " "1"" of type '" "struct pdf_annot_s *""'"); 
+  }
+  arg1 = (struct pdf_annot_s *)(argp1);
+  result = (char *)pdf_annot_s__getIntentType(arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Annot__getLineEnds(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct pdf_annot_s *arg1 = (struct pdf_annot_s *) 0 ;
@@ -11605,7 +11786,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Annot__getDate(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_Annot__creationDate(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct pdf_annot_s *arg1 = (struct pdf_annot_s *) 0 ;
   void *argp1 = 0 ;
@@ -11613,13 +11794,35 @@ SWIGINTERN PyObject *_wrap_Annot__getDate(PyObject *SWIGUNUSEDPARM(self), PyObje
   PyObject * obj0 = 0 ;
   char *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:Annot__getDate",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:Annot__creationDate",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_pdf_annot_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot__getDate" "', argument " "1"" of type '" "struct pdf_annot_s *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot__creationDate" "', argument " "1"" of type '" "struct pdf_annot_s *""'"); 
   }
   arg1 = (struct pdf_annot_s *)(argp1);
-  result = (char *)pdf_annot_s__getDate(arg1);
+  result = (char *)pdf_annot_s__creationDate(arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Annot__modDate(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct pdf_annot_s *arg1 = (struct pdf_annot_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Annot__modDate",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_pdf_annot_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot__modDate" "', argument " "1"" of type '" "struct pdf_annot_s *""'"); 
+  }
+  arg1 = (struct pdf_annot_s *)(argp1);
+  result = (char *)pdf_annot_s__modDate(arg1);
   resultobj = SWIG_FromCharPtr((const char *)result);
   return resultobj;
 fail:
@@ -12481,11 +12684,16 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"delete_Annot", _wrap_delete_Annot, METH_VARARGS, (char *)"delete_Annot(Annot self)"},
 	 { (char *)"Annot__getRect", _wrap_Annot__getRect, METH_VARARGS, (char *)"Annot__getRect(Annot self) -> Rect"},
 	 { (char *)"Annot__getVertices", _wrap_Annot__getVertices, METH_VARARGS, (char *)"Annot__getVertices(Annot self) -> PyObject *"},
+	 { (char *)"Annot__getInkList", _wrap_Annot__getInkList, METH_VARARGS, (char *)"Annot__getInkList(Annot self) -> PyObject *"},
+	 { (char *)"Annot__getBorderColor", _wrap_Annot__getBorderColor, METH_VARARGS, (char *)"Annot__getBorderColor(Annot self) -> PyObject *"},
+	 { (char *)"Annot__getfillColor", _wrap_Annot__getfillColor, METH_VARARGS, (char *)"Annot__getfillColor(Annot self) -> PyObject *"},
+	 { (char *)"Annot__getIntentType", _wrap_Annot__getIntentType, METH_VARARGS, (char *)"Annot__getIntentType(Annot self) -> char *"},
 	 { (char *)"Annot__getLineEnds", _wrap_Annot__getLineEnds, METH_VARARGS, (char *)"Annot__getLineEnds(Annot self) -> PyObject *"},
 	 { (char *)"Annot__getType", _wrap_Annot__getType, METH_VARARGS, (char *)"Annot__getType(Annot self) -> PyObject *"},
 	 { (char *)"Annot__getName", _wrap_Annot__getName, METH_VARARGS, (char *)"Annot__getName(Annot self) -> char *"},
 	 { (char *)"Annot__getTitle", _wrap_Annot__getTitle, METH_VARARGS, (char *)"Annot__getTitle(Annot self) -> char *"},
-	 { (char *)"Annot__getDate", _wrap_Annot__getDate, METH_VARARGS, (char *)"Annot__getDate(Annot self) -> char *"},
+	 { (char *)"Annot__creationDate", _wrap_Annot__creationDate, METH_VARARGS, (char *)"Annot__creationDate(Annot self) -> char *"},
+	 { (char *)"Annot__modDate", _wrap_Annot__modDate, METH_VARARGS, (char *)"Annot__modDate(Annot self) -> char *"},
 	 { (char *)"Annot__getFlags", _wrap_Annot__getFlags, METH_VARARGS, (char *)"Annot__getFlags(Annot self) -> int"},
 	 { (char *)"Annot__getContents", _wrap_Annot__getContents, METH_VARARGS, (char *)"Annot__getContents(Annot self) -> char *"},
 	 { (char *)"Annot__getNext", _wrap_Annot__getNext, METH_VARARGS, (char *)"Annot__getNext(Annot self) -> Annot"},

@@ -2183,6 +2183,7 @@ struct pdf_annot_s
 #ifdef MEMDEBUG
             fprintf(stderr, "[DEBUG]free annot\n");
 #endif
+            fz_drop_annot(gctx, (fz_annot*)&$self->super);
             fz_drop_annot(gctx, (fz_annot*)$self);
         }
         /**********************************************************************/
@@ -2221,6 +2222,112 @@ struct pdf_annot_s
             return res;
         }
         %pythoncode %{vertices = property(_getVertices)%}
+
+        /**********************************************************************/
+        // annotation inkList
+        /**********************************************************************/
+        PyObject *_getInkList()
+        {
+            PyObject *res, *coord_o;
+            res = PyList_New(0);                      // create Python list
+            if ($self->page == NULL) return res;      // not a PDF!
+            float coord = 0.0;
+            pdf_obj *vert_o;
+            vert_o = pdf_dict_get(gctx, $self->obj, PDF_NAME_InkList);
+            if (!vert_o) return res;                  // no inkList entry there
+            int n = pdf_array_len(gctx, vert_o);
+            int i, j;
+            if (n < 1) return res;                    // no inkList entry there
+            for (i = 0; i < n; i++)
+                {
+                    PyObject *list = PyList_New(0);
+                    pdf_obj *o = pdf_array_get(gctx, vert_o, i);
+                    int m = pdf_array_len(gctx, o);
+                    for (j = 0; j < m; j++)
+                        {
+                        coord = pdf_to_real(gctx, pdf_array_get(gctx, o, j));
+                        coord_o = PyFloat_FromDouble((double) coord);
+                        PyList_Append(list, coord_o);
+                        }
+                    PyList_Append(res, list);
+                }
+            return res;
+        }
+        %pythoncode %{inkList = property(_getInkList)%}
+
+        /**********************************************************************/
+        // annotation borderColor
+        /**********************************************************************/
+        PyObject *_getBorderColor()
+        {
+            PyObject *res, *col_o;
+            res = PyList_New(0);                      // create Python list
+            if ($self->page == NULL) return res;      // not a PDF!
+            int i;
+            float col;
+            pdf_obj *IC_o;
+            IC_o = pdf_dict_get(gctx, $self->obj, PDF_NAME_C);
+            if (!IC_o) return res;                    // no IC entry there
+            if (!pdf_is_array(gctx, IC_o)) return res;     // IC no an array
+            int n = pdf_array_len(gctx, IC_o);
+            if (n < 1) return res;
+
+            for (i = 0; i < n; i++)
+                {
+                col = pdf_to_real(gctx, pdf_array_get(gctx, IC_o, i));
+                col_o = PyFloat_FromDouble((double) col);
+                PyList_Append(res, col_o);
+                }
+            
+            return res;
+        }
+        %pythoncode %{borderColor = property(_getBorderColor)%}
+
+        /**********************************************************************/
+        // annotation fillColor
+        /**********************************************************************/
+        PyObject *_getfillColor()
+        {
+            PyObject *res, *col_o;
+            res = PyList_New(0);                      // create Python list
+            if ($self->page == NULL) return res;      // not a PDF!
+            int i;
+            float col;
+            pdf_obj *IC_o;
+            const char *IC_str = "IC";
+            IC_o = pdf_dict_gets(gctx, $self->obj, IC_str);
+            if (!IC_o) return res;                    // no IC entry there
+            if (!pdf_is_array(gctx, IC_o)) return res;     // IC no an array
+            int n = pdf_array_len(gctx, IC_o);
+            if (n < 1) return res;
+
+            for (i = 0; i < n; i++)
+                {
+                col = pdf_to_real(gctx, pdf_array_get(gctx, IC_o, i));
+                col_o = PyFloat_FromDouble((double) col);
+                PyList_Append(res, col_o);
+                }
+            
+            return res;
+        }
+        %pythoncode %{fillColor = property(_getfillColor)%}
+
+        /**********************************************************************/
+        // annotation intentType
+        /**********************************************************************/
+        char *_getIntentType()
+        {
+            char *it = "";
+            if ($self->page == NULL) return it;      // not a PDF!
+            pdf_obj *IT_o;
+            const char *IT_str = "IT";
+            IT_o = pdf_dict_gets(gctx, $self->obj, IT_str);
+            if (!IT_o) return it;                    // no LE entry there
+            if (!pdf_is_name(gctx, IT_o)) return it;
+            it = pdf_to_name(gctx, IT_o);
+            return it;
+        }
+        %pythoncode %{intentType = property(_getIntentType)%}
 
         /**********************************************************************/
         // annotation lineEnds
@@ -2318,9 +2425,25 @@ struct pdf_annot_s
         %pythoncode %{title = property(_getTitle)%}
 
         /**********************************************************************/
-        // annotation date
+        // annotation creationDate
         /**********************************************************************/
-        char *_getDate()
+        char *_creationDate()
+        {
+            char *date = "";
+            char *date_str = "CreationDate";
+            if ($self->page == NULL) return date;   // not a PDF!
+            pdf_obj *date_o;
+            date_o = pdf_dict_gets(gctx, $self->obj, date_str);
+            if (date_o == NULL) return date;
+            date = pdf_to_str_buf(gctx, date_o);
+            return date;
+        }
+        %pythoncode %{creationDate = property(_creationDate)%}
+
+        /**********************************************************************/
+        // annotation modDate
+        /**********************************************************************/
+        char *_modDate()
         {
             char *date = "";
             if ($self->page == NULL) return date;   // not a PDF!
@@ -2330,7 +2453,7 @@ struct pdf_annot_s
             date = pdf_to_str_buf(gctx, date_o);
             return date;
         }
-        %pythoncode %{date = property(_getDate)%}
+        %pythoncode %{modDate = property(_modDate)%}
 
         /**********************************************************************/
         // annotation flags

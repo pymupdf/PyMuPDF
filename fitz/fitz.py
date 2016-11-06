@@ -100,8 +100,8 @@ except __builtin__.Exception:
 
 
 VersionFitz = "1.9a"          
-VersionBind = "1.9.2"         
-VersionDate = "2016-11-05 08:55:01"        
+VersionBind = "1.9.3"         
+VersionDate = "2016-11-06 06:13:44"        
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -485,7 +485,10 @@ class Document(_object):
         return "fitz.Document('%s', bytearray)" % (self.name,)
 
     def __getitem__(self, i):
-        return self.loadPage(i)
+        if i >= 0:
+            return self.loadPage(i)
+        else:
+            return self.loadPage(i + self.pageCount)                    
 
     def __len__(self):
         return self.pageCount
@@ -1326,6 +1329,30 @@ class Annot(_object):
 
     vertices = property(_getVertices)
 
+    def _getInkList(self):
+        """_getInkList(Annot self) -> PyObject *"""
+        return _fitz.Annot__getInkList(self)
+
+    inkList = property(_getInkList)
+
+    def _getBorderColor(self):
+        """_getBorderColor(Annot self) -> PyObject *"""
+        return _fitz.Annot__getBorderColor(self)
+
+    borderColor = property(_getBorderColor)
+
+    def _getfillColor(self):
+        """_getfillColor(Annot self) -> PyObject *"""
+        return _fitz.Annot__getfillColor(self)
+
+    fillColor = property(_getfillColor)
+
+    def _getIntentType(self):
+        """_getIntentType(Annot self) -> char *"""
+        return _fitz.Annot__getIntentType(self)
+
+    intentType = property(_getIntentType)
+
     def _getLineEnds(self):
         """_getLineEnds(Annot self) -> PyObject *"""
         return _fitz.Annot__getLineEnds(self)
@@ -1350,11 +1377,17 @@ class Annot(_object):
 
     title = property(_getTitle)
 
-    def _getDate(self):
-        """_getDate(Annot self) -> char *"""
-        return _fitz.Annot__getDate(self)
+    def _creationDate(self):
+        """_creationDate(Annot self) -> char *"""
+        return _fitz.Annot__creationDate(self)
 
-    date = property(_getDate)
+    creationDate = property(_creationDate)
+
+    def _modDate(self):
+        """_modDate(Annot self) -> char *"""
+        return _fitz.Annot__modDate(self)
+
+    modDate = property(_modDate)
 
     def _getFlags(self):
         """_getFlags(Annot self) -> int"""

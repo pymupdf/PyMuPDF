@@ -12,22 +12,26 @@ Quote from the Adobe manual: "An annotation associates an object such as a note,
 This class supports accessing such annotations - not only for PDF files, but for all MuPDF supported document types. However, a minority of properties applies to non-PDF documents.
 
 
-========================= ==============================================================
-**Attribute**             **Short Description**
-========================= ==============================================================
-:meth:`Annot.getPixmap`   image of the annotation as a pixmap
-:attr:`Annot.rect`        rectangle containing the annotation
-:attr:`Annot.next`        link to the next annotation
-:attr:`Annot.type`        PDF only: type of the annotation
-:attr:`Annot.content`     PDF only: content of a text annotation
-:attr:`Annot.name`        PDF only: name of an annotation
-:attr:`Annot.title`       PDF only: title of the pop-up window
-:attr:`Annot.date`        PDF only: timestamp of last modification
-:attr:`Annot.flags`       PDF only: annotation flags
-:attr:`Annot.lineEnds`    PDF only: start / end appearance of line-type annotations
-:attr:`Annot.vertices`    PDF only: coordinates of polygon vertices
-:attr:`Annot.inkList`     PDF only: coordinates of free hand drawings
-========================= ==============================================================
+=========================== ==============================================================
+**Attribute**               **Short Description**
+=========================== ==============================================================
+:meth:`Annot.getPixmap`     image of the annotation as a pixmap
+:attr:`Annot.rect`          rectangle containing the annotation
+:attr:`Annot.next`          link to the next annotation
+:attr:`Annot.type`          PDF only: type of the annotation
+:attr:`Annot.content`       PDF only: content of a text annotation
+:attr:`Annot.name`          PDF only: name of an annotation
+:attr:`Annot.title`         PDF only: title of the pop-up window
+:attr:`Annot.borderColor`   PDF only: border color
+:attr:`Annot.fillColor`     PDF only: interior color
+:attr:`Annot.intentType`    PDF only: subtype
+:attr:`Annot.creationDate`  PDF only: timestamp of creation
+:attr:`Annot.modDate`       PDF only: timestamp of last modification
+:attr:`Annot.flags`         PDF only: annotation flags
+:attr:`Annot.lineEnds`      PDF only: start / end appearance of line-type annotations
+:attr:`Annot.vertices`      PDF only: point coordinates of polygons / polylines
+:attr:`Annot.inkList`       PDF only: point coordinates of free hand drawings
+=========================== ==============================================================
 
 **Class API**
 
@@ -35,12 +39,12 @@ This class supports accessing such annotations - not only for PDF files, but for
 
    .. method:: getPixmap(matrix = fitz.Ientity, colorspace = fitz.csRGB)
 
-      Creates a pixmap from the annotation as it appears on the page in untransformed coordinates. The pixmap's :ref:`IRect` is equal to ``Annot.rect.round()`` (see below).
+      Creates a pixmap from the annotation as it appears on the page in untransformed coordinates. The pixmap's :ref:`IRect` equals ``Annot.rect.round()`` (see below).
 
-      :param `matrix`: a matrix to be used for image creation. Default value is the ``fitz.Identity`` matrix.
+      :param `matrix`: a matrix to be used for image creation. Default is the ``fitz.Identity`` matrix.
       :type `matrix`: :ref:`Matrix`
 
-      :param `cspace`: a colorspace to be used for image creation. Default value is ``fitz.csRGB``.
+      :param `cspace`: a colorspace to be used for image creation. Default is ``fitz.csRGB``.
       :type `cspace`: :ref:`Colorspace`
 
       :rtype: :ref:`Pixmap`
@@ -59,13 +63,13 @@ This class supports accessing such annotations - not only for PDF files, but for
 
    .. attribute:: type
 
-      Meaningful for PDF only: A number and a string describing the annotation type, e.g. ``[12, 'Stamp']``. If not PDF, it will contain ``[]``. See the appendix :ref:`Annotation Types` for a list of possible values and their meanings.
+      Meaningful for PDF only: A number and a string describing the annotation type, e.g. ``[12, 'Stamp']``. ``[]`` if not PDF. See the appendix :ref:`Annotation Types` for a list of possible values and their meanings.
 
       :rtype: list
 
    .. attribute:: content
 
-      Meaningful for PDF only: A string containing the text for type ``Text`` and ``FreeText`` annotations. For other types the entry is optional. Contains an empty string if not specified or not a PDF.
+      Meaningful for PDF only: A string containing the text for type ``Text`` and ``FreeText`` annotations. For other types the entry is optional. Empty if not specified or not a PDF.
 
       :rtype: str
 
@@ -81,7 +85,13 @@ This class supports accessing such annotations - not only for PDF files, but for
 
       :rtype: str
 
-   .. attribute:: date
+   .. attribute:: creationDate
+
+      Meaningful for PDF only: A string containing the PDF timestamp of the annotation's creation.
+
+      :rtype: str
+
+   .. attribute:: modDate
 
       Meaningful for PDF only: A string containing the PDF timestamp of the annotation's last modification.
 
@@ -95,19 +105,37 @@ This class supports accessing such annotations - not only for PDF files, but for
 
    .. attribute:: lineEnds
 
-      Meaningful for PDF only: A list specifying the starting and the ending appearance of annotations of types ``Line``, ``PolyLine``, etc. An example would be ``['None', 'OpenArrow']``. If not specified or not applicable, it contains an empty list ``[]``. For possible values and descriptions in this list, see the Adobe manual, table 8.27 on page 630.
+      Meaningful for PDF only: A list specifying the starting and the ending appearance of annotations of types ``Line``, ``PolyLine``, etc. An example would be ``['None', 'OpenArrow']``. ``[]`` if not specified or not applicable. For possible values and descriptions in this list, see the Adobe manual, table 8.27 on page 630.
 
       :rtype: list
 
    .. attribute:: vertices
 
-      Meaningful for PDF only: A list of float coordinates for annotations of type ``PolyLine`` and ``Polygon``. Every pair of floats specifies a point ("vertex") of the annotation graph. Contains an empty list ``[]`` when not applicable.
+      Meaningful for PDF only: A list of float coordinates for annotations of type ``PolyLine`` and ``Polygon``. Every two floats specify the points ("vertices") that are connected with straight lines to form the graphical image of the annotation. ``[]`` when not applicable.
 
       :rtype: list
 
    .. attribute:: inkList
 
-      Meaningful for PDF only: ... work in progress ...
+      Meaningful for PDF only: A list of lists of point coordinates (like in vertices) for free hand drawings. The number of lists designates the number of disconnected lines in the drawing.
+
+      :rtype: list
+
+   .. attribute:: intentType
+
+      Meaningful for PDF only: A string specifying a subtype, e.g. ``LineArrow`` for type ``Line``.
+
+      :rtype: str
+
+   .. attribute:: fillColor
+
+      Meaningful for PDF only: A list of floats in range ``[0.0, 1.0]`` specifying the interior color of objects like line ends. The length of the list determines the colorspace used: 1 = GRAY, 3 = RGB, 4 = CMYK. So ``[1.0, 0.0, 0.0]`` stands for RGB ``red``.
+
+      :rtype: list
+
+   .. attribute:: borderColor
+
+      Meaningful for PDF only: A list of floats in range ``[0.0, 1.0]`` specifying the border color. The length of the list determines the colorspace used: 1 = GRAY, 3 = RGB, 4 = CMYK.
 
       :rtype: list
 
