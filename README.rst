@@ -64,13 +64,13 @@ Please have a look at the basic `demos <https://github.com/rk700/PyMuPDF/tree/ma
 
 You can access the complete documentation (which contains a detailed tutorial) as a `PDF <https://github.com/rk700/PyMuPDF/tree/master/doc/PyMuPDF.pdf>`_, as a `Windows compiled html <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm>`_ or at `PyPI <http://pythonhosted.org/PyMuPDF/>`_.
 
-Next Versions
-==============
-Version v1.9.3 is underway. If you want to try out its new features, have a look at its `branch <https://github.com/rk700/PyMuPDF/tree/1.9.3>`_. An overview can be found in this `Wiki <https://github.com/rk700/PyMuPDF/wiki/Changes-in-Version-1.9.3>`_ page.
+Next Versions - Update
+========================
+Version v1.9.3 exists as a branch. If you want to try out its new features, have a look at `this <https://github.com/rk700/PyMuPDF/tree/1.9.3>`_. An overview can be found in this `Wiki <https://github.com/rk700/PyMuPDF/wiki/Changes-in-Version-1.9.3>`_ page.
 
-**MuPDF v1.10** is in preparation: 1.10-rc1 has just been published. Accordingly, we have started working on **PyMuPDF v1.10.0**, which will be based on the v1.9.3 feature set.
+**MuPDF v1.10** has been officially published (2016-11-21). We are working to support it with **PyMuPDF v1.10.0**. This will be an extension of the v1.9.3 feature set which we do not plan to publish as an official PyMuPDF release any longer. You can, however, use branch 1.9.3 - it does work!
 
-MuPDF's new version contains significant changes. Some of them (pixmaps, links) will impact PyMuPDF's API, so please check out `Wiki <https://github.com/rk700/PyMuPDF/wiki>`_ pages dealing with such changes.
+MuPDF's new version contains significant changes. Some of them (pixmaps, links) will impact PyMuPDF's API, so please check out `Wiki <https://github.com/rk700/PyMuPDF/wiki>`_ pages dealing with any such changes.
 
 Legacy Support
 ==============
