@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Annot &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Annot &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="up" title="Classes" href="classes.html"/>
         <link rel="next" title="Colorspace" href="colorspace.html"/>
         <link rel="prev" title="Classes" href="classes.html"/> 
@@ -55,13 +57,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -84,7 +89,8 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
@@ -102,7 +108,6 @@
 <li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
@@ -150,8 +155,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/annot.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -162,8 +165,8 @@
             
   <div class="section" id="annot">
 <span id="id1"></span><h1>Annot<a class="headerlink" href="#annot" title="Permalink to this headline">¶</a></h1>
-<p>Quote from the Adobe manual: &#8220;An annotation associates an object such as a note, sound, or movie with a location on a page of a PDF document, or provides a way to interact with the user by means of the mouse and keyboard.&#8221;</p>
-<p>This class supports accessing such annotations - not only for PDF files, but for all MuPDF supported document types. However, a minority of properties applies to non-PDF documents.</p>
+<p>Quote from the Adobe manual: &quot;An annotation associates an object such as a note, sound, or movie with a location on a page of a PDF document, or provides a way to interact with the user by means of the mouse and keyboard.&quot;</p>
+<p>This class supports accessing such annotations - not only for PDF files, but for all MuPDF supported document types. However, only a few methods and properties apply to non-PDF documents.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="30%" />
@@ -178,50 +181,50 @@
 <tr class="row-even"><td><a class="reference internal" href="#Annot.getPixmap" title="Annot.getPixmap"><code class="xref py py-meth docutils literal"><span class="pre">Annot.getPixmap()</span></code></a></td>
 <td>image of the annotation as a pixmap</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Annot.rect" title="Annot.rect"><code class="xref py py-attr docutils literal"><span class="pre">Annot.rect</span></code></a></td>
-<td>rectangle containing the annotation</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.setInfo" title="Annot.setInfo"><code class="xref py py-meth docutils literal"><span class="pre">Annot.setInfo()</span></code></a></td>
+<td>PDF only: change metadata of an annotation</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Annot.next" title="Annot.next"><code class="xref py py-attr docutils literal"><span class="pre">Annot.next</span></code></a></td>
-<td>link to the next annotation</td>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.setBorder" title="Annot.setBorder"><code class="xref py py-meth docutils literal"><span class="pre">Annot.setBorder()</span></code></a></td>
+<td>PDF only: changes the border of an annotation</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Annot.type" title="Annot.type"><code class="xref py py-attr docutils literal"><span class="pre">Annot.type</span></code></a></td>
-<td>PDF only: type of the annotation</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.setLineEnds" title="Annot.setLineEnds"><code class="xref py py-meth docutils literal"><span class="pre">Annot.setLineEnds()</span></code></a></td>
+<td>PDF only: changes the line ends of an annotation</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Annot.content" title="Annot.content"><code class="xref py py-attr docutils literal"><span class="pre">Annot.content</span></code></a></td>
-<td>PDF only: content of a text annotation</td>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.setFlags" title="Annot.setFlags"><code class="xref py py-meth docutils literal"><span class="pre">Annot.setFlags()</span></code></a></td>
+<td>PDF only: changes the flags of an annotation</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Annot.name" title="Annot.name"><code class="xref py py-attr docutils literal"><span class="pre">Annot.name</span></code></a></td>
-<td>PDF only: name of an annotation</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.setRect" title="Annot.setRect"><code class="xref py py-meth docutils literal"><span class="pre">Annot.setRect()</span></code></a></td>
+<td>PDF only: changes the rectangle of an annotation</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Annot.title" title="Annot.title"><code class="xref py py-attr docutils literal"><span class="pre">Annot.title</span></code></a></td>
-<td>PDF only: title of the pop-up window</td>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.setColors" title="Annot.setColors"><code class="xref py py-meth docutils literal"><span class="pre">Annot.setColors()</span></code></a></td>
+<td>PDF only: changes the colors of an annotation</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Annot.borderColor" title="Annot.borderColor"><code class="xref py py-attr docutils literal"><span class="pre">Annot.borderColor</span></code></a></td>
-<td>PDF only: border color</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.border" title="Annot.border"><code class="xref py py-attr docutils literal"><span class="pre">Annot.border</span></code></a></td>
+<td>PDF only: border details</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Annot.fillColor" title="Annot.fillColor"><code class="xref py py-attr docutils literal"><span class="pre">Annot.fillColor</span></code></a></td>
-<td>PDF only: interior color</td>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.colors" title="Annot.colors"><code class="xref py py-attr docutils literal"><span class="pre">Annot.colors</span></code></a></td>
+<td>PDF only: border / background and fill colors</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Annot.intentType" title="Annot.intentType"><code class="xref py py-attr docutils literal"><span class="pre">Annot.intentType</span></code></a></td>
-<td>PDF only: subtype</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#Annot.creationDate" title="Annot.creationDate"><code class="xref py py-attr docutils literal"><span class="pre">Annot.creationDate</span></code></a></td>
-<td>PDF only: timestamp of creation</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Annot.modDate" title="Annot.modDate"><code class="xref py py-attr docutils literal"><span class="pre">Annot.modDate</span></code></a></td>
-<td>PDF only: timestamp of last modification</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#Annot.flags" title="Annot.flags"><code class="xref py py-attr docutils literal"><span class="pre">Annot.flags</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.flags" title="Annot.flags"><code class="xref py py-attr docutils literal"><span class="pre">Annot.flags</span></code></a></td>
 <td>PDF only: annotation flags</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.info" title="Annot.info"><code class="xref py py-attr docutils literal"><span class="pre">Annot.info</span></code></a></td>
+<td>PDF only: various information</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Annot.lineEnds" title="Annot.lineEnds"><code class="xref py py-attr docutils literal"><span class="pre">Annot.lineEnds</span></code></a></td>
 <td>PDF only: start / end appearance of line-type annotations</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Annot.vertices" title="Annot.vertices"><code class="xref py py-attr docutils literal"><span class="pre">Annot.vertices</span></code></a></td>
-<td>PDF only: point coordinates of polygons / polylines</td>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.next" title="Annot.next"><code class="xref py py-attr docutils literal"><span class="pre">Annot.next</span></code></a></td>
+<td>link to the next annotation</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Annot.inkList" title="Annot.inkList"><code class="xref py py-attr docutils literal"><span class="pre">Annot.inkList</span></code></a></td>
-<td>PDF only: point coordinates of free hand drawings</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.rect" title="Annot.rect"><code class="xref py py-attr docutils literal"><span class="pre">Annot.rect</span></code></a></td>
+<td>rectangle containing the annotation</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.type" title="Annot.type"><code class="xref py py-attr docutils literal"><span class="pre">Annot.type</span></code></a></td>
+<td>PDF only: type of the annotation</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.vertices" title="Annot.vertices"><code class="xref py py-attr docutils literal"><span class="pre">Annot.vertices</span></code></a></td>
+<td>PDF only: point coordinates of Polygons, PolyLines, etc.</td>
 </tr>
 </tbody>
 </table>
@@ -231,20 +234,109 @@
 <em class="property">class </em><code class="descname">Annot</code><a class="headerlink" href="#Annot" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="Annot.getPixmap">
-<code class="descname">getPixmap</code><span class="sig-paren">(</span><em>matrix = fitz.Ientity</em>, <em>colorspace = fitz.csRGB</em><span class="sig-paren">)</span><a class="headerlink" href="#Annot.getPixmap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a pixmap from the annotation as it appears on the page in untransformed coordinates. The pixmap&#8217;s <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> equals <code class="docutils literal"><span class="pre">Annot.rect.round()</span></code> (see below).</p>
+<code class="descname">getPixmap</code><span class="sig-paren">(</span><em>matrix = fitz.Ientity</em>, <em>colorspace = fitz.csRGB</em>, <em>alpha = False</em><span class="sig-paren">)</span><a class="headerlink" href="#Annot.getPixmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a pixmap from the annotation as it appears on the page in untransformed coordinates. The pixmap's <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> equals <code class="docutils literal"><span class="pre">Annot.rect.round()</span></code> (see below).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>matrix</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; a matrix to be used for image creation. Default is the <code class="docutils literal"><span class="pre">fitz.Identity</span></code> matrix.</li>
-<li><strong>cspace</strong> (<a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a>) &#8211; a colorspace to be used for image creation. Default is <code class="docutils literal"><span class="pre">fitz.csRGB</span></code>.</li>
+<li><strong>matrix</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) -- a matrix to be used for image creation. Default is the <code class="docutils literal"><span class="pre">fitz.Identity</span></code> matrix.</li>
+<li><strong>colorspace</strong> (<a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a>) -- a colorspace to be used for image creation. Default is <code class="docutils literal"><span class="pre">fitz.csRGB</span></code>.</li>
+<li><strong>alpha</strong> (<em>bool</em>) -- whether to include transparency information. Default is <code class="docutils literal"><span class="pre">False</span></code>.</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="pixmap.html#pixmap"><span class="std std-ref">Pixmap</span></a></p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Annot.setInfo">
+<code class="descname">setInfo</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="headerlink" href="#Annot.setInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes the info dictionary. This is includes dates, contents, subject and author (title). Changes for <code class="docutils literal"><span class="pre">name</span></code> will be ignored.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>d</strong> (<em>dict</em>) -- a dictionary compatible with the <code class="docutils literal"><span class="pre">info</span></code> property (see below). Plausibility checks are kept to a minimum - except all entries must be <code class="docutils literal"><span class="pre">unicode</span></code>, <code class="docutils literal"><span class="pre">bytes</span></code>, or strings. If <code class="docutils literal"><span class="pre">bytes</span></code> values are provided in Python 3, they will be treated as being UTF8 encoded.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Annot.setLineEnds">
+<code class="descname">setLineEnds</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="headerlink" href="#Annot.setLineEnds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes the line ending styles (of annotation types where this makes sense).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>start</strong> (<em>int</em>) -- an integer specifying the line start style. See <a class="reference internal" href="vars.html#annotation-line-ends"><span class="std std-ref">Annotation Line End Styles</span></a> for acceptable values.</li>
+<li><strong>end</strong> (<em>int</em>) -- an integer specifying the line end style. See <a class="reference internal" href="vars.html#annotation-line-ends"><span class="std std-ref">Annotation Line End Styles</span></a> for acceptable values.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Annot.setRect">
+<code class="descname">setRect</code><span class="sig-paren">(</span><em>rect</em><span class="sig-paren">)</span><a class="headerlink" href="#Annot.setRect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes the rectangle of an annotation. The annotation can be moved around and both sides of the rectangle can be independently scaled. However, the annotation appearance will never get rotated, flipped or sheared.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rect</strong> (<a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a>) -- the new rectangle of the annotation. This could e.g. be a rectangle <code class="docutils literal"><span class="pre">rect</span> <span class="pre">=</span> <span class="pre">Annot.rect</span> <span class="pre">*</span> <span class="pre">M</span></code> with a suitable <a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a> M (scaling and translating).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Annot.setBorder">
+<code class="descname">setBorder</code><span class="sig-paren">(</span><em>width</em><span class="sig-paren">)</span><a class="headerlink" href="#Annot.setBorder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes the border width. Any other border properties (border effects, dashed lines) will be deleted by this method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>width</strong> (<em>float</em>) -- a float specifying the border width in points.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Annot.setFlags">
+<code class="descname">setFlags</code><span class="sig-paren">(</span><em>flags</em><span class="sig-paren">)</span><a class="headerlink" href="#Annot.setFlags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes the flags of the annotation. See <a class="reference internal" href="vars.html#annotation-flags"><span class="std std-ref">Annotation Flags</span></a> for possible values and use the <code class="docutils literal"><span class="pre">|</span></code> operator to combine several.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>flags</strong> (<em>int</em>) -- an integer specifying the required flags.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Annot.setColors">
+<code class="descname">setColors</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="headerlink" href="#Annot.setColors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes the colors associated with the annotation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>d</strong> (<em>dict</em>) -- a dictionary containing color specifications. For accepted dictionary keys and values see below. The most practical way should be to first make a copy of the <code class="docutils literal"><span class="pre">colors</span></code> property and then modify this as required.</td>
 </tr>
 </tbody>
 </table>
@@ -281,7 +373,7 @@
 <dl class="attribute">
 <dt id="Annot.type">
 <code class="descname">type</code><a class="headerlink" href="#Annot.type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meaningful for PDF only: A number and a string describing the annotation type, e.g. <code class="docutils literal"><span class="pre">[12,</span> <span class="pre">'Stamp']</span></code>. <code class="docutils literal"><span class="pre">[]</span></code> if not PDF. See the appendix <a class="reference internal" href="vars.html#annotation-types"><span class="std std-ref">Annotation Types</span></a> for a list of possible values and their meanings.</p>
+<dd><p>Meaningful for PDF only: A number and two strings describing the annotation type, like <code class="docutils literal"><span class="pre">[2,</span> <span class="pre">'FreeText',</span> <span class="pre">'FreeTextCallout']</span></code>. The second string entry is optional and may be empty. <code class="docutils literal"><span class="pre">[]</span></code> if not PDF. See the appendix <a class="reference internal" href="vars.html#annotation-types"><span class="std std-ref">Annotation Types</span></a> for a list of possible values and their meanings.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -293,70 +385,22 @@
 </dd></dl>
 
 <dl class="attribute">
-<dt id="Annot.content">
-<code class="descname">content</code><a class="headerlink" href="#Annot.content" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meaningful for PDF only: A string containing the text for type <code class="docutils literal"><span class="pre">Text</span></code> and <code class="docutils literal"><span class="pre">FreeText</span></code> annotations. For other types the entry is optional. Empty if not specified or not a PDF.</p>
+<dt id="Annot.info">
+<code class="descname">info</code><a class="headerlink" href="#Annot.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meaningful for PDF only: A dictionary containing various information. All fields are unicode or strings (Python 2 or Python 3 respectively).</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">name</span></code> - e.g. for <code class="docutils literal"><span class="pre">[12,</span> <span class="pre">'Stamp']</span></code> type annotations it will contain the stamp text like <code class="docutils literal"><span class="pre">Sold</span></code> or <code class="docutils literal"><span class="pre">Experimental</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">content</span></code> - a string containing the text for type <code class="docutils literal"><span class="pre">Text</span></code> and <code class="docutils literal"><span class="pre">FreeText</span></code> annotations. For <code class="docutils literal"><span class="pre">FileAttachment</span></code> it contains the filename. For other types the entry is optional. Empty if not specified or not a PDF.</li>
+<li><code class="docutils literal"><span class="pre">title</span></code> - a string containing the title of the annotation pop-up window. By convention, this is used for the annotation author.</li>
+<li><code class="docutils literal"><span class="pre">creationDate</span></code> - the PDF timestamp of creation.</li>
+<li><code class="docutils literal"><span class="pre">modDate</span></code> - the PDF timestamp of last change.</li>
+<li><code class="docutils literal"><span class="pre">subject</span></code> - the subject, an optional string.</li>
+</ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="Annot.name">
-<code class="descname">name</code><a class="headerlink" href="#Annot.name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meaningful for PDF only: A string containing the name of the annotation. Contains an empty string if not specified or not a PDF. For e.g. <code class="docutils literal"><span class="pre">[12,</span> <span class="pre">'Stamp']</span></code> type annotations it will contain the stamp text like <code class="docutils literal"><span class="pre">Sold</span></code> or <code class="docutils literal"><span class="pre">Experimental</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="Annot.title">
-<code class="descname">title</code><a class="headerlink" href="#Annot.title" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meaningful for PDF only: A string containing the title of the annotation&#8217;s pop-up window. By convention, this is normally used for the name of the user who entered the annotation.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="Annot.creationDate">
-<code class="descname">creationDate</code><a class="headerlink" href="#Annot.creationDate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meaningful for PDF only: A string containing the PDF timestamp of the annotation&#8217;s creation.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="Annot.modDate">
-<code class="descname">modDate</code><a class="headerlink" href="#Annot.modDate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meaningful for PDF only: A string containing the PDF timestamp of the annotation&#8217;s last modification.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
 </tr>
 </tbody>
 </table>
@@ -365,7 +409,7 @@
 <dl class="attribute">
 <dt id="Annot.flags">
 <code class="descname">flags</code><a class="headerlink" href="#Annot.flags" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meaningful for PDF only: An integer with its low order byte containing flags for how the annotation should be presented. See section <a class="reference internal" href="vars.html#annotation-flags"><span class="std std-ref">Annotation Flags</span></a> for details.</p>
+<dd><p>Meaningful for PDF only: An integer whose low order bits contain flags for how the annotation should be presented. See section <a class="reference internal" href="vars.html#annotation-flags"><span class="std std-ref">Annotation Flags</span></a> for details.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -379,12 +423,12 @@
 <dl class="attribute">
 <dt id="Annot.lineEnds">
 <code class="descname">lineEnds</code><a class="headerlink" href="#Annot.lineEnds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meaningful for PDF only: A list specifying the starting and the ending appearance of annotations of types <code class="docutils literal"><span class="pre">Line</span></code>, <code class="docutils literal"><span class="pre">PolyLine</span></code>, etc. An example would be <code class="docutils literal"><span class="pre">['None',</span> <span class="pre">'OpenArrow']</span></code>. <code class="docutils literal"><span class="pre">[]</span></code> if not specified or not applicable. For possible values and descriptions in this list, see the Adobe manual, table 8.27 on page 630.</p>
+<dd><p>Meaningful for PDF only: A dictionary specifying the starting and the ending appearance of annotations of types <code class="docutils literal"><span class="pre">Line</span></code>, <code class="docutils literal"><span class="pre">PolyLine</span></code>, among others. An example would be <code class="docutils literal"><span class="pre">{'start':</span> <span class="pre">'None',</span> <span class="pre">'end':</span> <span class="pre">'OpenArrow'}</span></code>. <code class="docutils literal"><span class="pre">{}</span></code> if not specified or not applicable. For possible values and descriptions in this list, see the Adobe manual, table 8.27 on page 630.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
 </tr>
 </tbody>
 </table>
@@ -393,7 +437,7 @@
 <dl class="attribute">
 <dt id="Annot.vertices">
 <code class="descname">vertices</code><a class="headerlink" href="#Annot.vertices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meaningful for PDF only: A list of float coordinates for annotations of type <code class="docutils literal"><span class="pre">PolyLine</span></code> and <code class="docutils literal"><span class="pre">Polygon</span></code>. Every two floats specify the points (&#8220;vertices&#8221;) that are connected with straight lines to form the graphical image of the annotation. <code class="docutils literal"><span class="pre">[]</span></code> when not applicable.</p>
+<dd><p>Meaningful for PDF only: A list containing point (&quot;vertices&quot;) coordinates for various types of annotations: For &quot;Line&quot; it contains the starting and ending coordinates. For <code class="docutils literal"><span class="pre">[2,</span> <span class="pre">'FreeText',</span> <span class="pre">'FreeTextCallout']</span></code> it contains 4 or 6 floats designating the starting, the (optional) knee point, and the ending coordinates. For &quot;PolyLine&quot; and &quot;Polygon&quot; it contains the coordinates of the edges connected by line pieces. For &quot;Ink&quot; (freehand drawing) it contains one to many lists of vertex coordinates. Each such sublist represents a separate line in the drawing. <code class="docutils literal"><span class="pre">[]</span></code> when not applicable.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -405,56 +449,36 @@
 </dd></dl>
 
 <dl class="attribute">
-<dt id="Annot.inkList">
-<code class="descname">inkList</code><a class="headerlink" href="#Annot.inkList" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meaningful for PDF only: A list of lists of point coordinates (like in vertices) for free hand drawings. The number of lists designates the number of disconnected lines in the drawing.</p>
+<dt id="Annot.colors">
+<code class="descname">colors</code><a class="headerlink" href="#Annot.colors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meaningful for PDF only: A dictionary of two lists of floats in range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">float</span> <span class="pre">&lt;=</span> <span class="pre">1</span></code> specifying the common (<code class="docutils literal"><span class="pre">common</span></code>) and the interior (<code class="docutils literal"><span class="pre">fill</span></code>) colors. The common color is used for borders, and in some cases also for backgrounds. The fill color is used for the interior of objects like line ends, circles and squares. The lengths of the lists determine the colorspaces used: 1 = GRAY, 3 = RGB, 4 = CMYK. So <code class="docutils literal"><span class="pre">[1.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></code> stands for RGB and color <code class="docutils literal"><span class="pre">red</span></code>. Both lists can be <code class="docutils literal"><span class="pre">[]</span></code> if not specified. The dictionary will be empty <code class="docutils literal"><span class="pre">{}</span></code> if no PDF.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="Annot.intentType">
-<code class="descname">intentType</code><a class="headerlink" href="#Annot.intentType" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meaningful for PDF only: A string specifying a subtype, e.g. <code class="docutils literal"><span class="pre">LineArrow</span></code> for type <code class="docutils literal"><span class="pre">Line</span></code>.</p>
+<dt id="Annot.border">
+<code class="descname">border</code><a class="headerlink" href="#Annot.border" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meaningful for PDF only: A dictionary containing border characteristics. It will be empty <code class="docutils literal"><span class="pre">{}</span></code> if not PDF or when no border information is provided. Technically, the PDF entries <code class="docutils literal"><span class="pre">/Border</span></code>, <code class="docutils literal"><span class="pre">/BS</span></code> and <code class="docutils literal"><span class="pre">/BE</span></code> will be checked to build this information. The following optional keys may be contained:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">width</span></code> - a float indicating the border thickness in points.</li>
+<li><code class="docutils literal"><span class="pre">effect</span></code> - a list specifying a border line effect like <code class="docutils literal"><span class="pre">[1,</span> <span class="pre">'C']</span></code>. The first entry &quot;intensity&quot; is an integer (from 0 to 2 for maximum intensity). The second is either 'S' for &quot;no effect&quot; or 'C' for a &quot;cloudy&quot; line.</li>
+<li><code class="docutils literal"><span class="pre">dashes</span></code> - a list specifying a line dash pattern like in <code class="docutils literal"><span class="pre">[3,</span> <span class="pre">2]</span></code>. This example specifies 3-point dashes alternating with 2-point gaps.</li>
+<li><code class="docutils literal"><span class="pre">style</span></code> - 1-byte border style: <code class="docutils literal"><span class="pre">S</span></code> (Solid) = solid rectangle surrounding the annotation, <code class="docutils literal"><span class="pre">D</span></code> (Dashed) = dashed rectangle surrounding the annotation, the dash pattern is specified by the <code class="docutils literal"><span class="pre">dashes</span></code> entry, <code class="docutils literal"><span class="pre">B</span></code> (Beveled) = a simulated embossed rectangle that appears to be raised above the surface of the page, <code class="docutils literal"><span class="pre">I</span></code> (Inset) = a simulated engraved rectangle that appears to be recessed below the surface of the page, <code class="docutils literal"><span class="pre">U</span></code> (Underline) = a single line along the bottom of the annotation rectangle.</li>
+<li><code class="docutils literal"><span class="pre">hradius</span></code> - horizontal corner radius. Zero means square (un-rounded) corners.</li>
+<li><code class="docutils literal"><span class="pre">vradius</span></code> - vertical coner radius.  Zero means square (un-rounded) corners.</li>
+</ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="Annot.fillColor">
-<code class="descname">fillColor</code><a class="headerlink" href="#Annot.fillColor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meaningful for PDF only: A list of floats in range <code class="docutils literal"><span class="pre">[0.0,</span> <span class="pre">1.0]</span></code> specifying the interior color of objects like line ends. The length of the list determines the colorspace used: 1 = GRAY, 3 = RGB, 4 = CMYK. So <code class="docutils literal"><span class="pre">[1.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></code> stands for RGB <code class="docutils literal"><span class="pre">red</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="Annot.borderColor">
-<code class="descname">borderColor</code><a class="headerlink" href="#Annot.borderColor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meaningful for PDF only: A list of floats in range <code class="docutils literal"><span class="pre">[0.0,</span> <span class="pre">1.0]</span></code> specifying the border color. The length of the list determines the colorspace used: 1 = GRAY, 3 = RGB, 4 = CMYK.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
 </tr>
 </tbody>
 </table>
@@ -484,7 +508,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 06. Nov 2016.
+      Last updated on 01. Dec 2016.
 
     </p>
   </div>
@@ -506,7 +530,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

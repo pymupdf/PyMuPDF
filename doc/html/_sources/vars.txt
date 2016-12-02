@@ -49,21 +49,24 @@ Constants
 
 .. py:data:: VersionBind
 
-    '1.9.2' - version of PyMuPDF (these bindings)
+    '1.10.x' - version of PyMuPDF (these bindings)
 
     :rtype: string
 
 .. py:data:: VersionFitz
 
-    '1.9a' - version of MuPDF
+    '1.10' - version of MuPDF
 
     :rtype: string
 
 .. py:data:: VersionDate
 
-    ISO timestamp ``YYYY-MM-DD HH:MM:SS`` when these bindings were created.
+    ISO timestamp ``YYYY-MM-DD HH:MM:SS`` when these bindings were built.
 
     :rtype: string
+
+.. Note:: The docstring of ``fitz`` contains information of the above which can be retrieved like so: ``print(fitz.__doc__)``, and a possible response should look like: ``PyMuPDF 1.10.0: Python bindings for the MuPDF 1.10 library, built on 2016-11-30 13:09:13``.
+
 
 .. _linkDest Kinds:
 
@@ -268,7 +271,7 @@ Annotation Flags
 ---------------------
 Possible mask values for PDF annotation flags.
 
-.. Note:: Annotation flags is a bit field, so test the truth of its bits with the ``&`` operator. The following descriptions were extracted from the Adobe manual, pages 608 pp.
+.. Note:: Annotation flags is a bit field, so test the truth of its bits with the ``&`` operator. When changing flags for an annotation, use the ``|`` operator to combine several values. The following descriptions were extracted from the Adobe manual, pages 608 pp.
 
 .. py:data:: ANNOT_XF_Invisible
 
@@ -276,7 +279,7 @@ Possible mask values for PDF annotation flags.
 
 .. py:data:: ANNOT_XF_Hidden
 
-    2 -  If set, do not display or print the annotation or allow it to interact with the user, regardless of its annotation type or whether an annotation handler is available. In cases where screen space is limited, the ability to hide and show annotations selectively can be used in combination with appearance streams to display auxiliary pop-up information similar in function to online help systems.
+    2 - If set, do not display or print the annotation or allow it to interact with the user, regardless of its annotation type or whether an annotation handler is available. In cases where screen space is limited, the ability to hide and show annotations selectively can be used in combination with appearance streams to display auxiliary pop-up information similar in function to online help systems.
 
 .. py:data:: ANNOT_XF_Print
 
@@ -284,7 +287,7 @@ Possible mask values for PDF annotation flags.
 
 .. py:data:: ANNOT_XF_NoZoom
 
-    8 -  If set, do not scale the annotation’s appearance to match the magnification of the page. The location of the annotation on the page (defined by the upper-left corner of its annotation rectangle) remains fixed, regardless of the page magnification.
+    8 - If set, do not scale the annotation’s appearance to match the magnification of the page. The location of the annotation on the page (defined by the upper-left corner of its annotation rectangle) remains fixed, regardless of the page magnification.
 
 .. py:data:: ANNOT_XF_NoRotate
 
@@ -309,4 +312,50 @@ Possible mask values for PDF annotation flags.
 .. py:data:: ANNOT_XF_LockedContents
 
     512 - If set, do not allow the contents of the annotation to be modified by the user. This flag does not restrict deletion of the annotation or changes to other annotation properties, such as position and size.
+
+.. _Annotation Line Ends:
+
+Annotation Line End Styles
+----------------------------
+The following descriptions are taken from the Adobe manual TABLE 8.27 on page 630.
+
+.. py:data:: ANNOT_LE_None
+
+    0 - No line ending.
+
+.. py:data:: ANNOT_LE_Square
+
+    1 - A square filled with the annotation’s interior color, if any.
+
+.. py:data:: ANNOT_LE_Circle
+
+    2 - A circle filled with the annotation’s interior color, if any.
+
+.. py:data:: ANNOT_LE_Diamond
+
+    3 - A diamond shape filled with the annotation’s interior color, if any.
+
+.. py:data:: ANNOT_LE_OpenArrow
+
+    4 - Two short lines meeting in an acute angle to form an open arrowhead.
+
+.. py:data:: ANNOT_LE_ClosedArrow
+
+    5 - Two short lines meeting in an acute angle as in the OpenArrow style (see above) and connected by a third line to form a triangular closed arrowhead filled with the annotation’s interior color, if any.
+
+.. py:data:: ANNOT_LE_Butt
+
+    6 - (PDF 1.5) A short line at the endpoint perpendicular to the line itself.
+
+.. py:data:: ANNOT_LE_ROpenArrow
+
+    7 - (PDF 1.5) Two short lines in the reverse direction from OpenArrow.
+
+.. py:data:: ANNOT_LE_RClosedArrow
+
+    8 - (PDF 1.5) A triangular closed arrowhead in the reverse direction from ClosedArrow.
+
+.. py:data:: ANNOT_LE_Slash
+
+    9 - (PDF 1.6) A short line at the endpoint approximately 30 degrees clockwise from perpendicular to the line itself.
 

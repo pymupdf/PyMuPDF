@@ -26,13 +26,16 @@ A ``DisplayList`` is populated with objects from a page by running :meth:`Page.r
 
 .. class:: DisplayList
 
-   .. method:: __init__(self)
+   .. method:: __init__(self, mediabox)
 
       Create a new display list.
 
-      When the device is rendering a page it will populate the display list with drawing commands (text, images, etc.). The display list can later be reused to render a page many times without having to re-interpret the page from the document file.
+      When the device is rendering a page, it will populate the display list with drawing commands (text, images, etc.). The display list can later be reused to render a page many times without having to re-interpret the page from the document file.
 
-      :rtype: :ref:`DisplayList`
+      :param `mediabox`: The page's rectangle - output of ``page.bound()``.
+      :type `mediabox`: :ref:`Rect`
+
+      :rtype: ``DisplayList``
 
    .. method:: run(self, dev, ctm, area)
 

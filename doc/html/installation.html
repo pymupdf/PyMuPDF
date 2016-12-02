@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Installation &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Installation &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,9 +32,9 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="next" title="Tutorial" href="tutorial.html"/>
-        <link rel="prev" title="Changes in Version 1.9.2" href="changes.html"/> 
+        <link rel="prev" title="Changes in Version 1.10.0" href="changes.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -54,13 +56,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -83,12 +88,14 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#option-1-install-from-sources">Option 1: Install from Sources</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#step-1-download-pymupdf">Step 1: Download PyMuPDF</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-2-download-and-generate-mupdf-1-9">Step 2: Download and Generate MuPDF 1.9</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-2-download-and-generate-mupdf-1-10a">Step 2: Download and Generate MuPDF 1.10a</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-3-build-setup-pymupdf">Step 3: Build / Setup PyMuPDF</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#using-upx">Using UPX</a></li>
 </ul>
@@ -142,8 +149,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/installation.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -155,39 +160,103 @@
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>Installation generally encompasses downloading and generating PyMuPDF and MuPDF from sources.</p>
-<p>This process consists of three steps described below under <strong>&#8220;Option 1: Install from Sources&#8221;</strong>.</p>
-<p>If your operating system is Windows 7 or higher (x86 or x64), you can perform a binary setup, detailed out under <strong>&#8220;Option 2: Install from Binaries&#8221;</strong>. This process is <strong>a lot faster</strong> and requires no compiler, no Visual Studio, no download of MuPDF, even no download of PyMuPDF. You only need to download those binaries from PyMuPDF-optional-material that fit your Python version.</p>
+<p>This process consists of three steps described below under <strong>&quot;Option 1: Install from Sources&quot;</strong>.</p>
+<p>If your operating system is Windows 7 or higher (x86 or x64), you can perform a binary setup, detailed out under <strong>&quot;Option 2: Install from Binaries&quot;</strong>. This process is <strong>a lot faster</strong> and requires no compiler, no Visual Studio, no download of MuPDF, even no download of PyMuPDF. You only need to download those binaries from PyMuPDF-optional-material that fit your Python version.</p>
 <div class="section" id="option-1-install-from-sources">
 <h2>Option 1: Install from Sources<a class="headerlink" href="#option-1-install-from-sources" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="step-1-download-pymupdf">
 <h3>Step 1: Download PyMuPDF<a class="headerlink" href="#step-1-download-pymupdf" title="Permalink to this headline">¶</a></h3>
 <p>Download this repository and unzip / decompress it. This will give you a folder, let us call it <code class="docutils literal"><span class="pre">PyFitz</span></code>.</p>
 </div>
-<div class="section" id="step-2-download-and-generate-mupdf-1-9">
-<h3>Step 2: Download and Generate MuPDF 1.9<a class="headerlink" href="#step-2-download-and-generate-mupdf-1-9" title="Permalink to this headline">¶</a></h3>
-<p>Download <code class="docutils literal"><span class="pre">mupdf-1.9a-source.tar.gz</span></code> from <a class="reference external" href="http://mupdf.com/downloads/">MuPDF version 1.9a source</a>, now and unzip / decompress it. Call the resulting folder <code class="docutils literal"><span class="pre">mupdf</span></code>. MuPDF sources are also available on <a class="reference external" href="https://github.com/ArtifexSoftware/mupdf">GitHub</a>.</p>
+<div class="section" id="step-2-download-and-generate-mupdf-1-10a">
+<h3>Step 2: Download and Generate MuPDF 1.10a<a class="headerlink" href="#step-2-download-and-generate-mupdf-1-10a" title="Permalink to this headline">¶</a></h3>
+<p>Download <code class="docutils literal"><span class="pre">mupdf-1.9a-source.tar.gz</span></code> from <a class="reference external" href="http://mupdf.com/downloads/">MuPDF version 1.10a source</a>, now and unzip / decompress it. Call the resulting folder <code class="docutils literal"><span class="pre">mupdf</span></code>. MuPDF sources are also available on <a class="reference external" href="https://github.com/ArtifexSoftware/mupdf">GitHub</a>.</p>
 <p>Make sure you download the (sub-) version for which PyMuPDF has stated its compatibility. The various Linux flavors usually have their own specific ways to support download of packages which we cannot cover here. Do not hesitate posting inquiries to our web site or sending e-mail to the authors for getting support.</p>
 <p>Put it inside <code class="docutils literal"><span class="pre">PyFitz</span></code> as a subdirectory for keeping everything in one place.</p>
 <p><strong>Controlling the Binary File Size:</strong></p>
-<p>Since version 1.9, MuPDF includes support for many dozens of additional, so-called NOTO (&#8220;no TOFU&#8221;) fonts for all sorts of alphabets from all over the world like Chinese, Japanese, Corean, Kyrillic, Indonesian, Chinese etc. If you accept MuPDF&#8217;s standard here, the resulting binary for PyMuPDF will be quite big and easily approach 20 MB.</p>
-<p>If you feel you do not want or need every font, you can reduce their amount by adding appropriate <code class="docutils literal"><span class="pre">#define</span></code> statements to header file <code class="docutils literal"><span class="pre">/include/mupdf/fitz.h</span></code> by inserting <code class="docutils literal"><span class="pre">#define</span></code> statements like this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#ifndef MUDPF_FITZ_H</span>
-<span class="c1">#define MUDPF_FITZ_H</span>
+<p>Since version 1.9, MuPDF includes support for many dozens of additional, so-called NOTO (&quot;no TOFU&quot;) fonts for all sorts of alphabets from all over the world like Chinese, Japanese, Corean, Kyrillic, Indonesian, Chinese etc. If you accept MuPDF's standard here, the resulting binary for PyMuPDF will be very big and easily approach 20 MB. The features actually needed by PyMuPDF in contrast only represent a fraction of this size: no more than 5 MB currently.</p>
+<p>To cut off unneeded stuff from your MuPDF version, modify file <code class="docutils literal"><span class="pre">/include/mupdf/config.h</span></code> as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#ifndef FZ_CONFIG_H</span>
 
-<span class="c1">#define NOTO_SMALL          // choose a small set of extra fonts</span>
-<span class="c1">#define TOFU_CJK            // exclude Android specific fonts</span>
+<span class="c1">#define FZ_CONFIG_H</span>
 
-<span class="c1">#ifdef __cplusplus</span>
-<span class="n">extern</span> <span class="s2">&quot;C&quot;</span> <span class="p">{</span>
-<span class="c1">#endif</span>
-<span class="o">...</span>
+<span class="o">/</span> <span class="o">*</span>
+    <span class="n">Choose</span> <span class="n">which</span> <span class="n">plotters</span> <span class="n">we</span> <span class="n">need</span><span class="o">.</span>
+    <span class="n">By</span> <span class="n">default</span> <span class="n">we</span> <span class="n">build</span> <span class="n">the</span> <span class="n">greyscale</span><span class="p">,</span> <span class="n">RGB</span> <span class="ow">and</span> <span class="n">CMYK</span> <span class="n">plotters</span> <span class="ow">in</span><span class="p">,</span>
+    <span class="n">but</span> <span class="n">omit</span> <span class="n">the</span> <span class="n">arbitrary</span> <span class="n">plotters</span><span class="o">.</span> <span class="n">To</span> <span class="n">avoid</span> <span class="n">building</span>
+    <span class="n">plotters</span> <span class="ow">in</span> <span class="n">that</span> <span class="n">aren</span><span class="s1">&#39;t needed, define the unwanted</span>
+    <span class="n">FZ_PLOTTERS_</span><span class="o">...</span> <span class="n">define</span> <span class="n">to</span> <span class="mf">0.</span>
+<span class="o">*/</span>
+<span class="o">/*</span> <span class="c1">#define FZ_PLOTTERS_G 1 */</span>
+<span class="o">/*</span> <span class="c1">#define FZ_PLOTTERS_RGB 1 */</span>
+<span class="o">/*</span> <span class="c1">#define FZ_PLOTTERS_CMYK 1 */</span>
+<span class="o">/*</span> <span class="c1">#define FZ_PLOTTERS_N 0 */</span>
+
+<span class="o">/*</span>
+    <span class="n">Choose</span> <span class="n">which</span> <span class="n">document</span> <span class="n">agents</span> <span class="n">to</span> <span class="n">include</span><span class="o">.</span>
+    <span class="n">By</span> <span class="n">default</span> <span class="nb">all</span> <span class="n">but</span> <span class="n">GPRF</span> <span class="n">are</span> <span class="n">enabled</span><span class="o">.</span> <span class="n">To</span> <span class="n">avoid</span> <span class="n">building</span> <span class="n">unwanted</span>
+    <span class="n">ones</span><span class="p">,</span> <span class="n">define</span> <span class="n">FZ_ENABLE_</span><span class="o">...</span> <span class="n">to</span> <span class="mf">0.</span>
+<span class="o">*/</span>
+<span class="o">/*</span> <span class="c1">#define FZ_ENABLE_PDF 1 */</span>
+<span class="o">/*</span> <span class="c1">#define FZ_ENABLE_XPS 1 */</span>
+<span class="o">/*</span> <span class="c1">#define FZ_ENABLE_SVG 1 */</span>
+<span class="o">/*</span> <span class="c1">#define FZ_ENABLE_CBZ 1 */</span>
+<span class="o">/*</span> <span class="c1">#define FZ_ENABLE_IMG 1 */</span>
+<span class="o">/*</span> <span class="c1">#define FZ_ENABLE_TIFF 1 */</span>
+<span class="o">/*</span> <span class="c1">#define FZ_ENABLE_HTML 1 */</span>
+<span class="o">/*</span> <span class="c1">#define FZ_ENABLE_EPUB 1 */</span>
+<span class="o">/*</span> <span class="c1">#define FZ_ENABLE_GPRF 1 */</span>
+
+<span class="o">/*</span>
+    <span class="n">Choose</span> <span class="n">whether</span> <span class="n">to</span> <span class="n">enable</span> <span class="n">JavaScript</span><span class="o">.</span>
+    <span class="n">By</span> <span class="n">default</span> <span class="n">JavaScript</span> <span class="ow">is</span> <span class="n">enabled</span> <span class="n">both</span> <span class="k">for</span> <span class="n">mutool</span> <span class="ow">and</span> <span class="n">PDF</span> <span class="n">interactivity</span><span class="o">.</span>
+<span class="o">*/</span>
+<span class="o">//</span> <span class="c1">#define FZ_ENABLE_JS 1</span>
+
+<span class="o">/*</span>
+    <span class="n">Choose</span> <span class="n">which</span> <span class="n">fonts</span> <span class="n">to</span> <span class="n">include</span><span class="o">.</span>
+    <span class="n">By</span> <span class="n">default</span> <span class="n">we</span> <span class="n">include</span> <span class="n">the</span> <span class="n">base</span> <span class="mi">14</span> <span class="n">PDF</span> <span class="n">fonts</span><span class="p">,</span>
+    <span class="n">DroidSansFallback</span> <span class="kn">from</span> <span class="nn">Android</span> <span class="k">for</span> <span class="n">CJK</span><span class="p">,</span> <span class="ow">and</span>
+    <span class="n">Charis</span> <span class="n">SIL</span> <span class="kn">from</span> <span class="nn">SIL</span> <span class="k">for</span> <span class="n">epub</span><span class="o">/</span><span class="n">html</span><span class="o">.</span>
+    <span class="n">Enable</span> <span class="n">the</span> <span class="n">following</span> <span class="n">defines</span> <span class="n">to</span> <span class="n">AVOID</span> <span class="n">including</span>
+    <span class="n">unwanted</span> <span class="n">fonts</span><span class="o">.</span>
+<span class="o">*/</span>
+<span class="o">/*</span> <span class="n">To</span> <span class="n">avoid</span> <span class="nb">all</span> <span class="n">noto</span> <span class="n">fonts</span> <span class="k">except</span> <span class="n">CJK</span><span class="p">,</span> <span class="n">enable</span><span class="p">:</span> <span class="o">*/</span>
+<span class="c1">#define TOFU            // &lt;======================== PyMuPDF</span>
+
+<span class="o">/*</span> <span class="n">To</span> <span class="n">skip</span> <span class="n">the</span> <span class="n">CJK</span> <span class="n">font</span><span class="p">,</span> <span class="n">enable</span><span class="p">:</span> <span class="o">*/</span>
+<span class="c1">#define TOFU_CJK        // &lt;======================== PyMuPDF</span>
+
+<span class="o">/*</span> <span class="n">To</span> <span class="n">skip</span> <span class="n">CJK</span> <span class="n">Extension</span> <span class="n">A</span><span class="p">,</span> <span class="n">enable</span><span class="p">:</span> <span class="o">*/</span>
+<span class="c1">#define TOFU_CJK_EXT    // &lt;======================== PyMuPDF</span>
+
+<span class="o">/*</span> <span class="n">To</span> <span class="n">skip</span> <span class="n">the</span> <span class="n">Emoji</span> <span class="n">font</span><span class="p">,</span> <span class="n">enable</span><span class="p">:</span> <span class="o">*/</span>
+<span class="c1">#define TOFU_EMOJI      // &lt;======================== PyMuPDF</span>
+
+<span class="o">/*</span> <span class="n">To</span> <span class="n">skip</span> <span class="n">the</span> <span class="n">ancient</span><span class="o">/</span><span class="n">historic</span> <span class="n">scripts</span><span class="p">,</span> <span class="n">enable</span><span class="p">:</span> <span class="o">*/</span>
+<span class="c1">#define TOFU_HISTORIC   // &lt;======================== PyMuPDF</span>
+
+<span class="o">/*</span> <span class="n">To</span> <span class="n">skip</span> <span class="n">the</span> <span class="n">symbol</span> <span class="n">font</span><span class="p">,</span> <span class="n">enable</span><span class="p">:</span> <span class="o">*/</span>
+<span class="o">/*</span> <span class="c1">#define TOFU_SYMBOL */</span>
+
+<span class="o">/*</span> <span class="n">To</span> <span class="n">skip</span> <span class="n">the</span> <span class="n">SIL</span> <span class="n">fonts</span><span class="p">,</span> <span class="n">enable</span><span class="p">:</span> <span class="o">*/</span>
+<span class="c1">#define TOFU_SIL        // &lt;======================== PyMuPDF</span>
+
+<span class="o">/*</span> <span class="n">To</span> <span class="n">skip</span> <span class="n">the</span> <span class="n">Base14</span> <span class="n">fonts</span><span class="p">,</span> <span class="n">enable</span><span class="p">:</span> <span class="o">*/</span>
+<span class="o">/*</span> <span class="c1">#define TOFU_BASE14 */</span>
+<span class="o">/*</span> <span class="p">(</span><span class="n">You</span> <span class="n">probably</span> <span class="n">really</span> <span class="n">don</span><span class="s1">&#39;t want to do that except for measurement purposes!) */</span>
+
+<span class="o">/*</span> <span class="o">----------</span> <span class="n">DO</span> <span class="n">NOT</span> <span class="n">EDIT</span> <span class="n">ANYTHING</span> <span class="n">UNDER</span> <span class="n">THIS</span> <span class="n">LINE</span> <span class="o">----------</span> <span class="o">*/</span>
+
+<span class="o">...</span> <span class="o">...</span> <span class="o">...</span>
+
+<span class="c1">#endif /* FZ_CONFIG_H */</span>
 </pre></div>
 </div>
-<p>The above minimal choice should bring down the binary file size to a one digit MB amount.</p>
-<p>Check out file <code class="docutils literal"><span class="pre">.../source/fitz/noto.c</span></code> to see other possible combinations.</p>
+<p>The above choice should bring down your binary file size to around 5 MB or less.</p>
 <p><strong>Generate MuPDF now</strong>.</p>
 <p>The MuPDF source includes generation procedures / makefiles for numerous platforms. For Windows platforms, Visual Studio solution and project definitions are provided.</p>
-<p>Consult additional installation hints on PyMuPDF&#8217;s <a class="reference external" href="https://github.com/rk700/PyMuPDF/">main page</a> on Github.com. Among other things you will find a Wiki page with details on building the Windows binaries.</p>
+<p>Consult additional installation hints on PyMuPDF's <a class="reference external" href="https://github.com/rk700/PyMuPDF/">main page</a> on Github.com. Among other things you will find a Wiki page with details on building the Windows binaries.</p>
 </div>
 <div class="section" id="step-3-build-setup-pymupdf">
 <h3>Step 3: Build / Setup PyMuPDF<a class="headerlink" href="#step-3-build-setup-pymupdf" title="Permalink to this headline">¶</a></h3>
@@ -204,26 +273,26 @@
 <div class="section" id="using-upx">
 <h3>Using UPX<a class="headerlink" href="#using-upx" title="Permalink to this headline">¶</a></h3>
 <p>Your PyMuPDF installation will end up with four files: <code class="docutils literal"><span class="pre">__init__.py</span></code>, <code class="docutils literal"><span class="pre">fitz.py</span></code>, <code class="docutils literal"><span class="pre">utils.py</span></code> and the binary <code class="docutils literal"><span class="pre">_fitz.xxx</span></code> in the <code class="docutils literal"><span class="pre">site-packages</span></code> directory. The extension of the binary will be <code class="docutils literal"><span class="pre">.pyd</span></code> on Windows and <code class="docutils literal"><span class="pre">.so</span></code> on Linux and other platforms.</p>
-<p>Depending on your OS, your compiler and your font support choice (see above), this binary can be quite large and range from 8 MB to 20 MB. You can reduce this by applying the compression utility <a class="reference external" href="http://upx.sourceforge.net/">UPX</a> to it, which exists for many operating systems. UPX will reduce the size of <code class="docutils literal"><span class="pre">_fitz.xxx</span></code> by more than 50%. You will end up with 4 MB to 9 MB without impacting functionality or execution speed.</p>
+<p>Depending on your OS, your compiler and your font support choice (see above), this binary can be quite large and range from 5 MB to 20 MB. You can reduce this by applying the compression utility <a class="reference external" href="http://upx.sourceforge.net/">UPX</a> to it, which exists for many operating systems. UPX will reduce the size of <code class="docutils literal"><span class="pre">_fitz.xxx</span></code> by more than 50%. You will end up with 2.5 MB to 9 MB without impacting functionality or execution speed.</p>
 </div>
 </div>
 <div class="section" id="option-2-install-from-binaries">
 <h2>Option 2: Install from Binaries<a class="headerlink" href="#option-2-install-from-binaries" title="Permalink to this headline">¶</a></h2>
-<p>This installation option is based on pre-built binaries for Python versions on Windows 7, 8 and 10 (32bit or 64bit). Supported Python versions are 2.7 and 3.1 through 3.5.</p>
+<p>This installation option is based on pre-built binaries for Python versions on Windows 7, 8 and 10 (32bit or 64bit). Supported Python versions include 2.7 and 3.1 through 3.5.</p>
 <div class="section" id="step-1-download-optional-material">
 <h3>Step 1: Download Optional Material<a class="headerlink" href="#step-1-download-optional-material" title="Permalink to this headline">¶</a></h3>
 <p>Download <a class="reference external" href="https://github.com/JorjMcKie/PyMuPDF-optional-material/">PyMuPDF-optional-material</a>. From directory <code class="docutils literal"><span class="pre">binary_setups</span></code> select the zip file corresponding to your configuration and unzip it anywhere you like. To reduce download time, just download the zip file corresponding to your Python version.</p>
 </div>
 <div class="section" id="step-2-install-pymupdf">
 <h3>Step 2: Install PyMuPDF<a class="headerlink" href="#step-2-install-pymupdf" title="Permalink to this headline">¶</a></h3>
-<p>Open a command prompt at the unzipped folder&#8217;s top level and enter <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> (or <code class="docutils literal"><span class="pre">py</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> if you have the Python launcher, see below).</p>
+<p>Open a command prompt at the unzipped folder's top level and enter <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> (or <code class="docutils literal"><span class="pre">py</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> if you have the Python launcher, see below).</p>
 <p><strong>You are done within 2 seconds.</strong></p>
 <p>This process requires no compiler nor Visual Studio and is <strong>very</strong> fast. The only pre-requisite is, that your Python configuration matches the zip file.</p>
 </div>
 <div class="section" id="md5-checksums">
 <h3>MD5 Checksums<a class="headerlink" href="#md5-checksums" title="Permalink to this headline">¶</a></h3>
 <p>Binary download setup scripts contain an integrity check based on MD5 check sums.</p>
-<p>The directory structure of each zip file <code class="docutils literal"><span class="pre">pymupdf-1.9.?.?-py??-x??.zip</span></code> is as follows:</p>
+<p>The directory structure of each zip file <code class="docutils literal"><span class="pre">pymupdf-1.10.?.?-py??-x??.zip</span></code> is as follows:</p>
 <img alt="_images/binsetupdirs.png" src="_images/binsetupdirs.png" />
 <p>During setup, the MD5 check sum of the four installation files <code class="docutils literal"><span class="pre">__init__.py</span></code>, <code class="docutils literal"><span class="pre">_fitz.pyd</span></code>, <code class="docutils literal"><span class="pre">utils.py</span></code> and <code class="docutils literal"><span class="pre">fitz.py</span></code> is being calculated and compared against the pre-calculated check sum contained in file <code class="docutils literal"><span class="pre">md5.txt</span></code>. If a mismatch is detected, the error message</p>
 <p><code class="docutils literal"><span class="pre">md5</span> <span class="pre">mismatch:</span> <span class="pre">probable</span> <span class="pre">download</span> <span class="pre">error</span></code></p>
@@ -250,7 +319,7 @@
         <a href="tutorial.html" class="btn btn-neutral float-right" title="Tutorial" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="changes.html" class="btn btn-neutral" title="Changes in Version 1.9.2" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="changes.html" class="btn btn-neutral" title="Changes in Version 1.10.0" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -260,7 +329,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Nov 2016.
+      Last updated on 01. Dec 2016.
 
     </p>
   </div>
@@ -282,7 +351,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

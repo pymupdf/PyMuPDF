@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Constants and Enumerations &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Constants and Enumerations &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="next" title="Appendix 1: Performance" href="app1.html"/>
         <link rel="prev" title="Functions" href="functions.html"/> 
 
@@ -54,13 +56,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -83,7 +88,9 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
@@ -95,6 +102,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#link-destination-flags">Link Destination Flags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#annotation-types">Annotation Types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#annotation-flags">Annotation Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#annotation-line-end-styles">Annotation Line End Styles</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
@@ -132,8 +140,6 @@
     <li>Constants and Enumerations</li>
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/vars.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -235,7 +241,7 @@
 <dl class="data">
 <dt id="VersionBind">
 <code class="descname">VersionBind</code><a class="headerlink" href="#VersionBind" title="Permalink to this definition">¶</a></dt>
-<dd><p>&#8216;1.9.2&#8217; - version of PyMuPDF (these bindings)</p>
+<dd><p>'1.10.x' - version of PyMuPDF (these bindings)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -249,7 +255,7 @@
 <dl class="data">
 <dt id="VersionFitz">
 <code class="descname">VersionFitz</code><a class="headerlink" href="#VersionFitz" title="Permalink to this definition">¶</a></dt>
-<dd><p>&#8216;1.9a&#8217; - version of MuPDF</p>
+<dd><p>'1.10' - version of MuPDF</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -263,7 +269,7 @@
 <dl class="data">
 <dt id="VersionDate">
 <code class="descname">VersionDate</code><a class="headerlink" href="#VersionDate" title="Permalink to this definition">¶</a></dt>
-<dd><p>ISO timestamp <code class="docutils literal"><span class="pre">YYYY-MM-DD</span> <span class="pre">HH:MM:SS</span></code> when these bindings were created.</p>
+<dd><p>ISO timestamp <code class="docutils literal"><span class="pre">YYYY-MM-DD</span> <span class="pre">HH:MM:SS</span></code> when these bindings were built.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -274,6 +280,10 @@
 </table>
 </dd></dl>
 
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The docstring of <code class="docutils literal"><span class="pre">fitz</span></code> contains information of the above which can be retrieved like so: <code class="docutils literal"><span class="pre">print(fitz.__doc__)</span></code>, and a possible response should look like: <code class="docutils literal"><span class="pre">PyMuPDF</span> <span class="pre">1.10.0:</span> <span class="pre">Python</span> <span class="pre">bindings</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">MuPDF</span> <span class="pre">1.10</span> <span class="pre">library,</span> <span class="pre">built</span> <span class="pre">on</span> <span class="pre">2016-11-30</span> <span class="pre">13:09:13</span></code>.</p>
+</div>
 </div>
 <div class="section" id="enumerations">
 <span id="linkdest-kinds"></span><h2>Enumerations<a class="headerlink" href="#enumerations" title="Permalink to this headline">¶</a></h2>
@@ -337,7 +347,7 @@
 <dl class="data">
 <dt id="LINK_NAMED">
 <code class="descname">LINK_NAMED</code><a class="headerlink" href="#LINK_NAMED" title="Permalink to this definition">¶</a></dt>
-<dd><p>4 - Perform some action, like &#8220;FirstPage&#8221;, &#8220;NextPage&#8221;, etc.</p>
+<dd><p>4 - Perform some action, like &quot;FirstPage&quot;, &quot;NextPage&quot;, etc.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -627,7 +637,7 @@
 <p>Possible mask values for PDF annotation flags.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Annotation flags is a bit field, so test the truth of its bits with the <code class="docutils literal"><span class="pre">&amp;</span></code> operator. The following descriptions were extracted from the Adobe manual, pages 608 pp.</p>
+<p class="last">Annotation flags is a bit field, so test the truth of its bits with the <code class="docutils literal"><span class="pre">&amp;</span></code> operator. When changing flags for an annotation, use the <code class="docutils literal"><span class="pre">|</span></code> operator to combine several values. The following descriptions were extracted from the Adobe manual, pages 608 pp.</p>
 </div>
 <dl class="data">
 <dt id="ANNOT_XF_Invisible">
@@ -638,7 +648,7 @@
 <dl class="data">
 <dt id="ANNOT_XF_Hidden">
 <code class="descname">ANNOT_XF_Hidden</code><a class="headerlink" href="#ANNOT_XF_Hidden" title="Permalink to this definition">¶</a></dt>
-<dd><p>2 -  If set, do not display or print the annotation or allow it to interact with the user, regardless of its annotation type or whether an annotation handler is available. In cases where screen space is limited, the ability to hide and show annotations selectively can be used in combination with appearance streams to display auxiliary pop-up information similar in function to online help systems.</p>
+<dd><p>2 - If set, do not display or print the annotation or allow it to interact with the user, regardless of its annotation type or whether an annotation handler is available. In cases where screen space is limited, the ability to hide and show annotations selectively can be used in combination with appearance streams to display auxiliary pop-up information similar in function to online help systems.</p>
 </dd></dl>
 
 <dl class="data">
@@ -650,7 +660,7 @@
 <dl class="data">
 <dt id="ANNOT_XF_NoZoom">
 <code class="descname">ANNOT_XF_NoZoom</code><a class="headerlink" href="#ANNOT_XF_NoZoom" title="Permalink to this definition">¶</a></dt>
-<dd><p>8 -  If set, do not scale the annotation?s appearance to match the magnification of the page. The location of the annotation on the page (defined by the upper-left corner of its annotation rectangle) remains fixed, regardless of the page magnification.</p>
+<dd><p>8 - If set, do not scale the annotation?s appearance to match the magnification of the page. The location of the annotation on the page (defined by the upper-left corner of its annotation rectangle) remains fixed, regardless of the page magnification.</p>
 </dd></dl>
 
 <dl class="data">
@@ -690,6 +700,70 @@
 </dd></dl>
 
 </div>
+<div class="section" id="annotation-line-end-styles">
+<span id="annotation-line-ends"></span><h2>Annotation Line End Styles<a class="headerlink" href="#annotation-line-end-styles" title="Permalink to this headline">¶</a></h2>
+<p>The following descriptions are taken from the Adobe manual TABLE 8.27 on page 630.</p>
+<dl class="data">
+<dt id="ANNOT_LE_None">
+<code class="descname">ANNOT_LE_None</code><a class="headerlink" href="#ANNOT_LE_None" title="Permalink to this definition">¶</a></dt>
+<dd><p>0 - No line ending.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_LE_Square">
+<code class="descname">ANNOT_LE_Square</code><a class="headerlink" href="#ANNOT_LE_Square" title="Permalink to this definition">¶</a></dt>
+<dd><p>1 - A square filled with the annotation?s interior color, if any.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_LE_Circle">
+<code class="descname">ANNOT_LE_Circle</code><a class="headerlink" href="#ANNOT_LE_Circle" title="Permalink to this definition">¶</a></dt>
+<dd><p>2 - A circle filled with the annotation?s interior color, if any.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_LE_Diamond">
+<code class="descname">ANNOT_LE_Diamond</code><a class="headerlink" href="#ANNOT_LE_Diamond" title="Permalink to this definition">¶</a></dt>
+<dd><p>3 - A diamond shape filled with the annotation?s interior color, if any.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_LE_OpenArrow">
+<code class="descname">ANNOT_LE_OpenArrow</code><a class="headerlink" href="#ANNOT_LE_OpenArrow" title="Permalink to this definition">¶</a></dt>
+<dd><p>4 - Two short lines meeting in an acute angle to form an open arrowhead.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_LE_ClosedArrow">
+<code class="descname">ANNOT_LE_ClosedArrow</code><a class="headerlink" href="#ANNOT_LE_ClosedArrow" title="Permalink to this definition">¶</a></dt>
+<dd><p>5 - Two short lines meeting in an acute angle as in the OpenArrow style (see above) and connected by a third line to form a triangular closed arrowhead filled with the annotation?s interior color, if any.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_LE_Butt">
+<code class="descname">ANNOT_LE_Butt</code><a class="headerlink" href="#ANNOT_LE_Butt" title="Permalink to this definition">¶</a></dt>
+<dd><p>6 - (PDF 1.5) A short line at the endpoint perpendicular to the line itself.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_LE_ROpenArrow">
+<code class="descname">ANNOT_LE_ROpenArrow</code><a class="headerlink" href="#ANNOT_LE_ROpenArrow" title="Permalink to this definition">¶</a></dt>
+<dd><p>7 - (PDF 1.5) Two short lines in the reverse direction from OpenArrow.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_LE_RClosedArrow">
+<code class="descname">ANNOT_LE_RClosedArrow</code><a class="headerlink" href="#ANNOT_LE_RClosedArrow" title="Permalink to this definition">¶</a></dt>
+<dd><p>8 - (PDF 1.5) A triangular closed arrowhead in the reverse direction from ClosedArrow.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ANNOT_LE_Slash">
+<code class="descname">ANNOT_LE_Slash</code><a class="headerlink" href="#ANNOT_LE_Slash" title="Permalink to this definition">¶</a></dt>
+<dd><p>9 - (PDF 1.6) A short line at the endpoint approximately 30 degrees clockwise from perpendicular to the line itself.</p>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -712,7 +786,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 04. Nov 2016.
+      Last updated on 01. Dec 2016.
 
     </p>
   </div>
@@ -734,7 +808,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Tutorial &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Tutorial &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="next" title="Classes" href="classes.html"/>
         <link rel="prev" title="Installation" href="installation.html"/> 
 
@@ -54,13 +56,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -83,7 +88,9 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
@@ -150,8 +157,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/tutorial.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -187,7 +192,7 @@
 </div>
 <p>This will create <code class="docutils literal"><span class="pre">doc</span></code> as a <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> object. <code class="docutils literal"><span class="pre">filename</span></code> must be a Python string or unicode object that specifies the name of an existing file.</p>
 <p>It is also possible to open a document from memory (bytearray) data, i.e. without using a file. See <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> for details.</p>
-<p>A document contains many attributes and functions. Among them are meta information (like &#8220;author&#8221; or &#8220;subject&#8221;), number of total pages, outline and encryption information.</p>
+<p>A document contains many attributes and functions. Among them are meta information (like &quot;author&quot; or &quot;subject&quot;), number of total pages, outline and encryption information.</p>
 </div>
 <div class="section" id="some-document-methods-and-attributes">
 <h2>Some <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> Methods and Attributes<a class="headerlink" href="#some-document-methods-and-attributes" title="Permalink to this headline">¶</a></h2>
@@ -238,7 +243,7 @@
 <td>Producer (producing software)</td>
 </tr>
 <tr class="row-odd"><td>format</td>
-<td>PDF format, e.g. &#8216;PDF-1.4&#8217;</td>
+<td>PDF format, e.g. 'PDF-1.4'</td>
 </tr>
 <tr class="row-even"><td>encryption</td>
 <td>Encryption method used</td>
@@ -270,20 +275,20 @@
 <div class="section" id="working-with-outlines">
 <h2>Working with Outlines<a class="headerlink" href="#working-with-outlines" title="Permalink to this headline">¶</a></h2>
 <p>The easiest way to get all outlines of a document, is creating a table of contents:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># the simple form, if False, link information is included</span>
-<span class="n">toc</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getToC</span><span class="p">(</span><span class="n">simple</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">toc</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getToC</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>This will return a Python list <code class="docutils literal"><span class="pre">[[level,</span> <span class="pre">title,</span> <span class="pre">page,</span> <span class="pre">link],</span> <span class="pre">...]</span></code> (or <code class="docutils literal"><span class="pre">[]</span></code>).</p>
-<p><code class="docutils literal"><span class="pre">level</span></code> is the hierarchy level of the entry (starting from 1), <code class="docutils literal"><span class="pre">title</span></code> is the entry&#8217;s title, and <code class="docutils literal"><span class="pre">page</span></code> the page number (1-based). <code class="docutils literal"><span class="pre">link</span></code> is present if <code class="docutils literal"><span class="pre">simple</span> <span class="pre">=</span> <span class="pre">False</span></code> is specified. Its meaning can be looked up under <a class="reference internal" href="page.html#Page.getLinks" title="Page.getLinks"><code class="xref py py-meth docutils literal"><span class="pre">Page.getLinks()</span></code></a>.</p>
+<p>This will return a Python list <code class="docutils literal"><span class="pre">[[lvl,</span> <span class="pre">title,</span> <span class="pre">page,</span> <span class="pre">...]</span></code> (or <code class="docutils literal"><span class="pre">[]</span></code>).</p>
+<p><code class="docutils literal"><span class="pre">lvl</span></code> is the hierarchy level of the entry (starting from 1), <code class="docutils literal"><span class="pre">title</span></code> is the entry's title, and <code class="docutils literal"><span class="pre">page</span></code> the page number (1-based). Other parameters describe details of the bookmark target.</p>
 </div>
 <div class="section" id="working-with-pages">
 <h2>Working with Pages<a class="headerlink" href="#working-with-pages" title="Permalink to this headline">¶</a></h2>
-<p>Tasks that can be performed with a <a class="reference internal" href="page.html#page"><span class="std std-ref">Page</span></a> are at the core of MuPDF&#8217;s functionality.
+<p>Tasks that can be performed with a <a class="reference internal" href="page.html#page"><span class="std std-ref">Page</span></a> are at the core of MuPDF's functionality.
 Among other things, you can render a page, optionally zooming, rotating, shifting or shearing it.
-You can write it&#8217;s image to files, extract text from it or search for text strings.</p>
+You can write it's image to files, extract text from it or search for text strings.</p>
 <p>At first, a page object must be created:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">page</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">loadPage</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>        <span class="c1"># represents page n of the document (0-based)</span>
+<span class="n">page</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>                 <span class="c1"># short form</span>
 </pre></div>
 </div>
 <p>Some typical uses of <a class="reference internal" href="page.html#page"><span class="std std-ref">Page</span></a> objects follow:</p>
@@ -298,7 +303,7 @@ You can write it&#8217;s image to files, extract text from it or search for text
 </div>
 <div class="section" id="rendering-a-page">
 <h3>Rendering a Page<a class="headerlink" href="#rendering-a-page" title="Permalink to this headline">¶</a></h3>
-<p>This example creates an image out of a page&#8217;s content:</p>
+<p>This example creates an image out of a page's content:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pix</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">getPixmap</span><span class="p">(</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Identity</span><span class="p">,</span> <span class="n">colorspace</span> <span class="o">=</span> <span class="s2">&quot;RGB&quot;</span><span class="p">)</span>
 <span class="c1"># now pix contains an RGB image of the page, ready to be used</span>
 </pre></div>
@@ -349,7 +354,7 @@ You can write it&#8217;s image to files, extract text from it or search for text
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">areas</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">searchFor</span><span class="p">(</span><span class="s2">&quot;mupdf&quot;</span><span class="p">,</span> <span class="n">hit_max</span> <span class="o">=</span> <span class="mi">32</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The variable <code class="docutils literal"><span class="pre">areas</span></code> will now contain a list of up to 32 <a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a> rectangles each of which surrounds one occurrence of string &#8220;mupdf&#8221; (case insensitive).</p>
+<p>The variable <code class="docutils literal"><span class="pre">areas</span></code> will now contain a list of up to 32 <a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a> rectangles each of which surrounds one occurrence of string &quot;mupdf&quot; (not case sensitive).</p>
 <p>Please also do have a look at the demo program <code class="docutils literal"><span class="pre">demo.py</span></code>. Among others it contains details on how the <a class="reference internal" href="textpage.html#textpage"><span class="std std-ref">TextPage</span></a>, <a class="reference internal" href="textsheet.html#textsheet"><span class="std std-ref">TextSheet</span></a>, <a class="reference internal" href="device.html#device"><span class="std std-ref">Device</span></a> and <a class="reference internal" href="displaylist.html#displaylist"><span class="std std-ref">DisplayList</span></a> classes can be used for a more direct control, e.g. when performance considerations require it.</p>
 </div>
 </div>
@@ -358,7 +363,7 @@ You can write it&#8217;s image to files, extract text from it or search for text
 <p>Since version 1.9, PyMuPDF provides several options to modify PDF documents (only). The <a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> method automatically stores a document in its current (potentially modified) state on disk.</p>
 <p>A PDF document can be modified unnoticed by the user in two ways:</p>
 <ul class="simple">
-<li>During open, integrity checks are used to determine the health of the PDF structure. Any errors will automatically be corrected to present a repaired document in memory for further processing. If this is the case, the document counts as being modified.</li>
+<li>During open, integrity checks are used to determine the health of the PDF structure. Any errors will automatically be corrected to present a repaired document in memory for further processing. If this is the case, the document is regarded as being modified.</li>
 <li>After a document has been decrypted, the document in memory obviously has changed and also counts as being modified.</li>
 </ul>
 <p>In these cases, the save method will store a repaired and / or decrypted version, and saving <strong>must occur to a new file</strong>.</p>
@@ -386,8 +391,8 @@ the repository?s <em>example</em> directory.</p>
 <h3>Saving<a class="headerlink" href="#saving" title="Permalink to this headline">¶</a></h3>
 <p>As mentioned before, <code class="docutils literal"><span class="pre">save()</span></code> will automatically save a decrypted and / or repaired copy.</p>
 <p>If you altered something, then the resulting document will be saved.</p>
-<p>Since MuPDF 1.9, you can also write changes back to the original file by specifying <code class="docutils literal"><span class="pre">incremental</span> <span class="pre">=</span> <span class="pre">True</span></code>. This process is <strong>extremely fast</strong>, since any changes are <strong>appended to the original file</strong> - it will not be rewritten as a whole.</p>
-<p><a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> supports all options of MuPDF&#8217;s command line utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>, see the following table (corresponding <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code> option is indicated as &#8220;mco&#8221;).</p>
+<p>Since MuPDF 1.9, you can also write changes back to the original file by specifying <code class="docutils literal"><span class="pre">incremental</span> <span class="pre">=</span> <span class="pre">True</span></code>. This process is <strong>extremely fast</strong>, since changes are <strong>appended to the original file</strong> - it will not be rewritten as a whole.</p>
+<p><a class="reference internal" href="document.html#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a> supports all options of MuPDF's command line utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code>, see the following table (corresponding <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">clean</span></code> option is indicated as &quot;mco&quot;).</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="23%" />
@@ -457,7 +462,7 @@ the repository?s <em>example</em> directory.</p>
 </div>
 <div class="section" id="closing">
 <h2>Closing<a class="headerlink" href="#closing" title="Permalink to this headline">¶</a></h2>
-<p>It is often desirable to &#8220;close&#8221; a document to relinquish control of the underlying file to the OS, while your program is still running.</p>
+<p>It is often desirable to &quot;close&quot; a document to relinquish control of the underlying file to the OS, while your program is still running.</p>
 <p>This can be achieved by the <a class="reference internal" href="document.html#Document.close" title="Document.close"><code class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></code></a> method. Apart from closing the underlying file, buffer areas associated with the document will be freed (if the document has been created from memory data, only the buffer release will take place).</p>
 <div class="admonition caution">
 <p class="first admonition-title">Caution</p>
@@ -535,7 +540,7 @@ the repository?s <em>example</em> directory.</p>
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Nov 2016.
+      Last updated on 01. Dec 2016.
 
     </p>
   </div>
@@ -557,7 +562,7 @@ the repository?s <em>example</em> directory.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

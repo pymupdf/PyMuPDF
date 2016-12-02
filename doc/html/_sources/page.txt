@@ -8,25 +8,26 @@
 Page
 ================
 
-Class representing one document page. There is no separate constructor defined. It can only be created by :meth:`Document.loadPage` or via indexing the document (like ``doc[n]``).
+Class representing one document page. A page object is created by :meth:`Document.loadPage` (or equivalently via indexing the document like ``doc[n]``).
 
 
 ======================== =========================================
 **Method / Attribute**   **Short Description**
 ======================== =========================================
-:meth:`Page.bound`       the page's rectangle
-:meth:`Page.loadLinks`   get the first :ref:`Link`
+:meth:`Page.bound`       rectangle (mediabox) of the page
+:meth:`Page.deleteAnnot` PDF only: delete an annotation
 :meth:`Page.getLinks`    get all links
-:meth:`Page.getText`     extract the text
 :meth:`Page.getPixmap`   create a ``Pixmap``
-:meth:`Page.getRotate`   PDF only: get page rotation
-:meth:`Page.setRotate`   PDF only: set page rotation
-:meth:`Page.searchFor`   search for a string
+:meth:`Page.getText`     extract the text
 :meth:`Page.run`         run a page through a device
-:attr:`Page.firstLink`   first :ref:`Link` on the page
+:meth:`Page.searchFor`   search for a string
+:meth:`Page.setRotation` PDF only: set page rotation
 :attr:`Page.firstAnnot`  first :ref:`Annot` on the page
+:attr:`Page.firstLink`   first :ref:`Link` on the page
 :attr:`Page.number`      page number
 :attr:`Page.parent`      the owning document object
+:attr:`Page.rect`        rectangle (mediabox) of the page
+:attr:`Page.rotation`    PDF only: page rotation
 ======================== =========================================
 
 **Class API**
@@ -35,16 +36,24 @@ Class representing one document page. There is no separate constructor defined. 
 
    .. method:: bound()
 
-      Determine the a page's rectangle (before transformation).
+      Determine the rectangle ("mediabox", before transformation) of the page.
 
       :rtype: :ref:`Rect`
 
-   .. method:: loadLinks()
+   .. attribute:: rect
 
-      Get the first link of a page.
+      Contains the rectangle ("mediabox", before transformation) of the page. Same as result of method ``bound()``.
 
-      :rtype: :ref:`Link`
-      :returns: A :ref:`Link` or ``None`` if the page has no links.
+      :rtype: :ref:`Rect`
+
+   .. method:: deleteAnnot(annot)
+
+      PDF only: Delete the specified annotation from the page and (for all document types) return the next one.
+
+      :param `annot`: the annotation to be deleted.
+      :type `annot`: :ref:`Annot`
+      :rtype: :ref:`Annot`
+      :returns: the next annotation of the deleted one.
 
    .. method:: getLinks()
 
@@ -57,7 +66,7 @@ Class representing one document page. There is no separate constructor defined. 
 
       Retrieves the text of a page. Depending on the output parameter, the results of the :ref:`TextPage` extract methods are returned.
 
-      If ``output = 'text'`` is specified, the text is returned in the order as specified during PDF creation (which is not necessarily the normal reading order). As this may not always look like expected, consider using the example program ``PDF2TextJS.py``. It is based on ``extractJSON()`` and re-arranges text according to the Western reading layout convention "from top-left to bottom-right".
+      If ``output = 'text'`` is specified, plain text is returned in the order as specified during PDF creation (which is not necessarily the normal reading order). As this may not always look like expected, consider using the example program ``PDF2TextJS.py``. It is based on ``extractJSON()`` and re-arranges text according to the Western reading layout convention "from top-left to bottom-right".
 
       :param `output`: A string indicating the requested text format, one of ``text`` (default), ``html``, ``json``, or ``xml``.
 
@@ -66,41 +75,32 @@ Class representing one document page. There is no separate constructor defined. 
       :rtype: string
       :returns: The page's text as one string.
 
-   .. method:: getPixmap(matrix = fitz.Identity, colorspace = "RGB", clip = None)
+   .. method:: getPixmap(matrix = fitz.Identity, colorspace = "RGB", clip = None, alpha = False)
 
      Creates a Pixmap from the page.
 
      :param `matrix`: A :ref:`Matrix` object. Default is the :ref:`Identity` matrix.
-
      :type `matrix`: :ref:`Matrix`
 
      :param `colorspace`: Defines the required colorspace, one of ``GRAY``, ``CMYK`` or ``RGB`` (default).
-
      :type `colorspace`: string
 
      :param `clip`: An ``Irect`` to restrict rendering of the page to the rectangle's area. If not specified, the complete page will be rendered.
-
      :type `clip`: :ref:`IRect`
 
+     :param `alpha`: An bool indicating whether an alpha channel should be included in the pixmap. Leave it as ``False`` if you do not absolutely need transparency. This will save a lot of memory (25% in case of RGB).
+     :type `alpha`: bool
      :rtype: :ref:`Pixmap`
-
      :returns: Pixmap of the page.
 
-   .. method:: getRotate()
 
-      PDF only: Returns the rotation of the page in degrees.
-
-      :rtype: int
-
-      :returns: An integer representing the value of ``/Rotate`` in the PDF object definition. It should be a multiple of 90.
-
-   .. method:: setRotate(rot)
+   .. method:: setRotation(rot)
 
       PDF only: Sets the rotation of the page.
 
-      :param `rot`: An integer specifying the required rotation in degrees. It must be a (positive or negative) multiple of 90.
-
+      :param `rot`: An integer specifying the required rotation in degrees. Should be a (positive or negative) multiple of 90.
       :type `rot`: int
+      :returns: zero if successfull, ``-1`` if not a PDF.
 
 
    .. method:: searchFor(text, hit_max = 16)
@@ -129,17 +129,27 @@ Class representing one document page. There is no separate constructor defined. 
       :param `transform`: Transformation to apply to the page. Set it to :ref:`Identity` if no transformation is desired.
       :type `transform`: :ref:`Matrix`
 
+   .. attribute:: rotation
+
+      PDF only: contains the rotation of the page in degrees and ``-1`` for other document types.
+
+      :rtype: int
+
    .. attribute:: firstLink
 
-      Contains the first :ref:`Link` of a page or ``None`` if the page has no links. Is the same as result of method ``loadLinks()``.
+      Contains the first :ref:`Link` of a page (or ``None``).
+
+      :rtype: :ref:`Link`
 
    .. attribute:: firstAnnot
 
-      Contains the first :ref:`Annot` of a page or ``None`` if the page has no annotations.
+      Contains the first :ref:`Annot` of a page (or ``None``).
+
+      :rtype: :ref:`Annot`
 
    .. attribute:: number
 
-      The page number
+      The page number.
 
       :rtype: int
 

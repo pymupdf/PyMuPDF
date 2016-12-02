@@ -29,11 +29,11 @@ Returns a list of rectangles, each of which surrounds a found occurrence.
     if page.parent.isClosed or page.parent.isEncrypted:
         raise ValueError("page operation on closed or encrpted document")
 
-    dl = fitz.DisplayList()                  # create DisplayList
+    rect = page.rect
+    dl = fitz.DisplayList(rect)         # create DisplayList
     page.run(fitz.Device(dl), fitz.Identity) # run page through it
     ts = fitz.TextSheet()                    # create TextSheet
-    tp = fitz.TextPage()                     # create TextPage
-    rect = page.bound()                      # the page's rectangle
+    tp = fitz.TextPage(rect)            # create TextPage
     dl.run(fitz.Device(ts, tp), fitz.Identity, rect)   # run the page
 
     # return list of hitting reactangles
@@ -122,7 +122,7 @@ Default and misspelling choice is "text".
 # A function for rendering a page's image.
 # Requires a page object.
 #==============================================================================
-#def getPixmap(matrix = fitz.Identity, colorspace = "RGB", clip = None):
+#def getPixmap(matrix = fitz.Identity, colorspace = "RGB", clip = None, alpha = False):
 def getPixmap(*arg, **kw):
     '''getPixmap(matrix=fitz.Identity, colorspace='rgb', clip = None)
 Creates a fitz.Pixmap of a PDF page.
@@ -142,12 +142,13 @@ clip: a fitz.IRect to restrict rendering to this area.
         raise ValueError("page operation on closed or encrypted document")
 
     for k in kw.keys():
-        if k not in ["matrix", "colorspace", "clip"]:
+        if k not in ["matrix", "colorspace", "clip", "alpha"]:
             raise ValueError("invalid keyword in getPixmap")
     # set default values
     matrix = fitz.Identity
     colorspace = "rgb"
     clip = None
+    alpha = False
 
     if "matrix" in kw:
         matrix = kw["matrix"]
@@ -155,6 +156,8 @@ clip: a fitz.IRect to restrict rendering to this area.
         colorspace = kw["colorspace"]
     if "clip" in kw:
         clip = kw["clip"]
+    if "alpha" in kw:
+        alpha = kw["alpha"]
 
     # determine required colorspace
     if colorspace.upper() == "GRAY":
@@ -164,9 +167,9 @@ clip: a fitz.IRect to restrict rendering to this area.
     else:
         cs = fitz.csRGB
 
-    dl = fitz.DisplayList()                  # create DisplayList
-    page.run(fitz.Device(dl), fitz.Identity) # run page through it
     r = page.bound()                         # get page boundaries
+    dl = fitz.DisplayList(r)                 # create DisplayList
+    page.run(fitz.Device(dl), fitz.Identity) # run page through it
 
     if clip:
         r.intersect(clip.getRect())          # only the part within clip
@@ -177,7 +180,7 @@ clip: a fitz.IRect to restrict rendering to this area.
         r.transform(matrix)                  # transform it
         ir = r.round()                       # make IRect copy of it
 
-    pix = fitz.Pixmap(cs, ir)                # create an empty pixmap
+    pix = fitz.Pixmap(cs, ir, alpha)         # create an empty pixmap
     pix.clearWith(255)                       # clear it with color "white"
     dv = fitz.Device(pix, clip)              # create a "draw" device
     dl.run(dv, matrix, r)                    # render the page
@@ -190,7 +193,7 @@ clip: a fitz.IRect to restrict rendering to this area.
 #==============================================================================
 # A function for rendering a page by its number
 #==============================================================================
-# getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = "RGB", clip = None):
+# getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = "RGB", clip = None, alpha = False):
 def getPagePixmap(*arg, **kw):
     '''getPagePixmap(pno, matrix=fitz.Identity, colorspace="rgb", clip = None)
 Creates a fitz.Pixmap object for a document page number.
@@ -216,12 +219,13 @@ clip: a fitz.IRect to restrict rendering to this area
         raise ValueError("page number not in range 0 to %s" % (doc.pageCount - 1,))
 
     for k in kw.keys():
-        if k not in ["matrix", "colorspace", "clip"]:
+        if k not in ["matrix", "colorspace", "clip", "alpha"]:
             raise ValueError("invalid keyword specified to getPagePixmap")
     # default values
     matrix = fitz.Identity
     colorspace = "rgb"
     clip = None
+    alpha = False
 
     if "matrix" in kw.keys():
         matrix = kw["matrix"]
@@ -229,6 +233,8 @@ clip: a fitz.IRect to restrict rendering to this area
         colorspace = kw["colorspace"]
     if "clip" in kw.keys():
         clip = kw["clip"]
+    if "alpha" in kw.keys():
+        alpha = kw["alpha"]
 
     page = doc.loadPage(pno)
 
@@ -240,9 +246,9 @@ clip: a fitz.IRect to restrict rendering to this area
     else:
         cs = fitz.csRGB
 
-    dl = fitz.DisplayList()                  # create DisplayList
-    page.run(fitz.Device(dl), fitz.Identity) # run page through it
     r = page.bound()                         # get page boundaries
+    dl = fitz.DisplayList(r)                 # create DisplayList
+    page.run(fitz.Device(dl), fitz.Identity) # run page through it
 
     if clip:
         r.intersect(clip.getRect())          # only the part within clip
@@ -253,7 +259,7 @@ clip: a fitz.IRect to restrict rendering to this area
         r.transform(matrix)                  # transform it
         ir = r.round()                       # make IRect copy of it
 
-    pix = fitz.Pixmap(cs, ir)                # create an empty pixmap
+    pix = fitz.Pixmap(cs, ir, alpha)         # create an empty pixmap
     pix.clearWith(255)                       # clear it with color "white"
     dv = fitz.Device(pix, clip)              # create a "draw" device
     dl.run(dv, matrix, r)                    # render the page
@@ -338,8 +344,8 @@ The presence of other keys depends on this kind - see PyMuPDF's ducmentation for
     if not repr(page.parent).startswith("fitz.Document"):
         raise ValueError("invalid page object provided to getLinks")
     if page.parent.isClosed or page.parent.isEncrypted:
-        raise ValueError("page operation on closed or encrypted document")
-    ln = page.loadLinks()
+        raise ValueError("operation illegal for closed / encrypted doc")
+    ln = page.firstLink
     links = []
     while ln:
         nl = getLinkDict(ln)
@@ -375,10 +381,13 @@ and link destination (if simple = False). For details see PyMuPDF's documentatio
             else:
                 title = " "
 
-            if olItem.dest.kind != fitz.LINK_GOTO:
-                page = 0
+            if not olItem.isExternal:
+                if olItem.uri:
+                    page = olItem.page + 1
+                else:
+                    page = -1
             else:
-                page = olItem.dest.page + 1
+                page = -1
 
             if not simple:
                 link = getLinkDict(olItem)
@@ -405,38 +414,6 @@ and link destination (if simple = False). For details see PyMuPDF's documentatio
     lvl = 1
     liste = []
     return recurse(olItem, liste, lvl)
-
-#==============================================================================
-# A function to determine a pixmap's IRect
-#==============================================================================
-#def getIRect(pixmap):
-def getIRect(*arg, **kw):
-    '''getIRect()\nReturns the IRect of a given Pixmap.'''
-    # get parameters
-    p = arg[0]
-    if not repr(p).startswith("fitz.Pixmap"):
-        raise ValueError("no valid fitz.Pixmap provided")
-    return fitz.IRect(p.x, p.y, p.x + p.width, p.y + p.height)
-
-#==============================================================================
-# A function to determine a pixmap's Colorspace
-#==============================================================================
-#def getColorspace(pixmap):
-def getColorspace(*arg, **kw):
-    '''Returns the fitz.Colorspace of a given fitz.Pixmap.'''
-    # get parameters
-    p = arg[0]
-    if not repr(p).startswith("fitz.Pixmap"):
-        raise ValueError("no valid fitz.Pixmap provided")
-
-    if p.n == 2:
-        return fitz.csGRAY
-    elif p.n == 4:
-        return fitz.csRGB
-    elif p.n == 5:
-        return fitz.csCMYK
-    else:
-        raise ValueError("unsupported colorspace in pixmap")
 
 def getRectArea(rect, unit = "pt"):
     '''Calculates the area of a rectangle in square points or millimeters.
@@ -470,13 +447,12 @@ Returns a float containing the distance.
     else:
         return c * 25.4 / 72.0
 
-#def writeImage(filename, output = "png", savealpha = False):
+#def writeImage(filename, output = "png"):
 def writeImage(*arg, **kw):
-    '''writeImage(filename, output="png", savealpha=False)
+    '''writeImage(filename, output="png")
 Saves a pixmap to an image.
 Parameters:\nfilename: image filename\noutput: requested output format
 (one of png, pam, pnm, tga)
-savealpha: whether to save the alpha channel
     '''
     pix = arg[0]
     filename = arg[1]
@@ -485,32 +461,28 @@ savealpha: whether to save the alpha channel
     else:
         output = "png"
 
-    if "savealpha" in kw:
-        savealpha = kw["savealpha"]
-    else:
-        savealpha = False
     c_output = 0
     if output == "png":
         c_output = 1
         if not filename.lower().endswith(".png"):
-            raise ValueError("output=png requires .png extension")
-        if pix.n > 4:
-            raise ValueError("colorspace not supported for png")
+            raise ValueError("require .png extension")
+        if not pix.colorspace in ["DeviceRGB", "DeviceGray"]:
+            raise ValueError(pix.colorspace + " not supported for png")
     elif output == "tga":
         c_output = 4
         if not filename.lower().endswith(".tga"):
-            raise ValueError("output=tga requires .tga extension")
-        if pix.n > 4:
-            raise ValueError("colorspace not supported for tga")
+            raise ValueError("require .tga extension")
+        if not pix.colorspace in ["DeviceRGB", "DeviceGray"]:
+            raise ValueError(pix.colorspace + " not supported for tga")
     elif output == "pam":
         c_output = 3
         if not filename.lower().endswith(".pam"):
-            raise ValueError("output=pam requires .pam extension")
+            raise ValueError("require .pam extension")
     elif output == "pnm":
         c_output = 2
-        if pix.n > 4:
-            raise ValueError("colorspace not supported for pnm")
-        if pix.n == 2:
+        if not pix.colorspace in ["DeviceRGB", "DeviceGray"]:
+            raise ValueError(pix.colorspace + " not supported for pnm")
+        if pix.n <= 2:
             if not filename.lower().endswith((".pnm", ".pgm")):
                 raise ValueError("colorspace requires pnm or pgm extensions")
         elif not filename.lower().endswith((".pnm", "ppm")):
@@ -518,45 +490,9 @@ savealpha: whether to save the alpha channel
     else:
         raise ValueError("invalid output parameter")
 
-    rc = pix._writeIMG(filename, c_output, savealpha)
+    rc = pix._writeIMG(filename, c_output)
 
     return rc
-
-class Pages():
-    ''' Creates an iterator over a document's set of pages'''
-    def __init__(self, doc):
-        if not repr(doc).startswith("fitz.Document"):
-            raise ValueError("'%s' is not a valid fitz.Document" %(doc,))
-        self.pno      = -1
-        self.max      = doc.pageCount - 1
-        self.file     = doc.name
-        self.isStream = doc.streamlen > 0
-        self.doc      = repr(doc)
-        self.parent   = doc
-        self.page     = None
-
-    def __getitem__(self, i):
-        self.page = None
-        if i > self.max or i < 0:
-            raise StopIteration("page number not in range 0 to %s" % (self.max,))
-        self.pno = i
-        self.page = self.parent.loadPage(i)
-        return self.page
-
-    def __len__(self):
-        return self.parent.pageCount
-
-    def __del__(self):
-        self.page = None
-
-    def next(self):
-        self.page = None
-        self.pno += 1
-        if self.pno > self.max:
-            self.page = None
-            raise StopIteration
-        self.page = self.parent.loadPage(self.pno)
-        return self.page
 
 #==============================================================================
 # arithmetic methods for fitz.Matrix
@@ -812,7 +748,7 @@ def PDFstr(s):
         x = s.decode("utf-8")
     except:
         x = s
-
+    if x is None: x = ""
     if isinstance(x, str) or sys.version_info[0] < 3 and isinstance(x, unicode):
         pass
     else:
@@ -855,21 +791,21 @@ def setMetadata(doc, m):
             raise ValueError("invalid dictionary key: " + k)
 
     d = "<</Author"
-    d += "(none)" if not m.get("author") else PDFstr(m["author"])
+    d += PDFstr(m.get("author", "none"))
     d += "/CreationDate"
-    d += "(none)" if not m.get("creationDate") else PDFstr(m["creationDate"])
+    d += PDFstr(m.get("creationDate", "none"))
     d += "/Creator"
-    d += "(none)" if not m.get("creator") else PDFstr(m["creator"])
+    d += PDFstr(m.get("creator", "none"))
     d += "/Keywords"
-    d += "(none)" if not m.get("keywords") else PDFstr(m["keywords"])
+    d += PDFstr(m.get("keywords", "none"))
     d += "/ModDate"
-    d += "(none)" if not m.get("modDate") else PDFstr(m["modDate"])
+    d += PDFstr(m.get("modDate", "none"))
     d += "/Producer"
-    d += "(none)" if not m.get("producer") else PDFstr(m["producer"])
+    d += PDFstr(m.get("producer", "none"))
     d += "/Subject"
-    d += "(none)" if not m.get("subject") else PDFstr(m["subject"])
+    d += PDFstr(m.get("subject", "none"))
     d += "/Title"
-    d += "(none)" if not m.get("title") else PDFstr(m["title"])
+    d += PDFstr(m.get("title", "none"))
     d += ">>"
     r = doc._setMetadata(d)
     if r == 0:
@@ -1078,17 +1014,15 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
     #--------------------------------------------------------------------------
     # define skeletons for /Annots object texts
     #--------------------------------------------------------------------------
-    annot_goto ='''<</Dest[%s 0 R /XYZ %s %s 0]/Rect[%s]/Type/Annot
-    /Border[0 0 0]/Subtype/Link>>'''
+    annot_goto ='''<</Dest[%s 0 R /XYZ %s %s 0]/Rect[%s]/Subtype/Link>>'''
 
     annot_gotor = '''<</A<</D[%s /XYZ %s %s 0]/F<</F(%s)/UF(%s)/Type/Filespec
-    >>/S/GoToR>>/Rect[%s]/Type/Annot/Border[0 0 0]/Subtype/Link>>'''
+    >>/S/GoToR>>/Rect[%s]/Subtype/Link>>'''
 
     annot_launch = '''<</A<</F<</F(%s)/UF(%s)/Type/Filespec>>/S/Launch
-    >>/Rect[%s]/Type/Annot/Border[0 0 0]/Subtype/Link>>'''
+    >>/Rect[%s]/Subtype/Link>>'''
 
-    annot_uri = '''<</A<</S/URI/URI(%s)/Type/Action>>/Rect[%s]
-    /Type/Annot/Border[0 0 0]/Subtype/Link>>'''
+    annot_uri = '''<</A<</S/URI/URI(%s)/Type/Action>>/Rect[%s]/Subtype/Link>>'''
 
     #--------------------------------------------------------------------------
     # internal function to create the actual "/Annots" object string

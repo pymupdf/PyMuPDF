@@ -21,7 +21,6 @@ Classes
    matrix.txt
    outline.txt
    page.txt
-   pages.txt
    pixmap.txt
    point.txt
    rect.txt

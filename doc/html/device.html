@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Device &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Device &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="up" title="Classes" href="classes.html"/>
         <link rel="next" title="DisplayList" href="displaylist.html"/>
         <link rel="prev" title="Colorspace" href="colorspace.html"/> 
@@ -55,13 +57,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -84,7 +89,9 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
@@ -101,7 +108,6 @@
 <li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
@@ -149,8 +155,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/device.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -161,7 +165,7 @@
             
   <div class="section" id="device">
 <span id="id1"></span><h1>Device<a class="headerlink" href="#device" title="Permalink to this headline">¶</a></h1>
-<p>The different format handlers (pdf, xps, etc.) interpret pages to a &#8220;device&#8221;. These devices are the basis for everything that can be done with a page: rendering, text extraction and searching. The device type is determined by the selected construction method.</p>
+<p>The different format handlers (pdf, xps, etc.) interpret pages to a &quot;device&quot;. These devices are the basis for everything that can be done with a page: rendering, text extraction and searching. The device type is determined by the selected construction method.</p>
 <p><strong>Class API</strong></p>
 <dl class="class">
 <dt id="Device">
@@ -175,8 +179,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>object</strong> (<a class="reference internal" href="pixmap.html#pixmap"><span class="std std-ref">Pixmap</span></a> or <a class="reference internal" href="displaylist.html#displaylist"><span class="std std-ref">DisplayList</span></a>) &#8211; one of <code class="docutils literal"><span class="pre">Pixmap</span></code> or <code class="docutils literal"><span class="pre">DisplayList</span></code></li>
-<li><strong>clip</strong> (<a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a>) &#8211; An optional <cite>IRect</cite> for <code class="docutils literal"><span class="pre">Pixmap</span></code> devices only to restrict rendering to a certain area of the page. If the complete page is required, specify <code class="docutils literal"><span class="pre">None</span></code>. For display list devices, this parameter must be omitted.</li>
+<li><strong>object</strong> (<a class="reference internal" href="pixmap.html#pixmap"><span class="std std-ref">Pixmap</span></a> or <a class="reference internal" href="displaylist.html#displaylist"><span class="std std-ref">DisplayList</span></a>) -- one of <code class="docutils literal"><span class="pre">Pixmap</span></code> or <code class="docutils literal"><span class="pre">DisplayList</span></code></li>
+<li><strong>clip</strong> (<a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a>) -- An optional <cite>IRect</cite> for <code class="docutils literal"><span class="pre">Pixmap</span></code> devices only to restrict rendering to a certain area of the page. If the complete page is required, specify <code class="docutils literal"><span class="pre">None</span></code>. For display list devices, this parameter must be omitted.</li>
 </ul>
 </td>
 </tr>
@@ -193,8 +197,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>textsheet</strong> (<a class="reference internal" href="textsheet.html#textsheet"><span class="std std-ref">TextSheet</span></a>) &#8211; <code class="docutils literal"><span class="pre">TextSheet</span></code> object</li>
-<li><strong>textpage</strong> (<a class="reference internal" href="textpage.html#textpage"><span class="std std-ref">TextPage</span></a>) &#8211; <code class="docutils literal"><span class="pre">TextPage</span></code> object</li>
+<li><strong>textsheet</strong> (<a class="reference internal" href="textsheet.html#textsheet"><span class="std std-ref">TextSheet</span></a>) -- <code class="docutils literal"><span class="pre">TextSheet</span></code> object</li>
+<li><strong>textpage</strong> (<a class="reference internal" href="textpage.html#textpage"><span class="std std-ref">TextPage</span></a>) -- <code class="docutils literal"><span class="pre">TextPage</span></code> object</li>
 </ul>
 </td>
 </tr>
@@ -226,7 +230,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Nov 2016.
+      Last updated on 01. Dec 2016.
 
     </p>
   </div>
@@ -248,7 +252,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

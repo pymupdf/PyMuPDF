@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Document &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Document &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="up" title="Classes" href="classes.html"/>
         <link rel="next" title="Identity" href="identity.html"/>
         <link rel="prev" title="DisplayList" href="displaylist.html"/> 
@@ -55,13 +57,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -84,7 +89,9 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
@@ -109,7 +116,6 @@
 <li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
@@ -157,8 +163,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/document.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -185,65 +189,71 @@
 <tr class="row-even"><td><a class="reference internal" href="#Document.authenticate" title="Document.authenticate"><code class="xref py py-meth docutils literal"><span class="pre">Document.authenticate()</span></code></a></td>
 <td>decrypt the document</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.loadPage" title="Document.loadPage"><code class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></code></a></td>
-<td>read a page</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a></td>
-<td>PDF only: save the document</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.getToC" title="Document.getToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.getToC()</span></code></a></td>
-<td>create a table of contents</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.getPagePixmap" title="Document.getPagePixmap"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPagePixmap()</span></code></a></td>
-<td>create a pixmap of a page by page number</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.getPageText" title="Document.getPageText"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPageText()</span></code></a></td>
-<td>extract the text of a page by page number</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.getPageImageList" title="Document.getPageImageList"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPageImageList()</span></code></a></td>
-<td>make a list of images on a page</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.getPageFontList" title="Document.getPageFontList"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPageFontList()</span></code></a></td>
-<td>make a list of fonts on a page</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.getPermits" title="Document.getPermits"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPermits()</span></code></a></td>
-<td>show permissions to access the document</td>
-</tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.close" title="Document.close"><code class="xref py py-meth docutils literal"><span class="pre">Document.close()</span></code></a></td>
 <td>close the document</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a></td>
-<td>PDF only: select a subset of pages</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.setMetadata" title="Document.setMetadata"><code class="xref py py-meth docutils literal"><span class="pre">Document.setMetadata()</span></code></a></td>
-<td>PDF only: set the metadata</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.setToC" title="Document.setToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.setToC()</span></code></a></td>
-<td>PDF only: replace the table of contents (TOC)</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.insertPDF" title="Document.insertPDF"><code class="xref py py-meth docutils literal"><span class="pre">Document.insertPDF()</span></code></a></td>
-<td>PDF only: insert a page range from another PDF</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.deletePage" title="Document.deletePage"><code class="xref py py-meth docutils literal"><span class="pre">Document.deletePage()</span></code></a></td>
-<td>PDF only: delete a page by its number</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.deletePageRange" title="Document.deletePageRange"><code class="xref py py-meth docutils literal"><span class="pre">Document.deletePageRange()</span></code></a></td>
-<td>PDF only: delete a range of pages</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.copyPage" title="Document.copyPage"><code class="xref py py-meth docutils literal"><span class="pre">Document.copyPage()</span></code></a></td>
 <td>PDF only: copy a page to another location</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.movePage" title="Document.movePage"><code class="xref py py-meth docutils literal"><span class="pre">Document.movePage()</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.deletePage" title="Document.deletePage"><code class="xref py py-meth docutils literal"><span class="pre">Document.deletePage()</span></code></a></td>
+<td>PDF only: delete a page by its number</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.deletePageRange" title="Document.deletePageRange"><code class="xref py py-meth docutils literal"><span class="pre">Document.deletePageRange()</span></code></a></td>
+<td>PDF only: delete a range of pages</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.getPageFontList" title="Document.getPageFontList"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPageFontList()</span></code></a></td>
+<td>make a list of fonts on a page</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.getPageImageList" title="Document.getPageImageList"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPageImageList()</span></code></a></td>
+<td>make a list of images on a page</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.getPagePixmap" title="Document.getPagePixmap"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPagePixmap()</span></code></a></td>
+<td>create a pixmap of a page by page number</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.getPageText" title="Document.getPageText"><code class="xref py py-meth docutils literal"><span class="pre">Document.getPageText()</span></code></a></td>
+<td>extract the text of a page by page number</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.getToC" title="Document.getToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.getToC()</span></code></a></td>
+<td>create a table of contents</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.insertPDF" title="Document.insertPDF"><code class="xref py py-meth docutils literal"><span class="pre">Document.insertPDF()</span></code></a></td>
+<td>PDF only: insert a page range from another PDF</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.loadPage" title="Document.loadPage"><code class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></code></a></td>
+<td>read a page</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.movePage" title="Document.movePage"><code class="xref py py-meth docutils literal"><span class="pre">Document.movePage()</span></code></a></td>
 <td>PDF only: move a page to another location</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.save" title="Document.save"><code class="xref py py-meth docutils literal"><span class="pre">Document.save()</span></code></a></td>
+<td>PDF only: save the document</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.saveIncr" title="Document.saveIncr"><code class="xref py py-meth docutils literal"><span class="pre">Document.saveIncr()</span></code></a></td>
+<td>PDF only: save the document incrementally</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.select" title="Document.select"><code class="xref py py-meth docutils literal"><span class="pre">Document.select()</span></code></a></td>
+<td>PDF only: select a subset of pages</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.setMetadata" title="Document.setMetadata"><code class="xref py py-meth docutils literal"><span class="pre">Document.setMetadata()</span></code></a></td>
+<td>PDF only: set the metadata</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.setToC" title="Document.setToC"><code class="xref py py-meth docutils literal"><span class="pre">Document.setToC()</span></code></a></td>
+<td>PDF only: replace the table of contents (TOC)</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Document.isClosed" title="Document.isClosed"><code class="xref py py-attr docutils literal"><span class="pre">Document.isClosed</span></code></a></td>
 <td>has document been closed?</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><code class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></code></a></td>
-<td>first <cite>Outline</cite> item</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.isEncrypted" title="Document.isEncrypted"><code class="xref py py-attr docutils literal"><span class="pre">Document.isEncrypted</span></code></a></td>
+<td>document still encrypted?</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.name" title="Document.name"><code class="xref py py-attr docutils literal"><span class="pre">Document.name</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
+<td>metadata</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.name" title="Document.name"><code class="xref py py-attr docutils literal"><span class="pre">Document.name</span></code></a></td>
 <td>filename of document</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
+<td>require password to access data?</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Document.openErrCode" title="Document.openErrCode"><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrCode</span></code></a></td>
 <td>&gt; 0 if repair occurred during open</td>
@@ -251,17 +261,14 @@
 <tr class="row-even"><td><a class="reference internal" href="#Document.openErrMsg" title="Document.openErrMsg"><code class="xref py py-attr docutils literal"><span class="pre">Document.openErrMsg</span></code></a></td>
 <td>last error message if openErrCode &gt; 0</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.needsPass" title="Document.needsPass"><code class="xref py py-attr docutils literal"><span class="pre">Document.needsPass</span></code></a></td>
-<td>require password to access data?</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.outline" title="Document.outline"><code class="xref py py-attr docutils literal"><span class="pre">Document.outline</span></code></a></td>
+<td>first <cite>Outline</cite> item</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.isEncrypted" title="Document.isEncrypted"><code class="xref py py-attr docutils literal"><span class="pre">Document.isEncrypted</span></code></a></td>
-<td>document still encrypted?</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document.pageCount" title="Document.pageCount"><code class="xref py py-attr docutils literal"><span class="pre">Document.pageCount</span></code></a></td>
 <td>number of pages</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document.metadata" title="Document.metadata"><code class="xref py py-attr docutils literal"><span class="pre">Document.metadata</span></code></a></td>
-<td>metadata</td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document.permissions" title="Document.permissions"><code class="xref py py-attr docutils literal"><span class="pre">Document.permissions</span></code></a></td>
+<td>show permissions to access the document</td>
 </tr>
 </tbody>
 </table>
@@ -277,7 +284,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) &#8211; A string containing the path / name of the document file to be used. The file will be opened and remain open until either explicitely closed (see below) or until end of program. If omitted or <code class="docutils literal"><span class="pre">None</span></code>, a new empty <strong>PDF</strong> document will be created.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) -- A string containing the path / name of the document file to be used. The file will be opened and remain open until either explicitely closed (see below) or until end of program. If omitted or <code class="docutils literal"><span class="pre">None</span></code>, a new empty <strong>PDF</strong> document will be created.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">Document</span></code></td>
 </tr>
@@ -296,8 +303,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>filetype</strong> (<em>string</em>) &#8211; A string specifying the type of document contained in <code class="docutils literal"><span class="pre">stream</span></code>. This may be either something that looks like a filename (e.g. <code class="docutils literal"><span class="pre">x.pdf</span></code>), in which case MuPDF uses the extension to determine the type, or a mime type like <code class="docutils literal"><span class="pre">application/pdf</span></code>. Recommended is using the filename scheme, or even the name of the original file for documentation purposes.</li>
-<li><strong>stream</strong> (<em>bytearray, bytes or (Python 2 only) str</em>) &#8211; A memory area representing the content of a supported document type.</li>
+<li><strong>filetype</strong> (<em>string</em>) -- A string specifying the type of document contained in <code class="docutils literal"><span class="pre">stream</span></code>. This may be either something that looks like a filename (e.g. <code class="docutils literal"><span class="pre">x.pdf</span></code>), in which case MuPDF uses the extension to determine the type, or a mime type like <code class="docutils literal"><span class="pre">application/pdf</span></code>. Recommended is using the filename scheme, or even the name of the original file for documentation purposes.</li>
+<li><strong>stream</strong> (<em>bytearray, bytes or (Python 2 only) str</em>) -- A memory area representing the content of a supported document type.</li>
 </ul>
 </td>
 </tr>
@@ -314,12 +321,12 @@
 <dl class="method">
 <dt id="Document.authenticate">
 <code class="descname">authenticate</code><span class="sig-paren">(</span><em>password</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.authenticate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Decrypts the document with the string <code class="docutils literal"><span class="pre">password</span></code>. If successful, all of the document&#8217;s data can be accessed (e.g. for rendering).</p>
+<dd><p>Decrypts the document with the string <code class="docutils literal"><span class="pre">password</span></code>. If successful, all of the document's data can be accessed (e.g. for rendering).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>password</strong> (<em>string</em>) &#8211; The password to be used.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>password</strong> (<em>string</em>) -- The password to be used.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
 </tr>
@@ -337,7 +344,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>number</strong> (<em>int</em>) &#8211; page number, zero-based (0 is the first page of the document).</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>number</strong> (<em>int</em>) -- page number, zero-based (0 is the first page of the document). If a negative number is provided, then page <code class="docutils literal"><span class="pre">n</span> <span class="pre">%</span> <span class="pre">(-pageCount)</span></code> will be loaded. For example: in order to load the last page, you can specify <code class="docutils literal"><span class="pre">doc.loadPage(-1)</span></code>. After this you have <code class="docutils literal"><span class="pre">page.number</span> <span class="pre">==</span> <span class="pre">doc.pageCount</span> <span class="pre">-</span> <span class="pre">1</span></code>.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="page.html#page"><span class="std std-ref">Page</span></a></td>
 </tr>
@@ -345,35 +352,48 @@
 </table>
 </dd></dl>
 
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Conveniently, pages can also be loaded via indexes over the document: <code class="docutils literal"><span class="pre">doc.loadPage(n)</span> <span class="pre">==</span> <span class="pre">doc[n]</span></code>.</p>
+</div>
 <dl class="method">
 <dt id="Document.getToC">
 <code class="descname">getToC</code><span class="sig-paren">(</span><em>simple = True</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.getToC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a table of contents out of the document&#8217;s outline chain.</p>
+<dd><p>Creates a table of contents out of the document's outline chain.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>simple</strong> (<em>boolean</em>) &#8211; Indicates whether a detailed ToC is required. If <code class="docutils literal"><span class="pre">simple</span> <span class="pre">=</span> <span class="pre">False</span></code>, each entry of the list also contains a dictionary with <a class="reference internal" href="linkdest.html#linkdest"><span class="std std-ref">linkDest</span></a> details for each outline entry.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>simple</strong> (<em>boolean</em>) -- Indicates whether a detailed ToC is required. If <code class="docutils literal"><span class="pre">simple</span> <span class="pre">=</span> <span class="pre">False</span></code>, each entry of the list also contains a dictionary with <a class="reference internal" href="linkdest.html#linkdest"><span class="std std-ref">linkDest</span></a> details for each outline entry.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of lists. Each entry has the form <code class="docutils literal"><span class="pre">[lvl,</span> <span class="pre">title,</span> <span class="pre">page,</span> <span class="pre">dest]</span></code>. Its entries have the following meanings:</td>
+</tr>
 </tbody>
 </table>
+<ul class="simple">
+<li>lvl - hierarchy level (integer). The first entry has hierarchy level 1, and entries in a row increase by at most one level.</li>
+<li>title - title (string)</li>
+<li>page - 1-based page number (integer). Page numbers <code class="docutils literal"><span class="pre">&lt;</span> <span class="pre">1</span></code> either indicate a target outside this document or no target at all (see next entry).</li>
+<li>dest - included only if <code class="docutils literal"><span class="pre">simple</span> <span class="pre">=</span> <span class="pre">False</span></code> is specified. A dictionary containing details of the link destination.</li>
+</ul>
 </dd></dl>
 
 <dl class="method">
 <dt id="Document.getPagePixmap">
-<code class="descname">getPagePixmap</code><span class="sig-paren">(</span><em>pno</em>, <em>matrix = fitz.Identity</em>, <em>colorspace = &quot;rgb&quot;</em>, <em>clip = None</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.getPagePixmap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a pixmap from one of the document&#8217;s pages - identified by number <code class="docutils literal"><span class="pre">pno</span></code> (zero-based).</p>
+<code class="descname">getPagePixmap</code><span class="sig-paren">(</span><em>pno</em>, <em>matrix = fitz.Identity</em>, <em>colorspace = &quot;rgb&quot;</em>, <em>clip = None</em>, <em>alpha = False</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.getPagePixmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a pixmap from page <code class="docutils literal"><span class="pre">pno</span></code> (zero-based).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>pno</strong> (<em>int</em>) &#8211; Page number, zero-based</li>
-<li><strong>matrix</strong> (<a class="reference internal" href="matrix.html#Matrix" title="Matrix"><em>Matrix</em></a>) &#8211; A transformation matrix - default is <a class="reference internal" href="identity.html#identity"><span class="std std-ref">Identity</span></a>.</li>
-<li><strong>colorspace</strong> (<em>string</em>) &#8211; A string specifying the requested colorspace - default is <code class="docutils literal"><span class="pre">rgb</span></code>.</li>
-<li><strong>clip</strong> (<a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a>) &#8211; An <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> to restrict rendering of the page to the rectangle&#8217;s area. If not specified, the complete page will be rendered.</li>
+<li><strong>pno</strong> (<em>int</em>) -- Page number, zero-based</li>
+<li><strong>matrix</strong> (<a class="reference internal" href="matrix.html#Matrix" title="Matrix"><em>Matrix</em></a>) -- A transformation matrix - default is <a class="reference internal" href="identity.html#identity"><span class="std std-ref">Identity</span></a>.</li>
+<li><strong>colorspace</strong> (<em>string</em>) -- A string specifying the requested colorspace - default is <code class="docutils literal"><span class="pre">rgb</span></code>.</li>
+<li><strong>clip</strong> (<a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a>) -- An <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> to restrict rendering of the page to the rectangle's area. If not specified, the complete page will be rendered.</li>
+<li><strong>alpha</strong> (<em>bool</em>) -- Indicates whether transparency should be included. Leave it as <code class="docutils literal"><span class="pre">False</span></code> if not absolutely required, as it saves memory considerably (25% for RGB).</li>
 </ul>
 </td>
 </tr>
@@ -387,12 +407,12 @@
 <dl class="method">
 <dt id="Document.getPageImageList">
 <code class="descname">getPageImageList</code><span class="sig-paren">(</span><em>pno</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.getPageImageList" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a nested list of all images referenced by a page.</p>
+<dd><p>Returns a nested list of all image descriptions referenced by a page.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pno</strong> (<em>int</em>) &#8211; page number, zero-based</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pno</strong> (<em>int</em>) -- page number, zero-based.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
@@ -402,7 +422,7 @@
 <span class="go">[1052, 0, 365, 414, 8, &#39;DeviceRGB&#39;, &#39;&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="mi">1052</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pix</span>
-<span class="go">fitz.Pixmap(fitz.csRGB, fitz.IRect(0, 0, 365, 414))</span>
+<span class="go">fitz.Pixmap(fitz.csRGB, fitz.IRect(0, 0, 365, 414), 0)</span>
 </pre></div>
 </div>
 </td>
@@ -419,7 +439,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pno</strong> (<em>int</em>) &#8211; page number, zero-based</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pno</strong> (<em>int</em>) -- page number, zero-based</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
@@ -445,8 +465,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>pno</strong> (<em>int</em>) &#8211; Page number, zero-based</li>
-<li><strong>output</strong> (<em>string</em>) &#8211; A string specifying the requested output format: text, html, json or xml. Default is <code class="docutils literal"><span class="pre">text</span></code>.</li>
+<li><strong>pno</strong> (<em>int</em>) -- Page number, zero-based</li>
+<li><strong>output</strong> (<em>string</em>) -- A string specifying the requested output format: text, html, json or xml. Default is <code class="docutils literal"><span class="pre">text</span></code>.</li>
 </ul>
 </td>
 </tr>
@@ -458,33 +478,14 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="Document.getPermits">
-<code class="descname">getPermits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Document.getPermits" title="Permalink to this definition">¶</a></dt>
-<dd><p>Shows the permissions to access the document. Returns a dictionary likes this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">getPermits</span><span class="p">()</span>
-<span class="go">{&#39;print&#39;: True, &#39;edit&#39;: True, &#39;note&#39;: True, &#39;copy&#39;: True}</span>
-</pre></div>
-</div>
-<p>The keys have the obvious meaning of permissions to print, change, annotate and copy the document, respectively.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="Document.select">
 <code class="descname">select</code><span class="sig-paren">(</span><em>list</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.select" title="Permalink to this definition">¶</a></dt>
-<dd><p>PDF documents only: Keeps only those pages of the document whose numbers occur in the list. Empty lists or elements outside the range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">page</span> <span class="pre">&lt;</span> <span class="pre">doc.pageCount</span></code> will cause a <code class="docutils literal"><span class="pre">ValueError</span></code>. For more details see remarks at the bottom or this chapter.</p>
+<dd><p>PDF only: Keeps only those pages of the document whose numbers occur in the list. Empty lists or elements outside the range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">page</span> <span class="pre">&lt;</span> <span class="pre">doc.pageCount</span></code> will cause a <code class="docutils literal"><span class="pre">ValueError</span></code>. For more details see remarks at the bottom or this chapter.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>list</strong> (<em>list</em>) &#8211; A list (or tuple) of page numbers (zero-based) to be included. Pages not in the list will be deleted (from memory) and become unavailable until the document is reopened. <strong>Page numbers can occur multiple times and in any order:</strong> the resulting sub-document will reflect the list exactly as specified.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>list</strong> (<em>list</em>) -- A list (or tuple) of page numbers (zero-based) to be included. Pages not in the list will be deleted (from memory) and become unavailable until the document is reopened. <strong>Page numbers can occur multiple times and in any order:</strong> the resulting sub-document will reflect the list exactly as specified.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
 </tr>
@@ -497,12 +498,12 @@
 <dl class="method">
 <dt id="Document.setMetadata">
 <code class="descname">setMetadata</code><span class="sig-paren">(</span><em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.setMetadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>PDF documents only: Sets or updates the metadata of the document as specified in <code class="docutils literal"><span class="pre">m</span></code>, a Python dictionary. As with method <code class="docutils literal"><span class="pre">select()</span></code>, these changes become permanent only when you save the document. Incremental save is supported.</p>
+<dd><p>PDF only: Sets or updates the metadata of the document as specified in <code class="docutils literal"><span class="pre">m</span></code>, a Python dictionary. As with method <code class="docutils literal"><span class="pre">select()</span></code>, these changes become permanent only when you save the document. Incremental save is supported.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> (<em>dict</em>) &#8211; A dictionary with the same keys as <code class="docutils literal"><span class="pre">metadata</span></code> (see below). All keys are optional. A PDF&#8217;s format and encryption method cannot be set or changed, these keys therefore have no effect and will be ignored. If any value should not contain data, do not specify its key or set the value to <code class="docutils literal"><span class="pre">None</span></code>. If you use <code class="docutils literal"><span class="pre">m</span> <span class="pre">=</span> <span class="pre">{}</span></code> all metadata information will be cleared to <code class="docutils literal"><span class="pre">none</span></code>. If you want to selectively change only some values, modify <code class="docutils literal"><span class="pre">doc.metadata</span></code> directly and use it as the argument for this method.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> (<em>dict</em>) -- A dictionary with the same keys as <code class="docutils literal"><span class="pre">metadata</span></code> (see below). All keys are optional. A PDF's format and encryption method cannot be set or changed, these keys therefore have no effect and will be ignored. If any value should not contain data, do not specify its key or set the value to <code class="docutils literal"><span class="pre">None</span></code>. If you use <code class="docutils literal"><span class="pre">m</span> <span class="pre">=</span> <span class="pre">{}</span></code> all metadata information will be cleared to <code class="docutils literal"><span class="pre">none</span></code>. If you want to selectively change only some values, modify <code class="docutils literal"><span class="pre">doc.metadata</span></code> directly and use it as the argument for this method.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
 </tr>
@@ -515,7 +516,7 @@
 <dl class="method">
 <dt id="Document.setToC">
 <code class="descname">setToC</code><span class="sig-paren">(</span><em>toc</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.setToC" title="Permalink to this definition">¶</a></dt>
-<dd><p>PDF documents only: Replaces the complete current outline tree (table of contents) with a new one. After successful execution, the new outline tree can be accessed as usual via method <code class="docutils literal"><span class="pre">getToc()</span></code> or via property <code class="docutils literal"><span class="pre">outline</span></code>. Like with other output-oriented methods, changes become permanent only via <code class="docutils literal"><span class="pre">save()</span></code> (incremental save is supported). Internally, this method consists of the following two steps. For a demonstration see example below.</p>
+<dd><p>PDF only: Replaces the complete current outline tree (table of contents) with a new one. After successful execution, the new outline tree can be accessed as usual via method <code class="docutils literal"><span class="pre">getToc()</span></code> or via property <code class="docutils literal"><span class="pre">outline</span></code>. Like with other output-oriented methods, changes become permanent only via <code class="docutils literal"><span class="pre">save()</span></code> (incremental save is supported). Internally, this method consists of the following two steps. For a demonstration see example below.</p>
 <ul class="simple">
 <li>Step 1 deletes all existing bookmarks.</li>
 <li>Step 2 creates a new table of contents from the entries contained in <code class="docutils literal"><span class="pre">toc</span></code>.</li>
@@ -524,17 +525,18 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>toc</strong> (<em>list</em>) &#8211; </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>toc</strong> (<em>list</em>) -- </td>
 </tr>
 </tbody>
 </table>
 <p>A Python list with <strong>all bookmark entries</strong> that should form the new table of contents. Each entry of this list is again a list with the following format. Output variants of method <code class="docutils literal"><span class="pre">getToc()</span></code> are acceptable as input, too.</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">[lvl,</span> <span class="pre">title,</span> <span class="pre">pno,</span> <span class="pre">top]</span></code>, where<ul>
+<li><code class="docutils literal"><span class="pre">[lvl,</span> <span class="pre">title,</span> <span class="pre">page,</span> <span class="pre">isExternal,</span> <span class="pre">uri]</span></code>, where<ul>
 <li><code class="docutils literal"><span class="pre">lvl</span></code> is the hierarchy level (int &gt; 0) of the item, starting with <code class="docutils literal"><span class="pre">1</span></code> and being at most 1 higher than that of the predecessor,</li>
-<li><code class="docutils literal"><span class="pre">title</span></code> (str) is the title to be displayed,</li>
-<li><code class="docutils literal"><span class="pre">pno</span></code> (int) is the target page number <strong>(attention: 1-based to support getToC()-output)</strong>, must be in valid page range,</li>
-<li><code class="docutils literal"><span class="pre">top</span></code> (optional int / float) is a vertical location on the page in pixel units. It is the distance from bottom, so a zero means bottom of the target page. Default value is 36 pixels (half an inch) below top of page. A dictionary (like one contained in <code class="docutils literal"><span class="pre">getToC(simple=False)</span></code>) may also be specified - in this case the value is the y-coordinate of the link destination, a point specified by key <code class="docutils literal"><span class="pre">to</span></code>: <code class="docutils literal"><span class="pre">d[&quot;to&quot;].y</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">title</span></code> (str) is the title to be displayed.</li>
+<li><code class="docutils literal"><span class="pre">page</span></code> (int) is the target page number <strong>(attention: 1-based to support getToC()-output)</strong>, must be in valid page range if positive. Set this to <code class="docutils literal"><span class="pre">-1</span></code> if there is no target, or the target is external.</li>
+<li><code class="docutils literal"><span class="pre">isExternal</span></code> (optional bool) indicates whether the target is outside this document. In this case <code class="docutils literal"><span class="pre">page</span></code> must be <code class="docutils literal"><span class="pre">-1</span></code> and <code class="docutils literal"><span class="pre">uri</span></code> must not be <code class="docutils literal"><span class="pre">None</span></code>. If page is positive, this entry is ignored.</li>
+<li><code class="docutils literal"><span class="pre">uri</span></code> (optional string) contains details about the target. If <code class="docutils literal"><span class="pre">page</span></code> is positive, this entry is ignored. To specify an empty target, set to <code class="docutils literal"><span class="pre">None</span></code> and page to <code class="docutils literal"><span class="pre">-1</span></code>. To specify an external target, set <code class="docutils literal"><span class="pre">isExternal</span> <span class="pre">=</span> <span class="pre">True</span></code> and this entry to a content that can be &quot;launched&quot;, like <code class="docutils literal"><span class="pre">mailto:...</span></code>, <code class="docutils literal"><span class="pre">file://...</span></code>, <code class="docutils literal"><span class="pre">http://...</span></code>, etc.</li>
 </ul>
 </li>
 </ul>
@@ -553,20 +555,20 @@
 <dl class="method">
 <dt id="Document.save">
 <code class="descname">save</code><span class="sig-paren">(</span><em>outfile</em>, <em>garbage=0</em>, <em>clean=0</em>, <em>deflate=0</em>, <em>incremental=0</em>, <em>ascii=0</em>, <em>expand=0</em>, <em>linear=0</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>PDF documents only: Saves the <strong>current content of the document</strong> under the name <code class="docutils literal"><span class="pre">outfile</span></code> (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successful <code class="docutils literal"><span class="pre">authenticate</span></code>, a decrypted copy will be saved, and, in addition (even without optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed any modifying methods like <code class="docutils literal"><span class="pre">select()</span></code>, <code class="docutils literal"><span class="pre">setMetadata()</span></code>, <code class="docutils literal"><span class="pre">setToC()</span></code>, etc., their results will also be reflected in the saved version.</p>
+<dd><p>PDF only: Saves the <strong>current content of the document</strong> under the name <code class="docutils literal"><span class="pre">outfile</span></code> (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successful <code class="docutils literal"><span class="pre">authenticate</span></code>, a decrypted copy will be saved, and, in addition (even without optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed any modifying methods like <code class="docutils literal"><span class="pre">select()</span></code>, <code class="docutils literal"><span class="pre">setMetadata()</span></code>, <code class="docutils literal"><span class="pre">setToC()</span></code>, etc., their results will also be reflected in the saved version.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outfile</strong> (<em>string</em>) &#8211; The file name to save to. Must be different from the original value value if <code class="docutils literal"><span class="pre">incremental=False</span></code>. When saving incrementally, <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code> <strong>must be</strong> <code class="docutils literal"><span class="pre">False</span> <span class="pre">/</span> <span class="pre">0</span></code> and <code class="docutils literal"><span class="pre">outfile</span></code> <strong>must equal</strong> the original filename (for convenience use <code class="docutils literal"><span class="pre">doc.name</span></code>).</li>
-<li><strong>garbage</strong> (<em>int</em>) &#8211; Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition to 1, compact xref table, 3 = in addition to 2, merge duplicate objects, 4 = in addition to 3, check streams for duplication. Excludes <code class="docutils literal"><span class="pre">incremental</span></code>.</li>
-<li><strong>clean</strong> (<em>int</em>) &#8211; Clean content streams: 0 / False, 1 / True.</li>
-<li><strong>deflate</strong> (<em>int</em>) &#8211; Deflate uncompressed streams: 0 / False, 1 / True.</li>
-<li><strong>incremental</strong> (<em>int</em>) &#8211; Only save changed objects: 0 / False, 1 / True. Excludes <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code>. Cannot be used for decrypted files and for files opened in repair mode (<code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>). In these cases saving to a new file is required.</li>
-<li><strong>ascii</strong> (<em>int</em>) &#8211; Where possible make the output ASCII: 0 / False, 1 / True.</li>
-<li><strong>expand</strong> (<em>int</em>) &#8211; Decompress contents: 0 = none, 1 = images, 2 = fonts, 255 = all. This convenience option generates a decompressed file version that can be better read by some other programs.</li>
-<li><strong>linear</strong> (<em>int</em>) &#8211; Save a linearised version of the document: 0 = False, 1 = True. This option creates a file format for improved performance when read via internet connections. Excludes <code class="docutils literal"><span class="pre">incremental</span></code>.</li>
+<li><strong>outfile</strong> (<em>string</em>) -- The file name to save to. Must be different from the original value value if <code class="docutils literal"><span class="pre">incremental=False</span></code>. When saving incrementally, <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code> <strong>must be</strong> <code class="docutils literal"><span class="pre">False</span> <span class="pre">/</span> <span class="pre">0</span></code> and <code class="docutils literal"><span class="pre">outfile</span></code> <strong>must equal</strong> the original filename (for convenience use <code class="docutils literal"><span class="pre">doc.name</span></code>).</li>
+<li><strong>garbage</strong> (<em>int</em>) -- Do garbage collection: 0 = none, 1 = remove unused objects, 2 = in addition to 1, compact xref table, 3 = in addition to 2, merge duplicate objects, 4 = in addition to 3, check streams for duplication. Excludes <code class="docutils literal"><span class="pre">incremental</span></code>.</li>
+<li><strong>clean</strong> (<em>int</em>) -- Clean content streams: 0 / False, 1 / True.</li>
+<li><strong>deflate</strong> (<em>int</em>) -- Deflate uncompressed streams: 0 / False, 1 / True.</li>
+<li><strong>incremental</strong> (<em>int</em>) -- Only save changed objects: 0 / False, 1 / True. Excludes <code class="docutils literal"><span class="pre">garbage</span></code> and <code class="docutils literal"><span class="pre">linear</span></code>. Cannot be used for decrypted files and for files opened in repair mode (<code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>). In these cases saving to a new file is required.</li>
+<li><strong>ascii</strong> (<em>int</em>) -- Where possible make the output ASCII: 0 / False, 1 / True.</li>
+<li><strong>expand</strong> (<em>int</em>) -- Decompress contents: 0 = none, 1 = images, 2 = fonts, 255 = all. This convenience option generates a decompressed file version that can be better read by some other programs.</li>
+<li><strong>linear</strong> (<em>int</em>) -- Save a linearised version of the document: 0 = False, 1 = True. This option creates a file format for improved performance when read via internet connections. Excludes <code class="docutils literal"><span class="pre">incremental</span></code>.</li>
 </ul>
 </td>
 </tr>
@@ -581,20 +583,26 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="Document.saveIncr">
+<code class="descname">saveIncr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Document.saveIncr" title="Permalink to this definition">¶</a></dt>
+<dd><p>PDF only: saves the document incrementally. This is a convenience abbreviation for <code class="docutils literal"><span class="pre">doc.save(doc.name,</span> <span class="pre">incremental</span> <span class="pre">=</span> <span class="pre">True)</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="Document.insertPDF">
 <code class="descname">insertPDF</code><span class="sig-paren">(</span><em>doc2</em>, <em>from_page = -1</em>, <em>to_page = -1</em>, <em>start_at = -1</em>, <em>rotate = -1</em>, <em>links = True</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.insertPDF" title="Permalink to this definition">¶</a></dt>
-<dd><p>PDF documents only: Copies the page range <strong>[from_page, to_page]</strong> (including both) of the PDF document object <code class="docutils literal"><span class="pre">doc2</span></code> into the current PDF. <code class="docutils literal"><span class="pre">from_page</span></code> will start with page number <code class="docutils literal"><span class="pre">start_at</span></code>. Negative values can be used to indicate default values. All pages thus copied will be rotated as specified. Links can be excluded in the target, see below. All page numbers are zero-based.</p>
+<dd><p>PDF only: Copies the page range <strong>[from_page, to_page]</strong> (including both) of the PDF document object <code class="docutils literal"><span class="pre">doc2</span></code> into the current PDF. <code class="docutils literal"><span class="pre">from_page</span></code> will start with page number <code class="docutils literal"><span class="pre">start_at</span></code>. Negative values can be used to indicate default values. All pages thus copied will be rotated as specified. Links can be excluded in the target, see below. All page numbers are zero-based.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>doc2</strong> (<code class="docutils literal"><span class="pre">Document</span></code>) &#8211; An opened PDF document. The <code class="docutils literal"><span class="pre">doc2</span></code> object <strong>must not be the current document</strong>. It may, however, refer to the same PDF file opened as a separate <code class="docutils literal"><span class="pre">fitz.Document</span></code>. The reason is, that separate documents have their own separate buffer areas and are thus treated as different beasts that just happen to have the same filename.</li>
-<li><strong>from_page</strong> (<em>int</em>) &#8211; First page number in <code class="docutils literal"><span class="pre">doc2</span></code>. Default is zero.</li>
-<li><strong>to_page</strong> (<em>int</em>) &#8211; Last page number in <code class="docutils literal"><span class="pre">doc2</span></code> to copy. Default is the last page.</li>
-<li><strong>start_at</strong> (<em>int</em>) &#8211; First copied page will become page number <code class="docutils literal"><span class="pre">start_at</span></code> in the destination. If omitted, the page range will be appended. If zero, the page range will be inserted before current first page.</li>
-<li><strong>rotate</strong> (<em>int</em>) &#8211; All copied pages will be rotated by the provided value (degrees). If you do not specify a value (or <code class="docutils literal"><span class="pre">-1</span></code>), the original will not be changed. Otherwise it must be an integer multiple of 90. Rotation is clockwise if <code class="docutils literal"><span class="pre">rotate</span></code> is positive, else counter-clockwise.</li>
-<li><strong>links</strong> (<em>bool</em>) &#8211; Choose whether links should be included with the copy. Default is <code class="docutils literal"><span class="pre">True</span></code>.</li>
+<li><strong>doc2</strong> (<code class="docutils literal"><span class="pre">Document</span></code>) -- An opened PDF document. The <code class="docutils literal"><span class="pre">doc2</span></code> object <strong>must not be the current document</strong>. It may, however, refer to the same PDF file opened as a separate <code class="docutils literal"><span class="pre">fitz.Document</span></code>. The reason is, that separate documents have their own separate buffer areas and are thus treated as different beasts that just happen to have the same filename.</li>
+<li><strong>from_page</strong> (<em>int</em>) -- First page number in <code class="docutils literal"><span class="pre">doc2</span></code>. Default is zero.</li>
+<li><strong>to_page</strong> (<em>int</em>) -- Last page number in <code class="docutils literal"><span class="pre">doc2</span></code> to copy. Default is the last page.</li>
+<li><strong>start_at</strong> (<em>int</em>) -- First copied page will become page number <code class="docutils literal"><span class="pre">start_at</span></code> in the destination. If omitted, the page range will be appended. If zero, the page range will be inserted before current first page.</li>
+<li><strong>rotate</strong> (<em>int</em>) -- All copied pages will be rotated by the provided value (degrees). If you do not specify a value (or <code class="docutils literal"><span class="pre">-1</span></code>), the original will not be changed. Otherwise it must be an integer multiple of 90. Rotation is clockwise if <code class="docutils literal"><span class="pre">rotate</span></code> is positive, else counter-clockwise.</li>
+<li><strong>links</strong> (<em>bool</em>) -- Choose whether (internal and external) links should be included with the copy. Default is <code class="docutils literal"><span class="pre">True</span></code>. Only those internal links will be included that point to a page member of the copied range.</li>
 </ul>
 </td>
 </tr>
@@ -614,17 +622,17 @@
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The functionality of this method is a conversion of the MuPDF CLI utility <code class="docutils literal"><span class="pre">mutool</span> <span class="pre">merge</span></code>. Due to its current restrictions, <code class="docutils literal"><span class="pre">doc2</span></code> annotations and bookmarks <strong>will not be copied</strong>. Links however <strong>will be copied</strong> (kind <a class="reference internal" href="vars.html#LINK_GOTO" title="LINK_GOTO"><code class="xref py py-data docutils literal"><span class="pre">LINK_GOTO</span></code></a> links of course only then, if their destination is within the copied page range). It is easy to recover a table of contents for the resulting document. Look at the examples below and at program <code class="docutils literal"><span class="pre">PDFjoiner.py</span></code> in the <em>examples</em> directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.</p>
+<p class="last"><code class="docutils literal"><span class="pre">doc2</span></code> bookmarks <strong>will not be copied</strong>. It is easy however, to recover a table of contents for the resulting document. Look at the examples below and at program <code class="docutils literal"><span class="pre">PDFjoiner.py</span></code> in the <em>examples</em> directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.</p>
 </div>
 <dl class="method">
 <dt id="Document.deletePage">
 <code class="descname">deletePage</code><span class="sig-paren">(</span><em>pno</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.deletePage" title="Permalink to this definition">¶</a></dt>
-<dd><p>PDF only: Deletes a page specified by its zero-based number in range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">pno</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>.</p>
+<dd><p>PDF only: Deletes a page specified by its 0-based number in range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">pno</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pno</strong> (<em>int</em>) &#8211; the page to be deleted.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pno</strong> (<em>int</em>) -- the page to be deleted.</td>
 </tr>
 </tbody>
 </table>
@@ -633,14 +641,14 @@
 <dl class="method">
 <dt id="Document.deletePageRange">
 <code class="descname">deletePageRange</code><span class="sig-paren">(</span><em>from_page = -1</em>, <em>to_page = -1</em><span class="sig-paren">)</span><a class="headerlink" href="#Document.deletePageRange" title="Permalink to this definition">¶</a></dt>
-<dd><p>PDF only: Deletes a range of pages specified as zero-based page numbers. Any negative value will be replaced with <code class="docutils literal"><span class="pre">pageCount</span> <span class="pre">-</span> <span class="pre">1</span></code>. After that, condition <code class="docutils literal"><span class="pre">from_page</span> <span class="pre">&lt;=</span> <span class="pre">to_page</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code> must be true. If the parameters are equal, one page will be deleted.</p>
+<dd><p>PDF only: Deletes a range of pages specified as 0-based numbers. Any negative value will be replaced with <code class="docutils literal"><span class="pre">pageCount</span> <span class="pre">-</span> <span class="pre">1</span></code>. After that, condition <code class="docutils literal"><span class="pre">from_page</span> <span class="pre">&lt;=</span> <span class="pre">to_page</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code> must be true. If the parameters are equal, one page will be deleted.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>from_page</strong> (<em>int</em>) &#8211; the first page to be deleted.</li>
-<li><strong>to_page</strong> (<em>int</em>) &#8211; the last page to be deleted.</li>
+<li><strong>from_page</strong> (<em>int</em>) -- the first page to be deleted.</li>
+<li><strong>to_page</strong> (<em>int</em>) -- the last page to be deleted.</li>
 </ul>
 </td>
 </tr>
@@ -657,8 +665,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>pno</strong> (<em>int</em>) &#8211; the page to be copied. Number must be in range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">pno</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>.</li>
-<li><strong>to</strong> (<em>int</em>) &#8211; the page number in front of which to insert the copied page. To insert at end of document (default), specify a negative value.</li>
+<li><strong>pno</strong> (<em>int</em>) -- the page to be copied. Number must be in range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">pno</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>.</li>
+<li><strong>to</strong> (<em>int</em>) -- the page number in front of which to insert the copied page. To insert at end of document (default), specify a negative value.</li>
 </ul>
 </td>
 </tr>
@@ -675,8 +683,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>pno</strong> (<em>int</em>) &#8211; the page to be moved. Number must be in range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">pno</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>.</li>
-<li><strong>to</strong> (<em>int</em>) &#8211; the page number in front of which to insert the moved page. To insert at end of document (default), specify a negative value. Must be <code class="docutils literal"><span class="pre">&lt;</span> <span class="pre">pno</span></code> or <code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">pno</span> <span class="pre">+</span> <span class="pre">1</span></code>.</li>
+<li><strong>pno</strong> (<em>int</em>) -- the page to be moved. Number must be in range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">pno</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>.</li>
+<li><strong>to</strong> (<em>int</em>) -- the page number in front of which to insert the moved page. Must be <code class="docutils literal"><span class="pre">&lt;</span> <span class="pre">pno</span></code> or <code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">pno</span> <span class="pre">+</span> <span class="pre">1</span></code>. To insert at end of document (default), specify a negative value.</li>
 </ul>
 </td>
 </tr>
@@ -747,20 +755,39 @@
 </dd></dl>
 
 <dl class="attribute">
+<dt id="Document.permissions">
+<code class="descname">permissions</code><a class="headerlink" href="#Document.permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shows the permissions to access the document. Contains a dictionary likes this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">permissions</span>
+<span class="go">{&#39;print&#39;: True, &#39;edit&#39;: True, &#39;note&#39;: True, &#39;copy&#39;: True}</span>
+</pre></div>
+</div>
+<p>The keys have the obvious meaning of permissions to print, change, annotate and copy the document, respectively.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="Document.metadata">
 <code class="descname">metadata</code><a class="headerlink" href="#Document.metadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the document&#8217;s meta data as a Python dictionary or <code class="docutils literal"><span class="pre">None</span></code> (if <code class="docutils literal"><span class="pre">isEncrypted</span> <span class="pre">=</span> <span class="pre">True</span></code> and <code class="docutils literal"><span class="pre">needPass=True</span></code>). Keys are <code class="docutils literal"><span class="pre">format</span></code>, <code class="docutils literal"><span class="pre">encryption</span></code>, <code class="docutils literal"><span class="pre">title</span></code>, <code class="docutils literal"><span class="pre">author</span></code>, <code class="docutils literal"><span class="pre">subject</span></code>, <code class="docutils literal"><span class="pre">keywords</span></code>, <code class="docutils literal"><span class="pre">creator</span></code>, <code class="docutils literal"><span class="pre">producer</span></code>, <code class="docutils literal"><span class="pre">creationDate</span></code>, <code class="docutils literal"><span class="pre">modDate</span></code>. All item values are strings or <code class="docutils literal"><span class="pre">None</span></code>.</p>
+<dd><p>Contains the document's meta data as a Python dictionary or <code class="docutils literal"><span class="pre">None</span></code> (if <code class="docutils literal"><span class="pre">isEncrypted</span> <span class="pre">=</span> <span class="pre">True</span></code> and <code class="docutils literal"><span class="pre">needPass=True</span></code>). Keys are <code class="docutils literal"><span class="pre">format</span></code>, <code class="docutils literal"><span class="pre">encryption</span></code>, <code class="docutils literal"><span class="pre">title</span></code>, <code class="docutils literal"><span class="pre">author</span></code>, <code class="docutils literal"><span class="pre">subject</span></code>, <code class="docutils literal"><span class="pre">keywords</span></code>, <code class="docutils literal"><span class="pre">creator</span></code>, <code class="docutils literal"><span class="pre">producer</span></code>, <code class="docutils literal"><span class="pre">creationDate</span></code>, <code class="docutils literal"><span class="pre">modDate</span></code>. All item values are strings or <code class="docutils literal"><span class="pre">None</span></code>.</p>
 <p>Except <code class="docutils literal"><span class="pre">format</span></code> and <code class="docutils literal"><span class="pre">encryption</span></code>, the key names correspond in an obvious way to the PDF keys <code class="docutils literal"><span class="pre">/Creator</span></code>, <code class="docutils literal"><span class="pre">/Producer</span></code>, <code class="docutils literal"><span class="pre">/CreationDate</span></code>, <code class="docutils literal"><span class="pre">/ModDate</span></code>, <code class="docutils literal"><span class="pre">/Title</span></code>, <code class="docutils literal"><span class="pre">/Author</span></code>, <code class="docutils literal"><span class="pre">/Subject</span></code>, and <code class="docutils literal"><span class="pre">/Keywords</span></code> respectively.</p>
 <ul>
-<li><p class="first"><code class="docutils literal"><span class="pre">format</span></code> contains the PDF version (e.g. &#8216;PDF-1.6&#8217;).</p>
+<li><p class="first"><code class="docutils literal"><span class="pre">format</span></code> contains the PDF version (e.g. 'PDF-1.6').</p>
 </li>
 <li><p class="first"><code class="docutils literal"><span class="pre">encryption</span></code> either contains <code class="docutils literal"><span class="pre">None</span></code> (no encryption), or a string naming an encryption method (e.g. <code class="docutils literal"><span class="pre">'Standard</span> <span class="pre">V4</span> <span class="pre">R4</span> <span class="pre">128-bit</span> <span class="pre">RC4'</span></code>). Note that an encryption method may be specified even if <code class="docutils literal"><span class="pre">needsPass</span> <span class="pre">=</span> <span class="pre">False</span></code>. In such cases not all permissions will probably have been granted. Check dictionary <code class="docutils literal"><span class="pre">getPermits()</span></code> for details.</p>
 </li>
-<li><p class="first">If the date fields contain meaningful data (which need not be the case at all!), they are strings in the PDF-internal timestamp format &#8220;D:&lt;TS&gt;&lt;TZ&gt;&#8221;, where</p>
+<li><p class="first">If the date fields contain meaningful data (which need not be the case at all!), they are strings in the PDF-internal timestamp format &quot;D:&lt;TS&gt;&lt;TZ&gt;&quot;, where</p>
 <blockquote>
 <div><ul class="simple">
 <li>&lt;TS&gt; is the 12 character ISO timestamp <code class="docutils literal"><span class="pre">YYYYMMDDhhmmss</span></code> (<code class="docutils literal"><span class="pre">YYYY</span></code> - year, <code class="docutils literal"><span class="pre">MM</span></code> - month, <code class="docutils literal"><span class="pre">DD</span></code> - day, <code class="docutils literal"><span class="pre">hh</span></code> - hour, <code class="docutils literal"><span class="pre">mm</span></code> - minute, <code class="docutils literal"><span class="pre">ss</span></code> - second), and</li>
-<li>&lt;TZ&gt; is a time zone value (time intervall relative to GMT) containing a sign (&#8216;+&#8217; or &#8216;-&#8216;), the hour (<code class="docutils literal"><span class="pre">hh</span></code>), and the minute (<code class="docutils literal"><span class="pre">'mm'</span></code>, note the apostrophies!).</li>
+<li>&lt;TZ&gt; is a time zone value (time intervall relative to GMT) containing a sign ('+' or '-'), the hour (<code class="docutils literal"><span class="pre">hh</span></code>), and the minute (<code class="docutils literal"><span class="pre">'mm'</span></code>, note the apostrophies!).</li>
 </ul>
 </div></blockquote>
 </li>
@@ -794,7 +821,7 @@
 <dl class="attribute">
 <dt id="Document.pageCount">
 <code class="descname">pageCount</code><a class="headerlink" href="#Document.pageCount" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the number of pages of the document. May return 0 for documents with no pages.</p>
+<dd><p>Contains the number of pages of the document. May return 0 for documents with no pages. Function <code class="docutils literal"><span class="pre">len(doc)</span></code> will also deliver this result.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -822,7 +849,7 @@
 <dl class="attribute">
 <dt id="Document.openErrMsg">
 <code class="descname">openErrMsg</code><a class="headerlink" href="#Document.openErrMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains either an empty string or the last error message if <code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>. Together with any other error messages of MuPDF&#8217;s C library, it will also appear on <code class="docutils literal"><span class="pre">SYSERR</span></code>.</p>
+<dd><p>Contains either an empty string or the last error message if <code class="docutils literal"><span class="pre">openErrCode</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>. Together with any other error messages of MuPDF's C library, it will also appear on <code class="docutils literal"><span class="pre">SYSERR</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -837,18 +864,18 @@
 
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">For methods that change the structure of a PDF (<code class="docutils literal"><span class="pre">insertPDF()</span></code>, <code class="docutils literal"><span class="pre">select()</span></code>, <code class="docutils literal"><span class="pre">copyPage()</span></code>, <code class="docutils literal"><span class="pre">deletePage()</span></code>, <code class="docutils literal"><span class="pre">deletePageRange()</span></code>), be aware that objects or properties in your program may have been invalidated or orphaned by them. Examples are <a class="reference internal" href="page.html#page"><span class="std std-ref">Page</span></a> objects, variables holding old page counts and the like. Remember to keep such variables up to date or delete orphaned objects.</p>
+<p class="last">For methods that change the structure of a PDF (<code class="docutils literal"><span class="pre">insertPDF()</span></code>, <code class="docutils literal"><span class="pre">select()</span></code>, <code class="docutils literal"><span class="pre">copyPage()</span></code>, <code class="docutils literal"><span class="pre">deletePage()</span></code>, <code class="docutils literal"><span class="pre">deletePageRange()</span></code>), be aware that objects or properties in your program may have been invalidated or orphaned. Examples are <a class="reference internal" href="page.html#page"><span class="std std-ref">Page</span></a> objects, variables holding old page counts and the like. Remember to keep such variables up to date or delete orphaned objects.</p>
 </div>
 <div class="section" id="remarks-on-select">
 <h2>Remarks on <code class="docutils literal"><span class="pre">select()</span></code><a class="headerlink" href="#remarks-on-select" title="Permalink to this headline">¶</a></h2>
 <p>Page numbers in the list need not be unique nor be in any particular sequence. This makes the method a versatile utility to e.g. select only the even or the odd pages, re-arrange a document from back to front, duplicate it, and so forth. In combination with text extraction you can also omit / include pages with no text or containing a certain text, etc.</p>
 <p>You can execute several selections in a row. The document structure will be up to date after each method execution.</p>
-<p>Any of those changes will become permanent only with a <code class="docutils literal"><span class="pre">doc.save()</span></code>. If you have de-selected many pages, consider specifying the <code class="docutils literal"><span class="pre">garbage</span></code> option to eventually reduce the resulting document&#8217;s size (when saving to a new file).</p>
+<p>Any of those changes will become permanent only with a <code class="docutils literal"><span class="pre">doc.save()</span></code>. If you have de-selected many pages, consider specifying the <code class="docutils literal"><span class="pre">garbage</span></code> option to eventually reduce the resulting document's size (when saving to a new file).</p>
 <p>Also note, that this method <strong>preserves all links, annotations and bookmarks</strong> that are still valid. In other words: deleting pages only deletes references pointing to de-selected pages.</p>
 </div>
 <div class="section" id="select-examples">
 <h2><code class="docutils literal"><span class="pre">select()</span></code> Examples<a class="headerlink" href="#select-examples" title="Permalink to this headline">¶</a></h2>
-<p>In general, any list of integers within the document&#8217;s page range can be used as an argument. Here are just some illustrations.</p>
+<p>In general, any list of integers within the document's page range can be used as an argument. Here are just some illustrations.</p>
 <p>Create a document copy deleting pages with no text:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
@@ -882,7 +909,7 @@
 <span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;any-any.pdf&quot;</span><span class="p">)</span>                    <span class="c1"># contains doubled &lt;any.pdf&gt;</span>
 </pre></div>
 </div>
-<p>Create document copy in reverse page order (well, don&#8217;t try with a million pages):</p>
+<p>Create document copy in reverse page order (well, don't try with a million pages):</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;any.pdf&quot;</span><span class="p">)</span>
 <span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
@@ -950,7 +977,7 @@
 <span class="n">doc1</span><span class="o">.</span><span class="n">setToC</span><span class="p">(</span><span class="n">toc1</span> <span class="o">+</span> <span class="n">toc2</span><span class="p">)</span>               <span class="c1"># now result has total TOC</span>
 </pre></div>
 </div>
-<p>Obviously, similar ways can be found in more general situations. Just watch out that hierarchy level steps in a row do not increase by more than one. Inserting dummy entries before and after the <code class="docutils literal"><span class="pre">toc2</span></code> segment would heal such cases.</p>
+<p>Obviously, similar ways can be found in more general situations. Just watch out that hierarchy levels in a row do not increase by more than one. Inserting dummy entries before and after the <code class="docutils literal"><span class="pre">toc2</span></code> segment would heal such cases.</p>
 <p><strong>(2) More examples:</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># insert 5 pages of doc2, where its page 21 becomes page 15 in doc1</span>
 <span class="n">doc1</span><span class="o">.</span><span class="n">insertPDF</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">from_page</span> <span class="o">=</span> <span class="mi">21</span><span class="p">,</span> <span class="n">to_page</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">start_at</span> <span class="o">=</span> <span class="mi">15</span><span class="p">)</span>
@@ -965,19 +992,24 @@
 </div>
 <div class="section" id="other-examples">
 <h2>Other Examples<a class="headerlink" href="#other-examples" title="Permalink to this headline">¶</a></h2>
-<p><strong>Extract all images of a PDF into separate PNG files:</strong></p>
+<p><strong>Extract all page-referenced images of a PDF into separate PNG files:</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)):</span>
     <span class="n">imglist</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getPageImageList</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">imglist</span><span class="p">:</span>
         <span class="n">xref</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>                  <span class="c1"># xref number</span>
         <span class="n">pix</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">xref</span><span class="p">)</span>   <span class="c1"># make pixmap from image</span>
-        <span class="k">if</span> <span class="n">pix</span><span class="o">.</span><span class="n">n</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>                  <span class="c1"># can be saved as PNG</span>
+        <span class="k">if</span> <span class="n">pix</span><span class="o">.</span><span class="n">colorspace</span> <span class="o">!=</span> <span class="s2">&quot;DeviceCMYK&quot;</span><span class="p">:</span> <span class="c1"># can be saved as PNG</span>
             <span class="n">pix</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s2">&quot;p</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">.png&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">xref</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>                          <span class="c1"># must convert CMYK first</span>
+        <span class="k">else</span><span class="p">:</span>                          <span class="c1"># CMYK: must convert first</span>
             <span class="n">pix0</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">Pixmap</span><span class="p">(</span><span class="n">fitz</span><span class="o">.</span><span class="n">csRGB</span><span class="p">,</span> <span class="n">pix</span><span class="p">)</span>
             <span class="n">pix0</span><span class="o">.</span><span class="n">writePNG</span><span class="p">(</span><span class="s2">&quot;p</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">.png&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">xref</span><span class="p">))</span>
             <span class="n">pix0</span> <span class="o">=</span> <span class="kc">None</span>                <span class="c1"># free Pixmap resources</span>
         <span class="n">pix</span> <span class="o">=</span> <span class="kc">None</span>                     <span class="c1"># free Pixmap resources</span>
+</pre></div>
+</div>
+<p><strong>Rotate all pages of a PDF:</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)):</span>
+    <span class="n">doc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">setRotation</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1003,7 +1035,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Nov 2016.
+      Last updated on 01. Dec 2016.
 
     </p>
   </div>
@@ -1025,7 +1057,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

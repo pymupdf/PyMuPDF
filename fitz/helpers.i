@@ -1,95 +1,252 @@
 %{
-char *annot_type_str(int type)
+/*****************************************************************************/
+// return a (char *) for the provided PyObject obj if its type  is either
+// PyBytes, PyString (Python 2) or PyUnicode.
+// For PyBytes, a conversion to PyUnicode is first performed, if Python 3.
+// In Python 2, this is an alias for PyString and its (char *) is returned.
+// PyUnicode objects are converted to UTF16BE bytes objects (all Python
+// versions). Its (char *) version is returned.
+// If only 1-byte code points are present, BOM and high-order bytes are
+// deleted and the (compressed) rest is returned.
+/*****************************************************************************/
+char *getPDFstr(PyObject *obj, Py_ssize_t* psize, const char *name)
 {
-	switch (type)
-	{
-	case FZ_ANNOT_TEXT: return "Text";
-	case FZ_ANNOT_LINK: return "Link";
-	case FZ_ANNOT_FREETEXT: return "FreeText";
-	case FZ_ANNOT_LINE: return "Line";
-	case FZ_ANNOT_SQUARE: return "Square";
-	case FZ_ANNOT_CIRCLE: return "Circle";
-	case FZ_ANNOT_POLYGON: return "Polygon";
-	case FZ_ANNOT_POLYLINE: return "PolyLine";
-	case FZ_ANNOT_HIGHLIGHT: return "Highlight";
-	case FZ_ANNOT_UNDERLINE: return "Underline";
-	case FZ_ANNOT_SQUIGGLY: return "Squiggly";
-	case FZ_ANNOT_STRIKEOUT: return "StrikeOut";
-	case FZ_ANNOT_STAMP: return "Stamp";
-	case FZ_ANNOT_CARET: return "Caret";
-	case FZ_ANNOT_INK: return "Ink";
-	case FZ_ANNOT_POPUP: return "Popup";
-	case FZ_ANNOT_FILEATTACHMENT: return "FileAttachment";
-	case FZ_ANNOT_SOUND: return "Sound";
-	case FZ_ANNOT_MOVIE: return "Movie";
-	case FZ_ANNOT_WIDGET: return "Widget";
-	case FZ_ANNOT_SCREEN: return "Screen";
-	case FZ_ANNOT_PRINTERMARK: return "PrinterMark";
-	case FZ_ANNOT_TRAPNET: return "TrapNet";
-	case FZ_ANNOT_WATERMARK: return "Watermark";
-	case FZ_ANNOT_3D: return "3D";
-	default: return "";
-	}
+    int ok;
+    Py_ssize_t j, k;
+    PyObject *me;
+    unsigned char *nc;
+    int have_uc = 0;
+    me = obj;
+    if (PyBytes_Check(me))
+        {
+        ok = PyBytes_AsStringAndSize(me, &nc, psize);
+        if (ok != 0)
+            {
+            fz_throw(gctx, FZ_ERROR_GENERIC, "could not get string of '%s'", name);
+            return NULL;
+            }
+#if PY_MAJOR_VERSION < 3
+        return nc;                     // we are done when Python 2
+#endif
+        me = PyUnicode_FromStringAndSize(nc, *psize);      // assumes nc is UTF8
+        }
+    if (!PyUnicode_Check(me))
+        {
+        fz_throw(gctx, FZ_ERROR_GENERIC, "type(%s) is not unicode, bytes or str", name);
+        return NULL;
+        }
+    PyObject *uc = PyUnicode_AsUTF16String(me);
+    if (!uc)
+        {
+        fz_throw(gctx, FZ_ERROR_GENERIC, "could not create UTF16 for '%s'", name);
+        return NULL;
+        }
+    ok = PyBytes_AsStringAndSize(uc, &nc, psize);
+    if (ok != 0)
+        {
+        fz_throw(gctx, FZ_ERROR_GENERIC, "could not get UTF16 string of '%s'", name);
+        return NULL;
+        }
+    // UTF16-BE (big endian) is required for PDF if code points > 0xff
+    if (nc[0] == 255)                  // non-BE UTF16, so swap bytes
+    {
+        j = 2;
+        nc[0] = 254;                   // set BOM to "BE"
+        nc[1] = 255;
+        while ((j+1) < *psize)
+        {
+            k = nc[j];                      // save 1st byte
+            nc[j] = nc[j+1];                // copy 2nd byte
+            nc[j+1] = k;                    // copy 1st byte
+            if (nc[j] > 0) have_uc = 1;     // code point outside latin-1
+            j = j + 2;
+        }
+    }
+    else                               // have UTF16BE, just check code points
+    {
+        j = 2;
+        while (j < *psize)
+        {
+            if (nc[j] > 0) have_uc = 1;     // code point outside latin-1
+            j = j + 2;
+        }
+    }
+    if (have_uc == 1) return nc;            // have large code points: done
+    k=0; j=3;
+    while (j < *psize)                      // kick out BOM & high order bytes
+    {
+        nc[k] = nc[j];
+        k += 1;
+        j += 2;
+    }
+    nc[k+1] = 0;                            // end of string delimiter
+    *psize = (*psize - 2) / 2;              // reduced size
+    return nc;
 }
 
-/*******************************************************************************
-Deep-copies a specified source page to the target location.
-*******************************************************************************/
+// annotation types
+#define ANNOT_TEXT 0
+#define ANNOT_LINK 1
+#define ANNOT_FREETEXT 2
+#define ANNOT_LINE 3
+#define ANNOT_SQUARE 4
+#define ANNOT_CIRCLE 5
+#define ANNOT_POLYGON 6
+#define ANNOT_POLYLINE 7
+#define ANNOT_HIGHLIGHT 8
+#define ANNOT_UNDERLINE 9
+#define ANNOT_SQUIGGLY 10
+#define ANNOT_STRIKEOUT 11
+#define ANNOT_STAMP 12
+#define ANNOT_CARET 13
+#define ANNOT_INK 14
+#define ANNOT_POPUP 15
+#define ANNOT_FILEATTACHMENT 16
+#define ANNOT_SOUND 17
+#define ANNOT_MOVIE 18
+#define ANNOT_WIDGET 19
+#define ANNOT_SCREEN 20
+#define ANNOT_PRINTERMARK 21
+#define ANNOT_TRAPNET 22
+#define ANNOT_WATERMARK 23
+#define ANNOT_3D 24
+
+// annotation flag bits
+#define ANNOT_XF_Invisible 1 << (1-1)
+#define ANNOT_XF_Hidden 1 << (2-1)
+#define ANNOT_XF_Print 1 << (3-1)
+#define ANNOT_XF_NoZoom 1 << (4-1)
+#define ANNOT_XF_NoRotate 1 << (5-1)
+#define ANNOT_XF_NoView 1 << (6-1)
+#define ANNOT_XF_ReadOnly 1 << (7-1)
+#define ANNOT_XF_Locked 1 << (8-1)
+#define ANNOT_XF_ToggleNoView 1 << (9-1)
+#define ANNOT_XF_LockedContents 1 << (10-1)
+
+// line ending styles
+#define ANNOT_LE_None 0
+#define ANNOT_LE_Square 1
+#define ANNOT_LE_Circle 2
+#define ANNOT_LE_Diamond 3
+#define ANNOT_LE_OpenArrow 4
+#define ANNOT_LE_ClosedArrow 5
+#define ANNOT_LE_Butt 6
+#define ANNOT_LE_ROpenArrow 7
+#define ANNOT_LE_RClosedArrow 8
+#define ANNOT_LE_Slash 9
+
+char *annot_le_style_str(int type)
+{
+    switch (type)
+    {
+    case ANNOT_LE_None: return "None";
+    case ANNOT_LE_Square: return "Square";
+    case ANNOT_LE_Circle: return "Circle";
+    case ANNOT_LE_Diamond: return "Diamond";
+    case ANNOT_LE_OpenArrow: return "OpenArrow";
+    case ANNOT_LE_ClosedArrow: return "ClosedArrow";
+    case ANNOT_LE_Butt: return "Butt";
+    case ANNOT_LE_ROpenArrow: return "ROpenArrow";
+    case ANNOT_LE_RClosedArrow: return "RClosedArrow";
+    case ANNOT_LE_Slash: return "Slash";
+    default: return "None";
+    }
+}
+
+char *annot_type_str(int type)
+{
+    switch (type)
+    {
+    case ANNOT_TEXT: return "Text";
+    case ANNOT_LINK: return "Link";
+    case ANNOT_FREETEXT: return "FreeText";
+    case ANNOT_LINE: return "Line";
+    case ANNOT_SQUARE: return "Square";
+    case ANNOT_CIRCLE: return "Circle";
+    case ANNOT_POLYGON: return "Polygon";
+    case ANNOT_POLYLINE: return "PolyLine";
+    case ANNOT_HIGHLIGHT: return "Highlight";
+    case ANNOT_UNDERLINE: return "Underline";
+    case ANNOT_SQUIGGLY: return "Squiggly";
+    case ANNOT_STRIKEOUT: return "StrikeOut";
+    case ANNOT_STAMP: return "Stamp";
+    case ANNOT_CARET: return "Caret";
+    case ANNOT_INK: return "Ink";
+    case ANNOT_POPUP: return "Popup";
+    case ANNOT_FILEATTACHMENT: return "FileAttachment";
+    case ANNOT_SOUND: return "Sound";
+    case ANNOT_MOVIE: return "Movie";
+    case ANNOT_WIDGET: return "Widget";
+    case ANNOT_SCREEN: return "Screen";
+    case ANNOT_PRINTERMARK: return "PrinterMark";
+    case ANNOT_TRAPNET: return "TrapNet";
+    case ANNOT_WATERMARK: return "Watermark";
+    case ANNOT_3D: return "3D";
+    default: return "";
+    }
+}
+
+/*****************************************************************************/
+// Deep-copies a specified source page to the target location.
+/*****************************************************************************/
 void page_merge(pdf_document* doc_des, pdf_document* doc_src, int page_from, int page_to, int rotate, pdf_graft_map *graft_map)
 {
     pdf_obj *pageref = NULL;
     pdf_obj *page_dict;
-    pdf_obj *obj = NULL, *ref = NULL;
-    /***************************************************************************
-    Include minimal number of objects for page.  Do not include items that
-    reference other pages.
-    ***************************************************************************/
+    pdf_obj *obj = NULL, *ref = NULL, *subt = NULL;
+
+    // list of object types (per page) we want to copy
     pdf_obj *known_page_objs[] = {PDF_NAME_Contents, PDF_NAME_Resources,
-        PDF_NAME_MediaBox, PDF_NAME_CropBox, PDF_NAME_BleedBox,
+        PDF_NAME_MediaBox, PDF_NAME_CropBox, PDF_NAME_BleedBox, PDF_NAME_Annots,
         PDF_NAME_TrimBox, PDF_NAME_ArtBox, PDF_NAME_Rotate, PDF_NAME_UserUnit};
-    int n = nelem(known_page_objs);
+    int n = nelem(known_page_objs);                   // number of list elements
     int i;
-    int num;
+    int num, j;
     fz_var(obj);
     fz_var(ref);
 
     fz_try(gctx)
     {
         pageref = pdf_lookup_page_obj(gctx, doc_src, page_from);
-
-        /* Make a new dictionary and copy over the items from the source object to
-        * the new dict that we want to deep copy. */
+        pdf_flatten_inheritable_page_items(gctx, pageref);
+        // make a new page
         page_dict = pdf_new_dict(gctx, doc_des, 4);
-
         pdf_dict_put_drop(gctx, page_dict, PDF_NAME_Type, PDF_NAME_Page);
 
+        // copy objects of source page into it
         for (i = 0; i < n; i++)
-        {
+            {
             obj = pdf_dict_get(gctx, pageref, known_page_objs[i]);
             if (obj != NULL)
                 pdf_dict_put_drop(gctx, page_dict, known_page_objs[i], pdf_graft_object(gctx, doc_des, doc_src, obj, graft_map));
+            }
+        // remove any links from annots array
+        pdf_obj *annots = pdf_dict_get(gctx, page_dict, PDF_NAME_Annots);
+        int len = pdf_array_len(gctx, annots);
+        for (j = 0; j < len; j++)
+        {
+            pdf_obj *o = pdf_array_get(gctx, annots, j);
+            if (!pdf_name_eq(gctx, pdf_dict_get(gctx, o, PDF_NAME_Subtype), PDF_NAME_Link))
+                continue;
+            // remove the link annotation
+            pdf_array_delete(gctx, annots, j);
+            len--;
+            j--;
         }
-        /***********************************************************************
-        Make page rotate as specified
-        ***********************************************************************/
-        if (rotate != -1) {
+        // rotate the page as requested
+        if (rotate != -1)
+            {
             pdf_obj *rotateobj = pdf_new_int(gctx, doc_des, rotate);
             pdf_dict_put_drop(gctx, page_dict, PDF_NAME_Rotate, rotateobj);
-        }
-        /***********************************************************************
-        Now add the page dictionary to dest PDF
-        ***********************************************************************/
+            }
+        // Now add the page dictionary to dest PDF
         obj = pdf_add_object_drop(gctx, doc_des, page_dict);
 
-        /***********************************************************************
-        Get indirect ref of the page
-        ***********************************************************************/
+        // Get indirect ref of the page
         num = pdf_to_num(gctx, obj);
         ref = pdf_new_indirect(gctx, doc_des, num, 0);
 
-        /***********************************************************************
-        Insert new page at specified location
-        ***********************************************************************/
+        // Insert new page at specified location
         pdf_insert_page(gctx, doc_des, page_to, ref);
 
     }
@@ -104,11 +261,11 @@ void page_merge(pdf_document* doc_des, pdf_document* doc_src, int page_from, int
     }
 }
 
-/*******************************************************************************
-Copy a range of pages (spage, epage) from a source PDF to a specified location
-(apage) of the target PDF.
-If spage > epage, the sequence of source pages is reversed.
-*******************************************************************************/
+/*****************************************************************************/
+// Copy a range of pages (spage, epage) from a source PDF to a specified location
+// (apage) of the target PDF.
+// If spage > epage, the sequence of source pages is reversed.
+/*****************************************************************************/
 void merge_range(pdf_document* doc_des, pdf_document* doc_src, int spage, int epage, int apage, int rotate)
 {
     int page, afterpage;
@@ -137,12 +294,12 @@ void merge_range(pdf_document* doc_des, pdf_document* doc_src, int spage, int ep
     }
 }
 
-/*******************************************************************************
-Fills table 'res' with outline object numbers
-'res' must be a correctly pre-allocated table of integers
-'obj' must be the first OL item
-returns (int) number of filled-in outline item numbers.
-*******************************************************************************/
+/******************************************************************************/
+// Fills table 'res' with outline object numbers
+// 'res' must be a correctly pre-allocated table of integers
+// 'obj' must be the first OL item
+// returns (int) number of filled-in outline item numbers.
+/******************************************************************************/
 int fillOLNumbers(int *res, pdf_obj *obj, int oc, int argc)
 {
     int onum;
@@ -163,10 +320,10 @@ int fillOLNumbers(int *res, pdf_obj *obj, int oc, int argc)
     return oc;
 }
 
-/*******************************************************************************
-Returns (int) number of outlines
-'obj' must be first OL item
-*******************************************************************************/
+/******************************************************************************/
+// Returns (int) number of outlines
+// 'obj' must be first OL item
+/******************************************************************************/
 int countOutlines(pdf_obj *obj, int oc)
 {
     pdf_obj *first, *parent, *thisobj;
@@ -183,22 +340,22 @@ int countOutlines(pdf_obj *obj, int oc)
     return oc;
 }
 
-/*******************************************************************************
-Read text from a document page - the short way.
-Main logic is contained in function fz_new_stext_page_from_page of file
-utils.c in the fitz directory.
-In essence, it creates an stext device, runs the stext page through it,
-deletes the device and returns the text buffer in the requested format.
-A display list is not used in the process.
-*******************************************************************************/
-struct fz_buffer_s *readPageText(fz_page *page, int output) {
+/******************************************************************************/
+// Read text from a document page - the short way.
+// Main logic is contained in function fz_new_stext_page_from_page of file
+// utils.c in the fitz directory.
+// In essence, it creates an stext device, runs the stext page through it,
+// deletes the device and returns the text buffer in the requested format.
+// A display list is not used in the process.
+/******************************************************************************/
+char *readPageText(fz_page *page, int output) {
     fz_buffer *res;
     fz_output *out;
     fz_stext_sheet *ts;
     fz_stext_page *tp;
     fz_try(gctx) {
         ts = fz_new_stext_sheet(gctx);
-        tp = fz_new_stext_page_from_page(gctx, page, ts);
+        tp = fz_new_stext_page_from_page(gctx, page, ts, NULL);
         res = fz_new_buffer(gctx, 1024);
         out = fz_new_output_with_buffer(gctx, res);
         if (output<=0) fz_print_stext_page(gctx, out, tp);
@@ -216,14 +373,14 @@ struct fz_buffer_s *readPageText(fz_page *page, int output) {
         if (res) fz_drop_buffer(gctx, res);
         fz_rethrow(gctx);
     }
-    return res;
+    return fz_string_from_buffer(gctx, res);
 }
 
-/*******************************************************************************
-Helpers for document page selection - main logic was imported
-from pdf_clean_file.c. But instead of analyzing a string-based spefication of
-selected pages, we accept an integer array.
-*******************************************************************************/
+/******************************************************************************/
+// Helpers for document page selection - main logic was imported
+// from pdf_clean_file.c. But instead of analyzing a string-based spefication of
+// selected pages, we accept an integer array.
+/******************************************************************************/
 typedef struct globals_s
 {
     pdf_document *doc;
@@ -244,16 +401,17 @@ int string_in_names_list(fz_context *ctx, pdf_obj *p, pdf_obj *names_list)
     return 0;
 }
 
-/*******************************************************************************
-Recreate page tree to only retain specified pages.
-*******************************************************************************/
+/******************************************************************************/
+// Recreate page tree to only retain specified pages.
+/******************************************************************************/
 
 void retainpage(fz_context *ctx, pdf_document *doc, pdf_obj *parent, pdf_obj *kids, int page)
 {
     pdf_obj *pageref = pdf_lookup_page_obj(ctx, doc, page);
-    pdf_obj *pageobj = pdf_resolve_indirect(ctx, pageref);
 
-    pdf_dict_put(ctx, pageobj, PDF_NAME_Parent, parent);
+    pdf_flatten_inheritable_page_items(ctx, pageref);
+
+    pdf_dict_put(ctx, pageref, PDF_NAME_Parent, parent);
 
     /* Store page object in new kids array */
     pdf_array_push(ctx, kids, pageref);
@@ -309,24 +467,24 @@ int strip_outline(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int pag
     {
         int nc;
 
-/*******************************************************************************
-        Strip any children to start with. This takes care of
-        First / Last / Count for us.
-*******************************************************************************/
+        /*********************************************************************/
+        // Strip any children to start with. This takes care of
+        // First / Last / Count for us.
+        /*********************************************************************/
         nc = strip_outlines(ctx, doc, current, page_count, page_object_nums, names_list);
 
         if (!dest_is_valid(ctx, current, page_count, page_object_nums, names_list))
         {
             if (nc == 0)
             {
-/*******************************************************************************
-                Outline with invalid dest and no children. Drop it by
-                pulling the next one in here.
-*******************************************************************************/
+                /*************************************************************/
+                // Outline with invalid dest and no children. Drop it by
+                // pulling the next one in here.
+                /*************************************************************/
                 pdf_obj *next = pdf_dict_get(ctx, current, PDF_NAME_Next);
                 if (next == NULL)
                 {
-                    /* There is no next one to pull in */
+                    // There is no next one to pull in
                     if (prev != NULL)
                         pdf_dict_del(ctx, prev, PDF_NAME_Next);
                 }
@@ -343,7 +501,7 @@ int strip_outline(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int pag
             }
             else
             {
-                /* Outline with invalid dest, but children. Just drop the dest. */
+                // Outline with invalid dest, but children. Just drop the dest.
                 pdf_dict_del(ctx, current, PDF_NAME_Dest);
                 pdf_dict_del(ctx, current, PDF_NAME_A);
                 current = pdf_dict_get(ctx, current, PDF_NAME_Next);
@@ -351,7 +509,7 @@ int strip_outline(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int pag
         }
         else
         {
-            /* Keep this one */
+            // Keep this one
             if (first == NULL)
                 first = current;
             prev = current;
@@ -372,11 +530,15 @@ int strip_outlines(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int pa
     pdf_obj *first;
     pdf_obj *last;
 
+    if (outlines == NULL)
+        return 0;
+
     first = pdf_dict_get(ctx, outlines, PDF_NAME_First);
     if (first == NULL)
         nc = 0;
     else
-        nc = strip_outline(ctx, doc, first, page_count, page_object_nums, names_list, &first, &last);
+        nc = strip_outline(ctx, doc, first, page_count, page_object_nums,
+                           names_list, &first, &last);
 
     if (nc == 0)
     {
@@ -391,63 +553,64 @@ int strip_outlines(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int pa
         pdf_dict_put(ctx, outlines, PDF_NAME_Last, last);
         pdf_dict_put_drop(ctx, outlines, PDF_NAME_Count, pdf_new_int(ctx, doc, old_count > 0 ? nc : -nc));
     }
-
     return nc;
 }
 
-/*******************************************************************************
-   called by PyMuPDF:
-   argc  = length of "liste"
-   liste = (list of int) page numbers to retain
-*******************************************************************************/
+/******************************************************************************/
+//   called by PyMuPDF:
+//   argc  = length of "liste"
+//   liste = (list of int) page numbers to retain
+/******************************************************************************/
 void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
 {
-    pdf_obj *oldroot, *root, *pages, *kids, *countobj, *parent, *olddests;
+    pdf_obj *oldroot, *root, *pages, *kids, *countobj, *olddests;
     pdf_document *doc = glo->doc;
     int argidx = 0;
     pdf_obj *names_list = NULL;
     pdf_obj *outlines;
+    pdf_obj *ocproperties;
     int pagecount;
     int i;
     int *page_object_nums;
 
-/*******************************************************************************
-    Keep only pages/type and (reduced) dest entries to avoid
-    references to dropped pages
-*******************************************************************************/
+/******************************************************************************/
+//    Keep only pages/type and (reduced) dest entries to avoid
+//    references to dropped pages
+/******************************************************************************/
     oldroot = pdf_dict_get(ctx, pdf_trailer(ctx, doc), PDF_NAME_Root);
     pages = pdf_dict_get(ctx, oldroot, PDF_NAME_Pages);
     olddests = pdf_load_name_tree(ctx, doc, PDF_NAME_Dests);
     outlines = pdf_dict_get(ctx, oldroot, PDF_NAME_Outlines);
+    ocproperties = pdf_dict_get(ctx, oldroot, PDF_NAME_OCProperties);
 
     root = pdf_new_dict(ctx, doc, 3);
     pdf_dict_put(ctx, root, PDF_NAME_Type, pdf_dict_get(ctx, oldroot, PDF_NAME_Type));
     pdf_dict_put(ctx, root, PDF_NAME_Pages, pdf_dict_get(ctx, oldroot, PDF_NAME_Pages));
-    pdf_dict_put(ctx, root, PDF_NAME_Outlines, outlines);
+    if (outlines)
+        pdf_dict_put(ctx, root, PDF_NAME_Outlines, outlines);
+    if (ocproperties)
+        pdf_dict_put(ctx, root, PDF_NAME_OCProperties, ocproperties);
 
     pdf_update_object(ctx, doc, pdf_to_num(ctx, oldroot), root);
 
-    /* Create a new kids array with only the pages we want to keep */
-    parent = pdf_new_indirect(ctx, doc, pdf_to_num(ctx, pages), pdf_to_gen(ctx, pages));
+    // Create a new kids array with only the pages we want to keep
     kids = pdf_new_array(ctx, doc, 1);
 
-    /* Retain pages specified */
+    // Retain pages specified
     int page;
     for (page = 0; page < argc; page++)
         {
-            retainpage(ctx, doc, parent, kids, liste[page]);
+            retainpage(ctx, doc, pages, kids, liste[page]);
         }
 
-    pdf_drop_obj(ctx, parent);
-
-    /* Update page count and kids array */
+    // Update page count and kids array
     countobj = pdf_new_int(ctx, doc, pdf_array_len(ctx, kids));
     pdf_dict_put(ctx, pages, PDF_NAME_Count, countobj);
     pdf_drop_obj(ctx, countobj);
     pdf_dict_put(ctx, pages, PDF_NAME_Kids, kids);
     pdf_drop_obj(ctx, kids);
 
-    /* Force the next call to pdf_count_pages to recount */
+    // Force the next call to pdf_count_pages to recount
     glo->doc->page_count = 0;
 
     pagecount = pdf_count_pages(ctx, doc);
@@ -458,10 +621,11 @@ void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
         page_object_nums[i] = pdf_to_num(ctx, pageref);
     }
 
-/*******************************************************************************    If we had an old Dests tree (now reformed as an olddests dictionary),
-    keep any entries in there that point to valid pages.
-    This may mean we keep more than we need, but it is safe at least.
-*******************************************************************************/
+/******************************************************************************/
+// If we had an old Dests tree (now reformed as an olddests dictionary),
+// keep any entries in there that point to valid pages.
+// This may mean we keep more than we need, but it is safe at least.
+/******************************************************************************/
     if (olddests)
     {
         pdf_obj *names = pdf_new_dict(ctx, doc, 1);
@@ -480,9 +644,8 @@ void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
             if (dest_is_valid_page(ctx, dest, page_object_nums, pagecount))
             {
                 pdf_obj *key_str = pdf_new_string(ctx, doc, pdf_to_name(ctx, key), strlen(pdf_to_name(ctx, key)));
-                pdf_array_push(ctx, names_list, key_str);
+                pdf_array_push_drop(ctx, names_list, key_str);
                 pdf_array_push(ctx, names_list, val);
-                pdf_drop_obj(ctx, key_str);
             }
         }
 
@@ -495,15 +658,14 @@ void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
         pdf_drop_obj(ctx, olddests);
     }
 
-/*******************************************************************************
-    Edit each pages /Annot list to remove any links pointing to nowhere.
-*******************************************************************************/
+/*****************************************************************************/
+// Edit each pages /Annot list to remove any links pointing to nowhere.
+/*****************************************************************************/
     for (i = 0; i < pagecount; i++)
     {
         pdf_obj *pageref = pdf_lookup_page_obj(ctx, doc, i);
-        pdf_obj *pageobj = pdf_resolve_indirect(ctx, pageref);
 
-        pdf_obj *annots = pdf_dict_get(ctx, pageobj, PDF_NAME_Annots);
+        pdf_obj *annots = pdf_dict_get(ctx, pageref, PDF_NAME_Annots);
 
         int len = pdf_array_len(ctx, annots);
         int j;
@@ -517,8 +679,9 @@ void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
 
             if (!dest_is_valid(ctx, o, pagecount, page_object_nums, names_list))
             {
-                /* Remove this annotation */
+                // Remove this annotation
                 pdf_array_delete(ctx, annots, j);
+                len--;
                 j--;
             }
         }
@@ -535,9 +698,8 @@ void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
 }
 
 /*****************************************************************************/
-/* C helper functions for extractJSON */
+// C helper functions for extractJSON
 /*****************************************************************************/
-
 void
 fz_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox) {
     char buf[128];
@@ -587,17 +749,18 @@ fz_print_span_stext_json(fz_context *ctx, fz_output *out, fz_stext_span *span) {
 }
 
 void
-fz_send_data_base64(fz_context *ctx, fz_output *out, fz_buffer *buffer)
+fz_send_data_base64(fz_context *ctx, fz_output *out, struct fz_buffer_s *buffer)
 {
-    int i, len;
+    size_t i;
     static const char set[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-    len = buffer->len/3;
+    unsigned char *buff;
+    size_t bufflen = fz_buffer_storage(gctx, buffer, &buff);
+    size_t len = bufflen/3;
     for (i = 0; i < len; i++)
     {
-        int c = buffer->data[3*i];
-        int d = buffer->data[3*i+1];
-        int e = buffer->data[3*i+2];
+        int c = buff[3*i];
+        int d = buff[3*i+1];
+        int e = buff[3*i+2];
         /**************************************************/
         /* JSON decoders do not like "\n" in base64 data! */
         /* ==> next 2 lines commented out                 */
@@ -607,18 +770,18 @@ fz_send_data_base64(fz_context *ctx, fz_output *out, fz_buffer *buffer)
         fz_printf(ctx, out, "%c%c%c%c", set[c>>2], set[((c&3)<<4)|(d>>4)], set[((d&15)<<2)|(e>>6)], set[e & 63]);
     }
     i *= 3;
-    switch (buffer->len-i)
+    switch (bufflen-i)
     {
         case 2:
         {
-            int c = buffer->data[i];
-            int d = buffer->data[i+1];
+            int c = buff[i];
+            int d = buff[i+1];
             fz_printf(ctx, out, "%c%c%c=", set[c>>2], set[((c&3)<<4)|(d>>4)], set[((d&15)<<2)]);
             break;
         }
     case 1:
         {
-            int c = buffer->data[i];
+            int c = buff[i];
             fz_printf(ctx, out, "%c%c==", set[c>>2], set[(c&3)<<4]);
             break;
         }
@@ -634,9 +797,9 @@ fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page)
     int block_n;
 
     fz_printf(ctx, out, "{\n \"len\":%d,\"width\":%g,\"height\":%g,\n \"blocks\":[\n",
-                        page->len,
-                        page->mediabox.x1 - page->mediabox.x0,
-                        page->mediabox.y1 - page->mediabox.y0);
+              page->len,
+              page->mediabox.x1 - page->mediabox.x0,
+              page->mediabox.y1 - page->mediabox.y0);
 
     for (block_n = 0; block_n < page->len; block_n++)
     {
@@ -688,18 +851,18 @@ fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page)
             case FZ_PAGE_BLOCK_IMAGE:
             {
                 fz_image_block *image = page->blocks[block_n].u.image;
-
+                fz_compressed_buffer *buffer = fz_compressed_image_buffer(gctx, image->image);
                 fz_print_rect_json(ctx, out, &(image->bbox));
                 fz_printf(ctx, out, "\"imgtype\":%d,\"width\":%d,\"height\":%d,",
-                                    image->image->buffer->params.type,
+                                    buffer->params.type,
                                     image->image->w,
                                     image->image->h);
                 fz_printf(ctx, out, "\"image\":\n");
-                if (image->image->buffer == NULL) {
+                if (buffer == NULL) {
                     fz_printf(ctx, out, "null");
                 } else {
                     fz_printf(ctx, out, "\"");
-                    fz_send_data_base64(ctx, out, image->image->buffer->buffer);
+                    fz_send_data_base64(ctx, out, buffer->buffer);
                     fz_printf(ctx, out, "\"");
                 }
                 break;

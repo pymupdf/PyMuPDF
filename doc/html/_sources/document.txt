@@ -16,32 +16,33 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 **Method / Attribute**                **Short Description**
 ===================================== ==========================================================
 :meth:`Document.authenticate`         decrypt the document
-:meth:`Document.loadPage`             read a page
-:meth:`Document.save`                 PDF only: save the document
-:meth:`Document.getToC`               create a table of contents
+:meth:`Document.close`                close the document
+:meth:`Document.copyPage`             PDF only: copy a page to another location
+:meth:`Document.deletePage`           PDF only: delete a page by its number
+:meth:`Document.deletePageRange`      PDF only: delete a range of pages
+:meth:`Document.getPageFontList`      make a list of fonts on a page
+:meth:`Document.getPageImageList`     make a list of images on a page
 :meth:`Document.getPagePixmap`        create a pixmap of a page by page number
 :meth:`Document.getPageText`          extract the text of a page by page number
-:meth:`Document.getPageImageList`     make a list of images on a page
-:meth:`Document.getPageFontList`      make a list of fonts on a page
-:meth:`Document.getPermits`           show permissions to access the document
-:meth:`Document.close`                close the document
+:meth:`Document.getToC`               create a table of contents
+:meth:`Document.insertPDF`            PDF only: insert a page range from another PDF
+:meth:`Document.loadPage`             read a page
+:meth:`Document.movePage`             PDF only: move a page to another location
+:meth:`Document.save`                 PDF only: save the document
+:meth:`Document.saveIncr`             PDF only: save the document incrementally
 :meth:`Document.select`               PDF only: select a subset of pages
 :meth:`Document.setMetadata`          PDF only: set the metadata
 :meth:`Document.setToC`               PDF only: replace the table of contents (TOC)
-:meth:`Document.insertPDF`            PDF only: insert a page range from another PDF
-:meth:`Document.deletePage`           PDF only: delete a page by its number
-:meth:`Document.deletePageRange`      PDF only: delete a range of pages
-:meth:`Document.copyPage`             PDF only: copy a page to another location
-:meth:`Document.movePage`             PDF only: move a page to another location
 :attr:`Document.isClosed`             has document been closed?
-:attr:`Document.outline`              first `Outline` item
+:attr:`Document.isEncrypted`          document still encrypted?
+:attr:`Document.metadata`             metadata
 :attr:`Document.name`                 filename of document
+:attr:`Document.needsPass`            require password to access data?
 :attr:`Document.openErrCode`          > 0 if repair occurred during open
 :attr:`Document.openErrMsg`           last error message if openErrCode > 0
-:attr:`Document.needsPass`            require password to access data?
-:attr:`Document.isEncrypted`          document still encrypted?
+:attr:`Document.outline`              first `Outline` item
 :attr:`Document.pageCount`            number of pages
-:attr:`Document.metadata`             metadata
+:attr:`Document.permissions`          show permissions to access the document
 ===================================== ==========================================================
 
 **Class API**
@@ -85,10 +86,12 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       Loads a ``Page`` for further processing like rendering, text searching, etc. See the :ref:`Page` object.
 
-      :param `number`: page number, zero-based (0 is the first page of the document).
+      :param `number`: page number, zero-based (0 is the first page of the document). If a negative number is provided, then page ``n % (-pageCount)`` will be loaded. For example: in order to load the last page, you can specify ``doc.loadPage(-1)``. After this you have ``page.number == doc.pageCount - 1``.
       :type `number`: int
 
       :rtype: :ref:`Page`
+
+    .. note:: Conveniently, pages can also be loaded via indexes over the document: ``doc.loadPage(n) == doc[n]``.
 
     .. method:: getToC(simple = True)
 
@@ -100,9 +103,16 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       :rtype: list
 
-    .. method:: getPagePixmap(pno, matrix = fitz.Identity, colorspace = "rgb", clip = None)
+      :returns: a list of lists. Each entry has the form ``[lvl, title, page, dest]``. Its entries have the following meanings:
 
-      Creates a pixmap from one of the document's pages - identified by number ``pno`` (zero-based).
+      * lvl - hierarchy level (integer). The first entry has hierarchy level 1, and entries in a row increase by at most one level.
+      * title - title (string)
+      * page - 1-based page number (integer). Page numbers ``< 1`` either indicate a target outside this document or no target at all (see next entry).
+      * dest - included only if ``simple = False`` is specified. A dictionary containing details of the link destination.
+
+    .. method:: getPagePixmap(pno, matrix = fitz.Identity, colorspace = "rgb", clip = None, alpha = False)
+
+      Creates a pixmap from page ``pno`` (zero-based).
 
       :param `pno`: Page number, zero-based
 
@@ -120,13 +130,17 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       :type `clip`: :ref:`IRect`
 
+      :param `alpha`: Indicates whether transparency should be included. Leave it as ``False`` if not absolutely required, as it saves memory considerably (25% for RGB).
+
+      :type `alpha`: bool
+
       :rtype: :ref:`Pixmap`
 
     .. method:: getPageImageList(pno)
 
-      Returns a nested list of all images referenced by a page.
+      Returns a nested list of all image descriptions referenced by a page.
 
-      :param `pno`: page number, zero-based
+      :param `pno`: page number, zero-based.
       :type `pno`: int
 
       :rtype: list
@@ -139,7 +153,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
        [1052, 0, 365, 414, 8, 'DeviceRGB', '']
        >>> pix = fitz.Pixmap(doc, 1052)
        >>> pix
-       fitz.Pixmap(fitz.csRGB, fitz.IRect(0, 0, 365, 414))
+       fitz.Pixmap(fitz.csRGB, fitz.IRect(0, 0, 365, 414), 0)
 
 
     .. method:: getPageFontList(pno)
@@ -173,20 +187,9 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       :rtype: String
 
-    .. method:: getPermits()
-
-      Shows the permissions to access the document. Returns a dictionary likes this:
-      ::
-       >>> doc.getPermits()
-       {'print': True, 'edit': True, 'note': True, 'copy': True}
-
-      The keys have the obvious meaning of permissions to print, change, annotate and copy the document, respectively.
-
-      :rtype: dict
-
     .. method:: select(list)
 
-      PDF documents only: Keeps only those pages of the document whose numbers occur in the list. Empty lists or elements outside the range ``0 <= page < doc.pageCount`` will cause a ``ValueError``. For more details see remarks at the bottom or this chapter.
+      PDF only: Keeps only those pages of the document whose numbers occur in the list. Empty lists or elements outside the range ``0 <= page < doc.pageCount`` will cause a ``ValueError``. For more details see remarks at the bottom or this chapter.
 
       :param `list`: A list (or tuple) of page numbers (zero-based) to be included. Pages not in the list will be deleted (from memory) and become unavailable until the document is reopened. **Page numbers can occur multiple times and in any order:** the resulting sub-document will reflect the list exactly as specified.
 
@@ -197,7 +200,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
     .. method:: setMetadata(m)
 
-      PDF documents only: Sets or updates the metadata of the document as specified in ``m``, a Python dictionary. As with method ``select()``, these changes become permanent only when you save the document. Incremental save is supported.
+      PDF only: Sets or updates the metadata of the document as specified in ``m``, a Python dictionary. As with method ``select()``, these changes become permanent only when you save the document. Incremental save is supported.
 
       :param `m`: A dictionary with the same keys as ``metadata`` (see below). All keys are optional. A PDF's format and encryption method cannot be set or changed, these keys therefore have no effect and will be ignored. If any value should not contain data, do not specify its key or set the value to ``None``. If you use ``m = {}`` all metadata information will be cleared to ``none``. If you want to selectively change only some values, modify ``doc.metadata`` directly and use it as the argument for this method.
 
@@ -208,7 +211,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
     .. method:: setToC(toc)
 
-      PDF documents only: Replaces the complete current outline tree (table of contents) with a new one. After successful execution, the new outline tree can be accessed as usual via method ``getToc()`` or via property ``outline``. Like with other output-oriented methods, changes become permanent only via ``save()`` (incremental save is supported). Internally, this method consists of the following two steps. For a demonstration see example below.
+      PDF only: Replaces the complete current outline tree (table of contents) with a new one. After successful execution, the new outline tree can be accessed as usual via method ``getToc()`` or via property ``outline``. Like with other output-oriented methods, changes become permanent only via ``save()`` (incremental save is supported). Internally, this method consists of the following two steps. For a demonstration see example below.
 
       - Step 1 deletes all existing bookmarks.
 
@@ -219,22 +222,24 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       A Python list with **all bookmark entries** that should form the new table of contents. Each entry of this list is again a list with the following format. Output variants of method ``getToc()`` are acceptable as input, too.
 
-      - ``[lvl, title, pno, top]``, where
+      - ``[lvl, title, page, isExternal, uri]``, where
 
         - ``lvl`` is the hierarchy level (int > 0) of the item, starting with ``1`` and being at most 1 higher than that of the predecessor,
 
-        - ``title`` (str) is the title to be displayed,
+        - ``title`` (str) is the title to be displayed.
 
-        - ``pno`` (int) is the target page number **(attention: 1-based to support getToC()-output)**, must be in valid page range,
+        - ``page`` (int) is the target page number **(attention: 1-based to support getToC()-output)**, must be in valid page range if positive. Set this to ``-1`` if there is no target, or the target is external.
 
-        - ``top`` (optional int / float) is a vertical location on the page in pixel units. It is the distance from bottom, so a zero means bottom of the target page. Default value is 36 pixels (half an inch) below top of page. A dictionary (like one contained in ``getToC(simple=False)``) may also be specified - in this case the value is the y-coordinate of the link destination, a point specified by key ``to``: ``d["to"].y``.
+        - ``isExternal`` (optional bool) indicates whether the target is outside this document. In this case ``page`` must be ``-1`` and ``uri`` must not be ``None``. If page is positive, this entry is ignored.
+
+        - ``uri`` (optional string) contains details about the target. If ``page`` is positive, this entry is ignored. To specify an empty target, set to ``None`` and page to ``-1``. To specify an external target, set ``isExternal = True`` and this entry to a content that can be "launched", like ``mailto:...``, ``file://...``, ``http://...``, etc.
 
       :rtype: int
       :returns: ``outline`` and ``getToC()`` will be updated upon successful execution. The return code will either equal the number of inserted items (``len(toc)``) or the number of deleted items if ``toc = []``.
 
     .. method:: save(outfile, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0)
 
-      PDF documents only: Saves the **current content of the document** under the name ``outfile`` (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successful ``authenticate``, a decrypted copy will be saved, and, in addition (even without optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed any modifying methods like ``select()``, ``setMetadata()``, ``setToC()``, etc., their results will also be reflected in the saved version.
+      PDF only: Saves the **current content of the document** under the name ``outfile`` (include path specifications as necessary). A document may have changed for a number of reasons: e.g. after a successful ``authenticate``, a decrypted copy will be saved, and, in addition (even without optional parameters), some basic cleaning may also have occurred, e.g. broken xref tables have been repaired and earlier incremental changes have been resolved. If you executed any modifying methods like ``select()``, ``setMetadata()``, ``setToC()``, etc., their results will also be reflected in the saved version.
 
       :param `outfile`: The file name to save to. Must be different from the original value value if ``incremental=False``. When saving incrementally, ``garbage`` and ``linear`` **must be** ``False / 0`` and ``outfile`` **must equal** the original filename (for convenience use ``doc.name``).
       :type `outfile`: string
@@ -263,9 +268,13 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
       :rtype: int
       :returns: Zero upon successful execution.
 
+    .. method:: saveIncr()
+
+      PDF only: saves the document incrementally. This is a convenience abbreviation for ``doc.save(doc.name, incremental = True)``.
+
     .. method:: insertPDF(doc2, from_page = -1, to_page = -1, start_at = -1, rotate = -1, links = True)
 
-      PDF documents only: Copies the page range **[from_page, to_page]** (including both) of the PDF document object ``doc2`` into the current PDF. ``from_page`` will start with page number ``start_at``. Negative values can be used to indicate default values. All pages thus copied will be rotated as specified. Links can be excluded in the target, see below. All page numbers are zero-based.
+      PDF only: Copies the page range **[from_page, to_page]** (including both) of the PDF document object ``doc2`` into the current PDF. ``from_page`` will start with page number ``start_at``. Negative values can be used to indicate default values. All pages thus copied will be rotated as specified. Links can be excluded in the target, see below. All page numbers are zero-based.
 
       :param `doc2`: An opened PDF document. The ``doc2`` object **must not be the current document**. It may, however, refer to the same PDF file opened as a separate ``fitz.Document``. The reason is, that separate documents have their own separate buffer areas and are thus treated as different beasts that just happen to have the same filename.
       :type `doc2`: ``Document``
@@ -282,7 +291,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
       :param `rotate`: All copied pages will be rotated by the provided value (degrees). If you do not specify a value (or ``-1``), the original will not be changed. Otherwise it must be an integer multiple of 90. Rotation is clockwise if ``rotate`` is positive, else counter-clockwise.
       :type `rotate`: int
 
-      :param `links`: Choose whether links should be included with the copy. Default is ``True``.
+      :param `links`: Choose whether (internal and external) links should be included with the copy. Default is ``True``. Only those internal links will be included that point to a page member of the copied range.
       :type `links`: bool
 
       :rtype: int
@@ -290,18 +299,18 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
     .. note:: If ``from_page > to_page``, pages will be copied in reverse order. If ``0 <= from_page == to_page``, then one page will be copied.
 
-    .. note:: The functionality of this method is a conversion of the MuPDF CLI utility ``mutool merge``. Due to its current restrictions, ``doc2`` annotations and bookmarks **will not be copied**. Links however **will be copied** (kind :data:`LINK_GOTO` links of course only then, if their destination is within the copied page range). It is easy to recover a table of contents for the resulting document. Look at the examples below and at program ``PDFjoiner.py`` in the *examples* directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.
+    .. note:: ``doc2`` bookmarks **will not be copied**. It is easy however, to recover a table of contents for the resulting document. Look at the examples below and at program ``PDFjoiner.py`` in the *examples* directory: it can join PDF documents and at the same time piece together respective parts of the tables of contents.
 
     .. method:: deletePage(pno)
 
-      PDF only: Deletes a page specified by its zero-based number in range ``0 <= pno < pageCount``.
+      PDF only: Deletes a page specified by its 0-based number in range ``0 <= pno < pageCount``.
 
       :param `pno`: the page to be deleted.
       :type `pno`: int
 
     .. method:: deletePageRange(from_page = -1, to_page = -1)
 
-      PDF only: Deletes a range of pages specified as zero-based page numbers. Any negative value will be replaced with ``pageCount - 1``. After that, condition ``from_page <= to_page < pageCount`` must be true. If the parameters are equal, one page will be deleted.
+      PDF only: Deletes a range of pages specified as 0-based numbers. Any negative value will be replaced with ``pageCount - 1``. After that, condition ``from_page <= to_page < pageCount`` must be true. If the parameters are equal, one page will be deleted.
 
       :param `from_page`: the first page to be deleted.
       :type `from_page`: int
@@ -326,7 +335,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
       :param `pno`: the page to be moved. Number must be in range ``0 <= pno < pageCount``.
       :type `pno`: int
 
-      :param `to`: the page number in front of which to insert the moved page. To insert at end of document (default), specify a negative value. Must be ``< pno`` or ``> pno + 1``.
+      :param `to`: the page number in front of which to insert the moved page. Must be ``< pno`` or ``> pno + 1``. To insert at end of document (default), specify a negative value.
       :type `to`: int
 
     .. method:: close()
@@ -357,7 +366,18 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       :rtype: bool
 
-    .. Attribute:: metadata
+    .. attribute:: permissions
+
+      Shows the permissions to access the document. Contains a dictionary likes this:
+      ::
+       >>> doc.permissions
+       {'print': True, 'edit': True, 'note': True, 'copy': True}
+
+      The keys have the obvious meaning of permissions to print, change, annotate and copy the document, respectively.
+
+      :rtype: dict
+
+    .. attribute:: metadata
 
       Contains the document's meta data as a Python dictionary or ``None`` (if ``isEncrypted = True`` and ``needPass=True``). Keys are ``format``, ``encryption``, ``title``, ``author``, ``subject``, ``keywords``, ``creator``, ``producer``, ``creationDate``, ``modDate``. All item values are strings or ``None``.
 
@@ -385,7 +405,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
     .. Attribute:: pageCount
 
-      Contains the number of pages of the document. May return 0 for documents with no pages.
+      Contains the number of pages of the document. May return 0 for documents with no pages. Function ``len(doc)`` will also deliver this result.
 
       :rtype: int
 
@@ -401,7 +421,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       :rtype: string
 
-.. NOTE:: For methods that change the structure of a PDF (``insertPDF()``, ``select()``, ``copyPage()``, ``deletePage()``, ``deletePageRange()``), be aware that objects or properties in your program may have been invalidated or orphaned by them. Examples are :ref:`Page` objects, variables holding old page counts and the like. Remember to keep such variables up to date or delete orphaned objects.
+.. NOTE:: For methods that change the structure of a PDF (``insertPDF()``, ``select()``, ``copyPage()``, ``deletePage()``, ``deletePageRange()``), be aware that objects or properties in your program may have been invalidated or orphaned. Examples are :ref:`Page` objects, variables holding old page counts and the like. Remember to keep such variables up to date or delete orphaned objects.
 
 
 Remarks on ``select()``
@@ -521,7 +541,7 @@ This shows how to modify or add a table of contents:
      t[2] += pages1                     # by old len(doc1)
  doc1.setToC(toc1 + toc2)               # now result has total TOC
 
-Obviously, similar ways can be found in more general situations. Just watch out that hierarchy level steps in a row do not increase by more than one. Inserting dummy entries before and after the ``toc2`` segment would heal such cases.
+Obviously, similar ways can be found in more general situations. Just watch out that hierarchy levels in a row do not increase by more than one. Inserting dummy entries before and after the ``toc2`` segment would heal such cases.
 
 **(2) More examples:**
 ::
@@ -537,17 +557,23 @@ Obviously, similar ways can be found in more general situations. Just watch out 
 
 Other Examples
 ----------------
-**Extract all images of a PDF into separate PNG files:**
+**Extract all page-referenced images of a PDF into separate PNG files:**
 ::
  for i in range(len(doc)):
      imglist = doc.getPageImageList(i)
      for img in imglist:
          xref = img[0]                  # xref number
          pix = fitz.Pixmap(doc, xref)   # make pixmap from image
-         if pix.n < 5:                  # can be saved as PNG
+         if pix.colorspace != "DeviceCMYK": # can be saved as PNG
              pix.writePNG("p%s-%s.png" % (i, xref))
-         else:                          # must convert CMYK first
+         else:                          # CMYK: must convert first
              pix0 = fitz.Pixmap(fitz.csRGB, pix)
              pix0.writePNG("p%s-%s.png" % (i, xref))
              pix0 = None                # free Pixmap resources
          pix = None                     # free Pixmap resources
+
+**Rotate all pages of a PDF:**
+::
+ for i in range(len(doc)):
+     doc[i].setRotation(90)
+

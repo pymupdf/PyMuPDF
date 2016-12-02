@@ -20,6 +20,18 @@ Represents the color space of a :ref:`Pixmap`.
 
       :type `cno`: int
 
+   .. attribute:: name
+
+      The name identifying the colorspace. Example: ``fitz.csCMYK.name = 'DeviceCMYK'``.
+
+      :rtype: string
+
+   .. attribute:: nbytes
+
+      The number of bytes required to define the color of one pixel. Example: ``fitz.csCMYK.nbytes = 4``.
+
+      :rtype: int
+
 
     **Predefined Colorspaces**
 

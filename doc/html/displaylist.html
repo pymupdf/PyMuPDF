@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>DisplayList &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>DisplayList &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="up" title="Classes" href="classes.html"/>
         <link rel="next" title="Document" href="document.html"/>
         <link rel="prev" title="Device" href="device.html"/> 
@@ -55,13 +57,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -84,7 +89,9 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
@@ -101,7 +108,6 @@
 <li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
@@ -149,8 +155,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/displaylist.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -169,7 +173,7 @@
 </ol>
 </dd>
 </dl>
-<p>A <code class="docutils literal"><span class="pre">DisplayList</span></code> is populated with objects from a page by running <a class="reference internal" href="page.html#Page.run" title="Page.run"><code class="xref py py-meth docutils literal"><span class="pre">Page.run()</span></code></a> on a <a class="reference internal" href="device.html#device"><span class="std std-ref">Device</span></a>. Replay the list (once or many times) by invoking the display list&#8217;s <a class="reference internal" href="#DisplayList.run" title="DisplayList.run"><code class="xref py py-meth docutils literal"><span class="pre">run()</span></code></a> function.</p>
+<p>A <code class="docutils literal"><span class="pre">DisplayList</span></code> is populated with objects from a page by running <a class="reference internal" href="page.html#Page.run" title="Page.run"><code class="xref py py-meth docutils literal"><span class="pre">Page.run()</span></code></a> on a <a class="reference internal" href="device.html#device"><span class="std std-ref">Device</span></a>. Replay the list (once or many times) by invoking the display list's <a class="reference internal" href="#DisplayList.run" title="DisplayList.run"><code class="xref py py-meth docutils literal"><span class="pre">run()</span></code></a> function.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="36%" />
@@ -192,14 +196,16 @@
 <em class="property">class </em><code class="descname">DisplayList</code><a class="headerlink" href="#DisplayList" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="DisplayList.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#DisplayList.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>mediabox</em><span class="sig-paren">)</span><a class="headerlink" href="#DisplayList.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new display list.</p>
-<p>When the device is rendering a page it will populate the display list with drawing commands (text, images, etc.). The display list can later be reused to render a page many times without having to re-interpret the page from the document file.</p>
+<p>When the device is rendering a page, it will populate the display list with drawing commands (text, images, etc.). The display list can later be reused to render a page many times without having to re-interpret the page from the document file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#displaylist"><span class="std std-ref">DisplayList</span></a></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mediabox</strong> (<a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a>) -- The page's rectangle - output of <code class="docutils literal"><span class="pre">page.bound()</span></code>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">DisplayList</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -213,9 +219,9 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>dev</strong> (<a class="reference internal" href="device.html#device"><span class="std std-ref">Device</span></a>) &#8211; Device</li>
-<li><strong>ctm</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; Transformation matrix to apply to display list contents.</li>
-<li><strong>area</strong> (<a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a>) &#8211; Only the part of the contents of the display list visible within this area will be considered when the list is run through the device. This does not apply for tile objects contained in the display list.</li>
+<li><strong>dev</strong> (<a class="reference internal" href="device.html#device"><span class="std std-ref">Device</span></a>) -- Device</li>
+<li><strong>ctm</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) -- Transformation matrix to apply to display list contents.</li>
+<li><strong>area</strong> (<a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a>) -- Only the part of the contents of the display list visible within this area will be considered when the list is run through the device. This does not apply for tile objects contained in the display list.</li>
 </ul>
 </td>
 </tr>
@@ -247,7 +253,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Nov 2016.
+      Last updated on 01. Dec 2016.
 
     </p>
   </div>
@@ -269,7 +275,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

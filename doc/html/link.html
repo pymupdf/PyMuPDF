@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Link &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Link &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="up" title="Classes" href="classes.html"/>
         <link rel="next" title="linkDest" href="linkdest.html"/>
         <link rel="prev" title="IRect" href="irect.html"/> 
@@ -55,13 +57,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -84,7 +89,9 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
@@ -101,7 +108,6 @@
 <li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
@@ -149,8 +155,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/link.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -161,11 +165,11 @@
             
   <div class="section" id="link">
 <span id="id1"></span><h1>Link<a class="headerlink" href="#link" title="Permalink to this headline">¶</a></h1>
-<p>Represents a pointer to somewhere (this document, other documents, the internet). Links exist per document page, and they are forward-chained to each other, starting from an initial link which is accessible by the <a class="reference internal" href="page.html#Page.loadLinks" title="Page.loadLinks"><code class="xref py py-meth docutils literal"><span class="pre">Page.loadLinks()</span></code></a> method.</p>
+<p>Represents a pointer to somewhere (this document, other documents, the internet). Links exist per document page, and they are forward-chained to each other, starting from an initial link which is accessible by the <code class="xref py py-meth docutils literal"><span class="pre">Page.loadLinks()</span></code> method.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="33%" />
-<col width="67%" />
+<col width="36%" />
+<col width="64%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Attribute</strong></th>
@@ -176,11 +180,17 @@
 <tr class="row-even"><td><a class="reference internal" href="#Link.rect" title="Link.rect"><code class="xref py py-attr docutils literal"><span class="pre">Link.rect</span></code></a></td>
 <td>clickable area in untransformed coordinates.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Link.dest" title="Link.dest"><code class="xref py py-attr docutils literal"><span class="pre">Link.dest</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Link.uri" title="Link.uri"><code class="xref py py-attr docutils literal"><span class="pre">Link.uri</span></code></a></td>
 <td>link destination</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Link.next" title="Link.next"><code class="xref py py-attr docutils literal"><span class="pre">Link.next</span></code></a></td>
-<td>link to next link</td>
+<tr class="row-even"><td><a class="reference internal" href="#Link.isExternal" title="Link.isExternal"><code class="xref py py-attr docutils literal"><span class="pre">Link.isExternal</span></code></a></td>
+<td>link destination</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Link.next" title="Link.next"><code class="xref py py-attr docutils literal"><span class="pre">Link.next</span></code></a></td>
+<td>points to next link</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Link.dest" title="Link.dest"><code class="xref py py-attr docutils literal"><span class="pre">Link.dest</span></code></a></td>
+<td>points to link destination details</td>
 </tr>
 </tbody>
 </table>
@@ -203,14 +213,28 @@
 </dd></dl>
 
 <dl class="attribute">
-<dt id="Link.dest">
-<code class="descname">dest</code><a class="headerlink" href="#Link.dest" title="Permalink to this definition">¶</a></dt>
-<dd><p>The link destination. An object describing the destination this link points to.</p>
+<dt id="Link.isExternal">
+<code class="descname">isExternal</code><a class="headerlink" href="#Link.isExternal" title="Permalink to this definition">¶</a></dt>
+<dd><p>A bool specifying whether the link target is outside (<code class="docutils literal"><span class="pre">True</span></code>) of the current document.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="linkdest.html#linkdest"><span class="std std-ref">linkDest</span></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Link.uri">
+<code class="descname">uri</code><a class="headerlink" href="#Link.uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string specifying the link target. The meaning of this property should be evaluated in conjunction with property <code class="docutils literal"><span class="pre">isExternal</span></code>. The value may be <code class="docutils literal"><span class="pre">None</span></code>, in which case <code class="docutils literal"><span class="pre">isExternal</span> <span class="pre">==</span> <span class="pre">False</span></code>. If <code class="docutils literal"><span class="pre">uri</span></code> starts with <code class="docutils literal"><span class="pre">file://</span></code>, <code class="docutils literal"><span class="pre">mailto:</span></code>, or an internet resource name, <code class="docutils literal"><span class="pre">isExternal</span></code> is <code class="docutils literal"><span class="pre">True</span></code>. In all other cases <code class="docutils literal"><span class="pre">isExternal</span> <span class="pre">==</span> <span class="pre">False</span></code> and <code class="docutils literal"><span class="pre">uri</span></code> points to an internal location. In case of PDF documents, this should either be <code class="docutils literal"><span class="pre">#nnnn</span></code> to indicate a 1-based (!) page number <code class="docutils literal"><span class="pre">nnnn</span></code>, or a named location. The format varies for other document types, e.g. <code class="docutils literal"><span class="pre">uri</span> <span class="pre">=</span> <span class="pre">'../FixedDoc.fdoc#PG_2_LNK_1'</span></code> for page number 2 (1-based) in an XPS document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
 </tr>
 </tbody>
 </table>
@@ -224,7 +248,21 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#link"><span class="std std-ref">Link</span></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">Link</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Link.dest">
+<code class="descname">dest</code><a class="headerlink" href="#Link.dest" title="Permalink to this definition">¶</a></dt>
+<dd><p>The link destination details object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="linkdest.html#linkdest"><span class="std std-ref">linkDest</span></a></td>
 </tr>
 </tbody>
 </table>
@@ -254,7 +292,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Nov 2016.
+      Last updated on 01. Dec 2016.
 
     </p>
   </div>
@@ -276,7 +314,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

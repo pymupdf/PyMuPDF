@@ -2,19 +2,49 @@
 
     PageBreak
 
+Changes in Version 1.10.0
+==========================
+
+MuPDF v1.10 Impact
+------------------
+MuPDF version 1.10 has a significant impact on our bindings. Some of the changes also affect the API - in other words, **you** as a PyMuPDF user.
+
+* Link destination information has been reduced. Several properties of the ``linkDest`` class no longer contain valuable information. In fact, this class as a whole has been deleted from MuPDF's library and we in PyMuPDF only maintain it to provide compatibilty to existing code.
+
+* In an effort to minimize memory requirements, several improvements have been built into MuPDF v1.10:
+
+    - A new ``config.h`` file can be used to de-select unwanted features in the C base code. Using this feature we have been able to reduce the size of our binary ``_fitz.o`` / ``_fitz.pyd`` by about 50% (from 9 MB to 4.5 MB). When UPX-ing this, the size goes even further down to a very handy 2.3 MB.
+
+    - The alpha (transparency) channel for pixmaps is now optional. Letting alpha default to ``False`` significantly reduces pixmap sizes (by 20% - CMYK, 25% - RGB, 50% - GRAY). Many ``Pixmap`` constructors therefore now accept an ``alpha`` boolean to control inclusion of this channel. Other pixmap constructors (e.g. those for file and image input) create pixmaps with no alpha alltogether. On the downside, save methods for pixmaps no longer accept a ``savealpha`` option: this channel will always be saved when present. In order to minimize code breaks, we have left this parameter in the call patterns - it will just be ignored.
+
+* ``DisplayList`` and ``TextPage`` class constructors now **require the mediabox** of the page they are referring to (i.e. the ``page.bound()`` rectangle). There is no way to construct this information from other sources, therefore a source code change cannot be avoided in these cases. We assume however, that not many users are actually employing these rather low level classes explixitely. So the impact of that change should be minor.
+
+Other Changes compared to Version 1.9.3
+----------------------------------------
+* An annotation can now be scaled and moved around on its page. This is done by modifying its rectangle.
+* Annotations can now be deleted.
+* Various annotation attributes can now be modified, e.g. content, dates, title (= author), border, colors.
+* Document method ``insertPDF()`` now also supports annotations of source PDF pages.
+* The ``Pages`` class has been deleted. As documents can now be accessed with page numbers as indices (like ``doc[n] = doc.loadPage(n)``), the benefit of this class was too low to maintain it.
+* The ``Pixmap.getSize()`` method has been replaced with property ``Pixmap.size``.
+* In response to transparency (alpha) being an optional characteristic of pixmaps, several new parameters and properties have been added to ``Pixmap`` and ``Colorspace`` classes to support determining their characteristics.
+* The ``Page`` class now contains additional properties ``firstAnnot`` and ``firstLink`` to provide starting pointers to the respective class chains, where ``firstLink`` is just a mnemonic synonym to method ``loadLinks()`` (which continues to exist). Similarly, property ``Page.rect`` now exists as a synonym to method ``Page.bound()``, which also continues to exist.
+* ``Pixmap`` methods ``samplesRGB()`` and ``samplesAlpha()`` have been deleted because pixmaps can now be created without transparency.
+
+
 Changes in Version 1.9.3
 =========================
 This version is also based on MuPDF v1.9a. Changes compared to version 1.9.2:
 
-* As a major enhancement, accessing annotations for display is now supported for all MuPDF supported document types. Annotations can be displayed (i.e. extracted as pixmaps), located on a page and many of their properties are being made available. We plan to extend this support in future releases in terms information breadth as well as supporting updating annotations.
-* In addition to the document ``select()`` method, methods are now available that cover more elementary requirements for manipulating a PDF file:
+* As a major enhancement, annotations are now supported in a similar way as links. Annotations can be displayed (as pixmaps) and their properties can be accessed.
+* In addition to the document ``select()`` method, some simpler methods can now be used to manipulate a PDF:
 
     - ``copyPage()`` copies a page within a document.
-    - ``movePage()`` is similar, except that the original is deleted.
+    - ``movePage()`` is similar, but deletes the original.
     - ``deletePage()`` deletes a page
-    - ``deletePageRange()`` deletes several pages
+    - ``deletePageRange()`` deletes a page range
 
-* ``getRotate()`` or ``setRotate()`` access or change a PDF page's rotation, respectively.
+* ``rotation`` or ``setRotation()`` access or change a PDF page's rotation, respectively.
 * Available but undocumented before, :ref:`IRect`, :ref:`Rect`, :ref:`Point` and :ref:`Matrix` support the ``len()`` method and their coordinate properties can be accessed via indices, e.g. ``IRect.x1 == IRect[2]``.
 * For convenience, documents now support simple indexing: ``doc.loadPage(n) == doc[n]``. The index may however be in range ``-pageCount < n < pageCount``, such that ``doc[-1]`` is the last page of the document.
 

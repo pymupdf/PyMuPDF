@@ -98,10 +98,86 @@ except __builtin__.Exception:
         pass
     _newclass = 0
 
+VersionFitz = "1.10a"
+VersionBind = '1.10.0'
+VersionDate = '2016-12-01 19:57:49'
 
-VersionFitz = "1.9a"          
-VersionBind = "1.9.3"         
-VersionDate = "2016-11-06 06:13:44"        
+LINK_NONE   = 0
+LINK_GOTO   = 1
+LINK_URI    = 2
+LINK_LAUNCH = 3
+LINK_NAMED  = 4
+LINK_GOTOR  = 5
+LINK_FLAG_L_VALID = 1
+LINK_FLAG_T_VALID = 2
+LINK_FLAG_R_VALID = 4
+LINK_FLAG_B_VALID = 8
+LINK_FLAG_FIT_H = 16
+LINK_FLAG_FIT_V = 32
+LINK_FLAG_R_IS_ZOOM = 64
+
+class linkDest():
+    '''link or outline destination details'''
+    def __init__(self, obj):
+        self.dest = ""
+        self.fileSpec = ""
+        self.flags = 0
+        self.isMap = False
+        self.isUri = False
+        self.kind = LINK_NONE
+        self.lt = Point(0, 0)
+        self.named = ""
+        self.newWindow = ""
+        self.page = obj.page
+        self.rb = Point(0, 0)
+        self.uri = obj.uri
+        if obj.isExternal:
+            self.page = -1
+            self.kind = LINK_URI
+        if not self.uri:
+            self.page = -1
+            self.kind = LINK_NONE
+        if not obj.isExternal and self.uri:
+            if self.uri.startswith("#"):
+                self.named = ""
+                self.kind = LINK_GOTO
+                ftab = self.uri[1:].split(",")
+                if len(ftab) == 3:
+                    self.page = int(ftab[0]) - 1
+                    self.lt = Point(float(ftab[1]), float(ftab[2]))
+                    self.flags = self.flags | LINK_FLAG_L_VALID | LINK_FLAG_T_VALID
+                else:
+                    try:
+                        self.page = int(ftab[0]) - 1
+                    except:
+                        self.kind = LINK_NAMED
+                        self.named = self.uri
+            else:
+                self.kind = LINK_NAMED
+                self.named = self.uri
+        if obj.isExternal:
+            if self.uri.startswith(("http://", "https://", "mailto:", "ftp://")):
+                self.isUri = True
+                self.kind = LINK_URI
+            elif self.uri.startswith("file://"):
+                self.fileSpec = self.uri[7:]
+                ftab = self.fileSpec.split("#")
+                self.isUri = False
+                self.kind = LINK_LAUNCH
+                if len(ftab) == 2:
+                    if ftab[1].startswith("page="):
+                        self.page = int(ftab[1][5:]) - 1
+                        self.kind = LINK_GOTOR
+                        self.isUri = False
+                        self.fileSpec = ftab[0]
+                    else:
+                        self.page = -1
+                        self.kind = LINK_LAUNCH
+                        self.isUri = True
+            else:
+                self.isUri = True
+                self.kind = LINK_LAUNCH
+
 
 class Document(_object):
     """Proxy of C fz_document_s struct."""
@@ -155,8 +231,8 @@ class Document(_object):
     def close(self):
         """close(Document self)"""
 
-        if self.isClosed == 1:
-            raise ValueError("operation on closed document")
+        if self.isClosed:
+            raise ValueError("operation illegal for closed / encrypted doc")
         if hasattr(self, '_outline') and self._outline:
             self._dropOutline(self._outline)
             self._outline = None
@@ -172,14 +248,17 @@ class Document(_object):
     def loadPage(self, number):
         """loadPage(Document self, int number) -> Page"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_loadPage(self, number)
 
         if val:
             val.thisown = True
-            val.number = number
             val.parent = self
+            pageCount = self.pageCount
+            n = number
+            while n < 0: n += pageCount
+            val.number = n
 
 
         return val
@@ -188,7 +267,7 @@ class Document(_object):
     def _loadOutline(self):
         """_loadOutline(Document self) -> Outline"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__loadOutline(self)
 
@@ -197,29 +276,31 @@ class Document(_object):
         """_dropOutline(Document self, Outline ol)"""
         return _fitz.Document__dropOutline(self, ol)
 
+    @property
 
-    def _getPageCount(self):
-        """_getPageCount(Document self) -> int"""
+    def pageCount(self):
+        """pageCount(Document self) -> int"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
-        return _fitz.Document__getPageCount(self)
+        return _fitz.Document_pageCount(self)
 
 
     def _getMetadata(self, key):
         """_getMetadata(Document self, char const * key) -> char *"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getMetadata(self, key)
 
+    @property
 
-    def _needsPass(self):
-        """_needsPass(Document self) -> int"""
+    def needsPass(self):
+        """needsPass(Document self) -> int"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
-        return _fitz.Document__needsPass(self)
+        return _fitz.Document_needsPass(self)
 
 
     def _getGCTXerrcode(self):
@@ -235,7 +316,7 @@ class Document(_object):
     def authenticate(self, arg2):
         """authenticate(Document self, char const * arg2) -> int"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_authenticate(self, arg2)
 
@@ -250,26 +331,18 @@ class Document(_object):
     def save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0):
         """save(Document self, char * filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) -> int"""
 
-        if self.isClosed == 1:
-            raise ValueError("operation on closed document")
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
         if type(filename) == str:
             pass
         elif type(filename) == unicode:
             filename = filename.encode('utf8')
         else:
             raise TypeError("filename must be a string")
-        if filename == self.name and incremental == 0:
-            raise ValueError("cannot save to input file")
-        if len(self.name) > 0 and not self.name.lower().endswith("pdf"):
-            raise ValueError("can only save PDF files")
+        if filename == self.name and not incremental:
+            raise ValueError("save to original requires incremental")
         if incremental and (self.name != filename or self.streamlen > 0):
             raise ValueError("incremental save to original file only")
-        if incremental and (garbage > 0 or linear > 0):
-            raise ValueError("incremental excludes garbage and linear")
-        if incremental and self.openErrCode > 0:
-            raise ValueError("open error '%s' - save to new file" % (self.openErrMsg,))
-        if incremental and self.needsPass > 0:
-            raise ValueError("decrypted - save to new file")
 
 
         return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear)
@@ -281,10 +354,11 @@ class Document(_object):
         Insert page range [from, to] of source PDF, starting as page number start_at.
         """
 
+        if self.isClosed:
+            raise ValueError("operation illegal for closed / encrypted doc")
         sa = start_at
         if sa < 0:
             sa = self.pageCount
-
 
         val = _fitz.Document_insertPDF(self, docsrc, from_page, to_page, start_at, rotate, links)
 
@@ -298,40 +372,40 @@ class Document(_object):
 
     def deletePage(self, pno):
         """deletePage(Document self, int pno) -> int"""
-        if self.isClosed or self.isEncrypted:
-            raise ValueError("illegal operation on closed / encrypted document")
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_deletePage(self, pno)
 
 
     def deletePageRange(self, from_page=-1, to_page=-1):
         """deletePageRange(Document self, int from_page=-1, int to_page=-1) -> int"""
-        if self.isClosed or self.isEncrypted:
-            raise ValueError("illegal operation on closed / encrypted document")
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_deletePageRange(self, from_page, to_page)
 
 
     def copyPage(self, pno, to=-1):
         """copyPage(Document self, int pno, int to=-1) -> int"""
-        if self.isClosed or self.isEncrypted:
-            raise ValueError("illegal operation on closed / encrypted document")
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_copyPage(self, pno, to)
 
 
     def movePage(self, pno, to=-1):
         """movePage(Document self, int pno, int to=-1) -> int"""
-        if self.isClosed or self.isEncrypted:
-            raise ValueError("illegal operation on closed / encrypted document")
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_movePage(self, pno, to)
 
 
     def select(self, pyliste):
-        """select(list) -> int; build sub-pdf with listed pages"""
-        if self.isClosed or self.isEncrypted:
-            raise ValueError("illegal operation on closed / encrypted document")
+        """select(list) -> int; build sub-pdf with pages in list"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_select(self, pyliste)
 
@@ -342,51 +416,26 @@ class Document(_object):
 
 
     def _readPageText(self, pno, output=0):
-        """_readPageText(Document self, int pno, int output=0) -> struct fz_buffer_s *"""
+        """_readPageText(Document self, int pno, int output=0) -> char *"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__readPageText(self, pno, output)
 
+    @property
 
-    def getPermits(self):
-        """getPermits(self) -> dictionary containing permissions"""
-        if self.isClosed or self.isEncrypted:
-            raise ValueError("illegal operation on closed / encrypted document")
+    def permissions(self):
+        """permissions -> dictionary containing permissions"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
-        val = _fitz.Document_getPermits(self)
-
-                    # transform bitfield response into dictionary
-        d = {}
-        if val % 2: # print permission?
-            d["print"] = True
-        else:
-            d["print"] = False
-        val = val >> 1
-        if val % 2: # edit permission?
-            d["edit"] = True
-        else:
-            d["edit"] = False
-        val = val >> 1
-        if val % 2: # copy permission?
-            d["copy"] = True
-        else:
-            d["copy"] = False
-        val = val >> 1
-        if val % 2: # annotate permission?
-            d["note"] = True
-        else:
-            d["note"] = False
-        val = d
-
-
-        return val
+        return _fitz.Document_permissions(self)
 
 
     def _getPageObjNumber(self, pno):
         """_getPageObjNumber(Document self, int pno) -> PyObject *"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getPageObjNumber(self, pno)
 
@@ -394,7 +443,7 @@ class Document(_object):
     def getPageImageList(self, pno):
         """getPageImageList(Document self, int pno) -> PyObject *"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_getPageImageList(self, pno)
 
@@ -402,7 +451,7 @@ class Document(_object):
     def getPageFontList(self, pno):
         """getPageFontList(Document self, int pno) -> PyObject *"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_getPageFontList(self, pno)
 
@@ -410,7 +459,7 @@ class Document(_object):
     def _delToC(self):
         """_delToC(Document self) -> PyObject *"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document__delToC(self)
 
@@ -423,7 +472,7 @@ class Document(_object):
     def _getOLRootNumber(self):
         """_getOLRootNumber(Document self) -> int"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getOLRootNumber(self)
 
@@ -431,7 +480,7 @@ class Document(_object):
     def _getNewXref(self):
         """_getNewXref(Document self) -> int"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getNewXref(self)
 
@@ -439,15 +488,15 @@ class Document(_object):
     def _getXrefLength(self):
         """_getXrefLength(Document self) -> int"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getXrefLength(self)
 
 
     def _getObjectString(self, xnum):
-        """_getObjectString(Document self, int xnum) -> struct fz_buffer_s *"""
+        """_getObjectString(Document self, int xnum) -> char const *"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getObjectString(self, xnum)
 
@@ -455,7 +504,7 @@ class Document(_object):
     def _updateObject(self, xref, text):
         """_updateObject(Document self, int xref, char * text) -> int"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__updateObject(self, xref, text)
 
@@ -463,7 +512,7 @@ class Document(_object):
     def _setMetadata(self, text):
         """_setMetadata(Document self, char * text) -> int"""
         if self.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__setMetadata(self, text)
 
@@ -476,8 +525,10 @@ class Document(_object):
         self.metadata['encryption'] = None if self._getMetadata('encryption')=='None' else self._getMetadata('encryption')
 
     outline = property(lambda self: self._outline)
-    pageCount = property(lambda self: self._getPageCount())
-    needsPass = property(lambda self: self._needsPass())
+
+    def saveIncr(self):
+        """ Save PDF incrementally"""
+        return self.save(self.name, incremental = True)
 
     def __repr__(self):
         if self.streamlen == 0:
@@ -485,14 +536,10 @@ class Document(_object):
         return "fitz.Document('%s', bytearray)" % (self.name,)
 
     def __getitem__(self, i):
-        if i >= 0:
-            return self.loadPage(i)
-        else:
-            return self.loadPage(i + self.pageCount)                    
+        return self.loadPage(i)
 
     def __len__(self):
         return self.pageCount
-
 
     __swig_destroy__ = _fitz.delete_Document
     __del__ = lambda self: None
@@ -516,7 +563,7 @@ class Page(_object):
     def bound(self):
         """bound(Page self) -> Rect"""
         if self.parent.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Page_bound(self)
 
@@ -526,11 +573,12 @@ class Page(_object):
 
         return val
 
+    rect = property(bound, doc="Rect (mediabox) of the page")
 
     def run(self, dw, m):
         """run(Page self, Device dw, Matrix m) -> int"""
         if self.parent.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Page_run(self, dw, m)
 
@@ -538,7 +586,7 @@ class Page(_object):
     def loadLinks(self):
         """loadLinks(Page self) -> Link"""
         if self.parent.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Page_loadLinks(self)
 
@@ -549,47 +597,68 @@ class Page(_object):
         return val
 
     firstLink = property(loadLinks)
+    @property
 
-    def _firstAnnot(self):
-        """_firstAnnot(Page self) -> Annot"""
+    def firstAnnot(self):
+        """firstAnnot(Page self) -> Annot"""
         if self.parent.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
-        val = _fitz.Page__firstAnnot(self)
-
+        val = _fitz.Page_firstAnnot(self)
         if val:
             val.thisown = True
-
+            val.parent = self # owning page object
 
         return val
 
-    firstAnnot = property(_firstAnnot)
 
-    def getRotate(self):
-        """getRotate(Page self) -> int"""
+    def deleteAnnot(self, fannot):
+        """deleteAnnot(Page self, Annot fannot) -> Annot"""
         if self.parent.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
-        return _fitz.Page_getRotate(self)
+        val = _fitz.Page_deleteAnnot(self, fannot)
+        if val:
+            val.thisown = True
+            val.parent = self # owning page object
+
+        return val
 
 
-    def setRotate(self, rot):
-        """setRotate(Page self, int rot) -> int"""
+    def createAnnot(self, type, rect, width=1):
+        """createAnnot(Page self, int type, Rect rect, float width=1) -> Annot"""
         if self.parent.isClosed:
-            raise ValueError("illegal operation on closed / encrypted document")
+            raise ValueError("operation illegal for closed doc")
 
-        return _fitz.Page_setRotate(self, rot)
+        return _fitz.Page_createAnnot(self, type, rect, width)
+
+    @property
+
+    def rotation(self):
+        """rotation(Page self) -> int"""
+        if self.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Page_rotation(self)
+
+
+    def setRotation(self, rot):
+        """setRotation(Page self, int rot) -> int"""
+        if self.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Page_setRotation(self, rot)
 
 
     def _readPageText(self, output=0):
-        """_readPageText(Page self, int output=0) -> struct fz_buffer_s *"""
+        """_readPageText(Page self, int output=0) -> char *"""
         return _fitz.Page__readPageText(self, output)
 
 
     def __str__(self):
         return "page %s of %s" % (self.number, repr(self.parent))
     def __repr__(self):
-        return repr(self.parent) + ".loadPage(" + str(self.number) + ")"
+        return repr(self.parent) + "[" + str(self.number) + "]"
 
 Page_swigregister = _fitz.Page_swigregister
 Page_swigregister(Page)
@@ -637,6 +706,8 @@ class Rect(_object):
             self.this.append(this)
         except __builtin__.Exception:
             self.this = this
+    __swig_destroy__ = _fitz.delete_Rect
+    __del__ = lambda self: None
 
     def round(self):
         """round(Rect self) -> IRect"""
@@ -671,6 +742,15 @@ class Rect(_object):
         a = [self.x0, self.y0, self.x1, self.y1]
         return a[i]
 
+    def __setitem__(self, i, v):
+        if   i == 0: self.x0 = v
+        elif i == 1: self.y0 = v
+        elif i == 2: self.x1 = v
+        elif i == 3: self.y1 = v
+        else:
+            raise IndexError("list index out of range")
+        return
+
     def __len__(self):
         return 4
 
@@ -680,8 +760,6 @@ class Rect(_object):
     width = property(lambda self: self.x1-self.x0)
     height = property(lambda self: self.y1-self.y0)
 
-    __swig_destroy__ = _fitz.delete_Rect
-    __del__ = lambda self: None
 Rect_swigregister = _fitz.Rect_swigregister
 Rect_swigregister(Rect)
 
@@ -709,6 +787,8 @@ class IRect(_object):
     __swig_getmethods__["y1"] = _fitz.IRect_y1_get
     if _newclass:
         y1 = _swig_property(_fitz.IRect_y1_get, _fitz.IRect_y1_set)
+    __swig_destroy__ = _fitz.delete_IRect
+    __del__ = lambda self: None
 
     def __init__(self, *args):
         """
@@ -742,14 +822,21 @@ class IRect(_object):
         a = [self.x0, self.y0, self.x1, self.y1]
         return a[i]
 
+    def __setitem__(self, i, v):
+        if   i == 0: self.x0 = v
+        elif i == 1: self.y0 = v
+        elif i == 2: self.x1 = v
+        elif i == 3: self.y1 = v
+        else:
+            raise IndexError("list index out of range")
+        return
+
     def __len__(self):
         return 4
 
     def __repr__(self):
         return "fitz.IRect" + str((self.x0, self.y0, self.x1, self.y1))
 
-    __swig_destroy__ = _fitz.delete_IRect
-    __del__ = lambda self: None
 IRect_swigregister = _fitz.IRect_swigregister
 IRect_swigregister(IRect)
 
@@ -796,9 +883,9 @@ class Pixmap(_object):
 
     def __init__(self, *args):
         """
-        __init__(fz_pixmap_s self, Colorspace cs, IRect bbox) -> Pixmap
+        __init__(fz_pixmap_s self, Colorspace cs, IRect bbox, int alpha=0) -> Pixmap
         __init__(fz_pixmap_s self, Colorspace cs, Pixmap spix) -> Pixmap
-        __init__(fz_pixmap_s self, Colorspace cs, int w, int h, PyObject * samples) -> Pixmap
+        __init__(fz_pixmap_s self, Colorspace cs, int w, int h, PyObject * samples, int alpha=0) -> Pixmap
         __init__(fz_pixmap_s self, char * filename) -> Pixmap
         __init__(fz_pixmap_s self, PyObject * imagedata) -> Pixmap
         __init__(fz_pixmap_s self, Document doc, int xref) -> Pixmap
@@ -839,10 +926,35 @@ class Pixmap(_object):
         """copyPixmap(Pixmap self, Pixmap src, IRect bbox)"""
         return _fitz.Pixmap_copyPixmap(self, src, bbox)
 
+    @property
 
-    def getSize(self):
-        """getSize(Pixmap self) -> int"""
-        return _fitz.Pixmap_getSize(self)
+    def stride(self):
+        """stride(Pixmap self) -> int"""
+        return _fitz.Pixmap_stride(self)
+
+    @property
+
+    def alpha(self):
+        """alpha(Pixmap self) -> int"""
+        return _fitz.Pixmap_alpha(self)
+
+    @property
+
+    def colorspace(self):
+        """colorspace(Pixmap self) -> char const *"""
+        return _fitz.Pixmap_colorspace(self)
+
+    @property
+
+    def irect(self):
+        """irect(Pixmap self) -> IRect"""
+        return _fitz.Pixmap_irect(self)
+
+    @property
+
+    def size(self):
+        """size(Pixmap self) -> int"""
+        return _fitz.Pixmap_size(self)
 
 
     def writePNG(self, filename, savealpha=0):
@@ -866,18 +978,17 @@ class Pixmap(_object):
         return _fitz.Pixmap_getPNGData(self, savealpha)
 
 
-    def samplesRGB(self):
-        """samplesRGB(Pixmap self) -> PyObject *"""
-        return _fitz.Pixmap_samplesRGB(self)
-
-
-    def samplesAlpha(self):
-        """samplesAlpha(Pixmap self) -> PyObject *"""
-        return _fitz.Pixmap_samplesAlpha(self)
-
-
     def _writeIMG(self, filename, format, savealpha=0):
         """_writeIMG(Pixmap self, char * filename, int format, int savealpha=0) -> int"""
+
+        if type(filename) == str:
+            pass
+        elif type(filename) == unicode:
+            filename = filename.encode('utf8')
+        else:
+            raise TypeError("filename must be a string")
+
+
         return _fitz.Pixmap__writeIMG(self, filename, format, savealpha)
 
 
@@ -889,22 +1000,20 @@ class Pixmap(_object):
         return _fitz.Pixmap_invertIRect(self, *args)
 
 
-    def _getSamples(self):
-        """_getSamples(Pixmap self) -> PyObject *"""
-        return _fitz.Pixmap__getSamples(self)
+    def samples(self):
+        """samples(Pixmap self) -> PyObject *"""
+        return _fitz.Pixmap_samples(self)
 
 
-    samples = property(lambda self: self._getSamples())
-    __len__ = getSize
+    samples = property(samples)
     width  = w
     height = h
 
+    def __len__(self):
+        return self.size
+
     def __repr__(self):
-        cs = {2:"fitz.csGRAY", 4:"fitz.csRGB", 5:"fitz.csCMYK"}
-        cspace = "unsupp:" + str(self.n) if not cs.get(self.n) else cs[self.n]
-        return "fitz.Pixmap(%s, fitz.IRect(%s, %s, %s, %s))" % (cspace, self.x, self.y, self.x + self.width, self.y + self.height)
-
-
+        return "fitz.Pixmap(%s, %s, %s)" % (self.colorspace, self.irect, self.alpha)
 Pixmap_swigregister = _fitz.Pixmap_swigregister
 Pixmap_swigregister(Pixmap)
 
@@ -927,6 +1036,18 @@ class Colorspace(_object):
             self.this.append(this)
         except __builtin__.Exception:
             self.this = this
+    @property
+
+    def nbytes(self):
+        """nbytes(Colorspace self) -> int"""
+        return _fitz.Colorspace_nbytes(self)
+
+    @property
+
+    def name(self):
+        """name(Colorspace self) -> char *"""
+        return _fitz.Colorspace_name(self)
+
     __swig_destroy__ = _fitz.delete_Colorspace
     __del__ = lambda self: None
 Colorspace_swigregister = _fitz.Colorspace_swigregister
@@ -1001,6 +1122,8 @@ class Matrix(_object):
     __swig_getmethods__["f"] = _fitz.Matrix_f_get
     if _newclass:
         f = _swig_property(_fitz.Matrix_f_get, _fitz.Matrix_f_set)
+    __swig_destroy__ = _fitz.delete_Matrix
+    __del__ = lambda self: None
 
     def __init__(self, *args):
         """
@@ -1046,13 +1169,22 @@ class Matrix(_object):
         m = [self.a, self.b, self.c, self.d, self.e, self.f]
         return m[i]
 
+    def __setitem__(self, i, v):
+        if   i == 0: self.a = v
+        elif i == 1: self.b = v
+        elif i == 2: self.c = v
+        elif i == 3: self.d = v
+        elif i == 4: self.e = v
+        elif i == 5: self.f = v
+        else:
+            raise IndexError("list index out of range")
+        return
+
     def __len__(self):
         return 6
     def __repr__(self):
         return "fitz.Matrix(%s, %s, %s, %s, %s, %s)" % (self.a, self.b, self.c, self.d, self.e, self.f)
 
-    __swig_destroy__ = _fitz.delete_Matrix
-    __del__ = lambda self: None
 Matrix_swigregister = _fitz.Matrix_swigregister
 Matrix_swigregister(Matrix)
 
@@ -1070,9 +1202,9 @@ class Outline(_object):
     __swig_getmethods__["title"] = _fitz.Outline_title_get
     if _newclass:
         title = _swig_property(_fitz.Outline_title_get)
-    __swig_getmethods__["dest"] = _fitz.Outline_dest_get
+    __swig_getmethods__["page"] = _fitz.Outline_page_get
     if _newclass:
-        dest = _swig_property(_fitz.Outline_dest_get)
+        page = _swig_property(_fitz.Outline_page_get)
     __swig_getmethods__["next"] = _fitz.Outline_next_get
     if _newclass:
         next = _swig_property(_fitz.Outline_next_get)
@@ -1110,103 +1242,29 @@ class Outline(_object):
 
         return _fitz.Outline_saveText(self, filename)
 
+    @property
+
+    def uri(self):
+        """uri(Outline self) -> char *"""
+        return _fitz.Outline_uri(self)
+
+    @property
+
+    def isExternal(self):
+        """isExternal(Outline self) -> int"""
+        return _fitz.Outline_isExternal(self)
+
+    isOpen = is_open
+
+    @property
+    def dest(self):
+        '''outline destination details'''
+        return linkDest(self)
+
     __swig_destroy__ = _fitz.delete_Outline
     __del__ = lambda self: None
 Outline_swigregister = _fitz.Outline_swigregister
 Outline_swigregister(Outline)
-
-LINK_NONE = _fitz.LINK_NONE
-LINK_GOTO = _fitz.LINK_GOTO
-LINK_URI = _fitz.LINK_URI
-LINK_LAUNCH = _fitz.LINK_LAUNCH
-LINK_NAMED = _fitz.LINK_NAMED
-LINK_GOTOR = _fitz.LINK_GOTOR
-class linkDest(_object):
-    """Proxy of C fz_link_dest_s struct."""
-
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, linkDest, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, linkDest, name)
-
-    def __init__(self, *args, **kwargs):
-        raise AttributeError("No constructor defined")
-    __repr__ = _swig_repr
-    __swig_getmethods__["kind"] = _fitz.linkDest_kind_get
-    if _newclass:
-        kind = _swig_property(_fitz.linkDest_kind_get)
-
-    def _getPage(self):
-        """_getPage(linkDest self) -> int"""
-        return _fitz.linkDest__getPage(self)
-
-
-    def _getDest(self):
-        """_getDest(linkDest self) -> char *"""
-        return _fitz.linkDest__getDest(self)
-
-
-    def _getFlags(self):
-        """_getFlags(linkDest self) -> int"""
-        return _fitz.linkDest__getFlags(self)
-
-
-    def _getLt(self):
-        """_getLt(linkDest self) -> Point"""
-        return _fitz.linkDest__getLt(self)
-
-
-    def _getRb(self):
-        """_getRb(linkDest self) -> Point"""
-        return _fitz.linkDest__getRb(self)
-
-
-    def _getFileSpec(self):
-        """_getFileSpec(linkDest self) -> char *"""
-        return _fitz.linkDest__getFileSpec(self)
-
-
-    def _getNewWindow(self):
-        """_getNewWindow(linkDest self) -> int"""
-        return _fitz.linkDest__getNewWindow(self)
-
-
-    def _getUri(self):
-        """_getUri(linkDest self) -> char *"""
-        return _fitz.linkDest__getUri(self)
-
-
-    def _getIsMap(self):
-        """_getIsMap(linkDest self) -> int"""
-        return _fitz.linkDest__getIsMap(self)
-
-
-    def _getIsUri(self):
-        """_getIsUri(linkDest self) -> int"""
-        return _fitz.linkDest__getIsUri(self)
-
-
-    def _getNamed(self):
-        """_getNamed(linkDest self) -> char *"""
-        return _fitz.linkDest__getNamed(self)
-
-    __swig_destroy__ = _fitz.delete_linkDest
-    __del__ = lambda self: None
-
-    page = property(_getPage)
-    dest = property(_getDest)
-    flags = property(_getFlags)
-    lt = property(_getLt)
-    rb = property(_getRb)
-    fileSpec = property(_getFileSpec)
-    newWindow = property(_getNewWindow)
-    uri = property(_getUri)
-    isMap = property(_getIsMap)
-    isUri = property(_getIsUri)
-    named = property(_getNamed)
-
-linkDest_swigregister = _fitz.linkDest_swigregister
-linkDest_swigregister(linkDest)
 
 
 def _fz_transform_point(point, transform):
@@ -1228,6 +1286,8 @@ class Point(_object):
     __swig_getmethods__["y"] = _fitz.Point_y_get
     if _newclass:
         y = _swig_property(_fitz.Point_y_get, _fitz.Point_y_set)
+    __swig_destroy__ = _fitz.delete_Point
+    __del__ = lambda self: None
 
     def __init__(self, *args):
         """
@@ -1255,8 +1315,6 @@ class Point(_object):
     def __repr__(self):
         return "fitz.Point" + str((self.x, self.y))
 
-    __swig_destroy__ = _fitz.delete_Point
-    __del__ = lambda self: None
 Point_swigregister = _fitz.Point_swigregister
 Point_swigregister(Point)
 
@@ -1295,8 +1353,18 @@ ANNOT_XF_ReadOnly = _fitz.ANNOT_XF_ReadOnly
 ANNOT_XF_Locked = _fitz.ANNOT_XF_Locked
 ANNOT_XF_ToggleNoView = _fitz.ANNOT_XF_ToggleNoView
 ANNOT_XF_LockedContents = _fitz.ANNOT_XF_LockedContents
+ANNOT_LE_None = _fitz.ANNOT_LE_None
+ANNOT_LE_Square = _fitz.ANNOT_LE_Square
+ANNOT_LE_Circle = _fitz.ANNOT_LE_Circle
+ANNOT_LE_Diamond = _fitz.ANNOT_LE_Diamond
+ANNOT_LE_OpenArrow = _fitz.ANNOT_LE_OpenArrow
+ANNOT_LE_ClosedArrow = _fitz.ANNOT_LE_ClosedArrow
+ANNOT_LE_Butt = _fitz.ANNOT_LE_Butt
+ANNOT_LE_ROpenArrow = _fitz.ANNOT_LE_ROpenArrow
+ANNOT_LE_RClosedArrow = _fitz.ANNOT_LE_RClosedArrow
+ANNOT_LE_Slash = _fitz.ANNOT_LE_Slash
 class Annot(_object):
-    """Proxy of C pdf_annot_s struct."""
+    """Proxy of C fz_annot_s struct."""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Annot, name, value)
@@ -1306,131 +1374,153 @@ class Annot(_object):
     def __init__(self, *args, **kwargs):
         raise AttributeError("No constructor defined")
     __repr__ = _swig_repr
-    __swig_setmethods__["super"] = _fitz.Annot_super_set
-    __swig_getmethods__["super"] = _fitz.Annot_super_get
-    if _newclass:
-        super = _swig_property(_fitz.Annot_super_get, _fitz.Annot_super_set)
-    __swig_setmethods__["page"] = _fitz.Annot_page_set
-    __swig_getmethods__["page"] = _fitz.Annot_page_get
-    if _newclass:
-        page = _swig_property(_fitz.Annot_page_get, _fitz.Annot_page_set)
     __swig_destroy__ = _fitz.delete_Annot
     __del__ = lambda self: None
+    @property
 
-    def _getRect(self):
-        """_getRect(Annot self) -> Rect"""
-        return _fitz.Annot__getRect(self)
+    def rect(self):
+        """rect(Annot self) -> Rect"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
-    rect = property(_getRect)
+        return _fitz.Annot_rect(self)
 
-    def _getVertices(self):
-        """_getVertices(Annot self) -> PyObject *"""
-        return _fitz.Annot__getVertices(self)
 
-    vertices = property(_getVertices)
+    def setRect(self, r):
+        """setRect(Annot self, Rect r)"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
-    def _getInkList(self):
-        """_getInkList(Annot self) -> PyObject *"""
-        return _fitz.Annot__getInkList(self)
+        return _fitz.Annot_setRect(self, r)
 
-    inkList = property(_getInkList)
+    @property
 
-    def _getBorderColor(self):
-        """_getBorderColor(Annot self) -> PyObject *"""
-        return _fitz.Annot__getBorderColor(self)
+    def vertices(self):
+        """vertices(Annot self) -> PyObject *"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
-    borderColor = property(_getBorderColor)
+        return _fitz.Annot_vertices(self)
 
-    def _getfillColor(self):
-        """_getfillColor(Annot self) -> PyObject *"""
-        return _fitz.Annot__getfillColor(self)
+    @property
 
-    fillColor = property(_getfillColor)
+    def colors(self):
+        """colors(Annot self) -> PyObject *"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
-    def _getIntentType(self):
-        """_getIntentType(Annot self) -> char *"""
-        return _fitz.Annot__getIntentType(self)
+        return _fitz.Annot_colors(self)
 
-    intentType = property(_getIntentType)
 
-    def _getLineEnds(self):
-        """_getLineEnds(Annot self) -> PyObject *"""
-        return _fitz.Annot__getLineEnds(self)
+    def setColors(self, colors):
+        """setColors(Annot self, PyObject * colors)"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
-    lineEnds = property(_getLineEnds)
+        return _fitz.Annot_setColors(self, colors)
 
-    def _getType(self):
-        """_getType(Annot self) -> PyObject *"""
-        return _fitz.Annot__getType(self)
+    @property
 
-    type = property(_getType)
+    def lineEnds(self):
+        """lineEnds(Annot self) -> PyObject *"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
-    def _getName(self):
-        """_getName(Annot self) -> char *"""
-        return _fitz.Annot__getName(self)
+        return _fitz.Annot_lineEnds(self)
 
-    name = property(_getName)
 
-    def _getTitle(self):
-        """_getTitle(Annot self) -> char *"""
-        return _fitz.Annot__getTitle(self)
+    def setLineEnds(self, start, end):
+        """setLineEnds(Annot self, int start, int end)"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
-    title = property(_getTitle)
+        return _fitz.Annot_setLineEnds(self, start, end)
 
-    def _creationDate(self):
-        """_creationDate(Annot self) -> char *"""
-        return _fitz.Annot__creationDate(self)
+    @property
 
-    creationDate = property(_creationDate)
+    def type(self):
+        """type(Annot self) -> PyObject *"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
-    def _modDate(self):
-        """_modDate(Annot self) -> char *"""
-        return _fitz.Annot__modDate(self)
+        return _fitz.Annot_type(self)
 
-    modDate = property(_modDate)
+    @property
 
-    def _getFlags(self):
-        """_getFlags(Annot self) -> int"""
-        return _fitz.Annot__getFlags(self)
+    def info(self):
+        """info(Annot self) -> PyObject *"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
-    flags = property(_getFlags)
+        return _fitz.Annot_info(self)
 
-    def _getContents(self):
-        """_getContents(Annot self) -> char *"""
-        return _fitz.Annot__getContents(self)
 
-    content = property(_getContents)
+    def setInfo(self, info):
+        """setInfo(Annot self, PyObject * info) -> int"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
-    def _getNext(self):
-        """_getNext(Annot self) -> Annot"""
-        val = _fitz.Annot__getNext(self)
+        return _fitz.Annot_setInfo(self, info)
 
+    @property
+
+    def border(self):
+        """border(Annot self) -> PyObject *"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Annot_border(self)
+
+
+    def setBorder(self, width):
+        """setBorder(Annot self, float width)"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Annot_setBorder(self, width)
+
+    @property
+
+    def flags(self):
+        """flags(Annot self) -> int"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Annot_flags(self)
+
+
+    def setFlags(self, flags):
+        """setFlags(Annot self, int flags)"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Annot_setFlags(self, flags)
+
+    @property
+
+    def next(self):
+        """next(Annot self) -> Annot"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        val = _fitz.Annot_next(self)
         if val:
             val.thisown = True
-
+            val.parent = self.parent # copy owning page object
 
         return val
 
-    next = property(_getNext)
 
-    def getPixmap(self, matrix=None, colorspace=None):
-        """getPixmap(Annot self, Matrix matrix=None, Colorspace colorspace=None) -> Pixmap"""
+    def getPixmap(self, matrix=None, colorspace=None, alpha=0):
+        """getPixmap(Annot self, Matrix matrix=None, Colorspace colorspace=None, int alpha=0) -> Pixmap"""
+        if self.parent.parent.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
-        if not matrix: matrix = Matrix(0)
-        if not colorspace: colorspace = Colorspace(CS_RGB)
-
-        return _fitz.Annot_getPixmap(self, matrix, colorspace)
+        return _fitz.Annot_getPixmap(self, matrix, colorspace, alpha)
 
 Annot_swigregister = _fitz.Annot_swigregister
 Annot_swigregister(Annot)
 
-LINK_FLAG_L_VALID = _fitz.LINK_FLAG_L_VALID
-LINK_FLAG_T_VALID = _fitz.LINK_FLAG_T_VALID
-LINK_FLAG_R_VALID = _fitz.LINK_FLAG_R_VALID
-LINK_FLAG_B_VALID = _fitz.LINK_FLAG_B_VALID
-LINK_FLAG_FIT_H = _fitz.LINK_FLAG_FIT_H
-LINK_FLAG_FIT_V = _fitz.LINK_FLAG_FIT_V
-LINK_FLAG_R_IS_ZOOM = _fitz.LINK_FLAG_R_IS_ZOOM
 class Link(_object):
     """Proxy of C fz_link_s struct."""
 
@@ -1442,27 +1532,41 @@ class Link(_object):
     def __init__(self, *args, **kwargs):
         raise AttributeError("No constructor defined")
     __repr__ = _swig_repr
-    __swig_getmethods__["rect"] = _fitz.Link_rect_get
-    if _newclass:
-        rect = _swig_property(_fitz.Link_rect_get)
-    __swig_getmethods__["dest"] = _fitz.Link_dest_get
-    if _newclass:
-        dest = _swig_property(_fitz.Link_dest_get)
     __swig_destroy__ = _fitz.delete_Link
     __del__ = lambda self: None
+    @property
 
-    def _getNext(self):
-        """_getNext(Link self) -> Link"""
-        val = _fitz.Link__getNext(self)
+    def uri(self):
+        """uri(Link self) -> char *"""
+        return _fitz.Link_uri(self)
 
-        if val:
-            val.thisown = True
+    @property
 
+    def isExternal(self):
+        """isExternal(Link self) -> int"""
+        return _fitz.Link_isExternal(self)
+
+
+    page = -1
+    @property
+    def dest(self):
+        '''link destination details'''
+        return linkDest(self)
+
+    @property
+
+    def rect(self):
+        """rect(Link self) -> Rect"""
+        return _fitz.Link_rect(self)
+
+    @property
+
+    def next(self):
+        """next(Link self) -> Link"""
+        val = _fitz.Link_next(self)
+        if val: val.thisown = True
 
         return val
-
-
-    next = property(_getNext)
 
 Link_swigregister = _fitz.Link_swigregister
 Link_swigregister(Link)
@@ -1476,9 +1580,9 @@ class DisplayList(_object):
     __getattr__ = lambda self, name: _swig_getattr(self, DisplayList, name)
     __repr__ = _swig_repr
 
-    def __init__(self):
-        """__init__(fz_display_list_s self) -> DisplayList"""
-        this = _fitz.new_DisplayList()
+    def __init__(self, mediabox):
+        """__init__(fz_display_list_s self, Rect mediabox) -> DisplayList"""
+        this = _fitz.new_DisplayList(mediabox)
         try:
             self.this.append(this)
         except __builtin__.Exception:
@@ -1527,9 +1631,9 @@ class TextPage(_object):
     if _newclass:
         len = _swig_property(_fitz.TextPage_len_get, _fitz.TextPage_len_set)
 
-    def __init__(self):
-        """__init__(fz_stext_page_s self) -> TextPage"""
-        this = _fitz.new_TextPage()
+    def __init__(self, mediabox):
+        """__init__(fz_stext_page_s self, Rect mediabox) -> TextPage"""
+        this = _fitz.new_TextPage(mediabox)
         try:
             self.this.append(this)
         except __builtin__.Exception:
@@ -1543,22 +1647,22 @@ class TextPage(_object):
 
 
     def extractText(self):
-        """extractText(TextPage self) -> struct fz_buffer_s *"""
+        """extractText(TextPage self) -> char const *"""
         return _fitz.TextPage_extractText(self)
 
 
     def extractXML(self):
-        """extractXML(TextPage self) -> struct fz_buffer_s *"""
+        """extractXML(TextPage self) -> char const *"""
         return _fitz.TextPage_extractXML(self)
 
 
     def extractHTML(self):
-        """extractHTML(TextPage self) -> struct fz_buffer_s *"""
+        """extractHTML(TextPage self) -> char const *"""
         return _fitz.TextPage_extractHTML(self)
 
 
     def extractJSON(self):
-        """extractJSON(TextPage self) -> struct fz_buffer_s *"""
+        """extractJSON(TextPage self) -> char const *"""
         return _fitz.TextPage_extractJSON(self)
 
 TextPage_swigregister = _fitz.TextPage_swigregister

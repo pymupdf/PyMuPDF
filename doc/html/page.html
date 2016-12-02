@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Page &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Page &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,9 +32,9 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="up" title="Classes" href="classes.html"/>
-        <link rel="next" title="Pages" href="pages.html"/>
+        <link rel="next" title="Pixmap" href="pixmap.html"/>
         <link rel="prev" title="Outline" href="outline.html"/> 
 
   
@@ -55,13 +57,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -84,7 +89,8 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
@@ -102,7 +108,6 @@
 <li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
@@ -150,8 +155,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/page.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -162,7 +165,7 @@
             
   <div class="section" id="page">
 <span id="id1"></span><h1>Page<a class="headerlink" href="#page" title="Permalink to this headline">¶</a></h1>
-<p>Class representing one document page. There is no separate constructor defined. It can only be created by <a class="reference internal" href="document.html#Document.loadPage" title="Document.loadPage"><code class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></code></a> or via indexing the document (like <code class="docutils literal"><span class="pre">doc[n]</span></code>).</p>
+<p>Class representing one document page. A page object is created by <a class="reference internal" href="document.html#Document.loadPage" title="Document.loadPage"><code class="xref py py-meth docutils literal"><span class="pre">Document.loadPage()</span></code></a> (or equivalently via indexing the document like <code class="docutils literal"><span class="pre">doc[n]</span></code>).</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="37%" />
@@ -175,43 +178,46 @@
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><a class="reference internal" href="#Page.bound" title="Page.bound"><code class="xref py py-meth docutils literal"><span class="pre">Page.bound()</span></code></a></td>
-<td>the page&#8217;s rectangle</td>
+<td>rectangle (mediabox) of the page</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Page.loadLinks" title="Page.loadLinks"><code class="xref py py-meth docutils literal"><span class="pre">Page.loadLinks()</span></code></a></td>
-<td>get the first <a class="reference internal" href="link.html#link"><span class="std std-ref">Link</span></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Page.deleteAnnot" title="Page.deleteAnnot"><code class="xref py py-meth docutils literal"><span class="pre">Page.deleteAnnot()</span></code></a></td>
+<td>PDF only: delete an annotation</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Page.getLinks" title="Page.getLinks"><code class="xref py py-meth docutils literal"><span class="pre">Page.getLinks()</span></code></a></td>
 <td>get all links</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Page.getText" title="Page.getText"><code class="xref py py-meth docutils literal"><span class="pre">Page.getText()</span></code></a></td>
-<td>extract the text</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#Page.getPixmap" title="Page.getPixmap"><code class="xref py py-meth docutils literal"><span class="pre">Page.getPixmap()</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Page.getPixmap" title="Page.getPixmap"><code class="xref py py-meth docutils literal"><span class="pre">Page.getPixmap()</span></code></a></td>
 <td>create a <code class="docutils literal"><span class="pre">Pixmap</span></code></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Page.getRotate" title="Page.getRotate"><code class="xref py py-meth docutils literal"><span class="pre">Page.getRotate()</span></code></a></td>
-<td>PDF only: get page rotation</td>
+<tr class="row-even"><td><a class="reference internal" href="#Page.getText" title="Page.getText"><code class="xref py py-meth docutils literal"><span class="pre">Page.getText()</span></code></a></td>
+<td>extract the text</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Page.setRotate" title="Page.setRotate"><code class="xref py py-meth docutils literal"><span class="pre">Page.setRotate()</span></code></a></td>
-<td>PDF only: set page rotation</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Page.searchFor" title="Page.searchFor"><code class="xref py py-meth docutils literal"><span class="pre">Page.searchFor()</span></code></a></td>
-<td>search for a string</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#Page.run" title="Page.run"><code class="xref py py-meth docutils literal"><span class="pre">Page.run()</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Page.run" title="Page.run"><code class="xref py py-meth docutils literal"><span class="pre">Page.run()</span></code></a></td>
 <td>run a page through a device</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Page.firstLink" title="Page.firstLink"><code class="xref py py-attr docutils literal"><span class="pre">Page.firstLink</span></code></a></td>
-<td>first <a class="reference internal" href="link.html#link"><span class="std std-ref">Link</span></a> on the page</td>
+<tr class="row-even"><td><a class="reference internal" href="#Page.searchFor" title="Page.searchFor"><code class="xref py py-meth docutils literal"><span class="pre">Page.searchFor()</span></code></a></td>
+<td>search for a string</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Page.setRotation" title="Page.setRotation"><code class="xref py py-meth docutils literal"><span class="pre">Page.setRotation()</span></code></a></td>
+<td>PDF only: set page rotation</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Page.firstAnnot" title="Page.firstAnnot"><code class="xref py py-attr docutils literal"><span class="pre">Page.firstAnnot</span></code></a></td>
 <td>first <a class="reference internal" href="annot.html#annot"><span class="std std-ref">Annot</span></a> on the page</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Page.number" title="Page.number"><code class="xref py py-attr docutils literal"><span class="pre">Page.number</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Page.firstLink" title="Page.firstLink"><code class="xref py py-attr docutils literal"><span class="pre">Page.firstLink</span></code></a></td>
+<td>first <a class="reference internal" href="link.html#link"><span class="std std-ref">Link</span></a> on the page</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Page.number" title="Page.number"><code class="xref py py-attr docutils literal"><span class="pre">Page.number</span></code></a></td>
 <td>page number</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Page.parent" title="Page.parent"><code class="xref py py-attr docutils literal"><span class="pre">Page.parent</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Page.parent" title="Page.parent"><code class="xref py py-attr docutils literal"><span class="pre">Page.parent</span></code></a></td>
 <td>the owning document object</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Page.rect" title="Page.rect"><code class="xref py py-attr docutils literal"><span class="pre">Page.rect</span></code></a></td>
+<td>rectangle (mediabox) of the page</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Page.rotation" title="Page.rotation"><code class="xref py py-attr docutils literal"><span class="pre">Page.rotation</span></code></a></td>
+<td>PDF only: page rotation</td>
 </tr>
 </tbody>
 </table>
@@ -222,7 +228,21 @@
 <dd><dl class="method">
 <dt id="Page.bound">
 <code class="descname">bound</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Page.bound" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine the a page&#8217;s rectangle (before transformation).</p>
+<dd><p>Determine the rectangle (&quot;mediabox&quot;, before transformation) of the page.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Page.rect">
+<code class="descname">rect</code><a class="headerlink" href="#Page.rect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the rectangle (&quot;mediabox&quot;, before transformation) of the page. Same as result of method <code class="docutils literal"><span class="pre">bound()</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -234,16 +254,18 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="Page.loadLinks">
-<code class="descname">loadLinks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Page.loadLinks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the first link of a page.</p>
+<dt id="Page.deleteAnnot">
+<code class="descname">deleteAnnot</code><span class="sig-paren">(</span><em>annot</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.deleteAnnot" title="Permalink to this definition">¶</a></dt>
+<dd><p>PDF only: Delete the specified annotation from the page and (for all document types) return the next one.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="link.html#link"><span class="std std-ref">Link</span></a></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>annot</strong> (<a class="reference internal" href="annot.html#annot"><span class="std std-ref">Annot</span></a>) -- the annotation to be deleted.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A <a class="reference internal" href="link.html#link"><span class="std std-ref">Link</span></a> or <code class="docutils literal"><span class="pre">None</span></code> if the page has no links.</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="annot.html#annot"><span class="std std-ref">Annot</span></a></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the next annotation of the deleted one.</td>
 </tr>
 </tbody>
 </table>
@@ -269,16 +291,16 @@
 <dt id="Page.getText">
 <code class="descname">getText</code><span class="sig-paren">(</span><em>output = 'text'</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.getText" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieves the text of a page. Depending on the output parameter, the results of the <a class="reference internal" href="textpage.html#textpage"><span class="std std-ref">TextPage</span></a> extract methods are returned.</p>
-<p>If <code class="docutils literal"><span class="pre">output</span> <span class="pre">=</span> <span class="pre">'text'</span></code> is specified, the text is returned in the order as specified during PDF creation (which is not necessarily the normal reading order). As this may not always look like expected, consider using the example program <code class="docutils literal"><span class="pre">PDF2TextJS.py</span></code>. It is based on <code class="docutils literal"><span class="pre">extractJSON()</span></code> and re-arranges text according to the Western reading layout convention &#8220;from top-left to bottom-right&#8221;.</p>
+<p>If <code class="docutils literal"><span class="pre">output</span> <span class="pre">=</span> <span class="pre">'text'</span></code> is specified, plain text is returned in the order as specified during PDF creation (which is not necessarily the normal reading order). As this may not always look like expected, consider using the example program <code class="docutils literal"><span class="pre">PDF2TextJS.py</span></code>. It is based on <code class="docutils literal"><span class="pre">extractJSON()</span></code> and re-arranges text according to the Western reading layout convention &quot;from top-left to bottom-right&quot;.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>output</strong> (<em>string</em>) &#8211; A string indicating the requested text format, one of <code class="docutils literal"><span class="pre">text</span></code> (default), <code class="docutils literal"><span class="pre">html</span></code>, <code class="docutils literal"><span class="pre">json</span></code>, or <code class="docutils literal"><span class="pre">xml</span></code>.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>output</strong> (<em>string</em>) -- A string indicating the requested text format, one of <code class="docutils literal"><span class="pre">text</span></code> (default), <code class="docutils literal"><span class="pre">html</span></code>, <code class="docutils literal"><span class="pre">json</span></code>, or <code class="docutils literal"><span class="pre">xml</span></code>.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The page&#8217;s text as one string.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The page's text as one string.</td>
 </tr>
 </tbody>
 </table>
@@ -286,16 +308,17 @@
 
 <dl class="method">
 <dt id="Page.getPixmap">
-<code class="descname">getPixmap</code><span class="sig-paren">(</span><em>matrix = fitz.Identity</em>, <em>colorspace = &quot;RGB&quot;</em>, <em>clip = None</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.getPixmap" title="Permalink to this definition">¶</a></dt>
+<code class="descname">getPixmap</code><span class="sig-paren">(</span><em>matrix = fitz.Identity</em>, <em>colorspace = &quot;RGB&quot;</em>, <em>clip = None</em>, <em>alpha = False</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.getPixmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Pixmap from the page.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>matrix</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; A <a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a> object. Default is the <a class="reference internal" href="identity.html#identity"><span class="std std-ref">Identity</span></a> matrix.</li>
-<li><strong>colorspace</strong> (<em>string</em>) &#8211; Defines the required colorspace, one of <code class="docutils literal"><span class="pre">GRAY</span></code>, <code class="docutils literal"><span class="pre">CMYK</span></code> or <code class="docutils literal"><span class="pre">RGB</span></code> (default).</li>
-<li><strong>clip</strong> (<a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a>) &#8211; An <code class="docutils literal"><span class="pre">Irect</span></code> to restrict rendering of the page to the rectangle&#8217;s area. If not specified, the complete page will be rendered.</li>
+<li><strong>matrix</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) -- A <a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a> object. Default is the <a class="reference internal" href="identity.html#identity"><span class="std std-ref">Identity</span></a> matrix.</li>
+<li><strong>colorspace</strong> (<em>string</em>) -- Defines the required colorspace, one of <code class="docutils literal"><span class="pre">GRAY</span></code>, <code class="docutils literal"><span class="pre">CMYK</span></code> or <code class="docutils literal"><span class="pre">RGB</span></code> (default).</li>
+<li><strong>clip</strong> (<a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a>) -- An <code class="docutils literal"><span class="pre">Irect</span></code> to restrict rendering of the page to the rectangle's area. If not specified, the complete page will be rendered.</li>
+<li><strong>alpha</strong> (<em>bool</em>) -- An bool indicating whether an alpha channel should be included in the pixmap. Leave it as <code class="docutils literal"><span class="pre">False</span></code> if you do not absolutely need transparency. This will save a lot of memory (25% in case of RGB).</li>
 </ul>
 </td>
 </tr>
@@ -310,30 +333,16 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="Page.getRotate">
-<code class="descname">getRotate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Page.getRotate" title="Permalink to this definition">¶</a></dt>
-<dd><p>PDF only: Returns the rotation of the page in degrees.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">An integer representing the value of <code class="docutils literal"><span class="pre">/Rotate</span></code> in the PDF object definition. It should be a multiple of 90.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="Page.setRotate">
-<code class="descname">setRotate</code><span class="sig-paren">(</span><em>rot</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.setRotate" title="Permalink to this definition">¶</a></dt>
+<dt id="Page.setRotation">
+<code class="descname">setRotation</code><span class="sig-paren">(</span><em>rot</em><span class="sig-paren">)</span><a class="headerlink" href="#Page.setRotation" title="Permalink to this definition">¶</a></dt>
 <dd><p>PDF only: Sets the rotation of the page.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rot</strong> (<em>int</em>) &#8211; An integer specifying the required rotation in degrees. It must be a (positive or negative) multiple of 90.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rot</strong> (<em>int</em>) -- An integer specifying the required rotation in degrees. Should be a (positive or negative) multiple of 90.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">zero if successfull, <code class="docutils literal"><span class="pre">-1</span></code> if not a PDF.</td>
 </tr>
 </tbody>
 </table>
@@ -348,8 +357,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>text</strong> (<em>string</em>) &#8211; Text to searched for. Upper / lower case is ignored.</li>
-<li><strong>hit_max</strong> (<em>int</em>) &#8211; Maximum number of occurrences accepted.</li>
+<li><strong>text</strong> (<em>string</em>) -- Text to searched for. Upper / lower case is ignored.</li>
+<li><strong>hit_max</strong> (<em>int</em>) -- Maximum number of occurrences accepted.</li>
 </ul>
 </td>
 </tr>
@@ -372,8 +381,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>dev</strong> (<a class="reference internal" href="device.html#device"><span class="std std-ref">Device</span></a>) &#8211; Device, obtained from one of the <a class="reference internal" href="device.html#device"><span class="std std-ref">Device</span></a> constructors.</li>
-<li><strong>transform</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; Transformation to apply to the page. Set it to <a class="reference internal" href="identity.html#identity"><span class="std std-ref">Identity</span></a> if no transformation is desired.</li>
+<li><strong>dev</strong> (<a class="reference internal" href="device.html#device"><span class="std std-ref">Device</span></a>) -- Device, obtained from one of the <a class="reference internal" href="device.html#device"><span class="std std-ref">Device</span></a> constructors.</li>
+<li><strong>transform</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) -- Transformation to apply to the page. Set it to <a class="reference internal" href="identity.html#identity"><span class="std std-ref">Identity</span></a> if no transformation is desired.</li>
 </ul>
 </td>
 </tr>
@@ -382,21 +391,51 @@
 </dd></dl>
 
 <dl class="attribute">
+<dt id="Page.rotation">
+<code class="descname">rotation</code><a class="headerlink" href="#Page.rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>PDF only: contains the rotation of the page in degrees and <code class="docutils literal"><span class="pre">-1</span></code> for other document types.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="Page.firstLink">
 <code class="descname">firstLink</code><a class="headerlink" href="#Page.firstLink" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the first <a class="reference internal" href="link.html#link"><span class="std std-ref">Link</span></a> of a page or <code class="docutils literal"><span class="pre">None</span></code> if the page has no links. Is the same as result of method <code class="docutils literal"><span class="pre">loadLinks()</span></code>.</p>
+<dd><p>Contains the first <a class="reference internal" href="link.html#link"><span class="std std-ref">Link</span></a> of a page (or <code class="docutils literal"><span class="pre">None</span></code>).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="link.html#link"><span class="std std-ref">Link</span></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="Page.firstAnnot">
 <code class="descname">firstAnnot</code><a class="headerlink" href="#Page.firstAnnot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Contains the first <a class="reference internal" href="annot.html#annot"><span class="std std-ref">Annot</span></a> of a page or <code class="docutils literal"><span class="pre">None</span></code> if the page has no annotations.</p>
+<dd><p>Contains the first <a class="reference internal" href="annot.html#annot"><span class="std std-ref">Annot</span></a> of a page (or <code class="docutils literal"><span class="pre">None</span></code>).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="annot.html#annot"><span class="std std-ref">Annot</span></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="Page.number">
 <code class="descname">number</code><a class="headerlink" href="#Page.number" title="Permalink to this definition">¶</a></dt>
-<dd><p>The page number</p>
+<dd><p>The page number.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -432,7 +471,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="pages.html" class="btn btn-neutral float-right" title="Pages" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="pixmap.html" class="btn btn-neutral float-right" title="Pixmap" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="outline.html" class="btn btn-neutral" title="Outline" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -445,7 +484,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 05. Nov 2016.
+      Last updated on 01. Dec 2016.
 
     </p>
   </div>
@@ -467,7 +506,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

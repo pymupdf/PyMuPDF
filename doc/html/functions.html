@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Functions &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Functions &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="next" title="Constants and Enumerations" href="vars.html"/>
         <link rel="prev" title="TextSheet" href="textsheet.html"/> 
 
@@ -54,13 +56,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -83,7 +88,9 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
@@ -129,8 +136,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/functions.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -159,19 +164,22 @@
 <tr class="row-odd"><td><a class="reference internal" href="#Document._getPageObjNumber" title="Document._getPageObjNumber"><code class="xref py py-meth docutils literal"><span class="pre">Document._getPageObjNumber()</span></code></a></td>
 <td>returns a pages XREF and generation number</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document._getObjectString" title="Document._getObjectString"><code class="xref py py-meth docutils literal"><span class="pre">Document._getObjectString()</span></code></a></td>
+<tr class="row-even"><td><code class="xref py py-meth docutils literal"><span class="pre">Document._getPageXREF()</span></code></td>
+<td>synonym of <code class="docutils literal"><span class="pre">_getPageObjNumber()</span></code></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Document._getObjectString" title="Document._getObjectString"><code class="xref py py-meth docutils literal"><span class="pre">Document._getObjectString()</span></code></a></td>
 <td>returns the string representing an object</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document._getNewXref" title="Document._getNewXref"><code class="xref py py-meth docutils literal"><span class="pre">Document._getNewXref()</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document._getNewXref" title="Document._getNewXref"><code class="xref py py-meth docutils literal"><span class="pre">Document._getNewXref()</span></code></a></td>
 <td>creates and returns a new entry in the XREF</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document._updateObject" title="Document._updateObject"><code class="xref py py-meth docutils literal"><span class="pre">Document._updateObject()</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document._updateObject" title="Document._updateObject"><code class="xref py py-meth docutils literal"><span class="pre">Document._updateObject()</span></code></a></td>
 <td>inserts or updates a PDF object</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document._getXrefLength" title="Document._getXrefLength"><code class="xref py py-meth docutils literal"><span class="pre">Document._getXrefLength()</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Document._getXrefLength" title="Document._getXrefLength"><code class="xref py py-meth docutils literal"><span class="pre">Document._getXrefLength()</span></code></a></td>
 <td>returns the length of the PDF XREF</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Document._getOLRootNumber" title="Document._getOLRootNumber"><code class="xref py py-meth docutils literal"><span class="pre">Document._getOLRootNumber()</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document._getOLRootNumber" title="Document._getOLRootNumber"><code class="xref py py-meth docutils literal"><span class="pre">Document._getOLRootNumber()</span></code></a></td>
 <td>returns / creates the outline root XREF</td>
 </tr>
 </tbody>
@@ -180,15 +188,15 @@
 <div><dl class="method">
 <dt id="getPointDistance">
 <code class="descname">getPointDistance</code><span class="sig-paren">(</span><em>p1</em>, <em>p2</em>, <em>unit = &quot;pt&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#getPointDistance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the distance between two points in either pixel points &#8220;pt&#8221; (default) or millimeters &#8220;mm&#8221;. <code class="docutils literal"><span class="pre">fitz.getPointDistance(p1,</span> <span class="pre">p2)</span> <span class="pre">==</span> <span class="pre">fitz.getPointDistance(p2,</span> <span class="pre">p1)</span></code> always evaluates to <code class="docutils literal"><span class="pre">True</span></code>.</p>
+<dd><p>Calculates the distance between two points in either pixel points &quot;pt&quot; (default) or millimeters &quot;mm&quot;. <code class="docutils literal"><span class="pre">fitz.getPointDistance(p1,</span> <span class="pre">p2)</span> <span class="pre">==</span> <span class="pre">fitz.getPointDistance(p2,</span> <span class="pre">p1)</span></code> always evaluates to <code class="docutils literal"><span class="pre">True</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>p1</strong> (<a class="reference internal" href="point.html#Point" title="Point"><em>Point</em></a>) &#8211; First point</li>
-<li><strong>p2</strong> (<a class="reference internal" href="point.html#Point" title="Point"><em>Point</em></a>) &#8211; Second point</li>
-<li><strong>unit</strong> (<em>str</em>) &#8211; Unit specification, &#8220;pt&#8221; or &#8220;mm&#8221;</li>
+<li><strong>p1</strong> (<a class="reference internal" href="point.html#Point" title="Point"><em>Point</em></a>) -- First point</li>
+<li><strong>p2</strong> (<a class="reference internal" href="point.html#Point" title="Point"><em>Point</em></a>) -- Second point</li>
+<li><strong>unit</strong> (<em>str</em>) -- Unit specification, &quot;pt&quot; or &quot;mm&quot;</li>
 </ul>
 </td>
 </tr>
@@ -207,7 +215,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pno</strong> (<em>int.</em>) &#8211; Page number (zero-baed).</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pno</strong> (<em>int.</em>) -- Page number (zero-baed).</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
@@ -225,7 +233,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>xref</strong> (<em>int.</em>) &#8211; XREF number.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>xref</strong> (<em>int.</em>) -- XREF number.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
 </tr>
@@ -238,7 +246,7 @@
 <dl class="method">
 <dt id="Document._getNewXref">
 <code class="descclassname">Document.</code><code class="descname">_getNewXref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Document._getNewXref" title="Permalink to this definition">¶</a></dt>
-<dd><p>PDF documents only: Increases the XREF by one entry and returns the entry&#8217;s number.</p>
+<dd><p>PDF documents only: Increases the XREF by one entry and returns the entry's number.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -260,8 +268,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>xref</strong> (<em>int.</em>) &#8211; XREF number.</li>
-<li><strong>obj_str</strong> (<em>str.</em>) &#8211; a string containing a valid PDF object definition.</li>
+<li><strong>xref</strong> (<em>int.</em>) -- XREF number.</li>
+<li><strong>obj_str</strong> (<em>str.</em>) -- a string containing a valid PDF object definition.</li>
 </ul>
 </td>
 </tr>
@@ -310,7 +318,7 @@
 </div></blockquote>
 <div class="section" id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
-<p>This demonstrates how some of the above functions could be used to update a page&#8217;s rotation:</p>
+<p>This demonstrates how some of the above functions could be used to update a page's rotation:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fitz</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;PyMuPDF.pdf&quot;</span><span class="p">)</span> <span class="c1"># open document</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pix</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getPagePixmap</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="c1"># get pixmap of page 6</span>
@@ -365,7 +373,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Nov 2016.
+      Last updated on 01. Dec 2016.
 
     </p>
   </div>
@@ -387,7 +395,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

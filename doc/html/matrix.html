@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Matrix &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Matrix &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="up" title="Classes" href="classes.html"/>
         <link rel="next" title="Outline" href="outline.html"/>
         <link rel="prev" title="linkDest" href="linkdest.html"/> 
@@ -55,13 +57,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -84,7 +89,9 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
@@ -111,7 +118,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
@@ -158,8 +164,6 @@
     <li>Matrix</li>
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/matrix.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -243,9 +247,9 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>sx</strong> (<em>float</em>) &#8211; Scale or shear factor in x direction as controlled by <code class="docutils literal"><span class="pre">shear</span></code>.</li>
-<li><strong>sy</strong> (<em>float</em>) &#8211; Scale or shear factor in y direction as controlled by <code class="docutils literal"><span class="pre">shear</span></code>.</li>
-<li><strong>shear</strong> (<em>bool</em>) &#8211; Controls whether <code class="docutils literal"><span class="pre">sx</span></code> and <code class="docutils literal"><span class="pre">sy</span></code> should be treated as scale or as shear factors. If shear is <code class="docutils literal"><span class="pre">False</span></code> (default), matrix <code class="docutils literal"><span class="pre">[sx,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">sy,</span> <span class="pre">0,</span> <span class="pre">0]</span></code> will be created. If <code class="docutils literal"><span class="pre">shear</span></code> is <code class="docutils literal"><span class="pre">True</span></code>, matrix <code class="docutils literal"><span class="pre">[1,</span> <span class="pre">sx,</span> <span class="pre">sy,</span> <span class="pre">1,</span> <span class="pre">0,</span> <span class="pre">0]</span></code> will be created.</li>
+<li><strong>sx</strong> (<em>float</em>) -- Scale or shear factor in x direction as controlled by <code class="docutils literal"><span class="pre">shear</span></code>.</li>
+<li><strong>sy</strong> (<em>float</em>) -- Scale or shear factor in y direction as controlled by <code class="docutils literal"><span class="pre">shear</span></code>.</li>
+<li><strong>shear</strong> (<em>bool</em>) -- Controls whether <code class="docutils literal"><span class="pre">sx</span></code> and <code class="docutils literal"><span class="pre">sy</span></code> should be treated as scale or as shear factors. If shear is <code class="docutils literal"><span class="pre">False</span></code> (default), matrix <code class="docutils literal"><span class="pre">[sx,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">sy,</span> <span class="pre">0,</span> <span class="pre">0]</span></code> will be created. If <code class="docutils literal"><span class="pre">shear</span></code> is <code class="docutils literal"><span class="pre">True</span></code>, matrix <code class="docutils literal"><span class="pre">[1,</span> <span class="pre">sx,</span> <span class="pre">sy,</span> <span class="pre">1,</span> <span class="pre">0,</span> <span class="pre">0]</span></code> will be created.</li>
 </ul>
 </td>
 </tr>
@@ -261,7 +265,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> (<a class="reference internal" href="#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; The matrix to copy from.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> (<a class="reference internal" href="#matrix"><span class="std std-ref">Matrix</span></a>) -- The matrix to copy from.</td>
 </tr>
 </tbody>
 </table>
@@ -275,7 +279,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deg</strong> (<em>float</em>) &#8211; Rotation degrees.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deg</strong> (<em>float</em>) -- Rotation degrees.</td>
 </tr>
 </tbody>
 </table>
@@ -290,7 +294,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deg</strong> (<em>float</em>) &#8211; The rotation angle in degrees (use conventional notation based on Pi = 180 degrees).</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>deg</strong> (<em>float</em>) -- The rotation angle in degrees (use conventional notation based on Pi = 180 degrees).</td>
 </tr>
 </tbody>
 </table>
@@ -305,8 +309,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>sx</strong> (<em>float</em>) &#8211; Zoom factor in X direction. For the effect see description of attribute <code class="docutils literal"><span class="pre">a</span></code>.</li>
-<li><strong>sy</strong> (<em>float</em>) &#8211; Zoom factor in Y direction. For the effect see description of attribute <code class="docutils literal"><span class="pre">d</span></code>.</li>
+<li><strong>sx</strong> (<em>float</em>) -- Zoom factor in X direction. For the effect see description of attribute <code class="docutils literal"><span class="pre">a</span></code>.</li>
+<li><strong>sy</strong> (<em>float</em>) -- Zoom factor in Y direction. For the effect see description of attribute <code class="docutils literal"><span class="pre">d</span></code>.</li>
 </ul>
 </td>
 </tr>
@@ -323,8 +327,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>sx</strong> (<em>float</em>) &#8211; Shearing effect in X direction. See attribute <code class="docutils literal"><span class="pre">c</span></code>.</li>
-<li><strong>sy</strong> (<em>float</em>) &#8211; Shearing effect in Y direction. See attribute <code class="docutils literal"><span class="pre">b</span></code>.</li>
+<li><strong>sx</strong> (<em>float</em>) -- Shearing effect in X direction. See attribute <code class="docutils literal"><span class="pre">c</span></code>.</li>
+<li><strong>sy</strong> (<em>float</em>) -- Shearing effect in Y direction. See attribute <code class="docutils literal"><span class="pre">b</span></code>.</li>
 </ul>
 </td>
 </tr>
@@ -341,8 +345,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>tx</strong> (<em>float</em>) &#8211; Translation effect in X direction. See attribute <code class="docutils literal"><span class="pre">e</span></code>.</li>
-<li><strong>ty</strong> (<em>float</em>) &#8211; Translation effect in Y direction. See attribute <code class="docutils literal"><span class="pre">f</span></code>.</li>
+<li><strong>tx</strong> (<em>float</em>) -- Translation effect in X direction. See attribute <code class="docutils literal"><span class="pre">e</span></code>.</li>
+<li><strong>ty</strong> (<em>float</em>) -- Translation effect in Y direction. See attribute <code class="docutils literal"><span class="pre">f</span></code>.</li>
 </ul>
 </td>
 </tr>
@@ -359,8 +363,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>m1</strong> (<a class="reference internal" href="#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; First (left) matrix.</li>
-<li><strong>m2</strong> (<a class="reference internal" href="#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; Second (right) matrix.</li>
+<li><strong>m1</strong> (<a class="reference internal" href="#matrix"><span class="std std-ref">Matrix</span></a>) -- First (left) matrix.</li>
+<li><strong>m2</strong> (<a class="reference internal" href="#matrix"><span class="std std-ref">Matrix</span></a>) -- Second (right) matrix.</li>
 </ul>
 </td>
 </tr>
@@ -371,12 +375,12 @@
 <dl class="method">
 <dt id="Matrix.invert">
 <code class="descname">invert</code><span class="sig-paren">(</span><em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#Matrix.invert" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the matrix inverse of <code class="docutils literal"><span class="pre">m</span></code> and store the result in the current matrix. Returns <code class="docutils literal"><span class="pre">1</span></code> if <code class="docutils literal"><span class="pre">m</span></code> is not invertible (&#8220;degenerate&#8221;). In this case the current matrix <strong>will not change</strong>. Returns <code class="docutils literal"><span class="pre">0</span></code> if <code class="docutils literal"><span class="pre">m</span></code> is invertible, and the current matrix is replaced with the inverted <code class="docutils literal"><span class="pre">m</span></code>.</p>
+<dd><p>Calculate the matrix inverse of <code class="docutils literal"><span class="pre">m</span></code> and store the result in the current matrix. Returns <code class="docutils literal"><span class="pre">1</span></code> if <code class="docutils literal"><span class="pre">m</span></code> is not invertible (&quot;degenerate&quot;). In this case the current matrix <strong>will not change</strong>. Returns <code class="docutils literal"><span class="pre">0</span></code> if <code class="docutils literal"><span class="pre">m</span></code> is invertible, and the current matrix is replaced with the inverted <code class="docutils literal"><span class="pre">m</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> (<a class="reference internal" href="#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; Matrix to be inverted.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> (<a class="reference internal" href="#matrix"><span class="std std-ref">Matrix</span></a>) -- Matrix to be inverted.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
 </tr>
@@ -401,7 +405,7 @@
 <dl class="attribute">
 <dt id="Matrix.b">
 <code class="descname">b</code><a class="headerlink" href="#Matrix.b" title="Permalink to this definition">¶</a></dt>
-<dd><p>Causes a shearing effect: each <code class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y)</span></code> will become <code class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y</span> <span class="pre">-</span> <span class="pre">b*x)</span></code>. Therefore, looking from left to right, e.g. horizontal lines will be &#8220;tilt&#8221; - downwards if b &gt; 0, upwards otherwise (b is the tangens of the tilting angle).</p>
+<dd><p>Causes a shearing effect: each <code class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y)</span></code> will become <code class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y</span> <span class="pre">-</span> <span class="pre">b*x)</span></code>. Therefore, looking from left to right, e.g. horizontal lines will be &quot;tilt&quot; - downwards if b &gt; 0, upwards otherwise (b is the tangens of the tilting angle).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -415,7 +419,7 @@
 <dl class="attribute">
 <dt id="Matrix.c">
 <code class="descname">c</code><a class="headerlink" href="#Matrix.c" title="Permalink to this definition">¶</a></dt>
-<dd><p>Causes a shearing effect: each <code class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y)</span></code> will become <code class="docutils literal"><span class="pre">Point(x</span> <span class="pre">-</span> <span class="pre">c*y,</span> <span class="pre">y)</span></code>. Therefore, looking upwards, vertical lines will be &#8220;tilt&#8221; - to the left if c &gt; 0, to the right otherwise (c ist the tangens of the tilting angle).</p>
+<dd><p>Causes a shearing effect: each <code class="docutils literal"><span class="pre">Point(x,</span> <span class="pre">y)</span></code> will become <code class="docutils literal"><span class="pre">Point(x</span> <span class="pre">-</span> <span class="pre">c*y,</span> <span class="pre">y)</span></code>. Therefore, looking upwards, vertical lines will be &quot;tilt&quot; - to the left if c &gt; 0, to the right otherwise (c ist the tangens of the tilting angle).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -472,7 +476,7 @@
 
 <div class="section" id="remarks-1">
 <h2>Remarks 1<a class="headerlink" href="#remarks-1" title="Permalink to this headline">¶</a></h2>
-<p>For a matrix <code class="docutils literal"><span class="pre">m</span></code>, properties <code class="docutils literal"><span class="pre">a</span></code> to <code class="docutils literal"><span class="pre">f</span></code> can also be accessed by index, e.g. <code class="docutils literal"><span class="pre">m.a</span> <span class="pre">==</span> <span class="pre">m[0]</span></code>.</p>
+<p>For a matrix <code class="docutils literal"><span class="pre">m</span></code>, properties <code class="docutils literal"><span class="pre">a</span></code> to <code class="docutils literal"><span class="pre">f</span></code> can also be accessed by index, e.g. <code class="docutils literal"><span class="pre">m.a</span> <span class="pre">==</span> <span class="pre">m[0]</span></code> and <code class="docutils literal"><span class="pre">m[0]</span> <span class="pre">=</span> <span class="pre">1</span></code> has the same effect as <code class="docutils literal"><span class="pre">m.a</span> <span class="pre">=</span> <span class="pre">1</span></code>.</p>
 </div>
 <div class="section" id="remarks-2">
 <h2>Remarks 2<a class="headerlink" href="#remarks-2" title="Permalink to this headline">¶</a></h2>
@@ -480,9 +484,9 @@
 <p>Matrix multiplications are <strong>not commutative</strong>, i.e. execution sequence determines the result: a <strong>shift-rotate</strong> is not equal a <strong>rotate-shift</strong> in general. So it can easily become unclear which result a transformation will yield. E.g. if you apply <code class="docutils literal"><span class="pre">preRotate(x)</span></code> to an arbitrary matrix <code class="docutils literal"><span class="pre">[a,</span> <span class="pre">b,</span> <span class="pre">c,</span> <span class="pre">d,</span> <span class="pre">e,</span> <span class="pre">f]</span></code> you will get the matrix <code class="docutils literal"><span class="pre">[a*cos(x)+c*sin(x),</span> <span class="pre">b*cos(x)+d*sin(x),</span> <span class="pre">-a*sin(x)+c*cos(x),</span> <span class="pre">-b*sin(x)+d*cos(x),</span> <span class="pre">e,</span> <span class="pre">f]</span></code> ...</p>
 <p>In order to keep results foreseeable for a series of transformations, Adobe recommends the following sequence (see page 206 of their manual):</p>
 <ol class="arabic simple">
-<li>Shift (&#8220;translate&#8221;)</li>
+<li>Shift (&quot;translate&quot;)</li>
 <li>Rotate</li>
-<li>Scale or shear (&#8220;skew&#8221;)</li>
+<li>Scale or shear (&quot;skew&quot;)</li>
 </ol>
 </div>
 <div class="section" id="matrix-algebra">
@@ -494,7 +498,7 @@
 <li><strong>Multiplication:</strong> <code class="docutils literal"><span class="pre">m1</span> <span class="pre">*</span> <span class="pre">m2</span></code> is a new matrix calculated as <code class="docutils literal"><span class="pre">concat(m1,</span> <span class="pre">m2)</span></code></li>
 <li><strong>Negation:</strong> <code class="docutils literal"><span class="pre">-m</span></code> is the new matrix <code class="docutils literal"><span class="pre">[-m.a,</span> <span class="pre">-m.b,</span> <span class="pre">...]</span></code></li>
 <li><strong>Inversion:</strong> <code class="docutils literal"><span class="pre">~m</span></code> is the new matrix such that <code class="docutils literal"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">~m</span> <span class="pre">=</span> <span class="pre">fitz.Identity</span></code>. If <code class="docutils literal"><span class="pre">m</span></code> is degenerate (not invertible), <code class="docutils literal"><span class="pre">~m</span></code> will be <code class="docutils literal"><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0]</span></code>.</li>
-<li><strong>Absolute Value:</strong> <code class="docutils literal"><span class="pre">abs(m)</span></code> is a float containing the Euclidean norm of <code class="docutils literal"><span class="pre">m</span></code>. Typically used for testing whether two matrices are &#8220;almost equal&#8221;, like <code class="docutils literal"><span class="pre">abs(m1</span> <span class="pre">-</span> <span class="pre">m2)</span> <span class="pre">&lt;</span> <span class="pre">epsilon</span></code>.</li>
+<li><strong>Absolute Value:</strong> <code class="docutils literal"><span class="pre">abs(m)</span></code> is a float containing the Euclidean norm of <code class="docutils literal"><span class="pre">m</span></code>. Typically used for testing whether two matrices are &quot;almost equal&quot;, like <code class="docutils literal"><span class="pre">abs(m1</span> <span class="pre">-</span> <span class="pre">m2)</span> <span class="pre">&lt;</span> <span class="pre">epsilon</span></code>.</li>
 <li><strong>Non-Zero-Test:</strong> You can test whether a matrix is all zero (<code class="docutils literal"><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0]</span></code>): <code class="docutils literal"><span class="pre">if</span> <span class="pre">not</span> <span class="pre">~m:</span> <span class="pre">print</span> <span class="pre">&quot;m</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">invertible&quot;</span></code></li>
 </ul>
 <p>This makes the following operations possible:</p>
@@ -571,7 +575,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Nov 2016.
+      Last updated on 01. Dec 2016.
 
     </p>
   </div>
@@ -593,7 +597,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

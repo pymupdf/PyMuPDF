@@ -164,7 +164,7 @@ It should be noted, that
 
 Remarks 1
 ---------
-For a matrix ``m``, properties ``a`` to ``f`` can also be accessed by index, e.g. ``m.a == m[0]``.
+For a matrix ``m``, properties ``a`` to ``f`` can also be accessed by index, e.g. ``m.a == m[0]`` and ``m[0] = 1`` has the same effect as ``m.a = 1``.
 
 Remarks 2
 ---------

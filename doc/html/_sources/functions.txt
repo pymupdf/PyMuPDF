@@ -12,6 +12,7 @@ The following are miscellaneous functions either directly available under the bi
 ==================================== ==============================================
 :meth:`getPointDistance`             calculates the distance between to points
 :meth:`Document._getPageObjNumber()` returns a pages XREF and generation number
+:meth:`Document._getPageXREF()`      synonym of ``_getPageObjNumber()``
 :meth:`Document._getObjectString()`  returns the string representing an object
 :meth:`Document._getNewXref()`       creates and returns a new entry in the XREF
 :meth:`Document._updateObject()`     inserts or updates a PDF object

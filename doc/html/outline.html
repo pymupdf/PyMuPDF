@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Outline &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Outline &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="up" title="Classes" href="classes.html"/>
         <link rel="next" title="Page" href="page.html"/>
         <link rel="prev" title="Matrix" href="matrix.html"/> 
@@ -55,13 +57,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -84,7 +89,9 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
@@ -101,7 +108,6 @@
 <li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Outline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
@@ -149,8 +155,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/outline.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -161,11 +165,11 @@
             
   <div class="section" id="outline">
 <span id="id1"></span><h1>Outline<a class="headerlink" href="#outline" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal"><span class="pre">outline</span></code>, also called &#8220;bookmark&#8221;, is a property of <code class="docutils literal"><span class="pre">Document</span></code>. If not <code class="docutils literal"><span class="pre">None</span></code>, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in &#8220;horizontal&#8221; direction by property <code class="docutils literal"><span class="pre">Outline.next</span></code> to the next item of same level, and &#8220;downwards&#8221; by property <code class="docutils literal"><span class="pre">Outline.down</span></code> to the next item one level down. The full tree of all outline items for e.g. a conventional table of contents can be recovered by following these &#8220;pointers&#8221;.</p>
+<p><code class="docutils literal"><span class="pre">outline</span></code> (or &quot;bookmark&quot;), is a property of <code class="docutils literal"><span class="pre">Document</span></code>. If not <code class="docutils literal"><span class="pre">None</span></code>, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in &quot;horizontal&quot; or downward direction. The full tree of all outline items for e.g. a conventional table of contents (TOC) can be recovered by following these &quot;pointers&quot;.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="33%" />
-<col width="67%" />
+<col width="36%" />
+<col width="64%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head"><strong>Method / Attribute</strong></th>
@@ -179,20 +183,29 @@
 <tr class="row-odd"><td><a class="reference internal" href="#Outline.next" title="Outline.next"><code class="xref py py-attr docutils literal"><span class="pre">Outline.next</span></code></a></td>
 <td>next item same level</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Outline.dest" title="Outline.dest"><code class="xref py py-attr docutils literal"><span class="pre">Outline.dest</span></code></a></td>
-<td>link destination</td>
+<tr class="row-even"><td><a class="reference internal" href="#Outline.page" title="Outline.page"><code class="xref py py-attr docutils literal"><span class="pre">Outline.page</span></code></a></td>
+<td>page number (0-based)</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Outline.title" title="Outline.title"><code class="xref py py-attr docutils literal"><span class="pre">Outline.title</span></code></a></td>
 <td>title</td>
 </tr>
+<tr class="row-even"><td><a class="reference internal" href="#Outline.uri" title="Outline.uri"><code class="xref py py-attr docutils literal"><span class="pre">Outline.uri</span></code></a></td>
+<td>string further specifying the outline target</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Outline.isExternal" title="Outline.isExternal"><code class="xref py py-attr docutils literal"><span class="pre">Outline.isExternal</span></code></a></td>
+<td>target is outside this document</td>
+</tr>
 <tr class="row-even"><td><a class="reference internal" href="#Outline.is_open" title="Outline.is_open"><code class="xref py py-attr docutils literal"><span class="pre">Outline.is_open</span></code></a></td>
-<td>whether sub-outlines are open or colapsed</td>
+<td>whether sub-outlines are open or collapsed</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Outline.saveText" title="Outline.saveText"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveText()</span></code></a></td>
-<td>prints a conventional table of contents to a file</td>
+<tr class="row-odd"><td><code class="xref py py-attr docutils literal"><span class="pre">Outline.isOpen</span></code></td>
+<td>whether sub-outlines are open or collapsed</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Outline.saveXML" title="Outline.saveXML"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveXML()</span></code></a></td>
-<td>prints an XML-like table of contents to a file</td>
+<tr class="row-even"><td><a class="reference internal" href="#Outline.saveText" title="Outline.saveText"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveText()</span></code></a></td>
+<td>prints a conventional TOC to a file</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Outline.saveXML" title="Outline.saveXML"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveXML()</span></code></a></td>
+<td>prints an XML-like TOC to a file</td>
 </tr>
 </tbody>
 </table>
@@ -203,7 +216,7 @@
 <dd><dl class="attribute">
 <dt id="Outline.down">
 <code class="descname">down</code><a class="headerlink" href="#Outline.down" title="Permalink to this definition">¶</a></dt>
-<dd><p>The next outline item on the next level down. Is <code class="docutils literal"><span class="pre">None</span></code> if the item has no children.</p>
+<dd><p>The next outline item on the next level down. Is <code class="docutils literal"><span class="pre">None</span></code> if the item has no kids.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -217,26 +230,26 @@
 <dl class="attribute">
 <dt id="Outline.next">
 <code class="descname">next</code><a class="headerlink" href="#Outline.next" title="Permalink to this definition">¶</a></dt>
-<dd><p>The next outline item at the same level as this item. Is <code class="docutils literal"><span class="pre">None</span></code> if the item is the last one in its level.</p>
+<dd><p>The next outline item at the same level as this item. Is <code class="docutils literal"><span class="pre">None</span></code> if this is the last one in its level.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#outline"><span class="std std-ref">Outline</span></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><cite>Outline</cite></td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="Outline.dest">
-<code class="descname">dest</code><a class="headerlink" href="#Outline.dest" title="Permalink to this definition">¶</a></dt>
-<dd><p>The destination this entry points to. Can be a place in this or another document, or an internet resource. It can include actions to perform like opening a new window, invoking a javascript or opening another document.</p>
+<dt id="Outline.page">
+<code class="descname">page</code><a class="headerlink" href="#Outline.page" title="Permalink to this definition">¶</a></dt>
+<dd><p>The page number (0-based) this bookmark points to.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="linkdest.html#linkdest"><span class="std std-ref">linkDest</span></a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
 </tr>
 </tbody>
 </table>
@@ -245,7 +258,7 @@
 <dl class="attribute">
 <dt id="Outline.title">
 <code class="descname">title</code><a class="headerlink" href="#Outline.title" title="Permalink to this definition">¶</a></dt>
-<dd><p>The item&#8217;s title as a string or <code class="docutils literal"><span class="pre">None</span></code>.</p>
+<dd><p>The item's title as a string or <code class="docutils literal"><span class="pre">None</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -259,7 +272,7 @@
 <dl class="attribute">
 <dt id="Outline.is_open">
 <code class="descname">is_open</code><a class="headerlink" href="#Outline.is_open" title="Permalink to this definition">¶</a></dt>
-<dd><p>Indicator showing whether any sub-outlines should be expanded (<code class="docutils literal"><span class="pre">True</span></code>) or be colapsed (<code class="docutils literal"><span class="pre">False</span></code>). This information should be interpreted by PDF display software accordingly.</p>
+<dd><p>Or <code class="docutils literal"><span class="pre">isOpen</span></code> - an indicator showing whether any sub-outlines should be expanded (<code class="docutils literal"><span class="pre">True</span></code>) or be collapsed (<code class="docutils literal"><span class="pre">False</span></code>). This information should be interpreted by PDF display software accordingly.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -273,12 +286,12 @@
 <dl class="method">
 <dt id="Outline.saveText">
 <code class="descname">saveText</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#Outline.saveText" title="Permalink to this definition">¶</a></dt>
-<dd><p>The chain of outline items is being processed and printed to the file <code class="docutils literal"><span class="pre">filename</span></code> as a conventional table of contents. Each line of this file has the format <code class="docutils literal"><span class="pre">&lt;tab&gt;...&lt;tab&gt;&lt;title&gt;&lt;tab&gt;&lt;page#&gt;</span></code>, where the number of leading tabs is (n-1), with n equal to the outline hierarchy level of the entry. Page numbers are 1-based in this case, while <code class="docutils literal"><span class="pre">page#</span> <span class="pre">=</span> <span class="pre">0</span></code> if and only if the outline entry points to a place outside this document. If no title text was specified for an outline entry, it appears as a tab character in this file.</p>
+<dd><p>The chain of outline items is being processed and printed to the file <code class="docutils literal"><span class="pre">filename</span></code> as a conventional table of contents. Each line of this file has the format <code class="docutils literal"><span class="pre">&lt;tab&gt;...&lt;tab&gt;&lt;title&gt;&lt;tab&gt;&lt;page#&gt;</span></code>, where the number of leading tabs is (n-1), with n equal to the outline hierarchy level of the entry. Page numbers are 1-based in this case. <code class="docutils literal"><span class="pre">page</span> <span class="pre">=</span> <span class="pre">-1</span></code> can occur if the destination is outside this document or undefined (<code class="docutils literal"><span class="pre">uri</span> <span class="pre">==</span> <span class="pre">None</span></code>).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) &#8211; Name of the file to write to.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) -- Name of the file to write to.</td>
 </tr>
 </tbody>
 </table>
@@ -292,7 +305,35 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) &#8211; Name of the file to write to.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) -- Name of the file to write to.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Outline.isExternal">
+<code class="descname">isExternal</code><a class="headerlink" href="#Outline.isExternal" title="Permalink to this definition">¶</a></dt>
+<dd><p>A bool specifying whether the target is outside (<code class="docutils literal"><span class="pre">True</span></code>) of the current document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Outline.uri">
+<code class="descname">uri</code><a class="headerlink" href="#Outline.uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>A string specifying the link target. The meaning of this property should be evaluated in conjunction with <code class="docutils literal"><span class="pre">isExternal</span></code>. The value may be <code class="docutils literal"><span class="pre">None</span></code>, in which case <code class="docutils literal"><span class="pre">isExternal</span> <span class="pre">==</span> <span class="pre">False</span></code>. If <code class="docutils literal"><span class="pre">uri</span></code> starts with <code class="docutils literal"><span class="pre">file://</span></code>, <code class="docutils literal"><span class="pre">mailto:</span></code>, or an internet resource name, <code class="docutils literal"><span class="pre">isExternal</span></code> is <code class="docutils literal"><span class="pre">True</span></code>. In all other cases <code class="docutils literal"><span class="pre">isExternal</span> <span class="pre">==</span> <span class="pre">False</span></code> and <code class="docutils literal"><span class="pre">uri</span></code> points to an internal location. In case of PDF documents, this should either be <code class="docutils literal"><span class="pre">#nnnn</span></code> to indicate a 1-based (!) page number <code class="docutils literal"><span class="pre">nnnn</span></code>, or a named location. The format varies for other document types, e.g. <code class="docutils literal"><span class="pre">uri</span> <span class="pre">=</span> <span class="pre">'../FixedDoc.fdoc#PG_21_LNK_84'</span></code> for page number 21 (1-based) in an XPS document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
 </tr>
 </tbody>
 </table>
@@ -322,7 +363,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Nov 2016.
+      Last updated on 01. Dec 2016.
 
     </p>
   </div>
@@ -344,7 +385,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
