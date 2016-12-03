@@ -320,14 +320,14 @@ You can write it's image to files, extract text from it or search for text strin
 <h3>Displaying the Image in Dialog Managers<a class="headerlink" href="#displaying-the-image-in-dialog-managers" title="Permalink to this headline">¶</a></h3>
 <p>We can also use the image in a dialog. <a class="reference internal" href="pixmap.html#Pixmap.samples" title="Pixmap.samples"><code class="xref py py-attr docutils literal"><span class="pre">Pixmap.samples</span></code></a> represents the area of bytes of all the pixels as a Python bytearray. This area (or its <code class="docutils literal"><span class="pre">str()</span></code>-version), is directly usable by presumably most dialog managers. Here are two examples. Please also have a look at the examples directory of this repository.</p>
 <p><strong>wxPython</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">bitmap</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BitmapFromBufferRGBA</span><span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="c1"># image width</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">bitmap</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BitmapFromBufferRGB</span><span class="p">(</span><span class="n">pix</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>  <span class="c1"># image width</span>
             <span class="n">pix</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>                     <span class="c1"># image height</span>
             <span class="n">pix</span><span class="o">.</span><span class="n">samples</span><span class="p">)</span>                    <span class="c1"># bytearray with pixel data</span>
 </pre></div>
 </div>
 <p><strong>Tkinter</strong>:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># the following requires: &quot;from PIL import Image&quot;</span>
-<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="s2">&quot;RGBA&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">pix</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">pix</span><span class="o">.</span><span class="n">height</span><span class="p">],</span> <span class="n">pix</span><span class="o">.</span><span class="n">samples</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">pix</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">pix</span><span class="o">.</span><span class="n">height</span><span class="p">],</span> <span class="n">pix</span><span class="o">.</span><span class="n">samples</span><span class="p">)</span>
 <span class="n">photo</span> <span class="o">=</span> <span class="n">ImageTk</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -540,7 +540,7 @@ the repository?s <em>example</em> directory.</p>
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 01. Dec 2016.
+      Last updated on 02. Dec 2016.
 
     </p>
   </div>

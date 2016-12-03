@@ -19,7 +19,7 @@ Download this repository and unzip / decompress it. This will give you a folder,
 
 Step 2: Download and Generate MuPDF 1.10a
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Download ``mupdf-1.9a-source.tar.gz`` from `MuPDF version 1.10a source <http://mupdf.com/downloads/>`_, now and unzip / decompress it. Call the resulting folder ``mupdf``. MuPDF sources are also available on `GitHub <https://github.com/ArtifexSoftware/mupdf>`_.
+Download ``mupdf-1.10a-source.tar.gz`` from `MuPDF version 1.10a source <http://mupdf.com/downloads/>`_, now and unzip / decompress it. Call the resulting folder ``mupdf``. MuPDF sources are also available on `GitHub <https://github.com/ArtifexSoftware/mupdf>`_.
 
 Make sure you download the (sub-) version for which PyMuPDF has stated its compatibility. The various Linux flavors usually have their own specific ways to support download of packages which we cannot cover here. Do not hesitate posting inquiries to our web site or sending e-mail to the authors for getting support.
 
@@ -136,11 +136,11 @@ This installation option is based on pre-built binaries for Python versions on W
 
 Step 1: Download Optional Material
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Download `PyMuPDF-optional-material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_. From directory ``binary_setups`` select the zip file corresponding to your configuration and unzip it anywhere you like. To reduce download time, just download the zip file corresponding to your Python version.
+Download `PyMuPDF-optional-material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_. From directory ``binary_setups`` select the zip file corresponding to your configuration and unzip it anywhere you like. To reduce download time, directly download the zip file corresponding to your Python version.
 
 Step 2: Install PyMuPDF
 ~~~~~~~~~~~~~~~~~~~~~~~~
-Open a command prompt at the unzipped folder's top level and enter ``python setup.py install`` (or ``py setup.py install`` if you have the Python launcher, see below).
+Open a command prompt at the unzipped folder's directory that contains ``setup.py`` and enter ``python setup.py install`` (or ``py setup.py install`` if you have the Python launcher, see below).
 
 **You are done within 2 seconds.**
 

@@ -121,14 +121,14 @@ We can also use the image in a dialog. :attr:`Pixmap.samples` represents the are
 
 **wxPython**:
 ::
- bitmap = wx.BitmapFromBufferRGBA(pix.width, # image width
+ bitmap = wx.BitmapFromBufferRGB(pix.width,  # image width
              pix.height,                     # image height
              pix.samples)                    # bytearray with pixel data
 
 **Tkinter**:
 ::
  # the following requires: "from PIL import Image"
- img = Image.frombytes("RGBA", [pix.width, pix.height], pix.samples)
+ img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
  photo = ImageTk.PhotoImage(img)
 
 Now, ``photo`` can be used as an image in TK.
