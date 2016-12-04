@@ -31,18 +31,18 @@ Have a look at the **example** section to see some pixmap usage "at work".
 :meth:`Pixmap.copyPixmap`     copy parts of another pixmap
 :meth:`Pixmap.gammaWith`      applies a gamma factor to the pixmap
 :meth:`Pixmap.getPNGData`     returns a PNG as a memory area
-:meth:`Pixmap.getSize`        returns the pixmap's total length
 :meth:`Pixmap.invertIRect`    invert the pixels of a given area
 :meth:`Pixmap.tintWith`       tints a pixmap with a color
 :meth:`Pixmap.writeImage`     saves a pixmap in a variety of image formats
 :meth:`Pixmap.writePNG`       saves a pixmap as a PNG file
 :attr:`Pixmap.alpha`          indicates whether transparency is included
-:attr:`Pixmap.colorspace`     contains the :ref:`Colorspace` as a string
+:attr:`Pixmap.colorspace`     contains the :ref:`Colorspace`
 :attr:`Pixmap.height`         height of the region in pixels
 :attr:`Pixmap.interpolate`    interpolation method indicator
 :attr:`Pixmap.irect`          contains the :ref:`IRect`
 :attr:`Pixmap.n`              number of bytes per pixel including alpha byte
 :attr:`Pixmap.samples`        the components data for all pixels
+:attr:`Pixmap.size`           contains the pixmap's total length
 :attr:`Pixmap.stride`         number of bytes of one image row
 :attr:`Pixmap.width`          width of the region in pixels
 :attr:`Pixmap.x`              X-coordinate of top-left corner of pixmap
@@ -80,7 +80,7 @@ Have a look at the **example** section to see some pixmap usage "at work".
 
    .. method:: __init__(self, colorspace, sourcepix)
 
-      This constructor creates a new pixmap as a copy of another one, ``sourcepix``. If the two colorspaces differ, a conversion will take place. Any combination of supported colorspaces is possible.
+      This constructor creates a new pixmap as a copy of another one, ``sourcepix``. If the two colorspaces differ, a conversion will take place. Any combination of supported colorspaces is possible. The result will have the same alpha as the source.
 
       :param `colorspace`: The colorspace of the pixmap.
       :type `colorspace`: :ref:`Colorspace`
@@ -90,21 +90,21 @@ Have a look at the **example** section to see some pixmap usage "at work".
 
    .. method:: __init__(self, filename)
 
-      This constructor creates a pixmap from the image contained in file ``filename``.
+      This constructor creates a pixmap from the image contained in file ``filename``. The image type is determined automatically.
 
       :param `filename`: Path / name of the file. The origin of the resulting pixmap is ``(0, 0)``.
       :type `filename`: string
 
    .. method:: __init__(self, img)
 
-      This constructor creates a non-empty pixmap from ``img``, which is assumed to contain a supported image as a bytearray.
+      This constructor creates a non-empty pixmap from ``img``, which is assumed to contain a supported image as a bytearray. The image type is determined automatically.
 
-      :param `img`: Data containing a complete, valid image in the specified format. E.g. this may have been obtained from a statement like ``img = bytearray(open('somepic.png', 'rb').read())``. The origin of the resulting pixmap is (0,0).
+      :param `img`: Data containing a complete, valid image in one of the supported formats. E.g. this may have been obtained from a statement like ``img = bytearray(open('somepic.png', 'rb').read())``. The origin of the resulting pixmap is (0,0).
       :type `img`: bytearray
 
    .. method:: __init__(self, colorspace, width, height, samples, alpha)
 
-      This constructor creates a non-empty pixmap from ``samples``, which is assumed to contain an image in "plain pixel" format. This means that each pixel is represented by n bytes (as controlled by the ``colorspace`` parameter). The origin of the resulting pixmap is (0,0). This method is useful when raw image data are provided by some other program - see examples below.
+      This constructor creates a non-empty pixmap from ``samples``, which is assumed to contain an image in "plain pixel" format. This means that each pixel is represented by ``n`` bytes (as controlled by the ``colorspace`` parameter). The origin of the resulting pixmap is (0,0). This method is useful when raw image data are provided by some other program - see examples below.
 
       :param `colorspace`: Colorspace of the image. Together with ``alpha`` this parameter controls the interpretation of the ``samples`` area: for :data:`CS_GRAY`, :data:`CS_RGB` and :data:`CS_CMYK`, ``1 + alpha``, ``3 + alpha`` or ``4 + alpha`` bytes in samples will be assumed to define one pixel, respectively. Calling this number ``n``, the following must evaluate to ``True``: ``n * width * height == len(samples)``.
       :type `colorspace`: :ref:`Colorspace`
@@ -115,8 +115,11 @@ Have a look at the **example** section to see some pixmap usage "at work".
       :param `height`: Height of the image in pixels
       :type `height`: int
 
-      :param `samples`: ``bytearray``, ``bytes`` (Python 3) or ``string`` (Python 2) containing consecutive bytes describing all pixels of the image.
+      :param `samples`: ``bytearray``, ``bytes`` or ``string`` (Python 2 only) containing consecutive bytes describing all pixels of the image.
       :type `samples`: bytearray, bytes or str
+
+      :param `alpha`: a transparency channel is included in samples.
+      :type `alpha`: bool
 
    .. method:: clearWith(value, [irect])
 
@@ -159,13 +162,13 @@ Have a look at the **example** section to see some pixmap usage "at work".
 
    .. method:: copyPixmap(source, irect)
 
-      Copies the :ref:`IRect` part of the ``source`` pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and different colorspaces (provided each is either :data:`CS_GRAY` or :data:`CS_RGB`). The copy mechanism automatically adjusts to any discrepancies between source and target pixmap like so:
+      Copies the :ref:`IRect` part of the ``source`` pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and different colorspaces (provided each is either :data:`CS_GRAY` or :data:`CS_RGB`), but currently **must** have the same alpha property. The copy mechanism automatically adjusts discrepancies between source and target pixmap like so:
 
       If copying from :data:`CS_GRAY` to :data:`CS_RGB`, the source gray-shade value will be put into each of the three rgb component bytes. If the other way round, (r + g + b) / 3 will be taken as the gray-shade value of the target.
 
-      Between the specified ``irect`` and the target pixmap's :ref:`Irect`, an "intersection" rectangle is first being calculated. Then the corresponding data of this intersection are being copied. If the intersection is empty, nothing will happen.
+      Between the specified ``irect`` and the target pixmap's :ref:`Irect`, an "intersection" rectangle is calculated at first. Then the corresponding data of this intersection are being copied. If the intersection is empty, nothing will happen.
 
-      If you want your ``source`` pixmap image to land at a specific position of the target, modify its ``x`` and ``y`` attributes accordingly before copying. See the example below for how this works.
+      If you want your ``source`` pixmap image to land at a specific position of the target, set its ``x`` and ``y`` attributes to the top left point of the desired rectangle before copying. See the example below for how this works.
 
       :param `source`: The pixmap from where to copy.
       :type `source`: :ref:`Pixmap`
@@ -173,15 +176,9 @@ Have a look at the **example** section to see some pixmap usage "at work".
       :param `irect`: An IRect object specifying the area to be copied.
       :type `irect`: :ref:`IRect`
 
-   .. method:: getSize()
-
-      Returns the total length of the pixmap. This will generally equal ``len(pix.samples) + 60``. The following will evaluate to ``True``: ``len(pixmap) == pixmap.getSize()``.
-
-      :rtype: int
-
    .. method:: writePNG(filename)
 
-      Saves a pixmap as a PNG file. Please note that only grayscale and RGB colorspaces can be saved in PNG format (this is not a PyMuPDF restriction). CMYK colorspaces must either be saved as ``*.pam`` files or be converted.
+      Saves a pixmap as a PNG file. Please note that only grayscale and RGB colorspaces can be saved in PNG format (this is a MuPDF restriction). CMYK colorspaces must either be saved as ``*.pam`` files or be converted. Since MuPDF v1.10a the ``savealpha`` option is no longer supported and will be ignored with a warning.
 
       :param `filename`: The filename to save as (the extension ``png`` must be specified).
       :type `filename`: string
@@ -189,13 +186,13 @@ Have a look at the **example** section to see some pixmap usage "at work".
 
    .. method:: getPNGData()
 
-      Returns the pixmap as an image area (bytearray) in PNG format.
+      Returns the pixmap as an image area (bytearray) in PNG format. Please note that only grayscale and RGB colorspaces can be produced in PNG format (this is a MuPDF restriction). CMYK colorspaces must be converted first. Since MuPDF v1.10a the ``savealpha`` option is no longer supported and will be ignored with a warning.
 
       :rtype: bytearray
 
    .. method:: writeImage(filename, output="png")
 
-      Saves a pixmap as an image file. This method is an extension to ``writePNG()``. Depending on the output chosen, some or all colorspaces are supported and different file extensions can be chosen. Please see the table below.
+      Saves a pixmap as an image file. This method is an extension to ``writePNG()``. Depending on the output chosen, some or all colorspaces are supported and different file extensions can be chosen. Please see the table below. Since MuPDF v1.10a the ``savealpha`` option is no longer supported and will be ignored with a warning.
 
       :param `filename`: The filename to save to. Depending on the chosen output format, possible file extensions are ``.pam``, ``.pbm``, ``.pgm``, ``ppm``, ``.pnm``, ``.png`` and ``.tga``.
       :type `filename`: string
@@ -211,7 +208,7 @@ Have a look at the **example** section to see some pixmap usage "at work".
 
    .. attribute:: colorspace
 
-      The name of the colorspace of the pixmap as a string, e.g. ``DeviceRGB``.
+      The colorspace of the pixmap.
 
       :rtype: str
 
@@ -229,11 +226,17 @@ Have a look at the **example** section to see some pixmap usage "at work".
 
    .. attribute:: samples
 
-      The color and transparency values for all pixels. ``samples`` is a memory area of size ``width * height * n`` bytes. Each n bytes define one pixel. Each successive n bytes yield another pixel in scanline order. Subsequent scanlines follow each other with no padding. E.g. for an RGBA colorspace (i.e. ``n = 4``) this means, ``samples`` is a bytearray like ``..., R, G, B, A, ...``, and the four byte values R, G, B, A define one pixel.
+      The color and transparency values for all pixels. ``samples`` is a memory area of size ``width * height * n`` bytes. Each n bytes define one pixel. Each successive n bytes yield another pixel in scanline order. Subsequent scanlines follow each other with no padding. E.g. for an RGBA colorspace this means, ``samples`` is a bytearray like ``..., R, G, B, A, ...``, and the four byte values R, G, B, A define one pixel.
 
-      This area can also be used by other graphics libraries like PIL (Python Imaging Library) to do additional processing like saving the pixmap in additional image formats. See example 3.
+      This area can also be used by other graphics libraries like PIL (Python Imaging Library) to do additional processing like saving the pixmap in other image formats. See example 3.
 
       :rtype: bytearray
+
+   .. attribute:: size
+
+      Contains the total length of the pixmap. This will generally equal ``len(pix.samples) + 60``. The following will evaluate to ``True``: ``len(pixmap) == pixmap.size``.
+
+      :rtype: int
 
    .. attribute:: width
 
@@ -261,7 +264,7 @@ Have a look at the **example** section to see some pixmap usage "at work".
 
    .. attribute:: n
 
-      Number of components per pixel. This number depends on (and identifies) the chosen colorspace: :data:`CS_GRAY` = 2, :data:`CS_RGB` = 4, :data:`CS_CMYK` = 5.
+      Number of components per pixel. This number depends on colorspace and alpha (see remark above).
 
       :rtype: int
 
@@ -285,7 +288,7 @@ Have a look at the **example** section to see some pixmap usage "at work".
 
 Supported Pixmap Construction Image Types
 -------------------------------------------
-Support includes the following file types: BMP, JPEG, GIF, TIFF, JXR, and PNG.
+The following file types are supported as input to construct pixmaps: BMP, JPEG, GIF, TIFF, JXR, and PNG.
 
 Details on Saving Images with ``writeImage()``
 -----------------------------------------------
@@ -304,25 +307,24 @@ Pixmap Example Code Snippets
 This shows how pixmaps can be used for purely graphical, non-PDF purposes. The script reads a PNG picture and creates a new PNG file which consist of 3 * 4 tiles of the original one:
 ::
  import fitz
- # read in picture image and create a pixmap of it
+ # create a pixmap of a picture
  pix0 = fitz.Pixmap("editra.png")
 
- # calculate target colorspace and pixmap dimensions and create it
- tar_cs     = pix0.getColorspace()        # use colorspace of input
+ # set target colorspace and pixmap dimensions and create it
  tar_width  = pix0.width * 3              # 3 tiles per row
  tar_height = pix0.height * 4             # 4 tiles per column
  tar_irect  = fitz.IRect(0, 0, tar_width, tar_height)
  # create empty target pixmap
- tar_pix    = fitz.Pixmap(tar_cs, tar_irect)
+ tar_pix    = fitz.Pixmap(fitz.csRGB, tar_irect, pix0.alpha)
  # clear target with a very lively stone-gray (thanks and R.I.P., Loriot)
  tar_pix.clearWith(90)
 
  # now fill target with 3 * 4 tiles of input picture
- for i in list(range(4)):
-     pix0.y = i * pix0.height                          # modify input's y coord
-     for j in list(range(3)):
-         pix0.x = j * pix0.width                       # modify input's x coord
-         tar_pix.copyPixmap(pix0, pix0.getIRect())     # copy input to new loc
+ for i in range(4):
+     pix0.y = i * pix0.height                     # modify input's y coord
+     for j in range(3):
+         pix0.x = j * pix0.width                  # modify input's x coord
+         tar_pix.copyPixmap(pix0, pix0.irect)     # copy input to new loc
          # save all intermediate images to show what is happening
          fn = "target-" + str(i) + str(j) + ".png"
          tar_pix.writePNG(fn)

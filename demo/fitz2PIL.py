@@ -5,7 +5,7 @@ from PIL import Image
 
 '''
 Given any pixmap, use Pil / Pillow to save it in a different format
-Example: JPEG
+Example: take a RGBA pixmap and output as JPEG
 The unwieldy parameters afte "raw" onwards suppress warnings from PIL ...
 '''
 pix = fitz.Pixmap(...)

@@ -33,7 +33,7 @@ def punch(pm, x00, y00, x03, y03):
     punch(pm, x01, y00, x02, y01)      # top middle
     punch(pm, x02, y00, x03, y01)      # top right
     punch(pm, x00, y01, x01, y02)      # middle left
-    pm.clearWith(0, ir)                # clear center to black
+    pm.clearWith(255, ir)              # clear center to white
     punch(pm, x02, y01, x03, y02)      # middle right
     punch(pm, x00, y02, x01, y02)      # bottom left
     punch(pm, x01, y02, x02, y03)      # bottom middle
@@ -43,15 +43,14 @@ def punch(pm, x00, y00, x03, y03):
 #==============================================================================
 # main program
 #==============================================================================
-d = 3**6                               # 729
+d = 3**7                               # 729
 # create a quadratic pixmap with origin (0,0), where width = height = d should
 # be a power of 3
 t0 = time.clock()
-cs = fitz.Colorspace(fitz.CS_RGB)
 ir = fitz.IRect(0, 0, d, d)
-pm = fitz.Pixmap(cs, ir)
-# fill image area with "white" and then optionally tint and gamma it
-pm.clearWith(255)
+pm = fitz.Pixmap(fitz.csGRAY, ir)
+# fill image area with "black" and then optionally tint and gamma it
+pm.clearWith(0)
 #pm.tintWith(10, 20, 100)            # tint it with some sort of blue
 #pm.gammaWith(0.5)                   # lighten it up
 # now punch holes into it, down to 1 pixel granularity

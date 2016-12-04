@@ -34,7 +34,7 @@
   
     <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="up" title="Classes" href="classes.html"/>
-        <link rel="next" title="Device" href="device.html"/>
+        <link rel="next" title="Document" href="document.html"/>
         <link rel="prev" title="Annot" href="annot.html"/> 
 
   
@@ -98,8 +98,6 @@
 <li class="toctree-l1 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="annot.html">Annot</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Colorspace</a></li>
-<li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
 <li class="toctree-l2"><a class="reference internal" href="document.html">Document</a></li>
 <li class="toctree-l2"><a class="reference internal" href="identity.html">Identity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="irect.html">IRect</a></li>
@@ -111,11 +109,9 @@
 <li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
-<li class="toctree-l2"><a class="reference internal" href="textpage.html">TextPage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="textsheet.html">TextSheet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lowlevel.html">Low Level Functions and Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
@@ -199,10 +195,10 @@
 </dd></dl>
 
 <dl class="attribute">
-<dt id="Colorspace.nbytes">
-<code class="descname">nbytes</code><a class="headerlink" href="#Colorspace.nbytes" title="Permalink to this definition">¶</a></dt>
+<dt id="Colorspace.n">
+<code class="descname">n</code><a class="headerlink" href="#Colorspace.n" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>The number of bytes required to define the color of one pixel. Example: <code class="docutils literal"><span class="pre">fitz.csCMYK.nbytes</span> <span class="pre">=</span> <span class="pre">4</span></code>.</p>
+<div><p>The number of bytes required to define the color of one pixel. Example: <code class="docutils literal"><span class="pre">fitz.csCMYK.n</span> <span class="pre">=</span> <span class="pre">4</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -232,7 +228,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="device.html" class="btn btn-neutral float-right" title="Device" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="document.html" class="btn btn-neutral float-right" title="Document" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="annot.html" class="btn btn-neutral" title="Annot" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -245,7 +241,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Dec 2016.
+      Last updated on 04. Dec 2016.
 
     </p>
   </div>

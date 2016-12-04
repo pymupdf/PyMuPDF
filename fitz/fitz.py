@@ -100,7 +100,7 @@ except __builtin__.Exception:
 
 VersionFitz = "1.10a"
 VersionBind = '1.10.0'
-VersionDate = '2016-12-01 19:57:49'
+VersionDate = '2016-12-04 13:26:13'
 
 LINK_NONE   = 0
 LINK_GOTO   = 1
@@ -232,7 +232,7 @@ class Document(_object):
         """close(Document self)"""
 
         if self.isClosed:
-            raise ValueError("operation illegal for closed / encrypted doc")
+            raise ValueError("operation illegal for closed doc")
         if hasattr(self, '_outline') and self._outline:
             self._dropOutline(self._outline)
             self._outline = None
@@ -348,6 +348,15 @@ class Document(_object):
         return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear)
 
 
+    def write(self, garbage=0, clean=0, deflate=0, ascii=0, expand=0, linear=0):
+        """write(Document self, int garbage=0, int clean=0, int deflate=0, int ascii=0, int expand=0, int linear=0) -> PyObject *"""
+
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document_write(self, garbage, clean, deflate, ascii, expand, linear)
+
+
     def insertPDF(self, docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=1):
         """
         insertPDF(PDFsrc, from_page, to_page, start_at, rotate, links) -> int
@@ -355,7 +364,7 @@ class Document(_object):
         """
 
         if self.isClosed:
-            raise ValueError("operation illegal for closed / encrypted doc")
+            raise ValueError("operation illegal for closed doc")
         sa = start_at
         if sa < 0:
             sa = self.pageCount
@@ -365,7 +374,6 @@ class Document(_object):
         if links:
             self._do_links(docsrc, from_page = from_page, to_page = to_page,
                            start_at = sa)
-
 
         return val
 
@@ -941,7 +949,7 @@ class Pixmap(_object):
     @property
 
     def colorspace(self):
-        """colorspace(Pixmap self) -> char const *"""
+        """colorspace(Pixmap self) -> Colorspace"""
         return _fitz.Pixmap_colorspace(self)
 
     @property
@@ -957,8 +965,8 @@ class Pixmap(_object):
         return _fitz.Pixmap_size(self)
 
 
-    def writePNG(self, filename, savealpha=0):
-        """writePNG(Pixmap self, char * filename, int savealpha=0) -> int"""
+    def writePNG(self, filename, savealpha=-1):
+        """writePNG(Pixmap self, char * filename, int savealpha=-1) -> int"""
 
         if type(filename) == str:
             pass
@@ -973,13 +981,13 @@ class Pixmap(_object):
         return _fitz.Pixmap_writePNG(self, filename, savealpha)
 
 
-    def getPNGData(self, savealpha=0):
-        """getPNGData(Pixmap self, int savealpha=0) -> PyObject *"""
+    def getPNGData(self, savealpha=-1):
+        """getPNGData(Pixmap self, int savealpha=-1) -> PyObject *"""
         return _fitz.Pixmap_getPNGData(self, savealpha)
 
 
-    def _writeIMG(self, filename, format, savealpha=0):
-        """_writeIMG(Pixmap self, char * filename, int format, int savealpha=0) -> int"""
+    def _writeIMG(self, filename, format, savealpha=-1):
+        """_writeIMG(Pixmap self, char * filename, int format, int savealpha=-1) -> int"""
 
         if type(filename) == str:
             pass
@@ -1038,9 +1046,9 @@ class Colorspace(_object):
             self.this = this
     @property
 
-    def nbytes(self):
-        """nbytes(Colorspace self) -> int"""
-        return _fitz.Colorspace_nbytes(self)
+    def n(self):
+        """n(Colorspace self) -> int"""
+        return _fitz.Colorspace_n(self)
 
     @property
 

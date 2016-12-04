@@ -21,15 +21,16 @@ MuPDF version 1.10 has a significant impact on our bindings. Some of the changes
 
 Other Changes compared to Version 1.9.3
 ----------------------------------------
+* The new :ref:`Document` method ``write()`` writes an opened PDF to memory as opposed to a file, like ``save()`` does.
 * An annotation can now be scaled and moved around on its page. This is done by modifying its rectangle.
-* Annotations can now be deleted.
-* Various annotation attributes can now be modified, e.g. content, dates, title (= author), border, colors.
-* Document method ``insertPDF()`` now also supports annotations of source PDF pages.
+* Annotations can now be deleted. :ref:`Page` contains the new method ``deleteAnnot()``.
+* Various annotation attributes can now be modified, e.g. content, dates, title (= author), border, colors, line end styles.
+* Method ``Document.insertPDF()`` now also copies annotations of source pages.
 * The ``Pages`` class has been deleted. As documents can now be accessed with page numbers as indices (like ``doc[n] = doc.loadPage(n)``), the benefit of this class was too low to maintain it.
-* The ``Pixmap.getSize()`` method has been replaced with property ``Pixmap.size``.
-* In response to transparency (alpha) being an optional characteristic of pixmaps, several new parameters and properties have been added to ``Pixmap`` and ``Colorspace`` classes to support determining their characteristics.
-* The ``Page`` class now contains additional properties ``firstAnnot`` and ``firstLink`` to provide starting pointers to the respective class chains, where ``firstLink`` is just a mnemonic synonym to method ``loadLinks()`` (which continues to exist). Similarly, property ``Page.rect`` now exists as a synonym to method ``Page.bound()``, which also continues to exist.
-* ``Pixmap`` methods ``samplesRGB()`` and ``samplesAlpha()`` have been deleted because pixmaps can now be created without transparency.
+* The :ref:`Pixmap` method ``getSize()`` has been replaced with property ``size``. As before ``Pixmap.size == len(Pixmap)`` is ``True``.
+* In response to transparency (alpha) being optional, several new parameters and properties have been added to :ref:`Pixmap` and :ref:`Colorspace` classes to support determining their characteristics.
+* The :ref:`Page` class now contains new properties ``firstAnnot`` and ``firstLink`` to provide starting points to the respective class chains, where ``firstLink`` is just a mnemonic synonym to method ``loadLinks()`` which continues to exist. Similarly, the new property ``rect`` is a synonym for method ``bound()``, which also continues to exist.
+* :ref:`Pixmap` methods ``samplesRGB()`` and ``samplesAlpha()`` have been deleted because pixmaps can now be created without transparency.
 
 
 Changes in Version 1.9.3

@@ -466,22 +466,22 @@ Parameters:\nfilename: image filename\noutput: requested output format
         c_output = 1
         if not filename.lower().endswith(".png"):
             raise ValueError("require .png extension")
-        if not pix.colorspace in ["DeviceRGB", "DeviceGray"]:
-            raise ValueError(pix.colorspace + " not supported for png")
+        if pix.colorspace.n > 3:
+            raise ValueError(pix.colorspace.name + " not supported for png")
     elif output == "tga":
         c_output = 4
         if not filename.lower().endswith(".tga"):
             raise ValueError("require .tga extension")
-        if not pix.colorspace in ["DeviceRGB", "DeviceGray"]:
-            raise ValueError(pix.colorspace + " not supported for tga")
+        if pix.colorspace.n > 3:
+            raise ValueError(pix.colorspace.name + " not supported for tga")
     elif output == "pam":
         c_output = 3
         if not filename.lower().endswith(".pam"):
             raise ValueError("require .pam extension")
     elif output == "pnm":
         c_output = 2
-        if not pix.colorspace in ["DeviceRGB", "DeviceGray"]:
-            raise ValueError(pix.colorspace + " not supported for pnm")
+        if pix.colorspace.n > 3:
+            raise ValueError(pix.colorspace.name + " not supported for pnm")
         if pix.n <= 2:
             if not filename.lower().endswith((".pnm", ".pgm")):
                 raise ValueError("colorspace requires pnm or pgm extensions")

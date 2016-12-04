@@ -13,6 +13,8 @@ Outline
 ============================ ==================================================
 **Method / Attribute**       **Short Description**
 ============================ ==================================================
+:meth:`Outline.saveText`     prints a conventional TOC to a file
+:meth:`Outline.saveXML`      prints an XML-like TOC to a file
 :attr:`Outline.down`         next item downwards
 :attr:`Outline.next`         next item same level
 :attr:`Outline.page`         page number (0-based)
@@ -21,8 +23,7 @@ Outline
 :attr:`Outline.isExternal`   target is outside this document
 :attr:`Outline.is_open`      whether sub-outlines are open or collapsed
 :attr:`Outline.isOpen`       whether sub-outlines are open or collapsed
-:meth:`Outline.saveText`     prints a conventional TOC to a file
-:meth:`Outline.saveXML`      prints an XML-like TOC to a file
+:attr:`Outline.dest`         points to link destination details
 ============================ ==================================================
 
 **Class API**
@@ -85,3 +86,8 @@ Outline
 
       :rtype: str
 
+   .. attribute:: dest
+
+      The link destination details object.
+
+      :rtype: :ref:`linkDest`

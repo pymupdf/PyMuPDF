@@ -98,8 +98,6 @@
 <li class="toctree-l1 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="annot.html">Annot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="colorspace.html">Colorspace</a></li>
-<li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
 <li class="toctree-l2"><a class="reference internal" href="document.html">Document</a></li>
 <li class="toctree-l2"><a class="reference internal" href="identity.html">Identity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="irect.html">IRect</a></li>
@@ -111,11 +109,9 @@
 <li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
-<li class="toctree-l2"><a class="reference internal" href="textpage.html">TextPage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="textsheet.html">TextSheet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lowlevel.html">Low Level Functions and Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
@@ -177,6 +173,12 @@
 </tr>
 </thead>
 <tbody valign="top">
+<tr class="row-even"><td><a class="reference internal" href="#Outline.saveText" title="Outline.saveText"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveText()</span></code></a></td>
+<td>prints a conventional TOC to a file</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Outline.saveXML" title="Outline.saveXML"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveXML()</span></code></a></td>
+<td>prints an XML-like TOC to a file</td>
+</tr>
 <tr class="row-even"><td><a class="reference internal" href="#Outline.down" title="Outline.down"><code class="xref py py-attr docutils literal"><span class="pre">Outline.down</span></code></a></td>
 <td>next item downwards</td>
 </tr>
@@ -201,11 +203,8 @@
 <tr class="row-odd"><td><code class="xref py py-attr docutils literal"><span class="pre">Outline.isOpen</span></code></td>
 <td>whether sub-outlines are open or collapsed</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Outline.saveText" title="Outline.saveText"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveText()</span></code></a></td>
-<td>prints a conventional TOC to a file</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Outline.saveXML" title="Outline.saveXML"><code class="xref py py-meth docutils literal"><span class="pre">Outline.saveXML()</span></code></a></td>
-<td>prints an XML-like TOC to a file</td>
+<tr class="row-even"><td><a class="reference internal" href="#Outline.dest" title="Outline.dest"><code class="xref py py-attr docutils literal"><span class="pre">Outline.dest</span></code></a></td>
+<td>points to link destination details</td>
 </tr>
 </tbody>
 </table>
@@ -339,6 +338,20 @@
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="Outline.dest">
+<code class="descname">dest</code><a class="headerlink" href="#Outline.dest" title="Permalink to this definition">¶</a></dt>
+<dd><p>The link destination details object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="linkdest.html#linkdest"><span class="std std-ref">linkDest</span></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -363,7 +376,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Dec 2016.
+      Last updated on 04. Dec 2016.
 
     </p>
   </div>

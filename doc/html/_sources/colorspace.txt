@@ -26,9 +26,9 @@ Represents the color space of a :ref:`Pixmap`.
 
       :rtype: string
 
-   .. attribute:: nbytes
+   .. attribute:: n
 
-      The number of bytes required to define the color of one pixel. Example: ``fitz.csCMYK.nbytes = 4``.
+      The number of bytes required to define the color of one pixel. Example: ``fitz.csCMYK.n = 4``.
 
       :rtype: int
 

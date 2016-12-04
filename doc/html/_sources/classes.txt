@@ -11,8 +11,6 @@ Classes
 
    annot.txt
    colorspace.txt
-   device.txt
-   displaylist.txt
    document.txt
    identity.txt
    irect.txt
@@ -24,5 +22,3 @@ Classes
    pixmap.txt
    point.txt
    rect.txt
-   textpage.txt
-   textsheet.txt

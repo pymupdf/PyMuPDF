@@ -9,15 +9,14 @@ d = fitz.Document(sys.argv[1])
 pg = d.loadPage(int(sys.argv[2]))
 
 #setup the display list
-dl = fitz.DisplayList()
+dl = fitz.DisplayList(pg.rect)
 dv = fitz.Device(dl)
 pg.run(dv, fitz.Identity)
 
 #setup the text page
 ts = fitz.TextSheet()
-tp = fitz.TextPage()
-rect = pg.bound()
-dl.run(fitz.Device(ts, tp), fitz.Identity, rect)
+tp = fitz.TextPage(pg.rect)
+dl.run(fitz.Device(ts, tp), fitz.Identity, pg.rect)
 
 #get the text content
 text = tp.extractText()

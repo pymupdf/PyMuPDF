@@ -51,7 +51,7 @@ It should be noted, that
       :param `sy`: Scale or shear factor in y direction as controlled by ``shear``.
       :type `sy`: float
 
-      :param `shear`: Controls whether ``sx`` and ``sy`` should be treated as scale or as shear factors. If shear is ``False`` (default), matrix ``[sx, 0, 0, sy, 0, 0]`` will be created. If ``shear`` is ``True``, matrix ``[1, sx, sy, 1, 0, 0]`` will be created.
+      :param `shear`: Controls whether ``sx`` and ``sy`` should be treated as scale or as shear factors. If shear is ``False`` (default), the scaling matrix ``[sx, 0, 0, sy, 0, 0]`` will be created. If ``shear`` is ``True``, the shearing matrix ``[1, sx, sy, 1, 0, 0]`` will be created.
       :type `shear`: bool
 
    .. method:: __init__(self, m)

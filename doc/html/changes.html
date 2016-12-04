@@ -99,7 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lowlevel.html">Low Level Functions and Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
@@ -168,15 +168,16 @@
 <div class="section" id="other-changes-compared-to-version-1-9-3">
 <h2>Other Changes compared to Version 1.9.3<a class="headerlink" href="#other-changes-compared-to-version-1-9-3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li>The new <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> method <code class="docutils literal"><span class="pre">write()</span></code> writes an opened PDF to memory as opposed to a file, like <code class="docutils literal"><span class="pre">save()</span></code> does.</li>
 <li>An annotation can now be scaled and moved around on its page. This is done by modifying its rectangle.</li>
-<li>Annotations can now be deleted.</li>
-<li>Various annotation attributes can now be modified, e.g. content, dates, title (= author), border, colors.</li>
-<li>Document method <code class="docutils literal"><span class="pre">insertPDF()</span></code> now also supports annotations of source PDF pages.</li>
+<li>Annotations can now be deleted. <a class="reference internal" href="page.html#page"><span class="std std-ref">Page</span></a> contains the new method <code class="docutils literal"><span class="pre">deleteAnnot()</span></code>.</li>
+<li>Various annotation attributes can now be modified, e.g. content, dates, title (= author), border, colors, line end styles.</li>
+<li>Method <code class="docutils literal"><span class="pre">Document.insertPDF()</span></code> now also copies annotations of source pages.</li>
 <li>The <code class="docutils literal"><span class="pre">Pages</span></code> class has been deleted. As documents can now be accessed with page numbers as indices (like <code class="docutils literal"><span class="pre">doc[n]</span> <span class="pre">=</span> <span class="pre">doc.loadPage(n)</span></code>), the benefit of this class was too low to maintain it.</li>
-<li>The <code class="docutils literal"><span class="pre">Pixmap.getSize()</span></code> method has been replaced with property <code class="docutils literal"><span class="pre">Pixmap.size</span></code>.</li>
-<li>In response to transparency (alpha) being an optional characteristic of pixmaps, several new parameters and properties have been added to <code class="docutils literal"><span class="pre">Pixmap</span></code> and <code class="docutils literal"><span class="pre">Colorspace</span></code> classes to support determining their characteristics.</li>
-<li>The <code class="docutils literal"><span class="pre">Page</span></code> class now contains additional properties <code class="docutils literal"><span class="pre">firstAnnot</span></code> and <code class="docutils literal"><span class="pre">firstLink</span></code> to provide starting pointers to the respective class chains, where <code class="docutils literal"><span class="pre">firstLink</span></code> is just a mnemonic synonym to method <code class="docutils literal"><span class="pre">loadLinks()</span></code> (which continues to exist). Similarly, property <code class="docutils literal"><span class="pre">Page.rect</span></code> now exists as a synonym to method <code class="docutils literal"><span class="pre">Page.bound()</span></code>, which also continues to exist.</li>
-<li><code class="docutils literal"><span class="pre">Pixmap</span></code> methods <code class="docutils literal"><span class="pre">samplesRGB()</span></code> and <code class="docutils literal"><span class="pre">samplesAlpha()</span></code> have been deleted because pixmaps can now be created without transparency.</li>
+<li>The <a class="reference internal" href="pixmap.html#pixmap"><span class="std std-ref">Pixmap</span></a> method <code class="docutils literal"><span class="pre">getSize()</span></code> has been replaced with property <code class="docutils literal"><span class="pre">size</span></code>. As before <code class="docutils literal"><span class="pre">Pixmap.size</span> <span class="pre">==</span> <span class="pre">len(Pixmap)</span></code> is <code class="docutils literal"><span class="pre">True</span></code>.</li>
+<li>In response to transparency (alpha) being optional, several new parameters and properties have been added to <a class="reference internal" href="pixmap.html#pixmap"><span class="std std-ref">Pixmap</span></a> and <a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a> classes to support determining their characteristics.</li>
+<li>The <a class="reference internal" href="page.html#page"><span class="std std-ref">Page</span></a> class now contains new properties <code class="docutils literal"><span class="pre">firstAnnot</span></code> and <code class="docutils literal"><span class="pre">firstLink</span></code> to provide starting points to the respective class chains, where <code class="docutils literal"><span class="pre">firstLink</span></code> is just a mnemonic synonym to method <code class="docutils literal"><span class="pre">loadLinks()</span></code> which continues to exist. Similarly, the new property <code class="docutils literal"><span class="pre">rect</span></code> is a synonym for method <code class="docutils literal"><span class="pre">bound()</span></code>, which also continues to exist.</li>
+<li><a class="reference internal" href="pixmap.html#pixmap"><span class="std std-ref">Pixmap</span></a> methods <code class="docutils literal"><span class="pre">samplesRGB()</span></code> and <code class="docutils literal"><span class="pre">samplesAlpha()</span></code> have been deleted because pixmaps can now be created without transparency.</li>
 </ul>
 </div>
 </div>
@@ -285,7 +286,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Dec 2016.
+      Last updated on 04. Dec 2016.
 
     </p>
   </div>

@@ -26,7 +26,7 @@ for i in range(len(doc)):
         xref = img[0]                  # xref number
         pix = fitz.Pixmap(doc, xref)   # make pixmap from image
         imgcount += 1
-        if pix.n < 5:                  # can be saved as PNG
+        if pix.colorspace.n < 4:       # can be saved as PNG
             pix.writePNG("p%s-%s.png" % (i, xref))
         else:                          # must convert CMYK first
             pix0 = fitz.Pixmap(fitz.csRGB, pix)

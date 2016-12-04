@@ -8,6 +8,10 @@
 // versions). Its (char *) version is returned.
 // If only 1-byte code points are present, BOM and high-order bytes are
 // deleted and the (compressed) rest is returned.
+// Parameters:
+// obj = PyBytes / PyString / PyUnicode object
+// psize = pointer to a Py_ssize_t number for storing the returned length
+// name = char string to use in error messages
 /*****************************************************************************/
 char *getPDFstr(PyObject *obj, Py_ssize_t* psize, const char *name)
 {
@@ -362,14 +366,14 @@ char *readPageText(fz_page *page, int output) {
         if (output==1) fz_print_stext_page_html(gctx, out, tp);
         if (output==2) fz_print_stext_page_json(gctx, out, tp);
         if (output>=3) fz_print_stext_page_xml(gctx, out, tp);
+    }
+    fz_always(gctx)
+    {
         fz_drop_output(gctx, out);
         fz_drop_stext_page(gctx, tp);
         fz_drop_stext_sheet(gctx, ts);
     }
     fz_catch(gctx) {
-        if (out) fz_drop_output(gctx, out);
-        if (tp)  fz_drop_stext_page(gctx, tp);
-        if (ts)  fz_drop_stext_sheet(gctx, ts);
         if (res) fz_drop_buffer(gctx, res);
         fz_rethrow(gctx);
     }

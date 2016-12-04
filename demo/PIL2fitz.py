@@ -17,6 +17,6 @@ if pic_fn:
     pic_f = open(pic_fn, "rb")
     img = Image.open(pic_f).convert("RGBA")
     samples = img.tobytes()
-    pix = fitz.Pixmap(fitz.csRGB, img.size[0], img.size[1], samples)
+    pix = fitz.Pixmap(fitz.csRGB, img.size[0], img.size[1], samples, 1)
     pix.writePNG(pic_fn + ".png")
     pic_f.close()

@@ -146,7 +146,7 @@ struct fz_document_s
 
         %pythonprepend close %{
             if self.isClosed:
-                raise ValueError("operation illegal for closed / encrypted doc")
+                raise ValueError("operation illegal for closed doc")
             if hasattr(self, '_outline') and self._outline:
                 self._dropOutline(self._outline)
                 self._outline = None
@@ -251,7 +251,7 @@ struct fz_document_s
             return fz_authenticate_password(gctx, $self, pass);
         }
         /****************************************************************/
-        /* save(filename, ...)                                          */
+        // save(filename, ...)
         /****************************************************************/
         FITZEXCEPTION(save, result!=0)
         %pythonprepend save %{
@@ -271,7 +271,6 @@ struct fz_document_s
 
         int save(char *filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0)
         {
-            /* cast-down fz_document to a pdf_document */
             int errors = 0;
             pdf_write_options opts;
             opts.do_incremental = incremental;
@@ -300,12 +299,58 @@ struct fz_document_s
                     fz_throw(gctx, FZ_ERROR_GENERIC, "incremental excludes linear");
                 pdf_save_document(gctx, pdf, filename, &opts);
                 }
-            fz_catch(gctx) {
-                return -1;
-            }
+            fz_catch(gctx) return -1;
             return 0;
         }
 
+        /****************************************************************/
+        // write document to memory
+        /****************************************************************/
+        FITZEXCEPTION(write, !result)
+        %pythonprepend write %{
+            if self.isClosed:
+                raise ValueError("operation illegal for closed doc")%}
+
+        PyObject *write(int garbage=0, int clean=0, int deflate=0,
+                        int ascii=0, int expand=0, int linear=0)
+        {
+            unsigned char *c;
+            PyObject *r;
+            size_t len;
+            struct fz_buffer_s *res = NULL;
+            fz_output *out;
+            int errors = 0;
+            pdf_write_options opts;
+            opts.do_incremental = 0;
+            opts.do_ascii = ascii;
+            opts.do_compress = deflate;
+            opts.do_compress_images = deflate;
+            opts.do_compress_fonts = deflate;
+            opts.do_decompress = expand;
+            opts.do_garbage = garbage;
+            opts.do_linear = linear;
+            opts.do_clean = clean;
+            opts.do_pretty = 0;
+            opts.continue_on_error = 0;
+            opts.errors = &errors;
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            fz_try(gctx)
+            {
+                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF");
+                res = fz_new_buffer(gctx, 1024);
+                out = fz_new_output_with_buffer(gctx, res);
+                pdf_write_document(gctx, pdf, out, &opts);
+                len = fz_buffer_storage(gctx, res, &c);
+                r = PyByteArray_FromStringAndSize(c, len);
+            }
+            fz_always(gctx)
+            {
+                if (out) fz_drop_output(gctx, out);
+                if (res) fz_drop_buffer(gctx, res);
+            }
+            fz_catch(gctx) return NULL;
+            return r;
+        }
 
         /**********************************************************************/
         // Insert pages from a source PDF into this PDF.
@@ -315,7 +360,7 @@ struct fz_document_s
         FITZEXCEPTION(insertPDF, result<0)
         %pythonprepend insertPDF %{
             if self.isClosed:
-                raise ValueError("operation illegal for closed / encrypted doc")
+                raise ValueError("operation illegal for closed doc")
             sa = start_at
             if sa < 0:
                 sa = self.pageCount%}
@@ -323,8 +368,7 @@ struct fz_document_s
         %pythonappend insertPDF %{
             if links:
                 self._do_links(docsrc, from_page = from_page, to_page = to_page,
-                               start_at = sa)
-        %}
+                               start_at = sa)%}
 
         %feature("autodoc","insertPDF(PDFsrc, from_page, to_page, start_at, rotate, links) -> int\nInsert page range [from, to] of source PDF, starting as page number start_at.") insertPDF;
 
@@ -354,9 +398,7 @@ struct fz_document_s
                     fz_throw(gctx, FZ_ERROR_GENERIC, "source document not a PDF");
                 merge_range(pdfout, pdfsrc, fp, tp, sa, rotate);
             }
-            fz_catch(gctx){
-                return -1;
-            }
+            fz_catch(gctx) return -1;
             return 0;
         }
 
@@ -925,13 +967,13 @@ struct fz_document_s
         }
 
         /*********************************************************************/
-        // Add or update metadata with provided raw string
+        // Add or update metadata based on provided raw string
         /*********************************************************************/
         FITZEXCEPTION(_setMetadata, result>0)
         CLOSECHECK(_setMetadata, self.isClosed)
         int _setMetadata(char *text)
         {
-            pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
+            pdf_document *pdf = pdf_specifics(gctx, $self);     // pdf of doc
             fz_try(gctx) {
                 if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
             }
@@ -952,7 +994,7 @@ struct fz_document_s
             if (info)
             {
                 info_num = pdf_to_num(gctx, info);    // get xref no of old info
-                pdf_update_object(gctx, pdf, info_num, new_info);  // put new in
+                pdf_update_object(gctx, pdf, info_num, new_info);  // insert new
                 return 0;
             }
             // create new indirect object from /Info object
@@ -1080,7 +1122,7 @@ struct fz_page_s {
         struct fz_annot_s *deleteAnnot(struct fz_annot_s *fannot)
         {
             if (!fannot) return NULL;
-            fz_annot *nextannot = fz_next_annot(gctx, fannot);
+            fz_annot *nextannot = fz_next_annot(gctx, fannot);  // store next
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             if (!page)                 // no PDF, just return next annotation
                 {
@@ -1387,8 +1429,7 @@ struct fz_pixmap_s
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
                 pm = fz_new_pixmap_with_bbox(gctx, cs, bbox, alpha);
-            fz_catch(gctx)
-                return NULL;
+            fz_catch(gctx) return NULL;
             return pm;
         }
 
@@ -1405,8 +1446,7 @@ struct fz_pixmap_s
                 pm->y = 0;
                 fz_convert_pixmap(gctx, pm, spix);
             }
-            fz_catch(gctx)
-                return NULL;
+            fz_catch(gctx) return NULL;
             return pm;
         }
 
@@ -1423,7 +1463,7 @@ struct fz_pixmap_s
                 data = PyByteArray_AsString(samples);
                 size = (size_t) PyByteArray_Size(samples);
             }
-            if (PyBytes_Check(samples)){
+            else if (PyBytes_Check(samples)){
                 data = PyBytes_AsString(samples);
                 size = (size_t) PyBytes_Size(samples);
             }
@@ -1475,24 +1515,21 @@ struct fz_pixmap_s
                 data = PyByteArray_AsString(imagedata);
                 size = (size_t) PyByteArray_Size(imagedata);
             }
-            if (PyBytes_Check(imagedata)){
+            else if (PyBytes_Check(imagedata)){
                 data = PyBytes_AsString(imagedata);
                 size = (size_t) PyBytes_Size(imagedata);
             }
             struct fz_image_s *img = NULL;
             struct fz_pixmap_s *pm = NULL;
-            fz_try(gctx) {
+            fz_try(gctx)
+            {
                 if (size == 0)
                     fz_throw(gctx, FZ_ERROR_GENERIC, "type(imagedata) invalid");
                 img = fz_new_image_from_data(gctx, data, size);
                 pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
-                fz_drop_image(gctx, img);
-                }
-            fz_catch(gctx) {
-                if (img) fz_drop_image(gctx, img);
-                return NULL;
-                }
-
+            }
+            fz_always(gctx) if (img) fz_drop_image(gctx, img);
+            fz_catch(gctx) return NULL;
             return pm;
         }
 
@@ -1505,7 +1542,6 @@ struct fz_pixmap_s
             struct fz_pixmap_s *pix = NULL;
             pdf_obj *ref = NULL;
             pdf_document *pdf = pdf_specifics(gctx, doc);
-
             fz_try(gctx)
             {
                 if (!pdf)
@@ -1517,11 +1553,13 @@ struct fz_pixmap_s
                 img = pdf_load_image(gctx, pdf, ref);
                 pdf_drop_obj(gctx, ref);
                 pix = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
-                fz_drop_image(gctx,img);
+            }
+            fz_always(gctx)
+            {
+                if (img) fz_drop_image(gctx, img);
             }
             fz_catch(gctx)
             {
-                if (img) fz_drop_image(gctx, img);
                 if (pix) fz_drop_pixmap(gctx, pix);
                 if (ref) pdf_drop_obj(gctx, ref);
                 return NULL;
@@ -1596,12 +1634,11 @@ struct fz_pixmap_s
         }
 
         /*********************************************************************/
-        // get colorspace name of pixmap
+        // get colorspace of pixmap
         /*********************************************************************/
         %pythoncode %{@property%}
-        const char *colorspace() {
-            fz_colorspace *cs = fz_pixmap_colorspace(gctx, $self);
-            return fz_colorspace_name(gctx, cs);
+        struct fz_colorspace_s *colorspace() {
+            return fz_pixmap_colorspace(gctx, $self);
         }
 
         /*********************************************************************/
@@ -1639,13 +1676,13 @@ struct fz_pixmap_s
             if not filename.lower().endswith(".png"):
                 raise ValueError("filename must end with '.png'")
         %}
-        int writePNG(char *filename, int savealpha=0)
+        int writePNG(char *filename, int savealpha=-1)
         {
+            if (savealpha >= 0) fz_warn(gctx, "ignoring savealpha");
             fz_try(gctx) {
                 fz_save_pixmap_as_png(gctx, $self, filename);
             }
-            fz_catch(gctx)
-                return 1;
+            fz_catch(gctx) return 1;
             return 0;
         }
 
@@ -1653,20 +1690,28 @@ struct fz_pixmap_s
         /* getPNGData         */
         /**********************/
         FITZEXCEPTION(getPNGData, !result)
-        PyObject *getPNGData(int savealpha=0)
+        PyObject *getPNGData(int savealpha=-1)
         {
             struct fz_buffer_s *res = NULL;
             fz_output *out;
+            unsigned char *c;
+            PyObject *r;
+            size_t len;
+            if (savealpha >= 0) fz_warn(gctx, "ignoring savealpha");
             fz_try(gctx) {
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 fz_write_pixmap_as_png(gctx, out, $self);
-                fz_drop_output(gctx, out);
+                len = fz_buffer_storage(gctx, res, &c);
+                r = PyByteArray_FromStringAndSize(c, len);
+            }
+            fz_always(gctx)
+            {
+                if (out) fz_drop_output(gctx, out);
+                if (res) fz_drop_buffer(gctx, res);
             }
             fz_catch(gctx) return NULL;
-            unsigned char *c;
-            size_t len = fz_buffer_storage(gctx, res, &c);
-            return PyByteArray_FromStringAndSize(c, len);
+            return r;
         }
 
         /************************/
@@ -1682,8 +1727,9 @@ struct fz_pixmap_s
             else:
                 raise TypeError("filename must be a string")
         %}
-        int _writeIMG(char *filename, int format, int savealpha=0)
+        int _writeIMG(char *filename, int format, int savealpha=-1)
         {
+            if (savealpha >= 0) fz_warn(gctx, "ignoring savealpha");
             fz_try(gctx) {
                 switch(format)
                 {
@@ -1772,7 +1818,7 @@ struct fz_colorspace_s
 // number of bytes to define color of one pixel
 /*****************************************************************************/
         %pythoncode %{@property%}
-        int nbytes()
+        int n()
         {
             return fz_colorspace_n(gctx, $self);
         }
