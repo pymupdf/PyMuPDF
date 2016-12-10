@@ -1112,3 +1112,137 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
             p_txt = p_txt[:-2] + p_annots + ">>"
             doc1._updateObject(xref_dst[i], p_txt)
     return
+
+#-------------------------------------------------------------------------------
+# Annot method
+#-------------------------------------------------------------------------------
+def updateImage(annot):
+    '''Update border and color information in the appearance dictionary /AP.'''
+    
+    def modWidth(tab,wtab):
+        if wtab[1] != b"w": return
+        for i in range(len(tab)):
+            if tab[i] == b"w":
+                tab[i-1] = wtab[0]
+        return
+    
+    def modCommon(tab, ctab):
+        if not ctab[4]: return tab
+        ntab = []
+        in_text_block = False
+        for i in range(len(tab)):
+            if tab[i] == b"BT":
+                ntab.append(tab[i])
+                in_text_block = True
+                continue
+            if in_text_block:
+                ntab.append(tab[i])
+                if tab[i] == b"ET":
+                    in_text_block = False
+                continue
+            if tab[i] not in [b"G", b"RG", b"K"]:
+                ntab.append(tab[i])
+                continue
+            if tab[i] == b"G":
+                del ntab[-1]
+                ntab.extend(ctab)
+            elif tab[i] == b"RG":
+                del ntab[len(ntab)-3:]
+                ntab.extend(ctab)
+            else:
+                del ntab[len(ntab)-4:]
+                ntab.extend(ctab)
+        return ntab
+    
+    def modFill(tab, ftab):
+        if not ftab[4]: return tab
+        ntab = []
+        in_text_block = False
+        for i in range(len(tab)):
+            if tab[i] == b"BT":
+                ntab.append(tab[i])
+                in_text_block = True
+                continue
+            if in_text_block:
+                ntab.append(tab[i])
+                if tab[i] == b"ET":
+                    in_text_block = False
+                continue
+            if tab[i] not in [b"g", b"rg", b"k"]:
+                ntab.append(tab[i])
+                continue
+            if tab[i] == b"g":
+                del ntab[-1]
+                ntab.extend(ftab)
+            elif tab[i] == b"rg":
+                del ntab[len(ntab)-3:]
+                ntab.extend(ftab)
+            else:
+                del ntab[len(ntab)-4:]
+                ntab.extend(ftab)
+        return ntab
+    
+    ap = annot._getAP() # get appearance text
+    aptab = ap.split() # decompose into a list
+        
+    if aptab.count(b"Do") > 0:
+        raise ValueError("XObject invocation is not supported")
+    
+    # prepare width, common color and fill color lists
+    # fill color
+    c = annot.colors.get("fill")
+    ftab = [b""]*5
+    if c and len(c) > 0:
+        l = len(c)
+        if l == 4:
+            ftab[4] = b"k"
+            for i in range(4):
+                ftab[i] = str(round(c[i],4)).encode("utf-8")
+        elif l == 3:
+            ftab[4] = b"rg"
+            for i in range(1, 4):
+                ftab[i] = str(round(c[i-1],4)).encode("utf-8")
+        elif l == 1:
+            ftab[4] = b"g"
+            ftab[3] = str(round(c[0],4)).encode("utf-8")
+
+    # common color
+    c = annot.colors.get("common")
+    ctab = [b""]*5
+    if c and len(c) > 0:
+        l = len(c)
+        if l == 4:
+            ctab[4] = b"K"
+            for i in range(4):
+                ctab[i] = str(round(c[i],4)).encode("utf-8")
+        elif l == 3:
+            ctab[4] = b"RG"
+            for i in range(1, 4):
+                ctab[i] = str(round(c[i-1],4)).encode("utf-8")
+        elif l == 1:
+            ctab[4] = b"G"
+            ctab[3] = str(round(c[0],4)).encode("utf-8")
+
+    # border width
+    c = annot.border.get("width")
+    wtab = [b"", b""]
+    if c:
+        wtab[0] = str(round(c,4)).encode("utf-8")
+        wtab[1] = b"w"
+    
+    outlist = ftab + ctab + wtab # this starts the output appearance
+    if aptab[0] == b"q":
+        outlist = [b"q"] + outlist
+        aptab = aptab[1:]
+    # now change every color spec
+    modWidth(aptab, wtab)
+    aptab = modFill(aptab, ftab)
+    aptab = modCommon(aptab, ctab)
+    
+    aptab = outlist + aptab
+    
+    ap = b" ".join(aptab)
+    if ftab[4]:         # fill colors provided: change 's' to 'b'
+        ap = ap.replace(b" s", b" b")
+    annot._setAP(ap)
+    return

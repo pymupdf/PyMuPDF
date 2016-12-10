@@ -22,6 +22,7 @@ This class supports accessing such annotations - not only for PDF files, but for
 :meth:`Annot.setFlags`      PDF only: changes the flags of an annotation
 :meth:`Annot.setRect`       PDF only: changes the rectangle of an annotation
 :meth:`Annot.setColors`     PDF only: changes the colors of an annotation
+:meth:`Annot.updateImage`   PDF only: applies border and color values to shown image
 :attr:`Annot.border`        PDF only: border details
 :attr:`Annot.colors`        PDF only: border / background and fill colors
 :attr:`Annot.flags`         PDF only: annotation flags
@@ -100,9 +101,13 @@ This class supports accessing such annotations - not only for PDF files, but for
 
       Changes the colors associated with the annotation.
 
-      :param `d`: a dictionary containing color specifications. For accepted dictionary keys and values see below. The most practical way should be to first make a copy of the ``colors`` property and then modify this as required.
+      :param `d`: a dictionary containing color specifications. For accepted dictionary keys and values see below. The most practical way should be to first make a copy of the ``colors`` property and then modify this dictionary as required. 
 
       :type `d`: dict
+
+   .. method:: updateImage()
+
+      Attempts to modify the displayed graphical image such that it coincides with the values currently contained in the ``border`` and ``colors`` properties. This is achieved by modifying the contents stream of the associated appearance object. If the stream contains unsupported commands, a ``ValueError`` exception is raised.
 
    .. attribute:: rect
 
@@ -161,7 +166,7 @@ This class supports accessing such annotations - not only for PDF files, but for
 
    .. attribute:: colors
 
-      Meaningful for PDF only: A dictionary of two lists of floats in range ``0 <= float <= 1`` specifying the common (``common``) and the interior (``fill``) colors. The common color is used for borders, and in some cases also for backgrounds. The fill color is used for the interior of objects like line ends, circles and squares. The lengths of the lists determine the colorspaces used: 1 = GRAY, 3 = RGB, 4 = CMYK. So ``[1.0, 0.0, 0.0]`` stands for RGB and color ``red``. Both lists can be ``[]`` if not specified. The dictionary will be empty ``{}`` if no PDF.
+      Meaningful for PDF only: A dictionary of two lists of floats in range ``0 <= float <= 1`` specifying the common (``common``) and the interior (``fill``) colors. The common color is used for borders, and in some cases also for backgrounds. The fill color is used for the interior of objects like line ends, circles and squares. The lengths of the lists determine the colorspaces used: 1 = GRAY, 3 = RGB, 4 = CMYK. So ``[1.0, 0.0, 0.0]`` stands for RGB and color ``red``. Both lists can be ``[]`` if not specified. The dictionary will be empty ``{}`` if no PDF. The value of each float stands for the "intensity" of the represented color byte, meaning 1 corresonds to 255, 0.5 to 128, 0.25 to 64 and so forth.
 
       :rtype: dict
 
@@ -182,4 +187,3 @@ This class supports accessing such annotations - not only for PDF files, but for
       * ``vradius`` - vertical coner radius.  Zero means square (un-rounded) corners.
 
       :rtype: dict
-

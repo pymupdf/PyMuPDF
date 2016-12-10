@@ -97,10 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="lowlevel.html">Low Level Functions and Classes</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
-</ul>
-</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
 <li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
 <li class="toctree-l2"><a class="reference internal" href="textpage.html">TextPage</a></li>
@@ -189,7 +186,10 @@
 <tr class="row-even"><td><a class="reference internal" href="#Document._getXrefLength" title="Document._getXrefLength"><code class="xref py py-meth docutils literal"><span class="pre">Document._getXrefLength()</span></code></a></td>
 <td>returns the length of the PDF XREF</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Document._getOLRootNumber" title="Document._getOLRootNumber"><code class="xref py py-meth docutils literal"><span class="pre">Document._getOLRootNumber()</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Document._getXrefStream" title="Document._getXrefStream"><code class="xref py py-meth docutils literal"><span class="pre">Document._getXrefStream()</span></code></a></td>
+<td>returns the the content of the stream</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Document._getOLRootNumber" title="Document._getOLRootNumber"><code class="xref py py-meth docutils literal"><span class="pre">Document._getOLRootNumber()</span></code></a></td>
 <td>returns / creates the outline root XREF</td>
 </tr>
 </tbody>
@@ -238,7 +238,7 @@
 <dl class="method">
 <dt id="Document._getObjectString">
 <code class="descclassname">Document.</code><code class="descname">_getObjectString</code><span class="sig-paren">(</span><em>xref</em><span class="sig-paren">)</span><a class="headerlink" href="#Document._getObjectString" title="Permalink to this definition">¶</a></dt>
-<dd><p>PDF documents only: Returns the string representing an arbitrary object.</p>
+<dd><p>PDF documents only: Returns the string representing an arbitrary object. For stream objects, only the non-stream part is returned. To get the stream content, use <code class="docutils literal"><span class="pre">_getXrefStream()</span></code> (see below).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -310,6 +310,24 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="Document._getXrefStream">
+<code class="descclassname">Document.</code><code class="descname">_getXrefStream</code><span class="sig-paren">(</span><em>xref</em><span class="sig-paren">)</span><a class="headerlink" href="#Document._getXrefStream" title="Permalink to this definition">¶</a></dt>
+<dd><p>PDF documents only: Returns the content stream of the object referenced by <code class="docutils literal"><span class="pre">xref</span></code>. If the object has / is no stream, an exception is raised.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>xref</strong> (<em>int.</em>) -- XREF number.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str or bytes</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the (decompressed) stream of the object. This is a string in Python 2 and a <code class="docutils literal"><span class="pre">bytes</span></code> object in Python 3.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="Document._getOLRootNumber">
 <code class="descclassname">Document.</code><code class="descname">_getOLRootNumber</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Document._getOLRootNumber" title="Permalink to this definition">¶</a></dt>
 <dd><p>PDF documents only:  Returns the XREF number of the /Outlines root object (this is <strong>not</strong> the first outline entry!). If this object does not exist, a new one will be created.</p>
@@ -326,41 +344,6 @@
 </dd></dl>
 
 </div></blockquote>
-<div class="section" id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
-<p>This demonstrates how some of the above functions could be used to update a page's rotation:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fitz</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;PyMuPDF.pdf&quot;</span><span class="p">)</span> <span class="c1"># open document</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pix</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getPagePixmap</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="c1"># get pixmap of page 6</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pix</span><span class="o">.</span><span class="n">w</span> <span class="c1"># show its dimensions: 596 x 842</span>
-<span class="go">596</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pix</span><span class="o">.</span><span class="n">h</span>
-<span class="go">842</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pix</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># delete pixmap</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">_getPageObjNumber</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="c1"># get XREF of that page</span>
-<span class="go">[213, 0]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">p_str</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">_getObjectString</span><span class="p">(</span><span class="mi">213</span><span class="p">)</span> <span class="c1"># get string of its object</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">p_str</span>
-<span class="go">&#39;&lt;&lt;/Type/Page/Contents 214 0 R/Resources 212 0 R/MediaBox[0 0 595.276 841.89]</span>
-<span class="go">/Parent 1257 0 R/Annots[209 0 R 210 0 R]&gt;&gt;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">p_str_new</span> <span class="o">=</span> <span class="n">p_str</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/Rotate 90&gt;&gt;&quot;</span> <span class="c1"># insert a rotation</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">p_str_new</span>
-<span class="go">&#39;&lt;&lt;/Type/Page/Contents 214 0 R/Resources 212 0 R/MediaBox[0 0 595.276 841.89]</span>
-<span class="go">/Parent 1257 0 R/Annots[209 0 R 210 0 R]/Rotate 90&gt;&gt;&#39;</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">_updateObject</span><span class="p">(</span><span class="mi">213</span><span class="p">,</span> <span class="n">p_str_new</span><span class="p">)</span> <span class="c1"># update the page object</span>
-<span class="go">0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span><span class="o">.</span><span class="n">_getObjectString</span><span class="p">(</span><span class="mi">213</span><span class="p">)</span> <span class="c1"># get string again to demo the effect</span>
-<span class="go">&#39;&lt;&lt;/Type/Page/Contents 214 0 R/Resources 212 0 R/MediaBox[0 0 595.276 841.89]</span>
-<span class="go">/Parent 1257 0 R/Annots[209 0 R 210 0 R]/Rotate 90&gt;&gt;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pix</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">getPagePixmap</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="c1"># get pixmap of this page again</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pix</span><span class="o">.</span><span class="n">w</span> <span class="c1"># dimension is now indeed 842 x 596</span>
-<span class="go">842</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pix</span><span class="o">.</span><span class="n">h</span>
-<span class="go">596</span>
-</pre></div>
-</div>
-</div>
 </div>
 
 
@@ -383,7 +366,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 04. Dec 2016.
+      Last updated on 09. Dec 2016.
 
     </p>
   </div>

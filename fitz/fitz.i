@@ -15,12 +15,28 @@
 //=============================================================================
 
 //=============================================================================
-// SWIG macro: check that a document is open and / or not decrypted
+// SWIG macro: check that a document is not closed
 //=============================================================================
 %define CLOSECHECK(meth, cond)
 %pythonprepend meth
 %{if cond:
     raise ValueError("operation illegal for closed doc")%}
+%enddef
+//=============================================================================
+
+//=============================================================================
+// SWIG macro: short for throwing messages
+//=============================================================================
+%define THROWMSG(msg)
+fz_throw(gctx, FZ_ERROR_GENERIC, msg)
+%enddef
+//=============================================================================
+
+//=============================================================================
+// SWIG macro: check for document type = PDF
+//=============================================================================
+%define ENSURE_PDF(cond)
+if (cond) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 %enddef
 //=============================================================================
 
@@ -32,6 +48,7 @@
 #define SWIG_PYTHON_2_UNICODE
 #include <fitz.h>
 #include <pdf.h>
+#include <../../mupdf/thirdparty/zlib/zlib.h>
 
 void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page);
 void fz_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox);
@@ -288,15 +305,15 @@ struct fz_document_s
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx)
                 {
-                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF");
+                ENSURE_PDF(!pdf);
                 if ((incremental) && (garbage))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "incremental excludes garbage");
+                    THROWMSG("incremental excludes garbage");
                 if ((incremental) && (pdf->repair_attempted))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "file repaired - save to new");
+                    THROWMSG("repaired file - save to new");
                 if ((incremental) && (fz_needs_password(gctx, $self)))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "file encrypted - save to new");
+                    THROWMSG("encrypted file - save to new");
                 if ((incremental) && (linear))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "incremental excludes linear");
+                    THROWMSG("incremental excludes linear");
                 pdf_save_document(gctx, pdf, filename, &opts);
                 }
             fz_catch(gctx) return -1;
@@ -336,7 +353,7 @@ struct fz_document_s
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx)
             {
-                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF");
+                ENSURE_PDF(!pdf);
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 pdf_write_document(gctx, pdf, out, &opts);
@@ -392,10 +409,8 @@ struct fz_document_s
             if (sa > outCount) sa = outCount;
             fz_try(gctx)
             {
-                if (pdfout == NULL)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "target document not a PDF");
-                if (pdfsrc == NULL)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "source document not a PDF");
+                if (!pdfout) THROWMSG("target not a PDF");
+                if (!pdfsrc) THROWMSG("source not a PDF");
                 merge_range(pdfout, pdfsrc, fp, tp, sa, rotate);
             }
             fz_catch(gctx) return -1;
@@ -412,11 +427,10 @@ struct fz_document_s
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx)
             {
-                if (pdf == NULL)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a pdf document");
+                ENSURE_PDF(!pdf);
                 int pageCount = fz_count_pages(gctx, $self);
                 if ((pno < 0) | (pno >= pageCount))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range");
+                    THROWMSG("page number out of range");
                 pdf_delete_page(gctx, pdf, pno);
             }
             fz_catch(gctx) {
@@ -435,15 +449,14 @@ struct fz_document_s
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx)
             {
-                if (pdf == NULL)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                ENSURE_PDF(!pdf);
                 int pageCount = fz_count_pages(gctx, $self);
                 int f = from_page;
                 int t = to_page;
                 if (f < 0) f = pageCount - 1;
                 if (t < 0) t = pageCount - 1;
                 if ((t >= pageCount) | (f > t))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "invalid page range");
+                    THROWMSG("invalid page range");
                 int i = t + 1 - f;
                 while (i > 0)
                 {
@@ -467,11 +480,10 @@ struct fz_document_s
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx)
             {
-                if (pdf == NULL)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                ENSURE_PDF(!pdf);
                 int pageCount = fz_count_pages(gctx, $self);
                 if ((pno < 0) | (pno >= pageCount))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "source page out of range");
+                    THROWMSG("source page out of range");
                 pdf_obj *page = pdf_lookup_page_obj(gctx, pdf, pno);
                 pdf_insert_page(gctx, pdf, to, page);
             }
@@ -491,15 +503,14 @@ struct fz_document_s
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx)
             {
-                if (pdf == NULL)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                ENSURE_PDF(!pdf);
                 int pageCount = fz_count_pages(gctx, $self);
                 if ((pno < 0) | (pno >= pageCount))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "source page out of range");
+                    THROWMSG("source page out of range");
                 int t = to;
                 if (t < 0) t = pageCount;
                 if ((t == pno) | (pno == t - 1))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "source and target too close");
+                    THROWMSG("source and target too close");
                 pdf_obj *page = pdf_lookup_page_obj(gctx, pdf, pno);
                 pdf_insert_page(gctx, pdf, t, page);
                 if (pno < t)
@@ -533,13 +544,12 @@ struct fz_document_s
             int argc;
             fz_try(gctx)
             {
-                if (pdf == NULL)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a pdf document");
+                ENSURE_PDF(!pdf);
                 if (!PySequence_Check(pyliste))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "expected a sequence");
+                    THROWMSG("expected a sequence");
                 argc = (int) PySequence_Size(pyliste);
                 if (argc < 1)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "sequence is empty");
+                    THROWMSG("sequence is empty");
             }
             fz_catch(gctx) return -1;
 
@@ -557,10 +567,10 @@ struct fz_document_s
                     {
                         liste[i] = (int) PyInt_AsLong(o);
                         if ((liste[i] < 0) | (liste[i] >= pageCount))
-                            fz_throw(gctx, FZ_ERROR_GENERIC, "page numbers not in range");
+                            THROWMSG("page numbers not in range");
                     }
                     else
-                        fz_throw(gctx, FZ_ERROR_GENERIC, "page numbers must be integers");
+                        THROWMSG("page numbers must be integers");
                 }
             }
             fz_catch(gctx)
@@ -639,9 +649,8 @@ struct fz_document_s
             fz_try(gctx)
             {
                 if ((pno < 0) | (pno >= pageCount))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range");
-                if (!pdf)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                    THROWMSG("page number out of range");
+                ENSURE_PDF(!pdf);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -672,9 +681,8 @@ struct fz_document_s
             fz_try(gctx)
             {
                 if ((pno < 0) | (pno >= pageCount))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range");
-                if (!pdf)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                    THROWMSG("page number out of range");
+                ENSURE_PDF(!pdf);
             }
             fz_catch(gctx)
             {
@@ -761,9 +769,8 @@ struct fz_document_s
             fz_try(gctx)
             {
                 if ((pno < 0) | (pno >= pageCount))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range");
-                if (!pdf)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                    THROWMSG("page number out of range");
+                ENSURE_PDF(!pdf);
             }
             fz_catch(gctx) return NULL;
 
@@ -857,15 +864,14 @@ struct fz_document_s
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
             fz_try(gctx) {
-                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                ENSURE_PDF(!pdf);
             }
-            fz_catch(gctx) {
-                return -2;
-            }
+            fz_catch(gctx) return -2;
+            
             pdf_obj *root, *olroot, *ind_obj;
-            /* get main root */
+            // get main root
             root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root);
-            /* get outline root */
+            // get outline root
             olroot = pdf_dict_get(gctx, root, PDF_NAME_Outlines);
             if (olroot == NULL)
             {
@@ -888,7 +894,7 @@ struct fz_document_s
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
             fz_try(gctx) {
-                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                ENSURE_PDF(!pdf);
             }
             fz_catch(gctx) {
                 return -2;
@@ -903,10 +909,8 @@ struct fz_document_s
         CLOSECHECK(_getXrefLength, self.isClosed)
         int _getXrefLength()
         {
-            pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
-            fz_try(gctx) {
-                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
-            }
+            pdf_document *pdf = pdf_specifics(gctx, $self); // get pdf doc
+            fz_try(gctx) ENSURE_PDF(!pdf);
             fz_catch(gctx) return -2;
             return pdf_xref_len(gctx, pdf);
         }
@@ -924,10 +928,10 @@ struct fz_document_s
             fz_output *out;
             fz_try(gctx)
             {
-                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                ENSURE_PDF(!pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if ((xnum < 1) | (xnum >= xreflen))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "xref number out of range");
+                    THROWMSG("xnum out of range");
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 obj = pdf_load_object(gctx, pdf, xnum);
@@ -943,6 +947,32 @@ struct fz_document_s
         }
 
         /*********************************************************************/
+        // Get stream of an object by its xref
+        /*********************************************************************/
+        FITZEXCEPTION(_getXrefStream, !result)
+        CLOSECHECK(_getXrefStream, self.isClosed)
+        PyObject *_getXrefStream(int xnum)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            PyObject *r;
+            size_t len;
+            unsigned char *c;
+            struct fz_buffer_s *res;
+            fz_try(gctx)
+            {
+                ENSURE_PDF(!pdf);
+                int xreflen = pdf_xref_len(gctx, pdf);
+                if ((xnum < 1) | (xnum >= xreflen))
+                    THROWMSG("xnum out of range");
+                res = pdf_load_stream_number(gctx, pdf, xnum);
+                len = fz_buffer_storage(gctx, res, &c);
+                r = PyBytes_FromStringAndSize(c, len);
+            }
+            fz_catch(gctx) return NULL;
+            return r;
+        }
+
+        /*********************************************************************/
         // Update an Xref Number with a new Object given as a string
         /*********************************************************************/
         FITZEXCEPTION(_updateObject, result!=0)
@@ -953,11 +983,10 @@ struct fz_document_s
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
             fz_try(gctx)
             {
-                if (!pdf)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                ENSURE_PDF(!pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if ((xref < 1) | (xref >= xreflen))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "xref number out of range");
+                    THROWMSG("xref out of range");
                 /* create new object based on passed-in string          */
                 new_obj = pdf_new_obj_from_str(gctx, pdf, text);
                 pdf_update_object(gctx, pdf, xref, new_obj);
@@ -975,7 +1004,7 @@ struct fz_document_s
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);     // pdf of doc
             fz_try(gctx) {
-                if (!pdf) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                ENSURE_PDF(!pdf);
             }
             fz_catch(gctx) return 1;
             
@@ -1099,6 +1128,7 @@ struct fz_page_s {
         // firstAnnot
         /***********************************************************/
         CLOSECHECK(firstAnnot, self.parent.isClosed)
+        %feature("autodoc","firstAnnot points to first annot on page") firstAnnot;
         %pythonappend firstAnnot
 %{if val:
     val.thisown = True
@@ -1115,6 +1145,7 @@ struct fz_page_s {
         // deleteAnnot() - delete annotation and return the next one
         /*********************************************************************/
         CLOSECHECK(deleteAnnot, self.parent.isClosed)
+        %feature("autodoc","deleteAnnot deletes annot and returns next one") deleteAnnot;
         %pythonappend deleteAnnot
 %{if val:
     val.thisown = True
@@ -1136,42 +1167,6 @@ struct fz_page_s {
         }
 
         /*********************************************************************/
-        // createAnnot() - create new annotation and return it
-        /*********************************************************************/
-        FITZEXCEPTION(createAnnot, !result)
-        CLOSECHECK(createAnnot, self.parent.isClosed)
-        struct fz_annot_s *createAnnot(int type, struct fz_rect_s *rect, float width = 1)
-        {
-            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            struct pdf_annot_s *annot;
-            fz_annot *fannot;
-            fz_display_list *dl;
-            fz_try(gctx)
-                {
-                if (!page) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF");
-                annot = pdf_create_annot(gctx, page, type);
-                fannot = &annot->super;
-                fz_rect *mbox = (fz_rect *)malloc(sizeof(fz_rect));
-                fz_bound_page(gctx, $self, mbox);
-                pdf_set_annot_border(gctx, annot, width);
-                pdf_set_annot_rect(gctx, annot, rect);
-                float c[4];
-                c[0] = c[1] = c[2] = c[3] = 0.0;      // black
-                pdf_set_annot_color(gctx, annot, 3, c);
-                c[0] = c[1] = c[2] = c[3] = 1.0;      // white
-                pdf_set_annot_interior_color(gctx, annot, 3, c);
-                //dl = fz_new_display_list_from_page_contents(gctx, $self);
-                dl = fz_new_display_list_from_annot(gctx, &annot->super);
-                pdf_set_annot_appearance(gctx, page->doc, annot, rect, dl);
-                fz_drop_display_list(gctx, dl);
-                pdf_update_appearance(gctx, page->doc, annot);
-                free(mbox);
-                }
-            fz_catch(gctx) return NULL;
-            return fannot;
-        }
-
-        /*********************************************************************/
         // rotation - return page rotation
         /*********************************************************************/
         CLOSECHECK(rotation, self.parent.isClosed)
@@ -1189,6 +1184,7 @@ struct fz_page_s {
         // setRotation() - set page rotation
         /*********************************************************************/
         CLOSECHECK(setRotation, self.parent.isClosed)
+        %feature("autodoc","setRotation sets page rotation to 'rot'") setRotation;
         int setRotation(int rot)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
@@ -1469,9 +1465,9 @@ struct fz_pixmap_s
             }
             fz_try(gctx) {
                 if (size == 0)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "type(samples) invalid");
+                    THROWMSG("type(samples) invalid");
                 if (stride * h != size) {
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "len(samples) invalid");
+                    THROWMSG("len(samples) invalid");
                     }
                 }
             fz_catch(gctx) return NULL;
@@ -1511,11 +1507,13 @@ struct fz_pixmap_s
             size_t size;
             size = 0;
             char *data;
-            if (PyByteArray_Check(imagedata)){
+            if (PyByteArray_Check(imagedata))
+            {
                 data = PyByteArray_AsString(imagedata);
                 size = (size_t) PyByteArray_Size(imagedata);
             }
-            else if (PyBytes_Check(imagedata)){
+            else if (PyBytes_Check(imagedata))
+            {
                 data = PyBytes_AsString(imagedata);
                 size = (size_t) PyBytes_Size(imagedata);
             }
@@ -1524,7 +1522,7 @@ struct fz_pixmap_s
             fz_try(gctx)
             {
                 if (size == 0)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "type(imagedata) invalid");
+                    THROWMSG("type(imagedata) invalid");
                 img = fz_new_image_from_data(gctx, data, size);
                 pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
             }
@@ -1544,11 +1542,10 @@ struct fz_pixmap_s
             pdf_document *pdf = pdf_specifics(gctx, doc);
             fz_try(gctx)
             {
-                if (!pdf)
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF document");
+                ENSURE_PDF(!pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if ((xref < 1) | (xref >= xreflen))
-                    fz_throw(gctx, FZ_ERROR_GENERIC, "xref number out of range");
+                    THROWMSG("xref out of range");
                 ref = pdf_new_indirect(gctx, pdf, xref, 0);
                 img = pdf_load_image(gctx, pdf, ref);
                 pdf_drop_obj(gctx, ref);
@@ -1781,7 +1778,7 @@ struct fz_pixmap_s
                 return self.size
 
             def __repr__(self):
-                return "fitz.Pixmap(%s, %s, %s)" % (self.colorspace, self.irect, self.alpha)%}
+                return "fitz.Pixmap(%s, %s, %s)" % (self.colorspace.name, self.irect, self.alpha)%}
     }
 };
 
@@ -1827,7 +1824,7 @@ struct fz_colorspace_s
 // name of colorspace
 /*****************************************************************************/
         %pythoncode %{@property%}
-        char *name()
+        const char *name()
         {
             return fz_colorspace_name(gctx, $self);
         }
@@ -2241,6 +2238,7 @@ struct fz_annot_s
         // annotation rectangle
         /**********************************************************************/
         CLOSECHECK(rect, self.parent.parent.isClosed)
+        %feature("autodoc","rect: rectangle containing the annot") rect;
         %pythoncode %{@property%}
         struct fz_rect_s *rect()
         {
@@ -2249,9 +2247,69 @@ struct fz_annot_s
         }
 
         /**********************************************************************/
+        // annotation get appearance stream source
+        /**********************************************************************/
+        FITZEXCEPTION(_getAP, !result)
+        %feature("autodoc","_getAP: provides operator source of the /AP") _getAP;
+        PyObject *_getAP()
+        {
+            PyObject *r=NULL;
+            size_t len;
+            unsigned char *c;
+            struct fz_buffer_s *res;
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
+            fz_try(gctx)
+            {
+                ENSURE_PDF(!annot);
+                if (!annot->ap) THROWMSG("annot has no /AP");
+                res = pdf_load_stream(gctx, annot->ap->obj);
+                len = fz_buffer_storage(gctx, res, &c);
+                r = PyBytes_FromStringAndSize(c, (Py_ssize_t) len);
+            }
+            fz_catch(gctx) return NULL;
+            return r;
+        }
+
+        /**********************************************************************/
+        // annotation update appearance stream source
+        /**********************************************************************/
+        FITZEXCEPTION(_setAP, result!=0)
+        %feature("autodoc","_setAP: updates operator source of the /AP") _setAP;
+        int _setAP(PyObject *ap)
+        {
+            Py_ssize_t len = 0;
+            char *c = NULL;
+            if (PyByteArray_Check(ap))
+            {
+                c = PyByteArray_AsString(ap);
+                len = PyByteArray_Size(ap);
+            }
+            else if (PyBytes_Check(ap))
+            {
+                c = PyBytes_AsString(ap);
+                len = PyBytes_Size(ap);
+            }
+            struct fz_buffer_s *res;
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
+            fz_try(gctx)
+            {
+                ENSURE_PDF(!annot);
+                if (!annot->ap) THROWMSG("annot has no /AP");
+                if (!c) THROWMSG("type(ap) invalid");
+                pdf_dict_put(gctx, annot->ap->obj, PDF_NAME_Filter,
+                                                   PDF_NAME_FlateDecode);
+                res = deflatebuf(gctx, c, (size_t) len);
+                pdf_update_stream(gctx, annot->page->doc, annot->ap->obj, res, 1);
+            }
+            fz_catch(gctx) return -1;
+            return 0;
+        }
+
+        /**********************************************************************/
         // annotation set rectangle
         /**********************************************************************/
         CLOSECHECK(setRect, self.parent.parent.isClosed)
+        %feature("autodoc","setRect: changes the annot's rectangle") setRect;
         void setRect(struct fz_rect_s *r)
         {
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
@@ -2262,6 +2320,7 @@ struct fz_annot_s
         // annotation vertices (for "Line", "Polgon", "Ink", etc.
         /**********************************************************************/
         CLOSECHECK(vertices, self.parent.parent.isClosed)
+        %feature("autodoc","vertices: point coordinates for line-oriented annots") vertices;
         %pythoncode %{@property%}
         PyObject *vertices()
         {
@@ -2307,6 +2366,7 @@ struct fz_annot_s
         // annotation colors
         /**********************************************************************/
         CLOSECHECK(colors, self.parent.parent.isClosed)
+        %feature("autodoc","colors: dictionary of the annot's colors") colors;
         %pythoncode %{@property%}
         PyObject *colors()
         {
@@ -2353,6 +2413,7 @@ struct fz_annot_s
         // annotation set colors
         /**********************************************************************/
         CLOSECHECK(setColors, self.parent.parent.isClosed)
+        %feature("autodoc","setColors(dict)\nChanges the 'common' and 'fill' colors of an annotation. Both values must be lists of up to 4 floats.") setColors;
         void setColors(PyObject *colors)
         {
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
@@ -2380,9 +2441,8 @@ struct fz_annot_s
                     col[i] = (float) PyFloat_AsDouble(PySequence_GetItem(icol, i));
                 pdf_set_annot_interior_color(gctx, annot, n, col);
                 }
-            pdf_dict_put_drop(gctx, annot->obj, PDF_NAME_BM, pdf_new_name(gctx, annot->page->doc, "Multiply"));
             annot->changed = 1;
-            pdf_update_annot(gctx, annot);
+            return;
         }
 
         /**********************************************************************/
@@ -2529,10 +2589,9 @@ struct fz_annot_s
             Py_ssize_t i;
             fz_try(gctx)
             {
-                if (!annot)
-                    fz_throw(gctx, FZ_ERROR_GENERIC,"not a PDF");
+                ENSURE_PDF(!annot);
                 if (!PyDict_Check(info))
-                    fz_throw(gctx, FZ_ERROR_GENERIC,"info is not a Python dict");
+                    THROWMSG("info not a Python dict");
 
                 // contents
                 value = PyDict_GetItemString(info, "content");
@@ -2689,7 +2748,7 @@ struct fz_annot_s
             if (!annot) return;
             pdf_set_annot_border(gctx, annot, width);
             annot->changed = 1;
-            pdf_update_appearance(gctx, annot->page->doc, annot);
+            return;
         }
 
         /**********************************************************************/
@@ -2762,6 +2821,7 @@ struct fz_annot_s
             }
             return pix;
         }
+        
     }
 };
 %clearnodefaultctor;

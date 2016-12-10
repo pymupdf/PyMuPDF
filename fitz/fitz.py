@@ -100,7 +100,7 @@ except __builtin__.Exception:
 
 VersionFitz = "1.10a"
 VersionBind = '1.10.0'
-VersionDate = '2016-12-04 13:26:13'
+VersionDate = '2016-12-10 12:17:29'
 
 LINK_NONE   = 0
 LINK_GOTO   = 1
@@ -509,6 +509,14 @@ class Document(_object):
         return _fitz.Document__getObjectString(self, xnum)
 
 
+    def _getXrefStream(self, xnum):
+        """_getXrefStream(Document self, int xnum) -> PyObject *"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document__getXrefStream(self, xnum)
+
+
     def _updateObject(self, xref, text):
         """_updateObject(Document self, int xref, char * text) -> int"""
         if self.isClosed:
@@ -608,7 +616,7 @@ class Page(_object):
     @property
 
     def firstAnnot(self):
-        """firstAnnot(Page self) -> Annot"""
+        """firstAnnot points to first annot on page"""
         if self.parent.isClosed:
             raise ValueError("operation illegal for closed doc")
 
@@ -621,7 +629,7 @@ class Page(_object):
 
 
     def deleteAnnot(self, fannot):
-        """deleteAnnot(Page self, Annot fannot) -> Annot"""
+        """deleteAnnot deletes annot and returns next one"""
         if self.parent.isClosed:
             raise ValueError("operation illegal for closed doc")
 
@@ -631,14 +639,6 @@ class Page(_object):
             val.parent = self # owning page object
 
         return val
-
-
-    def createAnnot(self, type, rect, width=1):
-        """createAnnot(Page self, int type, Rect rect, float width=1) -> Annot"""
-        if self.parent.isClosed:
-            raise ValueError("operation illegal for closed doc")
-
-        return _fitz.Page_createAnnot(self, type, rect, width)
 
     @property
 
@@ -651,7 +651,7 @@ class Page(_object):
 
 
     def setRotation(self, rot):
-        """setRotation(Page self, int rot) -> int"""
+        """setRotation sets page rotation to 'rot'"""
         if self.parent.isClosed:
             raise ValueError("operation illegal for closed doc")
 
@@ -1021,7 +1021,7 @@ class Pixmap(_object):
         return self.size
 
     def __repr__(self):
-        return "fitz.Pixmap(%s, %s, %s)" % (self.colorspace, self.irect, self.alpha)
+        return "fitz.Pixmap(%s, %s, %s)" % (self.colorspace.name, self.irect, self.alpha)
 Pixmap_swigregister = _fitz.Pixmap_swigregister
 Pixmap_swigregister(Pixmap)
 
@@ -1053,7 +1053,7 @@ class Colorspace(_object):
     @property
 
     def name(self):
-        """name(Colorspace self) -> char *"""
+        """name(Colorspace self) -> char const *"""
         return _fitz.Colorspace_name(self)
 
     __swig_destroy__ = _fitz.delete_Colorspace
@@ -1387,15 +1387,25 @@ class Annot(_object):
     @property
 
     def rect(self):
-        """rect(Annot self) -> Rect"""
+        """rect: rectangle containing the annot"""
         if self.parent.parent.isClosed:
             raise ValueError("operation illegal for closed doc")
 
         return _fitz.Annot_rect(self)
 
 
+    def _getAP(self):
+        """_getAP: provides operator source of the /AP"""
+        return _fitz.Annot__getAP(self)
+
+
+    def _setAP(self, ap):
+        """_setAP: updates operator source of the /AP"""
+        return _fitz.Annot__setAP(self, ap)
+
+
     def setRect(self, r):
-        """setRect(Annot self, Rect r)"""
+        """setRect: changes the annot's rectangle"""
         if self.parent.parent.isClosed:
             raise ValueError("operation illegal for closed doc")
 
@@ -1404,7 +1414,7 @@ class Annot(_object):
     @property
 
     def vertices(self):
-        """vertices(Annot self) -> PyObject *"""
+        """vertices: point coordinates for line-oriented annots"""
         if self.parent.parent.isClosed:
             raise ValueError("operation illegal for closed doc")
 
@@ -1413,7 +1423,7 @@ class Annot(_object):
     @property
 
     def colors(self):
-        """colors(Annot self) -> PyObject *"""
+        """colors: dictionary of the annot's colors"""
         if self.parent.parent.isClosed:
             raise ValueError("operation illegal for closed doc")
 
@@ -1421,7 +1431,10 @@ class Annot(_object):
 
 
     def setColors(self, colors):
-        """setColors(Annot self, PyObject * colors)"""
+        """
+        setColors(dict)
+        Changes the 'common' and 'fill' colors of an annotation. Both values must be lists of up to 4 floats.
+        """
         if self.parent.parent.isClosed:
             raise ValueError("operation illegal for closed doc")
 

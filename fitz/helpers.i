@@ -1,4 +1,30 @@
 %{
+fz_buffer *deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
+{
+    fz_buffer *buf;
+    uLongf csize;
+    int t;
+    uLong longN = (uLong)n;
+    unsigned char *data;
+    size_t cap;
+
+    if (n != (size_t)longN)
+        fz_throw(ctx, FZ_ERROR_GENERIC, "Buffer to large to deflate");
+
+    cap = compressBound(longN);
+    data = fz_malloc(ctx, cap);
+    buf = fz_new_buffer_from_data(ctx, data, cap);
+    csize = (uLongf)cap;
+    t = compress(data, &csize, p, longN);
+    if (t != Z_OK)
+    {
+        fz_drop_buffer(ctx, buf);
+        fz_throw(ctx, FZ_ERROR_GENERIC, "cannot deflate buffer");
+    }
+    fz_resize_buffer(ctx, buf, csize);
+    return buf;
+}
+
 /*****************************************************************************/
 // return a (char *) for the provided PyObject obj if its type  is either
 // PyBytes, PyString (Python 2) or PyUnicode.
@@ -352,7 +378,7 @@ int countOutlines(pdf_obj *obj, int oc)
 // deletes the device and returns the text buffer in the requested format.
 // A display list is not used in the process.
 /******************************************************************************/
-char *readPageText(fz_page *page, int output) {
+const char *readPageText(fz_page *page, int output) {
     fz_buffer *res;
     fz_output *out;
     fz_stext_sheet *ts;

@@ -5,7 +5,7 @@
 =================================
 Low Level Functions and Classes
 =================================
-Contains anumber of functions and classes for the experienced user. To be used for special requirements or heavy performance requirements.
+Contains a number of functions and classes for the experienced user. To be used for special requirements or heavy performance requirements.
 
 .. toctree::
    :maxdepth: 1

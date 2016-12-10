@@ -195,31 +195,34 @@
 <tr class="row-even"><td><a class="reference internal" href="#Annot.setColors" title="Annot.setColors"><code class="xref py py-meth docutils literal"><span class="pre">Annot.setColors()</span></code></a></td>
 <td>PDF only: changes the colors of an annotation</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Annot.border" title="Annot.border"><code class="xref py py-attr docutils literal"><span class="pre">Annot.border</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.updateImage" title="Annot.updateImage"><code class="xref py py-meth docutils literal"><span class="pre">Annot.updateImage()</span></code></a></td>
+<td>PDF only: applies border and color values to shown image</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.border" title="Annot.border"><code class="xref py py-attr docutils literal"><span class="pre">Annot.border</span></code></a></td>
 <td>PDF only: border details</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Annot.colors" title="Annot.colors"><code class="xref py py-attr docutils literal"><span class="pre">Annot.colors</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.colors" title="Annot.colors"><code class="xref py py-attr docutils literal"><span class="pre">Annot.colors</span></code></a></td>
 <td>PDF only: border / background and fill colors</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Annot.flags" title="Annot.flags"><code class="xref py py-attr docutils literal"><span class="pre">Annot.flags</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.flags" title="Annot.flags"><code class="xref py py-attr docutils literal"><span class="pre">Annot.flags</span></code></a></td>
 <td>PDF only: annotation flags</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Annot.info" title="Annot.info"><code class="xref py py-attr docutils literal"><span class="pre">Annot.info</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.info" title="Annot.info"><code class="xref py py-attr docutils literal"><span class="pre">Annot.info</span></code></a></td>
 <td>PDF only: various information</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Annot.lineEnds" title="Annot.lineEnds"><code class="xref py py-attr docutils literal"><span class="pre">Annot.lineEnds</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.lineEnds" title="Annot.lineEnds"><code class="xref py py-attr docutils literal"><span class="pre">Annot.lineEnds</span></code></a></td>
 <td>PDF only: start / end appearance of line-type annotations</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Annot.next" title="Annot.next"><code class="xref py py-attr docutils literal"><span class="pre">Annot.next</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.next" title="Annot.next"><code class="xref py py-attr docutils literal"><span class="pre">Annot.next</span></code></a></td>
 <td>link to the next annotation</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Annot.rect" title="Annot.rect"><code class="xref py py-attr docutils literal"><span class="pre">Annot.rect</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.rect" title="Annot.rect"><code class="xref py py-attr docutils literal"><span class="pre">Annot.rect</span></code></a></td>
 <td>rectangle containing the annotation</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Annot.type" title="Annot.type"><code class="xref py py-attr docutils literal"><span class="pre">Annot.type</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.type" title="Annot.type"><code class="xref py py-attr docutils literal"><span class="pre">Annot.type</span></code></a></td>
 <td>PDF only: type of the annotation</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Annot.vertices" title="Annot.vertices"><code class="xref py py-attr docutils literal"><span class="pre">Annot.vertices</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.vertices" title="Annot.vertices"><code class="xref py py-attr docutils literal"><span class="pre">Annot.vertices</span></code></a></td>
 <td>PDF only: point coordinates of Polygons, PolyLines, etc.</td>
 </tr>
 </tbody>
@@ -332,10 +335,16 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>d</strong> (<em>dict</em>) -- a dictionary containing color specifications. For accepted dictionary keys and values see below. The most practical way should be to first make a copy of the <code class="docutils literal"><span class="pre">colors</span></code> property and then modify this as required.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>d</strong> (<em>dict</em>) -- a dictionary containing color specifications. For accepted dictionary keys and values see below. The most practical way should be to first make a copy of the <code class="docutils literal"><span class="pre">colors</span></code> property and then modify this dictionary as required.</td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Annot.updateImage">
+<code class="descname">updateImage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Annot.updateImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempts to modify the displayed graphical image such that it coincides with the values currently contained in the <code class="docutils literal"><span class="pre">border</span></code> and <code class="docutils literal"><span class="pre">colors</span></code> properties. This is achieved by modifying the contents stream of the associated appearance object. If the stream contains unsupported commands, a <code class="docutils literal"><span class="pre">ValueError</span></code> exception is raised.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -447,7 +456,7 @@
 <dl class="attribute">
 <dt id="Annot.colors">
 <code class="descname">colors</code><a class="headerlink" href="#Annot.colors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meaningful for PDF only: A dictionary of two lists of floats in range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">float</span> <span class="pre">&lt;=</span> <span class="pre">1</span></code> specifying the common (<code class="docutils literal"><span class="pre">common</span></code>) and the interior (<code class="docutils literal"><span class="pre">fill</span></code>) colors. The common color is used for borders, and in some cases also for backgrounds. The fill color is used for the interior of objects like line ends, circles and squares. The lengths of the lists determine the colorspaces used: 1 = GRAY, 3 = RGB, 4 = CMYK. So <code class="docutils literal"><span class="pre">[1.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></code> stands for RGB and color <code class="docutils literal"><span class="pre">red</span></code>. Both lists can be <code class="docutils literal"><span class="pre">[]</span></code> if not specified. The dictionary will be empty <code class="docutils literal"><span class="pre">{}</span></code> if no PDF.</p>
+<dd><p>Meaningful for PDF only: A dictionary of two lists of floats in range <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">float</span> <span class="pre">&lt;=</span> <span class="pre">1</span></code> specifying the common (<code class="docutils literal"><span class="pre">common</span></code>) and the interior (<code class="docutils literal"><span class="pre">fill</span></code>) colors. The common color is used for borders, and in some cases also for backgrounds. The fill color is used for the interior of objects like line ends, circles and squares. The lengths of the lists determine the colorspaces used: 1 = GRAY, 3 = RGB, 4 = CMYK. So <code class="docutils literal"><span class="pre">[1.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></code> stands for RGB and color <code class="docutils literal"><span class="pre">red</span></code>. Both lists can be <code class="docutils literal"><span class="pre">[]</span></code> if not specified. The dictionary will be empty <code class="docutils literal"><span class="pre">{}</span></code> if no PDF. The value of each float stands for the &quot;intensity&quot; of the represented color byte, meaning 1 corresonds to 255, 0.5 to 128, 0.25 to 64 and so forth.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -504,7 +513,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 04. Dec 2016.
+      Last updated on 10. Dec 2016.
 
     </p>
   </div>

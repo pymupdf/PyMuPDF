@@ -195,7 +195,7 @@ Possible values (integer) for PDF annotation types. See chapter 8.4.5, pp. 615 o
 
 .. py:data:: ANNOT_POLYLINE
 
-    7 - Polyline annotation
+    7 - PolyLine annotation
 
 .. py:data:: ANNOT_HIGHLIGHT
 

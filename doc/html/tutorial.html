@@ -499,24 +499,19 @@ the repository?s <em>example</em> directory.</p>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">PdfReader</span><span class="p">(</span><span class="n">ibuffer</span><span class="p">)</span>           <span class="c1"># let us try</span>
     <span class="k">except</span><span class="p">:</span>                                 <span class="c1"># problem! heal it with PyMuPDF</span>
-        <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;application/pdf&quot;</span><span class="p">,</span>
-                        <span class="nb">bytearray</span><span class="p">(</span><span class="n">idata</span><span class="p">))</span>   <span class="c1"># scan pdf data in memory</span>
-        <span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;temp.pdf&quot;</span><span class="p">,</span>
-                 <span class="n">garbage</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-                 <span class="n">deflate</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>                 <span class="c1"># save cleaned version</span>
-        <span class="n">ifile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;test.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>      <span class="c1"># open it</span>
-        <span class="n">idata</span> <span class="o">=</span> <span class="n">ifile</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>                <span class="c1"># put in memory</span>
-        <span class="n">ifile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="n">ibuffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">idata</span><span class="p">)</span>           <span class="c1"># convert to stream</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="n">idata</span><span class="p">)</span>       <span class="c1"># open and save a corrected</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">garbage</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>          <span class="c1"># version in memory</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">idata</span> <span class="o">=</span> <span class="kc">None</span>                  <span class="c1"># free storage</span>
+        <span class="n">ibuffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>               <span class="c1"># convert to stream</span>
         <span class="k">return</span> <span class="n">PdfReader</span><span class="p">(</span><span class="n">ibuffer</span><span class="p">)</span>           <span class="c1"># let pdfrw retry</span>
 <span class="c1">#---------------------------------------</span>
-
-<span class="n">pdf</span> <span class="o">=</span> <span class="n">reader</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">pdf</span> <span class="o">=</span> <span class="n">reader</span><span class="p">(</span><span class="s2">&quot;pymupdf.pdf&quot;</span><span class="p">)</span>
 <span class="nb">print</span> <span class="n">pdf</span><span class="o">.</span><span class="n">Info</span>
 <span class="c1"># do further processing</span>
 </pre></div>
 </div>
-<p>With the command line utility <code class="docutils literal"><span class="pre">pdftk</span></code> (<a class="reference external" href="https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/">available</a> for Windows only) a similar result can be achieved, see <a class="reference external" href="http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/">here</a>. It even supports buffers for input <strong>and</strong> output. However, you must invoke it as a separate process via <code class="docutils literal"><span class="pre">subprocess.Popen</span></code>, using stdin and stdout as communication vehicles.</p>
+<p>With the command line utility <code class="docutils literal"><span class="pre">pdftk</span></code> (<a class="reference external" href="https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/">available</a> for Windows only) a similar result can be achieved, see <a class="reference external" href="http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/">here</a>. However, you must invoke it as a separate process via <code class="docutils literal"><span class="pre">subprocess.Popen</span></code>, using stdin and stdout as communication vehicles.</p>
 </div>
 </div>
 
@@ -540,7 +535,7 @@ the repository?s <em>example</em> directory.</p>
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 04. Dec 2016.
+      Last updated on 09. Dec 2016.
 
     </p>
   </div>

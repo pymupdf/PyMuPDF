@@ -274,20 +274,16 @@ If a PDF is broken or needs to be decrypted, one could dynamically invoke PyMuPD
      try:
          return PdfReader(ibuffer)           # let us try
      except:                                 # problem! heal it with PyMuPDF
-         doc = fitz.open("application/pdf",
-                         bytearray(idata))   # scan pdf data in memory
-         doc.save("temp.pdf",
-                  garbage=3,
-                  deflate=1)                 # save cleaned version
-         ifile = open("test.pdf", "rb")      # open it
-         idata = ifile.read()                # put in memory
-         ifile.close()
-         ibuffer = StringIO(idata)           # convert to stream
+         doc = fitz.open("pdf", idata)       # open and save a corrected
+         c = doc.write(garbage = 4)          # version in memory
+         doc.close()
+         doc = idata = None                  # free storage
+         ibuffer = StringIO(c)               # convert to stream
          return PdfReader(ibuffer)           # let pdfrw retry
  #---------------------------------------
-
- pdf = reader(sys.argv[1])
+ pdf = reader("pymupdf.pdf")
  print pdf.Info
  # do further processing
 
-With the command line utility ``pdftk`` (`available <https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/>`_ for Windows only) a similar result can be achieved, see `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. It even supports buffers for input **and** output. However, you must invoke it as a separate process via ``subprocess.Popen``, using stdin and stdout as communication vehicles.
+
+With the command line utility ``pdftk`` (`available <https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/>`_ for Windows only) a similar result can be achieved, see `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. However, you must invoke it as a separate process via ``subprocess.Popen``, using stdin and stdout as communication vehicles.
