@@ -123,7 +123,7 @@ struct fz_document_s
                 self.thisown = False
         %}
 
-        fz_document_s(const char *filename = NULL, PyObject *stream=NULL)
+        fz_document_s(const char *filename = NULL, PyObject *stream = NULL)
         {
             struct fz_document_s *doc = NULL;
             fz_stream *data = NULL;
@@ -134,7 +134,7 @@ struct fz_document_s
                 streamdata = PyByteArray_AsString(stream);
                 streamlen = (size_t) PyByteArray_Size(stream);
             }
-            if (PyBytes_Check(stream))
+            else if (PyBytes_Check(stream))
             {
                 streamdata = PyBytes_AsString(stream);
                 streamlen = (size_t) PyBytes_Size(stream);
@@ -283,7 +283,7 @@ struct fz_document_s
             if filename == self.name and not incremental:
                 raise ValueError("save to original requires incremental")
             if incremental and (self.name != filename or self.streamlen > 0):
-                raise ValueError("incremental save to original file only")
+                raise ValueError("incremental save requires original file")
         %}
 
         int save(char *filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0)
@@ -300,7 +300,7 @@ struct fz_document_s
             opts.do_linear = linear;
             opts.do_clean = clean;
             opts.do_pretty = 0;
-            opts.continue_on_error = 0;
+            opts.continue_on_error = 1;
             opts.errors = &errors;
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx)
@@ -348,7 +348,7 @@ struct fz_document_s
             opts.do_linear = linear;
             opts.do_clean = clean;
             opts.do_pretty = 0;
-            opts.continue_on_error = 0;
+            opts.continue_on_error = 1;
             opts.errors = &errors;
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx)
@@ -567,7 +567,7 @@ struct fz_document_s
                     {
                         liste[i] = (int) PyInt_AsLong(o);
                         if ((liste[i] < 0) | (liste[i] >= pageCount))
-                            THROWMSG("page numbers not in range");
+                            THROWMSG("page number(s) not in range");
                     }
                     else
                         THROWMSG("page numbers must be integers");
@@ -617,24 +617,48 @@ struct fz_document_s
         {
             PyObject *res = PyDict_New();
             if (fz_has_permission(gctx, $self, FZ_PERMISSION_PRINT))
+                {
+                Py_INCREF(Py_True);
                 PyDict_SetItemString(res, "print", Py_True);
+                }
             else
+                {
+                Py_INCREF(Py_False);
                 PyDict_SetItemString(res, "print", Py_False);
+                }
 
             if (fz_has_permission(gctx, $self, FZ_PERMISSION_EDIT))
+                {
+                Py_INCREF(Py_True);
                 PyDict_SetItemString(res, "edit", Py_True);
+                }
             else
+                {
+                Py_INCREF(Py_False);
                 PyDict_SetItemString(res, "edit", Py_False);
+                }
 
             if (fz_has_permission(gctx, $self, FZ_PERMISSION_COPY))
+                {
+                Py_INCREF(Py_True);
                 PyDict_SetItemString(res, "copy", Py_True);
+                }
             else
+                {
+                Py_INCREF(Py_False);
                 PyDict_SetItemString(res, "copy", Py_False);
+                }
 
             if (fz_has_permission(gctx, $self, FZ_PERMISSION_ANNOTATE))
+                {
+                Py_INCREF(Py_True);
                 PyDict_SetItemString(res, "note", Py_True);
+                }
             else
+                {
+                Py_INCREF(Py_False);
                 PyDict_SetItemString(res, "note", Py_False);
+                }
 
             return res;
         }
@@ -658,17 +682,14 @@ struct fz_document_s
             pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, pno);
             long objnum = (long) pdf_to_num(gctx, pageref);
             long objgen = (long) pdf_to_gen(gctx, pageref);
-            PyObject *res, *xrefnum_o, *gennum_o;
-            res = PyList_New(2);                        /* create Python list */
-            xrefnum_o = PyInt_FromLong(objnum);
-            gennum_o  = PyInt_FromLong(objgen);
-            PyList_SetItem(res, 0, xrefnum_o);
-            PyList_SetItem(res, 1, gennum_o);
+            PyObject *res = PyList_New(0);            // create Python list
+            PyList_Append(res, PyInt_FromLong(objnum));
+            PyList_Append(res, PyInt_FromLong(objgen));
             return res;
         }
 
         /**********************************************************************/
-        // Returns the images used on a page as a nested list of lists.
+        // Returns the images used on a page as a list of lists.
         // Each image entry contains
         // [xref#, gen#, width, height, bpc, colorspace, altcs]
         /**********************************************************************/
@@ -711,8 +732,8 @@ struct fz_document_s
 
                 long xref = (long) pdf_to_num(gctx, imagedict);
                 long gen  = (long) pdf_to_gen(gctx, imagedict);
-                PyObject *xref_py = PyInt_FromLong(xref);      /* xref number */
-                PyObject *gen_py  = PyInt_FromLong(gen);        /* gen number */
+                PyObject *xref_py = PyInt_FromLong(xref);  // xref number
+                PyObject *gen_py  = PyInt_FromLong(gen);   // gen number
 
                 o = pdf_dict_get(gctx, imagedict, PDF_NAME_Width);
                 long width = (long) pdf_to_int(gctx, o);
@@ -812,7 +833,7 @@ struct fz_document_s
 
         /*********************************************************************/
         // Delete all bookmarks (table of contents)
-        // returns the list of deleted (freed) xref numbers
+        // returns the list of deleted (freed = now available) xref numbers
         /*********************************************************************/
         CLOSECHECK(_delToC, self.isClosed)
         %pythonappend _delToC %{
@@ -947,7 +968,8 @@ struct fz_document_s
         }
 
         /*********************************************************************/
-        // Get stream of an object by its xref
+        // Get stream of an object by its xref.
+        // Throws exception if not a stream.
         /*********************************************************************/
         FITZEXCEPTION(_getXrefStream, !result)
         CLOSECHECK(_getXrefStream, self.isClosed)
@@ -1161,7 +1183,8 @@ struct fz_page_s {
                 return nextannot;
                 }
             pdf_annot *pannot = pdf_annot_from_fz_annot(gctx, fannot);
-            pdf_delete_annot(gctx, page, pannot);
+            // pdf_delete_annot(gctx, page, pannot);
+            delete_annot(gctx, page, pannot);
             if (nextannot) fz_keep_annot(gctx, nextannot);
             return nextannot;
         }
@@ -2660,7 +2683,7 @@ struct fz_annot_s
         {
             PyObject *res = PyDict_New();
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
-            if (!annot) return res;                   // not a PDF
+            if (!annot) return res;                   // not a PDF, 
             PyObject *emptylst_py = PyList_New(0);
             PyObject *blank_py = PyString_FromString("");
             PyObject *dash_py   = PyList_New(0);
@@ -2720,18 +2743,18 @@ struct fz_annot_s
             PyList_Append(effect_py, PyString_FromString(effect2));
 
             PyDict_SetItemString(res, "width", PyFloat_FromDouble((double) width));
-            if (dash1 >= 0)
+            if (dash1 > 0)
                 PyDict_SetItemString(res, "style", PyString_FromString(style));
 
-            if (dash1 >= 0) PyDict_SetItemString(res, "dashes", dash_py);
+            if (dash1 > 0) PyDict_SetItemString(res, "dashes", dash_py);
 
             if (effect1 >= 0) PyDict_SetItemString(res, "effect", effect_py);
 
-            if (hradius >= 0)
+            if (hradius > 0)
                 PyDict_SetItemString(res, "hradius",
                                      PyFloat_FromDouble((double) hradius));
 
-            if (vradius >= 0)
+            if (vradius > 0)
                 PyDict_SetItemString(res, "vradius",
                                      PyFloat_FromDouble((double) vradius));
 
@@ -2815,13 +2838,9 @@ struct fz_annot_s
             {
                 pix = fz_new_pixmap_from_annot(gctx, $self, ctm, cs, alpha);
             }
-            fz_catch(gctx)
-            {
-                return NULL;
-            }
+            fz_catch(gctx) return NULL;
             return pix;
-        }
-        
+        }        
     }
 };
 %clearnodefaultctor;

@@ -216,13 +216,16 @@
 <tr class="row-odd"><td><a class="reference internal" href="#Annot.next" title="Annot.next"><code class="xref py py-attr docutils literal"><span class="pre">Annot.next</span></code></a></td>
 <td>link to the next annotation</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Annot.rect" title="Annot.rect"><code class="xref py py-attr docutils literal"><span class="pre">Annot.rect</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.parent" title="Annot.parent"><code class="xref py py-attr docutils literal"><span class="pre">Annot.parent</span></code></a></td>
+<td>page of the annotation</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.rect" title="Annot.rect"><code class="xref py py-attr docutils literal"><span class="pre">Annot.rect</span></code></a></td>
 <td>rectangle containing the annotation</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#Annot.type" title="Annot.type"><code class="xref py py-attr docutils literal"><span class="pre">Annot.type</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#Annot.type" title="Annot.type"><code class="xref py py-attr docutils literal"><span class="pre">Annot.type</span></code></a></td>
 <td>PDF only: type of the annotation</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#Annot.vertices" title="Annot.vertices"><code class="xref py py-attr docutils literal"><span class="pre">Annot.vertices</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#Annot.vertices" title="Annot.vertices"><code class="xref py py-attr docutils literal"><span class="pre">Annot.vertices</span></code></a></td>
 <td>PDF only: point coordinates of Polygons, PolyLines, etc.</td>
 </tr>
 </tbody>
@@ -345,6 +348,20 @@
 <dt id="Annot.updateImage">
 <code class="descname">updateImage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Annot.updateImage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attempts to modify the displayed graphical image such that it coincides with the values currently contained in the <code class="docutils literal"><span class="pre">border</span></code> and <code class="docutils literal"><span class="pre">colors</span></code> properties. This is achieved by modifying the contents stream of the associated appearance object. If the stream contains unsupported commands, a <code class="docutils literal"><span class="pre">ValueError</span></code> exception is raised.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Annot.parent">
+<code class="descname">parent</code><a class="headerlink" href="#Annot.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The owning page object of the annotation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="page.html#page"><span class="std std-ref">Page</span></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
@@ -513,7 +530,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 10. Dec 2016.
+      Last updated on 13. Dec 2016.
 
     </p>
   </div>

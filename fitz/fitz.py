@@ -99,8 +99,8 @@ except __builtin__.Exception:
     _newclass = 0
 
 VersionFitz = "1.10a"
-VersionBind = '1.10.0'
-VersionDate = '2016-12-10 12:17:29'
+VersionBind = "1.10.0"
+VersionDate = "2016-12-13 08:38:20"
 
 LINK_NONE   = 0
 LINK_GOTO   = 1
@@ -342,7 +342,7 @@ class Document(_object):
         if filename == self.name and not incremental:
             raise ValueError("save to original requires incremental")
         if incremental and (self.name != filename or self.streamlen > 0):
-            raise ValueError("incremental save to original file only")
+            raise ValueError("incremental save requires original file")
 
 
         return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear)

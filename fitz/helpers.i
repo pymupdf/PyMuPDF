@@ -1,4 +1,63 @@
 %{
+void
+delete_annot(fz_context *ctx, pdf_page *page, pdf_annot *annot)
+{
+    pdf_document *doc = annot->page->doc;
+    pdf_annot **annotptr;
+    pdf_obj *annot_arr;
+    int i;
+
+    if (annot == NULL)
+        return;
+
+    /* Remove annot from page's list */
+    for (annotptr = &page->annots; *annotptr; annotptr = &(*annotptr)->next)
+    {
+        if (*annotptr == annot)
+            break;
+    }
+
+    /* Check the passed annotation was of this page */
+    if (*annotptr == NULL)
+        return;
+
+    *annotptr = annot->next;
+
+    /* If the removed annotation was the last in the list adjust the end pointer */
+    if (*annotptr == NULL)
+        page->annot_tailp = annotptr;
+
+    /* If the removed annotation has the focus, blur it. */
+    if (doc->focus == annot)
+    {
+        doc->focus = NULL;
+        doc->focus_obj = NULL;
+    }
+
+    /* Remove the annot from the "Annots" array. */
+    pdf_obj *annot_entry = pdf_dict_get(ctx, page->obj, PDF_NAME_Annots);
+    if (pdf_is_indirect(ctx, annot_entry))
+        annot_arr = pdf_resolve_indirect(ctx, annot_entry);
+    else
+        annot_arr = annot_entry;
+    i = pdf_array_find(ctx, annot_arr, annot->obj);
+    if (i >= 0)
+        pdf_array_delete(ctx, annot_arr, i);
+
+    if (pdf_is_indirect(ctx, annot_entry))
+        pdf_update_object(ctx, doc, pdf_to_num(ctx, annot_entry), annot_arr);
+    else
+        pdf_dict_put(ctx, page->obj, PDF_NAME_Annots, annot_arr);
+
+    /* The garbage collection pass when saving will remove the annot object,
+     * removing it here may break files if multiple pages use the same annot. */
+
+    /* And free it. */
+    fz_drop_annot(ctx, &annot->super);
+
+    doc->dirty = 1;
+}
+
 fz_buffer *deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 {
     fz_buffer *buf;

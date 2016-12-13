@@ -1119,69 +1119,58 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
 def updateImage(annot):
     '''Update border and color information in the appearance dictionary /AP.'''
     
-    def modWidth(tab,wtab):
-        if wtab[1] != b"w": return
-        for i in range(len(tab)):
-            if tab[i] == b"w":
-                tab[i-1] = wtab[0]
-        return
-    
-    def modCommon(tab, ctab):
+    def modAP(tab, ctab, ftab, wtab, dtab):
         if not ctab[4]: return tab
         ntab = []
         in_text_block = False
         for i in range(len(tab)):
+            if tab[i] == b"Do":
+                raise ValueError("nested XObject calls not supported")
+            ntab.append(tab[i])
             if tab[i] == b"BT":
-                ntab.append(tab[i])
                 in_text_block = True
                 continue
-            if in_text_block:
-                ntab.append(tab[i])
-                if tab[i] == b"ET":
-                    in_text_block = False
-                continue
-            if tab[i] not in [b"G", b"RG", b"K"]:
-                ntab.append(tab[i])
-                continue
-            if tab[i] == b"G":
-                del ntab[-1]
-                ntab.extend(ctab)
-            elif tab[i] == b"RG":
-                del ntab[len(ntab)-3:]
-                ntab.extend(ctab)
-            else:
-                del ntab[len(ntab)-4:]
-                ntab.extend(ctab)
-        return ntab
-    
-    def modFill(tab, ftab):
-        if not ftab[4]: return tab
-        ntab = []
-        in_text_block = False
-        for i in range(len(tab)):
-            if tab[i] == b"BT":
-                ntab.append(tab[i])
-                in_text_block = True
+            if tab[i] == b"ET":
+                in_text_block = False
                 continue
             if in_text_block:
-                ntab.append(tab[i])
-                if tab[i] == b"ET":
-                    in_text_block = False
                 continue
-            if tab[i] not in [b"g", b"rg", b"k"]:
-                ntab.append(tab[i])
-                continue
-            if tab[i] == b"g":
-                del ntab[-1]
-                ntab.extend(ftab)
-            elif tab[i] == b"rg":
-                del ntab[len(ntab)-3:]
-                ntab.extend(ftab)
-            else:
-                del ntab[len(ntab)-4:]
-                ntab.extend(ftab)
+            if ftab[4] and (tab[i] == b"s"):
+                ntab[-1] = b"b"
+            if ctab[4]:
+                if tab[i] == b"G":
+                    del ntab[-2:]
+                    ntab.extend(ctab)
+                elif tab[i] == b"RG":
+                    del ntab[len(ntab)-4:]
+                    ntab.extend(ctab)
+                elif tab[i] == b"K":
+                    del ntab[len(ntab)-5:]
+                    ntab.extend(ctab)
+            if ftab[4]:
+                if tab[i] == b"g":
+                    del ntab[-2:]
+                    ntab.extend(ctab)
+                elif tab[i] == b"rg":
+                    del ntab[len(ntab)-4:]
+                    ntab.extend(ctab)
+                elif tab[i] == b"k":
+                    del ntab[len(ntab)-5:]
+                    ntab.extend(ctab)
+            if wtab[1]:
+                if tab[i] == b"w":
+                    ntab[-2] = wtab[0]
+            if dtab[2]:
+                if tab[i] == b"d":
+                    j = len(ntab) - 1
+                    x = b"d"
+                    while not x.startswith(b"["):
+                        j -= 1
+                        x = ntab[j]
+                    del ntab[j:]
+                    ntab.extend(dtab)
         return ntab
-    
+        
     ap = annot._getAP() # get appearance text
     aptab = ap.split() # decompose into a list
         
@@ -1230,19 +1219,25 @@ def updateImage(annot):
         wtab[0] = str(round(c,4)).encode("utf-8")
         wtab[1] = b"w"
     
-    outlist = ftab + ctab + wtab # this starts the output appearance
+    # dash pattern
+    c = annot.border.get("dashes")
+    dtab = [b""]*3
+    if c:
+        dtab[2] = b"0 d"
+        dtab[1] = b"]" if len(c) < 2 else str(c[1]).encode("utf8") + b"]"
+        dtab[0] = b"[" if len(c) < 1 else b"[" + str(c[0]).encode("utf8")
+        if dtab[1] == b"0]": dtab[1] = b"]"
+        if dtab[0] == b"[0": dtab[0] = b"["
+    
+    outlist = ftab + ctab + wtab + dtab # this starts the output appearance
     if aptab[0] == b"q":
         outlist = [b"q"] + outlist
         aptab = aptab[1:]
-    # now change every color spec
-    modWidth(aptab, wtab)
-    aptab = modFill(aptab, ftab)
-    aptab = modCommon(aptab, ctab)
+    # now change every color, width and dashes spec
+    aptab = modAP(aptab, ctab, ftab, wtab, dtab)
     
-    aptab = outlist + aptab
-    
+    aptab = outlist + aptab    
     ap = b" ".join(aptab)
-    if ftab[4]:         # fill colors provided: change 's' to 'b'
-        ap = ap.replace(b" s", b" b")
+    
     annot._setAP(ap)
     return

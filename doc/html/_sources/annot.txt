@@ -29,6 +29,7 @@ This class supports accessing such annotations - not only for PDF files, but for
 :attr:`Annot.info`          PDF only: various information
 :attr:`Annot.lineEnds`      PDF only: start / end appearance of line-type annotations
 :attr:`Annot.next`          link to the next annotation
+:attr:`Annot.parent`        page of the annotation
 :attr:`Annot.rect`          rectangle containing the annotation
 :attr:`Annot.type`          PDF only: type of the annotation
 :attr:`Annot.vertices`      PDF only: point coordinates of Polygons, PolyLines, etc.
@@ -108,6 +109,12 @@ This class supports accessing such annotations - not only for PDF files, but for
    .. method:: updateImage()
 
       Attempts to modify the displayed graphical image such that it coincides with the values currently contained in the ``border`` and ``colors`` properties. This is achieved by modifying the contents stream of the associated appearance object. If the stream contains unsupported commands, a ``ValueError`` exception is raised.
+
+   .. attribute:: parent
+
+      The owning page object of the annotation.
+
+      :rtype: :ref:`Page`
 
    .. attribute:: rect
 
