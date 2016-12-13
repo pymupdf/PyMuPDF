@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>The PyMuPDF Documentation &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>The PyMuPDF Documentation &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="#"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="#"/>
         <link rel="next" title="Introduction" href="intro.html"/> 
 
   
@@ -53,13 +55,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -82,12 +87,14 @@
             
                 <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lowlevel.html">Low Level Functions and Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
@@ -125,8 +132,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/index.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -144,12 +149,18 @@
 <li class="toctree-l2"><a class="reference internal" href="intro.html#license">License</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changes.html#mupdf-v1-10-impact">MuPDF v1.10 Impact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changes.html#other-changes-compared-to-version-1-9-3">Other Changes compared to Version 1.9.3</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#option-1-install-from-sources">Option 1: Install from Sources</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#step-1-download-pymupdf">Step 1: Download PyMuPDF</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#step-2-download-and-generate-mupdf-1-9">Step 2: Download and Generate MuPDF 1.9</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installation.html#step-2-download-and-generate-mupdf-1-10a">Step 2: Download and Generate MuPDF 1.10a</a></li>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#step-3-build-setup-pymupdf">Step 3: Build / Setup PyMuPDF</a></li>
 <li class="toctree-l3"><a class="reference internal" href="installation.html#using-upx">Using UPX</a></li>
 </ul>
@@ -189,9 +200,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="annot.html">Annot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="colorspace.html">Colorspace</a></li>
-<li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
 <li class="toctree-l2"><a class="reference internal" href="document.html">Document</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="document.html#remarks-on-select">Remarks on <code class="docutils literal"><span class="pre">select()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="document.html#select-examples"><code class="docutils literal"><span class="pre">select()</span></code> Examples</a></li>
@@ -223,10 +233,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pages.html#usage">Usage</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pixmap.html#supported-pixmap-construction-image-types">Supported Pixmap Construction Image Types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pixmap.html#details-on-saving-images-with-writeimage">Details on Saving Images with <code class="docutils literal"><span class="pre">writeImage()</span></code></a></li>
@@ -245,18 +251,23 @@
 <li class="toctree-l3"><a class="reference internal" href="rect.html#examples">Examples</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="textpage.html">TextPage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="textsheet.html">TextSheet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="functions.html#example">Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lowlevel.html">Low Level Functions and Classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="textpage.html">TextPage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="textsheet.html">TextSheet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="vars.html#constants">Constants</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vars.html#enumerations">Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="vars.html#link-destination-flags">Link Destination Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vars.html#annotation-types">Annotation Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vars.html#annotation-flags">Annotation Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vars.html#annotation-line-end-styles">Annotation Line End Styles</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a><ul>
@@ -296,7 +307,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 29. Oct 2016.
+      Last updated on 10. Dec 2016.
 
     </p>
   </div>
@@ -318,7 +329,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

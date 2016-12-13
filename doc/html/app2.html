@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Appendix 2: Details on Text Extraction &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Appendix 2: Details on Text Extraction &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="prev" title="Appendix 1: Performance" href="app1.html"/> 
 
   
@@ -53,13 +55,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -82,12 +87,14 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lowlevel.html">Low Level Functions and Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Appendix 2: Details on Text Extraction</a><ul>
@@ -133,8 +140,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/app2.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -168,8 +173,8 @@
 </div>
 <div class="section" id="output-of-gettext-output-text">
 <h2>Output of <code class="docutils literal"><span class="pre">getText(output=&quot;text&quot;)</span></code><a class="headerlink" href="#output-of-gettext-output-text" title="Permalink to this headline">¶</a></h2>
-<p>This function extracts a page&#8217;s plain <strong>text in original order</strong> as specified by the creator of the document (which may not be equal to a natural reading order!).</p>
-<p>An example output of this tutorial&#8217;s PDF version:</p>
+<p>This function extracts a page's plain <strong>text in original order</strong> as specified by the creator of the document (which may not be equal to a natural reading order!).</p>
+<p>An example output of this tutorial's PDF version:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Tutorial</span>
 
 <span class="n">This</span> <span class="n">tutorial</span> <span class="n">will</span> <span class="n">show</span> <span class="n">you</span> <span class="n">the</span> <span class="n">use</span> <span class="n">of</span> <span class="n">MuPDF</span> <span class="ow">in</span> <span class="n">Python</span> <span class="n">step</span> <span class="n">by</span> <span class="n">step</span><span class="o">.</span>
@@ -183,7 +188,7 @@
 </div>
 <div class="section" id="output-of-gettext-output-html">
 <h2>Output of <code class="docutils literal"><span class="pre">getText(output=&quot;html&quot;)</span></code><a class="headerlink" href="#output-of-gettext-output-html" title="Permalink to this headline">¶</a></h2>
-<p>HTML output reflects the structure of the page&#8217;s <code class="docutils literal"><span class="pre">TextPage</span></code> - without adding much other benefit. Again an example:</p>
+<p>HTML output reflects the structure of the page's <code class="docutils literal"><span class="pre">TextPage</span></code> - without adding much other benefit. Again an example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;page&quot;</span><span class="o">&gt;</span>
 <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;block&quot;</span><span class="o">&gt;&lt;</span><span class="n">p</span><span class="o">&gt;</span>
 <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;metaline&quot;</span><span class="o">&gt;&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;line&quot;</span><span class="o">&gt;&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;cell&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;width:0%;align:left&quot;</span><span class="o">&gt;&lt;</span><span class="n">span</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;s0&quot;</span><span class="o">&gt;</span><span class="n">Tutorial</span><span class="o">&lt;/</span><span class="n">span</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
@@ -201,7 +206,7 @@
 </div>
 <div class="section" id="output-of-gettext-output-json">
 <h2>Output of <code class="docutils literal"><span class="pre">getText(output=&quot;json&quot;)</span></code><a class="headerlink" href="#output-of-gettext-output-json" title="Permalink to this headline">¶</a></h2>
-<p>JSON output reflects the structure of a <code class="docutils literal"><span class="pre">TextPage</span></code> and provides position details (<code class="docutils literal"><span class="pre">bbox</span></code> - boundary boxes in pixel units) for every block, line and span. This is enough information to present a page&#8217;s text in any required reading order (e.g. from top-left to bottom-right). The output can obviously be made usable by <code class="docutils literal"><span class="pre">text_dict</span> <span class="pre">=</span> <span class="pre">json.loads(text)</span></code>. Have a look at our example program <code class="docutils literal"><span class="pre">PDF2textJS.py</span></code>. Here is how it looks like:</p>
+<p>JSON output reflects the structure of a <code class="docutils literal"><span class="pre">TextPage</span></code> and provides position details (<code class="docutils literal"><span class="pre">bbox</span></code> - boundary boxes in pixel units) for every block, line and span. This is enough information to present a page's text in any required reading order (e.g. from top-left to bottom-right). The output can obviously be made usable by <code class="docutils literal"><span class="pre">text_dict</span> <span class="pre">=</span> <span class="pre">json.loads(text)</span></code>. Have a look at our example program <code class="docutils literal"><span class="pre">PDF2textJS.py</span></code>. Here is how it looks like:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
  <span class="s2">&quot;len&quot;</span><span class="p">:</span><span class="mi">35</span><span class="p">,</span><span class="s2">&quot;width&quot;</span><span class="p">:</span><span class="mf">595.2756</span><span class="p">,</span><span class="s2">&quot;height&quot;</span><span class="p">:</span><span class="mf">841.8898</span><span class="p">,</span>
  <span class="s2">&quot;blocks&quot;</span><span class="p">:[</span>
@@ -266,12 +271,12 @@
 <span class="o">...</span>
 </pre></div>
 </div>
-<p>The method&#8217;s output can be processed by one of Python&#8217;s XML modules. We have successfully tested <code class="docutils literal"><span class="pre">lxml</span></code>. See the demo program <code class="docutils literal"><span class="pre">fontlister.py</span></code>. It creates a list of all fonts of a document including font size and where used on pages.</p>
+<p>The method's output can be processed by one of Python's XML modules. We have successfully tested <code class="docutils literal"><span class="pre">lxml</span></code>. See the demo program <code class="docutils literal"><span class="pre">fontlister.py</span></code>. It creates a list of all fonts of a document including font size and where used on pages.</p>
 </div>
 <div class="section" id="performance">
 <h2>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
 <p>The four text extraction methods of a <a class="reference internal" href="textpage.html#textpage"><span class="std std-ref">TextPage</span></a> differ significantly: in terms of information they supply (see above), and in terms of resource requirements. More information of course means that more processing is required and a higher data volume is generated.</p>
-<p>To begin with, all four methods are <strong>very</strong> fast in relation to what is there on the market. In terms of processing speed, we couldn&#8217;t find a faster (free) tool.</p>
+<p>To begin with, all four methods are <strong>very</strong> fast in relation to what is there on the market. In terms of processing speed, we couldn't find a faster (free) tool.</p>
 <p>Relative to each other, <code class="docutils literal"><span class="pre">xml</span></code> is about 2 times slower than <code class="docutils literal"><span class="pre">text</span></code>, the other three range between them. E.g. <code class="docutils literal"><span class="pre">json</span></code> needs about 13% - 14% more time than <code class="docutils literal"><span class="pre">text</span></code>.</p>
 <p>Look into the previous chapter <strong>Appendix 1</strong> for more performance information.</p>
 </div>
@@ -295,7 +300,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Oct 2016.
+      Last updated on 04. Dec 2016.
 
     </p>
   </div>
@@ -317,7 +322,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Rect &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Rect &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,9 +32,9 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="up" title="Classes" href="classes.html"/>
-        <link rel="next" title="TextPage" href="textpage.html"/>
+        <link rel="next" title="Low Level Functions and Classes" href="lowlevel.html"/>
         <link rel="prev" title="Point" href="point.html"/> 
 
   
@@ -55,13 +57,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -84,14 +89,15 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="annot.html">Annot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="colorspace.html">Colorspace</a></li>
-<li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
 <li class="toctree-l2"><a class="reference internal" href="document.html">Document</a></li>
 <li class="toctree-l2"><a class="reference internal" href="identity.html">Identity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="irect.html">IRect</a></li>
@@ -100,7 +106,6 @@
 <li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Rect</a><ul>
@@ -109,11 +114,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="textpage.html">TextPage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="textsheet.html">TextSheet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lowlevel.html">Low Level Functions and Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
@@ -152,8 +155,6 @@
     <li>Rect</li>
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/rect.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -205,16 +206,16 @@ A rectangle is called <em>finite</em> if x0 &lt;= x1 and y0 &lt;= y1 is true, el
 <td>rectangle width</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Rect.x0" title="Rect.x0"><code class="xref py py-attr docutils literal"><span class="pre">Rect.x0</span></code></a></td>
-<td>top left corner&#8217;s X-coordinate</td>
+<td>top left corner's X-coordinate</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Rect.y0" title="Rect.y0"><code class="xref py py-attr docutils literal"><span class="pre">Rect.y0</span></code></a></td>
-<td>top left corner&#8217;s Y-coordinate</td>
+<td>top left corner's Y-coordinate</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Rect.x1" title="Rect.x1"><code class="xref py py-attr docutils literal"><span class="pre">Rect.x1</span></code></a></td>
-<td>bottom right corner&#8217;s X-coordinate</td>
+<td>bottom right corner's X-coordinate</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Rect.y1" title="Rect.y1"><code class="xref py py-attr docutils literal"><span class="pre">Rect.y1</span></code></a></td>
-<td>bottom right corner&#8217;s Y-coordinate</td>
+<td>bottom right corner's Y-coordinate</td>
 </tr>
 </tbody>
 </table>
@@ -254,7 +255,7 @@ A rectangle is called <em>finite</em> if x0 &lt;= x1 and y0 &lt;= y1 is true, el
 <dl class="method">
 <dt id="Rect.round">
 <code class="descname">round</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Rect.round" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates the smallest <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> containing <code class="docutils literal"><span class="pre">Rect</span></code>. This is <strong>not</strong> the same as simply rounding each of the rectangle&#8217;s coordinates! Look at the example below.</p>
+<dd><p>Creates the smallest <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a> containing <code class="docutils literal"><span class="pre">Rect</span></code>. This is <strong>not</strong> the same as simply rounding each of the rectangle's coordinates! Look at the example below.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -273,7 +274,7 @@ A rectangle is called <em>finite</em> if x0 &lt;= x1 and y0 &lt;= y1 is true, el
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; The matrix to be used for the transformation.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) -- The matrix to be used for the transformation.</td>
 </tr>
 </tbody>
 </table>
@@ -287,7 +288,7 @@ A rectangle is called <em>finite</em> if x0 &lt;= x1 and y0 &lt;= y1 is true, el
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>r</strong> (<a class="reference internal" href="#rect"><span class="std std-ref">Rect</span></a>) &#8211; Second rectangle</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>r</strong> (<a class="reference internal" href="#rect"><span class="std std-ref">Rect</span></a>) -- Second rectangle</td>
 </tr>
 </tbody>
 </table>
@@ -301,7 +302,7 @@ A rectangle is called <em>finite</em> if x0 &lt;= x1 and y0 &lt;= y1 is true, el
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>r</strong> (<a class="reference internal" href="#rect"><span class="std std-ref">Rect</span></a>) &#8211; Second rectangle</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>r</strong> (<a class="reference internal" href="#rect"><span class="std std-ref">Rect</span></a>) -- Second rectangle</td>
 </tr>
 </tbody>
 </table>
@@ -315,7 +316,7 @@ A rectangle is called <em>finite</em> if x0 &lt;= x1 and y0 &lt;= y1 is true, el
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="point.html#point"><span class="std std-ref">Point</span></a>) &#8211; Point to include.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="point.html#point"><span class="std std-ref">Point</span></a>) -- Point to include.</td>
 </tr>
 </tbody>
 </table>
@@ -329,7 +330,7 @@ A rectangle is called <em>finite</em> if x0 &lt;= x1 and y0 &lt;= y1 is true, el
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>unit</strong> (<em>string</em>) &#8211; Specify required unit: <code class="docutils literal"><span class="pre">pt</span></code> (pixel points, default) or <code class="docutils literal"><span class="pre">mm</span></code> (square millimeters).</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>unit</strong> (<em>string</em>) -- Specify required unit: <code class="docutils literal"><span class="pre">pt</span></code> (pixel points, default) or <code class="docutils literal"><span class="pre">mm</span></code> (square millimeters).</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
 </tr>
@@ -425,7 +426,7 @@ A rectangle is called <em>finite</em> if x0 &lt;= x1 and y0 &lt;= y1 is true, el
 
 <div class="section" id="remark">
 <h2>Remark<a class="headerlink" href="#remark" title="Permalink to this headline">¶</a></h2>
-<p>A rectangle&#8217;s coordinates can also be accessed via index, e.g. <code class="docutils literal"><span class="pre">r.x0</span> <span class="pre">==</span> <span class="pre">r[0]</span></code>.</p>
+<p>A rectangle's coordinates can also be accessed via index, e.g. <code class="docutils literal"><span class="pre">r.x0</span> <span class="pre">==</span> <span class="pre">r[0]</span></code>.</p>
 </div>
 <div class="section" id="rect-algebra">
 <h2>Rect Algebra<a class="headerlink" href="#rect-algebra" title="Permalink to this headline">¶</a></h2>
@@ -501,7 +502,7 @@ A rectangle is called <em>finite</em> if x0 &lt;= x1 and y0 &lt;= y1 is true, el
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="textpage.html" class="btn btn-neutral float-right" title="TextPage" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="lowlevel.html" class="btn btn-neutral float-right" title="Low Level Functions and Classes" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="point.html" class="btn btn-neutral" title="Point" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -514,7 +515,7 @@ A rectangle is called <em>finite</em> if x0 &lt;= x1 and y0 &lt;= y1 is true, el
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 06. Oct 2016.
+      Last updated on 04. Dec 2016.
 
     </p>
   </div>
@@ -536,7 +537,7 @@ A rectangle is called <em>finite</em> if x0 &lt;= x1 and y0 &lt;= y1 is true, el
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

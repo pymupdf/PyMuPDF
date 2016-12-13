@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Changes in Version 1.9.2 &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Changes in Version 1.10.0 &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="next" title="Installation" href="installation.html"/>
         <link rel="prev" title="Introduction" href="intro.html"/> 
 
@@ -54,13 +56,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -83,12 +88,18 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Changes in Version 1.10.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mupdf-v1-10-impact">MuPDF v1.10 Impact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#other-changes-compared-to-version-1-9-3">Other Changes compared to Version 1.9.3</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lowlevel.html">Low Level Functions and Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
@@ -122,11 +133,9 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Changes in Version 1.9.2</li>
+    <li>Changes in Version 1.10.0</li>
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/changes.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -136,11 +145,71 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="changes-in-version-1-9-2">
+  <div class="section" id="changes-in-version-1-10-0">
+<h1>Changes in Version 1.10.0<a class="headerlink" href="#changes-in-version-1-10-0" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="mupdf-v1-10-impact">
+<h2>MuPDF v1.10 Impact<a class="headerlink" href="#mupdf-v1-10-impact" title="Permalink to this headline">¶</a></h2>
+<p>MuPDF version 1.10 has a significant impact on our bindings. Some of the changes also affect the API - in other words, <strong>you</strong> as a PyMuPDF user.</p>
+<ul>
+<li><p class="first">Link destination information has been reduced. Several properties of the <code class="docutils literal"><span class="pre">linkDest</span></code> class no longer contain valuable information. In fact, this class as a whole has been deleted from MuPDF's library and we in PyMuPDF only maintain it to provide compatibilty to existing code.</p>
+</li>
+<li><p class="first">In an effort to minimize memory requirements, several improvements have been built into MuPDF v1.10:</p>
+<blockquote>
+<div><ul class="simple">
+<li>A new <code class="docutils literal"><span class="pre">config.h</span></code> file can be used to de-select unwanted features in the C base code. Using this feature we have been able to reduce the size of our binary <code class="docutils literal"><span class="pre">_fitz.o</span></code> / <code class="docutils literal"><span class="pre">_fitz.pyd</span></code> by about 50% (from 9 MB to 4.5 MB). When UPX-ing this, the size goes even further down to a very handy 2.3 MB.</li>
+<li>The alpha (transparency) channel for pixmaps is now optional. Letting alpha default to <code class="docutils literal"><span class="pre">False</span></code> significantly reduces pixmap sizes (by 20% - CMYK, 25% - RGB, 50% - GRAY). Many <code class="docutils literal"><span class="pre">Pixmap</span></code> constructors therefore now accept an <code class="docutils literal"><span class="pre">alpha</span></code> boolean to control inclusion of this channel. Other pixmap constructors (e.g. those for file and image input) create pixmaps with no alpha alltogether. On the downside, save methods for pixmaps no longer accept a <code class="docutils literal"><span class="pre">savealpha</span></code> option: this channel will always be saved when present. In order to minimize code breaks, we have left this parameter in the call patterns - it will just be ignored.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">DisplayList</span></code> and <code class="docutils literal"><span class="pre">TextPage</span></code> class constructors now <strong>require the mediabox</strong> of the page they are referring to (i.e. the <code class="docutils literal"><span class="pre">page.bound()</span></code> rectangle). There is no way to construct this information from other sources, therefore a source code change cannot be avoided in these cases. We assume however, that not many users are actually employing these rather low level classes explixitely. So the impact of that change should be minor.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="other-changes-compared-to-version-1-9-3">
+<h2>Other Changes compared to Version 1.9.3<a class="headerlink" href="#other-changes-compared-to-version-1-9-3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>The new <a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> method <code class="docutils literal"><span class="pre">write()</span></code> writes an opened PDF to memory as opposed to a file, like <code class="docutils literal"><span class="pre">save()</span></code> does.</li>
+<li>An annotation can now be scaled and moved around on its page. This is done by modifying its rectangle.</li>
+<li>Annotations can now be deleted. <a class="reference internal" href="page.html#page"><span class="std std-ref">Page</span></a> contains the new method <code class="docutils literal"><span class="pre">deleteAnnot()</span></code>.</li>
+<li>Various annotation attributes can now be modified, e.g. content, dates, title (= author), border, colors, line end styles.</li>
+<li>Method <code class="docutils literal"><span class="pre">Document.insertPDF()</span></code> now also copies annotations of source pages.</li>
+<li>The <code class="docutils literal"><span class="pre">Pages</span></code> class has been deleted. As documents can now be accessed with page numbers as indices (like <code class="docutils literal"><span class="pre">doc[n]</span> <span class="pre">=</span> <span class="pre">doc.loadPage(n)</span></code>), the benefit of this class was too low to maintain it.</li>
+<li>The <a class="reference internal" href="pixmap.html#pixmap"><span class="std std-ref">Pixmap</span></a> method <code class="docutils literal"><span class="pre">getSize()</span></code> has been replaced with property <code class="docutils literal"><span class="pre">size</span></code>. As before <code class="docutils literal"><span class="pre">Pixmap.size</span> <span class="pre">==</span> <span class="pre">len(Pixmap)</span></code> is <code class="docutils literal"><span class="pre">True</span></code>.</li>
+<li>In response to transparency (alpha) being optional, several new parameters and properties have been added to <a class="reference internal" href="pixmap.html#pixmap"><span class="std std-ref">Pixmap</span></a> and <a class="reference internal" href="colorspace.html#colorspace"><span class="std std-ref">Colorspace</span></a> classes to support determining their characteristics.</li>
+<li>The <a class="reference internal" href="page.html#page"><span class="std std-ref">Page</span></a> class now contains new properties <code class="docutils literal"><span class="pre">firstAnnot</span></code> and <code class="docutils literal"><span class="pre">firstLink</span></code> to provide starting points to the respective class chains, where <code class="docutils literal"><span class="pre">firstLink</span></code> is just a mnemonic synonym to method <code class="docutils literal"><span class="pre">loadLinks()</span></code> which continues to exist. Similarly, the new property <code class="docutils literal"><span class="pre">rect</span></code> is a synonym for method <code class="docutils literal"><span class="pre">bound()</span></code>, which also continues to exist.</li>
+<li><a class="reference internal" href="pixmap.html#pixmap"><span class="std std-ref">Pixmap</span></a> methods <code class="docutils literal"><span class="pre">samplesRGB()</span></code> and <code class="docutils literal"><span class="pre">samplesAlpha()</span></code> have been deleted because pixmaps can now be created without transparency.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="changes-in-version-1-9-3">
+<h1>Changes in Version 1.9.3<a class="headerlink" href="#changes-in-version-1-9-3" title="Permalink to this headline">¶</a></h1>
+<p>This version is also based on MuPDF v1.9a. Changes compared to version 1.9.2:</p>
+<ul>
+<li><p class="first">As a major enhancement, annotations are now supported in a similar way as links. Annotations can be displayed (as pixmaps) and their properties can be accessed.</p>
+</li>
+<li><p class="first">In addition to the document <code class="docutils literal"><span class="pre">select()</span></code> method, some simpler methods can now be used to manipulate a PDF:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">copyPage()</span></code> copies a page within a document.</li>
+<li><code class="docutils literal"><span class="pre">movePage()</span></code> is similar, but deletes the original.</li>
+<li><code class="docutils literal"><span class="pre">deletePage()</span></code> deletes a page</li>
+<li><code class="docutils literal"><span class="pre">deletePageRange()</span></code> deletes a page range</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">rotation</span></code> or <code class="docutils literal"><span class="pre">setRotation()</span></code> access or change a PDF page's rotation, respectively.</p>
+</li>
+<li><p class="first">Available but undocumented before, <a class="reference internal" href="irect.html#irect"><span class="std std-ref">IRect</span></a>, <a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a>, <a class="reference internal" href="point.html#point"><span class="std std-ref">Point</span></a> and <a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a> support the <code class="docutils literal"><span class="pre">len()</span></code> method and their coordinate properties can be accessed via indices, e.g. <code class="docutils literal"><span class="pre">IRect.x1</span> <span class="pre">==</span> <span class="pre">IRect[2]</span></code>.</p>
+</li>
+<li><p class="first">For convenience, documents now support simple indexing: <code class="docutils literal"><span class="pre">doc.loadPage(n)</span> <span class="pre">==</span> <span class="pre">doc[n]</span></code>. The index may however be in range <code class="docutils literal"><span class="pre">-pageCount</span> <span class="pre">&lt;</span> <span class="pre">n</span> <span class="pre">&lt;</span> <span class="pre">pageCount</span></code>, such that <code class="docutils literal"><span class="pre">doc[-1]</span></code> is the last page of the document.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="changes-in-version-1-9-2">
 <h1>Changes in Version 1.9.2<a class="headerlink" href="#changes-in-version-1-9-2" title="Permalink to this headline">¶</a></h1>
 <p>This version is also based on MuPDF v1.9a. Changes compared to version 1.9.1:</p>
 <ul>
-<li><p class="first"><code class="docutils literal"><span class="pre">fitz.open()</span></code> (no parameters) creates a new empty <strong>PDF</strong> document. If saved afterwards, it must be given a <code class="docutils literal"><span class="pre">.pdf</span></code> extension.</p>
+<li><p class="first"><code class="docutils literal"><span class="pre">fitz.open()</span></code> (no parameters) creates a new empty <strong>PDF</strong> document, i.e. if saved afterwards, it must be given a <code class="docutils literal"><span class="pre">.pdf</span></code> extension.</p>
 </li>
 <li><p class="first"><a class="reference internal" href="document.html#document"><span class="std std-ref">Document</span></a> now accepts all of the following formats (<code class="docutils literal"><span class="pre">Document</span></code> and <code class="docutils literal"><span class="pre">open</span></code> are synonyms):</p>
 <ul class="simple">
@@ -148,7 +217,7 @@
 <li><code class="docutils literal"><span class="pre">open(filename)</span></code> (equivalent to <code class="docutils literal"><span class="pre">open(filename,</span> <span class="pre">None)</span></code>),</li>
 <li><code class="docutils literal"><span class="pre">open(filetype,</span> <span class="pre">area)</span></code> (equivalent to <code class="docutils literal"><span class="pre">open(filetype,</span> <span class="pre">stream</span> <span class="pre">=</span> <span class="pre">area)</span></code>).</li>
 </ul>
-<p>Type of memory area <code class="docutils literal"><span class="pre">stream</span></code> may be <code class="docutils literal"><span class="pre">str</span></code> (Python 2), <code class="docutils literal"><span class="pre">bytes</span></code> (Python 3) or <code class="docutils literal"><span class="pre">bytearray</span></code> (Python 2 and 3). Thus, e.g. <code class="docutils literal"><span class="pre">stream</span> <span class="pre">=</span> <span class="pre">open(&quot;file.pdf&quot;,</span> <span class="pre">&quot;rb&quot;).read()</span></code> may be used directly (without first converting it to bytearray).</p>
+<p>Type of memory area <code class="docutils literal"><span class="pre">stream</span></code> may be <code class="docutils literal"><span class="pre">str</span></code> (Python 2), <code class="docutils literal"><span class="pre">bytes</span></code> (Python 3) or <code class="docutils literal"><span class="pre">bytearray</span></code> (Python 2 and 3). Thus, e.g. <code class="docutils literal"><span class="pre">area</span> <span class="pre">=</span> <span class="pre">open(&quot;file.pdf&quot;,</span> <span class="pre">&quot;rb&quot;).read()</span></code> may be used directly (without first converting it to bytearray).</p>
 </li>
 <li><p class="first">New method <code class="docutils literal"><span class="pre">Document.insertPDF()</span></code> (PDFs only) inserts a range of pages from another PDF.</p>
 </li>
@@ -169,7 +238,7 @@
 <div class="section" id="changes-in-version-1-9-1">
 <h1>Changes in Version 1.9.1<a class="headerlink" href="#changes-in-version-1-9-1" title="Permalink to this headline">¶</a></h1>
 <p>This version of PyMuPDF is based on MuPDF library source code version 1.9a published on April 21, 2016.</p>
-<p>Please have a look at MuPDF&#8217;s website to see which changes and enhancements are contained herein.</p>
+<p>Please have a look at MuPDF's website to see which changes and enhancements are contained herein.</p>
 <p>Changes in version 1.9.1 compared to version 1.8.0 are the following:</p>
 <ul class="simple">
 <li>New methods <code class="docutils literal"><span class="pre">getRectArea()</span></code> for both <code class="docutils literal"><span class="pre">fitz.Rect</span></code> and <code class="docutils literal"><span class="pre">fitz.IRect</span></code></li>
@@ -185,15 +254,15 @@
 <li>New pixmap method <code class="docutils literal"><span class="pre">getPNGData()</span></code> which will return a bytearray formatted as a PNG image of the pixmap.</li>
 <li>New pixmap method <code class="docutils literal"><span class="pre">samplesRGB()</span></code> providing a <code class="docutils literal"><span class="pre">samples</span></code> version with alpha bytes stripped off (RGB colorspaces only).</li>
 <li>New pixmap method <code class="docutils literal"><span class="pre">samplesAlpha()</span></code> providing the alpha bytes only of the <code class="docutils literal"><span class="pre">samples</span></code> area.</li>
-<li>New iterator <code class="docutils literal"><span class="pre">fitz.Pages(doc)</span></code> over a document&#8217;s set of pages.</li>
+<li>New iterator <code class="docutils literal"><span class="pre">fitz.Pages(doc)</span></code> over a document's set of pages.</li>
 <li>New matrix methods <code class="docutils literal"><span class="pre">invert()</span></code> (calculate inverted matrix), <code class="docutils literal"><span class="pre">concat()</span></code> (calculate matrix product), <code class="docutils literal"><span class="pre">preTranslate()</span></code> (perform a shift operation).</li>
 <li>New <code class="docutils literal"><span class="pre">IRect</span></code> methods <code class="docutils literal"><span class="pre">intersect()</span></code> (intersection with another rectangle), <code class="docutils literal"><span class="pre">translate()</span></code> (perform a shift operation).</li>
 <li>New <code class="docutils literal"><span class="pre">Rect</span></code> methods <code class="docutils literal"><span class="pre">intersect()</span></code> (intersection with another rectangle), <code class="docutils literal"><span class="pre">transform()</span></code> (transformation with a matrix), <code class="docutils literal"><span class="pre">includePoint()</span></code> (enlarge rectangle to also contain a point), <code class="docutils literal"><span class="pre">includeRect()</span></code> (enlarge rectangle to also contain another one).</li>
 <li>Documented <code class="docutils literal"><span class="pre">Point.transform()</span></code> (transform a point with a matrix).</li>
 <li><code class="docutils literal"><span class="pre">Matrix</span></code>, <code class="docutils literal"><span class="pre">IRect</span></code>, <code class="docutils literal"><span class="pre">Rect</span></code> and <code class="docutils literal"><span class="pre">Point</span></code> classes now support compact, algebraic formulations for manipulating such objects.</li>
 <li>Incremental saves for changes are possible now using the call pattern <code class="docutils literal"><span class="pre">doc.save(doc.name,</span> <span class="pre">incremental=True)</span></code>.</li>
-<li>A PDF&#8217;s metadata can now be deleted, set or changed by document method <code class="docutils literal"><span class="pre">setMetadata()</span></code>. Supports incremental saves.</li>
-<li>A PDF&#8217;s bookmarks (or table of contents) can now be deleted, set or changed with the entries of a list using document method <code class="docutils literal"><span class="pre">setToC(list)</span></code>. Supports incremental saves.</li>
+<li>A PDF's metadata can now be deleted, set or changed by document method <code class="docutils literal"><span class="pre">setMetadata()</span></code>. Supports incremental saves.</li>
+<li>A PDF's bookmarks (or table of contents) can now be deleted, set or changed with the entries of a list using document method <code class="docutils literal"><span class="pre">setToC(list)</span></code>. Supports incremental saves.</li>
 </ul>
 </div>
 
@@ -217,7 +286,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Oct 2016.
+      Last updated on 04. Dec 2016.
 
     </p>
   </div>
@@ -239,7 +308,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

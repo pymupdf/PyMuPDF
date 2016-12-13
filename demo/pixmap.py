@@ -18,11 +18,11 @@ Read an image and create a new one consisting of 3 * 4 tiles of it.
 # create pixmap from file
 pix0 = fitz.Pixmap("editra.png")
 # calculate target pixmap colorspace and dimensions and then create it
-tar_cs     = pix0.getColorspace()
+tar_cs     = pix0.colorspace
 tar_width  = pix0.width * 3
 tar_height = pix0.height * 4
 tar_irect  = fitz.IRect(0, 0, tar_width, tar_height)
-tar_pix    = fitz.Pixmap(tar_cs, tar_irect)
+tar_pix    = fitz.Pixmap(tar_cs, tar_irect, pix0.alpha)
 tar_pix.clearWith(90)        # clear target with a "very lively stone gray" (Loriot)
 
 # now fill target with 3 * 4 tiles of input picture

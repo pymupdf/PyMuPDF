@@ -14,7 +14,7 @@
    installation.txt
    tutorial.txt
    classes.txt
-   functions.txt
+   lowlevel.txt
    vars.txt
    app1.txt
    app2.txt

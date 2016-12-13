@@ -14,12 +14,12 @@ This is usually 10+ times faster than pure python solutions like pypng and
 height = 108            # choose whatever
 width  = 192            # you want here
 
-image  = np.ndarray((height, width, 4), dtype = np.uint8)
+image  = np.ndarray((height, width, 3), dtype = np.uint8)
 
 for i in range(height):
     for j in range(width):
         # colorize components as you like
-        image[i, j] = np.array([i%256, j%256, 200, 255], dtype = np.uint8)
+        image[i, j] = np.array([i%256, j%256, 200], dtype = np.uint8)
 
 # create string / bytes object from the array and output the picture
 samples = image.tostring()

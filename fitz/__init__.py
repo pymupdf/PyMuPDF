@@ -38,7 +38,6 @@ import fitz.utils
 fitz.open                   = fitz.Document
 fitz.Document.getToC        = fitz.utils.getToC
 fitz.Document._do_links     = fitz.utils.do_links
-fitz.Pages                  = fitz.utils.Pages
 fitz.Document.getPagePixmap = fitz.utils.getPagePixmap
 fitz.Document.getPageText   = fitz.utils.getPageText
 fitz.Document.setMetadata   = fitz.utils.setMetadata
@@ -47,11 +46,10 @@ fitz.Page.getLinks          = fitz.utils.getLinks
 fitz.Page.getPixmap         = fitz.utils.getPixmap
 fitz.Page.getText           = fitz.utils.getText
 fitz.Page.searchFor         = fitz.utils.searchFor
-fitz.Pixmap.getIRect        = fitz.utils.getIRect
-fitz.Pixmap.getColorspace   = fitz.utils.getColorspace
 fitz.Pixmap.writeImage      = fitz.utils.writeImage
 fitz.Rect.getRectArea       = fitz.utils.getRectArea
 fitz.IRect.getRectArea      = fitz.utils.getRectArea
+fitz.Annot.updateImage      = fitz.utils.updateImage
 getPointDistance            = fitz.utils.getPointDistance
 # matrix arithmetics
 fitz.Matrix.__mul__         = fitz.utils.mat_mult

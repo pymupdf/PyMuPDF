@@ -52,7 +52,7 @@ else:
 
 # get the page number, which should start from 0
 pn = int(sys.argv[2])-1
-if pn >= doc.pageCount or pn < 0:
+if pn > doc.pageCount:
     print '%s has %d pages only' % (sys.argv[1], doc.pageCount)
     exit(1)
 
@@ -86,12 +86,12 @@ hand it over to a list device
 and then populate the display list by running the page through that device,
 with transformation applied
 '''
-dl = fitz.DisplayList()
+mediabox = page.rect
+dl = fitz.DisplayList(mediabox)
 dv = fitz.Device(dl)
 page.run(dv, trans)
-
 # get the page size, and then apply the transformation
-rect = page.bound().transform(trans)
+rect = mediabox.transform(trans)
 
 # create a pixmap with RGB as colorspace and bounded by irect
 pm = fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), rect.round())
@@ -123,7 +123,7 @@ dl.run(fitz.Device(pm1, None), fitz.Identity, rect)
 # now let's do text search
 # first, we need text sheet and text page
 ts = fitz.TextSheet()
-tp = fitz.TextPage()
+tp = fitz.TextPage(mediabox)
 
 # and run the display list through a text device which is created from
 # text page and text sheet

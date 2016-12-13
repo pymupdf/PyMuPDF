@@ -32,7 +32,7 @@ for i in range(1, lenXREF):            # scan through all objects
         continue
     imgcount += 1
     pix = fitz.Pixmap(doc, i)          # make pixmap from image
-    if pix.n < 5:                      # can be saved as PNG
+    if pix.colorspace.n < 4:           # can be saved as PNG
         pix.writePNG("img-%s.png" % (i,))
     else:                              # must convert the CMYK first
         pix0 = fitz.Pixmap(fitz.csRGB, pix)

@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Identity &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Identity &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="up" title="Classes" href="classes.html"/>
         <link rel="next" title="IRect" href="irect.html"/>
         <link rel="prev" title="Document" href="document.html"/> 
@@ -55,13 +57,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -84,14 +89,15 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="annot.html">Annot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="colorspace.html">Colorspace</a></li>
-<li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
 <li class="toctree-l2"><a class="reference internal" href="document.html">Document</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Identity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="irect.html">IRect</a></li>
@@ -100,15 +106,12 @@
 <li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
-<li class="toctree-l2"><a class="reference internal" href="textpage.html">TextPage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="textsheet.html">TextSheet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lowlevel.html">Low Level Functions and Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
@@ -148,8 +151,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/identity.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -161,7 +162,7 @@
   <div class="section" id="identity">
 <span id="id1"></span><h1>Identity<a class="headerlink" href="#identity" title="Permalink to this headline">¶</a></h1>
 <p>Identity is just a <a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a> that performs no action, to be used whenever the syntax requires a <a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>, but no actual transformation should take place.</p>
-<p>Identity is a constant, an &#8220;immutable&#8221; object. So, all of its matrix properties are read-only and its methods are disabled.</p>
+<p>Identity is a constant, an &quot;immutable&quot; object. So, all of its matrix properties are read-only and its methods are disabled.</p>
 <p>If you need a do-nothing matrix as a starting point, use <code class="docutils literal"><span class="pre">fitz.Matrix(1,</span> <span class="pre">1)</span></code> or <code class="docutils literal"><span class="pre">fitz.Matrix(0)</span></code> instead, like so:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fitz</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">preTranslate</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <span class="go">fitz.Matrix(1.0, 0.0, -0.0, 1.0, 2.0, 5.0)</span>
@@ -189,7 +190,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Oct 2016.
+      Last updated on 04. Dec 2016.
 
     </p>
   </div>
@@ -211,7 +212,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

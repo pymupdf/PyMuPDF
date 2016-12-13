@@ -72,12 +72,11 @@ Working with Outlines
 =========================
 The easiest way to get all outlines of a document, is creating a table of contents:
 ::
- # the simple form, if False, link information is included
- toc = doc.getToC(simple = True)
+ toc = doc.getToC()
 
-This will return a Python list ``[[level, title, page, link], ...]`` (or ``[]``).
+This will return a Python list ``[[lvl, title, page, ...]`` (or ``[]``).
 
-``level`` is the hierarchy level of the entry (starting from 1), ``title`` is the entry's title, and ``page`` the page number (1-based). ``link`` is present if ``simple = False`` is specified. Its meaning can be looked up under :meth:`Page.getLinks`.
+``lvl`` is the hierarchy level of the entry (starting from 1), ``title`` is the entry's title, and ``page`` the page number (1-based). Other parameters describe details of the bookmark target.
 
 
 Working with Pages
@@ -89,6 +88,7 @@ You can write it's image to files, extract text from it or search for text strin
 At first, a page object must be created:
 ::
  page = doc.loadPage(n)        # represents page n of the document (0-based)
+ page = doc[n]                 # short form
 
 Some typical uses of :ref:`Page` objects follow:
 
@@ -121,14 +121,14 @@ We can also use the image in a dialog. :attr:`Pixmap.samples` represents the are
 
 **wxPython**:
 ::
- bitmap = wx.BitmapFromBufferRGBA(pix.width, # image width
+ bitmap = wx.BitmapFromBufferRGB(pix.width,  # image width
              pix.height,                     # image height
              pix.samples)                    # bytearray with pixel data
 
 **Tkinter**:
 ::
  # the following requires: "from PIL import Image"
- img = Image.frombytes("RGBA", [pix.width, pix.height], pix.samples)
+ img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
  photo = ImageTk.PhotoImage(img)
 
 Now, ``photo`` can be used as an image in TK.
@@ -158,7 +158,7 @@ You can find out, exactly where on a page a certain string appears like this:
  areas = page.searchFor("mupdf", hit_max = 32)
 
 
-The variable ``areas`` will now contain a list of up to 32 :ref:`Rect` rectangles each of which surrounds one occurrence of string "mupdf" (case insensitive).
+The variable ``areas`` will now contain a list of up to 32 :ref:`Rect` rectangles each of which surrounds one occurrence of string "mupdf" (not case sensitive).
 
 Please also do have a look at the demo program ``demo.py``. Among others it contains details on how the :ref:`TextPage`, :ref:`TextSheet`, :ref:`Device` and :ref:`DisplayList` classes can be used for a more direct control, e.g. when performance considerations require it.
 
@@ -169,7 +169,7 @@ Since version 1.9, PyMuPDF provides several options to modify PDF documents (onl
 
 A PDF document can be modified unnoticed by the user in two ways:
 
-* During open, integrity checks are used to determine the health of the PDF structure. Any errors will automatically be corrected to present a repaired document in memory for further processing. If this is the case, the document counts as being modified.
+* During open, integrity checks are used to determine the health of the PDF structure. Any errors will automatically be corrected to present a repaired document in memory for further processing. If this is the case, the document is regarded as being modified.
 
 * After a document has been decrypted, the document in memory obviously has changed and also counts as being modified.
 
@@ -209,7 +209,7 @@ As mentioned before, ``save()`` will automatically save a decrypted and / or rep
 
 If you altered something, then the resulting document will be saved.
 
-Since MuPDF 1.9, you can also write changes back to the original file by specifying ``incremental = True``. This process is **extremely fast**, since any changes are **appended to the original file** - it will not be rewritten as a whole.
+Since MuPDF 1.9, you can also write changes back to the original file by specifying ``incremental = True``. This process is **extremely fast**, since changes are **appended to the original file** - it will not be rewritten as a whole.
 
 :meth:`Document.save` supports all options of MuPDF's command line utility ``mutool clean``, see the following table (corresponding ``mutool clean`` option is indicated as "mco").
 
@@ -274,20 +274,16 @@ If a PDF is broken or needs to be decrypted, one could dynamically invoke PyMuPD
      try:
          return PdfReader(ibuffer)           # let us try
      except:                                 # problem! heal it with PyMuPDF
-         doc = fitz.open("application/pdf",
-                         bytearray(idata))   # scan pdf data in memory
-         doc.save("temp.pdf",
-                  garbage=3,
-                  deflate=1)                 # save cleaned version
-         ifile = open("test.pdf", "rb")      # open it
-         idata = ifile.read()                # put in memory
-         ifile.close()
-         ibuffer = StringIO(idata)           # convert to stream
+         doc = fitz.open("pdf", idata)       # open and save a corrected
+         c = doc.write(garbage = 4)          # version in memory
+         doc.close()
+         doc = idata = None                  # free storage
+         ibuffer = StringIO(c)               # convert to stream
          return PdfReader(ibuffer)           # let pdfrw retry
  #---------------------------------------
-
- pdf = reader(sys.argv[1])
+ pdf = reader("pymupdf.pdf")
  print pdf.Info
  # do further processing
 
-With the command line utility ``pdftk`` (`available <https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/>`_ for Windows only) a similar result can be achieved, see `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. It even supports buffers for input **and** output. However, you must invoke it as a separate process via ``subprocess.Popen``, using stdin and stdout as communication vehicles.
+
+With the command line utility ``pdftk`` (`available <https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/>`_ for Windows only) a similar result can be achieved, see `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. However, you must invoke it as a separate process via ``subprocess.Popen``, using stdin and stdout as communication vehicles.

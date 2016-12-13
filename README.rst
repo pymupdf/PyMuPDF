@@ -1,7 +1,7 @@
-PyMuPDF 1.9.2
-==============
+PyMuPDF 1.10.0
+================
 
-Release date: August, 2016
+Release date: December, 2016
 
 Authors
 =======
@@ -13,11 +13,11 @@ Authors
 Introduction
 ============
 
-This is **version 1.9.2 of PyMuPDF (formerly python-fitz)**, a Python binding which supports `MuPDF 1.9a <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
+This is **version 1.10.0 of PyMuPDF (formerly python-fitz)**, a Python binding which supports `MuPDF 1.10a <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
 
-MuPDF can access files in PDF, XPS, OpenXPS and EPUB (e-book) formats, and it is known for its top performance and high rendering quality.
+MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
-With PyMuPDF you therefore can also access files with extensions ``*.pdf``, ``*.xps``, ``*.oxps`` or ``*.epub`` from your Python scripts.
+With PyMuPDF you therefore can also access files with extensions ``*.pdf``, ``*.xps``, ``*.oxps``, ``*.cbz``, ``*.fb2`` or ``*.epub`` from your Python scripts.
 
 See the `Wiki <https://github.com/rk700/PyMuPDF/wiki>`_ for more info/news/release notes/etc.
 
@@ -25,9 +25,7 @@ See the `Wiki <https://github.com/rk700/PyMuPDF/wiki>`_ for more info/news/relea
 Installation
 ============
 
-Like v1.9.1, this version 1.9.2 is also based on MuPDF version 1.9a. Therefore, generating MuPDF again is not required to make use of it.
-
-If you had not previously installed MuPDF, you must first do this. This process highly depends on your system. For most platforms, MuPDF source contains prepared procedures on how to do this. Linux distributions usually also provide their own ways on how to install MuPDF. See below for more details.
+If you had not previously installed MuPDF, you must first do this. This process highly depends on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this. Linux distributions usually also provide their own ways on how to install MuPDF. See below for more details.
 
 Once MuPDF is in place, installing PyMuPDF comes down to running the usual ``python setup.py install``.
 
@@ -39,7 +37,7 @@ AUR: https://aur.archlinux.org/packages/python2-pymupdf/
 
 Ubuntu
 ------
-Since MuPDF v1.9a is not available yet in the official repo, you need to first build it from source. Make sure to add ``-fPIC`` to CFLAGS when compiling.
+Since MuPDF v1.10a is not available yet in the official repo, you need to first build it from source. Make sure to add ``-fPIC`` to CFLAGS when compiling.
 
 When MuPDF is ready, edit ``setup.py`` in PyMuPDF and comment out the line of ``library_dirs=[]`` to specify the directory which contains ``libmupdf.a`` and other 3rd party libraries. Remove ``crypto`` from ``libraries`` in ``setup.py`` if it complains.
 
@@ -55,7 +53,7 @@ Windows
 -------
 You can download pre-generated binaries from `here <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/binary_setups>`_ that are suitable for your Python version, and thereby avoid any compilation hassle. Please refer to this `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
 
-If you want to make your own binary, have a look at this `Wiki page <https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation>`_. It explains how to use Visual Studio for generating MuPDF in some detail.
+If you want to make your own binary however, have a look at this `Wiki page <https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation>`_. It explains how to use Visual Studio for generating MuPDF in quite some detail. Also do not hesitate to contact us if you need help.
 
 Usage
 =====
@@ -64,16 +62,12 @@ Please have a look at the basic `demos <https://github.com/rk700/PyMuPDF/tree/ma
 
 You can access the complete documentation (which contains a detailed tutorial) as a `PDF <https://github.com/rk700/PyMuPDF/tree/master/doc/PyMuPDF.pdf>`_, as a `Windows compiled html <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm>`_ or at `PyPI <http://pythonhosted.org/PyMuPDF/>`_.
 
-Next Versions - Update
-========================
-Version v1.9.3 exists as a branch. If you want to try out its new features, have a look at `this <https://github.com/rk700/PyMuPDF/tree/1.9.3>`_. An overview can be found in this `Wiki <https://github.com/rk700/PyMuPDF/wiki/Changes-in-Version-1.9.3>`_ page.
+Earlier Versions
+================
+* `PyMuPDF Version 1.9.3 <https://github.com/rk700/PyMuPDF/tree/1.9.3>`_
 
-**MuPDF v1.10** has been officially published (2016-11-21). We are working to support it with **PyMuPDF v1.10.0**. This will be an extension of the v1.9.3 feature set which we do not plan to publish as an official PyMuPDF release any longer. You can, however, use branch 1.9.3 - it does work!
+* `PyMuPDF Version 1.9.2 <https://github.com/rk700/PyMuPDF/releases/tag/v1.9.2>`_
 
-MuPDF's new version contains significant changes. Some of them (pixmaps, links) will impact PyMuPDF's API, so please check out `Wiki <https://github.com/rk700/PyMuPDF/wiki>`_ pages dealing with any such changes.
-
-Legacy Support
-==============
 * `PyMuPDF Version 1.9.1 <https://github.com/rk700/PyMuPDF/releases/tag/v1.9.1>`_
 
 * `Code compatible with MuPDF v1.8 <https://github.com/rk700/PyMuPDF/releases/tag/v1.8>`_
@@ -90,7 +84,7 @@ PyMuPDF is distributed under GNU GPL V3.
 Contact
 =======
 
-You can also find PyMuPDF on the Python Package Index `PyPI <https://pypi.python.org/pypi/PyMuPDF/1.9.2>`_.
+You can also find PyMuPDF on the Python Package Index `PyPI <https://pypi.python.org/pypi/PyMuPDF/1.10.0>`_.
 
 We invite you to join our efforts by contributing to the the wiki pages.
 

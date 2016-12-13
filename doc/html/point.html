@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Point &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Point &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="up" title="Classes" href="classes.html"/>
         <link rel="next" title="Rect" href="rect.html"/>
         <link rel="prev" title="Pixmap" href="pixmap.html"/> 
@@ -55,13 +57,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -84,14 +89,15 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="annot.html">Annot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="colorspace.html">Colorspace</a></li>
-<li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
 <li class="toctree-l2"><a class="reference internal" href="document.html">Document</a></li>
 <li class="toctree-l2"><a class="reference internal" href="identity.html">Identity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="irect.html">IRect</a></li>
@@ -100,7 +106,6 @@
 <li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Point</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#remark">Remark</a></li>
@@ -109,11 +114,9 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
-<li class="toctree-l2"><a class="reference internal" href="textpage.html">TextPage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="textsheet.html">TextSheet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lowlevel.html">Low Level Functions and Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
@@ -152,8 +155,6 @@
     <li>Point</li>
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/point.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -196,14 +197,14 @@
 <dt id="Point.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em><span class="optional">[</span>, <em>x</em>, <em>y</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#Point.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
-<div>Constructor. Without parameters defaulting to <code class="docutils literal"><span class="pre">Point(0.0,</span> <span class="pre">0.0)</span></code> (&#8220;top left&#8221;). Also see the example below.</div></blockquote>
+<div>Constructor. Without parameters defaulting to <code class="docutils literal"><span class="pre">Point(0.0,</span> <span class="pre">0.0)</span></code> (&quot;top left&quot;). Also see the example below.</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>x</strong> (<em>float</em>) &#8211; X coordinate of the point</li>
-<li><strong>y</strong> (<em>float</em>) &#8211; Y coordinate of the point</li>
+<li><strong>x</strong> (<em>float</em>) -- X coordinate of the point</li>
+<li><strong>y</strong> (<em>float</em>) -- Y coordinate of the point</li>
 </ul>
 </td>
 </tr>
@@ -220,7 +221,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="#point"><span class="std std-ref">Point</span></a>) &#8211; The point to copy from.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<a class="reference internal" href="#point"><span class="std std-ref">Point</span></a>) -- The point to copy from.</td>
 </tr>
 </tbody>
 </table>
@@ -235,7 +236,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) &#8211; The matrix to be applied.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m</strong> (<a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a>) -- The matrix to be applied.</td>
 </tr>
 </tbody>
 </table>
@@ -245,7 +246,7 @@
 
 <div class="section" id="remark">
 <h2>Remark<a class="headerlink" href="#remark" title="Permalink to this headline">¶</a></h2>
-<p>A point&#8217;s <code class="docutils literal"><span class="pre">p</span></code> attributes <code class="docutils literal"><span class="pre">x</span></code> and <code class="docutils literal"><span class="pre">y</span></code> can also be accessed as indices, e.g. <code class="docutils literal"><span class="pre">p.x</span> <span class="pre">==</span> <span class="pre">p[0]</span></code>.</p>
+<p>A point's <code class="docutils literal"><span class="pre">p</span></code> attributes <code class="docutils literal"><span class="pre">x</span></code> and <code class="docutils literal"><span class="pre">y</span></code> can also be accessed as indices, e.g. <code class="docutils literal"><span class="pre">p.x</span> <span class="pre">==</span> <span class="pre">p[0]</span></code>.</p>
 </div>
 <div class="section" id="point-algebra">
 <h2>Point Algebra<a class="headerlink" href="#point-algebra" title="Permalink to this headline">¶</a></h2>
@@ -303,7 +304,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 06. Oct 2016.
+      Last updated on 04. Dec 2016.
 
     </p>
   </div>
@@ -325,7 +326,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

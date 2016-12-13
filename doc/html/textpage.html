@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TextPage &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>TextPage &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,10 +32,10 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
-        <link rel="up" title="Classes" href="classes.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
+        <link rel="up" title="Low Level Functions and Classes" href="lowlevel.html"/>
         <link rel="next" title="TextSheet" href="textsheet.html"/>
-        <link rel="prev" title="Rect" href="rect.html"/> 
+        <link rel="prev" title="DisplayList" href="displaylist.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -55,13 +57,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -84,31 +89,21 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="colorspace.html">Colorspace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="lowlevel.html">Low Level Functions and Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="functions.html">Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
 <li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
-<li class="toctree-l2"><a class="reference internal" href="document.html">Document</a></li>
-<li class="toctree-l2"><a class="reference internal" href="identity.html">Identity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="irect.html">IRect</a></li>
-<li class="toctree-l2"><a class="reference internal" href="link.html">Link</a></li>
-<li class="toctree-l2"><a class="reference internal" href="linkdest.html">linkDest</a></li>
-<li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
-<li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
-<li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">TextPage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="textsheet.html">TextSheet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
@@ -142,13 +137,11 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-          <li><a href="classes.html">Classes</a> &raquo;</li>
+          <li><a href="lowlevel.html">Low Level Functions and Classes</a> &raquo;</li>
       
     <li>TextPage</li>
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/textpage.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -173,16 +166,16 @@
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td><a class="reference internal" href="#TextPage.extractText" title="TextPage.extractText"><code class="xref py py-meth docutils literal"><span class="pre">TextPage.extractText()</span></code></a></td>
-<td>Extract the page&#8217;s plain text</td>
+<td>Extract the page's plain text</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#TextPage.extractHTML" title="TextPage.extractHTML"><code class="xref py py-meth docutils literal"><span class="pre">TextPage.extractHTML()</span></code></a></td>
-<td>Extract the page&#8217;s text in HTML format</td>
+<td>Extract the page's text in HTML format</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#TextPage.extractJSON" title="TextPage.extractJSON"><code class="xref py py-meth docutils literal"><span class="pre">TextPage.extractJSON()</span></code></a></td>
-<td>Extract the page&#8217;s text in JSON format</td>
+<td>Extract the page's text in JSON format</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#TextPage.extractXML" title="TextPage.extractXML"><code class="xref py py-meth docutils literal"><span class="pre">TextPage.extractXML()</span></code></a></td>
-<td>Extract the page&#8217;s text in XML format</td>
+<td>Extract the page's text in XML format</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#TextPage.search" title="TextPage.search"><code class="xref py py-meth docutils literal"><span class="pre">TextPage.search()</span></code></a></td>
 <td>Search for a string in the page</td>
@@ -196,7 +189,7 @@
 <dd><dl class="method">
 <dt id="TextPage.extractText">
 <code class="descname">extractText</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TextPage.extractText" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract the text from a <code class="docutils literal"><span class="pre">TextPage</span></code> object. Returns a string of the page&#8217;s complete text. No attempt is being made to adhere to a natural reading sequence: the text is returned UTF-8 encoded and in the same sequence as the PDF creator specified it. If this looks awkward for your PDF file, consider using program that re-arranges the text according to a more familiar layout, e.g. <code class="docutils literal"><span class="pre">PDF2TextJS.py</span></code> in the examples directory.</p>
+<dd><p>Extract the text from a <code class="docutils literal"><span class="pre">TextPage</span></code> object. Returns a string of the page's complete text. No attempt is being made to adhere to a natural reading sequence: the text is returned UTF-8 encoded and in the same sequence as the PDF creator specified it. If this looks awkward for your PDF file, consider using program that re-arranges the text according to a more familiar layout, e.g. <code class="docutils literal"><span class="pre">PDF2TextJS.py</span></code> in the examples directory.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -258,8 +251,8 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>string</strong> (<em>string</em>) &#8211; The string to search for.</li>
-<li><strong>hit_max</strong> (<em>int</em>) &#8211; Maximum number of expected hits (default 16).</li>
+<li><strong>string</strong> (<em>string</em>) -- The string to search for.</li>
+<li><strong>hit_max</strong> (<em>int</em>) -- Maximum number of expected hits (default 16).</li>
 </ul>
 </td>
 </tr>
@@ -291,7 +284,7 @@
         <a href="textsheet.html" class="btn btn-neutral float-right" title="TextSheet" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="rect.html" class="btn btn-neutral" title="Rect" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="displaylist.html" class="btn btn-neutral" title="DisplayList" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -301,7 +294,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Oct 2016.
+      Last updated on 04. Dec 2016.
 
     </p>
   </div>
@@ -323,7 +316,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

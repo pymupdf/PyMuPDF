@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Introduction &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Introduction &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,8 +32,8 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
-        <link rel="next" title="Changes in Version 1.9.2" href="changes.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
+        <link rel="next" title="Changes in Version 1.10.0" href="changes.html"/>
         <link rel="prev" title="The PyMuPDF Documentation" href="index.html"/> 
 
   
@@ -54,13 +56,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -87,12 +92,14 @@
 <li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lowlevel.html">Low Level Functions and Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
@@ -130,8 +137,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/intro.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -142,22 +147,21 @@
             
   <div class="section" id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p><strong>PyMuPDF</strong> (formerly known as <strong>python-fitz</strong>) is a Python binding for <a class="reference external" href="http://www.mupdf.com/">MuPDF</a> - &#8220;a lightweight PDF and XPS viewer&#8221;.</p>
-<p>MuPDF can access files in PDF, XPS, OpenXPS, CBZ (comic book archive) and EPUB (e-book) formats.</p>
-<p>These are files with extensions <code class="docutils literal"><span class="pre">*.pdf</span></code>, <code class="docutils literal"><span class="pre">*.xps</span></code>, <code class="docutils literal"><span class="pre">*.oxps</span></code>, <code class="docutils literal"><span class="pre">*.cbz</span></code> or <code class="docutils literal"><span class="pre">*.epub</span></code> (so in essence, with this binding you can develop <strong>e-book viewers in Python</strong> ...)</p>
+<p><strong>PyMuPDF</strong> (formerly known as <strong>python-fitz</strong>) is a Python binding for <a class="reference external" href="http://www.mupdf.com/">MuPDF</a> - &quot;a lightweight PDF and XPS viewer&quot;.</p>
+<p>MuPDF can access files in PDF, XPS, OpenXPS, CBZ (comic book archive), FB2 and EPUB (e-book) formats.</p>
+<p>These are files with extensions <code class="docutils literal"><span class="pre">*.pdf</span></code>, <code class="docutils literal"><span class="pre">*.xps</span></code>, <code class="docutils literal"><span class="pre">*.oxps</span></code>, <code class="docutils literal"><span class="pre">*.cbz</span></code>, <code class="docutils literal"><span class="pre">*.fb2</span></code>  or <code class="docutils literal"><span class="pre">*.epub</span></code> (so in essence, with this binding you can develop <strong>e-book viewers in Python</strong> ...)</p>
 <p>PyMuPDF provides access to all important functions of MuPDF from within a Python environment. Nevertheless, we are continuously expanding this function set.</p>
 <p>MuPDF stands out among all similar products for its top rendering capability and unsurpassed processing speed.</p>
-<p>Check this out yourself and compare the various free PDF-viewers. In terms of speed and rendering quality <a class="reference external" href="http://www.sumatrapdfreader.org/">SumatraPDF</a> ranges at the top (apart from MuPDF&#8217;s own standalone viewer) - since it has changed its library basis to  MuPDF!</p>
-<p>While PyMuPDF has been available since several years for an earlier version of MuPDF (1.2), it was until only mid May 2015, that its creator and a few co-workers decided to elevate it to support the current release of MuPDF (first V1.7a  then V1.8 in November 2016, and V1.9 and V1.9a since April 2016).</p>
-<p>And we are determined to keep PyMuPDF also current in the future!</p>
-<p>PyMuPDF runs and has been tested on Mac, Linux, Windows 7, Windows 10, Python 2 and Python 3 (x86 and x64 versions). Other platforms should work too as long as MuPDF and Python support them.</p>
+<p>Check this out yourself and compare the various free PDF-viewers. In terms of speed and rendering quality <a class="reference external" href="http://www.sumatrapdfreader.org/">SumatraPDF</a> ranges at the top (apart from MuPDF's own standalone viewer) - since it has changed its library basis to  MuPDF!</p>
+<p>While PyMuPDF has been available since several years for an earlier version of MuPDF (1.2), it was until only mid May 2015, that its creator and a few co-workers decided to elevate it to support the current release of MuPDF (first v1.7a  then v1.8 in November 2016, v1.9 and v1.9a since April 2016, and v1.10a in December 2016).</p>
+<p>PyMuPDF runs and has been tested on Mac, Linux, Windows 7, Windows 10, Python 2 and Python 3 (x86 and x64 versions). Other platforms should work too, as long as MuPDF and Python support them.</p>
 <p>There exist several demo and example programs in the repository, ranging from simple code snippets to full-featured utilities, like text extraction, PDF joiners and bookmark maintenance.</p>
 <p>Several interesting PDF output functions have been added recently, covering metadata and bookmark maintenance and document restructuring.</p>
 <p>For installation, you can choose between generating from source code (which implies also compiling the MuPDF C library), or, under Windows only, installing pre-generated binaries.</p>
 <div class="section" id="note-on-the-name-fitz">
 <h2>Note on the Name <code class="docutils literal"><span class="pre">fitz</span></code><a class="headerlink" href="#note-on-the-name-fitz" title="Permalink to this headline">¶</a></h2>
-<p>The Python import statement for this library is <code class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></code>. Here is the reason why:</p>
-<p>The original rendering library for MuPDF was called <code class="docutils literal"><span class="pre">Libart</span></code>. &#8220;After Artifex Software acquired the MuPDF project, the development focus shifted on writing a new modern graphics library called <code class="docutils literal"><span class="pre">Fitz</span></code>. Fitz was originally intended as an R&amp;D project to replace the aging Ghostscript graphics library, but has instead become the rendering engine powering MuPDF.&#8221; (Quoted from <a class="reference external" href="https://en.wikipedia.org/wiki/MuPDF">Wikipedia</a>).</p>
+<p>The Python import statement for this library is <code class="docutils literal"><span class="pre">import</span> <span class="pre">fitz</span></code>. This has a historical reason:</p>
+<p>The original rendering library for MuPDF was called <code class="docutils literal"><span class="pre">Libart</span></code>. &quot;After Artifex Software acquired the MuPDF project, the development focus shifted on writing a new modern graphics library called <code class="docutils literal"><span class="pre">Fitz</span></code>. Fitz was originally intended as an R&amp;D project to replace the aging Ghostscript graphics library, but has instead become the rendering engine powering MuPDF.&quot; (Quoted from <a class="reference external" href="https://en.wikipedia.org/wiki/MuPDF">Wikipedia</a>).</p>
 </div>
 <div class="section" id="license">
 <h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
@@ -173,7 +177,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="changes.html" class="btn btn-neutral float-right" title="Changes in Version 1.9.2" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="changes.html" class="btn btn-neutral float-right" title="Changes in Version 1.10.0" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral" title="The PyMuPDF Documentation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -186,7 +190,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Oct 2016.
+      Last updated on 04. Dec 2016.
 
     </p>
   </div>
@@ -208,7 +212,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

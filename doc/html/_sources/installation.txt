@@ -17,9 +17,9 @@ Step 1: Download PyMuPDF
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 Download this repository and unzip / decompress it. This will give you a folder, let us call it ``PyFitz``.
 
-Step 2: Download and Generate MuPDF 1.9
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Download ``mupdf-1.9a-source.tar.gz`` from `MuPDF version 1.9a source <http://mupdf.com/downloads/>`_, now and unzip / decompress it. Call the resulting folder ``mupdf``. MuPDF sources are also available on `GitHub <https://github.com/ArtifexSoftware/mupdf>`_.
+Step 2: Download and Generate MuPDF 1.10a
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Download ``mupdf-1.10a-source.tar.gz`` from `MuPDF version 1.10a source <http://mupdf.com/downloads/>`_, now and unzip / decompress it. Call the resulting folder ``mupdf``. MuPDF sources are also available on `GitHub <https://github.com/ArtifexSoftware/mupdf>`_.
 
 Make sure you download the (sub-) version for which PyMuPDF has stated its compatibility. The various Linux flavors usually have their own specific ways to support download of packages which we cannot cover here. Do not hesitate posting inquiries to our web site or sending e-mail to the authors for getting support.
 
@@ -27,24 +27,88 @@ Put it inside ``PyFitz`` as a subdirectory for keeping everything in one place.
 
 **Controlling the Binary File Size:**
 
-Since version 1.9, MuPDF includes support for many dozens of additional, so-called NOTO ("no TOFU") fonts for all sorts of alphabets from all over the world like Chinese, Japanese, Corean, Kyrillic, Indonesian, Chinese etc. If you accept MuPDF's standard here, the resulting binary for PyMuPDF will be quite big and easily approach 20 MB.
+Since version 1.9, MuPDF includes support for many dozens of additional, so-called NOTO ("no TOFU") fonts for all sorts of alphabets from all over the world like Chinese, Japanese, Corean, Kyrillic, Indonesian, Chinese etc. If you accept MuPDF's standard here, the resulting binary for PyMuPDF will be very big and easily approach 20 MB. The features actually needed by PyMuPDF in contrast only represent a fraction of this size: no more than 5 MB currently.
 
-If you feel you do not want or need every font, you can reduce their amount by adding appropriate ``#define`` statements to header file ``/include/mupdf/fitz.h`` by inserting ``#define`` statements like this:
+To cut off unneeded stuff from your MuPDF version, modify file ``/include/mupdf/config.h`` as follows:
 ::
- #ifndef MUDPF_FITZ_H
- #define MUDPF_FITZ_H
+ #ifndef FZ_CONFIG_H
 
- #define NOTO_SMALL          // choose a small set of extra fonts
- #define TOFU_CJK            // exclude Android specific fonts
+ #define FZ_CONFIG_H
 
- #ifdef __cplusplus
- extern "C" {
- #endif
- ...
+ / *
+     Choose which plotters we need.
+     By default we build the greyscale, RGB and CMYK plotters in,
+     but omit the arbitrary plotters. To avoid building
+     plotters in that aren't needed, define the unwanted
+     FZ_PLOTTERS_... define to 0.
+ */
+ /* #define FZ_PLOTTERS_G 1 */
+ /* #define FZ_PLOTTERS_RGB 1 */
+ /* #define FZ_PLOTTERS_CMYK 1 */
+ /* #define FZ_PLOTTERS_N 0 */
 
-The above minimal choice should bring down the binary file size to a one digit MB amount.
+ /*
+     Choose which document agents to include.
+     By default all but GPRF are enabled. To avoid building unwanted
+     ones, define FZ_ENABLE_... to 0.
+ */
+ /* #define FZ_ENABLE_PDF 1 */
+ /* #define FZ_ENABLE_XPS 1 */
+ /* #define FZ_ENABLE_SVG 1 */
+ /* #define FZ_ENABLE_CBZ 1 */
+ /* #define FZ_ENABLE_IMG 1 */
+ /* #define FZ_ENABLE_TIFF 1 */
+ /* #define FZ_ENABLE_HTML 1 */
+ /* #define FZ_ENABLE_EPUB 1 */
+ /* #define FZ_ENABLE_GPRF 1 */
 
-Check out file ``.../source/fitz/noto.c`` to see other possible combinations.
+ /*
+     Choose whether to enable JavaScript.
+     By default JavaScript is enabled both for mutool and PDF interactivity.
+ */
+ // #define FZ_ENABLE_JS 1
+
+ /*
+     Choose which fonts to include.
+     By default we include the base 14 PDF fonts,
+     DroidSansFallback from Android for CJK, and
+     Charis SIL from SIL for epub/html.
+     Enable the following defines to AVOID including
+     unwanted fonts.
+ */
+ /* To avoid all noto fonts except CJK, enable: */
+ #define TOFU            // <======================== PyMuPDF
+
+ /* To skip the CJK font, enable: */
+ #define TOFU_CJK        // <======================== PyMuPDF
+
+ /* To skip CJK Extension A, enable: */
+ #define TOFU_CJK_EXT    // <======================== PyMuPDF
+
+ /* To skip the Emoji font, enable: */
+ #define TOFU_EMOJI      // <======================== PyMuPDF
+
+ /* To skip the ancient/historic scripts, enable: */
+ #define TOFU_HISTORIC   // <======================== PyMuPDF
+
+ /* To skip the symbol font, enable: */
+ /* #define TOFU_SYMBOL */
+
+ /* To skip the SIL fonts, enable: */
+ #define TOFU_SIL        // <======================== PyMuPDF
+
+ /* To skip the Base14 fonts, enable: */
+ /* #define TOFU_BASE14 */
+ /* (You probably really don't want to do that except for measurement purposes!) */
+
+ /* ---------- DO NOT EDIT ANYTHING UNDER THIS LINE ---------- */
+
+ ... ... ...
+
+ #endif /* FZ_CONFIG_H */
+
+
+The above choice should bring down your binary file size to around 5 MB or less.
 
 **Generate MuPDF now**.
 
@@ -64,19 +128,19 @@ Using UPX
 ~~~~~~~~~~~~~~~~~~
 Your PyMuPDF installation will end up with four files: ``__init__.py``, ``fitz.py``, ``utils.py`` and the binary ``_fitz.xxx`` in the ``site-packages`` directory. The extension of the binary will be ``.pyd`` on Windows and ``.so`` on Linux and other platforms.
 
-Depending on your OS, your compiler and your font support choice (see above), this binary can be quite large and range from 8 MB to 20 MB. You can reduce this by applying the compression utility `UPX <http://upx.sourceforge.net/>`_ to it, which exists for many operating systems. UPX will reduce the size of ``_fitz.xxx`` by more than 50%. You will end up with 4 MB to 9 MB without impacting functionality or execution speed.
+Depending on your OS, your compiler and your font support choice (see above), this binary can be quite large and range from 5 MB to 20 MB. You can reduce this by applying the compression utility `UPX <http://upx.sourceforge.net/>`_ to it, which exists for many operating systems. UPX will reduce the size of ``_fitz.xxx`` by more than 50%. You will end up with 2.5 MB to 9 MB without impacting functionality or execution speed.
 
 Option 2: Install from Binaries
 --------------------------------
-This installation option is based on pre-built binaries for Python versions on Windows 7, 8 and 10 (32bit or 64bit). Supported Python versions are 2.7 and 3.1 through 3.5.
+This installation option is based on pre-built binaries for Python versions on Windows 7, 8 and 10 (32bit or 64bit). Supported Python versions include 2.7 and 3.1 through 3.5.
 
 Step 1: Download Optional Material
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Download `PyMuPDF-optional-material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_. From directory ``binary_setups`` select the zip file corresponding to your configuration and unzip it anywhere you like. To reduce download time, just download the zip file corresponding to your Python version.
+Download `PyMuPDF-optional-material <https://github.com/JorjMcKie/PyMuPDF-optional-material/>`_. From directory ``binary_setups`` select the zip file corresponding to your configuration and unzip it anywhere you like. To reduce download time, directly download the zip file corresponding to your Python version.
 
 Step 2: Install PyMuPDF
 ~~~~~~~~~~~~~~~~~~~~~~~~
-Open a command prompt at the unzipped folder's top level and enter ``python setup.py install`` (or ``py setup.py install`` if you have the Python launcher, see below).
+Open a command prompt at the unzipped folder's directory that contains ``setup.py`` and enter ``python setup.py install`` (or ``py setup.py install`` if you have the Python launcher, see below).
 
 **You are done within 2 seconds.**
 
@@ -86,7 +150,7 @@ MD5 Checksums
 ~~~~~~~~~~~~~~
 Binary download setup scripts contain an integrity check based on MD5 check sums.
 
-The directory structure of each zip file ``pymupdf-1.9.?.?-py??-x??.zip`` is as follows:
+The directory structure of each zip file ``pymupdf-1.10.?.?-py??-x??.zip`` is as follows:
 
 .. image:: binsetupdirs.png
 

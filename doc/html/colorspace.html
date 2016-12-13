@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Colorspace &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Colorspace &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,10 +32,10 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="up" title="Classes" href="classes.html"/>
-        <link rel="next" title="Device" href="device.html"/>
-        <link rel="prev" title="Classes" href="classes.html"/> 
+        <link rel="next" title="Document" href="document.html"/>
+        <link rel="prev" title="Annot" href="annot.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -55,13 +57,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -84,14 +89,15 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="annot.html">Annot</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Colorspace</a></li>
-<li class="toctree-l2"><a class="reference internal" href="device.html">Device</a></li>
-<li class="toctree-l2"><a class="reference internal" href="displaylist.html">DisplayList</a></li>
 <li class="toctree-l2"><a class="reference internal" href="document.html">Document</a></li>
 <li class="toctree-l2"><a class="reference internal" href="identity.html">Identity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="irect.html">IRect</a></li>
@@ -100,15 +106,12 @@
 <li class="toctree-l2"><a class="reference internal" href="matrix.html">Matrix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="outline.html">Outline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="page.html">Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages.html">Pages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pixmap.html">Pixmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="point.html">Point</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rect.html">Rect</a></li>
-<li class="toctree-l2"><a class="reference internal" href="textpage.html">TextPage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="textsheet.html">TextSheet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lowlevel.html">Low Level Functions and Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app1.html">Appendix 1: Performance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app2.html">Appendix 2: Details on Text Extraction</a></li>
@@ -148,8 +151,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/colorspace.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -168,15 +169,41 @@
 <dd><dl class="method">
 <dt id="Colorspace.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>self</em>, <em>cno</em><span class="sig-paren">)</span><a class="headerlink" href="#Colorspace.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Constructor</p>
+<dd><p>Constructor</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">param <cite>cno</cite>:</th><td class="field-body">A number identifying the colorspace. Possible values are <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a>, <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> and <a class="reference internal" href="vars.html#CS_CMYK" title="CS_CMYK"><code class="xref py py-data docutils literal"><span class="pre">CS_CMYK</span></code></a>.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cno</strong> (<em>int</em>) -- A number identifying the colorspace. Possible values are <a class="reference internal" href="vars.html#CS_RGB" title="CS_RGB"><code class="xref py py-data docutils literal"><span class="pre">CS_RGB</span></code></a>, <a class="reference internal" href="vars.html#CS_GRAY" title="CS_GRAY"><code class="xref py py-data docutils literal"><span class="pre">CS_GRAY</span></code></a> and <a class="reference internal" href="vars.html#CS_CMYK" title="CS_CMYK"><code class="xref py py-data docutils literal"><span class="pre">CS_CMYK</span></code></a>.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">type <cite>cno</cite>:</th><td class="field-body">int</td>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Colorspace.name">
+<code class="descname">name</code><a class="headerlink" href="#Colorspace.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name identifying the colorspace. Example: <code class="docutils literal"><span class="pre">fitz.csCMYK.name</span> <span class="pre">=</span> <span class="pre">'DeviceCMYK'</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Colorspace.n">
+<code class="descname">n</code><a class="headerlink" href="#Colorspace.n" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>The number of bytes required to define the color of one pixel. Example: <code class="docutils literal"><span class="pre">fitz.csCMYK.n</span> <span class="pre">=</span> <span class="pre">4</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">rtype:</th><td class="field-body">int</td>
 </tr>
 </tbody>
 </table>
@@ -201,10 +228,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="device.html" class="btn btn-neutral float-right" title="Device" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="document.html" class="btn btn-neutral float-right" title="Document" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="classes.html" class="btn btn-neutral" title="Classes" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="annot.html" class="btn btn-neutral" title="Annot" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -214,7 +241,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Oct 2016.
+      Last updated on 04. Dec 2016.
 
     </p>
   </div>
@@ -236,7 +263,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

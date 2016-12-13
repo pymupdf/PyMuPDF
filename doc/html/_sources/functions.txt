@@ -10,12 +10,14 @@ The following are miscellaneous functions either directly available under the bi
 ==================================== ==============================================
 **Function**                         **Short Description**
 ==================================== ==============================================
-:meth:`getPointDistance`             calculates the distance between to points
+:meth:`getPointDistance`             calculates the distance between two points
 :meth:`Document._getPageObjNumber()` returns a pages XREF and generation number
+:meth:`Document._getPageXREF()`      synonym of ``_getPageObjNumber()``
 :meth:`Document._getObjectString()`  returns the string representing an object
 :meth:`Document._getNewXref()`       creates and returns a new entry in the XREF
 :meth:`Document._updateObject()`     inserts or updates a PDF object
 :meth:`Document._getXrefLength()`    returns the length of the PDF XREF
+:meth:`Document._getXrefStream()`    returns the the content of the stream
 :meth:`Document._getOLRootNumber()`  returns / creates the outline root XREF
 ==================================== ==============================================
 
@@ -47,7 +49,7 @@ The following are miscellaneous functions either directly available under the bi
 
    .. method:: Document._getObjectString(xref)
 
-      PDF documents only: Returns the string representing an arbitrary object.
+      PDF documents only: Returns the string representing an arbitrary object. For stream objects, only the non-stream part is returned. To get the stream content, use ``_getXrefStream()`` (see below).
 
       :param `xref`: XREF number.
       :type `xref`: int.
@@ -82,43 +84,19 @@ The following are miscellaneous functions either directly available under the bi
       :rtype: int
       :returns: the number of entries in the XREF table.
 
+   .. method:: Document._getXrefStream(xref)
+
+      PDF documents only: Returns the content stream of the object referenced by ``xref``. If the object has / is no stream, an exception is raised.
+
+      :param `xref`: XREF number.
+      :type `xref`: int.
+      
+      :rtype: str or bytes
+      :returns: the (decompressed) stream of the object. This is a string in Python 2 and a ``bytes`` object in Python 3.
+
    .. method:: Document._getOLRootNumber()
 
       PDF documents only:  Returns the XREF number of the /Outlines root object (this is **not** the first outline entry!). If this object does not exist, a new one will be created.
 
       :rtype: int
       :returns: XREF number of the **/Outlines** root object.
-
-Example
---------
-This demonstrates how some of the above functions could be used to update a page's rotation:
-::
- >>> import fitz
- >>> doc = fitz.open("PyMuPDF.pdf") # open document
- >>> pix = doc.getPagePixmap(5) # get pixmap of page 6
- >>> pix.w # show its dimensions: 596 x 842
- 596
- >>> pix.h
- 842
- >>> pix = None # delete pixmap
- >>> doc._getPageObjNumber(5) # get XREF of that page
- [213, 0]
- >>> p_str = doc._getObjectString(213) # get string of its object
- >>> p_str
- '<</Type/Page/Contents 214 0 R/Resources 212 0 R/MediaBox[0 0 595.276 841.89]
- /Parent 1257 0 R/Annots[209 0 R 210 0 R]>>'
- >>> p_str_new = p_str[:-2] + "/Rotate 90>>" # insert a rotation
- >>> p_str_new
- '<</Type/Page/Contents 214 0 R/Resources 212 0 R/MediaBox[0 0 595.276 841.89]
- /Parent 1257 0 R/Annots[209 0 R 210 0 R]/Rotate 90>>'
- >>>
- >>> doc._updateObject(213, p_str_new) # update the page object
- 0
- >>> doc._getObjectString(213) # get string again to demo the effect
- '<</Type/Page/Contents 214 0 R/Resources 212 0 R/MediaBox[0 0 595.276 841.89]
- /Parent 1257 0 R/Annots[209 0 R 210 0 R]/Rotate 90>>'
- >>> pix = doc.getPagePixmap(5) # get pixmap of this page again
- >>> pix.w # dimension is now indeed 842 x 596
- 842
- >>> pix.h
- 596

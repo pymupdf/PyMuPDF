@@ -9,9 +9,8 @@ Classes
 .. toctree::
    :maxdepth: 1
 
+   annot.txt
    colorspace.txt
-   device.txt
-   displaylist.txt
    document.txt
    identity.txt
    irect.txt
@@ -20,9 +19,6 @@ Classes
    matrix.txt
    outline.txt
    page.txt
-   pages.txt
    pixmap.txt
    point.txt
    rect.txt
-   textpage.txt
-   textsheet.txt

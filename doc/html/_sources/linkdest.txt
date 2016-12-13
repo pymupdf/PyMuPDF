@@ -7,7 +7,7 @@
 ================
 linkDest
 ================
-Class representing the `dest` property of an outline entry or a link. Describes the link to which such entries point.
+Class representing the `dest` property of an outline entry or a link. Describes the destination to which such entries point.
 
 =========================== ====================================
 **Attribute**               **Short Description**

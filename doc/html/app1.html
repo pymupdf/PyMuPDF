@@ -8,10 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Appendix 1: Performance &mdash; PyMuPDF 1.9.2 documentation</title>
+  <title>Appendix 1: Performance &mdash; PyMuPDF 1.10.0 documentation</title>
   
 
   
+  
+    <link rel="shortcut icon" href="_static/pymupdf.ico"/>
   
 
   
@@ -30,7 +32,7 @@
   
 
   
-    <link rel="top" title="PyMuPDF 1.9.2 documentation" href="index.html"/>
+    <link rel="top" title="PyMuPDF 1.10.0 documentation" href="index.html"/>
         <link rel="next" title="Appendix 2: Details on Text Extraction" href="app2.html"/>
         <link rel="prev" title="Constants and Enumerations" href="vars.html"/> 
 
@@ -54,13 +56,16 @@
           
 
           
+            
+            <img src="_static/pymupdf.png" class="logo" />
+          
           </a>
 
           
             
             
               <div class="version">
-                1.9
+                1.10
               </div>
             
           
@@ -83,12 +88,14 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes in Version 1.10.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-3">Changes in Version 1.9.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-2">Changes in Version 1.9.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html#changes-in-version-1-9-1">Changes in Version 1.9.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classes.html">Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lowlevel.html">Low Level Functions and Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vars.html">Constants and Enumerations</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Appendix 1: Performance</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#part-1-parsing">Part 1: Parsing</a></li>
@@ -131,8 +138,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/app1.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
   </ul>
@@ -143,7 +148,7 @@
             
   <div class="section" id="appendix-1-performance">
 <h1>Appendix 1: Performance<a class="headerlink" href="#appendix-1-performance" title="Permalink to this headline">¶</a></h1>
-<p>We have tried to get an impression on PyMuPDF&#8217;s performance. While we know this is very hard and a fair comparison is almost impossible, we feel that we at least should provide some quantitative information to justify our bold comments on MuPDF&#8217;s <strong>top performance</strong>.</p>
+<p>We have tried to get an impression on PyMuPDF's performance. While we know this is very hard and a fair comparison is almost impossible, we feel that we at least should provide some quantitative information to justify our bold comments on MuPDF's <strong>top performance</strong>.</p>
 <p>Following are three sections that deal with different aspects of performance:</p>
 <ul class="simple">
 <li>document parsing</li>
@@ -159,7 +164,7 @@
 <p>In order to yet find an answer to the question, we therefore measure the time to copy a PDF file to an output file with each tool, and doing nothing else.</p>
 <p><strong>These were the tools</strong></p>
 <p>All tools are either platform independent, or at least can run both, on Windows and Unix / Linux (pdftk).</p>
-<p><strong>Poppler</strong> is missing here, because it specifically is a Linux tool set, although we know there exist Windows ports (created with considerable effort apparently). Technically, it is a C/C++ library, for which a Python binding exists - in so far somewhat comparable to PyMuPDF. But Poppler in contrast is tightly coupled to <strong>Qt</strong> and <strong>Cairo</strong>. We may still include it in future, when a more handy Windows installation is available. We have seen however some <a class="reference external" href="http://hzqtc.github.io/2012/04/poppler-vs-mupdf.html">analysis</a>, that hints at a much lower performance than MuPDF. Our comparison of text extraction speeds also show a much lower performance of Poppler&#8217;s PDF code base <strong>Xpdf</strong>.</p>
+<p><strong>Poppler</strong> is missing here, because it specifically is a Linux tool set, although we know there exist Windows ports (created with considerable effort apparently). Technically, it is a C/C++ library, for which a Python binding exists - in so far somewhat comparable to PyMuPDF. But Poppler in contrast is tightly coupled to <strong>Qt</strong> and <strong>Cairo</strong>. We may still include it in future, when a more handy Windows installation is available. We have seen however some <a class="reference external" href="http://hzqtc.github.io/2012/04/poppler-vs-mupdf.html">analysis</a>, that hints at a much lower performance than MuPDF. Our comparison of text extraction speeds also show a much lower performance of Poppler's PDF code base <strong>Xpdf</strong>.</p>
 <p>Image rendering of MuPDF also is about three times faster than the one of Xpdf when comparing the command line tools <code class="docutils literal"><span class="pre">mudraw</span></code> of MuPDF and <code class="docutils literal"><span class="pre">pdftopng</span></code> of Xpdf - see part 3 of this chapter.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -173,7 +178,7 @@
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>PyMuPDF</td>
-<td>tool of this manual, appearing as &#8220;fitz&#8221; in reports</td>
+<td>tool of this manual, appearing as &quot;fitz&quot; in reports</td>
 </tr>
 <tr class="row-odd"><td>pdfrw</td>
 <td>a pure Python tool, is being used by rst2pdf, has interface to ReportLab</td>
@@ -217,20 +222,20 @@
 <img alt="_images/copy_speed_2.png" src="_images/copy_speed_2.png" />
 <p>PyMuPDF is by far the fastest: on average 4.5 times faster than the second best (the pure Python tool pdfrw, <strong>chapeau pdfrw!</strong>), and almost 20 times faster than the command line tool pdftk.</p>
 <p>Where PyMuPDF only requires less than 13 seconds to process all files, pdftk affords itself almost 4 minutes.</p>
-<p>By far the slowest tool is PyPDF2 - it is more than 66 times slower than PyMuPDF and 15 times slower than pdfrw! The main reason for PyPDF2&#8217;s bad look comes from the Adobe manual. It obviously is slowed down by the linear file structure and the immense amount of bookmarks of this file. If we take out this special case, then PyPDF2 is only 21.5 times slower than PyMuPDF, 4.5 times slower than pdfrw and 1.2 times slower than pdftk.</p>
+<p>By far the slowest tool is PyPDF2 - it is more than 66 times slower than PyMuPDF and 15 times slower than pdfrw! The main reason for PyPDF2's bad look comes from the Adobe manual. It obviously is slowed down by the linear file structure and the immense amount of bookmarks of this file. If we take out this special case, then PyPDF2 is only 21.5 times slower than PyMuPDF, 4.5 times slower than pdfrw and 1.2 times slower than pdftk.</p>
 <p>If we look at the output PDFs, there is one surprise:</p>
 <p>Each tool created a PDF of similar size as the original. Apart from the Adobe case, PyMuPDF always created the smallest output.</p>
-<p>Adobe&#8217;s manual is an exception: The pure Python tools pdfrw and PyPDF2 <strong>reduced</strong> its size by more than 20% (and yielded a document which is no longer linearized)!</p>
+<p>Adobe's manual is an exception: The pure Python tools pdfrw and PyPDF2 <strong>reduced</strong> its size by more than 20% (and yielded a document which is no longer linearized)!</p>
 <p>PyMuPDF and pdftk in contrast <strong>drastically increased</strong> the size by 40% to about 50 MB (also no longer linearized).</p>
 <p>So far, we have no explanation of what is happening here.</p>
 </div>
 <div class="section" id="part-2-text-extraction">
 <h2>Part 2: Text Extraction<a class="headerlink" href="#part-2-text-extraction" title="Permalink to this headline">¶</a></h2>
 <p>We also have compared text extraction speed with other tools.</p>
-<p>The following table shows a run time comparison. PyMuPDF&#8217;s methods appear as &#8220;fitz (TEXT)&#8221; and &#8220;fitz (JSON)&#8221; respectively. The tool <code class="docutils literal"><span class="pre">pdftotext.exe</span></code> of the <a class="reference external" href="http://www.foolabs.com/xpdf/">Xpdf</a> toolset appears as &#8220;xpdf&#8221;.</p>
+<p>The following table shows a run time comparison. PyMuPDF's methods appear as &quot;fitz (TEXT)&quot; and &quot;fitz (JSON)&quot; respectively. The tool <code class="docutils literal"><span class="pre">pdftotext.exe</span></code> of the <a class="reference external" href="http://www.foolabs.com/xpdf/">Xpdf</a> toolset appears as &quot;xpdf&quot;.</p>
 <ul class="simple">
 <li><strong>extractText():</strong> basic text extraction without layout re-arrangement (using <code class="docutils literal"><span class="pre">GetText(...,</span> <span class="pre">output</span> <span class="pre">=</span> <span class="pre">&quot;text&quot;)</span></code>)</li>
-<li><strong>pdftotext:</strong> a command line tool of the <strong>Xpdf</strong> toolset (which also is the basis of <a class="reference external" href="http://poppler.freedesktop.org/">Poppler&#8217;s library</a>)</li>
+<li><strong>pdftotext:</strong> a command line tool of the <strong>Xpdf</strong> toolset (which also is the basis of <a class="reference external" href="http://poppler.freedesktop.org/">Poppler's library</a>)</li>
 <li><strong>extractJSON():</strong> text extraction with layout information (using <code class="docutils literal"><span class="pre">GetText(...,</span> <span class="pre">output</span> <span class="pre">=</span> <span class="pre">&quot;json&quot;)</span></code>)</li>
 <li><strong>pdfminer:</strong> a pure Python PDF tool specialized on text extraction tasks</li>
 </ul>
@@ -295,7 +300,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 02. Oct 2016.
+      Last updated on 04. Dec 2016.
 
     </p>
   </div>
@@ -317,7 +322,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.9.2',
+            VERSION:'1.10.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
