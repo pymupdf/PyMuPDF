@@ -100,7 +100,7 @@ except __builtin__.Exception:
 
 VersionFitz = "1.10a"
 VersionBind = "1.10.0"
-VersionDate = "2016-12-13 08:38:20"
+VersionDate = "2016-12-14 17:39:37"
 
 LINK_NONE   = 0
 LINK_GOTO   = 1
@@ -1493,12 +1493,12 @@ class Annot(_object):
         return _fitz.Annot_border(self)
 
 
-    def setBorder(self, width):
-        """setBorder(Annot self, float width)"""
+    def setBorder(self, border):
+        """setBorder(Annot self, PyObject * border)"""
         if self.parent.parent.isClosed:
             raise ValueError("operation illegal for closed doc")
 
-        return _fitz.Annot_setBorder(self, width)
+        return _fitz.Annot_setBorder(self, border)
 
     @property
 

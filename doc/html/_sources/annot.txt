@@ -29,7 +29,7 @@ This class supports accessing such annotations - not only for PDF files, but for
 :attr:`Annot.info`          PDF only: various information
 :attr:`Annot.lineEnds`      PDF only: start / end appearance of line-type annotations
 :attr:`Annot.next`          link to the next annotation
-:attr:`Annot.parent`        page of the annotation
+:attr:`Annot.parent`        page object of the annotation
 :attr:`Annot.rect`          rectangle containing the annotation
 :attr:`Annot.type`          PDF only: type of the annotation
 :attr:`Annot.vertices`      PDF only: point coordinates of Polygons, PolyLines, etc.
@@ -78,17 +78,17 @@ This class supports accessing such annotations - not only for PDF files, but for
 
       Changes the rectangle of an annotation. The annotation can be moved around and both sides of the rectangle can be independently scaled. However, the annotation appearance will never get rotated, flipped or sheared.
 
-      :param `rect`: the new rectangle of the annotation. This could e.g. be a rectangle ``rect = Annot.rect * M`` with a suitable :ref:`Matrix` M (scaling and translating).
+      :param `rect`: the new rectangle of the annotation. This could e.g. be a rectangle ``rect = Annot.rect * M`` with a suitable :ref:`Matrix` M (only scaling and translating will yield the expected effect).
 
       :type `rect`: :ref:`Rect`
 
-   .. method:: setBorder(width)
+   .. method:: setBorder(value)
 
-      Changes the border width. Any other border properties (border effects, dashed lines) will be deleted by this method.
+      PDF only: Change border width and dashing properties. Any other border properties will be deleted.
 
-      :param `width`: a float specifying the border width in points.
+      :param `value`: a number or a dictionary specifying the desired border properties. If a dictionary is provided, it must be of a format as explained for property ``annot.border``. If a number is specified or a dictionary like ``{"width": w}``, only border width will be changed and any dashes will remain unchanged. Conversely, with a dictionary ``{"dashes": [...]}``, only line dashing will be changed. To remove dashing and get a straight line, specify an empty list ``[]``.
 
-      :type `width`: float
+      :type `value`: number or dictionary
 
    .. method:: setFlags(flags)
 
@@ -108,7 +108,7 @@ This class supports accessing such annotations - not only for PDF files, but for
 
    .. method:: updateImage()
 
-      Attempts to modify the displayed graphical image such that it coincides with the values currently contained in the ``border`` and ``colors`` properties. This is achieved by modifying the contents stream of the associated appearance object. If the stream contains unsupported commands, a ``ValueError`` exception is raised.
+      Attempts to modify the displayed graphical image such that it coincides with the values currently contained in the ``border`` and ``colors`` properties. This is achieved by modifying the contents stream of the associated appearance ``XObject``. If this stream contains unsupported commands (like nested invocations of yet another ``XObject``), a ``ValueError`` exception is raised.
 
    .. attribute:: parent
 
@@ -130,7 +130,7 @@ This class supports accessing such annotations - not only for PDF files, but for
 
    .. attribute:: type
 
-      Meaningful for PDF only: A number and two strings describing the annotation type, like ``[2, 'FreeText', 'FreeTextCallout']``. The second string entry is optional and may be empty. ``[]`` if not PDF. See the appendix :ref:`Annotation Types` for a list of possible values and their meanings.
+      Meaningful for PDF only: A number and one or two strings describing the annotation type, like ``[2, 'FreeText', 'FreeTextCallout']``. The second string entry is optional and may be empty. ``[]`` if not PDF. See the appendix :ref:`Annotation Types` for a list of possible values and their meanings.
 
       :rtype: list
 
@@ -185,7 +185,7 @@ This class supports accessing such annotations - not only for PDF files, but for
 
       * ``effect`` - a list specifying a border line effect like ``[1, 'C']``. The first entry "intensity" is an integer (from 0 to 2 for maximum intensity). The second is either 'S' for "no effect" or 'C' for a "cloudy" line.
 
-      * ``dashes`` - a list specifying a line dash pattern like in ``[3, 2]``. This example specifies 3-point dashes alternating with 2-point gaps.
+      * ``dashes`` - a list of up to 4 integer entries specifying a line dash pattern like in ``[3, 2]``. This example specifies 3-point dashes alternating with 2-point gaps. See the Adobemanual page 217 for details.
 
       * ``style`` - 1-byte border style: ``S`` (Solid) = solid rectangle surrounding the annotation, ``D`` (Dashed) = dashed rectangle surrounding the annotation, the dash pattern is specified by the ``dashes`` entry, ``B`` (Beveled) = a simulated embossed rectangle that appears to be raised above the surface of the page, ``I`` (Inset) = a simulated engraved rectangle that appears to be recessed below the surface of the page, ``U`` (Underline) = a single line along the bottom of the annotation rectangle.
 
@@ -194,3 +194,34 @@ This class supports accessing such annotations - not only for PDF files, but for
       * ``vradius`` - vertical coner radius.  Zero means square (un-rounded) corners.
 
       :rtype: dict
+      
+Example
+--------
+Change the graphical image of an annotation. Also update the "author" and the text to be shown in the popup window:
+::
+ doc = fitz.open("circle-in.pdf")
+ page = doc[0]                          # page 0
+ annot = page.firstAnnot                # get the annotation
+ annot.setBorder({"dashes": [3]})       # set dashes to "3 on, 3 off ..."
+ 
+ # set border / popup color to blue and fill color to light blue
+ annot.setColors({"common":[0, 0 ,1], "fill":[0.75, 0.8, 0.95]})
+ info = annot.info                      # get info dict
+ info["title"] = "Jorj X. McKie"        # author name in popup title
+ 
+ # text in popup window ...
+ info["content"] = "I changed border and colors and enlarged the image by 20%."
+ info["subject"] = "Demonstration of PyMuPDF"     # some readers also show this
+ annot.setInfo(info)                    # update info dict
+ r = annot.rect                         # take annot rect
+ r.x1 = r.x0 + r.width  * 1.2           # new location has same top-left
+ r.y1 = r.y0 + r.height * 1.2           # but 20% longer sides
+ annot.setRect(r)                       # update rectangle
+ annot.updateImage()                    # update appearance
+ doc.save("circle-out.pdf", garbage=4)  # save
+
+This is how the circle annotation looks before and after the change:
+
+.. image:: circle-1.png
+
+.. image:: circle-2.png

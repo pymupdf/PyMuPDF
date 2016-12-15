@@ -6084,50 +6084,58 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "info not a Python dict")
 SWIGINTERN PyObject *fz_annot_s_border(struct fz_annot_s *self){
             PyObject *res = PyDict_New();
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
-            if (!annot) return res;                   // not a PDF, 
+            if (!annot) return res;                   // not a PDF -> empty dict
             PyObject *emptylst_py = PyList_New(0);
             PyObject *blank_py = PyString_FromString("");
             PyObject *dash_py   = PyList_New(0);
             PyObject *effect_py = PyList_New(0);
-            char *c = "";
-            float width = -1.0;
-            float hradius = -1.0;
-            float vradius = -1.0;
-            int dash1 = -1;
-            int dash2 = -1;
+            int i;
+            char *effect2, *style;
+            effect2 = style = "";
+            double width = -1.0;
+            int hradius, vradius;
             int effect1 = -1;
-            char *effect2 = "";
-            char *style= "";
-            pdf_obj *dash = NULL;
+            hradius = vradius = 0;
+            int dashes[4] = {-1, -1, -1, -1};
+            int dash_ind, style_ind;
+            dash_ind = style_ind = 0;
 
-            pdf_obj *o = pdf_dict_gets(gctx, annot->obj, "Border");
-            if ((o != NULL) & pdf_is_array(gctx, o))
+            pdf_obj *o = pdf_dict_get(gctx, annot->obj, PDF_NAME_Border);
+            if (pdf_is_array(gctx, o))
                 {
-                hradius = pdf_to_real(gctx, pdf_array_get(gctx, o, 0));
-                vradius = pdf_to_real(gctx, pdf_array_get(gctx, o, 1));
-                width   = pdf_to_real(gctx, pdf_array_get(gctx, o, 2));
+                hradius = pdf_to_int(gctx, pdf_array_get(gctx, o, 0));
+                vradius = pdf_to_int(gctx, pdf_array_get(gctx, o, 1));
+                width   = (double) pdf_to_real(gctx, pdf_array_get(gctx, o, 2));
                 if (pdf_array_len(gctx, o) == 4)
-                    dash = pdf_array_get(gctx, o, 3);
-                    dash1 = pdf_to_int(gctx, pdf_array_get(gctx, dash, 0));
-                    dash2 = pdf_to_int(gctx, pdf_array_get(gctx, dash, 1));
+                    {
+                    dash_ind = 1;
+                    pdf_obj *dash = pdf_array_get(gctx, o, 3);
+                    for (i = 0; i < pdf_array_len(gctx, dash); i++)
+                        dashes[i] = pdf_to_int(gctx,
+                                             pdf_array_get(gctx, dash, i));
+                    }
                 }
 
             pdf_obj *bs_o = pdf_dict_get(gctx, annot->obj, PDF_NAME_BS);
             if (bs_o)
                 {
                 o = pdf_dict_get(gctx, bs_o, PDF_NAME_W);
-                if (o) width = pdf_to_real(gctx, o);
+                if (o) width = (double) pdf_to_real(gctx, o);
                 o = pdf_dict_get(gctx, bs_o, PDF_NAME_S);
-                if (o) style = pdf_to_name(gctx, o);
+                if (o)
+                    {
+                    style_ind = 1;
+                    style = pdf_to_name(gctx, o);
+                    }
                 o = pdf_dict_get(gctx, bs_o, PDF_NAME_D);
                 if (o)
                     {
-                    dash1 = pdf_to_int(gctx, pdf_array_get(gctx, o, 0));
-                    dash2 = pdf_to_int(gctx, pdf_array_get(gctx, o, 1));
+                    dash_ind = 1;
+                    for (i = 0; i < pdf_array_len(gctx, o); i++)
+                        dashes[i] = pdf_to_int(gctx,
+                                             pdf_array_get(gctx, o, i));
                     }
                 }
-
-            if (width < 0) return res;      // no valid border entries at all
 
             pdf_obj *be_o = pdf_dict_gets(gctx, annot->obj, "BE");
             if (be_o)
@@ -6138,33 +6146,72 @@ SWIGINTERN PyObject *fz_annot_s_border(struct fz_annot_s *self){
                 if (o) effect1 = pdf_to_int(gctx, o);
                 }
 
-            PyList_Append(dash_py, PyInt_FromSize_t((size_t) dash1));
-            PyList_Append(dash_py, PyInt_FromSize_t((size_t) dash2));
-            PyList_Append(effect_py, PyInt_FromSize_t((size_t) effect1));
+            for (i = 0; i < 4; i++)
+                if (dashes[i] > 0)
+                    PyList_Append(dash_py, PyInt_FromSize_t(dashes[i]));
+
+            PyList_Append(effect_py, PyInt_FromLong((long) effect1));
             PyList_Append(effect_py, PyString_FromString(effect2));
 
-            PyDict_SetItemString(res, "width", PyFloat_FromDouble((double) width));
-            if (dash1 > 0)
+            if (width >=0)
+                PyDict_SetItemString(res, "width", PyFloat_FromDouble(width));
+
+            if (dash_ind > 0)
+                PyDict_SetItemString(res, "dashes", dash_py);
+
+            if (style_ind > 0)
                 PyDict_SetItemString(res, "style", PyString_FromString(style));
 
-            if (dash1 > 0) PyDict_SetItemString(res, "dashes", dash_py);
-
-            if (effect1 >= 0) PyDict_SetItemString(res, "effect", effect_py);
+            if (effect1 > -1) PyDict_SetItemString(res, "effect", effect_py);
 
             if (hradius > 0)
-                PyDict_SetItemString(res, "hradius",
-                                     PyFloat_FromDouble((double) hradius));
+                PyDict_SetItemString(res, "hradius", PyInt_FromSize_t(hradius));
 
             if (vradius > 0)
-                PyDict_SetItemString(res, "vradius",
-                                     PyFloat_FromDouble((double) vradius));
+                PyDict_SetItemString(res, "vradius", PyInt_FromSize_t(vradius));
 
             return res;
         }
-SWIGINTERN void fz_annot_s_setBorder(struct fz_annot_s *self,float width){
+SWIGINTERN void fz_annot_s_setBorder(struct fz_annot_s *self,PyObject *border){
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
-            if (!annot) return;
-            pdf_set_annot_border(gctx, annot, width);
+            if (!annot) return;                  // not a PDF
+            if (PyFloat_Check(border) || PyInt_Check(border))
+                {                           // number specified: change width
+                pdf_set_annot_border(gctx, annot, (float) PyFloat_AsDouble(border));
+                return;
+                }
+            if (!PyDict_Check(border)) return;   // not a dict: ignore call
+            if (PyDict_Size(border) == 0) return;     // also ignore empty dict
+            pdf_document *doc = annot->page->doc;
+            // delete all related entries in annotation dictionary
+            pdf_dict_del(gctx, annot->obj, PDF_NAME_BS);
+            pdf_dict_del(gctx, annot->obj, PDF_NAME_BE);
+            pdf_dict_del(gctx, annot->obj, PDF_NAME_Border);
+            PyObject *pyo;
+            float width = 0.0;                   // default width value
+            int i, d;
+            pyo = PyDict_GetItemString(border, "width");
+            if (pyo) width = (float) PyFloat_AsDouble(pyo);
+            // populate new border array
+            pdf_obj *bdr = pdf_new_array(gctx, doc, 3);
+            pdf_array_push_drop(gctx, bdr, pdf_new_real(gctx, doc, 0));
+            pdf_array_push_drop(gctx, bdr, pdf_new_real(gctx, doc, 0));
+            pdf_array_push_drop(gctx, bdr, pdf_new_real(gctx, doc, width));
+            // if dashes are specified, create another dict for them
+            pyo = PyDict_GetItemString(border, "dashes");
+            if (!pyo)
+                {}
+            else if (PyList_Check(pyo))
+                {
+                pdf_obj *darr = pdf_new_array(gctx, doc, 1);
+                for (i = 0; i < (int) PyList_Size(pyo); i++)
+                    {
+                    d = (int) PyInt_AsLong(PyList_GetItem(pyo, i));
+                    pdf_array_push_drop(gctx, darr, pdf_new_int(gctx, doc, d));
+                    }
+                pdf_array_push_drop(gctx, bdr, darr);
+                }
+            pdf_dict_put_drop(gctx, annot->obj, PDF_NAME_Border, bdr);
             annot->changed = 1;
             return;
         }
@@ -12417,11 +12464,9 @@ fail:
 SWIGINTERN PyObject *_wrap_Annot_setBorder(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
-  float arg2 ;
+  PyObject *arg2 = (PyObject *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  float val2 ;
-  int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
@@ -12431,11 +12476,7 @@ SWIGINTERN PyObject *_wrap_Annot_setBorder(PyObject *SWIGUNUSEDPARM(self), PyObj
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot_setBorder" "', argument " "1"" of type '" "struct fz_annot_s *""'"); 
   }
   arg1 = (struct fz_annot_s *)(argp1);
-  ecode2 = SWIG_AsVal_float(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Annot_setBorder" "', argument " "2"" of type '" "float""'");
-  } 
-  arg2 = (float)(val2);
+  arg2 = obj1;
   fz_annot_s_setBorder(arg1,arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -13350,7 +13391,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Annot_info", _wrap_Annot_info, METH_VARARGS, (char *)"Annot_info(Annot self) -> PyObject *"},
 	 { (char *)"Annot_setInfo", _wrap_Annot_setInfo, METH_VARARGS, (char *)"Annot_setInfo(Annot self, PyObject * info) -> int"},
 	 { (char *)"Annot_border", _wrap_Annot_border, METH_VARARGS, (char *)"Annot_border(Annot self) -> PyObject *"},
-	 { (char *)"Annot_setBorder", _wrap_Annot_setBorder, METH_VARARGS, (char *)"Annot_setBorder(Annot self, float width)"},
+	 { (char *)"Annot_setBorder", _wrap_Annot_setBorder, METH_VARARGS, (char *)"Annot_setBorder(Annot self, PyObject * border)"},
 	 { (char *)"Annot_flags", _wrap_Annot_flags, METH_VARARGS, (char *)"Annot_flags(Annot self) -> int"},
 	 { (char *)"Annot_setFlags", _wrap_Annot_setFlags, METH_VARARGS, (char *)"Annot_setFlags(Annot self, int flags)"},
 	 { (char *)"Annot_next", _wrap_Annot_next, METH_VARARGS, (char *)"Annot_next(Annot self) -> Annot"},

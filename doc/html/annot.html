@@ -96,7 +96,10 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Annot</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Annot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="colorspace.html">Colorspace</a></li>
 <li class="toctree-l2"><a class="reference internal" href="document.html">Document</a></li>
 <li class="toctree-l2"><a class="reference internal" href="identity.html">Identity</a></li>
@@ -217,7 +220,7 @@
 <td>link to the next annotation</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#Annot.parent" title="Annot.parent"><code class="xref py py-attr docutils literal"><span class="pre">Annot.parent</span></code></a></td>
-<td>page of the annotation</td>
+<td>page object of the annotation</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#Annot.rect" title="Annot.rect"><code class="xref py py-attr docutils literal"><span class="pre">Annot.rect</span></code></a></td>
 <td>rectangle containing the annotation</td>
@@ -296,7 +299,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rect</strong> (<a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a>) -- the new rectangle of the annotation. This could e.g. be a rectangle <code class="docutils literal"><span class="pre">rect</span> <span class="pre">=</span> <span class="pre">Annot.rect</span> <span class="pre">*</span> <span class="pre">M</span></code> with a suitable <a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a> M (scaling and translating).</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rect</strong> (<a class="reference internal" href="rect.html#rect"><span class="std std-ref">Rect</span></a>) -- the new rectangle of the annotation. This could e.g. be a rectangle <code class="docutils literal"><span class="pre">rect</span> <span class="pre">=</span> <span class="pre">Annot.rect</span> <span class="pre">*</span> <span class="pre">M</span></code> with a suitable <a class="reference internal" href="matrix.html#matrix"><span class="std std-ref">Matrix</span></a> M (only scaling and translating will yield the expected effect).</td>
 </tr>
 </tbody>
 </table>
@@ -304,13 +307,13 @@
 
 <dl class="method">
 <dt id="Annot.setBorder">
-<code class="descname">setBorder</code><span class="sig-paren">(</span><em>width</em><span class="sig-paren">)</span><a class="headerlink" href="#Annot.setBorder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Changes the border width. Any other border properties (border effects, dashed lines) will be deleted by this method.</p>
+<code class="descname">setBorder</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#Annot.setBorder" title="Permalink to this definition">¶</a></dt>
+<dd><p>PDF only: Change border width and dashing properties. Any other border properties will be deleted.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>width</strong> (<em>float</em>) -- a float specifying the border width in points.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<em>number or dictionary</em>) -- a number or a dictionary specifying the desired border properties. If a dictionary is provided, it must be of a format as explained for property <code class="docutils literal"><span class="pre">annot.border</span></code>. If a number is specified or a dictionary like <code class="docutils literal"><span class="pre">{&quot;width&quot;:</span> <span class="pre">w}</span></code>, only border width will be changed and any dashes will remain unchanged. Conversely, with a dictionary <code class="docutils literal"><span class="pre">{&quot;dashes&quot;:</span> <span class="pre">[...]}</span></code>, only line dashing will be changed. To remove dashing and get a straight line, specify an empty list <code class="docutils literal"><span class="pre">[]</span></code>.</td>
 </tr>
 </tbody>
 </table>
@@ -347,7 +350,7 @@
 <dl class="method">
 <dt id="Annot.updateImage">
 <code class="descname">updateImage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Annot.updateImage" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attempts to modify the displayed graphical image such that it coincides with the values currently contained in the <code class="docutils literal"><span class="pre">border</span></code> and <code class="docutils literal"><span class="pre">colors</span></code> properties. This is achieved by modifying the contents stream of the associated appearance object. If the stream contains unsupported commands, a <code class="docutils literal"><span class="pre">ValueError</span></code> exception is raised.</p>
+<dd><p>Attempts to modify the displayed graphical image such that it coincides with the values currently contained in the <code class="docutils literal"><span class="pre">border</span></code> and <code class="docutils literal"><span class="pre">colors</span></code> properties. This is achieved by modifying the contents stream of the associated appearance <code class="docutils literal"><span class="pre">XObject</span></code>. If this stream contains unsupported commands (like nested invocations of yet another <code class="docutils literal"><span class="pre">XObject</span></code>), a <code class="docutils literal"><span class="pre">ValueError</span></code> exception is raised.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -395,7 +398,7 @@
 <dl class="attribute">
 <dt id="Annot.type">
 <code class="descname">type</code><a class="headerlink" href="#Annot.type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meaningful for PDF only: A number and two strings describing the annotation type, like <code class="docutils literal"><span class="pre">[2,</span> <span class="pre">'FreeText',</span> <span class="pre">'FreeTextCallout']</span></code>. The second string entry is optional and may be empty. <code class="docutils literal"><span class="pre">[]</span></code> if not PDF. See the appendix <a class="reference internal" href="vars.html#annotation-types"><span class="std std-ref">Annotation Types</span></a> for a list of possible values and their meanings.</p>
+<dd><p>Meaningful for PDF only: A number and one or two strings describing the annotation type, like <code class="docutils literal"><span class="pre">[2,</span> <span class="pre">'FreeText',</span> <span class="pre">'FreeTextCallout']</span></code>. The second string entry is optional and may be empty. <code class="docutils literal"><span class="pre">[]</span></code> if not PDF. See the appendix <a class="reference internal" href="vars.html#annotation-types"><span class="std std-ref">Annotation Types</span></a> for a list of possible values and their meanings.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -491,7 +494,7 @@
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">width</span></code> - a float indicating the border thickness in points.</li>
 <li><code class="docutils literal"><span class="pre">effect</span></code> - a list specifying a border line effect like <code class="docutils literal"><span class="pre">[1,</span> <span class="pre">'C']</span></code>. The first entry &quot;intensity&quot; is an integer (from 0 to 2 for maximum intensity). The second is either 'S' for &quot;no effect&quot; or 'C' for a &quot;cloudy&quot; line.</li>
-<li><code class="docutils literal"><span class="pre">dashes</span></code> - a list specifying a line dash pattern like in <code class="docutils literal"><span class="pre">[3,</span> <span class="pre">2]</span></code>. This example specifies 3-point dashes alternating with 2-point gaps.</li>
+<li><code class="docutils literal"><span class="pre">dashes</span></code> - a list of up to 4 integer entries specifying a line dash pattern like in <code class="docutils literal"><span class="pre">[3,</span> <span class="pre">2]</span></code>. This example specifies 3-point dashes alternating with 2-point gaps. See the Adobemanual page 217 for details.</li>
 <li><code class="docutils literal"><span class="pre">style</span></code> - 1-byte border style: <code class="docutils literal"><span class="pre">S</span></code> (Solid) = solid rectangle surrounding the annotation, <code class="docutils literal"><span class="pre">D</span></code> (Dashed) = dashed rectangle surrounding the annotation, the dash pattern is specified by the <code class="docutils literal"><span class="pre">dashes</span></code> entry, <code class="docutils literal"><span class="pre">B</span></code> (Beveled) = a simulated embossed rectangle that appears to be raised above the surface of the page, <code class="docutils literal"><span class="pre">I</span></code> (Inset) = a simulated engraved rectangle that appears to be recessed below the surface of the page, <code class="docutils literal"><span class="pre">U</span></code> (Underline) = a single line along the bottom of the annotation rectangle.</li>
 <li><code class="docutils literal"><span class="pre">hradius</span></code> - horizontal corner radius. Zero means square (un-rounded) corners.</li>
 <li><code class="docutils literal"><span class="pre">vradius</span></code> - vertical coner radius.  Zero means square (un-rounded) corners.</li>
@@ -508,6 +511,35 @@
 
 </dd></dl>
 
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>Change the graphical image of an annotation. Also update the &quot;author&quot; and the text to be shown in the popup window:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">doc</span> <span class="o">=</span> <span class="n">fitz</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;circle-in.pdf&quot;</span><span class="p">)</span>
+<span class="n">page</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>                          <span class="c1"># page 0</span>
+<span class="n">annot</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">firstAnnot</span>                <span class="c1"># get the annotation</span>
+<span class="n">annot</span><span class="o">.</span><span class="n">setBorder</span><span class="p">({</span><span class="s2">&quot;dashes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">]})</span>       <span class="c1"># set dashes to &quot;3 on, 3 off ...&quot;</span>
+
+<span class="c1"># set border / popup color to blue and fill color to light blue</span>
+<span class="n">annot</span><span class="o">.</span><span class="n">setColors</span><span class="p">({</span><span class="s2">&quot;common&quot;</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;fill&quot;</span><span class="p">:[</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">]})</span>
+<span class="n">info</span> <span class="o">=</span> <span class="n">annot</span><span class="o">.</span><span class="n">info</span>                      <span class="c1"># get info dict</span>
+<span class="n">info</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Jorj X. McKie&quot;</span>        <span class="c1"># author name in popup title</span>
+
+<span class="c1"># text in popup window ...</span>
+<span class="n">info</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;I changed border and colors and enlarged the image by 20%.&quot;</span>
+<span class="n">info</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Demonstration of PyMuPDF&quot;</span>     <span class="c1"># some readers also show this</span>
+<span class="n">annot</span><span class="o">.</span><span class="n">setInfo</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>                    <span class="c1"># update info dict</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">annot</span><span class="o">.</span><span class="n">rect</span>                         <span class="c1"># take annot rect</span>
+<span class="n">r</span><span class="o">.</span><span class="n">x1</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">x0</span> <span class="o">+</span> <span class="n">r</span><span class="o">.</span><span class="n">width</span>  <span class="o">*</span> <span class="mf">1.2</span>           <span class="c1"># new location has same top-left</span>
+<span class="n">r</span><span class="o">.</span><span class="n">y1</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">y0</span> <span class="o">+</span> <span class="n">r</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mf">1.2</span>           <span class="c1"># but 20% longer sides</span>
+<span class="n">annot</span><span class="o">.</span><span class="n">setRect</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>                       <span class="c1"># update rectangle</span>
+<span class="n">annot</span><span class="o">.</span><span class="n">updateImage</span><span class="p">()</span>                    <span class="c1"># update appearance</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;circle-out.pdf&quot;</span><span class="p">,</span> <span class="n">garbage</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>  <span class="c1"># save</span>
+</pre></div>
+</div>
+<p>This is how the circle annotation looks before and after the change:</p>
+<img alt="_images/circle-1.png" src="_images/circle-1.png" />
+<img alt="_images/circle-2.png" src="_images/circle-2.png" />
+</div>
 </div>
 
 
@@ -530,7 +562,7 @@
   <div role="contentinfo">
     <p>
         &copy; Copyright 2016, Jorj X. McKie.
-      Last updated on 13. Dec 2016.
+      Last updated on 15. Dec 2016.
 
     </p>
   </div>
