@@ -48,7 +48,7 @@ if (cond) fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 #define SWIG_PYTHON_2_UNICODE
 #include <fitz.h>
 #include <pdf.h>
-#include <../../mupdf/thirdparty/zlib/zlib.h>
+#include <zlib.h>
 
 void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page);
 void fz_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox);

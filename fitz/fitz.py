@@ -100,7 +100,7 @@ except __builtin__.Exception:
 
 VersionFitz = "1.10a"
 VersionBind = "1.10.0"
-VersionDate = "2016-12-14 17:39:37"
+VersionDate = "2016-12-15 08:50:50"
 
 LINK_NONE   = 0
 LINK_GOTO   = 1

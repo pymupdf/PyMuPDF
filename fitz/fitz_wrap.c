@@ -3033,7 +3033,7 @@ static swig_module_info swig_module = {swig_types, 16, 0, 0, 0, 0};
 #define SWIG_PYTHON_2_UNICODE
 #include <fitz.h>
 #include <pdf.h>
-#include <../../mupdf/thirdparty/zlib/zlib.h>
+#include <zlib.h>
 
 void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page);
 void fz_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox);
