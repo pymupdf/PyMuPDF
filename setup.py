@@ -5,9 +5,10 @@ import sys, os
 if sys.platform.startswith('linux'):
     module = Extension('fitz._fitz', # name of the module
                        ['fitz/fitz_wrap.c'], # C source file
-                       include_dirs=[  # we need the path of the MuPDF's headers
+                       include_dirs=[  # we need the path of the MuPDF and zlib headers
                                      '/usr/include/mupdf',
-                                     '/usr/local/include/mupdf'
+                                     '/usr/local/include/mupdf',
+                                     '/usr/local/thirdparty/zlib',
                                     ],
                        #library_dirs=['<mupdf_and_3rd_party_libraries_dir>'],
                        libraries=[
@@ -20,8 +21,8 @@ if sys.platform.startswith('linux'):
 elif sys.platform.startswith('darwin'):
     module = Extension('fitz._fitz', # name of the module
                        ['fitz/fitz_wrap.c'], # C source file
-                       # this is directory containing mupdf's header files
-                       include_dirs=['/usr/local/include/mupdf'],
+                       # this are directories containing mupdf's and zlib's header files
+                       include_dirs=['/usr/local/include/mupdf', '/usr/local/thirdparty/zlib'],
                        # libraries should already be linked here by brew
                        library_dirs=['/usr/local/lib'],
                        #library_dirs=['/usr/local/Cellar/mupdf-tools/1.8/lib/',
@@ -42,6 +43,7 @@ else:
                        include_dirs=[ # we need the path of the MuPDF's headers
                                      './mupdf/include',
                                      './mupdf/include/mupdf',
+                                     './mupdf/thirdparty/zlib', 
                                     ],
                        libraries=[ # these are needed in Windows
                                   'libmupdf', 'libfonts',
