@@ -1,7 +1,3 @@
-.. raw:: pdf
-
-    PageBreak
-
 .. _Annot:
 
 ================
@@ -18,7 +14,6 @@ This class supports accessing such annotations - not only for PDF files, but for
 :meth:`Annot.getPixmap`     image of the annotation as a pixmap
 :meth:`Annot.setInfo`       PDF only: change metadata of an annotation
 :meth:`Annot.setBorder`     PDF only: changes the border of an annotation
-:meth:`Annot.setLineEnds`   PDF only: changes the line ends of an annotation
 :meth:`Annot.setFlags`      PDF only: changes the flags of an annotation
 :meth:`Annot.setRect`       PDF only: changes the rectangle of an annotation
 :meth:`Annot.setColors`     PDF only: changes the colors of an annotation
@@ -61,18 +56,6 @@ This class supports accessing such annotations - not only for PDF files, but for
       :param `d`: a dictionary compatible with the ``info`` property (see below). Plausibility checks are kept to a minimum - except all entries must be ``unicode``, ``bytes``, or strings. If ``bytes`` values are provided in Python 3, they will be treated as being UTF8 encoded.
 
       :type `d`: dict
-
-   .. method:: setLineEnds(start, end)
-
-      Changes the line ending styles (of annotation types where this makes sense).
-
-      :param `start`: an integer specifying the line start style. See :ref:`Annotation Line Ends` for acceptable values.
-
-      :type `start`: int
-
-      :param `end`: an integer specifying the line end style. See :ref:`Annotation Line Ends` for acceptable values.
-
-      :type `end`: int
 
    .. method:: setRect(rect)
 
@@ -140,15 +123,15 @@ This class supports accessing such annotations - not only for PDF files, but for
 
       * ``name`` - e.g. for ``[12, 'Stamp']`` type annotations it will contain the stamp text like ``Sold`` or ``Experimental``.
 
-      * ``content`` - a string containing the text for type ``Text`` and ``FreeText`` annotations. For ``FileAttachment`` it contains the filename. For other types the entry is optional. Empty if not specified or not a PDF.
+      * ``content`` - a string containing the text for type ``Text`` and ``FreeText`` annotations. Commonly used for filling the text field of annotation pop-up windows. For ``FileAttachment`` annotations it contains the filename.
 
       * ``title`` - a string containing the title of the annotation pop-up window. By convention, this is used for the annotation author.
 
-      * ``creationDate`` - the PDF timestamp of creation.
+      * ``creationDate`` - creation timestamp.
 
-      * ``modDate`` - the PDF timestamp of last change.
+      * ``modDate`` - last modified timestamp.
 
-      * ``subject`` - the subject, an optional string.
+      * ``subject`` - subject, an optional string.
 
       :rtype: dict
 
@@ -185,13 +168,9 @@ This class supports accessing such annotations - not only for PDF files, but for
 
       * ``effect`` - a list specifying a border line effect like ``[1, 'C']``. The first entry "intensity" is an integer (from 0 to 2 for maximum intensity). The second is either 'S' for "no effect" or 'C' for a "cloudy" line.
 
-      * ``dashes`` - a list of up to 4 integer entries specifying a line dash pattern like in ``[3, 2]``. This example specifies 3-point dashes alternating with 2-point gaps. See the Adobemanual page 217 for details.
+      * ``dashes`` - a list of integers (arbitrarily limited to 10) specifying a line dash pattern in user units (usually points). ``[]`` means no dashes, ``[n]`` means equal on-off lengths of ``n`` points, longer lists will be interpreted as specifying alternating on-off values. See the Adobe manual page 217 for more details.
 
       * ``style`` - 1-byte border style: ``S`` (Solid) = solid rectangle surrounding the annotation, ``D`` (Dashed) = dashed rectangle surrounding the annotation, the dash pattern is specified by the ``dashes`` entry, ``B`` (Beveled) = a simulated embossed rectangle that appears to be raised above the surface of the page, ``I`` (Inset) = a simulated engraved rectangle that appears to be recessed below the surface of the page, ``U`` (Underline) = a single line along the bottom of the annotation rectangle.
-
-      * ``hradius`` - horizontal corner radius. Zero means square (un-rounded) corners.
-
-      * ``vradius`` - vertical coner radius.  Zero means square (un-rounded) corners.
 
       :rtype: dict
       
@@ -204,8 +183,8 @@ Change the graphical image of an annotation. Also update the "author" and the te
  annot = page.firstAnnot                # get the annotation
  annot.setBorder({"dashes": [3]})       # set dashes to "3 on, 3 off ..."
  
- # set border / popup color to blue and fill color to light blue
- annot.setColors({"common":[0, 0 ,1], "fill":[0.75, 0.8, 0.95]})
+ # set border / popup color to blue and fill color to some light blue
+ annot.setColors({"common":[0, 0, 1], "fill":[0.75, 0.8, 0.95]})
  info = annot.info                      # get info dict
  info["title"] = "Jorj X. McKie"        # author name in popup title
  

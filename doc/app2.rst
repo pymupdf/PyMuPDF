@@ -1,7 +1,3 @@
-.. raw:: pdf
-
-    PageBreak
-
 ======================================
 Appendix 2: Details on Text Extraction
 ======================================

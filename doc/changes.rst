@@ -1,7 +1,3 @@
-.. raw:: pdf
-
-    PageBreak
-
 Changes in Version 1.10.0
 ==========================
 

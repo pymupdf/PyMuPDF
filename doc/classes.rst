@@ -1,7 +1,3 @@
-.. raw:: pdf
-
-    PageBreak
-
 ============
 Classes
 ============

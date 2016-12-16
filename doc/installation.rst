@@ -1,7 +1,3 @@
-.. raw:: pdf
-
-    PageBreak
-
 Installation
 =============
 Installation generally encompasses downloading and generating PyMuPDF and MuPDF from sources.

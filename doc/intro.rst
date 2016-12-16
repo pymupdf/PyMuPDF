@@ -1,6 +1,10 @@
 =============
 Introduction
 =============
+
+.. image:: pymupdf.png
+
+
 **PyMuPDF** (formerly known as **python-fitz**) is a Python binding for `MuPDF <http://www.mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ (comic book archive), FB2 and EPUB (e-book) formats.
