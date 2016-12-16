@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # This is a demo which saves a certain page as PNG file
 # It also contains misc feature like displaying document outline
 # usage: demo.py <filename> <page> <zoom> <degree> <output filename> <needle>

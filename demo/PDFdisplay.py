@@ -363,7 +363,7 @@ class PDFdisplay (wx.Dialog):
     def pdf_show(self, pg_nr):
         page = self.doc.loadPage(int(pg_nr) - 1) # load the page & get Pixmap
         pix = page.getPixmap(matrix = self.matrix)
-        bmp = bmp_buffer(pix.w, pix.h, pix.samplesRGB())
+        bmp = bmp_buffer(pix.width, pix.height, pix.samples)
         paper = FindFit(page.bound().x1, page.bound().y1)
         self.paperform.Label = "Page format: " + paper
         if self.links.Value:
