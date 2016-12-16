@@ -1,3 +1,4 @@
+
 .. _Annot:
 
 ================
@@ -199,8 +200,14 @@ Change the graphical image of an annotation. Also update the "author" and the te
  annot.updateImage()                    # update appearance
  doc.save("circle-out.pdf", garbage=4)  # save
 
-This is how the circle annotation looks before and after the change:
+This is how the circle annotation looks like, before
 
-.. image:: circle-1.png
+|before|
 
-.. image:: circle-2.png
+and after the change:
+
+|after|
+ 
+.. |before| image:: circle-1.png
+
+.. |after| image:: circle-2.png

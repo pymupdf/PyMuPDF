@@ -267,7 +267,7 @@ Since version 1.9.0 there exists an alias ``open`` for this class.
 
       PDF only: saves the document incrementally. This is a convenience abbreviation for ``doc.save(doc.name, incremental = True)``.
 
-    .. caution:: A PDF may not be encrypted, but still be password protected against changes - see the :ref:`Document.permissions` property. Performing incremental saves if ``permissions["edit"] == False`` can lead to unpredictable results. Save to a new file in such a case. We also consider raising an exception under this condition.
+    .. caution:: A PDF may not be encrypted, but still be password protected against changes - see the ``permissions`` property. Performing incremental saves if ``permissions["edit"] == False`` can lead to unpredictable results. Save to a new file in such a case. We also consider raising an exception under this condition.
 
     .. method:: write(garbage=0, clean=0, deflate=0, ascii=0, expand=0, linear=0)
 

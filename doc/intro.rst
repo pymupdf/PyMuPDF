@@ -2,10 +2,12 @@
 Introduction
 =============
 
-.. image:: pymupdf.png
+.. |intro| image:: pymupdf.png
 
 
 **PyMuPDF** (formerly known as **python-fitz**) is a Python binding for `MuPDF <http://www.mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
+
+|intro|
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ (comic book archive), FB2 and EPUB (e-book) formats.
 
@@ -17,19 +19,19 @@ MuPDF stands out among all similar products for its top rendering capability and
 
 Check this out yourself and compare the various free PDF-viewers. In terms of speed and rendering quality `SumatraPDF <http://www.sumatrapdfreader.org/>`_ ranges at the top (apart from MuPDF's own standalone viewer) - since it has changed its library basis to  MuPDF!
 
-While PyMuPDF has been available since several years for an earlier version of MuPDF (1.2), it was until only mid May 2015, that its creator and a few co-workers decided to elevate it to support the current release of MuPDF (first v1.7a  then v1.8 in November 2016, v1.9 and v1.9a since April 2016, and v1.10a in December 2016).
+While PyMuPDF has been available since several years for an earlier version of MuPDF (v1.2), it was until only mid May 2015, that its creator and a few co-workers decided to elevate it to support current releases of MuPDF (first v1.7a,  then v1.8 in November 2016, v1.9 and v1.9a since April 2016, and v1.10a in December 2016).
 
-PyMuPDF runs and has been tested on Mac, Linux, Windows 7, Windows 10, Python 2 and Python 3 (x86 and x64 versions). Other platforms should work too, as long as MuPDF and Python support them.
+PyMuPDF runs and has been tested on Mac, Linux, Windows 7, Windows 10, Python 2 and Python 3, 32bit and 64bit versions. Other platforms should work too, as long as MuPDF and Python support them.
 
 There exist several demo and example programs in the repository, ranging from simple code snippets to full-featured utilities, like text extraction, PDF joiners and bookmark maintenance.
 
-Several interesting PDF output functions have been added recently, covering metadata and bookmark maintenance and document restructuring.
+Interesting PDF output functions have been added recently, covering metadata and bookmark maintenance, document restructuring, annotation handling and document output to memory areas.
 
 For installation, you can choose between generating from source code (which implies also compiling the MuPDF C library), or, under Windows only, installing pre-generated binaries.
 
 Note on the Name ``fitz``
 --------------------------
-The Python import statement for this library is ``import fitz``. This has a historical reason:
+The standard Python import statement for this library is ``import fitz``. This has a historical reason:
 
 The original rendering library for MuPDF was called ``Libart``. "After Artifex Software acquired the MuPDF project, the development focus shifted on writing a new modern graphics library called ``Fitz``. Fitz was originally intended as an R&D project to replace the aging Ghostscript graphics library, but has instead become the rendering engine powering MuPDF." (Quoted from `Wikipedia <https://en.wikipedia.org/wiki/MuPDF>`_).
 

@@ -12,9 +12,12 @@ Following are three sections that deal with different aspects of performance:
 
 In each section, the same fixed set of PDF files is being processed by a set of tools. The set of tools varies - for reasons we will explain in the section.
 
-Here is the list of files we are using. Each file name is accompanied by further information: **size** in bytes, number of **pages**, number of bookmarks (**toc** entries), number of **links**, **text** size as a percentage of file size, **KB** per page, PDF **version** and remarks. **text %** and **KB index** are indicators for whether a file is text or graphics oriented: e.g. ``Adobe.pdf`` and ``PyMuPDF.pdf`` are clearly text oriented, all other files contain many more images.
+.. |fsizes| image:: filesizes.png
 
-.. image:: filesizes.png
+Here is the list of files we are using. Each file name is accompanied by further information: **size** in bytes, number of **pages**, number of bookmarks (**toc** entries), number of **links**, **text** size as a percentage of file size, **KB** per page, PDF **version** and remarks. **text %** and **KB index** are indicators for whether a file is text or graphics oriented.
+|fsizes|
+E.g. ``Adobe.pdf`` and ``PyMuPDF.pdf`` are clearly text oriented, all other files contain many more images.
+
 
 
 Part 1: Parsing
@@ -69,13 +72,14 @@ This is how each of the tools was used:
 
 **Observations**
 
-These are our run time findings (in **seconds**, please note the European number convention: meaning of decimal point and comma is reversed):
+.. |cpyspeed1| image:: copy_speed_1.png
+.. |cpyspeed2| image:: copy_speed_2.png
 
-.. image:: copy_speed_1.png
+These are our run time findings (in **seconds**, please note the European number convention: meaning of decimal point and comma is reversed):
+|cpyspeed1|
 
 If we leave out the Adobe manual, this table looks like
-
-.. image:: copy_speed_2.png
+|cpyspeed2|
 
 PyMuPDF is by far the fastest: on average 4.5 times faster than the second best (the pure Python tool pdfrw, **chapeau pdfrw!**), and almost 20 times faster than the command line tool pdftk.
 
@@ -114,19 +118,14 @@ All tools have been used with their most basic, fanciless functionality - no lay
 
 For demonstration purposes, we have included a version of ``GetText(doc, output = "json")``, that also re-arranges the output according to occurrence on the page.
 
-Here are the results using the same test files as above (again: decimal point and comma reversed):
+.. |textperf| image:: textperformance.png
 
-.. image:: textperformance.png
+Here are the results using the same test files as above (again: decimal point and comma reversed):
+|textperf|
 
 Again, (Py-) MuPDF is the fastest around. It is 2.3 to 2.6 times faster than xpdf.
 
 ``pdfminer``, as a pure Python solution, of course is comparatively slow: MuPDF is 50 to 60 times faster and xpdf is 23 times faster. These observations in order of magnitude coincide with the statements on this `web site <http://www.unixuser.org/~euske/python/pdfminer/>`_.
-
-
-.. raw:: pdf
-
-    PageBreak
-
 
 Part 3: Image Rendering
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -154,9 +153,11 @@ We have tested rendering speed of MuPDF against the ``pdftopng.exe``, a command 
 ::
  pdftopng.exe file.pdf ./
 
+.. |renderspeed| image:: render_speed.png
+
 The resulting runtimes can be found here (again: meaning of decimal point and comma reversed):
 
-.. image:: render_speed.png
+|renderspeed|
 
 * MuPDF and PyMuPDF are both about 3 times faster than Xpdf.
 

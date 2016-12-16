@@ -289,9 +289,11 @@ The following file types are supported as input to construct pixmaps: BMP, JPEG,
 Details on Saving Images with ``writeImage()``
 -----------------------------------------------
 
-The following table shows possible combinations of file extensions, output formats and colorspaces of method ``writeImage()``.
+.. |wimgopt| image:: writeimage.png
 
-.. image:: writeimage.png
+The following table shows possible combinations of file extensions, output formats and colorspaces of method ``writeImage()``:
+
+|wimgopt|
 
 .. note:: Not all image file types are available, or at least common on all platforms, e.g. PAM is mostly unknown on Windows. Especially pertaining to CMYK colorspaces, you can always convert a CMYK pixmap to an RGB-pixmap with ``rgb_pix = fitz.Pixmap(fitz.csRGB, cmyk_pix)`` and then save that as a PNG.
 
@@ -322,19 +324,22 @@ This shows how pixmaps can be used for purely graphical, non-PDF purposes. The s
          pix0.x = j * pix0.width                  # modify input's x coord
          tar_pix.copyPixmap(pix0, pix0.irect)     # copy input to new loc
          # save all intermediate images to show what is happening
-         fn = "target-" + str(i) + str(j) + ".png"
-         tar_pix.writePNG(fn)
+         fn = "target-%s-%s.png" % (str(i), str(j))
+         tar_pix.writePNG(fn) 
 
+
+.. |editra| image:: editra.png
 
 This is the input picture ``editra.png`` (taken from the wxPython directory ``/tools/Editra/pixmaps``):
+|editra|
 
-.. image:: editra.png
+.. |t11| image:: target-11.png
+
+.. |t32| image:: target-32.png
 
 Here is the output, showing some intermediate picture and the final result:
 
-.. image:: target-11.png
-
-.. image:: target-32.png
+|t11| |t32|
 
 **Example 2**
 

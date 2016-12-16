@@ -148,7 +148,9 @@ Binary download setup scripts contain an integrity check based on MD5 check sums
 
 The directory structure of each zip file ``pymupdf-1.10.?.?-py??-x??.zip`` is as follows:
 
-.. image:: binsetupdirs.png
+.. |setup| image:: binsetupdirs.png
+
+|setup|
 
 During setup, the MD5 check sum of the four installation files ``__init__.py``, ``_fitz.pyd``, ``utils.py`` and ``fitz.py`` is being calculated and compared against the pre-calculated check sum contained in file ``md5.txt``. If a mismatch is detected, the error message
 

@@ -1,3 +1,4 @@
+
 .. _Matrix:
 
 ==========
@@ -6,9 +7,11 @@ Matrix
 
 Matrix is a row-major 3x3 matrix used by image transformations in MuPDF (which complies with the respective concepts laid down in the Adobe manual). With matrices you can manipulate the rendered image of a page in a variety of ways: (parts of) the page can be rotated, zoomed, flipped, sheared and shifted by setting some or all of just six float values.
 
+.. |matrix| image:: matrix.png
+
 Since all points or pixels live in a two-dimensional space, one column vector of that matrix is a constant unit vector, and only the remaining six elements are used for manipulations. These six elements are usually represented by ``[a, b, c, d, e, f]``. Here is how they are positioned in the matrix:
 
-.. image:: matrix.png
+|matrix|
 
 It should be noted, that
 
@@ -210,47 +213,58 @@ Examples
 -------------
 Here are examples to illustrate some of the effects achievable. The following pictures start with a page of the PDF version of this help file. We show what happens when a matrix is being applied (though always full pages are created, only parts are displayed here to save space).
 
-This is the original page image
+.. |original| image:: original.png
 
-.. image:: original.png
+This is the original page image:
 
+|original|
 
 Shifting
 ------------
+.. |e100| image:: e_is_100.png
+
 We transform it with a matrix where ``e = 100`` (right shift by 100 pixels).
 
-.. image:: e_is_100.png
+|e100|
 
+.. |f100| image:: f_is_100.png
 
 Next we do a down shift by 100 pixels: ``f = 100``.
 
-.. image:: f_is_100.png
-
+|f100|
 
 Flipping
 --------------
+.. |aminus1| image:: a_is_-1.png
+
 Flip the page left-right (``a = -1``).
 
-.. image:: a_is_-1.png
+|aminus1|
 
+.. |dminus1| image:: d_is_-1.png
 
 Flip up-down (``d = -1``).
 
-.. image:: d_is_-1.png
-
+|dminus1|
 
 Shearing
 ----------------
+.. |bnull5| image:: b_is_0.5.png
+
 First a shear in Y direction (``b = 0.5``).
 
-.. image:: b_is_0.5.png
+|bnull5|
+
+.. |cnull5| image:: c_is_0.5.png
 
 Second a shear in X direction (``c = 0.5``).
 
-.. image:: c_is_0.5.png
+|cnull5|
 
 Rotating
 ---------
+.. |rot60| image:: rot_60.png
+
 Finally a rotation by 30 clockwise degrees (``preRotate(-30)``).
 
-.. image:: rot_60.png
+|rot60|
