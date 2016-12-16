@@ -55,11 +55,16 @@ You can download pre-generated binaries from `here <https://github.com/JorjMcKie
 
 If you want to make your own binary however, have a look at this `Wiki page <https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation>`_. It explains how to use Visual Studio for generating MuPDF in quite some detail. Also do not hesitate to contact us if you need help.
 
-Usage
-=====
+Usage and Documentation
+=========================
 
 Please have a look at the basic `demos <https://github.com/rk700/PyMuPDF/tree/master/demo>`_ or the `examples <https://github.com/rk700/PyMuPDF/tree/master/examples>`_ which contain complete, working programs.
 
+You have a variety of options to access the **documentation**:
+
+* You can view it online at `PyPI <http://pythonhosted.org/PyMuPDF/>`_ or at `Read the Docs <https://pymupdf.readthedocs.io/en/latest/>`_. **Read the Docs** also lets you download versions in PDF (see below), HTML and EPUB formats.
+* You can download a `Windows compiled html <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm>`_.
+* You can download a `PDF <https://media.readthedocs.org/pdf/pymupdf/latest/pymupdf.pdf>`_ from **Read the Docs**.
 You can access the complete documentation (which contains a detailed tutorial) as a `PDF <https://github.com/rk700/PyMuPDF/tree/master/doc/PyMuPDF.pdf>`_, as a `Windows compiled html <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm>`_ or at `PyPI <http://pythonhosted.org/PyMuPDF/>`_.
 
 Earlier Versions
