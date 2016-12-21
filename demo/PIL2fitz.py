@@ -14,10 +14,10 @@ else:
 if pic_fn:
     print('Reading %s' % pic_fn)
     pic_f = open(pic_fn, "rb")
-    img = Image.open(pic_f).convert("RGBA")
+    img = Image.open(pic_f).convert("RGB")
     samples = img.tobytes()
-    pix = fitz.Pixmap(fitz.csRGB, img.size[0], img.size[1], samples, 1)
-    outputFileName = pic_fn+'-from-PIL.png'
+    pix = fitz.Pixmap(fitz.csRGB, img.size[0], img.size[1], samples, 0)
+    outputFileName = pic_fn + '-from-PIL.png'
     print('Writing %s' % outputFileName)
     pix.writePNG(outputFileName)
     pic_f.close()

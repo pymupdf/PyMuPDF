@@ -14,11 +14,15 @@ PyMuPDF, wxPython 3.x
 License:
  GNU GPL 3.x
 
+Changes in PyMuPDF 1.10.0
+-------------------------
+- allow PageFormat module to be missing
+
 Changes in PyMuPDF 1.9.2
 ------------------------
 - supporting Python 3 as wxPython now supports it
 - optionally show links in displayed pages
-- when clicking on a link, attempt to follow the link
+- when clicking on a link, attempt to follow it
 - remove inline code for dialog icon and import from a library
 
 Changes in PyMuPDF 1.8.0
@@ -31,7 +35,11 @@ Changes in PyMuPDF 1.8.0
 import fitz
 import wx
 import os
-from PageFormat import FindFit
+try:
+    from PageFormat import FindFit
+except:
+    def FindFit(*args):
+        return "not implemented"
 try:
     from icons import ico_pdf            # PDF icon in upper left screen corner
     do_icon = True
@@ -40,17 +48,21 @@ except:
 
 app = None
 app = wx.App()
-
+gui_version = [wx.VERSION[0], wx.VERSION[1], wx.VERSION[2]]
+assert gui_version >= [3, 0, 2], "need wxPython 3.0.2 or later"
+assert [int(x) for x in fitz.VersionBind.split(".")] >= [
+    1, 9, 2], "need PyMuPDF 1.9.2 or later"
 # make some adjustments for differences between wxPython versions 3.0.2 / 3.0.3
-if wx.version() >= "3.0.3":
-    cursor_hand  = wx.Cursor(wx.CURSOR_HAND)
-    cursor_norm  = wx.Cursor(wx.CURSOR_DEFAULT)
+if gui_version >= [3, 0, 3]:
+    cursor_hand = wx.Cursor(wx.CURSOR_HAND)
+    cursor_norm = wx.Cursor(wx.CURSOR_DEFAULT)
     bmp_buffer = wx.Bitmap.FromBuffer
 else:
-    cursor_hand  = wx.StockCursor(wx.CURSOR_HAND)
-    cursor_norm  = wx.StockCursor(wx.CURSOR_DEFAULT)
+    cursor_hand = wx.StockCursor(wx.CURSOR_HAND)
+    cursor_norm = wx.StockCursor(wx.CURSOR_DEFAULT)
     bmp_buffer = wx.BitmapFromBuffer
-    
+
+
 def getint(v):
     import types
     try:
@@ -68,19 +80,21 @@ def getint(v):
 # abbreviations to get rid of those long pesky names ...
 defPos = wx.DefaultPosition
 defSiz = wx.DefaultSize
-khaki  = wx.Colour(240, 230, 140)
-zoom   = 1.2                        # zoom factor of display
+khaki = wx.Colour(240, 230, 140)
+zoom = 1.2                        # zoom factor of display
 #==============================================================================
 # Define our dialog as a subclass of wx.Dialog.
 # Only special thing is, that we are being invoked with a filename ...
 #==============================================================================
+
+
 class PDFdisplay (wx.Dialog):
 
     def __init__(self, parent, filename):
-        wx.Dialog.__init__ (self, parent, id = wx.ID_ANY,
-            title = u"Display with PyMuPDF: ",
-            pos = defPos, size = defSiz,
-            style = wx.CAPTION|wx.CLOSE_BOX|wx.DEFAULT_DIALOG_STYLE)
+        wx.Dialog.__init__(self, parent, id=wx.ID_ANY,
+                           title=u"Display with PyMuPDF: ",
+                           pos=defPos, size=defSiz,
+                           style=wx.CAPTION | wx.CLOSE_BOX | wx.DEFAULT_DIALOG_STYLE)
 
         #======================================================================
         # display an icon top left of dialog, append filename to title
@@ -93,7 +107,7 @@ class PDFdisplay (wx.Dialog):
         #======================================================================
         # open the document with MuPDF when dialog gets created
         #======================================================================
-        self.doc = fitz.open(filename) # create Document object
+        self.doc = fitz.open(filename)  # create Document object
         if self.doc.needsPass:         # check password protection
             self.decrypt_doc()
         if self.doc.isEncrypted:       # quit if we cannot decrpt
@@ -139,14 +153,14 @@ class PDFdisplay (wx.Dialog):
         # forward button
         #======================================================================
         self.ButtonNext = wx.Button(self, wx.ID_ANY, u"forw",
-                           defPos, defSiz, wx.BU_EXACTFIT)
+                                    defPos, defSiz, wx.BU_EXACTFIT)
         szr20.Add(self.ButtonNext, 0, wx.ALL, 5)
 
         #======================================================================
         # backward button
         #======================================================================
         self.ButtonPrevious = wx.Button(self, wx.ID_ANY, u"back",
-                           defPos, defSiz, wx.BU_EXACTFIT)
+                                        defPos, defSiz, wx.BU_EXACTFIT)
         szr20.Add(self.ButtonPrevious, 0, wx.ALL, 5)
 
         #======================================================================
@@ -154,27 +168,28 @@ class PDFdisplay (wx.Dialog):
         # required to get data entry fired as events.
         #======================================================================
         self.TextToPage = wx.TextCtrl(self, wx.ID_ANY, u"1", defPos,
-                             wx.Size(40, -1),
-                             wx.TE_RIGHT|wx.TE_PROCESS_ENTER)
+                                      wx.Size(40, -1),
+                                      wx.TE_RIGHT | wx.TE_PROCESS_ENTER)
         szr20.Add(self.TextToPage, 0, wx.ALL, 5)
 
         #======================================================================
         # displays total pages and page paper format
         #======================================================================
         self.statPageMax = wx.StaticText(self, wx.ID_ANY,
-                              "of " + str(len(self.doc)) + " pages.",
-                              defPos, defSiz, 0)
-        szr20.Add(self.statPageMax, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
+                                         "of " + str(len(self.doc)
+                                                     ) + " pages.",
+                                         defPos, defSiz, 0)
+        szr20.Add(self.statPageMax, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
 
-        self.links = wx.CheckBox( self, wx.ID_ANY,
-                           u"show links",
-                           defPos, defSiz, wx.ALIGN_LEFT)
+        self.links = wx.CheckBox(self, wx.ID_ANY,
+                                 u"show links",
+                                 defPos, defSiz, wx.ALIGN_LEFT)
         self.links.Value = True
-        szr20.Add( self.links, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+        szr20.Add(self.links, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
 
         self.paperform = wx.StaticText(self, wx.ID_ANY,
-                              "", defPos, defSiz, 0)
-        szr20.Add(self.paperform, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
+                                       "", defPos, defSiz, 0)
+        szr20.Add(self.paperform, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
 
         #======================================================================
         # sizer ready, represents top dialog line
@@ -185,7 +200,7 @@ class PDFdisplay (wx.Dialog):
         # define the area for page images and load page 1 for primary display
         #======================================================================
         self.PDFimage = wx.StaticBitmap(self, wx.ID_ANY, self.pdf_show(1),
-                           defPos, defSiz, 0)
+                                        defPos, defSiz, 0)
         self.szr10.Add(self.PDFimage, 0, wx.ALL, 5)
 
         #======================================================================
@@ -291,7 +306,7 @@ class PDFdisplay (wx.Dialog):
         return
 
     def NextPage(self, event):                   # means: page forward
-        page = getint(self.TextToPage.Value) + 1 # current page + 1
+        page = getint(self.TextToPage.Value) + 1  # current page + 1
         page = min(page, self.doc.pageCount)     # cannot go beyond last page
         self.TextToPage.Value = str(page)        # put target page# in screen
         self.bitmap = self.pdf_show(page)        # get page image
@@ -299,7 +314,7 @@ class PDFdisplay (wx.Dialog):
         event.Skip()
 
     def PreviousPage(self, event):               # means: page back
-        page = getint(self.TextToPage.Value) - 1 # current page - 1
+        page = getint(self.TextToPage.Value) - 1  # current page - 1
         page = max(page, 1)                      # cannot go before page 1
         self.TextToPage.Value = str(page)        # put target page# in screen
         self.NeuesImage(page)
@@ -343,8 +358,8 @@ class PDFdisplay (wx.Dialog):
             r = lnk["from"].round()
             wx_r = wx.Rect(int(r.x0 * zoom_w),
                            int(r.y0 * zoom_h),
-                           int((r.x1 - r.x0)*zoom_w),
-                           int((r.y1 - r.y0)*zoom_h))
+                           int((r.x1 - r.x0) * zoom_w),
+                           int((r.y1 - r.y0) * zoom_h))
             dc.DrawRectangle(wx_r[0], wx_r[1], wx_r[2], wx_r[3])
             self.link_rects.append(wx_r)
             if lnk["kind"] == fitz.LINK_GOTO:
@@ -361,9 +376,9 @@ class PDFdisplay (wx.Dialog):
         return
 
     def pdf_show(self, pg_nr):
-        page = self.doc.loadPage(int(pg_nr) - 1) # load the page & get Pixmap
-        pix = page.getPixmap(matrix = self.matrix)
-        bmp = bmp_buffer(pix.width, pix.height, pix.samples)
+        page = self.doc.loadPage(int(pg_nr) - 1)  # load the page & get Pixmap
+        pix = page.getPixmap(matrix=self.matrix)
+        bmp = bmp_buffer(pix.w, pix.h, pix.samples)
         paper = FindFit(page.bound().x1, page.bound().y1)
         self.paperform.Label = "Page format: " + paper
         if self.links.Value:
@@ -377,8 +392,8 @@ class PDFdisplay (wx.Dialog):
         # let user enter document password
         pw = None
         dlg = wx.TextEntryDialog(self, 'Please enter password below:',
-                 'Document needs password to open', '',
-                 style = wx.TextEntryDialogStyle|wx.TE_PASSWORD)
+                                 'Document needs password to open', '',
+                                 style=wx.TextEntryDialogStyle | wx.TE_PASSWORD)
         while pw is None:
             rc = dlg.ShowModal()
             if rc == wx.ID_OK:
@@ -404,10 +419,10 @@ wild = "supported files|*.pdf;*.xps;*.oxps;*.epub;*.cbz"
 #==============================================================================
 # define the file selection dialog
 #==============================================================================
-dlg = wx.FileDialog(None, message = "Choose a file to display",
-                    defaultDir = os.path.expanduser("~"),
-                    defaultFile = "",
-                    wildcard = wild, style=wx.FD_OPEN|wx.FD_CHANGE_DIR)
+dlg = wx.FileDialog(None, message="Choose a file to display",
+                    defaultDir=os.path.expanduser("~"),
+                    defaultFile="",
+                    wildcard=wild, style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
 #==============================================================================
 # now display and ask for return code in one go
