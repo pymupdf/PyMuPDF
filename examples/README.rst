@@ -28,4 +28,6 @@ TableExtract.py         example CLI program using ParseTab
 wxTableExtract.py       full-featured GUI using ParseTab. Supports automatic and manual column definitions
 csv2toc.py              load a PDF TOC (table of contents) from a CSV file's contents
 toc2csv.py              export a document TOC (Table of contents) to a CSV file
+csv2meta.py             load a PDF metadata dictionary from a CSV file's contents
+meta2csv.py             export a document metadata dictionary to a CSV file
 ======================= ===========================================================================================
