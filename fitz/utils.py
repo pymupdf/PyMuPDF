@@ -10,24 +10,15 @@ The following is a collection of commodity functions to simplify the use of PyMu
 # A function for searching string occurrences on a page.
 #==============================================================================
 #def searchFor(page, text, hit_max = 16):
-def searchFor(*arg, **kw):
+def searchFor(page, text, hit_max = 16):
     '''searchFor(text, hit_max=16)\nSearch for a string on a page.
 Parameters:\ntext: string to be searched for\nhit_max: maximum hits.\n
 Returns a list of rectangles, each of which surrounds a found occurrence.
     '''
-    page = arg[0]
-    text = arg[1]
-    if "hit_max" in kw:
-        hit_max = kw["hit_max"]
-    else:
-        hit_max = 16
-        if kw:
-            raise ValueError("invalid keyword parameter specified")
-
-    if not repr(page.parent).startswith("fitz.Document"):
-        raise ValueError("invalid page object provided to searchFor")
-    if page.parent.isClosed or page.parent.isEncrypted:
-        raise ValueError("page operation on closed or encrpted document")
+    if page.parent is None:
+        raise RuntimeError("orphaned object: parent is None")
+    if page.parent.isClosed:
+        raise RuntimeError("illegal operation on closed document")
 
     rect = page.rect
     dl = fitz.DisplayList(rect)         # create DisplayList
@@ -35,37 +26,33 @@ Returns a list of rectangles, each of which surrounds a found occurrence.
     ts = fitz.TextSheet()                    # create TextSheet
     tp = fitz.TextPage(rect)            # create TextPage
     dl.run(fitz.Device(ts, tp), fitz.Identity, rect)   # run the page
-
     # return list of hitting reactangles
     return tp.search(text, hit_max = hit_max)
 
 #==============================================================================
+# A function for searching string occurrences on a page.
+#==============================================================================
+def searchPageFor(doc, pno, text, hit_max=16):
+    """Search for a string on a page.
+Parameters:\npno: integer page number\ntext: string to be searched for\nhit_max: maximum hits.\n
+Returns a list of rectangles, each of which surrounds a found occurrence."""
+    return searchFor(doc[pno], text, hit_max = hit_max)
+    
+#==============================================================================
 # A function for extracting a page's text.
 #==============================================================================
 #def getText(page, output = "text"):
-def getText(*arg, **kw):
+def getText(page, output = "text"):
     '''getText(output='text')\nExtracts a PDF page's text.
 Parameters:\noutput option: text, html, json or xml.\n
 Returns strings like the TextPage extraction methods extractText, extractHTML,
 extractJSON, or etractXML respectively.
 Default and misspelling choice is "text".
     '''
-    # determine parameters. Using generalized arguments, so we can become a
-    # method of the Page class
-    if len(arg) != 1:
-        raise ValueError("requiring 1 pos. argument, %s given" % (len(arg),))
-    page = arg[0]                                # arg[0] = self when Page method
-    if not repr(page.parent).startswith("fitz.Document"):
-        raise ValueError("invalid page object provided to getText")
-    if page.parent.isClosed or page.parent.isEncrypted:
-        raise ValueError("page operation on closed or encrypted document")
-
-    if "output" in kw:
-        output = kw["output"]
-    else:
-        output = "text"
-        if kw:
-            raise ValueError("getText invalid keyword specified")
+    if page.parent is None:
+        raise RuntimeError("orphaned object: parent is None")
+    if page.parent.isClosed:
+        raise RuntimeError("illegal operation on closed document")
 
     # return requested text format
     if output.lower() == "json":
@@ -80,7 +67,7 @@ Default and misspelling choice is "text".
 # A function for extracting a page's text.
 #==============================================================================
 #def getPageText(pno, output = "text"):
-def getPageText(*arg, **kw):
+def getPageText(doc, pno, output = "text"):
     '''getPageText(pno, output='text')
 Extracts a PDF page's text by page number.
 Parameters:\npno: page number\noutput option: text, html, json or xml.\n
@@ -88,42 +75,15 @@ Returns strings like the TextPage extraction methods extractText, extractHTML,
 extractJSON, or etractXML respectively.
 Default and misspelling choice is "text".
     '''
-    # determine parameters. Using generics, so we can become a
-    # method of the Document class
-    if len(arg) != 2:
-        raise ValueError("requiring 2 pos. arguments, %s given" % (len(arg),))
-    doc = arg[0]                       # arg[0] = self when Document method
-    if not repr(doc).startswith("fitz.Document"):
-        raise ValueError("invalid fitz.Document object specified")
-    if doc.isClosed or doc.isEncrypted:
-        raise ValueError("operation on closed or encrypted document")
-
-    pno = int(arg[1])                  # page number
-    if pno < 0 or pno >= doc.pageCount:
-        raise ValueError("page number not in range 0 to %s" % (doc.pageCount - 1,))
-
-    if "output" in kw:
-        output = kw["output"]
-    else:
-        output = "text"
-        if kw:
-            raise ValueError("invalid keyword specified to getPageText")
-
-    # return requested text format
-    if output.lower() == "json":
-        return doc._readPageText(pno, output = 2)
-    elif output.lower() == "html":
-        return doc._readPageText(pno, output = 1)
-    elif output.lower() == "xml":
-        return doc._readPageText(pno, output = 3)
-    return doc._readPageText(pno, output = 0)
+    return doc[pno].getText(output = output)
 
 #==============================================================================
 # A function for rendering a page's image.
 # Requires a page object.
 #==============================================================================
 #def getPixmap(matrix = fitz.Identity, colorspace = "RGB", clip = None, alpha = False):
-def getPixmap(*arg, **kw):
+def getPixmap(page, matrix = fitz.Identity, colorspace = "rgb", clip = None,
+              alpha = False):
     '''getPixmap(matrix=fitz.Identity, colorspace='rgb', clip = None)
 Creates a fitz.Pixmap of a PDF page.
 Parameters:\nmatrix: a fitz.Matrix instance to specify required transformations.
@@ -132,32 +92,10 @@ colorspace: text string to specify required colour space (rgb, rgb, gray - case 
 Default and misspelling choice is "rgb".
 clip: a fitz.IRect to restrict rendering to this area.
     '''
-    # get parameters
-    if len(arg) != 1:
-        raise ValueError("requiring 1 pos. argument, %s given" % (len(arg),))
-    page = arg[0]
-    if not repr(page.parent).startswith("fitz.Document"):
-        raise ValueError("invalid page object provided to getPixmap")
-    if page.parent.isClosed or page.parent.isEncrypted:
-        raise ValueError("page operation on closed or encrypted document")
-
-    for k in kw.keys():
-        if k not in ["matrix", "colorspace", "clip", "alpha"]:
-            raise ValueError("invalid keyword in getPixmap")
-    # set default values
-    matrix = fitz.Identity
-    colorspace = "rgb"
-    clip = None
-    alpha = False
-
-    if "matrix" in kw:
-        matrix = kw["matrix"]
-    if "colorspace" in kw:
-        colorspace = kw["colorspace"]
-    if "clip" in kw:
-        clip = kw["clip"]
-    if "alpha" in kw:
-        alpha = kw["alpha"]
+    if page.parent is None:
+        raise RuntimeError("orphaned object: parent is None")
+    if page.parent.isClosed:
+        raise RuntimeError("illegal operation on closed document")
 
     # determine required colorspace
     if colorspace.upper() == "GRAY":
@@ -194,7 +132,8 @@ clip: a fitz.IRect to restrict rendering to this area.
 # A function for rendering a page by its number
 #==============================================================================
 # getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = "RGB", clip = None, alpha = False):
-def getPagePixmap(*arg, **kw):
+def getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = "rgb",
+                  clip = None, alpha = False):
     '''getPagePixmap(pno, matrix=fitz.Identity, colorspace="rgb", clip = None)
 Creates a fitz.Pixmap object for a document page number.
 Parameters:\npno: page number (int)
@@ -204,71 +143,8 @@ colorspace: text string to specify the required colour space (rgb, cmyk, gray - 
 Default and misspelling choice is "rgb".
 clip: a fitz.IRect to restrict rendering to this area
     '''
-    # get parameters
-    if len(arg) != 2:
-        raise ValueError("need 2 positional arguments, got %s" % (len(arg),))
-    doc = arg[0]
-    # check if called with a valid document
-    if not repr(doc).startswith("fitz.Document"):
-        raise ValueError("invalid fitz.Document provided to getPagePixmap")
-    if doc.isClosed or doc.isEncrypted:
-        raise ValueError("operation on closed or encrypted document")
-    # check if called with a valid page number
-    pno = int(arg[1])
-    if pno < 0 or pno >= doc.pageCount:
-        raise ValueError("page number not in range 0 to %s" % (doc.pageCount - 1,))
-
-    for k in kw.keys():
-        if k not in ["matrix", "colorspace", "clip", "alpha"]:
-            raise ValueError("invalid keyword specified to getPagePixmap")
-    # default values
-    matrix = fitz.Identity
-    colorspace = "rgb"
-    clip = None
-    alpha = False
-
-    if "matrix" in kw.keys():
-        matrix = kw["matrix"]
-    if "colorspace" in kw.keys():
-        colorspace = kw["colorspace"]
-    if "clip" in kw.keys():
-        clip = kw["clip"]
-    if "alpha" in kw.keys():
-        alpha = kw["alpha"]
-
-    page = doc.loadPage(pno)
-
-    # determine required colorspace
-    if colorspace.upper() == "GRAY":
-        cs = fitz.csGRAY
-    elif colorspace.upper() == "CMYK":
-        cs = fitz.csCMYK
-    else:
-        cs = fitz.csRGB
-
-    r = page.bound()                         # get page boundaries
-    dl = fitz.DisplayList(r)                 # create DisplayList
-    page.run(fitz.Device(dl), fitz.Identity) # run page through it
-
-    if clip:
-        r.intersect(clip.getRect())          # only the part within clip
-        r.transform(matrix)                  # transform it
-        clip = r.round()                     # make IRect copy of it
-        ir = clip
-    else:                                    # take full page
-        r.transform(matrix)                  # transform it
-        ir = r.round()                       # make IRect copy of it
-
-    pix = fitz.Pixmap(cs, ir, alpha)         # create an empty pixmap
-    pix.clearWith(255)                       # clear it with color "white"
-    dv = fitz.Device(pix, clip)              # create a "draw" device
-    dl.run(dv, matrix, r)                    # render the page
-    dv = None
-    dl = None
-    page = None
-    pix.x = 0
-    pix.y = 0
-    return pix
+    return doc[pno].getPixmap(matrix = matrix, colorspace = colorspace,
+                          clip = clip, alpha = alpha)
 
 #==============================================================================
 # An internal function to create a link info dictionary for getToC and getLinks
@@ -331,20 +207,17 @@ def getLinkDict(ln):
 # loadPage() method of a document.
 #==============================================================================
 #def getLinks(page):
-def getLinks(*arg, **kw):
+def getLinks(page):
     '''getLinks()
 Creates a list of all links contained in a PDF page.
 Parameters: none\nThe returned list contains a Python dictionary for every link item found.
 Every dictionary contains the keys "type" and "kind" to specify the link type / kind.
 The presence of other keys depends on this kind - see PyMuPDF's ducmentation for details.'''
-    # get parameters
-    page = arg[0]
 
-    # check whether called with a valid page
-    if not repr(page.parent).startswith("fitz.Document"):
-        raise ValueError("invalid page object provided to getLinks")
-    if page.parent.isClosed or page.parent.isEncrypted:
-        raise ValueError("operation illegal for closed / encrypted doc")
+    if page.parent is None:
+        raise RuntimeError("orphaned object: parent is None")
+    if page.parent.isClosed:
+        raise RuntimeError("illegal operation on closed document")
     ln = page.firstLink
     links = []
     while ln:
@@ -358,20 +231,12 @@ The presence of other keys depends on this kind - see PyMuPDF's ducmentation for
 # of contents.
 #==============================================================================
 #def GetToC(doc, simple = True):
-def getToC(*arg, **kw):
+def getToC(doc, simple = True):
     '''getToC(simple=True)
 Creates a table of contents for a given PDF document.
 Parameters:\nsimple: a boolean indicator to control the output
 Returns a Python list, where each entry consists of outline level, title, page number
 and link destination (if simple = False). For details see PyMuPDF's documentation.'''
-    # get parameters
-    doc = arg[0]
-    if "simple" in kw:
-        simple = kw["simple"]
-    else:
-        simple = True
-        if kw:
-            raise ValueError("invalid keyword provided to getToc")
 
     def recurse(olItem, liste, lvl):
         '''Recursively follow the outline item chain and record item information in a list.'''
@@ -400,13 +265,9 @@ and link destination (if simple = False). For details see PyMuPDF's documentatio
             olItem = olItem.next
         return liste
 
-    # check if we are being called legally
-    if not repr(doc).startswith("fitz.Document"):
-        raise ValueError("invalid document object provided to getToC")
-
     # check if document is open and not encrypted
-    if doc.isClosed or doc.isEncrypted:
-        raise ValueError("operation on closed or encrypted document")
+    if doc.isClosed:
+        raise RuntimeError("illegal operation on closed document")
 
     olItem = doc.outline
 
@@ -813,12 +674,13 @@ def setMetadata(doc, m):
     return r
 
 def getDestStr(xref, ddict):
+    if not ddict:
+        return ""
     str_goto = "/Dest[%s %s R/XYZ %s %s %s]"
 
     if type(ddict) is int or type(ddict) is float:
         dest = str_goto % (xref[0], xref[1], 0, str(ddict), 0)
         return dest
-
     d_kind = ddict["kind"]
 
     if d_kind == fitz.LINK_NONE:
@@ -882,20 +744,23 @@ def setToC(doc, toc):
         raise ValueError("arg2 must be a list")
     if toclen == 0:
         return len(doc._delToC())
+    pageCount = len(doc)
     t0 = toc[0]
     if type(t0) is not list:
-        raise ValueError("arg2 must be a list of lists of 3 or 4 items")
+        raise ValueError("arg2 must contain lists of 3 or 4 items")
     if t0[0] != 1:
         raise ValueError("hierarchy level of item 0 must be 1")
     for i in list(range(toclen-1)):
         t1 = toc[i]
         t2 = toc[i+1]
+        if not -1 <= t1[2] < pageCount:
+            raise ValueError("row %s:page number out of range" % (str(i),))
         if (type(t2) is not list) or len(t2) < 3 or len(t2) > 4:
-            raise ValueError("arg2 must be list of lists of 3 or 4 items")
+            raise ValueError("arg2 must contain lists of 3 or 4 items")
         if (type(t2[0]) is not int) or t2[0] < 1:
             raise ValueError("hierarchy levels must be int > 0")
         if t2[0] > t1[0] + 1:
-            raise ValueError("hierarchy steps must not be > 1")
+            raise ValueError("row %s: hierarchy steps must not be > 1" + (str(i),))
     # no formal errors in toc --------------------------------------------------
 
     old_xrefs = doc._delToC()          # del old outlines, get xref numbers
@@ -1118,61 +983,65 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
 #-------------------------------------------------------------------------------
 def updateImage(annot):
     '''Update border and color information in the appearance dictionary /AP.'''
+    if annot.parent is None:
+        raise RuntimeError("orphaned object: parent is None")
+    if annot.parent.parent.isClosed:
+        raise RuntimeError("illegal operation on closed document")
     
     def modAP(tab, ctab, ftab, wtab, dtab):
-        if not ctab[4]: return tab
+        '''replace all occurrences of colors, width and dashes by provided values.'''
         ntab = []
-        in_text_block = False
+        in_text_block = False          # if True do nothing
         for i in range(len(tab)):
-            if tab[i] == b"Do":
+            if tab[i] == b"Do":        # another XObject invoked
                 raise ValueError("nested XObject calls not supported")
-            ntab.append(tab[i])
-            if tab[i] == b"BT":
-                in_text_block = True
+            ntab.append(tab[i])        # store in output
+            if tab[i] == b"BT":        # begin of text block
+                in_text_block = True   # switch on
                 continue
-            if tab[i] == b"ET":
-                in_text_block = False
+            if tab[i] == b"ET":        # end of text block
+                in_text_block = False  # switch off
                 continue
-            if in_text_block:
+            if in_text_block:          # skip if in text block
                 continue
-            if ftab[4] and (tab[i] == b"s"):
-                ntab[-1] = b"b"
+            if ftab[4] and (tab[i] == b"s"):     # fill color provided
+                ntab[-1] = b"b"        # make sure it is used
                 continue
-            if ctab[4]:
-                if tab[i] == b"G":
+            if ctab[4]:                # stroke color provided
+                if tab[i] == b"G":     # it is a gray
                     del ntab[-2:]
                     ntab.extend(ctab)
                     continue
-                elif tab[i] == b"RG":
+                elif tab[i] == b"RG":  # it is RGB
                     del ntab[len(ntab)-4:]
                     ntab.extend(ctab)
                     continue
-                elif tab[i] == b"K":
+                elif tab[i] == b"K":   # it is CMYK
                     del ntab[len(ntab)-5:]
                     ntab.extend(ctab)
                     continue
-            if ftab[4]:
-                if tab[i] == b"g":
+            if ftab[4]:                # fill color provided
+                if tab[i] == b"g":     # it is a gray
                     del ntab[-2:]
                     ntab.extend(ftab)
                     continue
-                elif tab[i] == b"rg":
+                elif tab[i] == b"rg":  # it is RGB
                     del ntab[len(ntab)-4:]
                     ntab.extend(ftab)
                     continue
-                elif tab[i] == b"k":
+                elif tab[i] == b"k":   # it is CMYK
                     del ntab[len(ntab)-5:]
                     ntab.extend(ftab)
                     continue
-            if wtab[1]:
+            if wtab[1]:                # width value provided
                 if tab[i] == b"w":
                     ntab[-2] = wtab[0]
                     continue
-            if dtab[1]:
+            if dtab[1]:                # dashes provided
                 if tab[i] == b"d":
                     j = len(ntab) - 1
                     x = b"d"
-                    while not x.startswith(b"["):
+                    while not x.startswith(b"["):     # search start of array
                         j -= 1
                         x = ntab[j]
                     del ntab[j:]
@@ -1182,7 +1051,7 @@ def updateImage(annot):
     ap = annot._getAP() # get appearance text
     aptab = ap.split() # decompose into a list
         
-    # prepare width, common color and fill color lists
+    # prepare width, colors and dashes lists
     # fill color
     c = annot.colors.get("fill")
     ftab = [b""]*5
@@ -1200,7 +1069,7 @@ def updateImage(annot):
             ftab[4] = b"g"
             ftab[3] = str(round(c[0],4)).encode("utf-8")
 
-    # common color
+    # stroke color
     c = annot.colors.get("common")
     ctab = [b""]*5
     if c and len(c) > 0:
@@ -1208,47 +1077,47 @@ def updateImage(annot):
         if l == 4:
             ctab[4] = b"K"
             for i in range(4):
-                ctab[i] = str(round(c[i],4)).encode("utf-8")
+                ctab[i] = str(round(c[i], 4)).encode("utf-8")
         elif l == 3:
             ctab[4] = b"RG"
             for i in range(1, 4):
-                ctab[i] = str(round(c[i-1],4)).encode("utf-8")
+                ctab[i] = str(round(c[i-1], 4)).encode("utf-8")
         elif l == 1:
             ctab[4] = b"G"
-            ctab[3] = str(round(c[0],4)).encode("utf-8")
+            ctab[3] = str(round(c[0], 4)).encode("utf-8")
 
     # border width
     c = annot.border.get("width")
     wtab = [b"", b""]
     if c:
-        wtab[0] = str(round(c,4)).encode("utf-8")
+        wtab[0] = str(round(c, 4)).encode("utf-8")
         wtab[1] = b"w"
-    
+
     # dash pattern
     c = annot.border.get("dashes")
     dtab = [b""]*2
-    if not (c is None):
+    if not c is None:
         dtab[1] = b"0 d"
         dtab[0] = b"["
         for n in c:
             if n > 0:
                 dtab[0] += str(n).encode("utf-8") + b" "
         dtab[0] += b"]"
-    
+
     outlist = []
     outlist += ftab if ftab[4] else []
     outlist += ctab if ctab[4] else []
     outlist += wtab if wtab[1] else []
     outlist += dtab if dtab[1] else []
-        
-    if outlist and aptab[0] == b"q":
+    if not outlist:
+        return
+    # make sure we insert behind a leading "save graphics state"
+    if aptab[0] == b"q":
         outlist = [b"q"] + outlist
         aptab = aptab[1:]
     # now change every color, width and dashes spec
-    if outlist:
-        aptab = modAP(aptab, ctab, ftab, wtab, dtab)
-        aptab = outlist + aptab
-        
+    aptab = modAP(aptab, ctab, ftab, wtab, dtab)
+    aptab = outlist + aptab
     ap = b" ".join(aptab)
     annot._setAP(ap)
     return
