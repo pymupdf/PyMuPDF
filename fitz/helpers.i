@@ -1,7 +1,7 @@
 %{
 //----------------------------------------------------------------------------
-// Checks whether the dict.keys() is contained in list [vkeys, ...]
-// dict keys must be string or unicode in Py2 and string in Py3!
+// Checks whether list dict.keys() is contained in [vkeys, ...]
+// keys of dict must be string or unicode in Py2 and string in Py3!
 // Parameters:
 // dict - the Python dictionary object to be checked
 // vkeys - a null-terminated list of keys (char *)

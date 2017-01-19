@@ -958,24 +958,26 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
 
     # create /Annots per copied page in destination PDF
     for i in range(len(xref_src)):
-        page = doc2.loadPage(list_src[i])
-        height = page.bound().y1
-        links = page.getLinks()
+        page_src = doc2[list_src[i]]
+        links = page_src.getLinks()
+        if len(links) == 0:
+            page_src = None
+            continue
+        height = page_src.bound().y1
         p_annots = ""
-        p_txt = doc1._getObjectString(xref_dst[i])
+        page_dst = doc1[list_dst[i]]
+        link_tab = []
         for l in links:
             if l["type"] == "goto" and (l["page"] not in list_src):
                 continue          # target not in copied pages
             annot_text = cre_annot(l, xref_dst, list_src, height)
             if not annot_text:
                 raise ValueError("cannot create /Annot for type: " + l["type"])
-            annot_xref = doc1._getNewXref()
-            doc1._updateObject(annot_xref, annot_text)
-            p_annots += str(annot_xref) + " 0 R "
-        if p_annots:
-            p_annots = "/Annots[" + p_annots + "]"
-            p_txt = p_txt[:-2] + p_annots + ">>"
-            doc1._updateObject(xref_dst[i], p_txt)
+            link_tab.append(annot_text)
+        if len(link_tab) > 0:
+            page_dst._addAnnot_FromString(link_tab)
+        page_dst = None
+        page_src = None
     return
 
 #-------------------------------------------------------------------------------

@@ -98,7 +98,7 @@ except __builtin__.Exception:
 import weakref
 VersionFitz = "1.10a"
 VersionBind = "1.10.0"
-VersionDate = "2017-01-05 14:47:29"
+VersionDate = "2017-01-18 03:50:02"
 
 LINK_NONE   = 0
 LINK_GOTO   = 1
@@ -206,7 +206,7 @@ class Document(_object):
         self.metadata    = None
         self.openErrCode = 0
         self.openErrMsg  = ''
-        self._page_refs = weakref.WeakValueDictionary()
+        self._page_refs  = weakref.WeakValueDictionary()
 
 
 
@@ -382,15 +382,15 @@ class Document(_object):
         insertPDF(PDFsrc, from_page, to_page, start_at, rotate, links) -> int
         Insert page range [from, to] of source PDF, starting as page number start_at.
         """
-
         if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+            raise RuntimeError("operation illegal for closed doc")
+        if id(self) == id(docsrc):
+            raise RuntimeError("source must not equal target PDF")
         sa = start_at
         if sa < 0:
             sa = self.pageCount
 
         val = _fitz.Document_insertPDF(self, docsrc, from_page, to_page, start_at, rotate, links)
-
         if links:
             self._do_links(docsrc, from_page = from_page, to_page = to_page,
                            start_at = sa)
@@ -637,6 +637,8 @@ class Document(_object):
         return "fitz.Document('%s', bytearray)" % (self.name,)
 
     def __getitem__(self, i):
+        if i >= len(self):
+            raise IndexError
         return self.loadPage(i)
 
     def __len__(self):
@@ -652,7 +654,7 @@ class Document(_object):
         """Invalidate all pages in document dictionary."""
         for page in self._page_refs.values():
             if page:
-                page.__del__()
+                page._erase()
         self._page_refs.clear()
 
     def __del__(self):
@@ -750,7 +752,7 @@ class Page(_object):
             val.thisown = True
             val.parent = weakref.proxy(self) # owning page object
             val.parent._annot_refs[id(val)] = val
-        fannot.__del__()
+        fannot._erase()
 
 
         return val
@@ -780,6 +782,11 @@ class Page(_object):
         return _fitz.Page_setRotation(self, rot)
 
 
+    def _addAnnot_FromString(self, linklist):
+        """_addAnnot_FromString(Page self, PyObject * linklist) -> int"""
+        return _fitz.Page__addAnnot_FromString(self, linklist)
+
+
     def _readPageText(self, output=0):
         """_readPageText(Page self, int output=0) -> char *"""
         return _fitz.Page__readPageText(self, output)
@@ -807,10 +814,10 @@ class Page(_object):
         """Invalidate / delete all annots of this page."""
         for annot in self._annot_refs.values():
             if annot:
-                annot.__del__()
+                annot._erase()
         self._annot_refs.clear()
 
-    def __del__(self):
+    def _erase(self):
         self._reset_annot_refs()
         try:
             self.parent._forget_page(self)
@@ -820,6 +827,9 @@ class Page(_object):
             self.__swig_destroy__(self)
         self.parent = None
         self.thisown = False
+
+    def __del__(self):
+        self._erase()
 
 Page_swigregister = _fitz.Page_swigregister
 Page_swigregister(Page)
@@ -1774,7 +1784,7 @@ class Annot(_object):
         return _fitz.Annot_getPixmap(self, matrix, colorspace, alpha)
 
 
-    def __del__(self):
+    def _erase(self):
         try:
             self.parent._forget_annot(self)
         except:
@@ -1783,6 +1793,9 @@ class Annot(_object):
             self.__swig_destroy__(self)
         self.parent = None
         self.thisown = False
+
+    def __del__(self):
+        self._erase()
 Annot_swigregister = _fitz.Annot_swigregister
 Annot_swigregister(Annot)
 
