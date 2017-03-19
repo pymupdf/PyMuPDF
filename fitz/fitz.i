@@ -961,7 +961,7 @@ if sa < 0:
         /*********************************************************************/
         FITZEXCEPTION(_updateObject, result!=0)
         CLOSECHECK(_updateObject, self.isClosed)
-        int _updateObject(int xref, char *text)
+        int _updateObject(int xref, char *text, struct fz_page_s *page = NULL)
         {
             pdf_obj *new_obj;
             pdf_document *pdf = pdf_specifics(gctx, $self);     // get pdf doc
@@ -975,6 +975,7 @@ if sa < 0:
                 new_obj = pdf_new_obj_from_str(gctx, pdf, text);
                 pdf_update_object(gctx, pdf, xref, new_obj);
                 pdf_drop_obj(gctx, new_obj);
+                if (page) refresh_link_table(pdf_page_from_fz_page(gctx, page));
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -1143,10 +1144,49 @@ struct fz_page_s {
         }
 
         /*********************************************************************/
-        // deleteAnnot() - delete annotation and return the next one
+        // Page.deleteLink() - delete link
+        /*********************************************************************/
+        CLOSECHECK(deleteLink, self.parent.isClosed)
+        %feature("autodoc","Delete link if PDF") deleteLink;
+        %pythonappend deleteLink
+%{if linkdict["xref"] == 0: return
+linkid = linkdict["id"]
+try:
+    linkobj = self._annot_refs[linkid]
+    linkobj._erase()
+except:
+    pass
+%}
+        void deleteLink(PyObject *linkdict)
+        {
+            if (!linkdict) return;               // have no parameter
+            if (!PyDict_Check(linkdict)) return; // have no dictionary
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            if (!page) return;                   // have no PDF
+            int xref = (int) PyInt_AsLong(PyDict_GetItemString(linkdict, "xref"));
+            if (xref < 1) return;                // invalid xref
+            pdf_obj *annots = pdf_dict_get(gctx, page->obj, PDF_NAME_Annots);
+            if (!annots) return;                 // have no annotations
+            int len = pdf_array_len(gctx, annots);
+            int i, oxref = 0;
+            for (i = 0; i < len; i++)
+            {
+                oxref = pdf_to_num(gctx, pdf_array_get(gctx, annots, i));
+                if (xref == oxref) break;        // found xref in annotations
+            }
+            if (xref != oxref) return;           // xref not in annotations
+            pdf_array_delete(gctx, annots, i);   // delete entry in annotations
+            pdf_delete_object(gctx, page->doc, xref);      // delete link object
+            pdf_dict_put_drop(gctx, page->obj, PDF_NAME_Annots, annots);
+            refresh_link_table(page);            // reload link / annot tables
+            return;
+        }
+
+        /*********************************************************************/
+        // Page.deleteAnnot() - delete annotation and return the next one
         /*********************************************************************/
         CLOSECHECK(deleteAnnot, self.parent.isClosed)
-        %feature("autodoc","deleteAnnot deletes annot if PDF and always returns next one") deleteAnnot;
+        %feature("autodoc","Delete annot if PDF and return next one") deleteAnnot;
         %pythonappend deleteAnnot
 %{if val:
     val.thisown = True
@@ -1176,7 +1216,7 @@ fannot._erase()
         /*********************************************************************/
         CLOSECHECK(rotation, self.parent.isClosed)
         %pythoncode %{@property%}
-        %feature("autodoc","rotation -> int\nreturns rotation in degrees") rotation;
+        %feature("autodoc","rotation -> int\nReturn rotation in degrees") rotation;
         int rotation()
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
@@ -1202,18 +1242,22 @@ fannot._erase()
 
         /*********************************************************************/
         // Page._addAnnot_FromString
+        // Add new links provided as an array of string object definitions.
         /*********************************************************************/
         FITZEXCEPTION(_addAnnot_FromString, result!=0)
+        CLOSECHECK(_addAnnot_FromString, self.parent.isClosed)
         int _addAnnot_FromString(PyObject *linklist)
         {
             pdf_obj *annots, *annots_arr, *annot, *ind_obj, *new_array;
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             PyObject *txtpy;
             char *text;
-            int lcount = (int) PySequence_Size(linklist);
+            int lcount = (int) PySequence_Size(linklist); // new object count
             fz_try(gctx)
             {
-                assert_PDF(page);
+                assert_PDF(page);                // make sure we have a PDF
+                // get existing annots array
+                annots = pdf_dict_get(gctx, page->obj, PDF_NAME_Annots);
                 if (annots)
                     {
                         if (pdf_is_indirect(gctx, annots))
@@ -1224,30 +1268,63 @@ fannot._erase()
                     annots_arr = NULL;
                 int new_len = lcount;
                 if (annots_arr) new_len += pdf_array_len(gctx, annots_arr);
+                // allocate new array of old plus new size
                 new_array = pdf_new_array(gctx, page->doc, new_len);
                 int i;
                 if (annots_arr)
-                {
+                {   // copy existing annots to new array
                     for (i = 0; i < pdf_array_len(gctx, annots_arr); i++)
                             pdf_array_push(gctx, new_array, pdf_array_get(gctx, annots_arr, i));
                 }
                 for (i = 0; i < lcount; i++)
-                    {
+                    {   // extract object sources from Python list 
                         txtpy = PySequence_ITEM(linklist, (Py_ssize_t) i);
                         if (PyBytes_Check(txtpy))
                             text = PyBytes_AsString(txtpy);
                         else
                             text = PyBytes_AsString(PyUnicode_AsUTF8String(txtpy));
+                        // create annot, insert its XREF into annot array
                         annot = pdf_new_obj_from_str(gctx, page->doc, text);
                         ind_obj = pdf_add_object(gctx, page->doc, annot);
                         pdf_array_push_drop(gctx, new_array, ind_obj);
                         pdf_drop_obj(gctx, annot);
                     }
                 pdf_dict_put_drop(gctx, page->obj, PDF_NAME_Annots, new_array);
-                
+                refresh_link_table(page);
             }
             fz_catch(gctx) return -1;
             return 0;
+        }
+
+        /*********************************************************************/
+        // Page._getLinkXrefs
+        /*********************************************************************/
+
+        PyObject *_getLinkXrefs()
+        {
+            pdf_obj *annots, *annots_arr, *link, *obj;
+            int i, lcount;
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            PyObject *linkxrefs = PyList_New(0);
+            if (!page) return linkxrefs;         // empty list if not PDF
+            annots = pdf_dict_get(gctx, page->obj, PDF_NAME_Annots);
+            if (!annots) return linkxrefs;
+            if (pdf_is_indirect(gctx, annots))
+                annots_arr = pdf_resolve_indirect(gctx, annots);
+            else
+                annots_arr = annots;
+            lcount = pdf_array_len(gctx, annots_arr);
+            for (i = 0; i < lcount; i++)
+                {
+                    link = pdf_array_get(gctx, annots_arr, i);
+                    obj = pdf_dict_get(gctx, link, PDF_NAME_Subtype);
+	                if (pdf_name_eq(gctx, obj, PDF_NAME_Link))
+                    {
+                        int xref = pdf_to_num(gctx, link);
+                        PyList_Append(linkxrefs, PyInt_FromLong((long) xref));
+                    }
+                }
+            return linkxrefs;
         }
 
         /*********************************************************************/
@@ -1287,6 +1364,10 @@ fannot._erase()
                 if annot:
                     annot._erase()
             self._annot_refs.clear()
+
+        def _getXref(self):
+            """Return PDF XREF number of page."""
+            return self.parent._getPageXref(self.number)[0]
 
         def _erase(self):
             self._reset_annot_refs()
@@ -2332,6 +2413,18 @@ struct fz_annot_s
         }
 
         /**********************************************************************/
+        // annotation get xref number
+        /**********************************************************************/
+        CLOSECHECK(_getXref, self.parent.parent.isClosed)
+        %feature("autodoc","return xref number of annotation") _getXref;
+        int _getXref()
+        {
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
+            if(!annot) return 0;
+            return pdf_to_num(gctx, annot->obj);
+        }
+
+        /**********************************************************************/
         // annotation get decompressed appearance stream source
         /**********************************************************************/
         FITZEXCEPTION(_getAP, !result)
@@ -3056,17 +3149,7 @@ struct fz_link_s
                 raise RuntimeError("orphaned object: parent is None")
             if self.parent.parent.isClosed:
                 raise RuntimeError("operation illegal for closed doc")
-            return linkDest(self)
-        
-        def __del__(self):
-            try:
-                self.parent._forget_annot(self)
-            except:
-                pass
-            if getattr(self, "thisown", True):
-                self.__swig_destroy__(self)
-            self.parent = None
-            self.thisown = False
+            return linkDest(self)        
         %}
 
         CLOSECHECK(rect, self.parent.parent.isClosed)
@@ -3098,6 +3181,21 @@ struct fz_link_s
             fz_keep_link(gctx, $self->next);
             return $self->next;
         }
+
+        %pythoncode %{
+        def _erase(self):
+            try:
+                self.parent._forget_annot(self)
+            except:
+                pass
+            if getattr(self, "thisown", True):
+                self.__swig_destroy__(self)
+            self.parent = None
+            self.thisown = False
+
+        def __del__(self):
+            self._erase()%}
+
     }
 };
 %clearnodefaultctor;

@@ -1,6 +1,6 @@
 %{
 //----------------------------------------------------------------------------
-// Checks whether list dict.keys() is contained in [vkeys, ...]
+// Return set(dict.keys()) <= set([vkeys, ...])
 // keys of dict must be string or unicode in Py2 and string in Py3!
 // Parameters:
 // dict - the Python dictionary object to be checked
@@ -46,6 +46,23 @@ PyObject *truth_value(int v)
 {
     if (v == 0) Py_RETURN_FALSE;
     Py_RETURN_TRUE;
+}
+
+//----------------------------------------------------------------------------
+// refreshes the link and annotation tables of a page
+//----------------------------------------------------------------------------
+void refresh_link_table (pdf_page *page)
+{
+    pdf_obj *annots_arr = pdf_dict_get(gctx, page->obj, PDF_NAME_Annots);
+    if (annots_arr)
+    {
+        fz_rect page_mediabox;
+        fz_matrix page_ctm;
+        pdf_page_transform(gctx, page, &page_mediabox, &page_ctm);
+        page->links = pdf_load_link_annots(gctx, page->doc, annots_arr, &page_ctm);
+        pdf_load_annots(gctx, page, annots_arr);
+    }
+    return;
 }
 
 //----------------------------------------------------------------------------
@@ -136,9 +153,8 @@ fz_buffer *deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
     return buf;
 }
 
-/*****************************************************************************/
-// return a (char *) for the provided PyObject obj if its type  is either
-// PyBytes, PyString (Python 2) or PyUnicode.
+//*****************************************************************************
+// Return (char *) for PyBytes, PyString (Python 2) or PyUnicode object.
 // For PyBytes, a conversion to PyUnicode is first performed, if Python 3.
 // In Python 2, this is an alias for PyString and its (char *) is returned.
 // PyUnicode objects are converted to UTF16BE bytes objects (all Python
@@ -148,15 +164,15 @@ fz_buffer *deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 // Parameters:
 // obj = PyBytes / PyString / PyUnicode object
 // psize = pointer to a Py_ssize_t number for storing the returned length
-// name = char string to use in error messages
-/*****************************************************************************/
+// name = name of object to use in error messages
+//*****************************************************************************
 char *getPDFstr(PyObject *obj, Py_ssize_t* psize, const char *name)
 {
     int ok;
     Py_ssize_t j, k;
     PyObject *me;
     unsigned char *nc;
-    int have_uc = 0;
+    int have_uc = 0;    // indicates unicode beyond latin-1 code points
     me = obj;
     if (PyBytes_Check(me))
         {

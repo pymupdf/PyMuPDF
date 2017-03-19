@@ -68,8 +68,7 @@ Default and misspelling choice is "text".
 #==============================================================================
 #def getPageText(pno, output = "text"):
 def getPageText(doc, pno, output = "text"):
-    '''getPageText(pno, output='text')
-Extracts a PDF page's text by page number.
+    ''' Extract a PDF page's text by page number.
 Parameters:\npno: page number\noutput option: text, html, json or xml.\n
 Returns strings like the TextPage extraction methods extractText, extractHTML,
 extractJSON, or etractXML respectively.
@@ -84,8 +83,7 @@ Default and misspelling choice is "text".
 #def getPixmap(matrix = fitz.Identity, colorspace = "RGB", clip = None, alpha = False):
 def getPixmap(page, matrix = fitz.Identity, colorspace = "rgb", clip = None,
               alpha = False):
-    '''getPixmap(matrix=fitz.Identity, colorspace='rgb', clip = None)
-Creates a fitz.Pixmap of a PDF page.
+    ''' Create a pixmap of a page.
 Parameters:\nmatrix: a fitz.Matrix instance to specify required transformations.
 Defaults to fitz.Identity (no transformation).
 colorspace: text string to specify required colour space (rgb, rgb, gray - case ignored).
@@ -134,8 +132,7 @@ clip: a fitz.IRect to restrict rendering to this area.
 # getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = "RGB", clip = None, alpha = False):
 def getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = "rgb",
                   clip = None, alpha = False):
-    '''getPagePixmap(pno, matrix=fitz.Identity, colorspace="rgb", clip = None)
-Creates a fitz.Pixmap object for a document page number.
+    ''' Create a pixmap for a document page number.
 Parameters:\npno: page number (int)
 matrix: a fitz.Matrix instance to specify required transformations.
 Defaults to fitz.Identity (no transformation).
@@ -150,7 +147,7 @@ clip: a fitz.IRect to restrict rendering to this area
 # An internal function to create a link info dictionary for getToC and getLinks
 #==============================================================================
 def getLinkDict(ln):
-    nl = {"kind": ln.dest.kind}
+    nl = {"kind": ln.dest.kind, "xref": 0, "id": id(ln)}
     try:
         nl["from"] = ln.rect
     except:
@@ -162,11 +159,9 @@ def getLinkDict(ln):
         pnt.y = ln.dest.lt.y
 
     if ln.dest.kind == fitz.LINK_URI:
-        nl["type"] = "uri"
         nl["uri"] = ln.dest.uri
 
     elif ln.dest.kind == fitz.LINK_GOTO:
-        nl["type"] = "goto"
         nl["page"] = ln.dest.page
         nl["to"] = pnt
         if ln.dest.flags & fitz.LINK_FLAG_R_IS_ZOOM:
@@ -175,7 +170,6 @@ def getLinkDict(ln):
             nl["zoom"] = 0.0
 
     elif ln.dest.kind == fitz.LINK_GOTOR:
-        nl["type"] = "gotor"
         nl["file"] = ln.dest.fileSpec.replace("\\", "/")
         nl["page"] = ln.dest.page
         if ln.dest.page < 0:
@@ -188,15 +182,12 @@ def getLinkDict(ln):
                 nl["zoom"] = 0.0
 
     elif ln.dest.kind == fitz.LINK_LAUNCH:
-        nl["type"] = "launch"
         nl["file"] = ln.dest.fileSpec.replace("\\", "/")
 
     elif ln.dest.kind == fitz.LINK_NAMED:
-        nl["type"] = "named"
         nl["name"] = ln.dest.named
 
     else:
-        nl["type"] = "none"
         nl["page"] = ln.dest.page
 
     return nl
@@ -208,32 +199,32 @@ def getLinkDict(ln):
 #==============================================================================
 #def getLinks(page):
 def getLinks(page):
-    '''getLinks()
-Creates a list of all links contained in a PDF page.
+    ''' Create a list of all links contained in a PDF page.
 Parameters: none\nThe returned list contains a Python dictionary for every link item found.
 Every dictionary contains the keys "type" and "kind" to specify the link type / kind.
 The presence of other keys depends on this kind - see PyMuPDF's ducmentation for details.'''
 
     if page.parent is None:
         raise RuntimeError("orphaned object: parent is None")
-    if page.parent.isClosed:
-        raise RuntimeError("illegal operation on closed document")
     ln = page.firstLink
     links = []
     while ln:
         nl = getLinkDict(ln)
         links.append(nl)
         ln = ln.next
+    if len(links) > 0:
+        linkxrefs = page._getLinkXrefs()
+        if len(linkxrefs) == len(links):
+            for i in range(len(linkxrefs)):
+                links[i]["xref"] = linkxrefs[i]
     return links
 
 #==============================================================================
 # A function to collect all bookmarks of a PDF document in the form of a table
 # of contents.
 #==============================================================================
-#def GetToC(doc, simple = True):
 def getToC(doc, simple = True):
-    '''getToC(simple=True)
-Creates a table of contents for a given PDF document.
+    ''' Create a table of contents for a given document.
 Parameters:\nsimple: a boolean indicator to control the output
 Returns a Python list, where each entry consists of outline level, title, page number
 and link destination (if simple = False). For details see PyMuPDF's documentation.'''
@@ -277,7 +268,7 @@ and link destination (if simple = False). For details see PyMuPDF's documentatio
     return recurse(olItem, liste, lvl)
 
 def getRectArea(rect, unit = "pt"):
-    '''Calculates the area of a rectangle in square points or millimeters.
+    '''Calculate the area of a rectangle in square points or millimeters.
 Parameters:\nrect: a fitz.IRect or fitz.Rect\nunit: a string, 'pt' means points (default),
 "mm" means millimeters.
 Returns a float containing the area.
@@ -295,7 +286,7 @@ Infinite rectangles (MuPDF definition) have an area of zero.
         return area * 0.1244521605
 
 def getPointDistance(p1, p2, unit = "pt"):
-    '''Calculates the distance between two points in points or millimeters.
+    '''Calculate the distance between two points in points or millimeters.
 Parameters:\np1, p2: two fitz.Point objects\nunit: a string, 'pt' means points,
 "mm" means millimeters.
 Returns a float containing the distance.
@@ -310,8 +301,7 @@ Returns a float containing the distance.
 
 #def writeImage(filename, output = "png"):
 def writeImage(*arg, **kw):
-    '''writeImage(filename, output="png")
-Saves a pixmap to an image.
+    '''Save a pixmap to an image file.
 Parameters:\nfilename: image filename\noutput: requested output format
 (one of png, pam, pnm, tga)
     '''
@@ -726,7 +716,7 @@ def getDestStr(xref, ddict):
 # Document method set Table of Contents
 #==============================================================================
 def setToC(doc, toc):
-    '''Creates a new outline tree (table of contents) for a PDF document.\nParameters:
+    '''Create a new outline tree (table of contents) for a PDF document.\nParameters:
     doc: a PDF document opened with PyMuPDF
     toc: a Python list of lists. Each entry must contain level, title, page and optionally top margin on the page.
     Returns zero (int) on success.
@@ -753,7 +743,7 @@ def setToC(doc, toc):
     for i in list(range(toclen-1)):
         t1 = toc[i]
         t2 = toc[i+1]
-        if not -1 <= t1[2] < pageCount:
+        if not -1 <= t1[2] <= pageCount:
             raise ValueError("row %s:page number out of range" % (str(i),))
         if (type(t2) is not list) or len(t2) < 3 or len(t2) > 4:
             raise ValueError("arg2 must contain lists of 3 or 4 items")
@@ -897,25 +887,23 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
 
         # "from" rectangle is always there. Note: y-coords are from bottom!
         r = lnk["from"]
-        rect = "%s %s %s %s" % (str(round(r.x0, 4)),
-                                str(round(height - r.y0, 4)),   # correct y0
-                                str(round(r.x1, 4)),
-                                str(round(height - r.y1, 4)))   # correct y1
-        if lnk["type"] == "goto":
+        rect = "%s %s %s %s" % (str(r.x0), str(height - r.y0),   # correct y0
+                                str(r.x1), str(height - r.y1))   # correct y1
+        if lnk["kind"] == fitz.LINK_GOTO:
             txt = annot_goto
             idx = list_src.index(lnk["page"])
-            annot = txt % (str(xref_dst[idx]), str(round(lnk["to"].x, 4)),
-                           str(round(lnk["to"].y, 4)), rect)
-        elif lnk["type"] == "gotor":
+            annot = txt % (str(xref_dst[idx]), str(lnk["to"].x),
+                           str(lnk["to"].y), rect)
+        elif lnk["kind"] == fitz.LINK_GOTOR:
             txt = annot_gotor
-            annot = txt % (str(lnk["page"]), str(round(lnk["to"].x, 4)),
-                           str(round(lnk["to"].y, 4)),
+            annot = txt % (str(lnk["page"]), str(lnk["to"].x),
+                           str(lnk["to"].y),
                            lnk["file"], lnk["file"],
                            rect)
-        elif lnk["type"] == "launch":
+        elif lnk["kind"] == fitz.LINK_LAUNCH:
             txt = annot_launch
             annot = txt % (lnk["file"], lnk["file"], rect)
-        elif lnk["type"] == "uri":
+        elif lnk["kind"] == fitz.LINK_URI:
             txt = annot_uri
             annot = txt % (lnk["uri"], rect)
         else:
@@ -968,17 +956,86 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
         page_dst = doc1[list_dst[i]]
         link_tab = []
         for l in links:
-            if l["type"] == "goto" and (l["page"] not in list_src):
+            if l["kind"] == fitz.LINK_GOTO and (l["page"] not in list_src):
                 continue          # target not in copied pages
             annot_text = cre_annot(l, xref_dst, list_src, height)
             if not annot_text:
-                raise ValueError("cannot create /Annot for type: " + l["type"])
+                raise ValueError("cannot create /Annot for kind: " + str(l["kind"]))
             link_tab.append(annot_text)
         if len(link_tab) > 0:
             page_dst._addAnnot_FromString(link_tab)
         page_dst = None
         page_src = None
     return
+
+def getLinkText(page, lnk):
+    #--------------------------------------------------------------------------
+    # define skeletons for /Annots object texts
+    #--------------------------------------------------------------------------
+    annot_goto ='''<</Dest[%s 0 R /XYZ %s %s 0]/Rect[%s]/Subtype/Link>>'''
+
+    annot_gotor = '''<</A<</D[%s /XYZ %s %s 0]/F<</F(%s)/UF(%s)/Type/Filespec
+    >>/S/GoToR>>/Rect[%s]/Subtype/Link>>'''
+
+    annot_launch = '''<</A<</F<</F(%s)/UF(%s)/Type/Filespec>>/S/Launch
+    >>/Rect[%s]/Subtype/Link>>'''
+
+    annot_uri = '''<</A<</S/URI/URI(%s)/Type/Action>>/Rect[%s]/Subtype/Link>>'''
+
+    annot_named = '''<</A<</S/Named/N/%s/Type/Action>>/Rect[%s]/Subtype/Link>>'''
+
+    r = lnk["from"]
+    height = page.rect.height
+    rect = "%s %s %s %s" % (str(r.x0), str(height - r.y0),   # correct y0
+                            str(r.x1), str(height - r.y1))   # correct y1
+
+    annot = ""
+    if lnk["kind"] == fitz.LINK_GOTO:
+        txt = annot_goto
+        pno = lnk["page"]
+        xref = page.parent._getPageXref(pno)[0]
+        pnt = lnk.get("to", fitz.Point(0, 0))              # destination point
+        annot = txt % (xref, str(pnt.x),
+                       str(pnt.y), rect)
+        
+    elif lnk["kind"] == fitz.LINK_GOTOR:
+        txt = annot_gotor
+        pnt = lnk.get("to", fitz.Point(0, 0))              # destination point
+        annot = txt % (str(lnk["page"]), str(pnt.x),
+                           str(pnt.y),
+                           lnk["file"], lnk["file"],
+                           rect)
+
+    elif lnk["kind"] == fitz.LINK_LAUNCH:
+        txt = annot_launch
+        annot = txt % (lnk["file"], lnk["file"], rect)
+
+    elif lnk["kind"] == fitz.LINK_URI:
+        txt = annot_uri
+        annot = txt % (lnk["uri"], rect)
+
+    elif lnk["kind"] == fitz.LINK_NAMED:
+        txt = annot_named
+        annot = txt % (lnk["name"], rect)
+
+    return annot    
+    
+def updateLink(page, lnk):
+    """ Update a link on the current page. """
+    annot = getLinkText(page, lnk)
+    assert annot != "", "link kind not supported"
+    page.parent._updateObject(lnk["xref"], annot, page = page) 
+    return
+
+def insertLink(page, lnk, mark = True):
+    """ Insert a new link for the current page. """
+    annot = getLinkText(page, lnk)
+    assert annot != "", "link kind not supported"
+    page._addAnnot_FromString([annot])
+    return
+
+def contains(rect, x):
+    return tuple(rect | x) == tuple(rect)
 
 #-------------------------------------------------------------------------------
 # Annot method

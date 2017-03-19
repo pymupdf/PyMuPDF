@@ -98,7 +98,7 @@ except __builtin__.Exception:
 import weakref
 VersionFitz = "1.10a"
 VersionBind = "1.10.0"
-VersionDate = "2017-01-18 03:50:02"
+VersionDate = "2017-03-19 07:51:51"
 
 LINK_NONE   = 0
 LINK_GOTO   = 1
@@ -597,14 +597,14 @@ class Document(_object):
         return _fitz.Document__getXrefStream(self, xnum)
 
 
-    def _updateObject(self, xref, text):
-        """_updateObject(Document self, int xref, char * text) -> int"""
+    def _updateObject(self, xref, text, page=None):
+        """_updateObject(Document self, int xref, char * text, Page page=None) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
-        return _fitz.Document__updateObject(self, xref, text)
+        return _fitz.Document__updateObject(self, xref, text, page)
 
 
     def _setMetadata(self, text):
@@ -740,8 +740,28 @@ class Page(_object):
         return val
 
 
+    def deleteLink(self, linkdict):
+        """Delete link if PDF"""
+        if hasattr(self, "parent") and self.parent is None:
+            raise RuntimeError("orphaned object: parent is None")
+        if self.parent.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+
+        val = _fitz.Page_deleteLink(self, linkdict)
+        if linkdict["xref"] == 0: return
+        linkid = linkdict["id"]
+        try:
+            linkobj = self._annot_refs[linkid]
+            linkobj._erase()
+        except:
+            pass
+
+
+        return val
+
+
     def deleteAnnot(self, fannot):
-        """deleteAnnot deletes annot if PDF and always returns next one"""
+        """Delete annot if PDF and return next one"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.isClosed:
@@ -762,7 +782,7 @@ class Page(_object):
     def rotation(self):
         """
         rotation -> int
-        returns rotation in degrees
+        Return rotation in degrees
         """
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
@@ -784,7 +804,17 @@ class Page(_object):
 
     def _addAnnot_FromString(self, linklist):
         """_addAnnot_FromString(Page self, PyObject * linklist) -> int"""
+        if hasattr(self, "parent") and self.parent is None:
+            raise RuntimeError("orphaned object: parent is None")
+        if self.parent.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+
         return _fitz.Page__addAnnot_FromString(self, linklist)
+
+
+    def _getLinkXrefs(self):
+        """_getLinkXrefs(Page self) -> PyObject *"""
+        return _fitz.Page__getLinkXrefs(self)
 
 
     def _readPageText(self, output=0):
@@ -816,6 +846,10 @@ class Page(_object):
             if annot:
                 annot._erase()
         self._annot_refs.clear()
+
+    def _getXref(self):
+        """Return PDF XREF number of page."""
+        return self.parent._getPageXref(self.number)[0]
 
     def _erase(self):
         self._reset_annot_refs()
@@ -1597,6 +1631,16 @@ class Annot(_object):
         return _fitz.Annot_rect(self)
 
 
+    def _getXref(self):
+        """return xref number of annotation"""
+        if hasattr(self, "parent") and self.parent is None:
+            raise RuntimeError("orphaned object: parent is None")
+        if self.parent.parent.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+
+        return _fitz.Annot__getXref(self)
+
+
     def _getAP(self):
         """_getAP: provides operator source of the /AP"""
         if hasattr(self, "parent") and self.parent is None:
@@ -1843,17 +1887,7 @@ class Link(_object):
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
             raise RuntimeError("operation illegal for closed doc")
-        return linkDest(self)
-
-    def __del__(self):
-        try:
-            self.parent._forget_annot(self)
-        except:
-            pass
-        if getattr(self, "thisown", True):
-            self.__swig_destroy__(self)
-        self.parent = None
-        self.thisown = False
+        return linkDest(self)        
 
     @property
 
@@ -1883,6 +1917,19 @@ class Link(_object):
 
         return val
 
+
+    def _erase(self):
+        try:
+            self.parent._forget_annot(self)
+        except:
+            pass
+        if getattr(self, "thisown", True):
+            self.__swig_destroy__(self)
+        self.parent = None
+        self.thisown = False
+
+    def __del__(self):
+        self._erase()
 Link_swigregister = _fitz.Link_swigregister
 Link_swigregister(Link)
 

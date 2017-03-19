@@ -3051,7 +3051,7 @@ struct DeviceWrapper {
 
 
 //----------------------------------------------------------------------------
-// Checks whether list dict.keys() is contained in [vkeys, ...]
+// Return set(dict.keys()) <= set([vkeys, ...])
 // keys of dict must be string or unicode in Py2 and string in Py3!
 // Parameters:
 // dict - the Python dictionary object to be checked
@@ -3097,6 +3097,23 @@ PyObject *truth_value(int v)
 {
     if (v == 0) Py_RETURN_FALSE;
     Py_RETURN_TRUE;
+}
+
+//----------------------------------------------------------------------------
+// refreshes the link and annotation tables of a page
+//----------------------------------------------------------------------------
+void refresh_link_table (pdf_page *page)
+{
+    pdf_obj *annots_arr = pdf_dict_get(gctx, page->obj, PDF_NAME_Annots);
+    if (annots_arr)
+    {
+        fz_rect page_mediabox;
+        fz_matrix page_ctm;
+        pdf_page_transform(gctx, page, &page_mediabox, &page_ctm);
+        page->links = pdf_load_link_annots(gctx, page->doc, annots_arr, &page_ctm);
+        pdf_load_annots(gctx, page, annots_arr);
+    }
+    return;
 }
 
 //----------------------------------------------------------------------------
@@ -3187,9 +3204,8 @@ fz_buffer *deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
     return buf;
 }
 
-/*****************************************************************************/
-// return a (char *) for the provided PyObject obj if its type  is either
-// PyBytes, PyString (Python 2) or PyUnicode.
+//*****************************************************************************
+// Return (char *) for PyBytes, PyString (Python 2) or PyUnicode object.
 // For PyBytes, a conversion to PyUnicode is first performed, if Python 3.
 // In Python 2, this is an alias for PyString and its (char *) is returned.
 // PyUnicode objects are converted to UTF16BE bytes objects (all Python
@@ -3199,15 +3215,15 @@ fz_buffer *deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 // Parameters:
 // obj = PyBytes / PyString / PyUnicode object
 // psize = pointer to a Py_ssize_t number for storing the returned length
-// name = char string to use in error messages
-/*****************************************************************************/
+// name = name of object to use in error messages
+//*****************************************************************************
 char *getPDFstr(PyObject *obj, Py_ssize_t* psize, const char *name)
 {
     int ok;
     Py_ssize_t j, k;
     PyObject *me;
     unsigned char *nc;
-    int have_uc = 0;
+    int have_uc = 0;    // indicates unicode beyond latin-1 code points
     me = obj;
     if (PyBytes_Check(me))
         {
@@ -5089,7 +5105,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "xnum out of range")
             fz_catch(gctx) return NULL;
             return r;
         }
-SWIGINTERN int fz_document_s__updateObject(struct fz_document_s *self,int xref,char *text){
+SWIGINTERN int fz_document_s__updateObject(struct fz_document_s *self,int xref,char *text,struct fz_page_s *page){
             pdf_obj *new_obj;
             pdf_document *pdf = pdf_specifics(gctx, self);     // get pdf doc
             fz_try(gctx)
@@ -5108,6 +5124,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "xref out of range")
                 new_obj = pdf_new_obj_from_str(gctx, pdf, text);
                 pdf_update_object(gctx, pdf, xref, new_obj);
                 pdf_drop_obj(gctx, new_obj);
+                if (page) refresh_link_table(pdf_page_from_fz_page(gctx, page));
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -5169,6 +5186,29 @@ SWIGINTERN struct fz_annot_s *fz_page_s_firstAnnot(struct fz_page_s *self){
             if (annot) fz_keep_annot(gctx, annot);
             return annot;
         }
+SWIGINTERN void fz_page_s_deleteLink(struct fz_page_s *self,PyObject *linkdict){
+            if (!linkdict) return;               // have no parameter
+            if (!PyDict_Check(linkdict)) return; // have no dictionary
+            pdf_page *page = pdf_page_from_fz_page(gctx, self);
+            if (!page) return;                   // have no PDF
+            int xref = (int) PyInt_AsLong(PyDict_GetItemString(linkdict, "xref"));
+            if (xref < 1) return;                // invalid xref
+            pdf_obj *annots = pdf_dict_get(gctx, page->obj, PDF_NAME_Annots);
+            if (!annots) return;                 // have no annotations
+            int len = pdf_array_len(gctx, annots);
+            int i, oxref = 0;
+            for (i = 0; i < len; i++)
+            {
+                oxref = pdf_to_num(gctx, pdf_array_get(gctx, annots, i));
+                if (xref == oxref) break;        // found xref in annotations
+            }
+            if (xref != oxref) return;           // xref not in annotations
+            pdf_array_delete(gctx, annots, i);   // delete entry in annotations
+            pdf_delete_object(gctx, page->doc, xref);      // delete link object
+            pdf_dict_put_drop(gctx, page->obj, PDF_NAME_Annots, annots);
+            refresh_link_table(page);            // reload link / annot tables
+            return;
+        }
 SWIGINTERN struct fz_annot_s *fz_page_s_deleteAnnot(struct fz_page_s *self,struct fz_annot_s *fannot){
             if (!fannot) return NULL;
             fz_annot *nextannot = fz_next_annot(gctx, fannot);  // store next
@@ -5203,14 +5243,16 @@ SWIGINTERN int fz_page_s__addAnnot_FromString(struct fz_page_s *self,PyObject *l
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
             PyObject *txtpy;
             char *text;
-            int lcount = (int) PySequence_Size(linklist);
+            int lcount = (int) PySequence_Size(linklist); // new object count
             fz_try(gctx)
             {
                 /*@SWIG:fitz\fitz.i,38,assert_PDF@*/
 if (!page) /*@SWIG:fitz\fitz.i,32,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
-/*@SWIG@*/;
+/*@SWIG@*/;                // make sure we have a PDF
+                // get existing annots array
+                annots = pdf_dict_get(gctx, page->obj, PDF_NAME_Annots);
                 if (annots)
                     {
                         if (pdf_is_indirect(gctx, annots))
@@ -5221,30 +5263,57 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
                     annots_arr = NULL;
                 int new_len = lcount;
                 if (annots_arr) new_len += pdf_array_len(gctx, annots_arr);
+                // allocate new array of old plus new size
                 new_array = pdf_new_array(gctx, page->doc, new_len);
                 int i;
                 if (annots_arr)
-                {
+                {   // copy existing annots to new array
                     for (i = 0; i < pdf_array_len(gctx, annots_arr); i++)
                             pdf_array_push(gctx, new_array, pdf_array_get(gctx, annots_arr, i));
                 }
                 for (i = 0; i < lcount; i++)
-                    {
+                    {   // extract object sources from Python list 
                         txtpy = PySequence_ITEM(linklist, (Py_ssize_t) i);
                         if (PyBytes_Check(txtpy))
                             text = PyBytes_AsString(txtpy);
                         else
                             text = PyBytes_AsString(PyUnicode_AsUTF8String(txtpy));
+                        // create annot, insert its XREF into annot array
                         annot = pdf_new_obj_from_str(gctx, page->doc, text);
                         ind_obj = pdf_add_object(gctx, page->doc, annot);
                         pdf_array_push_drop(gctx, new_array, ind_obj);
                         pdf_drop_obj(gctx, annot);
                     }
                 pdf_dict_put_drop(gctx, page->obj, PDF_NAME_Annots, new_array);
-                
+                refresh_link_table(page);
             }
             fz_catch(gctx) return -1;
             return 0;
+        }
+SWIGINTERN PyObject *fz_page_s__getLinkXrefs(struct fz_page_s *self){
+            pdf_obj *annots, *annots_arr, *link, *obj;
+            int i, lcount;
+            pdf_page *page = pdf_page_from_fz_page(gctx, self);
+            PyObject *linkxrefs = PyList_New(0);
+            if (!page) return linkxrefs;         // empty list if not PDF
+            annots = pdf_dict_get(gctx, page->obj, PDF_NAME_Annots);
+            if (!annots) return linkxrefs;
+            if (pdf_is_indirect(gctx, annots))
+                annots_arr = pdf_resolve_indirect(gctx, annots);
+            else
+                annots_arr = annots;
+            lcount = pdf_array_len(gctx, annots_arr);
+            for (i = 0; i < lcount; i++)
+                {
+                    link = pdf_array_get(gctx, annots_arr, i);
+                    obj = pdf_dict_get(gctx, link, PDF_NAME_Subtype);
+	                if (pdf_name_eq(gctx, obj, PDF_NAME_Link))
+                    {
+                        int xref = pdf_to_num(gctx, link);
+                        PyList_Append(linkxrefs, PyInt_FromLong((long) xref));
+                    }
+                }
+            return linkxrefs;
         }
 SWIGINTERN char *fz_page_s__readPageText(struct fz_page_s *self,int output){
             char *res;
@@ -5819,6 +5888,11 @@ SWIGINTERN void delete_fz_annot_s(struct fz_annot_s *self){
 SWIGINTERN struct fz_rect_s *fz_annot_s_rect(struct fz_annot_s *self){
             fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
             return fz_bound_annot(gctx, self, r);
+        }
+SWIGINTERN int fz_annot_s__getXref(struct fz_annot_s *self){
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
+            if(!annot) return 0;
+            return pdf_to_num(gctx, annot->obj);
         }
 SWIGINTERN PyObject *fz_annot_s__getAP(struct fz_annot_s *self){
             PyObject *r=NULL;
@@ -7710,6 +7784,7 @@ SWIGINTERN PyObject *_wrap_Document__updateObject(PyObject *SWIGUNUSEDPARM(self)
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
   int arg2 ;
   char *arg3 = (char *) 0 ;
+  struct fz_page_s *arg4 = (struct fz_page_s *) NULL ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
@@ -7717,12 +7792,15 @@ SWIGINTERN PyObject *_wrap_Document__updateObject(PyObject *SWIGUNUSEDPARM(self)
   int res3 ;
   char *buf3 = 0 ;
   int alloc3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO:Document__updateObject",&obj0,&obj1,&obj2)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO|O:Document__updateObject",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__updateObject" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
@@ -7738,8 +7816,15 @@ SWIGINTERN PyObject *_wrap_Document__updateObject(PyObject *SWIGUNUSEDPARM(self)
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Document__updateObject" "', argument " "3"" of type '" "char *""'");
   }
   arg3 = (char *)(buf3);
+  if (obj3) {
+    res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_fz_page_s, 0 |  0 );
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "Document__updateObject" "', argument " "4"" of type '" "struct fz_page_s *""'"); 
+    }
+    arg4 = (struct fz_page_s *)(argp4);
+  }
   {
-    result = (int)fz_document_s__updateObject(arg1,arg2,arg3);
+    result = (int)fz_document_s__updateObject(arg1,arg2,arg3,arg4);
     if(result!=0) {
       PyErr_SetString(PyExc_Exception, gctx->error->message);
       return NULL;
@@ -7934,6 +8019,30 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Page_deleteLink(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
+  PyObject *arg2 = (PyObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Page_deleteLink",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_deleteLink" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
+  }
+  arg1 = (struct fz_page_s *)(argp1);
+  arg2 = obj1;
+  fz_page_s_deleteLink(arg1,arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Page_deleteAnnot(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
@@ -8043,6 +8152,28 @@ SWIGINTERN PyObject *_wrap_Page__addAnnot_FromString(PyObject *SWIGUNUSEDPARM(se
     }
   }
   resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Page__getLinkXrefs(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Page__getLinkXrefs",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page__getLinkXrefs" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
+  }
+  arg1 = (struct fz_page_s *)(argp1);
+  result = (PyObject *)fz_page_s__getLinkXrefs(arg1);
+  resultobj = result;
   return resultobj;
 fail:
   return NULL;
@@ -12276,6 +12407,28 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Annot__getXref(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Annot__getXref",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_annot_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot__getXref" "', argument " "1"" of type '" "struct fz_annot_s *""'"); 
+  }
+  arg1 = (struct fz_annot_s *)(argp1);
+  result = (int)fz_annot_s__getXref(arg1);
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Annot__getAP(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
@@ -13367,7 +13520,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document__delXmlMetadata", _wrap_Document__delXmlMetadata, METH_VARARGS, (char *)"Document__delXmlMetadata(Document self) -> int"},
 	 { (char *)"Document__getObjectString", _wrap_Document__getObjectString, METH_VARARGS, (char *)"Document__getObjectString(Document self, int xnum) -> char const *"},
 	 { (char *)"Document__getXrefStream", _wrap_Document__getXrefStream, METH_VARARGS, (char *)"Document__getXrefStream(Document self, int xnum) -> PyObject *"},
-	 { (char *)"Document__updateObject", _wrap_Document__updateObject, METH_VARARGS, (char *)"Document__updateObject(Document self, int xref, char * text) -> int"},
+	 { (char *)"Document__updateObject", _wrap_Document__updateObject, METH_VARARGS, (char *)"Document__updateObject(Document self, int xref, char * text, Page page=None) -> int"},
 	 { (char *)"Document__setMetadata", _wrap_Document__setMetadata, METH_VARARGS, (char *)"Document__setMetadata(Document self, char * text) -> int"},
 	 { (char *)"Document_swigregister", Document_swigregister, METH_VARARGS, NULL},
 	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, (char *)"delete_Page(Page self)"},
@@ -13375,13 +13528,15 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Page_run", _wrap_Page_run, METH_VARARGS, (char *)"Page_run(Page self, Device dw, Matrix m) -> int"},
 	 { (char *)"Page_loadLinks", _wrap_Page_loadLinks, METH_VARARGS, (char *)"Page_loadLinks(Page self) -> Link"},
 	 { (char *)"Page_firstAnnot", _wrap_Page_firstAnnot, METH_VARARGS, (char *)"firstAnnot points to first annot on page"},
-	 { (char *)"Page_deleteAnnot", _wrap_Page_deleteAnnot, METH_VARARGS, (char *)"deleteAnnot deletes annot if PDF and always returns next one"},
+	 { (char *)"Page_deleteLink", _wrap_Page_deleteLink, METH_VARARGS, (char *)"Delete link if PDF"},
+	 { (char *)"Page_deleteAnnot", _wrap_Page_deleteAnnot, METH_VARARGS, (char *)"Delete annot if PDF and return next one"},
 	 { (char *)"Page_rotation", _wrap_Page_rotation, METH_VARARGS, (char *)"\n"
 		"rotation -> int\n"
-		"returns rotation in degrees\n"
+		"Return rotation in degrees\n"
 		""},
 	 { (char *)"Page_setRotation", _wrap_Page_setRotation, METH_VARARGS, (char *)"setRotation sets page rotation to 'rot' degrees"},
 	 { (char *)"Page__addAnnot_FromString", _wrap_Page__addAnnot_FromString, METH_VARARGS, (char *)"Page__addAnnot_FromString(Page self, PyObject * linklist) -> int"},
+	 { (char *)"Page__getLinkXrefs", _wrap_Page__getLinkXrefs, METH_VARARGS, (char *)"Page__getLinkXrefs(Page self) -> PyObject *"},
 	 { (char *)"Page__readPageText", _wrap_Page__readPageText, METH_VARARGS, (char *)"Page__readPageText(Page self, int output=0) -> char *"},
 	 { (char *)"Page_swigregister", Page_swigregister, METH_VARARGS, NULL},
 	 { (char *)"_fz_transform_rect", _wrap__fz_transform_rect, METH_VARARGS, (char *)"_fz_transform_rect(Rect rect, Matrix transform) -> Rect"},
@@ -13563,6 +13718,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Point_swigregister", Point_swigregister, METH_VARARGS, NULL},
 	 { (char *)"delete_Annot", _wrap_delete_Annot, METH_VARARGS, (char *)"delete_Annot(Annot self)"},
 	 { (char *)"Annot_rect", _wrap_Annot_rect, METH_VARARGS, (char *)"rect: rectangle containing the annot"},
+	 { (char *)"Annot__getXref", _wrap_Annot__getXref, METH_VARARGS, (char *)"return xref number of annotation"},
 	 { (char *)"Annot__getAP", _wrap_Annot__getAP, METH_VARARGS, (char *)"_getAP: provides operator source of the /AP"},
 	 { (char *)"Annot__setAP", _wrap_Annot__setAP, METH_VARARGS, (char *)"_setAP: updates operator source of the /AP"},
 	 { (char *)"Annot_setRect", _wrap_Annot_setRect, METH_VARARGS, (char *)"setRect: changes the annot's rectangle"},

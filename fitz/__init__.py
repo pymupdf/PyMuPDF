@@ -47,9 +47,13 @@ fitz.Page.getLinks          = fitz.utils.getLinks
 fitz.Page.getPixmap         = fitz.utils.getPixmap
 fitz.Page.getText           = fitz.utils.getText
 fitz.Page.searchFor         = fitz.utils.searchFor
+fitz.Page.updateLink        = fitz.utils.updateLink
+fitz.Page.insertLink        = fitz.utils.insertLink
 fitz.Pixmap.writeImage      = fitz.utils.writeImage
 fitz.Rect.getRectArea       = fitz.utils.getRectArea
 fitz.IRect.getRectArea      = fitz.utils.getRectArea
+fitz.Rect.contains          = fitz.utils.contains
+fitz.IRect.contains         = fitz.utils.contains
 fitz.Annot.updateImage      = fitz.utils.updateImage
 getPointDistance            = fitz.utils.getPointDistance
 # matrix arithmetics
