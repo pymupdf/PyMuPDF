@@ -54,6 +54,8 @@ fitz.Rect.getRectArea       = fitz.utils.getRectArea
 fitz.IRect.getRectArea      = fitz.utils.getRectArea
 fitz.Rect.contains          = fitz.utils.contains
 fitz.IRect.contains         = fitz.utils.contains
+fitz.IRect.intersects       = fitz.utils.intersects
+fitz.Rect.intersects        = fitz.utils.intersects
 fitz.Annot.updateImage      = fitz.utils.updateImage
 getPointDistance            = fitz.utils.getPointDistance
 # matrix arithmetics

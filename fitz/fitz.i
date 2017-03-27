@@ -1177,7 +1177,7 @@ except:
             if (xref != oxref) return;           // xref not in annotations
             pdf_array_delete(gctx, annots, i);   // delete entry in annotations
             pdf_delete_object(gctx, page->doc, xref);      // delete link object
-            pdf_dict_put_drop(gctx, page->obj, PDF_NAME_Annots, annots);
+            pdf_dict_put(gctx, page->obj, PDF_NAME_Annots, annots);
             refresh_link_table(page);            // reload link / annot tables
             return;
         }

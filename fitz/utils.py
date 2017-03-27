@@ -1034,8 +1034,15 @@ def insertLink(page, lnk, mark = True):
     page._addAnnot_FromString([annot])
     return
 
-def contains(rect, x):
-    return tuple(rect | x) == tuple(rect)
+def contains(me, x):
+    """ Checks whether object x is contained in the rectangle.
+    x may be a fitz.Point, fitz.Rect or fitz.IRect."""
+    return tuple(me | x) == tuple(me)
+
+def intersects(me, rect):
+    """ Checks whether rect has a non-empty intersection with the rectangle.
+    rect may be a fitz.Rect or fitz.IRect."""
+    return tuple(me & rect) != (0, 0, 0, 0)
 
 #-------------------------------------------------------------------------------
 # Annot method
