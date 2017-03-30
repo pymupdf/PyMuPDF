@@ -98,7 +98,7 @@ except __builtin__.Exception:
 import weakref
 VersionFitz = "1.10a"
 VersionBind = "1.10.0"
-VersionDate = "2017-03-27 18:55:12"
+VersionDate = "2017-03-29 10:12:13"
 
 LINK_NONE   = 0
 LINK_GOTO   = 1
@@ -567,6 +567,16 @@ class Document(_object):
         return _fitz.Document__getXrefLength(self)
 
 
+    def _getPageRectText(self, pno, rect):
+        """_getPageRectText(Document self, int pno, Rect rect) -> char *"""
+        if hasattr(self, "parent") and self.parent is None:
+            raise RuntimeError("orphaned object: parent is None")
+        if self.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+
+        return _fitz.Document__getPageRectText(self, pno, rect)
+
+
     def _delXmlMetadata(self):
         """_delXmlMetadata(Document self) -> int"""
         if hasattr(self, "parent") and self.parent is None:
@@ -815,6 +825,16 @@ class Page(_object):
     def _getLinkXrefs(self):
         """_getLinkXrefs(Page self) -> PyObject *"""
         return _fitz.Page__getLinkXrefs(self)
+
+
+    def _getRectText(self, rect):
+        """_getRectText(Page self, Rect rect) -> char *"""
+        if hasattr(self, "parent") and self.parent is None:
+            raise RuntimeError("orphaned object: parent is None")
+        if self.parent.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+
+        return _fitz.Page__getRectText(self, rect)
 
 
     def _readPageText(self, output=0):

@@ -174,8 +174,7 @@ class PDFdisplay(wx.Dialog):
                       t_size, wx.ALIGN_RIGHT)
         t_toHeight = wx.StaticText(self, wx.ID_ANY, "@Height:", defPos,
                         t_size, wx.ALIGN_RIGHT)
-        t_Update = wx.StaticText(self, wx.ID_ANY, "Apply link changes before paging",
-                      defPos, defSiz, 0)
+        self.t_Update = wx.StaticText(self, wx.ID_ANY, "", defPos, defSiz, 0)
         t_NewLink = wx.StaticText(self, wx.ID_ANY, "Create new link",
                        defPos, defSiz, 0)
         t_Save = wx.StaticText(self, wx.ID_ANY, "Save changes to file",
@@ -215,20 +214,23 @@ class PDFdisplay(wx.Dialog):
                          wx.Size(40, -1), wx.TE_RIGHT|wx.TE_PROCESS_ENTER)
         self.toHeight = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, defPos,
                            wx.Size(40, -1), wx.TE_RIGHT|wx.TE_PROCESS_ENTER)
-        self.btn_Update = wx.Button(self, wx.ID_ANY, "update",
-                             defPos, wx.Size(70, -1), 0)
-        self.btn_NewLink = wx.Button(self, wx.ID_ANY, "new",
-                              defPos, wx.Size(70, -1), 0)
-        self.btn_Save = wx.Button(self, wx.ID_ANY, "save",
-                           defPos, wx.Size(70, -1), 0)
+        self.btn_Update = wx.Button(self, wx.ID_ANY, "UPDATE PAGE",
+                             defPos, wx.Size(90, -1), 0)
+        self.btn_Update.Disable()
+        self.btn_NewLink = wx.Button(self, wx.ID_ANY, "NEW LINK",
+                              defPos, wx.Size(90, -1), 0)
+        self.btn_Save = wx.Button(self, wx.ID_ANY, "SAVE FILE",
+                           defPos, wx.Size(90, -1), 0)
         linie1 = wx.StaticLine(self, wx.ID_ANY,
                     defPos, defSiz, wx.LI_VERTICAL)
         #======================================================================
         # the main sizer of the dialog
         #======================================================================
         self.szr00 = wx.BoxSizer(wx.HORIZONTAL)
+        
         szr10 = wx.BoxSizer(wx.VERTICAL)
         szr20 = wx.BoxSizer(wx.HORIZONTAL)
+        
         szr20.Add(self.btn_Next, 0, wx.ALL, 5)
         szr20.Add(self.btn_Previous, 0, wx.ALL, 5)
         szr20.Add(self.TextToPage, 0, wx.ALL, 5)
@@ -265,22 +267,23 @@ class PDFdisplay(wx.Dialog):
         szr30.Add(t_toName, 0, wx.ALL, 5)
         szr30.Add(self.toName, 0, wx.ALL, 5)
         szr30.Add(self.btn_Update, 0, wx.ALL, 5)
-        szr30.Add(t_Update, 0, wx.ALL, 5)
+        szr30.Add(self.t_Update, 0, wx.ALL, 5)
         szr30.Add(self.btn_NewLink, 0, wx.ALL, 5)
         szr30.Add(t_NewLink, 0, wx.ALL, 5)
         szr30.Add(self.btn_Save, 0, wx.ALL, 5)
         szr30.Add(t_Save, 0, wx.ALL, 5)
-        # sizer ready, represents top dialog line
+        
         szr10.Add(szr20, 0, wx.EXPAND, 5)
         szr10.Add(self.PDFimage, 0, wx.ALL, 5)
+        
         self.szr00.Add(szr30, 0, wx.EXPAND, 5)
         self.szr00.Add(linie1, 0, wx.EXPAND, 5)
         self.szr00.Add(szr10, 0, wx.EXPAND, 5)
-        # main sizer now ready - request final size & layout adjustments
+        
         self.szr00.Fit(self)
         self.SetSizer(self.szr00)
         self.Layout()
-        # center dialog on screen
+        
         self.Centre(wx.BOTH)
 
         # Bind buttons and fields to event handlers
@@ -305,6 +308,11 @@ class PDFdisplay(wx.Dialog):
         self.toURI.Bind(wx.EVT_TEXT_ENTER, self.on_link_changed)
         self.toURI.Bind(wx.EVT_TEXT_ENTER, self.on_link_changed)
         self.toPage.Bind(wx.EVT_TEXT_ENTER, self.on_link_changed)
+        self.toLeft.Bind(wx.EVT_TEXT, self.on_link_changed)
+        self.toHeight.Bind(wx.EVT_TEXT, self.on_link_changed)
+        self.toURI.Bind(wx.EVT_TEXT, self.on_link_changed)
+        self.toURI.Bind(wx.EVT_TEXT, self.on_link_changed)
+        self.toPage.Bind(wx.EVT_TEXT, self.on_link_changed)
         self.toName.Bind(wx.EVT_CHOICE, self.on_link_changed)
         self.clear_link_details()
 
@@ -460,6 +468,8 @@ class PDFdisplay(wx.Dialog):
                     pg.updateLink(l)
             l["update"] = False
             self.page_links[i] = l
+        self.btn_Update.Disable()
+        self.t_Update.Label = ""
         evt.Skip()
         return
     
@@ -539,48 +549,63 @@ class PDFdisplay(wx.Dialog):
         lt = self.linkType.GetSelection()
         self.prep_link_details(lt)
             
+        lnk = self.page_links[self.current_idx]
+        lnk["update"] = True
+        lnk["kind"] = lt
+        self.enable_update()
+
         if lt == fitz.LINK_GOTO:
             if not self.toPage.Value.isdecimal():
-                self.toPage.ChangeValue("?")
+                self.toPage.ChangeValue("1")
             self.toPage.Enable()
             if not self.toLeft.Value.isdecimal():
-                self.toLeft.ChangeValue("?")
+                self.toLeft.ChangeValue("0")
             self.toLeft.Enable()
             if not self.toHeight.Value.isdecimal():
-                self.toHeight.ChangeValue("?")
+                self.toHeight.ChangeValue("0")
             self.toHeight.Enable()
+            lnk["page"] = int(self.toPage.Value) - 1
+            lnk["to"] = fitz.Point(int(self.toLeft.Value),
+                                   int(self.toHeight.Value))
 
         elif lt == fitz.LINK_GOTOR:
             if not self.toFile.Value:
-                self.toFile.ChangeValue("filename?")
+                self.toFile.SetValue(self.text_in_rect())
+                self.toFile.MarkDirty()
+            lnk["file"] = self.toFile.Value
             self.toFile.Enable()
             if not self.toPage.Value.isdecimal():
-                self.toPage.ChangeValue("?")
+                self.toPage.ChangeValue("1")
             self.toPage.Enable()
             if not self.toLeft.Value.isdecimal():
-                self.toLeft.ChangeValue("?")
+                self.toLeft.ChangeValue("0")
             self.toLeft.Enable()
             if not self.toHeight.Value.isdecimal():
-                self.toHeight.ChangeValue("?")
+                self.toHeight.ChangeValue("0")
             self.toHeight.Enable()
+            lnk["page"] = int(self.toPage.Value) - 1
+            lnk["to"] = fitz.Point(int(self.toLeft.Value),
+                                   int(self.toHeight.Value))
             
         elif lt == fitz.LINK_URI:
             if not self.toURI.Value:
-                self.toURI.ChangeValue("URL?")
+                self.toURI.SetValue(self.text_in_rect())
+                self.toURI.MarkDirty()
+            lnk["uri"] = self.toURI.Value
             self.toURI.Enable()
             
         elif lt == fitz.LINK_LAUNCH:
             if not self.toFile.Value:
-                self.toFile.ChangeValue("filename?")
+                self.toFile.SetValue(self.text_in_rect())
+                self.toFile.MarkDirty()
+            lnk["file"] = self.toFile.Value
+                
             self.toFile.Enable()
             
         elif lt == fitz.LINK_NAMED:
             self.toName.SetSelection(0)
             self.toName.Enable()
             
-        lnk = self.page_links[self.current_idx]
-        lnk["update"] = True
-        lnk["kind"] = lt
         self.page_links[self.current_idx] = lnk
             
         evt.Skip()
@@ -627,28 +652,26 @@ class PDFdisplay(wx.Dialog):
         self.fromTop.SetValue(0)
         self.fromWidth.SetValue(0)
         self.toPage.ChangeValue("1")
-        self.toLeft.ChangeValue("36")
-        self.toHeight.ChangeValue(str(self.page_height -36))
-        self.toPage.Enable()
-        self.toLeft.Enable()
-        self.toHeight.Enable()
+        self.toLeft.ChangeValue("0")
+        self.toHeight.ChangeValue("0")
+        self.linkType.Disable()
         evt.Skip()
         return
     
     def on_left_up(self, evt):
         if self.adding_link:
             n = self.linkType.GetSelection()
-            wx_r = wx.Rect(self.fromLeft.Value, self.fromTop.Value,
+            wxr = wx.Rect(self.fromLeft.Value, self.fromTop.Value,
                            self.fromWidth.Value, self.fromHeight.Value)
-            l_from = self.wxRect_to_Rect(wx_r)
+            l_from = self.wxRect_to_Rect(wxr)
             l_to = fitz.Point(float(self.toLeft.Value),
                               float(self.toHeight.Value))
             lnk = {"kind": n, "xref": 0, "from": l_from, "to": l_to,
                    "page": int(self.toPage.Value) - 1, "update": True}
             
-            self.link_rects.append(wx_r)
+            self.link_rects.append(wxr)
             self.page_links.append(lnk)
-            p = wx_r.BottomRight
+            p = wxr.BottomRight
             br = wx.Rect(p.x - self.sense, p.y - self.sense,
                          2*self.sense, 2*self.sense)
             self.link_bottom_rects.append(br)
@@ -658,6 +681,10 @@ class PDFdisplay(wx.Dialog):
             self.current_idx = -1
             self.PDFimage.SetCursor(cur_norm)
             self.clear_link_details()
+            self.toPage.Enable()
+            self.toLeft.Enable()
+            self.toHeight.Enable()
+            self.linkType.Enable()
             evt.Skip()
             return
         self.adding_link = False
@@ -740,6 +767,11 @@ class PDFdisplay(wx.Dialog):
         evt.Skip()
         return
 
+    def enable_update(self):
+        self.btn_Update.Enable()
+        self.t_Update.Label = "Page contains changed links. Press to update."
+        return
+    
     def draw_links(self):
         dc = wx.ClientDC(self.PDFimage)
         dc.SetPen(wx.Pen("BLUE", width=1))
@@ -749,10 +781,12 @@ class PDFdisplay(wx.Dialog):
         self.link_texts = []
 
         for lnk in self.page_links:
-            wx_r = self.Rect_to_wxRect(lnk["from"])
-            dc.DrawRectangle(wx_r[0], wx_r[1], wx_r[2], wx_r[3])
-            self.link_rects.append(wx_r)
-            p = wx_r.BottomRight
+            if lnk.get("update", False):
+                self.enable_update()
+            wxr = self.Rect_to_wxRect(lnk["from"])
+            dc.DrawRectangle(wxr[0], wxr[1], wxr[2], wxr[3])
+            self.link_rects.append(wxr)
+            p = wxr.BottomRight
             br = wx.Rect(p.x - self.sense, p.y - self.sense,
                          2*self.sense, 2*self.sense)
             self.link_bottom_rects.append(br)
@@ -832,6 +866,14 @@ class PDFdisplay(wx.Dialog):
             self.toName.Disable()
         return
 
+    def text_in_rect(self):
+        wxr = wx.Rect(self.fromLeft.Value, self.fromTop.Value,
+                      self.fromWidth.Value, self.fromHeight.Value)
+        r = self.wxRect_to_Rect(wxr)
+        pno = getint(self.TextToPage.Value) - 1
+        return self.doc._getPageRectText(pno, r)
+        
+        
     def Rect_to_wxRect(self, fr):
         """ Return a zoomed wx.Rect for given fitz.Rect."""
         r = (fr * self.matrix).irect   # zoomed IRect

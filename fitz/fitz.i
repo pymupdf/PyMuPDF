@@ -879,6 +879,22 @@ if sa < 0:
         }
 
         //*********************************************************************
+        // Get bare text inside a rectangle of a page
+        //*********************************************************************
+        FITZEXCEPTION(_getPageRectText, !result)
+        CLOSECHECK(_getPageRectText, self.isClosed)
+        char *_getPageRectText(int pno, struct fz_rect_s *rect)
+        {
+            fz_buffer *res;
+            fz_try(gctx)
+            {
+                res = fz_new_buffer_from_page_number(gctx, $self, pno, rect, 0, NULL);
+            }
+            fz_catch(gctx) return NULL;
+            return fz_string_from_buffer(gctx, res);
+        }
+
+        //*********************************************************************
         // Delete XML-based Metadata
         //*********************************************************************
         FITZEXCEPTION(_delXmlMetadata, result<0)
@@ -1325,6 +1341,22 @@ fannot._erase()
                     }
                 }
             return linkxrefs;
+        }
+
+        //*********************************************************************
+        // Get bare text inside a rectangle of a page
+        //*********************************************************************
+        FITZEXCEPTION(_getRectText, !result)
+        CLOSECHECK(_getRectText, self.parent.isClosed)
+        char *_getRectText(struct fz_rect_s *rect)
+        {
+            fz_buffer *res;
+            fz_try(gctx)
+            {
+                res = fz_new_buffer_from_page(gctx, $self, rect, 0, NULL);
+            }
+            fz_catch(gctx) return NULL;
+            return fz_string_from_buffer(gctx, res);
         }
 
         /*********************************************************************/

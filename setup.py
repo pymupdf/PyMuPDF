@@ -50,8 +50,10 @@ else:
                                   'libthirdparty',
                                  ],
                        extra_link_args=['/NODEFAULTLIB:MSVCRT'],
-                                     # dir of libmupdf.lib etc.
-                       library_dirs=['./PyMuPDF-optional-material/LibWin32'],
+                                     # x86 dir of libmupdf.lib etc.
+                       library_dirs=['./mupdf/platform/win32/Release'],
+                                     # x64 dir of libmupdf.lib etc.
+                       #library_dirs=['./mupdf/platform/win32/x64/Release'],
                        sources=['./fitz/fitz_wrap.c',])
 
 setup(name = 'fitz',
