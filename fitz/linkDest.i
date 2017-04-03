@@ -69,7 +69,7 @@ class linkDest():
                         self.fileSpec = ftab[0]
                     else:
                         self.page = -1
-                        self.kind = LINK_LAUNCH
+                        self.kind = LINK_URI
                         self.isUri = True
             else:
                 self.isUri = True

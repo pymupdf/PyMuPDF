@@ -1313,7 +1313,7 @@ fannot._erase()
         }
 
         /*********************************************************************/
-        // Page._getLinkXrefs
+        // Page._getLinkXrefs - return list of link xref numbers.
         /*********************************************************************/
 
         PyObject *_getLinkXrefs()

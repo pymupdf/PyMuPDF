@@ -98,7 +98,7 @@ except __builtin__.Exception:
 import weakref
 VersionFitz = "1.10a"
 VersionBind = "1.10.0"
-VersionDate = "2017-03-29 10:12:13"
+VersionDate = "2017-04-02 22:24:51"
 
 LINK_NONE   = 0
 LINK_GOTO   = 1
@@ -170,7 +170,7 @@ class linkDest():
                         self.fileSpec = ftab[0]
                     else:
                         self.page = -1
-                        self.kind = LINK_LAUNCH
+                        self.kind = LINK_URI
                         self.isUri = True
             else:
                 self.isUri = True

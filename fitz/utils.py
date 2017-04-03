@@ -80,41 +80,42 @@ Default and misspelling choice is "text".
 # A function for rendering a page's image.
 # Requires a page object.
 #==============================================================================
-#def getPixmap(matrix = fitz.Identity, colorspace = "RGB", clip = None, alpha = False):
+
 def getPixmap(page, matrix = fitz.Identity, colorspace = "rgb", clip = None,
-              alpha = False):
+              alpha = True):
     ''' Create a pixmap of a page.
 Parameters:\nmatrix: a fitz.Matrix instance to specify required transformations.
 Defaults to fitz.Identity (no transformation).
 colorspace: text string to specify required colour space (rgb, rgb, gray - case ignored).
-Default and misspelling choice is "rgb".
+Default and misspelling choice is "rgb". A colorspace object may also be specified.
 clip: a fitz.IRect to restrict rendering to this area.
     '''
     if page.parent is None:
         raise RuntimeError("orphaned object: parent is None")
-    if page.parent.isClosed:
-        raise RuntimeError("illegal operation on closed document")
 
     # determine required colorspace
-    if colorspace.upper() == "GRAY":
-        cs = fitz.csGRAY
-    elif colorspace.upper() == "CMYK":
-        cs = fitz.csCMYK
-    else:
-        cs = fitz.csRGB
+    cs = colorspace
+    if type(colorspace) is str:
+        if colorspace.upper() == "GRAY":
+            cs = fitz.csGRAY
+        elif colorspace.upper() == "CMYK":
+            cs = fitz.csCMYK
+        else:
+            cs = fitz.csRGB
+    assert cs.n in (1,3,4), "unsupported colorspace"    
 
-    r = page.bound()                         # get page boundaries
+    r = page.rect                            # get page boundaries
     dl = fitz.DisplayList(r)                 # create DisplayList
     page.run(fitz.Device(dl), fitz.Identity) # run page through it
 
     if clip:
         r.intersect(clip.getRect())          # only the part within clip
         r.transform(matrix)                  # transform it
-        clip = r.round()                     # make IRect copy of it
+        clip = r.irect                       # make IRect copy of it
         ir = clip
     else:                                    # take full page
         r.transform(matrix)                  # transform it
-        ir = r.round()                       # make IRect copy of it
+        ir = r.irect                         # make IRect copy of it
 
     pix = fitz.Pixmap(cs, ir, alpha)         # create an empty pixmap
     pix.clearWith(255)                       # clear it with color "white"
@@ -131,7 +132,7 @@ clip: a fitz.IRect to restrict rendering to this area.
 #==============================================================================
 # getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = "RGB", clip = None, alpha = False):
 def getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = "rgb",
-                  clip = None, alpha = False):
+                  clip = None, alpha = True):
     ''' Create a pixmap for a document page number.
 Parameters:\npno: page number (int)
 matrix: a fitz.Matrix instance to specify required transformations.
@@ -201,8 +202,8 @@ def getLinkDict(ln):
 def getLinks(page):
     ''' Create a list of all links contained in a PDF page.
 Parameters: none\nThe returned list contains a Python dictionary for every link item found.
-Every dictionary contains the keys "type" and "kind" to specify the link type / kind.
-The presence of other keys depends on this kind - see PyMuPDF's ducmentation for details.'''
+Every dictionary contains at least keys "kind", "from" and "xref".
+The presence of other keys depends on "kind" - see PyMuPDF's ducmentation for details.'''
 
     if page.parent is None:
         raise RuntimeError("orphaned object: parent is None")

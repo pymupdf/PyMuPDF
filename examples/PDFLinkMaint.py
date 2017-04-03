@@ -70,7 +70,7 @@ class PDFdisplay(wx.Dialog):
         defPos = wx.DefaultPosition
         defSiz = wx.DefaultSize
         zoom   = 1.2                        # zoom factor of display
-        wx.Dialog.__init__ (self, parent, id = wx.ID_ANY,
+        wx.Dialog.__init__ (self, parent, id = -1,
             title = "Link Maintenance of ",
             pos = defPos, size = defSiz,
             style = wx.CAPTION|wx.CLOSE_BOX|
@@ -82,7 +82,8 @@ class PDFdisplay(wx.Dialog):
         if do_icon:
             self.SetIcon(ico_pdf.img.GetIcon())      # set a screen icon
         self.SetTitle(self.Title + filename)
-        self.SetBackgroundColour(wx.Colour(240, 230, 140))
+        KHAKI = wx.Colour(240, 230, 140)
+        self.SetBackgroundColour(KHAKI)
 
         #======================================================================
         # open the document with MuPDF when dialog gets created
@@ -93,12 +94,15 @@ class PDFdisplay(wx.Dialog):
         if self.doc.isEncrypted:       # quit if we cannot decrypt
             self.Destroy()
             return
+        self.link_code = {"NONE":0, "GOTO":1, "URI":2, "LAUNCH":3,
+                           "NAMED":0, "GOTOR":5}
         self.last_pno = -1             # memorize last page displayed
         self.link_rects = []           # store link rectangles here
         self.link_bottom_rects = []    # store bottom rectangles here
         self.link_texts = []           # store link texts here
         self.current_idx = -1          # store entry of found rectangle
         self.page_links = []           # list of links of page
+        self.update_links = True       # False if unsupported links
         self.page_height = 0           # page height in pixels
         self.adding_link = False       # indicate new link in the making
         self.dragging_link = False     # indicate moving rect
@@ -109,184 +113,187 @@ class PDFdisplay(wx.Dialog):
                                        # side is 2 * self.sense pixels
 
         # forward button
-        self.btn_Next = wx.Button(self, wx.ID_ANY, "forw",
+        self.btn_Next = wx.Button(self, -1, "forw",
                            defPos, defSiz, wx.BU_EXACTFIT)
         # backward button
-        self.btn_Previous = wx.Button(self, wx.ID_ANY, "back",
-                           defPos, defSiz, wx.BU_EXACTFIT)
+        self.btn_Previous = wx.Button(self, -1, "back",
+                               defPos, defSiz, wx.BU_EXACTFIT)
         #======================================================================
         # text field for entering a target page. wx.TE_PROCESS_ENTER is
         # required to get data entry fired as events.
         #======================================================================
-        self.TextToPage = wx.TextCtrl(self, wx.ID_ANY, "1", defPos,
-                            wx.Size(40, -1), wx.TE_RIGHT|wx.TE_PROCESS_ENTER)
+        self.TextToPage = wx.TextCtrl(self, -1, "1", defPos,
+                             wx.Size(40, -1), wx.TE_RIGHT|wx.TE_PROCESS_ENTER)
         # displays total pages and page paper format
-        self.statPageMax = wx.StaticText(self, wx.ID_ANY,
+        self.statPageMax = wx.StaticText(self, -1,
                               "of " + str(len(self.doc)) + " pages.",
                               defPos, defSiz, 0)
-        self.paperform = wx.StaticText(self, wx.ID_ANY, wx.EmptyString,
-                            defPos, defSiz, 0)
+        self.paperform = wx.StaticText(self, -1, "", defPos, defSiz, 0)
         #======================================================================
         # define zooming matrix for displaying PDF page images
         # we increase images by 20%, so take 1.2 as scale factors
         #======================================================================
-        self.matrix = fitz.Matrix(zoom, zoom)    # will use a constant zoom
-        self.imatrix = ~self.matrix              # corresp. shrink matrix
+        self.zoom = fitz.Matrix(zoom, zoom)    # will use a constant zoom
+        self.shrink = ~self.zoom               # corresp. shrink matrix
         self.bitmap = self.pdf_show(1)
-        self.PDFimage = wx.StaticBitmap(self, wx.ID_ANY, self.bitmap,
+        self.PDFimage = wx.StaticBitmap(self, -1, self.bitmap,
                            defPos, defSiz, style = 0)
         #======================================================================
         # Fields defining a PDF link
         #======================================================================
-        t_size = wx.Size(60, -1)
 
-        t_blank1 = wx.StaticText(self, wx.ID_ANY, wx.EmptyString, defPos,
-                        defSiz, 0)
-        t_head1 = wx.StaticText(self, wx.ID_ANY, "=== Link Details ===",
-                     defPos, wx.Size(300, -1), 0)
-        t_blank2 = wx.StaticText(self, wx.ID_ANY, wx.EmptyString, defPos,
-                      defSiz, 0)
-        t_head2 = wx.StaticText(self, wx.ID_ANY, "--- Hot Spot ---", defPos,
-                     wx.Size(300, -1), 0)
-        t_blank3 = wx.StaticText(self, wx.ID_ANY, wx.EmptyString, defPos,
-                      defSiz, 0)
-        t_head3 = wx.StaticText(self, wx.ID_ANY, "--- Link Destination ---",
-                     defPos, wx.Size(300, -1), 0)
-        t_linkType = wx.StaticText(self, wx.ID_ANY, "Link Type:", defPos,
-                        t_size, wx.ALIGN_RIGHT)
-        t_fromLeft = wx.StaticText(self, wx.ID_ANY, "Left:", defPos,
-                        t_size, wx.ALIGN_RIGHT)
-        t_fromTop = wx.StaticText(self, wx.ID_ANY, "Top:", defPos,
-                       t_size, wx.ALIGN_RIGHT)
-        t_fromWidth = wx.StaticText(self, wx.ID_ANY, "Width:", defPos,
-                         t_size, wx.ALIGN_RIGHT)
-        t_fromHeight = wx.StaticText(self, wx.ID_ANY, "Height:", defPos,
-                          t_size, wx.ALIGN_RIGHT)
-        t_toFile = wx.StaticText(self, wx.ID_ANY, "File:", defPos,
-                      t_size, wx.ALIGN_RIGHT)
-        t_toURI = wx.StaticText(self, wx.ID_ANY, "URL:", defPos,
-                     t_size, wx.ALIGN_RIGHT)
-        t_toPage = wx.StaticText(self, wx.ID_ANY, "To Page:", defPos,
-                      t_size, wx.ALIGN_RIGHT)
-        t_toName = wx.StaticText(self, wx.ID_ANY, "Name:", defPos,
-                      t_size, wx.ALIGN_RIGHT)
-        t_toLeft = wx.StaticText(self, wx.ID_ANY, "@Left:", defPos,
-                      t_size, wx.ALIGN_RIGHT)
-        t_toHeight = wx.StaticText(self, wx.ID_ANY, "@Height:", defPos,
-                        t_size, wx.ALIGN_RIGHT)
-        self.t_Update = wx.StaticText(self, wx.ID_ANY, "", defPos, defSiz, 0)
-        t_NewLink = wx.StaticText(self, wx.ID_ANY, "Create new link",
-                       defPos, defSiz, 0)
-        t_Save = wx.StaticText(self, wx.ID_ANY, "Save changes to file",
-                    defPos, defSiz, 0)
-        self.linkTypeStrings = ["NONE", "GOTO", "URI", "LAUNCH",
-                                "NAMED", "GOTOR"]
-        self.linkType = wx.Choice(self, wx.ID_ANY, defPos, defSiz,
-                           self.linkTypeStrings, 0)
+        self.t_Update = wx.StaticText(self, -1, "")
+
+        self.t_Save = wx.StaticText(self, -1, "")
+        self.linkTypeStrings = ["NONE", "GOTO", "URI", "LAUNCH", "GOTOR"]
+        self.linkType = wx.Choice(self, -1, defPos, defSiz,
+                           self.linkTypeStrings)
         self.linkType.SetBackgroundColour(wx.Colour(240, 230, 140))
-        self.fromLeft = wx.SpinCtrl(self, wx.ID_ANY, wx.EmptyString,
+        self.fromLeft = wx.SpinCtrl(self, -1, wx.EmptyString,
                            defPos, wx.Size(60, -1), 
                            wx.TE_RIGHT|wx.SP_ARROW_KEYS|wx.TE_PROCESS_ENTER,
-                           0, 9999, 0 )
-        self.fromTop = wx.SpinCtrl(self, wx.ID_ANY, wx.EmptyString,
+                           0, 9999)
+        self.fromTop = wx.SpinCtrl(self, -1, wx.EmptyString,
                           defPos, wx.Size(60, -1), 
                           wx.TE_RIGHT|wx.SP_ARROW_KEYS|wx.TE_PROCESS_ENTER,
-                          0, 9999, 0 )
-        self.fromWidth = wx.SpinCtrl(self, wx.ID_ANY, wx.EmptyString,
+                          0, 9999)
+        self.fromWidth = wx.SpinCtrl(self, -1, wx.EmptyString,
                             defPos, wx.Size(60, -1), 
                             wx.TE_RIGHT|wx.SP_ARROW_KEYS|wx.TE_PROCESS_ENTER,
-                            0, 9999, 0 )
-        self.fromHeight = wx.SpinCtrl(self, wx.ID_ANY, wx.EmptyString,
+                            0, 9999)
+        self.fromHeight = wx.SpinCtrl(self, -1, wx.EmptyString,
                              defPos, wx.Size(60, -1), 
                              wx.TE_RIGHT|wx.SP_ARROW_KEYS|wx.TE_PROCESS_ENTER,
-                             0, 9999, 0 )
-        self.toFile = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, defPos,
-                         wx.Size(300, -1), wx.TE_PROCESS_ENTER)
-        self.toURI = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, defPos,
-                        wx.Size(300, -1), wx.TE_PROCESS_ENTER)
-        self.toPage = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, defPos,
-                         wx.Size(40, -1), wx.TE_RIGHT|wx.TE_PROCESS_ENTER)
+                             0, 9999)
+        self.toFile = wx.TextCtrl(self, -1, wx.EmptyString, defPos,
+                         wx.Size(350,-1), wx.TE_PROCESS_ENTER)
+        self.toURI = wx.TextCtrl(self, -1, wx.EmptyString, defPos,
+                        wx.Size(350,-1), wx.TE_PROCESS_ENTER)
+        self.toPage = wx.TextCtrl(self, -1, wx.EmptyString, defPos,
+                         wx.Size(50, -1), wx.TE_RIGHT|wx.TE_PROCESS_ENTER)
         self.toNameStrings = ["FirstPage", "LastPage",
                               "NextPage", "PrevPage"]
-        self.toName = wx.Choice(self, wx.ID_ANY, defPos, defSiz,
-                         self.toNameStrings, 0)
-        self.toLeft = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, defPos,
-                         wx.Size(40, -1), wx.TE_RIGHT|wx.TE_PROCESS_ENTER)
-        self.toHeight = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, defPos,
-                           wx.Size(40, -1), wx.TE_RIGHT|wx.TE_PROCESS_ENTER)
-        self.btn_Update = wx.Button(self, wx.ID_ANY, "UPDATE PAGE",
-                             defPos, wx.Size(90, -1), 0)
-        self.btn_Update.Disable()
-        self.btn_NewLink = wx.Button(self, wx.ID_ANY, "NEW LINK",
-                              defPos, wx.Size(90, -1), 0)
-        self.btn_Save = wx.Button(self, wx.ID_ANY, "SAVE FILE",
-                           defPos, wx.Size(90, -1), 0)
-        linie1 = wx.StaticLine(self, wx.ID_ANY,
+        self.toName = wx.Choice(self, -1, defPos, defSiz,
+                         self.toNameStrings)
+        self.toLeft = wx.TextCtrl(self, -1, wx.EmptyString, defPos,
+                         wx.Size(50, -1), wx.TE_RIGHT|wx.TE_PROCESS_ENTER)
+        self.toHeight = wx.TextCtrl(self, -1, wx.EmptyString, defPos,
+                           wx.Size(50, -1), wx.TE_RIGHT|wx.TE_PROCESS_ENTER)
+        self.btn_Update = wx.Button(self, -1, "UPDATE PAGE",
+                             defPos, defSiz, wx.BU_EXACTFIT)
+        self.btn_NewLink = wx.Button(self, -1, "NEW LINK",
+                              defPos, self.btn_Update.Size, 0)
+        self.btn_Save = wx.Button(self, -1, "SAVE FILE",
+                           defPos, self.btn_Update.Size, 0)
+        linie1 = wx.StaticLine(self, -1,
                     defPos, defSiz, wx.LI_VERTICAL)
         #======================================================================
-        # the main sizer of the dialog
+        # sizers of the dialog
         #======================================================================
-        self.szr00 = wx.BoxSizer(wx.HORIZONTAL)
-        
+        szr00 = wx.BoxSizer(wx.HORIZONTAL)        
         szr10 = wx.BoxSizer(wx.VERTICAL)
         szr20 = wx.BoxSizer(wx.HORIZONTAL)
+        szr30 = wx.GridBagSizer(5, 5)
         
         szr20.Add(self.btn_Next, 0, wx.ALL, 5)
         szr20.Add(self.btn_Previous, 0, wx.ALL, 5)
         szr20.Add(self.TextToPage, 0, wx.ALL, 5)
         szr20.Add(self.statPageMax, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
         szr20.Add(self.paperform, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-        
-        szr30 = wx.FlexGridSizer(17, 2, 0, 0)
-        szr30.Add(t_blank1, 0, wx.ALL, 5)
-        szr30.Add(t_head1, 0, wx.ALL, 5)
-        szr30.Add(t_linkType, 0, wx.ALL, 5)
-        szr30.Add(self.linkType, 0, wx.ALL, 5)
-        szr30.Add(t_blank2, 0, wx.ALL, 5)
-        szr30.Add(t_head2, 0, wx.ALL, 5)
-        szr30.Add(t_fromLeft, 0, wx.ALL, 5)
-        szr30.Add(self.fromLeft, 0, wx.ALL, 5)
-        szr30.Add(t_fromTop, 0, wx.ALL, 5)
-        szr30.Add(self.fromTop, 0, wx.ALL, 5)
-        szr30.Add(t_fromWidth, 0, wx.ALL, 5)
-        szr30.Add(self.fromWidth, 0, wx.ALL, 5)
-        szr30.Add(t_fromHeight, 0, wx.ALL, 5)
-        szr30.Add(self.fromHeight, 0, wx.ALL, 5)
-        szr30.Add(t_blank3, 0, wx.ALL, 5)
-        szr30.Add(t_head3, 0, wx.ALL, 5)
-        szr30.Add(t_toPage, 0, wx.ALL, 5)
-        szr30.Add(self.toPage, 0, wx.ALL, 5)
-        szr30.Add(t_toLeft, 0, wx.ALL, 5)
-        szr30.Add(self.toLeft, 0, wx.ALL, 5)
-        szr30.Add(t_toHeight, 0, wx.ALL, 5)
-        szr30.Add(self.toHeight, 0, wx.ALL, 5)
-        szr30.Add(t_toFile, 0, wx.ALL, 5)
-        szr30.Add(self.toFile, 0, wx.ALL, 5)
-        szr30.Add(t_toURI, 0, wx.ALL, 5)
-        szr30.Add(self.toURI, 0, wx.ALL, 5)
-        szr30.Add(t_toName, 0, wx.ALL, 5)
-        szr30.Add(self.toName, 0, wx.ALL, 5)
-        szr30.Add(self.btn_Update, 0, wx.ALL, 5)
-        szr30.Add(self.t_Update, 0, wx.ALL, 5)
-        szr30.Add(self.btn_NewLink, 0, wx.ALL, 5)
-        szr30.Add(t_NewLink, 0, wx.ALL, 5)
-        szr30.Add(self.btn_Save, 0, wx.ALL, 5)
-        szr30.Add(t_Save, 0, wx.ALL, 5)
+#==============================================================================
+#       use GridBagSizer for link details  
+#==============================================================================
+        line_span = wx.GBSpan(1, 5)
+        t = wx.StaticText(self, -1, "Link Details", defPos, defSiz,
+                          wx.ALIGN_CENTER)
+        t.SetBackgroundColour("STEEL BLUE")
+        t.SetForegroundColour("WHITE")
+        szr30.Add(t,
+                  (0,0), line_span, wx.EXPAND) # overall header
+        szr30.Add(wx.StaticLine(self, -1, defPos, defSiz, wx.LI_HORIZONTAL),
+                  (1,0), line_span, wx.EXPAND)
+
+        t = wx.StaticText(self, -1, "Hot Spot", defPos, defSiz,
+                          wx.ALIGN_CENTER)
+        t.SetBackgroundColour("GOLD")
+        szr30.Add(t,
+                  (2,0), line_span, wx.EXPAND) # hot area header
+        szr30.Add(wx.StaticText(self, -1, "Left:"),
+                  (3,0), (1,1), wx.ALIGN_RIGHT)
+        szr30.Add(self.fromLeft,
+                  (3,1), (1,1), wx.ALIGN_LEFT)
+        szr30.Add(wx.StaticText(self, -1, "Top:"),
+                  (3,2), (1,1), wx.ALIGN_RIGHT)
+        szr30.Add(self.fromTop, (3,3), (1,1), wx.ALIGN_LEFT)
+        szr30.Add(wx.StaticText(self, -1, "Width:"),
+                  (4,0), (1,1), wx.ALIGN_RIGHT)
+        szr30.Add(self.fromWidth,
+                  (4,1), (1,1), wx.ALIGN_LEFT)
+        szr30.Add(wx.StaticText(self, -1, "Height:"),
+                  (4,2), (1,1), wx.ALIGN_RIGHT)
+        szr30.Add(self.fromHeight,
+                  (4,3), (1,1), wx.ALIGN_LEFT)
+
+        szr30.Add(wx.StaticLine(self, -1, defPos, defSiz, wx.LI_HORIZONTAL),
+                  (5,0), line_span, wx.EXPAND)
+        t = wx.StaticText(self, -1, "Link Destination", defPos, defSiz,
+                          wx.ALIGN_CENTER)
+        t.SetBackgroundColour("YELLOW GREEN")
+        szr30.Add(t,
+                  (6,0), line_span, wx.EXPAND) # destination header
+        szr30.Add(wx.StaticText(self, -1, "Link Type:"),
+                  (7,0), (1,1), wx.ALIGN_RIGHT)
+        szr30.Add(self.linkType,
+                  (7,1))
+        szr30.Add(wx.StaticText(self, -1, " to Page:"),
+                  (8,0), (1,1), wx.ALIGN_RIGHT)
+        szr30.Add(self.toPage,
+                  (8,1))
+        szr30.Add(wx.StaticText(self, -1, "at left/top:"),
+                  (8,2), (1,1), wx.ALIGN_RIGHT)
+        szr30.Add(self.toLeft,
+                  (8,3))
+        szr30.Add(self.toHeight,
+                  (8,4), (1,1), wx.ALIGN_LEFT)
+        szr30.Add(wx.StaticText(self, -1, " to File:"),
+                  (9,0), line_span)
+        szr30.Add(self.toFile,
+                  (10,0), line_span)
+        szr30.Add(wx.StaticText(self, -1, " to URL:"),
+                  (11,0), line_span)
+        szr30.Add(self.toURI,
+                  (12,0), line_span)
+        self.toName.Hide()
+        szr30.Add(wx.StaticText(self, -1, ""),
+                  (13,0), (1,1), wx.ALIGN_RIGHT)
+        szr30.Add(self.toName, (13,1))
+        # buttons
+        szr30.Add(wx.StaticLine(self, -1, defPos, defSiz, wx.LI_HORIZONTAL),
+                  (14,0), line_span, wx.EXPAND)
+        szr30.Add(self.btn_Update, (15,0))
+        szr30.Add(self.t_Update, (15,1))
+        szr30.Add(self.btn_NewLink, (16,0))
+        szr30.Add(wx.StaticText(self, -1, "Create a new link"),
+                  (16,1), (1,1), wx.ALIGN_RIGHT)
+        szr30.Add(self.btn_Save, (17,0))
+        szr30.Add(self.t_Save, (17,1))
+        szr30.Add(wx.StaticLine(self, -1, defPos, defSiz, wx.LI_HORIZONTAL),
+                  (18,0), line_span, wx.EXPAND)
         
         szr10.Add(szr20, 0, wx.EXPAND, 5)
         szr10.Add(self.PDFimage, 0, wx.ALL, 5)
         
-        self.szr00.Add(szr30, 0, wx.EXPAND, 5)
-        self.szr00.Add(linie1, 0, wx.EXPAND, 5)
-        self.szr00.Add(szr10, 0, wx.EXPAND, 5)
+        szr00.Add(szr30, 0, wx.EXPAND, 5)
+        szr00.Add(linie1, 0, wx.EXPAND, 5)
+        szr00.Add(szr10, 0, wx.EXPAND, 5)
         
-        self.szr00.Fit(self)
-        self.SetSizer(self.szr00)
+        szr00.Fit(self)
+        self.SetSizer(szr00)
         self.Layout()
         
         self.Centre(wx.BOTH)
 
-        # Bind buttons and fields to event handlers
+        # Bind dialog elements to event handlers
         self.btn_Save.Bind(wx.EVT_BUTTON, self.on_save_file)
         self.btn_Update.Bind(wx.EVT_BUTTON, self.on_update_page_links)
         self.btn_Next.Bind(wx.EVT_BUTTON, self.on_next_page)
@@ -306,14 +313,16 @@ class PDFdisplay(wx.Dialog):
         self.toLeft.Bind(wx.EVT_TEXT_ENTER, self.on_link_changed)
         self.toHeight.Bind(wx.EVT_TEXT_ENTER, self.on_link_changed)
         self.toURI.Bind(wx.EVT_TEXT_ENTER, self.on_link_changed)
-        self.toURI.Bind(wx.EVT_TEXT_ENTER, self.on_link_changed)
+        self.toFile.Bind(wx.EVT_TEXT_ENTER, self.on_link_changed)
         self.toPage.Bind(wx.EVT_TEXT_ENTER, self.on_link_changed)
         self.toLeft.Bind(wx.EVT_TEXT, self.on_link_changed)
         self.toHeight.Bind(wx.EVT_TEXT, self.on_link_changed)
         self.toURI.Bind(wx.EVT_TEXT, self.on_link_changed)
-        self.toURI.Bind(wx.EVT_TEXT, self.on_link_changed)
+        self.toFile.Bind(wx.EVT_TEXT, self.on_link_changed)
         self.toPage.Bind(wx.EVT_TEXT, self.on_link_changed)
         self.toName.Bind(wx.EVT_CHOICE, self.on_link_changed)
+        self.btn_Update.Disable()
+        self.btn_Save.Disable()
         self.clear_link_details()
 
     def __del__(self):
@@ -327,67 +336,63 @@ class PDFdisplay(wx.Dialog):
         self.draw_links()
         evt.Skip()
         return
-        if len(self.page_links) > len(self.link_rects):
-            # will only happen on 1st time if page 0 contains links
-            self.draw_links()
-        evt.Skip()
-        return
     
     def on_move_mouse(self, evt):
         pos = evt.GetPosition()
-        in_rect = self.get_linkrect_idx(pos)
-        in_brect = self.get_bottomrect_idx(pos)
-        self.PDFimage.SetCursor(cur_norm)
+        in_rect = self.get_linkrect_idx(pos)     # rect number we are in
+        in_brect = self.get_bottomrect_idx(pos)  # bottom-right corner we are in
+        self.PDFimage.SetCursor(cur_norm)        # standard cursor
             
-        if in_brect >= 0:
+        if in_brect >= 0:                        # cursor if in br corner
             self.PDFimage.SetCursor(cur_nwse)
-        elif in_rect >= 0:
+        elif in_rect >= 0:                       # cursor if in a rect
             self.PDFimage.SetCursor(cur_hand)
         
-        if self.adding_link:
-            if in_rect >= 0 or in_brect >= 0:
+        if self.adding_link:                     # painting new hot spot?
+            if in_rect >= 0 or in_brect >= 0:    # must be outside others
                 evt.Skip()
                 return
-            self.PDFimage.SetCursor(cur_cross)
-            if evt.LeftIsDown():
-                w = abs(pos.x - self.addrect.x)
+            self.PDFimage.SetCursor(cur_cross)   # cursor if painting
+            if evt.LeftIsDown():                 # mouse pressed? go!
+                w = abs(pos.x - self.addrect.x)  # new rect values
                 h = abs(pos.y - self.addrect.y)
                 x = min(self.addrect.x, pos.x)
                 y = min(self.addrect.y, pos.y)
                 if not self.is_in_free_area(wx.Rect(x, y, w, h)):
-                    evt.Skip()
+                    evt.Skip()                   # do not allow overlaps
                     return
                 if h <= self.sense or w <= self.sense: # too small!
                     evt.Skip()
                     return
-                self.fromHeight.SetValue(h)       # update ...
+                self.fromHeight.SetValue(h)      # update ...
                 self.fromWidth.SetValue(w)       # ... spin ...
-                self.fromLeft.SetValue(x)       # ... controls
+                self.fromLeft.SetValue(x)        # ... controls
                 self.fromTop.SetValue(y)
                 self.redraw_bitmap()
                 self.draw_links()
                 self.draw_rect(x, y, w, h, "BLUE")  # draw rectangle
-                self.current_idx = -1
+                self.current_idx = -1            # means: not in an old rect
             evt.Skip()
             return
 
-        if len(self.page_links) == 0:     # there are no links yet
+        if len(self.page_links) == 0:            # there are no links yet
             evt.Skip()
             return
         
-        if self.resize_rect:
-            self.PDFimage.SetCursor(cur_nwse)
-            if evt.LeftIsDown():
-                r = self.link_rects[in_brect]
-                w = pos.x - r.x
-                h = pos.y - r.y
-                nr = wx.Rect(r.x, r.y, w, h)
+        if self.resize_rect:                     # resizing hot spot?
+            self.PDFimage.SetCursor(cur_nwse)    # adjust cursor
+            if evt.LeftIsDown():                 # mouse pressed? go!
+                r = self.link_rects[in_brect]    # resizing this rectangle
+                w = pos.x - r.x                  # new width
+                h = pos.y - r.y                  # new height
+                nr = wx.Rect(r.x, r.y, w, h)     # new retangle
+                # if large anough and no overlaps:
                 if w >= 2 * self.sense and h >= 2 * self.sense and \
                     self.is_in_free_area(nr, ok = in_brect):
-                    l = self.page_links[in_brect]
-                    l["from"] = self.wxRect_to_Rect(nr)
+                    l = self.page_links[in_brect]     # page link entry 
+                    l["from"] = self.wxRect_to_Rect(nr)    # get fitz format
                     l["update"] = True
-                    self.page_links[in_brect] = l
+                    self.page_links[in_brect] = l     # store change link
                     self.fromHeight.SetValue(h)
                     self.fromWidth.SetValue(w)
                     self.redraw_bitmap()
@@ -395,24 +400,24 @@ class PDFdisplay(wx.Dialog):
             evt.Skip()
             return
             
-        if in_rect >= 0:
-            self.PDFimage.SetCursor(cur_hand)
+        if in_rect >= 0:                         # still here and inside a rect?
+            self.PDFimage.SetCursor(cur_hand)    # adjust cursor
             self.PDFimage.SetToolTip(self.link_texts[in_rect])
-            if self.dragging_link:
+            if self.dragging_link:               # are we moving the hot spot?
                 if evt.LeftIsDown():
-                    r = self.link_rects[in_rect]
-                    x = pos.x - self.dragstart_x
-                    y = pos.y - self.dragstart_y
-                    w = r.width
-                    h = r.height
-                    newrect = wx.Rect(x, y, w, h)
-                    if self.is_in_free_area(newrect, ok = in_rect):
-                        self.fromLeft.SetValue(x)
-                        self.fromTop.SetValue(y)
-                        fr = self.wxRect_to_Rect(newrect)
-                        l = self.page_links[in_rect]
-                        l["from"] = fr
-                        l["update"] = True
+                    r = self.link_rects[in_rect] # this is the rectangle
+                    x = pos.x - self.dragstart_x # new left ...
+                    y = pos.y - self.dragstart_y # ... and top values
+                    w = r.width                  # shape does ...
+                    h = r.height                 # ... not change
+                    nr = wx.Rect(x, y, w, h)     # new rectangle
+                    if self.is_in_free_area(nr, ok = in_rect):  # no overlaps?
+                        self.fromLeft.SetValue(x)     # new screen value
+                        self.fromTop.SetValue(y)      # new screen value
+                        fr = self.wxRect_to_Rect(nr)  # fitz format of new rect
+                        l = self.page_links[in_rect]  # this is the link
+                        l["from"] = fr                # update its hot spot
+                        l["update"] = True       # we need to update
                         self.page_links[in_rect] = l
                         self.redraw_bitmap()
                         self.draw_links()
@@ -433,65 +438,72 @@ class PDFdisplay(wx.Dialog):
             self.on_previous_page(evt)
         return
 
-    def on_next_page(self, event):                   # means: page forward
-        page = getint(self.TextToPage.Value) + 1 # current page + 1
-        page = min(page, self.doc.pageCount)     # cannot go beyond last page
-        self.TextToPage.ChangeValue(str(page))        # put target page# in screen
-        self.new_image(page)                    # refresh the layout
+    def on_next_page(self, event):                # means: page forward
+        page = getint(self.TextToPage.Value) + 1  # current page + 1
+        page = min(page, self.doc.pageCount)      # cannot go beyond last page
+        self.TextToPage.ChangeValue(str(page))    # put target page# in screen
+        self.new_image(page)                      # refresh the layout
         event.Skip()
 
-    def on_previous_page(self, event):               # means: page back
-        page = getint(self.TextToPage.Value) - 1 # current page - 1
-        page = max(page, 1)                      # cannot go before page 1
-        self.TextToPage.ChangeValue(str(page))        # put target page# in screen
+    def on_previous_page(self, event):            # means: page back
+        page = getint(self.TextToPage.Value) - 1  # current page - 1
+        page = max(page, 1)                       # cannot go before page 1
+        self.TextToPage.ChangeValue(str(page))    # put target page# in screen
         self.new_image(page)
         event.Skip()
 
-    def on_goto_page(self, event):                   # means: go to page number
-        page = getint(self.TextToPage.Value)     # get page# from screen
-        page = min(page, len(self.doc))          # cannot go beyond last page
-        page = max(page, 1)                      # cannot go before page 1
-        self.TextToPage.ChangeValue(str(page))   # make sure it's on the screen
+    def on_goto_page(self, event):                # means: go to page number
+        page = getint(self.TextToPage.Value)      # get page# from screen
+        page = min(page, len(self.doc))           # cannot go beyond last page
+        page = max(page, 1)                       # cannot go before page 1
+        self.TextToPage.ChangeValue(str(page))    # make sure it's on the screen
         self.new_image(page)
         event.Skip()
 
     def on_update_page_links(self, evt):
-        pg = self.doc[getint(self.TextToPage.Value) - 1]
+        """ Perform PDF update of changed links."""
+        if not self.update_links:                 # skip if unsupported links
+            evt.Skip()
+            return
+        pg = self.doc[getint(self.TextToPage.Value) -1]
         for i in range(len(self.page_links)):
             l = self.page_links[i]
-            if l.get("update", False):
-                if l["xref"] == 0:
+            if l.get("update", False):            # "update" must be True
+                if l["xref"] == 0:                # no xref => new link
                     pg.insertLink(l)
                 elif l["kind"] < 1 or l["kind"] > len(self.linkTypeStrings):
-                    pg.deleteLink(l)
+                    pg.deleteLink(l)              # delete invalid link
                 else:
-                    pg.updateLink(l)
-            l["update"] = False
-            self.page_links[i] = l
-        self.btn_Update.Disable()
-        self.t_Update.Label = ""
+                    pg.updateLink(l)              # else link update
+            l["update"] = False                   # reset update indicator
+            self.page_links[i] = l                # update list of page links
+        self.btn_Update.Disable()                 # disable update button
+        self.t_Update.Label = ""                  # and its message
+        self.btn_Save.Enable()
+        self.t_Save.Label = "There are changes. Press to save them to file."
         evt.Skip()
         return
     
     def on_link_changed(self, evt):
-        if  self.current_idx < 0:
+        if  self.current_idx < 0:                 # invalid index should not occur
             evt.Skip()
             return
-        repaint = False
-        lnk = self.page_links[self.current_idx]
-        lkind = self.linkType.GetSelection()
-        lnk["kind"] = lkind
-        
+        repaint = False                           # reset when we must repaint
+        lnk = self.page_links[self.current_idx]   # we deal with this link
+        n = self.linkType.GetSelection()
+        lstr = self.linkType.GetString(n)
+        lnk["kind"] = self.link_code[lstr]
+        # rectangle in link details on screen:
         r = wx.Rect(self.fromLeft.Value, self.fromTop.Value,
                     self.fromWidth.Value, self.fromHeight.Value)
-        lr = self.link_rects[self.current_idx]
+        lr = self.link_rects[self.current_idx]    # stored rectangle
 
-        if tuple(r) != tuple(lr):
+        if tuple(r) != tuple(lr):                 # something changed
             if self.is_in_free_area(r, ok = self.current_idx):
                 lnk["from"] = self.wxRect_to_Rect(r)
-                lnk["update"] = True
+                lnk["update"] = True              # update rectangle in list
                 repaint = True
-            else:
+            else:                                 # reset values: invalid change
                 self.fromHeight.SetValue(lr.Height)
                 self.fromWidth.SetValue(lr.Width)
                 self.fromTop.SetValue(lr.y)
@@ -508,9 +520,9 @@ class PDFdisplay(wx.Dialog):
         except:
             pass
 
-        lnk["to"] = new_to
+        lnk["to"] = new_to                        # destination point
         
-        if self.toPage.IsModified:
+        if self.toPage.IsModified:                # dest page modified
             if self.toPage.Value.isdecimal():
                 lnk["page"] = int(self.toPage.Value) - 1
             else:
@@ -518,24 +530,24 @@ class PDFdisplay(wx.Dialog):
             repaint = True
             lnk["update"] = True
 
-        if self.toURI.IsModified:
+        if self.toURI.IsModified:                 # dest URI modified
             lnk["uri"] = self.toURI.Value
             repaint = True
             lnk["update"] = True
 
-        if self.toFile.IsModified:
+        if self.toFile.IsModified:                # dest file modified
             lnk["file"] = self.toFile.Value
             repaint = True
             lnk["update"] = True
 
-        n = self.toName.GetSelection()
+        n = self.toName.GetSelection()            # named dest modified
         scr_name = self.toName.GetString(n)
         if scr_name != lnk.get("name", ""):
             lnk["name"] = scr_name 
             repaint = True
             lnk["update"] = True
                 
-        self.page_links[self.current_idx] = lnk
+        self.page_links[self.current_idx] = lnk   # update page link list
         if repaint:
             self.redraw_bitmap()
             self.draw_links()
@@ -546,7 +558,12 @@ class PDFdisplay(wx.Dialog):
     
     def on_linkType_changed(self, evt):
         """User changed link kind, so prepare available fields."""
-        lt = self.linkType.GetSelection()
+        if self.current_idx < 0:
+            evt.Skip()
+            return
+        n = self.linkType.GetSelection()
+        lt_str = self.linkType.GetString(n)
+        lt = self.link_code[lt_str]
         self.prep_link_details(lt)
             
         lnk = self.page_links[self.current_idx]
@@ -572,17 +589,17 @@ class PDFdisplay(wx.Dialog):
             if not self.toFile.Value:
                 self.toFile.SetValue(self.text_in_rect())
                 self.toFile.MarkDirty()
-            lnk["file"] = self.toFile.Value
-            self.toFile.Enable()
             if not self.toPage.Value.isdecimal():
                 self.toPage.ChangeValue("1")
-            self.toPage.Enable()
             if not self.toLeft.Value.isdecimal():
                 self.toLeft.ChangeValue("0")
-            self.toLeft.Enable()
             if not self.toHeight.Value.isdecimal():
                 self.toHeight.ChangeValue("0")
+            self.toLeft.Enable()
+            self.toPage.Enable()
+            self.toFile.Enable()
             self.toHeight.Enable()
+            lnk["file"] = self.toFile.Value
             lnk["page"] = int(self.toPage.Value) - 1
             lnk["to"] = fitz.Point(int(self.toLeft.Value),
                                    int(self.toHeight.Value))
@@ -599,7 +616,6 @@ class PDFdisplay(wx.Dialog):
                 self.toFile.SetValue(self.text_in_rect())
                 self.toFile.MarkDirty()
             lnk["file"] = self.toFile.Value
-                
             self.toFile.Enable()
             
         elif lt == fitz.LINK_NAMED:
@@ -639,6 +655,7 @@ class PDFdisplay(wx.Dialog):
             self.doc.save(outfile, garbage=4)
         
         sdlg.Destroy()
+        self.btn_Save.Disable()
         evt.Skip()
         return
 
@@ -654,7 +671,6 @@ class PDFdisplay(wx.Dialog):
         self.toPage.ChangeValue("1")
         self.toLeft.ChangeValue("0")
         self.toHeight.ChangeValue("0")
-        self.linkType.Disable()
         evt.Skip()
         return
     
@@ -768,10 +784,14 @@ class PDFdisplay(wx.Dialog):
         return
 
     def enable_update(self):
-        self.btn_Update.Enable()
-        self.t_Update.Label = "Page contains changed links. Press to update."
+        if self.update_links:
+            self.btn_Update.Enable()
+            self.t_Update.Label = "Contains changed links. Press to update."
+        else:
+            self.btn_Update.Disable()
+            self.t_Update.Label = "Contains unsupported links. Cannot update!"
         return
-    
+        
     def draw_links(self):
         dc = wx.ClientDC(self.PDFimage)
         dc.SetPen(wx.Pen("BLUE", width=1))
@@ -779,7 +799,6 @@ class PDFdisplay(wx.Dialog):
         self.link_rects = []
         self.link_bottom_rects = []
         self.link_texts = []
-
         for lnk in self.page_links:
             if lnk.get("update", False):
                 self.enable_update()
@@ -793,7 +812,7 @@ class PDFdisplay(wx.Dialog):
             if lnk["kind"] == fitz.LINK_GOTO:
                 txt = "page " + str(lnk["page"] + 1)
             elif lnk["kind"] == fitz.LINK_GOTOR:
-                txt = lnk["file"]
+                txt = lnk["file"] + " p. " + str(lnk["page"] + 1)
             elif lnk["kind"] == fitz.LINK_URI:
                 txt = lnk["uri"]
             elif lnk["kind"] == fitz.LINK_LAUNCH:
@@ -837,11 +856,17 @@ class PDFdisplay(wx.Dialog):
         self.toLeft.ChangeValue("")
         self.toURI.ChangeValue("")
         self.toName.SetSelection(wx.NOT_FOUND)
+        self.toName.Disable()
+        self.btn_Update.Disable()
+        self.t_Update.Label = ""
         self.toFile.Disable()
         self.toLeft.Disable()
         self.toHeight.Disable()
         self.toURI.Disable()
         self.toPage.Disable()
+        self.adding_link = False
+        self.resize_rect = False
+        
         return
 
     def prep_link_details(self, lt):
@@ -876,13 +901,13 @@ class PDFdisplay(wx.Dialog):
         
     def Rect_to_wxRect(self, fr):
         """ Return a zoomed wx.Rect for given fitz.Rect."""
-        r = (fr * self.matrix).irect   # zoomed IRect
+        r = (fr * self.zoom).irect   # zoomed IRect
         return wx.Rect(r.x0, r.y0, r.width, r.height)   # wx.Rect version
     
     def wxRect_to_Rect(self, wr):
         """ Return a shrunk fitz.Rect for given wx.Rect."""
         r = fitz.Rect(wr.x, wr.y, wr.x + wr.width, wr.y + wr.height)
-        return r * self.imatrix        # shrunk fitz.Rect version
+        return r * self.shrink        # shrunk fitz.Rect version
     
     def is_in_free_area(self, nr, ok = -1):
         """ Determine if rect covers a free area inside the bitmap."""
@@ -930,11 +955,19 @@ class PDFdisplay(wx.Dialog):
 
     def pdf_show(self, pno):
         page = self.doc.loadPage(getint(pno) - 1) # load page & get Pixmap
-        pix = page.getPixmap(matrix = self.matrix)
+        pix = page.getPixmap(matrix = self.zoom)
         bmp = bmp_buffer(pix.w, pix.h, pix.samples)
         paper = FindFit(page.bound().x1, page.bound().y1)
         self.paperform.Label = "Page format: " + paper
         self.page_links = page.getLinks()
+        if len(self.page_links) > 0:
+            l = self.page_links[0]
+            if l["xref"] > 0:
+                self.update_links = True
+            else:
+                self.update_links = False
+        else:
+            self.update_links = True
         self.page_height = page.rect.height
         page = None
         pix = None
