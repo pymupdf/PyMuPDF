@@ -96,9 +96,9 @@ except __builtin__.Exception:
     _newclass = 0
 
 import weakref
-VersionFitz = "1.10a"
-VersionBind = "1.10.0"
-VersionDate = "2017-04-02 22:24:51"
+VersionFitz = "1.11"
+VersionBind = "1.11.0"
+VersionDate = "2017-04-19 17:09:26"
 
 LINK_NONE   = 0
 LINK_GOTO   = 1
@@ -149,7 +149,7 @@ class linkDest():
                         self.page = int(ftab[0]) - 1
                     except:
                         self.kind = LINK_NAMED
-                        self.named = self.uri
+                        self.named = self.uri[1:]
             else:
                 self.kind = LINK_NAMED
                 self.named = self.uri
@@ -159,26 +159,27 @@ class linkDest():
                 self.kind = LINK_URI
             elif self.uri.startswith("file://"):
                 self.fileSpec = self.uri[7:]
-                ftab = self.fileSpec.split("#")
                 self.isUri = False
+                self.uri = ""
                 self.kind = LINK_LAUNCH
+                ftab = self.fileSpec.split("#")
                 if len(ftab) == 2:
+                    self.kind = LINK_GOTOR
+                    self.fileSpec = ftab[0]
                     if ftab[1].startswith("page="):
-                        self.page = int(ftab[1][5:]) - 1
-                        self.kind = LINK_GOTOR
-                        self.isUri = False
-                        self.fileSpec = ftab[0]
+                        self.page = int(ftab[1][5:]) - 1    
                     else:
                         self.page = -1
-                        self.kind = LINK_URI
-                        self.isUri = True
+                        self.dest = ftab[1]
             else:
                 self.isUri = True
                 self.kind = LINK_LAUNCH
 
 
 class Document(_object):
-    """Proxy of C fz_document_s struct."""
+    """open() - new empty PDF
+open('pdf', stream) - bytes/bytearray/string
+open(filename)"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Document, name, value)
@@ -189,7 +190,7 @@ class Document(_object):
     __del__ = lambda self: None
 
     def __init__(self, filename=None, stream=None):
-        """__init__(fz_document_s self, char const * filename=None, PyObject * stream=None) -> Document"""
+        """__init__(self, filename=None, stream=None) -> Document"""
 
         if not filename or type(filename) == str:
             pass
@@ -230,7 +231,7 @@ class Document(_object):
 
 
     def close(self):
-        """close(Document self)"""
+        """close(self)"""
 
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
@@ -251,7 +252,7 @@ class Document(_object):
 
 
     def loadPage(self, number):
-        """loadPage(Document self, int number) -> Page"""
+        """loadPage(self, number) -> Page"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -274,7 +275,7 @@ class Document(_object):
 
 
     def _loadOutline(self):
-        """_loadOutline(Document self) -> Outline"""
+        """_loadOutline(self) -> Outline"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -284,13 +285,13 @@ class Document(_object):
 
 
     def _dropOutline(self, ol):
-        """_dropOutline(Document self, Outline ol)"""
+        """_dropOutline(self, ol)"""
         return _fitz.Document__dropOutline(self, ol)
 
     @property
 
     def pageCount(self):
-        """pageCount(Document self) -> int"""
+        """pageCount(self) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -300,7 +301,7 @@ class Document(_object):
 
 
     def _getMetadata(self, key):
-        """_getMetadata(Document self, char const * key) -> char *"""
+        """_getMetadata(self, key) -> char *"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -311,7 +312,7 @@ class Document(_object):
     @property
 
     def needsPass(self):
-        """needsPass(Document self) -> int"""
+        """needsPass(self) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -321,17 +322,17 @@ class Document(_object):
 
 
     def _getGCTXerrcode(self):
-        """_getGCTXerrcode(Document self) -> int"""
+        """_getGCTXerrcode(self) -> int"""
         return _fitz.Document__getGCTXerrcode(self)
 
 
     def _getGCTXerrmsg(self):
-        """_getGCTXerrmsg(Document self) -> char *"""
+        """_getGCTXerrmsg(self) -> char *"""
         return _fitz.Document__getGCTXerrmsg(self)
 
 
     def authenticate(self, arg2):
-        """authenticate(Document self, char const * arg2) -> int"""
+        """authenticate(self, arg2) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -349,7 +350,7 @@ class Document(_object):
 
 
     def save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0):
-        """save(Document self, char * filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) -> int"""
+        """save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0) -> int"""
 
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
@@ -369,7 +370,7 @@ class Document(_object):
 
 
     def write(self, garbage=0, clean=0, deflate=0, ascii=0, expand=0, linear=0):
-        """write(Document self, int garbage=0, int clean=0, int deflate=0, int ascii=0, int expand=0, int linear=0) -> PyObject *"""
+        """write(self, garbage=0, clean=0, deflate=0, ascii=0, expand=0, linear=0) -> PyObject *"""
 
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
@@ -489,7 +490,7 @@ class Document(_object):
 
 
     def _getPageObjNumber(self, pno):
-        """_getPageObjNumber(Document self, int pno) -> PyObject *"""
+        """_getPageObjNumber(self, pno) -> PyObject *"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -525,7 +526,7 @@ class Document(_object):
 
 
     def _delToC(self):
-        """_delToC(Document self) -> PyObject *"""
+        """_delToC(self) -> PyObject *"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -538,7 +539,7 @@ class Document(_object):
 
 
     def _getOLRootNumber(self):
-        """_getOLRootNumber(Document self) -> int"""
+        """_getOLRootNumber(self) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -548,7 +549,7 @@ class Document(_object):
 
 
     def _getNewXref(self):
-        """_getNewXref(Document self) -> int"""
+        """_getNewXref(self) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -558,7 +559,7 @@ class Document(_object):
 
 
     def _getXrefLength(self):
-        """_getXrefLength(Document self) -> int"""
+        """_getXrefLength(self) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -568,7 +569,7 @@ class Document(_object):
 
 
     def _getPageRectText(self, pno, rect):
-        """_getPageRectText(Document self, int pno, Rect rect) -> char *"""
+        """_getPageRectText(self, pno, rect) -> char *"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -578,7 +579,7 @@ class Document(_object):
 
 
     def _delXmlMetadata(self):
-        """_delXmlMetadata(Document self) -> int"""
+        """_delXmlMetadata(self) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -588,7 +589,7 @@ class Document(_object):
 
 
     def _getObjectString(self, xnum):
-        """_getObjectString(Document self, int xnum) -> char const *"""
+        """_getObjectString(self, xnum) -> char const *"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -598,7 +599,7 @@ class Document(_object):
 
 
     def _getXrefStream(self, xnum):
-        """_getXrefStream(Document self, int xnum) -> PyObject *"""
+        """_getXrefStream(self, xnum) -> PyObject *"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -608,7 +609,7 @@ class Document(_object):
 
 
     def _updateObject(self, xref, text, page=None):
-        """_updateObject(Document self, int xref, char * text, Page page=None) -> int"""
+        """_updateObject(self, xref, text, page=None) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -618,7 +619,7 @@ class Document(_object):
 
 
     def _setMetadata(self, text):
-        """_setMetadata(Document self, char * text) -> int"""
+        """_setMetadata(self, text) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
@@ -690,7 +691,7 @@ class Page(_object):
     __del__ = lambda self: None
 
     def bound(self):
-        """bound(Page self) -> Rect"""
+        """bound(self) -> Rect"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.isClosed:
@@ -707,7 +708,7 @@ class Page(_object):
     rect = property(bound, doc="Rect (mediabox) of the page")
 
     def run(self, dw, m):
-        """run(Page self, Device dw, Matrix m) -> int"""
+        """run(self, dw, m) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.isClosed:
@@ -717,7 +718,7 @@ class Page(_object):
 
 
     def loadLinks(self):
-        """loadLinks(Page self) -> Link"""
+        """loadLinks(self) -> Link"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.isClosed:
@@ -813,7 +814,7 @@ class Page(_object):
 
 
     def _addAnnot_FromString(self, linklist):
-        """_addAnnot_FromString(Page self, PyObject * linklist) -> int"""
+        """_addAnnot_FromString(self, linklist) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.isClosed:
@@ -823,12 +824,12 @@ class Page(_object):
 
 
     def _getLinkXrefs(self):
-        """_getLinkXrefs(Page self) -> PyObject *"""
+        """_getLinkXrefs(self) -> PyObject *"""
         return _fitz.Page__getLinkXrefs(self)
 
 
     def _getRectText(self, rect):
-        """_getRectText(Page self, Rect rect) -> char *"""
+        """_getRectText(self, rect) -> char *"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.isClosed:
@@ -838,7 +839,7 @@ class Page(_object):
 
 
     def _readPageText(self, output=0):
-        """_readPageText(Page self, int output=0) -> char *"""
+        """_readPageText(self, output=0) -> char *"""
         return _fitz.Page__readPageText(self, output)
 
 
@@ -890,10 +891,16 @@ Page_swigregister(Page)
 
 
 def _fz_transform_rect(rect, transform):
-    """_fz_transform_rect(Rect rect, Matrix transform) -> Rect"""
+    """_fz_transform_rect(rect, transform) -> Rect"""
     return _fitz._fz_transform_rect(rect, transform)
 class Rect(_object):
-    """Proxy of C fz_rect_s struct."""
+    """Rect() - all zeros
+Rect(x0, y0, x1, y1)
+Rect(top-left, x1, y1)
+Rect(x0, y0, bottom-right)
+Rect(top-left, bottom-right)
+Rect(rect) - copy of 'rect'
+Rect(list) - from 'list'"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Rect, name, value)
@@ -919,12 +926,13 @@ class Rect(_object):
 
     def __init__(self, *args):
         """
-        __init__(fz_rect_s self) -> Rect
-        __init__(fz_rect_s self, Rect s) -> Rect
-        __init__(fz_rect_s self, Point lt, Point rb) -> Rect
-        __init__(fz_rect_s self, float x0, float y0, Point rb) -> Rect
-        __init__(fz_rect_s self, Point lt, float x1, float y1) -> Rect
-        __init__(fz_rect_s self, float x0, float y0, float x1, float y1) -> Rect
+        __init__(self) -> Rect
+        __init__(self, s) -> Rect
+        __init__(self, lt, rb) -> Rect
+        __init__(self, x0, y0, rb) -> Rect
+        __init__(self, lt, x1, y1) -> Rect
+        __init__(self, x0, y0, x1, y1) -> Rect
+        __init__(self, list) -> Rect
         """
         this = _fitz.new_Rect(*args)
         try:
@@ -935,7 +943,7 @@ class Rect(_object):
     __del__ = lambda self: None
 
     def round(self):
-        """round(Rect self) -> IRect"""
+        """Create enclosing 'IRect'"""
         val = _fitz.Rect_round(self)
 
         val.thisown = True
@@ -945,23 +953,71 @@ class Rect(_object):
 
 
     def includePoint(self, p):
-        """includePoint(Rect self, Point p) -> Rect"""
+        """Enlarge to include a 'Point' p"""
         return _fitz.Rect_includePoint(self, p)
 
 
     def intersect(self, r):
-        """intersect(Rect self, Rect r) -> Rect"""
+        """Shrink to intersection with another 'Rect' r"""
         return _fitz.Rect_intersect(self, r)
 
 
     def includeRect(self, r):
-        """includeRect(Rect self, Rect r) -> Rect"""
+        """Enlarge to include another 'Rect' r"""
         return _fitz.Rect_includeRect(self, r)
 
 
+    def normalize(self):
+        """Make rectangle finite"""
+        return _fitz.Rect_normalize(self)
+
+
+    def contains(self, *args):
+        """Check for containing some 'Point' or other rectangle."""
+        return _fitz.Rect_contains(self, *args)
+
+    @property
+
+    def isEmpty(self):
+        """isEmpty(self) -> PyObject *"""
+        return _fitz.Rect_isEmpty(self)
+
+    @property
+
+    def isInfinite(self):
+        """isInfinite(self) -> PyObject *"""
+        return _fitz.Rect_isInfinite(self)
+
+
     def transform(self, m):
+        """Transform rectangle with Matrix m."""
         _fitz._fz_transform_rect(self, m)
         return self
+
+    @property
+    def top_left(self):
+        """Return the rectangle's top-left point."""
+        return Point(self.x0, self.y0)
+
+    @property
+    def top_right(self):
+        """Return the rectangle's top-right point."""
+        return Point(self.x1, self.y0)
+
+    @property
+    def bottom_left(self):
+        """Return the rectangle's bottom-left point."""
+        return Point(self.x0, self.y1)
+
+    @property
+    def bottom_right(self):
+        """Return the rectangle's bottom-right point."""
+        return Point(self.x1, self.y1)
+
+    def __contains__(self, x):
+        if type(x) in (int, float):
+            return x in tuple(self)
+        return self.contains(x)
 
     def __getitem__(self, i):
         a = [self.x0, self.y0, self.x1, self.y1]
@@ -990,7 +1046,10 @@ Rect_swigregister = _fitz.Rect_swigregister
 Rect_swigregister(Rect)
 
 class IRect(_object):
-    """Proxy of C fz_irect_s struct."""
+    """IRect() - all zeros
+IRect(x0, y0, x1, y1)
+IRect(irect) - copy of 'irect'
+IRect(list) - from 'list'"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, IRect, name, value)
@@ -1018,23 +1077,46 @@ class IRect(_object):
 
     def __init__(self, *args):
         """
-        __init__(fz_irect_s self) -> IRect
-        __init__(fz_irect_s self, IRect s) -> IRect
-        __init__(fz_irect_s self, int x0, int y0, int x1, int y1) -> IRect
+        __init__(self) -> IRect
+        __init__(self, s) -> IRect
+        __init__(self, x0, y0, x1, y1) -> IRect
+        __init__(self, list) -> IRect
         """
         this = _fitz.new_IRect(*args)
         try:
             self.this.append(this)
         except __builtin__.Exception:
             self.this = this
+    @property
+
+    def isEmpty(self):
+        """isEmpty(self) -> PyObject *"""
+        return _fitz.IRect_isEmpty(self)
+
+    @property
+
+    def isInfinite(self):
+        """isInfinite(self) -> PyObject *"""
+        return _fitz.IRect_isInfinite(self)
+
+
+    def normalize(self):
+        """Make rectangle finite"""
+        return _fitz.IRect_normalize(self)
+
+
+    def contains(self, *args):
+        """Check for containing some 'Point' or other rectangle."""
+        return _fitz.IRect_contains(self, *args)
+
 
     def translate(self, xoff, yoff):
-        """translate(IRect self, int xoff, int yoff) -> IRect"""
+        """translate(self, xoff, yoff) -> IRect"""
         return _fitz.IRect_translate(self, xoff, yoff)
 
 
     def intersect(self, ir):
-        """intersect(IRect self, IRect ir) -> IRect"""
+        """intersect(self, ir) -> IRect"""
         return _fitz.IRect_intersect(self, ir)
 
 
@@ -1045,6 +1127,27 @@ class IRect(_object):
         return Rect(self.x0, self.y0, self.x1, self.y1)
 
     rect = property(getRect)
+
+    @property
+    def top_left(self):
+        return Point(self.x0, self.y0)
+
+    @property
+    def top_right(self):
+        return Point(self.x1, self.y0)
+
+    @property
+    def bottom_left(self):
+        return Point(self.x0, self.y1)
+
+    @property
+    def bottom_right(self):
+        return Point(self.x1, self.y1)
+
+    def __contains__(self, x):
+        if type(x) in (int, float):
+            return x in tuple(self)
+        return self.contains(x)
 
     def __getitem__(self, i):
         a = [self.x0, self.y0, self.x1, self.y1]
@@ -1164,12 +1267,12 @@ class Pixmap(_object):
     __del__ = lambda self: None
 
     def gammaWith(self, gamma):
-        """gammaWith(Pixmap self, float gamma)"""
+        """gammaWith(self, gamma)"""
         return _fitz.Pixmap_gammaWith(self, gamma)
 
 
     def tintWith(self, red, green, blue):
-        """tintWith(Pixmap self, int red, int green, int blue)"""
+        """tintWith(self, red, green, blue)"""
 
         if self.colorspace.n > 3:
             raise TypeError("CMYK colorspace cannot be tinted")
@@ -1179,49 +1282,49 @@ class Pixmap(_object):
 
     def clearWith(self, *args):
         """
-        clearWith(Pixmap self, int value)
-        clearWith(Pixmap self, int value, IRect bbox)
+        clearWith(self, value)
+        clearWith(self, value, bbox)
         """
         return _fitz.Pixmap_clearWith(self, *args)
 
 
     def copyPixmap(self, src, bbox):
-        """copyPixmap(Pixmap self, Pixmap src, IRect bbox)"""
+        """copyPixmap(self, src, bbox)"""
         return _fitz.Pixmap_copyPixmap(self, src, bbox)
 
     @property
 
     def stride(self):
-        """stride(Pixmap self) -> int"""
+        """stride(self) -> int"""
         return _fitz.Pixmap_stride(self)
 
     @property
 
     def alpha(self):
-        """alpha(Pixmap self) -> int"""
+        """alpha(self) -> int"""
         return _fitz.Pixmap_alpha(self)
 
     @property
 
     def colorspace(self):
-        """colorspace(Pixmap self) -> Colorspace"""
+        """colorspace(self) -> Colorspace"""
         return _fitz.Pixmap_colorspace(self)
 
     @property
 
     def irect(self):
-        """irect(Pixmap self) -> IRect"""
+        """irect(self) -> IRect"""
         return _fitz.Pixmap_irect(self)
 
     @property
 
     def size(self):
-        """size(Pixmap self) -> int"""
+        """size(self) -> int"""
         return _fitz.Pixmap_size(self)
 
 
     def writePNG(self, filename, savealpha=-1):
-        """writePNG(Pixmap self, char * filename, int savealpha=-1) -> int"""
+        """writePNG(self, filename, savealpha=-1) -> int"""
 
         if type(filename) == str:
             pass
@@ -1237,12 +1340,12 @@ class Pixmap(_object):
 
 
     def getPNGData(self, savealpha=-1):
-        """getPNGData(Pixmap self, int savealpha=-1) -> PyObject *"""
+        """getPNGData(self, savealpha=-1) -> PyObject *"""
         return _fitz.Pixmap_getPNGData(self, savealpha)
 
 
     def _writeIMG(self, filename, format, savealpha=-1):
-        """_writeIMG(Pixmap self, char * filename, int format, int savealpha=-1) -> int"""
+        """_writeIMG(self, filename, format, savealpha=-1) -> int"""
 
         if type(filename) == str:
             pass
@@ -1257,14 +1360,14 @@ class Pixmap(_object):
 
     def invertIRect(self, *args):
         """
-        invertIRect(Pixmap self)
-        invertIRect(Pixmap self, IRect irect)
+        invertIRect(self)
+        invertIRect(self, irect)
         """
         return _fitz.Pixmap_invertIRect(self, *args)
 
 
     def samples(self):
-        """samples(Pixmap self) -> PyObject *"""
+        """samples(self) -> PyObject *"""
         return _fitz.Pixmap_samples(self)
 
 
@@ -1293,7 +1396,7 @@ class Colorspace(_object):
     __repr__ = _swig_repr
 
     def __init__(self, type):
-        """__init__(fz_colorspace_s self, int type) -> Colorspace"""
+        """__init__(self, type) -> Colorspace"""
         this = _fitz.new_Colorspace(type)
         try:
             self.this.append(this)
@@ -1302,13 +1405,13 @@ class Colorspace(_object):
     @property
 
     def n(self):
-        """n(Colorspace self) -> int"""
+        """n(self) -> int"""
         return _fitz.Colorspace_n(self)
 
     @property
 
     def name(self):
-        """name(Colorspace self) -> char const *"""
+        """name(self) -> char const *"""
         return _fitz.Colorspace_name(self)
 
     __swig_destroy__ = _fitz.delete_Colorspace
@@ -1327,9 +1430,9 @@ class Device(_object):
 
     def __init__(self, *args):
         """
-        __init__(DeviceWrapper self, Pixmap pm, IRect clip) -> Device
-        __init__(DeviceWrapper self, DisplayList dl) -> Device
-        __init__(DeviceWrapper self, TextSheet ts, TextPage tp) -> Device
+        __init__(self, pm, clip) -> Device
+        __init__(self, dl) -> Device
+        __init__(self, ts, tp) -> Device
         """
         this = _fitz.new_Device(*args)
         try:
@@ -1343,18 +1446,24 @@ Device_swigregister(Device)
 
 
 def _fz_pre_scale(m, sx, sy):
-    """_fz_pre_scale(Matrix m, float sx, float sy) -> Matrix"""
+    """_fz_pre_scale(m, sx, sy) -> Matrix"""
     return _fitz._fz_pre_scale(m, sx, sy)
 
 def _fz_pre_shear(m, sx, sy):
-    """_fz_pre_shear(Matrix m, float sx, float sy) -> Matrix"""
+    """_fz_pre_shear(m, sx, sy) -> Matrix"""
     return _fitz._fz_pre_shear(m, sx, sy)
 
 def _fz_pre_rotate(m, degree):
-    """_fz_pre_rotate(Matrix m, float degree) -> Matrix"""
+    """_fz_pre_rotate(m, degree) -> Matrix"""
     return _fitz._fz_pre_rotate(m, degree)
 class Matrix(_object):
-    """Proxy of C fz_matrix_s struct."""
+    """Matrix() - all zeros
+Matrix(a, b, c, d, e, f)
+Matrix(zoom-x, zoom-y) - zoom
+Matrix(shear-x, shear-y, 1) - shear
+Matrix(degree) - rotate
+Matrix(matrix) - copy of 'matrix'
+Matrix(list) - from 'list'"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Matrix, name, value)
@@ -1390,10 +1499,12 @@ class Matrix(_object):
 
     def __init__(self, *args):
         """
-        __init__(fz_matrix_s self) -> Matrix
-        __init__(fz_matrix_s self, Matrix n) -> Matrix
-        __init__(fz_matrix_s self, float sx, float sy, int shear=0) -> Matrix
-        __init__(fz_matrix_s self, float degree) -> Matrix
+        __init__(self) -> Matrix
+        __init__(self, n) -> Matrix
+        __init__(self, sx, sy, shear=0) -> Matrix
+        __init__(self, r, s, t, u, v, w) -> Matrix
+        __init__(self, degree) -> Matrix
+        __init__(self, list) -> Matrix
         """
         this = _fitz.new_Matrix(*args)
         try:
@@ -1402,17 +1513,17 @@ class Matrix(_object):
             self.this = this
 
     def invert(self, m):
-        """invert(Matrix self, Matrix m) -> int"""
+        """invert(self, m) -> int"""
         return _fitz.Matrix_invert(self, m)
 
 
     def preTranslate(self, sx, sy):
-        """preTranslate(Matrix self, float sx, float sy) -> Matrix"""
+        """preTranslate(self, sx, sy) -> Matrix"""
         return _fitz.Matrix_preTranslate(self, sx, sy)
 
 
     def concat(self, m1, m2):
-        """concat(Matrix self, Matrix m1, Matrix m2) -> Matrix"""
+        """concat(self, m1, m2) -> Matrix"""
         return _fitz.Matrix_concat(self, m1, m2)
 
 
@@ -1479,7 +1590,7 @@ class Outline(_object):
         is_open = _swig_property(_fitz.Outline_is_open_get)
 
     def saveXML(self, filename):
-        """saveXML(Outline self, char const * filename) -> int"""
+        """saveXML(self, filename) -> int"""
 
         if type(filename) == str:
             pass
@@ -1493,7 +1604,7 @@ class Outline(_object):
 
 
     def saveText(self, filename):
-        """saveText(Outline self, char const * filename) -> int"""
+        """saveText(self, filename) -> int"""
 
         if type(filename) == str:
             pass
@@ -1508,13 +1619,13 @@ class Outline(_object):
     @property
 
     def uri(self):
-        """uri(Outline self) -> char *"""
+        """uri(self) -> char *"""
         return _fitz.Outline_uri(self)
 
     @property
 
     def isExternal(self):
-        """isExternal(Outline self) -> int"""
+        """isExternal(self) -> int"""
         return _fitz.Outline_isExternal(self)
 
     isOpen = is_open
@@ -1531,10 +1642,12 @@ Outline_swigregister(Outline)
 
 
 def _fz_transform_point(point, transform):
-    """_fz_transform_point(Point point, Matrix transform) -> Point"""
+    """_fz_transform_point(point, transform) -> Point"""
     return _fitz._fz_transform_point(point, transform)
 class Point(_object):
-    """Proxy of C fz_point_s struct."""
+    """Point() - all zeros
+Point(x, y)
+Point(point) - copy of 'point'"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Point, name, value)
@@ -1554,15 +1667,55 @@ class Point(_object):
 
     def __init__(self, *args):
         """
-        __init__(fz_point_s self) -> Point
-        __init__(fz_point_s self, Point q) -> Point
-        __init__(fz_point_s self, float x, float y) -> Point
+        __init__(self) -> Point
+        __init__(self, q) -> Point
+        __init__(self, x, y) -> Point
+        __init__(self, list) -> Point
         """
         this = _fitz.new_Point(*args)
         try:
             self.this.append(this)
         except __builtin__.Exception:
             self.this = this
+
+    def distance_to(self, *args):
+        """Return the distance to a rectangle or another point."""
+        assert len(args) > 0, "at least one parameter must be given"
+        x = args[0]
+        if len(args) > 1:
+            unit = args[1]
+        else:
+            unit = "px"
+        u = {"px": (1.,1.), "in": (1.,72.), "cm": (2.54, 72.), "mm": (25.4, 72.)}
+        f = u[unit][0] / u[unit][1]
+        if type(x) is Point:
+            return abs(self - x) * f
+
+    # from here on, x is a rectangle
+    # as a safeguard, make a finite copy of it
+        r = Rect(x.top_left, x.top_left)
+        r = r | x.bottom_right
+        if self in r:
+            return 0.0
+        if self.x > r.x1:
+            if self.y >= r.y1:
+                return self.distance_to(r.bottom_right, unit = unit)
+            elif self.y <= r.y0:
+                return self.distance_to(r.top_right, unit = unit)
+            else:
+                return (self.x - r.x1) * f
+        elif r.x0 <= self.x <= r.x1:
+            if self.y >= r.y1:
+                return (self.y - r.y1) * f
+            else:
+                return (r.y0 - self.y) * f
+        else:
+            if self.y >= r.y1:
+                return self.distance_to(r.bottom_left, unit = unit)
+            elif self.y <= r.y0:
+                return self.distance_to(r.top_left, unit = unit)
+            else:
+                return (r.x0 - self.x) * f
 
     def transform(self, m):
         _fitz._fz_transform_point(self, m)
@@ -1693,7 +1846,7 @@ class Annot(_object):
     @property
 
     def vertices(self):
-        """vertices: point coordinates for various annot typess"""
+        """vertices: point coordinates for various annot types"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1704,7 +1857,7 @@ class Annot(_object):
     @property
 
     def colors(self):
-        """colors: dictionary of the annot's colors"""
+        """dictionary of the annot's colors"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1716,7 +1869,7 @@ class Annot(_object):
     def setColors(self, colors):
         """
         setColors(dict)
-        Changes the 'common' and 'fill' colors of an annotation. Both values must be lists of up to 4 floats.
+        Changes the 'common' and 'fill' colors of an annotation. If provided, values must be lists of up to 4 floats.
         """
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
@@ -1728,7 +1881,7 @@ class Annot(_object):
     @property
 
     def lineEnds(self):
-        """lineEnds(Annot self) -> PyObject *"""
+        """lineEnds(self) -> PyObject *"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1738,7 +1891,7 @@ class Annot(_object):
 
 
     def setLineEnds(self, start, end):
-        """setLineEnds(Annot self, int start, int end)"""
+        """setLineEnds(self, start, end)"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1749,7 +1902,7 @@ class Annot(_object):
     @property
 
     def type(self):
-        """type(Annot self) -> PyObject *"""
+        """type(self) -> PyObject *"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1760,7 +1913,7 @@ class Annot(_object):
     @property
 
     def info(self):
-        """info(Annot self) -> PyObject *"""
+        """info(self) -> PyObject *"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1770,7 +1923,7 @@ class Annot(_object):
 
 
     def setInfo(self, info):
-        """setInfo(Annot self, PyObject * info) -> int"""
+        """setInfo(self, info) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1781,7 +1934,7 @@ class Annot(_object):
     @property
 
     def border(self):
-        """border(Annot self) -> PyObject *"""
+        """border(self) -> PyObject *"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1791,7 +1944,7 @@ class Annot(_object):
 
 
     def setBorder(self, border):
-        """setBorder(Annot self, PyObject * border) -> int"""
+        """setBorder(self, border) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1802,7 +1955,7 @@ class Annot(_object):
     @property
 
     def flags(self):
-        """flags(Annot self) -> int"""
+        """flags(self) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1812,7 +1965,7 @@ class Annot(_object):
 
 
     def setFlags(self, flags):
-        """setFlags(Annot self, int flags)"""
+        """setFlags(self, flags)"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1823,7 +1976,7 @@ class Annot(_object):
     @property
 
     def next(self):
-        """next(Annot self) -> Annot"""
+        """next(self) -> Annot"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1839,7 +1992,7 @@ class Annot(_object):
 
 
     def getPixmap(self, matrix=None, colorspace=None, alpha=0):
-        """getPixmap(Annot self, Matrix matrix=None, Colorspace colorspace=None, int alpha=0) -> Pixmap"""
+        """getPixmap(self, matrix=None, colorspace=None, alpha=0) -> Pixmap"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1879,7 +2032,7 @@ class Link(_object):
     @property
 
     def uri(self):
-        """uri(Link self) -> char *"""
+        """uri(self) -> char *"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1890,7 +2043,7 @@ class Link(_object):
     @property
 
     def isExternal(self):
-        """isExternal(Link self) -> int"""
+        """isExternal(self) -> int"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1912,7 +2065,7 @@ class Link(_object):
     @property
 
     def rect(self):
-        """rect(Link self) -> Rect"""
+        """rect(self) -> Rect"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1923,7 +2076,7 @@ class Link(_object):
     @property
 
     def next(self):
-        """next(Link self) -> Link"""
+        """next(self) -> Link"""
         if hasattr(self, "parent") and self.parent is None:
             raise RuntimeError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
@@ -1963,7 +2116,7 @@ class DisplayList(_object):
     __repr__ = _swig_repr
 
     def __init__(self, mediabox):
-        """__init__(fz_display_list_s self, Rect mediabox) -> DisplayList"""
+        """__init__(self, mediabox) -> DisplayList"""
         this = _fitz.new_DisplayList(mediabox)
         try:
             self.this.append(this)
@@ -1973,7 +2126,7 @@ class DisplayList(_object):
     __del__ = lambda self: None
 
     def run(self, dw, m, area):
-        """run(DisplayList self, Device dw, Matrix m, Rect area) -> int"""
+        """run(self, dw, m, area) -> int"""
         return _fitz.DisplayList_run(self, dw, m, area)
 
 DisplayList_swigregister = _fitz.DisplayList_swigregister
@@ -1989,7 +2142,7 @@ class TextSheet(_object):
     __repr__ = _swig_repr
 
     def __init__(self):
-        """__init__(fz_stext_sheet_s self) -> TextSheet"""
+        """__init__(self) -> TextSheet"""
         this = _fitz.new_TextSheet()
         try:
             self.this.append(this)
@@ -2014,7 +2167,7 @@ class TextPage(_object):
         len = _swig_property(_fitz.TextPage_len_get, _fitz.TextPage_len_set)
 
     def __init__(self, mediabox):
-        """__init__(fz_stext_page_s self, Rect mediabox) -> TextPage"""
+        """__init__(self, mediabox) -> TextPage"""
         this = _fitz.new_TextPage(mediabox)
         try:
             self.this.append(this)
@@ -2024,27 +2177,27 @@ class TextPage(_object):
     __del__ = lambda self: None
 
     def search(self, needle, hit_max=16):
-        """search(TextPage self, char const * needle, int hit_max=16) -> Rect"""
+        """search(self, needle, hit_max=16) -> Rect"""
         return _fitz.TextPage_search(self, needle, hit_max)
 
 
     def extractText(self):
-        """extractText(TextPage self) -> char const *"""
+        """extractText(self) -> char const *"""
         return _fitz.TextPage_extractText(self)
 
 
     def extractXML(self):
-        """extractXML(TextPage self) -> char const *"""
+        """extractXML(self) -> char const *"""
         return _fitz.TextPage_extractXML(self)
 
 
     def extractHTML(self):
-        """extractHTML(TextPage self) -> char const *"""
+        """extractHTML(self) -> char const *"""
         return _fitz.TextPage_extractHTML(self)
 
 
     def extractJSON(self):
-        """extractJSON(TextPage self) -> char const *"""
+        """extractJSON(self) -> char const *"""
         return _fitz.TextPage_extractJSON(self)
 
 TextPage_swigregister = _fitz.TextPage_swigregister

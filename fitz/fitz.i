@@ -39,10 +39,9 @@ fz_throw(gctx, FZ_ERROR_GENERIC, msg)
 if (!cond) THROWMSG("not a PDF")
 %enddef
 //=============================================================================
-
+%feature("autodoc", "0");
 // #define MEMDEBUG
 
-%feature("autodoc","1");
 %{
 #define SWIG_FILE_WITH_INIT
 #define SWIG_PYTHON_2_UNICODE
@@ -1424,12 +1423,14 @@ fannot._erase()
 %rename(_fz_transform_rect) fz_transform_rect;
 struct fz_rect_s *fz_transform_rect(struct fz_rect_s *restrict rect, const struct fz_matrix_s *restrict transform);
 %rename(Rect) fz_rect_s;
+
 struct fz_rect_s
 {
     float x0, y0;
     float x1, y1;
     fz_rect_s();
     %extend {
+        FITZEXCEPTION(fz_rect_s, !result)
         fz_rect_s(const struct fz_rect_s *s) {
             fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
             *r = *s;
@@ -1472,6 +1473,29 @@ struct fz_rect_s
             return r;
         }
 
+        //--------------------------------------------------------------------
+        // create Rect from Python list
+        //--------------------------------------------------------------------
+        fz_rect_s(PyObject *list)
+        {
+            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_try(gctx)
+            {
+                if (!PySequence_Check(list)) THROWMSG("expected a sequence");
+                if (PySequence_Size(list) != 4) THROWMSG("sequence length must be 4");
+                r->x0 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
+                r->y0 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 1));
+                r->x1 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 2));
+                r->y1 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 3));
+            }
+            fz_catch(gctx)
+            {
+                free(r);
+                return NULL;
+            }
+            return r;
+        }
+
         ~fz_rect_s() {
 #ifdef MEMDEBUG
             fprintf(stderr, "[DEBUG]free rect ...");
@@ -1484,31 +1508,133 @@ struct fz_rect_s
         %pythonappend round() %{
             val.thisown = True
         %}
+        %feature("autodoc","Create enclosing 'IRect'") round;
         struct fz_irect_s *round() {
             fz_irect *irect = (fz_irect *)malloc(sizeof(fz_irect));
             fz_round_rect(irect, $self);
             return irect;
         }
 
+        %feature("autodoc","Enlarge to include a 'Point' p") includePoint;
         struct fz_rect_s *includePoint(const struct fz_point_s *p) {
             fz_include_point_in_rect($self, p);
             return $self;
         }
 
+        %feature("autodoc","Shrink to intersection with another 'Rect' r") intersect;
         struct fz_rect_s *intersect(struct fz_rect_s *r) {
             fz_intersect_rect($self, r);
             return $self;
         }
 
-        struct fz_rect_s *includeRect(struct fz_rect_s *r) {
+        %feature("autodoc","Enlarge to include another 'Rect' r") includeRect;
+        struct fz_rect_s *includeRect(struct fz_rect_s *r)
+        {
             fz_union_rect($self, r);
             return $self;
+        }
+        
+        %feature("autodoc","Make rectangle finite") normalize;
+        void normalize()
+        {
+            float f;
+            if ($self->x1 <= $self->x0)
+            {
+                f = $self->x1;
+                $self->x1 = $self->x0;
+                $self->x0 = f;
+            }
+            if ($self->y1 <= $self->y0)
+            {
+                f = $self->y1;
+                $self->y1 = $self->y0;
+                $self->y0 = f;
+            }
+            return;
+        }
+        
+        %feature("autodoc","contains") contains;
+        PyObject *contains(struct fz_rect_s *r)
+        {
+            return truth_value(fz_contains_rect($self, r));
+        }
+
+        PyObject *contains(struct fz_irect_s *ir)
+        {
+            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            r->x0 = ir->x0;
+            r->y0 = ir->y0;
+            r->x1 = ir->x1;
+            r->y1 = ir->y1;
+            int rc = fz_contains_rect($self, r);
+            free(r);
+            return truth_value(rc);
+        }
+
+        PyObject *contains(struct fz_point_s *p)
+        {
+            if (fz_is_empty_rect($self)) return truth_value(0);
+            float l = $self->x0;
+            float t = $self->y0;
+            float r = $self->x1;
+            float b = $self->y1;
+            if ($self->x1 <= $self->x0)
+            {
+                l = $self->x1;
+                r = $self->x0;
+            }
+            if ($self->y1 <= $self->y0)
+            {
+                t = $self->y1;
+                b = $self->y0;
+            }
+            if ((p->x < l) || (p->x > r) || (p->y < t) || (p->y > b))
+                return truth_value(0);
+            return truth_value(1);
+        }
+
+        %pythoncode %{@property%}
+        PyObject *isEmpty()
+        {
+            return truth_value(fz_is_empty_rect($self));
+        }
+
+        %pythoncode %{@property%}
+        PyObject *isInfinite()
+        {
+            return truth_value(fz_is_infinite_rect($self));
         }
 
         %pythoncode %{
             def transform(self, m):
+                """Transform rectangle with Matrix m."""
                 _fitz._fz_transform_rect(self, m)
                 return self
+
+            @property
+            def top_left(self):
+                """Return the rectangle's top-left point."""
+                return Point(self.x0, self.y0)
+                
+            @property
+            def top_right(self):
+                """Return the rectangle's top-right point."""
+                return Point(self.x1, self.y0)
+                
+            @property
+            def bottom_left(self):
+                """Return the rectangle's bottom-left point."""
+                return Point(self.x0, self.y1)
+            
+            @property
+            def bottom_right(self):
+                """Return the rectangle's bottom-right point."""
+                return Point(self.x1, self.y1)
+                
+            def __contains__(self, x):
+                if type(x) in (int, float):
+                    return x in tuple(self)
+                return self.contains(x)
 
             def __getitem__(self, i):
                 a = [self.x0, self.y0, self.x1, self.y1]
@@ -1545,6 +1671,7 @@ struct fz_irect_s
     int x1, y1;
     fz_irect_s();
     %extend {
+        FITZEXCEPTION(fz_irect_s, !result)
         ~fz_irect_s() {
 #ifdef MEMDEBUG
             fprintf(stderr, "[DEBUG]free irect ... ");
@@ -1569,6 +1696,113 @@ struct fz_irect_s
             return r;
         }
 
+        //--------------------------------------------------------------------
+        // create IRect from Python list
+        //--------------------------------------------------------------------
+        fz_irect_s(PyObject *list)
+        {
+            fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
+            fz_try(gctx)
+            {
+                if (!PySequence_Check(list)) THROWMSG("expected a sequence");
+                if (PySequence_Size(list) != 4) THROWMSG("sequence length must be 4");
+                r->x0 = (int) PyInt_AsLong(PySequence_GetItem(list, 0));
+                r->y0 = (int) PyInt_AsLong(PySequence_GetItem(list, 1));
+                r->x1 = (int) PyInt_AsLong(PySequence_GetItem(list, 2));
+                r->y1 = (int) PyInt_AsLong(PySequence_GetItem(list, 3));
+            }
+            fz_catch(gctx) 
+            {
+                free(r);
+                return NULL;
+            }
+            return r;
+        }
+
+        %pythoncode %{@property%}
+        PyObject *isEmpty()
+        {
+            return truth_value(fz_is_empty_irect($self));
+        }
+
+        %pythoncode %{@property%}
+        PyObject *isInfinite()
+        {
+            return truth_value(fz_is_infinite_irect($self));
+        }
+
+        %feature("autodoc","contains") contains;
+        PyObject *contains(struct fz_irect_s *ir)
+        {
+            fz_rect *s = (fz_rect *)malloc(sizeof(fz_rect));
+            s->x0 = $self->x0;
+            s->y0 = $self->y0;
+            s->x1 = $self->x1;
+            s->y1 = $self->y1;
+            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            r->x0 = ir->x0;
+            r->y0 = ir->y0;
+            r->x1 = ir->x1;
+            r->y1 = ir->y1;
+            int rc = fz_contains_rect(s, r);
+            free(s);
+            free(r);
+            return truth_value(rc);
+        }
+
+        %feature("autodoc","Make rectangle finite") normalize;
+        void normalize()
+        {
+            int f;
+            if ($self->x1 <= $self->x0)
+            {
+                f = $self->x1;
+                $self->x1 = $self->x0;
+                $self->x0 = f;
+            }
+            if ($self->y1 <= $self->y0)
+            {
+                f = $self->y1;
+                $self->y1 = $self->y0;
+                $self->y0 = f;
+            }
+            return;
+        }
+        
+        PyObject *contains(struct fz_rect_s *r)
+        {
+            fz_rect *s = (fz_rect *)malloc(sizeof(fz_rect));
+            s->x0 = $self->x0;
+            s->y0 = $self->y0;
+            s->x1 = $self->x1;
+            s->y1 = $self->y1;
+            int rc = fz_contains_rect(s, r);
+            free(s);
+            return truth_value(rc);
+        }
+
+        PyObject *contains(struct fz_point_s *p)
+        {
+            if (fz_is_empty_irect($self)) return truth_value(0);
+            float l = $self->x0;
+            float t = $self->y0;
+            float r = $self->x1;
+            float b = $self->y1;
+            if ($self->x1 <= $self->x0)
+            {
+                l = $self->x1;
+                r = $self->x0;
+            }
+            if ($self->y1 <= $self->y0)
+            {
+                t = $self->y1;
+                b = $self->y0;
+            }
+            if ((p->x < l) || (p->x > r) || (p->y < t) || (p->y > b))
+                return truth_value(0);
+            return truth_value(1);
+        }
+
         struct fz_irect_s *translate(int xoff, int yoff) {
             fz_translate_irect($self, xoff, yoff);
             return $self;
@@ -1587,6 +1821,27 @@ struct fz_irect_s
                 return Rect(self.x0, self.y0, self.x1, self.y1)
             
             rect = property(getRect)
+
+            @property
+            def top_left(self):
+                return Point(self.x0, self.y0)
+                
+            @property
+            def top_right(self):
+                return Point(self.x1, self.y0)
+                
+            @property
+            def bottom_left(self):
+                return Point(self.x0, self.y1)
+            
+            @property
+            def bottom_right(self):
+                return Point(self.x1, self.y1)
+                
+            def __contains__(self, x):
+                if type(x) in (int, float):
+                    return x in tuple(self)
+                return self.contains(x)
 
             def __getitem__(self, i):
                 a = [self.x0, self.y0, self.x1, self.y1]
@@ -1641,10 +1896,7 @@ struct fz_irect_s
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
             {
-                pm = fz_new_pixmap(gctx, cs, spix->w, spix->h, spix->alpha);
-                pm->x = 0;
-                pm->y = 0;
-                fz_convert_pixmap(gctx, pm, spix);
+                pm = fz_convert_pixmap(gctx, spix, cs, 1);
             }
             fz_catch(gctx) return NULL;
             return pm;
@@ -1708,16 +1960,18 @@ struct fz_irect_s
         {
             size_t size;
             size = 0;
-            char *data;
+            fz_buffer *data;
             if (PyByteArray_Check(imagedata))
             {
-                data = PyByteArray_AsString(imagedata);
                 size = (size_t) PyByteArray_Size(imagedata);
+                data = fz_new_buffer_from_shared_data(gctx,
+                                          PyByteArray_AsString(imagedata), size);
             }
             else if (PyBytes_Check(imagedata))
             {
-                data = PyBytes_AsString(imagedata);
                 size = (size_t) PyBytes_Size(imagedata);
+                data = fz_new_buffer_from_shared_data(gctx,
+                                          PyBytes_AsString(imagedata), size);
             }
             struct fz_image_s *img = NULL;
             struct fz_pixmap_s *pm = NULL;
@@ -1725,7 +1979,7 @@ struct fz_irect_s
             {
                 if (size == 0)
                     THROWMSG("type(imagedata) invalid");
-                img = fz_new_image_from_data(gctx, data, size);
+                img = fz_new_image_from_buffer(gctx, data);
                 pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
             }
             fz_always(gctx) if (img) fz_drop_image(gctx, img);
@@ -2117,7 +2371,9 @@ struct fz_matrix_s
     float a, b, c, d, e, f;
     fz_matrix_s();
     %extend {
-        ~fz_matrix_s() {
+        FITZEXCEPTION(fz_matrix_s, !result)
+        ~fz_matrix_s()
+        {
 #ifdef MEMDEBUG
             fprintf(stderr, "[DEBUG]free matrix ... ");
 #endif
@@ -2126,38 +2382,93 @@ struct fz_matrix_s
             fprintf(stderr, "done!\n");
 #endif
         }
-        /* copy constructor */
-        fz_matrix_s(const struct fz_matrix_s* n) {
+        
+        //--------------------------------------------------------------------
+        // copy constructor
+        //--------------------------------------------------------------------
+        fz_matrix_s(const struct fz_matrix_s* n)
+        {
             fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
             return fz_copy_matrix(m, n);
         }
-        /* create a scale/shear matrix, scale matrix by default */
-        fz_matrix_s(float sx, float sy, int shear=0) {
-            if(shear) {
-                fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
-                return fz_shear(m, sx, sy);
-            }
-            else {
-                fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
-                return fz_scale(m, sx, sy);
-            }
+        
+        //--------------------------------------------------------------------
+        // create a scale/shear matrix, scale matrix by default
+        //--------------------------------------------------------------------
+        fz_matrix_s(float sx, float sy, int shear=0)
+        {
+            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            if(shear) return fz_shear(m, sx, sy);
+            return fz_scale(m, sx, sy);
         }
-        /* create a rotate matrix */
-        fz_matrix_s(float degree) {
+        
+        //--------------------------------------------------------------------
+        // create a matrix by its 6 components
+        //--------------------------------------------------------------------
+        fz_matrix_s(float r, float s, float t, float u, float v, float w)
+        {
+            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            m->a = r;
+            m->b = s;
+            m->c = t;
+            m->d = u;
+            m->e = v;
+            m->f = w;
+            return m;
+        }
+
+        //--------------------------------------------------------------------
+        // create a rotate matrix
+        //--------------------------------------------------------------------
+        fz_matrix_s(float degree)
+        {
             fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
             return fz_rotate(m, degree);
         }
 
-        int invert(const struct fz_matrix_s *m) {
+        //--------------------------------------------------------------------
+        // create matrix from Python list
+        //--------------------------------------------------------------------
+        fz_matrix_s(PyObject *list)
+        {
+            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            fz_try(gctx)
+            {
+                if (!PySequence_Check(list)) THROWMSG("expected a sequence");
+                if (PySequence_Size(list) != 6) THROWMSG("sequence length must be 6");
+                m->a = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
+                m->b = (float) PyFloat_AsDouble(PySequence_GetItem(list, 1));
+                m->c = (float) PyFloat_AsDouble(PySequence_GetItem(list, 2));
+                m->d = (float) PyFloat_AsDouble(PySequence_GetItem(list, 3));
+                m->e = (float) PyFloat_AsDouble(PySequence_GetItem(list, 4));
+                m->f = (float) PyFloat_AsDouble(PySequence_GetItem(list, 5));
+            }
+            fz_catch(gctx)
+            {
+                free(m);
+                return NULL;
+            }
+            return m;
+        }
+
+        //--------------------------------------------------------------------
+        // invert a matrix
+        //--------------------------------------------------------------------
+        int invert(const struct fz_matrix_s *m)
+        {
             int rc = fz_try_invert_matrix($self, m);
             return rc;
         }
 
-        struct fz_matrix_s *preTranslate(float sx, float sy) {
+        struct fz_matrix_s *preTranslate(float sx, float sy)
+        {
             fz_pre_translate($self, sx, sy);
             return $self;
         }
 
+        //--------------------------------------------------------------------
+        // multiply matrices
+        //--------------------------------------------------------------------
         struct fz_matrix_s *concat(struct fz_matrix_s *m1, struct fz_matrix_s *m2) {
             fz_concat($self, m1, m2);
             return $self;
@@ -2324,6 +2635,7 @@ struct fz_point_s
     float x, y;
     fz_point_s();
     %extend {
+        FITZEXCEPTION(fz_point_s, !result)
         ~fz_point_s() {
 #ifdef MEMDEBUG
             fprintf(stderr, "[DEBUG]free point ... ");
@@ -2346,7 +2658,67 @@ struct fz_point_s
             return p;
         }
 
+        //--------------------------------------------------------------------
+        // create Point from Python list
+        //--------------------------------------------------------------------
+        fz_point_s(PyObject *list)
+        {
+            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            fz_try(gctx)
+            {
+                if (!PySequence_Check(list)) THROWMSG("expected a sequence");
+                if (PySequence_Size(list) != 2) THROWMSG("sequence length must be 2");
+                p->x = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
+                p->y = (float) PyFloat_AsDouble(PySequence_GetItem(list, 1));
+            }
+            fz_catch(gctx)
+            {
+                free(p);
+                return NULL;
+            }
+            return p;
+        }
+
         %pythoncode %{
+            def distance_to(self, *args):
+                """Return the distance to a rectangle or another point."""
+                assert len(args) > 0, "at least one parameter must be given"
+                x = args[0]
+                if len(args) > 1:
+                    unit = args[1]
+                else:
+                    unit = "px"
+                u = {"px": (1.,1.), "in": (1.,72.), "cm": (2.54, 72.), "mm": (25.4, 72.)}
+                f = u[unit][0] / u[unit][1]
+                if type(x) is Point:
+                    return abs(self - x) * f
+            
+                # from here on, x is a rectangle
+                # as a safeguard, make a finite copy of it
+                r = Rect(x.top_left, x.top_left)
+                r = r | x.bottom_right
+                if self in r:
+                    return 0.0
+                if self.x > r.x1:
+                    if self.y >= r.y1:
+                        return self.distance_to(r.bottom_right, unit = unit)
+                    elif self.y <= r.y0:
+                        return self.distance_to(r.top_right, unit = unit)
+                    else:
+                        return (self.x - r.x1) * f
+                elif r.x0 <= self.x <= r.x1:
+                    if self.y >= r.y1:
+                        return (self.y - r.y1) * f
+                    else:
+                        return (r.y0 - self.y) * f
+                else:
+                    if self.y >= r.y1:
+                        return self.distance_to(r.bottom_left, unit = unit)
+                    elif self.y <= r.y0:
+                        return self.distance_to(r.top_left, unit = unit)
+                    else:
+                        return (r.x0 - self.x) * f
+        
             def transform(self, m):
                 _fitz._fz_transform_point(self, m)
                 return self
@@ -2532,7 +2904,7 @@ struct fz_annot_s
         // annotation vertices (for "Line", "Polgon", "Ink", etc.
         /**********************************************************************/
         CLOSECHECK(vertices, self.parent.parent.isClosed)
-        %feature("autodoc","vertices: point coordinates for various annot typess") vertices;
+        %feature("autodoc","vertices: point coordinates for various annot types") vertices;
         %pythoncode %{@property%}
         PyObject *vertices()
         {
@@ -2595,7 +2967,7 @@ struct fz_annot_s
         // annotation colors
         /**********************************************************************/
         CLOSECHECK(colors, self.parent.parent.isClosed)
-        %feature("autodoc","colors: dictionary of the annot's colors") colors;
+        %feature("autodoc","dictionary of the annot's colors") colors;
         %pythoncode %{@property%}
         PyObject *colors()
         {
@@ -2650,7 +3022,7 @@ struct fz_annot_s
         // annotation set colors
         /**********************************************************************/
         CLOSECHECK(setColors, self.parent.parent.isClosed)
-        %feature("autodoc","setColors(dict)\nChanges the 'common' and 'fill' colors of an annotation. Both values must be lists of up to 4 floats.") setColors;
+        %feature("autodoc","setColors(dict)\nChanges the 'common' and 'fill' colors of an annotation. If provided, values must be lists of up to 4 floats.") setColors;
         void setColors(PyObject *colors)
         {
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);

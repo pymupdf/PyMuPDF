@@ -11,14 +11,9 @@ The following is a collection of commodity functions to simplify the use of PyMu
 #==============================================================================
 #def searchFor(page, text, hit_max = 16):
 def searchFor(page, text, hit_max = 16):
-    '''searchFor(text, hit_max=16)\nSearch for a string on a page.
-Parameters:\ntext: string to be searched for\nhit_max: maximum hits.\n
-Returns a list of rectangles, each of which surrounds a found occurrence.
-    '''
+    '''Search for a string on a page. Parameters:\ntext: string to be searched for\nhit_max: maximum hits.\nReturns a list of rectangles, each of which surrounds a found occurrence.'''
     if page.parent is None:
         raise RuntimeError("orphaned object: parent is None")
-    if page.parent.isClosed:
-        raise RuntimeError("illegal operation on closed document")
 
     rect = page.rect
     dl = fitz.DisplayList(rect)         # create DisplayList
@@ -33,9 +28,7 @@ Returns a list of rectangles, each of which surrounds a found occurrence.
 # A function for searching string occurrences on a page.
 #==============================================================================
 def searchPageFor(doc, pno, text, hit_max=16):
-    """Search for a string on a page.
-Parameters:\npno: integer page number\ntext: string to be searched for\nhit_max: maximum hits.\n
-Returns a list of rectangles, each of which surrounds a found occurrence."""
+    """Search for a string on a page. Parameters:\npno: integer page number\ntext: string to be searched for\nhit_max: maximum hits.\nReturns a list of rectangles, each of which surrounds a found occurrence."""
     return searchFor(doc[pno], text, hit_max = hit_max)
     
 #==============================================================================
@@ -43,16 +36,9 @@ Returns a list of rectangles, each of which surrounds a found occurrence."""
 #==============================================================================
 #def getText(page, output = "text"):
 def getText(page, output = "text"):
-    '''getText(output='text')\nExtracts a PDF page's text.
-Parameters:\noutput option: text, html, json or xml.\n
-Returns strings like the TextPage extraction methods extractText, extractHTML,
-extractJSON, or etractXML respectively.
-Default and misspelling choice is "text".
-    '''
+    '''Extract a PDF page's text. Parameters:\noutput option: text, html, json or xml.\nReturns strings like the TextPage extraction methods extractText, extractHTML, extractJSON, or etractXML respectively. Default and misspelling choice is "text".'''
     if page.parent is None:
         raise RuntimeError("orphaned object: parent is None")
-    if page.parent.isClosed:
-        raise RuntimeError("illegal operation on closed document")
 
     # return requested text format
     if output.lower() == "json":
@@ -68,12 +54,7 @@ Default and misspelling choice is "text".
 #==============================================================================
 #def getPageText(pno, output = "text"):
 def getPageText(doc, pno, output = "text"):
-    ''' Extract a PDF page's text by page number.
-Parameters:\npno: page number\noutput option: text, html, json or xml.\n
-Returns strings like the TextPage extraction methods extractText, extractHTML,
-extractJSON, or etractXML respectively.
-Default and misspelling choice is "text".
-    '''
+    '''Extract a PDF page's text by page number. Parameters:\npno: page number\noutput option: text, html, json or xml.\nReturns strings like the TextPage extraction methods extractText, extractHTML, extractJSON, or etractXML respectively. Default and misspelling choice is "text".'''
     return doc[pno].getText(output = output)
 
 #==============================================================================
@@ -83,13 +64,7 @@ Default and misspelling choice is "text".
 
 def getPixmap(page, matrix = fitz.Identity, colorspace = "rgb", clip = None,
               alpha = True):
-    ''' Create a pixmap of a page.
-Parameters:\nmatrix: a fitz.Matrix instance to specify required transformations.
-Defaults to fitz.Identity (no transformation).
-colorspace: text string to specify required colour space (rgb, rgb, gray - case ignored).
-Default and misspelling choice is "rgb". A colorspace object may also be specified.
-clip: a fitz.IRect to restrict rendering to this area.
-    '''
+    '''Create pixmap of page.\nmatrix: fitz.Matrix for transformation (default: fitz.Identity).\ncolorspace: text string / fitz.Colorspace (rgb, rgb, gray - case ignored), default fitz.csRGB.\nclip: a fitz.IRect to restrict rendering to this area.'''
     if page.parent is None:
         raise RuntimeError("orphaned object: parent is None")
 
@@ -133,14 +108,7 @@ clip: a fitz.IRect to restrict rendering to this area.
 # getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = "RGB", clip = None, alpha = False):
 def getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = "rgb",
                   clip = None, alpha = True):
-    ''' Create a pixmap for a document page number.
-Parameters:\npno: page number (int)
-matrix: a fitz.Matrix instance to specify required transformations.
-Defaults to fitz.Identity (no transformation).
-colorspace: text string to specify the required colour space (rgb, cmyk, gray - case ignored).
-Default and misspelling choice is "rgb".
-clip: a fitz.IRect to restrict rendering to this area
-    '''
+    '''Create pixmap of page number.\nmatrix: fitz.Matrix for transformation (default: fitz.Identity).\ncolorspace: text string / fitz.Colorspace (rgb, rgb, gray - case ignored), default fitz.csRGB.\nclip: a fitz.IRect to restrict rendering to this area.'''
     return doc[pno].getPixmap(matrix = matrix, colorspace = colorspace,
                           clip = clip, alpha = alpha)
 
@@ -198,12 +166,8 @@ def getLinkDict(ln):
 # Required is a page object previously created by the
 # loadPage() method of a document.
 #==============================================================================
-#def getLinks(page):
 def getLinks(page):
-    ''' Create a list of all links contained in a PDF page.
-Parameters: none\nThe returned list contains a Python dictionary for every link item found.
-Every dictionary contains at least keys "kind", "from" and "xref".
-The presence of other keys depends on "kind" - see PyMuPDF's ducmentation for details.'''
+    '''Create a list of all links contained in a PDF page as dictionaries - see PyMuPDF ducmentation for details.'''
 
     if page.parent is None:
         raise RuntimeError("orphaned object: parent is None")
@@ -225,10 +189,7 @@ The presence of other keys depends on "kind" - see PyMuPDF's ducmentation for de
 # of contents.
 #==============================================================================
 def getToC(doc, simple = True):
-    ''' Create a table of contents for a given document.
-Parameters:\nsimple: a boolean indicator to control the output
-Returns a Python list, where each entry consists of outline level, title, page number
-and link destination (if simple = False). For details see PyMuPDF's documentation.'''
+    '''Create a table of contents.\nsimple: a bool to control output. Returns a list, where each entry consists of outline level, title, page number and link destination (if simple = False). For details see PyMuPDF's documentation.'''
 
     def recurse(olItem, liste, lvl):
         '''Recursively follow the outline item chain and record item information in a list.'''
@@ -268,44 +229,22 @@ and link destination (if simple = False). For details see PyMuPDF's documentatio
     liste = []
     return recurse(olItem, liste, lvl)
 
-def getRectArea(rect, unit = "pt"):
-    '''Calculate the area of a rectangle in square points or millimeters.
-Parameters:\nrect: a fitz.IRect or fitz.Rect\nunit: a string, 'pt' means points (default),
-"mm" means millimeters.
-Returns a float containing the area.
-Infinite rectangles (MuPDF definition) have an area of zero.
-    '''
-    if rect.x1 <= rect.x0 or rect.y1 <= rect.y0:
+def getRectArea(*args):
+    """Calculate area of rectangle.\nparameter is one of 'px' (default), 'in', 'cm', or 'mm'."""
+    rect = args[0]
+    if len(args) > 1:
+        unit = args[1]
+    else:
+        unit = "px"    
+    if rect.isInfinite or rect.isEmpty:
         return 0.0
-    width = float(rect.x1 - rect.x0)
-    height = float(rect.y1 - rect.y0)
-    area = width * height
-    if unit == "pt":
-        return area
-    else:
-        # square mm = pt * (25.4/72)**2
-        return area * 0.1244521605
-
-def getPointDistance(p1, p2, unit = "pt"):
-    '''Calculate the distance between two points in points or millimeters.
-Parameters:\np1, p2: two fitz.Point objects\nunit: a string, 'pt' means points,
-"mm" means millimeters.
-Returns a float containing the distance.
-    '''
-    a = float(p2.x - p1.x)
-    b = float(p2.y - p1.y)
-    c = math.sqrt(a * a + b * b)
-    if unit == "pt":
-        return c
-    else:
-        return c * 25.4 / 72.0
+    u = {"px": (1,1), "in": (1.,72.), "cm": (2.54, 72.), "mm": (25.4, 72.)}
+    f = (u[unit][0] / u[unit][1])**2
+    return f * rect.width * rect.height
 
 #def writeImage(filename, output = "png"):
 def writeImage(*arg, **kw):
-    '''Save a pixmap to an image file.
-Parameters:\nfilename: image filename\noutput: requested output format
-(one of png, pam, pnm, tga)
-    '''
+    '''Save pixmap to file.\nfilename: image filename\noutput: requested output format (png, pam, pnm or tga).'''
     pix = arg[0]
     filename = arg[1]
     if "output" in kw:
@@ -350,242 +289,202 @@ Parameters:\nfilename: image filename\noutput: requested output format
 # arithmetic methods for fitz.Matrix
 #==============================================================================
 def mat_mult(m1, m2):     # __mul__
-    if not repr(m2).startswith(("fitz.Matrix", "fitz.Identity")):
-        raise NotImplementedError
+    if type(m2) in (int, float):
+        return fitz.Matrix(m1.a * m2, m1.b * m2, m1.c * m2,
+                           m1.d * m2, m1.e * m2, m1.f * m2)
     m = fitz.Matrix()
-    m.concat(m1, m2)
+    try:
+        m.concat(m1, m2)
+    except:
+        raise NotImplementedError("op2 must be 'Matrix' or number")
     return m
 
-def mat_invert(m1):       # __invert__
+def mat_invert(me):       # __invert__
     m = fitz.Matrix()
-    r = m.invert(m1)
+    m.invert(me)
     return m
 
 def mat_add(m1, m2):      # __add__
-    if not repr(m2).startswith(("fitz.Matrix", "fitz.Identity")):
-        raise NotImplementedError
-    m = fitz.Matrix()
-    m.a = m1.a + m2.a
-    m.b = m1.b + m2.b
-    m.c = m1.c + m2.c
-    m.d = m1.d + m2.d
-    m.e = m1.e + m2.e
-    m.f = m1.f + m2.f
-    return m
+    if type(m2) in (int, float):
+        return fitz.Matrix(m1.a + m2, m1.b + m2, m1.c + m2,
+                           m1.d + m2, m1.e + m2, m1.f + m2)
+    try:
+        return fitz.Matrix(m1.a + m2.a, m1.b + m2.b, m1.c + m2.c,
+                           m1.d + m2.d, m1.e + m2.e, m1.f + m2.f)
+    except:
+        raise NotImplementedError("op2 must be 'Matrix' or number")
 
 def mat_sub(m1, m2):      # __sub__
-    if not repr(m2).startswith(("fitz.Matrix", "fitz.Identity")):
-        raise NotImplementedError
-    m = fitz.Matrix()
-    m.a = m1.a - m2.a
-    m.b = m1.b - m2.b
-    m.c = m1.c - m2.c
-    m.d = m1.d - m2.d
-    m.e = m1.e - m2.e
-    m.f = m1.f - m2.f
-    return m
-
-def mat_neg(m1):          # __neg__
-    m = fitz.Matrix()
-    m.a = -m1.a
-    m.b = -m1.b
-    m.c = -m1.c
-    m.d = -m1.d
-    m.e = -m1.e
-    m.f = -m1.f
-    return m
+    if type(m2) in (int, float):
+        return fitz.Matrix(m1.a - m2, m1.b - m2, m1.c - m2,
+                           m1.d - m2, m1.e - m2, m1.f - m2)
+    try:
+        return fitz.Matrix(m1.a - m2.a, m1.b - m2.b, m1.c - m2.c,
+                           m1.d - m2.d, m1.e - m2.e, m1.f - m2.f)
+    except:
+        raise NotImplementedError("op2 must be 'Matrix' or number")
 
 def mat_abs(m):           # __abs__
     a = m.a**2 + m.b**2 + m.c**2 + m.d**2 + m.e**2 + m.f**2
     return math.sqrt(a)
 
 def mat_true(m):          # __nonzero__
-    a = m.a**2 + m.b**2 + m.c**2 + m.d**2 + m.e**2 + m.f**2
-    return a > 0.0
+    return (abs(m.a) + abs(m.b) + abs(m.c) + abs(m.d) + abs(m.e) + abs(m.f)) > 0
+
+def mat_equ(m, m2):       # __equ__
+    return len(m) == len(m2) and mat_true(m - m2) == 0
+
+def mat_contains(m, x):
+    if type(x) not in (int, float):
+        return False
+    else:
+        return x in tuple(m)
 
 #==============================================================================
 # arithmetic methods for fitz.Rect
 #==============================================================================
-def rect_neg(r):             # __neg__: (-1)*r, also for irect
-    if repr(r).startswith("fitz.Rect"):
-        nr = fitz.Rect(r)
-    else:
-        nr = fitz.IRect(r)
-    nr.x0 *= -1
-    nr.y0 *= -1
-    nr.x1 *= -1
-    nr.y1 *= -1
-    return nr
-
 def rect_or(r1, r2):         # __or__: include point, rect or irect
-    if not repr(r1).startswith("fitz.Rect"):
-        raise NotImplementedError
-    if not repr(r2).startswith(("fitz.Rect", "fitz.IRect", "fitz.Point")):
-        raise NotImplementedError
-    r = fitz.Rect(r1)
-    if repr(r2).startswith("fitz.Rect"):
-        return r.includeRect(r2)
-    elif repr(r2).startswith("fitz.IRect"):
-        return r.includeRect(r2.getRect())
-    return r.includePoint(r2)
+    if type(r2) not in (fitz.Rect, fitz.IRect, fitz.Point):
+        raise NotImplementedError("op2 must be 'Rect', 'IRect' or 'Point'")
+    if type(r1) is fitz.Rect:
+        r = fitz.Rect(r1)
+    else:
+        r = r1.rect
+    if type(r2) is fitz.Rect:
+        r.includeRect(r2)
+    elif type(r2) is fitz.IRect:
+        r.includeRect(r2.rect)
+    else:
+        r.includePoint(r2)
+    if type(r1) is fitz.Rect:
+        return r
+    else:
+        return r.irect
 
 def rect_and(r1, r2):        # __and__: intersection with rect or irect
-    if not repr(r1).startswith("fitz.Rect"):
-        raise NotImplementedError
-    if not repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
-        raise NotImplementedError
-    r = fitz.Rect(r1)
-    if repr(r2).startswith("fitz.Rect"):
-        return r.intersect(r2)
-    if repr(r2).startswith("fitz.IRect"):
-        return r.intersect(r2.getRect())
-    raise NotImplementedError
+    if type(r2) not in (fitz.Rect, fitz.IRect):
+        raise NotImplementedError("op2 must be 'Rect' or 'IRect'")
+    if type(r1) is fitz.Rect:
+        r = fitz.Rect(r1)
+    else:
+        r = r1.rect
+    if type(r2) is fitz.Rect:
+        r.intersect(r2)
+    else:
+        r.intersect(r2.rect)
+    if type(r1) is fitz.Rect:
+        return r
+    else:
+        return r.irect
 
 def rect_add(r1, r2):        # __add__: add number, rect or irect to rect
-    if not repr(r1).startswith("fitz.Rect"):
-        raise NotImplementedError
-    r = fitz.Rect(r1)
-    if repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
+    if type(r1) is fitz.Rect:
+        r = fitz.Rect(r1)
+    else:
+        r = r1.rect
+    if type(r2) in (fitz.Rect, fitz.IRect):
         a = r2
-    elif type(r2) is int or type(r2) is float:
+    elif type(r2) in (int, float):
         a = fitz.Rect(r2, r2, r2, r2)
     else:
-        raise NotImplementedError
+        raise NotImplementedError("op2 must be 'Rect', 'Irect' or number")
     r.x0 += a.x0
     r.y0 += a.y0
     r.x1 += a.x1
     r.y1 += a.y1
-    return r
+    if type(r1) is fitz.Rect:
+        return r
+    else:
+        return r.irect
 
 def rect_sub(r1, r2):        # __sub__: subtract number, rect or irect from rect
-    if not repr(r1).startswith("fitz.Rect"):
-        raise NotImplementedError
-    r = fitz.Rect(r1)
-    if repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
+    if type(r1) is fitz.Rect:
+        r = fitz.Rect(r1)
+    else:
+        r = r1.rect
+
+    if type(r2) in (fitz.Rect, fitz.IRect):
         a = r2
-    elif type(r2) is int or type(r2) is float:
+    elif type(r2) in (int, float):
         a = fitz.Rect(r2, r2, r2, r2)
     else:
-        raise NotImplementedError
+        raise NotImplementedError("op2 must be 'Rect', 'Irect' or number")
     r.x0 -= a.x0
     r.y0 -= a.y0
     r.x1 -= a.x1
     r.y1 -= a.y1
-    return r
+    if type(r1) is fitz.Rect:
+        return r
+    else:
+        return r.irect
 
 def rect_mul(r, m):          # __mul__: transform with matrix
-    if not repr(r).startswith("fitz.Rect"):
-        raise NotImplementedError
-    if not repr(m).startswith(("fitz.Matrix", "fitz.Identity")):
-        raise NotImplementedError
-    r1 = fitz.Rect(r)
-    return r1.transform(m)
-
-#==============================================================================
-# arithmetic methods for fitz.IRect
-#==============================================================================
-def irect_or(r1, r2):        # __or__: include a point, rect or irect
-    if not repr(r1).startswith("fitz.IRect"):
-        raise NotImplementedError
-    if not repr(r2).startswith(("fitz.Rect", "fitz.IRect", "fitz.Point")):
-        raise NotImplementedError
-    r = r1.getRect()
-    if repr(r2).startswith("fitz.Rect"):
-        return r.includeRect(r2).round()
-    elif repr(r2).startswith("fitz.IRect"):
-        return r.includeRect(r2.getRect()).round()
-    return r.includePoint(r2).round()
-
-def irect_and(r1, r2):       # __and__: intersection with a rect or irect
-    if not repr(r1).startswith("fitz.IRect"):
-        raise NotImplementedError
-    if not repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
-        raise NotImplementedError
-    r = fitz.IRect(r1)
-    if repr(r2).startswith("fitz.Rect"):
-        return r.intersect(r2).round()
-    if repr(r2).startswith("fitz.IRect"):
-        return r.intersect(r2)
-    raise NotImplementedError
-
-def irect_add(r1, r2):       # __add__: add a number, rect or irect
-    if not repr(r1).startswith("fitz.IRect"):
-        raise NotImplementedError
-    r = r1.getRect()
-    if repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
-        a = r2
-    elif type(r2) is int or type(r2) is float:
-        a = fitz.Rect(r2, r2, r2, r2)
+    if type(r) is fitz.Rect:
+        r1 = fitz.Rect(r)
     else:
-        raise NotImplementedError
-    r.x0 += a.x0
-    r.y0 += a.y0
-    r.x1 += a.x1
-    r.y1 += a.y1
-    return r.round()
-
-def irect_sub(r1, r2):       # __sub__: subtract number, rect or irect
-    if not repr(r1).startswith("fitz.IRect"):
-        raise NotImplementedError
-    r = r1.getRect()
-    if repr(r2).startswith(("fitz.Rect", "fitz.IRect")):
-        a = r2
-    elif type(r2) is int or type(r2) is float:
-        a = fitz.Rect(r2, r2, r2, r2)
+        r1 = r.rect
+    if type(m) in (int, float):
+        r1 = fitz.Rect(r1.x0 * m, r1.y0 * m, r1.x1 * m, r1.y1 * m)
     else:
-        raise NotImplementedError
-    r.x0 -= a.x0
-    r.y0 -= a.y0
-    r.x1 -= a.x1
-    r.y1 -= a.y1
-    return r.round()
+        try:
+            r1.transform(m)
+        except:
+            raise NotImplementedError("op2 must be number or 'Matrix'")
+    if type(r) is fitz.Rect:
+        return r1
+    else:
+        return r1.irect
 
-def irect_mul(r, m):         # __mul__: transform with matrix
-    if not repr(r).startswith("fitz.IRect"):
-        raise NotImplementedError
-    if not repr(m).startswith(("fitz.Matrix", "fitz.Identity")):
-        raise NotImplementedError
-    r1 = r.getRect()
-    return r1.transform(m).round()
+def rect_equ(r, r2):       # __equ__
+    return type(r) == type(r2) and rect_true(r - r2) == 0
 
+def rect_true(r):
+    return (abs(r.x0) + abs(r.y0) + abs(r.x1) + abs(r.y1)) > 0
+    
 #==============================================================================
 # arithmetic methods for fitz.Point
 #==============================================================================
-def point_neg(p):            # __neg__: point with negated coordinates
-    return fitz.Point(-p.x, -p.y)
-
 def point_add(p1, p2):
-    if not repr(p1).startswith("fitz.Point"):
-        raise NotImplementedError
-    if repr(p2).startswith("fitz.Point"):
+    if type(p2) is fitz.Point:
         p = p2
-    elif type(p2) is int or type(p2) is float:
+    elif type(p2) in (int, float):
         p = fitz.Point(p2, p2)
     else:
-        raise NotImplementedError
+        raise NotImplementedError("op2 must be 'Point' or number")
     return fitz.Point(p1.x + p.x, p1.y + p.y)
 
 def point_sub(p1, p2):
-    if not repr(p1).startswith("fitz.Point"):
-        raise NotImplementedError
-    if repr(p2).startswith("fitz.Point"):
+    if type(p2) is fitz.Point:
         p = p2
-    elif type(p2) is int or type(p2) is float:
+    elif type(p2) in (int, float):
         p = fitz.Point(p2, p2)
     else:
-        raise NotImplementedError
+        raise NotImplementedError("op2 must be 'Point' or number")
     return fitz.Point(p1.x - p.x, p1.y - p.y)
 
 def point_mul(p, m):
-    if not repr(p).startswith("fitz.Point"):
-        raise NotImplementedError
-    if not repr(m).startswith(("fitz.Matrix", "fitz.Identity")):
-        raise NotImplementedError
+    if type(m) in (int, float):
+        return fitz.Point(p.x*m, p.y*m)
     p1 = fitz.Point(p)
-    return p1.transform(m)
+    try:
+        return p1.transform(m)
+    except:
+        raise NotImplementedError("op2 must be 'Matrix' or number")
 
 def point_abs(p):
     return math.sqrt(p.x**2 + p.y**2)
+
+def point_true(p):
+    return (abs(p.x) + abs(p.y)) > 0
+
+def point_equ(p, p2):       # __equ__
+    return type(p) == type(p2) and point_true(p - p2) == 0
+
+def point_contains(p, x):
+    if type(x) not in (int, float):
+        return False
+    else:
+        return x in tuple(p)
 
 #==============================================================================
 # Returns a PDF string depending on its coding.
@@ -630,16 +529,15 @@ def PDFstr(s):
 # Document method Set Metadata
 #==============================================================================
 def setMetadata(doc, m):
-    '''Set a PDF document's metadata (/Info dictionary)\nParameters:\nm: a dictionary with valid metadata keys.\nAfter execution, the metadata property will be updated.
-    '''
+    """Set a PDF's metadata (/Info dictionary)\nm: dictionary like doc.metadata'."""
     if doc.isClosed or doc.isEncrypted:
         raise ValueError("operation on closed or encrypted document")
     if type(m) is not dict:
         raise ValueError("arg2 must be a dictionary")
     for k in m.keys():
-        if not k in ["author", "producer", "creator", "title", "format",
+        if not k in ("author", "producer", "creator", "title", "format",
                      "encryption", "creationDate", "modDate", "subject",
-                     "keywords"]:
+                     "keywords"):
             raise ValueError("invalid dictionary key: " + k)
 
     d = "<</Author"
@@ -669,7 +567,7 @@ def getDestStr(xref, ddict):
         return ""
     str_goto = "/Dest[%s %s R/XYZ %s %s %s]"
 
-    if type(ddict) is int or type(ddict) is float:
+    if type(ddict) in (int, float):
         dest = str_goto % (xref[0], xref[1], 0, str(ddict), 0)
         return dest
     d_kind = ddict["kind"]
@@ -717,13 +615,7 @@ def getDestStr(xref, ddict):
 # Document method set Table of Contents
 #==============================================================================
 def setToC(doc, toc):
-    '''Create a new outline tree (table of contents) for a PDF document.\nParameters:
-    doc: a PDF document opened with PyMuPDF
-    toc: a Python list of lists. Each entry must contain level, title, page and optionally top margin on the page.
-    Returns zero (int) on success.
-    '''
-    if not repr(doc).startswith("fitz.Document"):
-        raise ValueError("arg1 not a document")
+    '''Create new outline tree (table of contents)\ntoc: a Python list of lists. Each entry must contain level, title, page and optionally top margin on the page.'''
     if not doc.name.lower().endswith(("/pdf", ".pdf")) and len(doc.name) > 0:
         raise ValueError("not a PDF document")
     if doc.isClosed or doc.isEncrypted:
@@ -973,17 +865,21 @@ def getLinkText(page, lnk):
     #--------------------------------------------------------------------------
     # define skeletons for /Annots object texts
     #--------------------------------------------------------------------------
-    annot_goto ='''<</Dest[%s 0 R /XYZ %s %s 0]/Rect[%s]/Subtype/Link>>'''
+    annot_goto = "<</Dest[%s 0 R/XYZ %s %s 0]/Rect[%s]/Subtype/Link>>"
+
+    annot_goto_n = "<</A<</D%s/S/GoTo>>/Rect[%s]/Subtype/Link>>"
 
     annot_gotor = '''<</A<</D[%s /XYZ %s %s 0]/F<</F(%s)/UF(%s)/Type/Filespec
     >>/S/GoToR>>/Rect[%s]/Subtype/Link>>'''
 
+    annot_gotor_n = "<</A<</D%s/F(%s)/S/GoToR>>/Rect[%s]/Subtype/Link>>"
+
     annot_launch = '''<</A<</F<</F(%s)/UF(%s)/Type/Filespec>>/S/Launch
     >>/Rect[%s]/Subtype/Link>>'''
 
-    annot_uri = '''<</A<</S/URI/URI(%s)/Type/Action>>/Rect[%s]/Subtype/Link>>'''
+    annot_uri = "<</A<</S/URI/URI(%s)>>/Rect[%s]/Subtype/Link>>"
 
-    annot_named = '''<</A<</S/Named/N/%s/Type/Action>>/Rect[%s]/Subtype/Link>>'''
+    annot_named = "<</A<</S/Named/N/%s/Type/Action>>/Rect[%s]/Subtype/Link>>"
 
     r = lnk["from"]
     height = page.rect.height
@@ -992,20 +888,28 @@ def getLinkText(page, lnk):
 
     annot = ""
     if lnk["kind"] == fitz.LINK_GOTO:
-        txt = annot_goto
-        pno = lnk["page"]
-        xref = page.parent._getPageXref(pno)[0]
-        pnt = lnk.get("to", fitz.Point(0, 0))              # destination point
-        annot = txt % (xref, str(pnt.x),
-                       str(pnt.y), rect)
+        if lnk["page"] >= 0:
+            txt = annot_goto
+            pno = lnk["page"]
+            xref = page.parent._getPageXref(pno)[0]
+            pnt = lnk.get("to", fitz.Point(0, 0))          # destination point
+            annot = txt % (xref, str(pnt.x),
+                           str(pnt.y), rect)
+        else:
+            txt = annot_goto_n
+            annot = txt % (PDFstr(lnk["to"]), rect)
         
     elif lnk["kind"] == fitz.LINK_GOTOR:
-        txt = annot_gotor
-        pnt = lnk.get("to", fitz.Point(0, 0))              # destination point
-        annot = txt % (str(lnk["page"]), str(pnt.x),
-                           str(pnt.y),
-                           lnk["file"], lnk["file"],
-                           rect)
+        if lnk["page"] >= 0:
+            txt = annot_gotor
+            pnt = lnk.get("to", fitz.Point(0, 0))          # destination point
+            if type(pnt) is not fitz.Point:
+                pnt = fitz.Point(0, 0)
+            annot = txt % (str(lnk["page"]), str(pnt.x), str(pnt.y),
+                           lnk["file"], lnk["file"], rect)
+        else:
+            txt = annot_gotor_n
+            annot = txt % (PDFstr(lnk["to"]), lnk["file"], rect)
 
     elif lnk["kind"] == fitz.LINK_LAUNCH:
         txt = annot_launch
@@ -1035,15 +939,16 @@ def insertLink(page, lnk, mark = True):
     page._addAnnot_FromString([annot])
     return
 
-def contains(me, x):
-    """ Checks whether object x is contained in the rectangle.
-    x may be a fitz.Point, fitz.Rect or fitz.IRect."""
-    return tuple(me | x) == tuple(me)
-
 def intersects(me, rect):
-    """ Checks whether rect has a non-empty intersection with the rectangle.
-    rect may be a fitz.Rect or fitz.IRect."""
-    return tuple(me & rect) != (0, 0, 0, 0)
+    """ Checks whether this rectangle and 'rect' have a rectangle with a positive area in common."""
+    if type(rect) not in (fitz.Rect, fitz.IRect):
+        return False
+    if me.isEmpty or me.isInfinite or rect.isEmpty or rect.isInfinite:
+        return False
+    r = me & rect
+    if r.isEmpty or r.isInfinite:
+        return False
+    return True
 
 #-------------------------------------------------------------------------------
 # Annot method

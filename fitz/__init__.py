@@ -52,41 +52,54 @@ fitz.Page.insertLink        = fitz.utils.insertLink
 fitz.Pixmap.writeImage      = fitz.utils.writeImage
 fitz.Rect.getRectArea       = fitz.utils.getRectArea
 fitz.IRect.getRectArea      = fitz.utils.getRectArea
-fitz.Rect.contains          = fitz.utils.contains
-fitz.IRect.contains         = fitz.utils.contains
 fitz.IRect.intersects       = fitz.utils.intersects
 fitz.Rect.intersects        = fitz.utils.intersects
 fitz.Annot.updateImage      = fitz.utils.updateImage
-getPointDistance            = fitz.utils.getPointDistance
 # matrix arithmetics
 fitz.Matrix.__mul__         = fitz.utils.mat_mult
 fitz.Matrix.__add__         = fitz.utils.mat_add
 fitz.Matrix.__sub__         = fitz.utils.mat_sub
 fitz.Matrix.__abs__         = fitz.utils.mat_abs
-fitz.Matrix.__neg__         = fitz.utils.mat_neg
+fitz.Matrix.__neg__         = lambda x: fitz.Matrix(x)*-1
+fitz.Matrix.__pos__         = lambda x: fitz.Matrix(x)
 fitz.Matrix.__invert__      = fitz.utils.mat_invert
 fitz.Matrix.__nonzero__     = fitz.utils.mat_true
+fitz.Matrix.__bool__        = fitz.utils.mat_true
+fitz.Matrix.__eq__          = fitz.utils.mat_equ
+fitz.Matrix.__contains__    = fitz.utils.mat_contains
 # rect arithmetics
-fitz.Rect.__neg__           = fitz.utils.rect_neg
+fitz.Rect.__neg__           = lambda x: fitz.Rect(x)*-1
+fitz.Rect.__pos__           = lambda x: fitz.Rect(x)
 fitz.Rect.__or__            = fitz.utils.rect_or
 fitz.Rect.__and__           = fitz.utils.rect_and
 fitz.Rect.__add__           = fitz.utils.rect_add
 fitz.Rect.__sub__           = fitz.utils.rect_sub
 fitz.Rect.__mul__           = fitz.utils.rect_mul
+fitz.Rect.__eq__            = fitz.utils.rect_equ
+fitz.Rect.__nonzero__       = fitz.utils.rect_true
+fitz.Rect.__bool__          = fitz.utils.rect_true
 # irect arithmetics
-fitz.IRect.__neg__          = fitz.utils.rect_neg
-fitz.IRect.__or__           = fitz.utils.irect_or
-fitz.IRect.__and__          = fitz.utils.irect_and
-fitz.IRect.__add__          = fitz.utils.irect_add
-fitz.IRect.__sub__          = fitz.utils.irect_sub
-fitz.IRect.__mul__          = fitz.utils.irect_mul
+fitz.IRect.__neg__          = lambda x: fitz.IRect(x)*-1
+fitz.IRect.__pos__          = lambda x: fitz.IRect(x)
+fitz.IRect.__or__           = fitz.utils.rect_or
+fitz.IRect.__and__          = fitz.utils.rect_and
+fitz.IRect.__add__          = fitz.utils.rect_add
+fitz.IRect.__sub__          = fitz.utils.rect_sub
+fitz.IRect.__mul__          = fitz.utils.rect_mul
+fitz.IRect.__eq__           = fitz.utils.rect_equ
+fitz.IRect.__nonzero__      = fitz.utils.rect_true
+fitz.IRect.__bool__         = fitz.utils.rect_true
 # point arithmetics
-fitz.Point.__neg__          = fitz.utils.point_neg
+fitz.Point.__neg__          = lambda x: fitz.Point(x)*-1
+fitz.Point.__pos__          = lambda x: fitz.Point(x)
 fitz.Point.__add__          = fitz.utils.point_add
 fitz.Point.__sub__          = fitz.utils.point_sub
 fitz.Point.__abs__          = fitz.utils.point_abs
 fitz.Point.__mul__          = fitz.utils.point_mul
-
+fitz.Point.__nonzero__      = fitz.utils.point_true
+fitz.Point.__bool__         = fitz.utils.point_true
+fitz.Point.__eq__           = fitz.utils.point_equ
+fitz.Point.__contains__     = fitz.utils.point_contains
 
 # ... and delete them from here
 del utils
