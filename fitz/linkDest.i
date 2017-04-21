@@ -48,7 +48,7 @@ class linkDest():
                         self.page = int(ftab[0]) - 1
                     except:
                         self.kind = LINK_NAMED
-                        self.named = self.uri
+                        self.named = self.uri[1:]
             else:
                 self.kind = LINK_NAMED
                 self.named = self.uri
@@ -58,19 +58,18 @@ class linkDest():
                 self.kind = LINK_URI
             elif self.uri.startswith("file://"):
                 self.fileSpec = self.uri[7:]
-                ftab = self.fileSpec.split("#")
                 self.isUri = False
+                self.uri = ""
                 self.kind = LINK_LAUNCH
+                ftab = self.fileSpec.split("#")
                 if len(ftab) == 2:
+                    self.kind = LINK_GOTOR
+                    self.fileSpec = ftab[0]
                     if ftab[1].startswith("page="):
-                        self.page = int(ftab[1][5:]) - 1
-                        self.kind = LINK_GOTOR
-                        self.isUri = False
-                        self.fileSpec = ftab[0]
+                        self.page = int(ftab[1][5:]) - 1    
                     else:
                         self.page = -1
-                        self.kind = LINK_URI
-                        self.isUri = True
+                        self.dest = ftab[1]
             else:
                 self.isUri = True
                 self.kind = LINK_LAUNCH

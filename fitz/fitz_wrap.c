@@ -5438,6 +5438,28 @@ SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_5(float x0,float y0,float x1,fl
             r->y1 = y1;
             return r;
         }
+SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_6(PyObject *list){
+            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_try(gctx)
+            {
+                if (!PySequence_Check(list)) /*@SWIG:fitz\fitz.i,32,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "expected a sequence")
+/*@SWIG@*/;
+                if (PySequence_Size(list) != 4) /*@SWIG:fitz\fitz.i,32,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "sequence length must be 4")
+/*@SWIG@*/;
+                r->x0 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
+                r->y0 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 1));
+                r->x1 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 2));
+                r->y1 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 3));
+            }
+            fz_catch(gctx)
+            {
+                free(r);
+                return NULL;
+            }
+            return r;
+        }
 SWIGINTERN void delete_fz_rect_s(struct fz_rect_s *self){
 
 
@@ -5464,6 +5486,61 @@ SWIGINTERN struct fz_rect_s *fz_rect_s_includeRect(struct fz_rect_s *self,struct
             fz_union_rect(self, r);
             return self;
         }
+SWIGINTERN void fz_rect_s_normalize(struct fz_rect_s *self){
+            float f;
+            if (self->x1 <= self->x0)
+            {
+                f = self->x1;
+                self->x1 = self->x0;
+                self->x0 = f;
+            }
+            if (self->y1 <= self->y0)
+            {
+                f = self->y1;
+                self->y1 = self->y0;
+                self->y0 = f;
+            }
+            return;
+        }
+SWIGINTERN PyObject *fz_rect_s_contains__SWIG_0(struct fz_rect_s *self,struct fz_rect_s *r){
+            return truth_value(fz_contains_rect(self, r));
+        }
+SWIGINTERN PyObject *fz_rect_s_contains__SWIG_1(struct fz_rect_s *self,struct fz_irect_s *ir){
+            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            r->x0 = ir->x0;
+            r->y0 = ir->y0;
+            r->x1 = ir->x1;
+            r->y1 = ir->y1;
+            int rc = fz_contains_rect(self, r);
+            free(r);
+            return truth_value(rc);
+        }
+SWIGINTERN PyObject *fz_rect_s_contains__SWIG_2(struct fz_rect_s *self,struct fz_point_s *p){
+            if (fz_is_empty_rect(self)) return truth_value(0);
+            float l = self->x0;
+            float t = self->y0;
+            float r = self->x1;
+            float b = self->y1;
+            if (self->x1 <= self->x0)
+            {
+                l = self->x1;
+                r = self->x0;
+            }
+            if (self->y1 <= self->y0)
+            {
+                t = self->y1;
+                b = self->y0;
+            }
+            if ((p->x < l) || (p->x > r) || (p->y < t) || (p->y > b))
+                return truth_value(0);
+            return truth_value(1);
+        }
+SWIGINTERN PyObject *fz_rect_s_isEmpty(struct fz_rect_s *self){
+            return truth_value(fz_is_empty_rect(self));
+        }
+SWIGINTERN PyObject *fz_rect_s_isInfinite(struct fz_rect_s *self){
+            return truth_value(fz_is_infinite_rect(self));
+        }
 SWIGINTERN void delete_fz_irect_s(struct fz_irect_s *self){
 
 
@@ -5485,6 +5562,96 @@ SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_2(int x0,int y0,int x1,int y1
             r->x1 = x1;
             r->y1 = y1;
             return r;
+        }
+SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_3(PyObject *list){
+            fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
+            fz_try(gctx)
+            {
+                if (!PySequence_Check(list)) /*@SWIG:fitz\fitz.i,32,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "expected a sequence")
+/*@SWIG@*/;
+                if (PySequence_Size(list) != 4) /*@SWIG:fitz\fitz.i,32,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "sequence length must be 4")
+/*@SWIG@*/;
+                r->x0 = (int) PyInt_AsLong(PySequence_GetItem(list, 0));
+                r->y0 = (int) PyInt_AsLong(PySequence_GetItem(list, 1));
+                r->x1 = (int) PyInt_AsLong(PySequence_GetItem(list, 2));
+                r->y1 = (int) PyInt_AsLong(PySequence_GetItem(list, 3));
+            }
+            fz_catch(gctx) 
+            {
+                free(r);
+                return NULL;
+            }
+            return r;
+        }
+SWIGINTERN PyObject *fz_irect_s_isEmpty(struct fz_irect_s *self){
+            return truth_value(fz_is_empty_irect(self));
+        }
+SWIGINTERN PyObject *fz_irect_s_isInfinite(struct fz_irect_s *self){
+            return truth_value(fz_is_infinite_irect(self));
+        }
+SWIGINTERN PyObject *fz_irect_s_contains__SWIG_0(struct fz_irect_s *self,struct fz_irect_s *ir){
+            fz_rect *s = (fz_rect *)malloc(sizeof(fz_rect));
+            s->x0 = self->x0;
+            s->y0 = self->y0;
+            s->x1 = self->x1;
+            s->y1 = self->y1;
+            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            r->x0 = ir->x0;
+            r->y0 = ir->y0;
+            r->x1 = ir->x1;
+            r->y1 = ir->y1;
+            int rc = fz_contains_rect(s, r);
+            free(s);
+            free(r);
+            return truth_value(rc);
+        }
+SWIGINTERN void fz_irect_s_normalize(struct fz_irect_s *self){
+            int f;
+            if (self->x1 <= self->x0)
+            {
+                f = self->x1;
+                self->x1 = self->x0;
+                self->x0 = f;
+            }
+            if (self->y1 <= self->y0)
+            {
+                f = self->y1;
+                self->y1 = self->y0;
+                self->y0 = f;
+            }
+            return;
+        }
+SWIGINTERN PyObject *fz_irect_s_contains__SWIG_1(struct fz_irect_s *self,struct fz_rect_s *r){
+            fz_rect *s = (fz_rect *)malloc(sizeof(fz_rect));
+            s->x0 = self->x0;
+            s->y0 = self->y0;
+            s->x1 = self->x1;
+            s->y1 = self->y1;
+            int rc = fz_contains_rect(s, r);
+            free(s);
+            return truth_value(rc);
+        }
+SWIGINTERN PyObject *fz_irect_s_contains__SWIG_2(struct fz_irect_s *self,struct fz_point_s *p){
+            if (fz_is_empty_irect(self)) return truth_value(0);
+            float l = self->x0;
+            float t = self->y0;
+            float r = self->x1;
+            float b = self->y1;
+            if (self->x1 <= self->x0)
+            {
+                l = self->x1;
+                r = self->x0;
+            }
+            if (self->y1 <= self->y0)
+            {
+                t = self->y1;
+                b = self->y0;
+            }
+            if ((p->x < l) || (p->x > r) || (p->y < t) || (p->y > b))
+                return truth_value(0);
+            return truth_value(1);
         }
 SWIGINTERN struct fz_irect_s *fz_irect_s_translate(struct fz_irect_s *self,int xoff,int yoff){
             fz_translate_irect(self, xoff, yoff);
@@ -5820,18 +5987,47 @@ SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_1(struct fz_matrix_s const 
             return fz_copy_matrix(m, n);
         }
 SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_2(float sx,float sy,int shear){
-            if(shear) {
-                fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
-                return fz_shear(m, sx, sy);
-            }
-            else {
-                fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
-                return fz_scale(m, sx, sy);
-            }
+            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            if(shear) return fz_shear(m, sx, sy);
+            return fz_scale(m, sx, sy);
         }
-SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_3(float degree){
+SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_3(float r,float s,float t,float u,float v,float w){
+            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            m->a = r;
+            m->b = s;
+            m->c = t;
+            m->d = u;
+            m->e = v;
+            m->f = w;
+            return m;
+        }
+SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_4(float degree){
             fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
             return fz_rotate(m, degree);
+        }
+SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_5(PyObject *list){
+            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            fz_try(gctx)
+            {
+                if (!PySequence_Check(list)) /*@SWIG:fitz\fitz.i,32,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "expected a sequence")
+/*@SWIG@*/;
+                if (PySequence_Size(list) != 6) /*@SWIG:fitz\fitz.i,32,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "sequence length must be 6")
+/*@SWIG@*/;
+                m->a = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
+                m->b = (float) PyFloat_AsDouble(PySequence_GetItem(list, 1));
+                m->c = (float) PyFloat_AsDouble(PySequence_GetItem(list, 2));
+                m->d = (float) PyFloat_AsDouble(PySequence_GetItem(list, 3));
+                m->e = (float) PyFloat_AsDouble(PySequence_GetItem(list, 4));
+                m->f = (float) PyFloat_AsDouble(PySequence_GetItem(list, 5));
+            }
+            fz_catch(gctx)
+            {
+                free(m);
+                return NULL;
+            }
+            return m;
         }
 SWIGINTERN int fz_matrix_s_invert(struct fz_matrix_s *self,struct fz_matrix_s const *m){
             int rc = fz_try_invert_matrix(self, m);
@@ -5892,6 +6088,26 @@ SWIGINTERN struct fz_point_s *new_fz_point_s__SWIG_2(float x,float y){
             fz_point *p = (fz_point *)malloc(sizeof(fz_point));
             p->x = x;
             p->y = y;
+            return p;
+        }
+SWIGINTERN struct fz_point_s *new_fz_point_s__SWIG_3(PyObject *list){
+            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            fz_try(gctx)
+            {
+                if (!PySequence_Check(list)) /*@SWIG:fitz\fitz.i,32,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "expected a sequence")
+/*@SWIG@*/;
+                if (PySequence_Size(list) != 2) /*@SWIG:fitz\fitz.i,32,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "sequence length must be 2")
+/*@SWIG@*/;
+                p->x = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
+                p->y = (float) PyFloat_AsDouble(PySequence_GetItem(list, 1));
+            }
+            fz_catch(gctx)
+            {
+                free(p);
+                return NULL;
+            }
             return p;
         }
 SWIGINTERN void delete_fz_annot_s(struct fz_annot_s *self){
@@ -8594,7 +8810,13 @@ SWIGINTERN PyObject *_wrap_new_Rect__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyOb
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Rect" "', argument " "1"" of type '" "struct fz_rect_s const *""'"); 
   }
   arg1 = (struct fz_rect_s *)(argp1);
-  result = (struct fz_rect_s *)new_fz_rect_s__SWIG_1((struct fz_rect_s const *)arg1);
+  {
+    result = (struct fz_rect_s *)new_fz_rect_s__SWIG_1((struct fz_rect_s const *)arg1);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -8625,7 +8847,13 @@ SWIGINTERN PyObject *_wrap_new_Rect__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyOb
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_Rect" "', argument " "2"" of type '" "struct fz_point_s const *""'"); 
   }
   arg2 = (struct fz_point_s *)(argp2);
-  result = (struct fz_rect_s *)new_fz_rect_s__SWIG_2((struct fz_point_s const *)arg1,(struct fz_point_s const *)arg2);
+  {
+    result = (struct fz_rect_s *)new_fz_rect_s__SWIG_2((struct fz_point_s const *)arg1,(struct fz_point_s const *)arg2);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -8665,7 +8893,13 @@ SWIGINTERN PyObject *_wrap_new_Rect__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyOb
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "new_Rect" "', argument " "3"" of type '" "struct fz_point_s const *""'"); 
   }
   arg3 = (struct fz_point_s *)(argp3);
-  result = (struct fz_rect_s *)new_fz_rect_s__SWIG_3(arg1,arg2,(struct fz_point_s const *)arg3);
+  {
+    result = (struct fz_rect_s *)new_fz_rect_s__SWIG_3(arg1,arg2,(struct fz_point_s const *)arg3);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -8705,7 +8939,13 @@ SWIGINTERN PyObject *_wrap_new_Rect__SWIG_4(PyObject *SWIGUNUSEDPARM(self), PyOb
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_Rect" "', argument " "3"" of type '" "float""'");
   } 
   arg3 = (float)(val3);
-  result = (struct fz_rect_s *)new_fz_rect_s__SWIG_4((struct fz_point_s const *)arg1,arg2,arg3);
+  {
+    result = (struct fz_rect_s *)new_fz_rect_s__SWIG_4((struct fz_point_s const *)arg1,arg2,arg3);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -8754,7 +8994,35 @@ SWIGINTERN PyObject *_wrap_new_Rect__SWIG_5(PyObject *SWIGUNUSEDPARM(self), PyOb
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "new_Rect" "', argument " "4"" of type '" "float""'");
   } 
   arg4 = (float)(val4);
-  result = (struct fz_rect_s *)new_fz_rect_s__SWIG_5(arg1,arg2,arg3,arg4);
+  {
+    result = (struct fz_rect_s *)new_fz_rect_s__SWIG_5(arg1,arg2,arg3,arg4);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_Rect__SWIG_6(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PyObject *arg1 = (PyObject *) 0 ;
+  PyObject * obj0 = 0 ;
+  struct fz_rect_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_Rect",&obj0)) SWIG_fail;
+  arg1 = obj0;
+  {
+    result = (struct fz_rect_s *)new_fz_rect_s__SWIG_6(arg1);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -8784,6 +9052,13 @@ SWIGINTERN PyObject *_wrap_new_Rect(PyObject *self, PyObject *args) {
     _v = SWIG_CheckState(res);
     if (_v) {
       return _wrap_new_Rect__SWIG_1(self, args);
+    }
+  }
+  if (argc == 1) {
+    int _v;
+    _v = (argv[0] != 0);
+    if (_v) {
+      return _wrap_new_Rect__SWIG_6(self, args);
     }
   }
   if (argc == 2) {
@@ -8879,7 +9154,8 @@ fail:
     "    fz_rect_s::fz_rect_s(struct fz_point_s const *,struct fz_point_s const *)\n"
     "    fz_rect_s::fz_rect_s(float,float,struct fz_point_s const *)\n"
     "    fz_rect_s::fz_rect_s(struct fz_point_s const *,float,float)\n"
-    "    fz_rect_s::fz_rect_s(float,float,float,float)\n");
+    "    fz_rect_s::fz_rect_s(float,float,float,float)\n"
+    "    fz_rect_s::fz_rect_s(PyObject *)\n");
   return 0;
 }
 
@@ -9014,6 +9290,229 @@ SWIGINTERN PyObject *_wrap_Rect_includeRect(PyObject *SWIGUNUSEDPARM(self), PyOb
   arg2 = (struct fz_rect_s *)(argp2);
   result = (struct fz_rect_s *)fz_rect_s_includeRect(arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Rect_normalize(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Rect_normalize",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_normalize" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg1 = (struct fz_rect_s *)(argp1);
+  fz_rect_s_normalize(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Rect_contains__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
+  struct fz_rect_s *arg2 = (struct fz_rect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Rect_contains",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_contains" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg1 = (struct fz_rect_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Rect_contains" "', argument " "2"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg2 = (struct fz_rect_s *)(argp2);
+  result = (PyObject *)fz_rect_s_contains__SWIG_0(arg1,arg2);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Rect_contains__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
+  struct fz_irect_s *arg2 = (struct fz_irect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Rect_contains",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_contains" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg1 = (struct fz_rect_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_irect_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Rect_contains" "', argument " "2"" of type '" "struct fz_irect_s *""'"); 
+  }
+  arg2 = (struct fz_irect_s *)(argp2);
+  result = (PyObject *)fz_rect_s_contains__SWIG_1(arg1,arg2);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Rect_contains__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
+  struct fz_point_s *arg2 = (struct fz_point_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Rect_contains",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_contains" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg1 = (struct fz_rect_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_point_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Rect_contains" "', argument " "2"" of type '" "struct fz_point_s *""'"); 
+  }
+  arg2 = (struct fz_point_s *)(argp2);
+  result = (PyObject *)fz_rect_s_contains__SWIG_2(arg1,arg2);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Rect_contains(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  Py_ssize_t ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 2) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_rect_s, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_fz_rect_s, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_Rect_contains__SWIG_0(self, args);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_rect_s, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_fz_irect_s, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_Rect_contains__SWIG_1(self, args);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_rect_s, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_fz_point_s, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_Rect_contains__SWIG_2(self, args);
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'Rect_contains'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    fz_rect_s::contains(struct fz_rect_s *)\n"
+    "    fz_rect_s::contains(struct fz_irect_s *)\n"
+    "    fz_rect_s::contains(struct fz_point_s *)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_Rect_isEmpty(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Rect_isEmpty",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_isEmpty" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg1 = (struct fz_rect_s *)(argp1);
+  result = (PyObject *)fz_rect_s_isEmpty(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Rect_isInfinite(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Rect_isInfinite",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_isInfinite" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg1 = (struct fz_rect_s *)(argp1);
+  result = (PyObject *)fz_rect_s_isInfinite(arg1);
+  resultobj = result;
   return resultobj;
 fail:
   return NULL;
@@ -9283,7 +9782,13 @@ SWIGINTERN PyObject *_wrap_new_IRect__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyO
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_IRect" "', argument " "1"" of type '" "struct fz_irect_s const *""'"); 
   }
   arg1 = (struct fz_irect_s *)(argp1);
-  result = (struct fz_irect_s *)new_fz_irect_s__SWIG_1((struct fz_irect_s const *)arg1);
+  {
+    result = (struct fz_irect_s *)new_fz_irect_s__SWIG_1((struct fz_irect_s const *)arg1);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_irect_s, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -9332,7 +9837,35 @@ SWIGINTERN PyObject *_wrap_new_IRect__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyO
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "new_IRect" "', argument " "4"" of type '" "int""'");
   } 
   arg4 = (int)(val4);
-  result = (struct fz_irect_s *)new_fz_irect_s__SWIG_2(arg1,arg2,arg3,arg4);
+  {
+    result = (struct fz_irect_s *)new_fz_irect_s__SWIG_2(arg1,arg2,arg3,arg4);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_irect_s, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_IRect__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PyObject *arg1 = (PyObject *) 0 ;
+  PyObject * obj0 = 0 ;
+  struct fz_irect_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_IRect",&obj0)) SWIG_fail;
+  arg1 = obj0;
+  {
+    result = (struct fz_irect_s *)new_fz_irect_s__SWIG_3(arg1);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_irect_s, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -9362,6 +9895,13 @@ SWIGINTERN PyObject *_wrap_new_IRect(PyObject *self, PyObject *args) {
     _v = SWIG_CheckState(res);
     if (_v) {
       return _wrap_new_IRect__SWIG_1(self, args);
+    }
+  }
+  if (argc == 1) {
+    int _v;
+    _v = (argv[0] != 0);
+    if (_v) {
+      return _wrap_new_IRect__SWIG_3(self, args);
     }
   }
   if (argc == 4) {
@@ -9398,7 +9938,231 @@ fail:
     "  Possible C/C++ prototypes are:\n"
     "    fz_irect_s::fz_irect_s()\n"
     "    fz_irect_s::fz_irect_s(struct fz_irect_s const *)\n"
-    "    fz_irect_s::fz_irect_s(int,int,int,int)\n");
+    "    fz_irect_s::fz_irect_s(int,int,int,int)\n"
+    "    fz_irect_s::fz_irect_s(PyObject *)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_IRect_isEmpty(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IRect_isEmpty",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_isEmpty" "', argument " "1"" of type '" "struct fz_irect_s *""'"); 
+  }
+  arg1 = (struct fz_irect_s *)(argp1);
+  result = (PyObject *)fz_irect_s_isEmpty(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IRect_isInfinite(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IRect_isInfinite",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_isInfinite" "', argument " "1"" of type '" "struct fz_irect_s *""'"); 
+  }
+  arg1 = (struct fz_irect_s *)(argp1);
+  result = (PyObject *)fz_irect_s_isInfinite(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IRect_contains__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
+  struct fz_irect_s *arg2 = (struct fz_irect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IRect_contains",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_contains" "', argument " "1"" of type '" "struct fz_irect_s *""'"); 
+  }
+  arg1 = (struct fz_irect_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_irect_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IRect_contains" "', argument " "2"" of type '" "struct fz_irect_s *""'"); 
+  }
+  arg2 = (struct fz_irect_s *)(argp2);
+  result = (PyObject *)fz_irect_s_contains__SWIG_0(arg1,arg2);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IRect_normalize(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:IRect_normalize",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_normalize" "', argument " "1"" of type '" "struct fz_irect_s *""'"); 
+  }
+  arg1 = (struct fz_irect_s *)(argp1);
+  fz_irect_s_normalize(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IRect_contains__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
+  struct fz_rect_s *arg2 = (struct fz_rect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IRect_contains",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_contains" "', argument " "1"" of type '" "struct fz_irect_s *""'"); 
+  }
+  arg1 = (struct fz_irect_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IRect_contains" "', argument " "2"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg2 = (struct fz_rect_s *)(argp2);
+  result = (PyObject *)fz_irect_s_contains__SWIG_1(arg1,arg2);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IRect_contains__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_irect_s *arg1 = (struct fz_irect_s *) 0 ;
+  struct fz_point_s *arg2 = (struct fz_point_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:IRect_contains",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_irect_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "IRect_contains" "', argument " "1"" of type '" "struct fz_irect_s *""'"); 
+  }
+  arg1 = (struct fz_irect_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_point_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "IRect_contains" "', argument " "2"" of type '" "struct fz_point_s *""'"); 
+  }
+  arg2 = (struct fz_point_s *)(argp2);
+  result = (PyObject *)fz_irect_s_contains__SWIG_2(arg1,arg2);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_IRect_contains(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  Py_ssize_t ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 2) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_irect_s, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_fz_irect_s, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_IRect_contains__SWIG_0(self, args);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_irect_s, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_fz_rect_s, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_IRect_contains__SWIG_1(self, args);
+      }
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_irect_s, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      void *vptr = 0;
+      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_fz_point_s, 0);
+      _v = SWIG_CheckState(res);
+      if (_v) {
+        return _wrap_IRect_contains__SWIG_2(self, args);
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'IRect_contains'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    fz_irect_s::contains(struct fz_irect_s *)\n"
+    "    fz_irect_s::contains(struct fz_rect_s *)\n"
+    "    fz_irect_s::contains(struct fz_point_s *)\n");
   return 0;
 }
 
@@ -11662,7 +12426,13 @@ SWIGINTERN PyObject *_wrap_new_Matrix__SWIG_1(PyObject *SWIGUNUSEDPARM(self), Py
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Matrix" "', argument " "1"" of type '" "struct fz_matrix_s const *""'"); 
   }
   arg1 = (struct fz_matrix_s *)(argp1);
-  result = (struct fz_matrix_s *)new_fz_matrix_s__SWIG_1((struct fz_matrix_s const *)arg1);
+  {
+    result = (struct fz_matrix_s *)new_fz_matrix_s__SWIG_1((struct fz_matrix_s const *)arg1);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -11704,7 +12474,13 @@ SWIGINTERN PyObject *_wrap_new_Matrix__SWIG_2(PyObject *SWIGUNUSEDPARM(self), Py
     } 
     arg3 = (int)(val3);
   }
-  result = (struct fz_matrix_s *)new_fz_matrix_s__SWIG_2(arg1,arg2,arg3);
+  {
+    result = (struct fz_matrix_s *)new_fz_matrix_s__SWIG_2(arg1,arg2,arg3);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -11713,6 +12489,79 @@ fail:
 
 
 SWIGINTERN PyObject *_wrap_new_Matrix__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float arg1 ;
+  float arg2 ;
+  float arg3 ;
+  float arg4 ;
+  float arg5 ;
+  float arg6 ;
+  float val1 ;
+  int ecode1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  float val3 ;
+  int ecode3 = 0 ;
+  float val4 ;
+  int ecode4 = 0 ;
+  float val5 ;
+  int ecode5 = 0 ;
+  float val6 ;
+  int ecode6 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  struct fz_matrix_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:new_Matrix",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  ecode1 = SWIG_AsVal_float(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_Matrix" "', argument " "1"" of type '" "float""'");
+  } 
+  arg1 = (float)(val1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_Matrix" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = (float)(val2);
+  ecode3 = SWIG_AsVal_float(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_Matrix" "', argument " "3"" of type '" "float""'");
+  } 
+  arg3 = (float)(val3);
+  ecode4 = SWIG_AsVal_float(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "new_Matrix" "', argument " "4"" of type '" "float""'");
+  } 
+  arg4 = (float)(val4);
+  ecode5 = SWIG_AsVal_float(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "new_Matrix" "', argument " "5"" of type '" "float""'");
+  } 
+  arg5 = (float)(val5);
+  ecode6 = SWIG_AsVal_float(obj5, &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "new_Matrix" "', argument " "6"" of type '" "float""'");
+  } 
+  arg6 = (float)(val6);
+  {
+    result = (struct fz_matrix_s *)new_fz_matrix_s__SWIG_3(arg1,arg2,arg3,arg4,arg5,arg6);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_Matrix__SWIG_4(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   float arg1 ;
   float val1 ;
@@ -11726,7 +12575,35 @@ SWIGINTERN PyObject *_wrap_new_Matrix__SWIG_3(PyObject *SWIGUNUSEDPARM(self), Py
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_Matrix" "', argument " "1"" of type '" "float""'");
   } 
   arg1 = (float)(val1);
-  result = (struct fz_matrix_s *)new_fz_matrix_s__SWIG_3(arg1);
+  {
+    result = (struct fz_matrix_s *)new_fz_matrix_s__SWIG_4(arg1);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_Matrix__SWIG_5(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PyObject *arg1 = (PyObject *) 0 ;
+  PyObject * obj0 = 0 ;
+  struct fz_matrix_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_Matrix",&obj0)) SWIG_fail;
+  arg1 = obj0;
+  {
+    result = (struct fz_matrix_s *)new_fz_matrix_s__SWIG_5(arg1);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_matrix_s, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -11736,14 +12613,14 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_Matrix(PyObject *self, PyObject *args) {
   Py_ssize_t argc;
-  PyObject *argv[4] = {
+  PyObject *argv[7] = {
     0
   };
   Py_ssize_t ii;
   
   if (!PyTuple_Check(args)) SWIG_fail;
   argc = args ? PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 3) && (ii < argc); ii++) {
+  for (ii = 0; (ii < 6) && (ii < argc); ii++) {
     argv[ii] = PyTuple_GET_ITEM(args,ii);
   }
   if (argc == 0) {
@@ -11765,7 +12642,14 @@ SWIGINTERN PyObject *_wrap_new_Matrix(PyObject *self, PyObject *args) {
       _v = SWIG_CheckState(res);
     }
     if (_v) {
-      return _wrap_new_Matrix__SWIG_3(self, args);
+      return _wrap_new_Matrix__SWIG_4(self, args);
+    }
+  }
+  if (argc == 1) {
+    int _v;
+    _v = (argv[0] != 0);
+    if (_v) {
+      return _wrap_new_Matrix__SWIG_5(self, args);
     }
   }
   if ((argc >= 2) && (argc <= 3)) {
@@ -11793,6 +12677,46 @@ SWIGINTERN PyObject *_wrap_new_Matrix(PyObject *self, PyObject *args) {
       }
     }
   }
+  if (argc == 6) {
+    int _v;
+    {
+      int res = SWIG_AsVal_float(argv[0], NULL);
+      _v = SWIG_CheckState(res);
+    }
+    if (_v) {
+      {
+        int res = SWIG_AsVal_float(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_float(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          {
+            int res = SWIG_AsVal_float(argv[3], NULL);
+            _v = SWIG_CheckState(res);
+          }
+          if (_v) {
+            {
+              int res = SWIG_AsVal_float(argv[4], NULL);
+              _v = SWIG_CheckState(res);
+            }
+            if (_v) {
+              {
+                int res = SWIG_AsVal_float(argv[5], NULL);
+                _v = SWIG_CheckState(res);
+              }
+              if (_v) {
+                return _wrap_new_Matrix__SWIG_3(self, args);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
   
 fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_Matrix'.\n"
@@ -11800,7 +12724,9 @@ fail:
     "    fz_matrix_s::fz_matrix_s()\n"
     "    fz_matrix_s::fz_matrix_s(struct fz_matrix_s const *)\n"
     "    fz_matrix_s::fz_matrix_s(float,float,int)\n"
-    "    fz_matrix_s::fz_matrix_s(float)\n");
+    "    fz_matrix_s::fz_matrix_s(float,float,float,float,float,float)\n"
+    "    fz_matrix_s::fz_matrix_s(float)\n"
+    "    fz_matrix_s::fz_matrix_s(PyObject *)\n");
   return 0;
 }
 
@@ -12368,7 +13294,13 @@ SWIGINTERN PyObject *_wrap_new_Point__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyO
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Point" "', argument " "1"" of type '" "struct fz_point_s const *""'"); 
   }
   arg1 = (struct fz_point_s *)(argp1);
-  result = (struct fz_point_s *)new_fz_point_s__SWIG_1((struct fz_point_s const *)arg1);
+  {
+    result = (struct fz_point_s *)new_fz_point_s__SWIG_1((struct fz_point_s const *)arg1);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_point_s, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -12399,7 +13331,35 @@ SWIGINTERN PyObject *_wrap_new_Point__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyO
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_Point" "', argument " "2"" of type '" "float""'");
   } 
   arg2 = (float)(val2);
-  result = (struct fz_point_s *)new_fz_point_s__SWIG_2(arg1,arg2);
+  {
+    result = (struct fz_point_s *)new_fz_point_s__SWIG_2(arg1,arg2);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_point_s, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_Point__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  PyObject *arg1 = (PyObject *) 0 ;
+  PyObject * obj0 = 0 ;
+  struct fz_point_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:new_Point",&obj0)) SWIG_fail;
+  arg1 = obj0;
+  {
+    result = (struct fz_point_s *)new_fz_point_s__SWIG_3(arg1);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_point_s, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -12431,6 +13391,13 @@ SWIGINTERN PyObject *_wrap_new_Point(PyObject *self, PyObject *args) {
       return _wrap_new_Point__SWIG_1(self, args);
     }
   }
+  if (argc == 1) {
+    int _v;
+    _v = (argv[0] != 0);
+    if (_v) {
+      return _wrap_new_Point__SWIG_3(self, args);
+    }
+  }
   if (argc == 2) {
     int _v;
     {
@@ -12453,7 +13420,8 @@ fail:
     "  Possible C/C++ prototypes are:\n"
     "    fz_point_s::fz_point_s()\n"
     "    fz_point_s::fz_point_s(struct fz_point_s const *)\n"
-    "    fz_point_s::fz_point_s(float,float)\n");
+    "    fz_point_s::fz_point_s(float,float)\n"
+    "    fz_point_s::fz_point_s(PyObject *)\n");
   return 0;
 }
 
@@ -13569,20 +14537,20 @@ SWIGINTERN PyObject *TextPage_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObj
 
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
-	 { (char *)"delete_Document", _wrap_delete_Document, METH_VARARGS, (char *)"delete_Document(Document self)"},
-	 { (char *)"new_Document", _wrap_new_Document, METH_VARARGS, (char *)"new_Document(char const * filename=None, PyObject * stream=None) -> Document"},
-	 { (char *)"Document_close", _wrap_Document_close, METH_VARARGS, (char *)"Document_close(Document self)"},
-	 { (char *)"Document_loadPage", _wrap_Document_loadPage, METH_VARARGS, (char *)"Document_loadPage(Document self, int number) -> Page"},
-	 { (char *)"Document__loadOutline", _wrap_Document__loadOutline, METH_VARARGS, (char *)"Document__loadOutline(Document self) -> Outline"},
-	 { (char *)"Document__dropOutline", _wrap_Document__dropOutline, METH_VARARGS, (char *)"Document__dropOutline(Document self, Outline ol)"},
-	 { (char *)"Document_pageCount", _wrap_Document_pageCount, METH_VARARGS, (char *)"Document_pageCount(Document self) -> int"},
-	 { (char *)"Document__getMetadata", _wrap_Document__getMetadata, METH_VARARGS, (char *)"Document__getMetadata(Document self, char const * key) -> char *"},
-	 { (char *)"Document_needsPass", _wrap_Document_needsPass, METH_VARARGS, (char *)"Document_needsPass(Document self) -> int"},
-	 { (char *)"Document__getGCTXerrcode", _wrap_Document__getGCTXerrcode, METH_VARARGS, (char *)"Document__getGCTXerrcode(Document self) -> int"},
-	 { (char *)"Document__getGCTXerrmsg", _wrap_Document__getGCTXerrmsg, METH_VARARGS, (char *)"Document__getGCTXerrmsg(Document self) -> char *"},
-	 { (char *)"Document_authenticate", _wrap_Document_authenticate, METH_VARARGS, (char *)"Document_authenticate(Document self, char const * arg3) -> int"},
-	 { (char *)"Document_save", _wrap_Document_save, METH_VARARGS, (char *)"Document_save(Document self, char * filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0) -> int"},
-	 { (char *)"Document_write", _wrap_Document_write, METH_VARARGS, (char *)"Document_write(Document self, int garbage=0, int clean=0, int deflate=0, int ascii=0, int expand=0, int linear=0) -> PyObject *"},
+	 { (char *)"delete_Document", _wrap_delete_Document, METH_VARARGS, (char *)"delete_Document(self)"},
+	 { (char *)"new_Document", _wrap_new_Document, METH_VARARGS, (char *)"new_Document(filename=None, stream=None) -> Document"},
+	 { (char *)"Document_close", _wrap_Document_close, METH_VARARGS, (char *)"Document_close(self)"},
+	 { (char *)"Document_loadPage", _wrap_Document_loadPage, METH_VARARGS, (char *)"Document_loadPage(self, number) -> Page"},
+	 { (char *)"Document__loadOutline", _wrap_Document__loadOutline, METH_VARARGS, (char *)"Document__loadOutline(self) -> Outline"},
+	 { (char *)"Document__dropOutline", _wrap_Document__dropOutline, METH_VARARGS, (char *)"Document__dropOutline(self, ol)"},
+	 { (char *)"Document_pageCount", _wrap_Document_pageCount, METH_VARARGS, (char *)"Document_pageCount(self) -> int"},
+	 { (char *)"Document__getMetadata", _wrap_Document__getMetadata, METH_VARARGS, (char *)"Document__getMetadata(self, key) -> char *"},
+	 { (char *)"Document_needsPass", _wrap_Document_needsPass, METH_VARARGS, (char *)"Document_needsPass(self) -> int"},
+	 { (char *)"Document__getGCTXerrcode", _wrap_Document__getGCTXerrcode, METH_VARARGS, (char *)"Document__getGCTXerrcode(self) -> int"},
+	 { (char *)"Document__getGCTXerrmsg", _wrap_Document__getGCTXerrmsg, METH_VARARGS, (char *)"Document__getGCTXerrmsg(self) -> char *"},
+	 { (char *)"Document_authenticate", _wrap_Document_authenticate, METH_VARARGS, (char *)"Document_authenticate(self, arg3) -> int"},
+	 { (char *)"Document_save", _wrap_Document_save, METH_VARARGS, (char *)"Document_save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0) -> int"},
+	 { (char *)"Document_write", _wrap_Document_write, METH_VARARGS, (char *)"Document_write(self, garbage=0, clean=0, deflate=0, ascii=0, expand=0, linear=0) -> PyObject *"},
 	 { (char *)"Document_insertPDF", _wrap_Document_insertPDF, METH_VARARGS, (char *)"\n"
 		"insertPDF(PDFsrc, from_page, to_page, start_at, rotate, links) -> int\n"
 		"Insert page range [from, to] of source PDF, starting as page number start_at.\n"
@@ -13605,7 +14573,7 @@ static PyMethodDef SwigMethods[] = {
 		""},
 	 { (char *)"Document_select", _wrap_Document_select, METH_VARARGS, (char *)"select(list) -> int; build sub-pdf with pages in list"},
 	 { (char *)"Document_permissions", _wrap_Document_permissions, METH_VARARGS, (char *)"permissions -> dictionary containing permissions"},
-	 { (char *)"Document__getPageObjNumber", _wrap_Document__getPageObjNumber, METH_VARARGS, (char *)"Document__getPageObjNumber(Document self, int pno) -> PyObject *"},
+	 { (char *)"Document__getPageObjNumber", _wrap_Document__getPageObjNumber, METH_VARARGS, (char *)"Document__getPageObjNumber(self, pno) -> PyObject *"},
 	 { (char *)"Document_getPageImageList", _wrap_Document_getPageImageList, METH_VARARGS, (char *)"\n"
 		"getPageImageList(pno) -> int\n"
 		"list images used on a PDF page\n"
@@ -13614,21 +14582,21 @@ static PyMethodDef SwigMethods[] = {
 		"getPageFontList(pno) -> int\n"
 		"list fonts used on a PDF page\n"
 		""},
-	 { (char *)"Document__delToC", _wrap_Document__delToC, METH_VARARGS, (char *)"Document__delToC(Document self) -> PyObject *"},
-	 { (char *)"Document__getOLRootNumber", _wrap_Document__getOLRootNumber, METH_VARARGS, (char *)"Document__getOLRootNumber(Document self) -> int"},
-	 { (char *)"Document__getNewXref", _wrap_Document__getNewXref, METH_VARARGS, (char *)"Document__getNewXref(Document self) -> int"},
-	 { (char *)"Document__getXrefLength", _wrap_Document__getXrefLength, METH_VARARGS, (char *)"Document__getXrefLength(Document self) -> int"},
-	 { (char *)"Document__getPageRectText", _wrap_Document__getPageRectText, METH_VARARGS, (char *)"Document__getPageRectText(Document self, int pno, Rect rect) -> char *"},
-	 { (char *)"Document__delXmlMetadata", _wrap_Document__delXmlMetadata, METH_VARARGS, (char *)"Document__delXmlMetadata(Document self) -> int"},
-	 { (char *)"Document__getObjectString", _wrap_Document__getObjectString, METH_VARARGS, (char *)"Document__getObjectString(Document self, int xnum) -> char const *"},
-	 { (char *)"Document__getXrefStream", _wrap_Document__getXrefStream, METH_VARARGS, (char *)"Document__getXrefStream(Document self, int xnum) -> PyObject *"},
-	 { (char *)"Document__updateObject", _wrap_Document__updateObject, METH_VARARGS, (char *)"Document__updateObject(Document self, int xref, char * text, Page page=None) -> int"},
-	 { (char *)"Document__setMetadata", _wrap_Document__setMetadata, METH_VARARGS, (char *)"Document__setMetadata(Document self, char * text) -> int"},
+	 { (char *)"Document__delToC", _wrap_Document__delToC, METH_VARARGS, (char *)"Document__delToC(self) -> PyObject *"},
+	 { (char *)"Document__getOLRootNumber", _wrap_Document__getOLRootNumber, METH_VARARGS, (char *)"Document__getOLRootNumber(self) -> int"},
+	 { (char *)"Document__getNewXref", _wrap_Document__getNewXref, METH_VARARGS, (char *)"Document__getNewXref(self) -> int"},
+	 { (char *)"Document__getXrefLength", _wrap_Document__getXrefLength, METH_VARARGS, (char *)"Document__getXrefLength(self) -> int"},
+	 { (char *)"Document__getPageRectText", _wrap_Document__getPageRectText, METH_VARARGS, (char *)"Document__getPageRectText(self, pno, rect) -> char *"},
+	 { (char *)"Document__delXmlMetadata", _wrap_Document__delXmlMetadata, METH_VARARGS, (char *)"Document__delXmlMetadata(self) -> int"},
+	 { (char *)"Document__getObjectString", _wrap_Document__getObjectString, METH_VARARGS, (char *)"Document__getObjectString(self, xnum) -> char const *"},
+	 { (char *)"Document__getXrefStream", _wrap_Document__getXrefStream, METH_VARARGS, (char *)"Document__getXrefStream(self, xnum) -> PyObject *"},
+	 { (char *)"Document__updateObject", _wrap_Document__updateObject, METH_VARARGS, (char *)"Document__updateObject(self, xref, text, page=None) -> int"},
+	 { (char *)"Document__setMetadata", _wrap_Document__setMetadata, METH_VARARGS, (char *)"Document__setMetadata(self, text) -> int"},
 	 { (char *)"Document_swigregister", Document_swigregister, METH_VARARGS, NULL},
-	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, (char *)"delete_Page(Page self)"},
-	 { (char *)"Page_bound", _wrap_Page_bound, METH_VARARGS, (char *)"Page_bound(Page self) -> Rect"},
-	 { (char *)"Page_run", _wrap_Page_run, METH_VARARGS, (char *)"Page_run(Page self, Device dw, Matrix m) -> int"},
-	 { (char *)"Page_loadLinks", _wrap_Page_loadLinks, METH_VARARGS, (char *)"Page_loadLinks(Page self) -> Link"},
+	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, (char *)"delete_Page(self)"},
+	 { (char *)"Page_bound", _wrap_Page_bound, METH_VARARGS, (char *)"Page_bound(self) -> Rect"},
+	 { (char *)"Page_run", _wrap_Page_run, METH_VARARGS, (char *)"Page_run(self, dw, m) -> int"},
+	 { (char *)"Page_loadLinks", _wrap_Page_loadLinks, METH_VARARGS, (char *)"Page_loadLinks(self) -> Link"},
 	 { (char *)"Page_firstAnnot", _wrap_Page_firstAnnot, METH_VARARGS, (char *)"firstAnnot points to first annot on page"},
 	 { (char *)"Page_deleteLink", _wrap_Page_deleteLink, METH_VARARGS, (char *)"Delete link if PDF"},
 	 { (char *)"Page_deleteAnnot", _wrap_Page_deleteAnnot, METH_VARARGS, (char *)"Delete annot if PDF and return next one"},
@@ -13637,67 +14605,85 @@ static PyMethodDef SwigMethods[] = {
 		"Return rotation in degrees\n"
 		""},
 	 { (char *)"Page_setRotation", _wrap_Page_setRotation, METH_VARARGS, (char *)"setRotation sets page rotation to 'rot' degrees"},
-	 { (char *)"Page__addAnnot_FromString", _wrap_Page__addAnnot_FromString, METH_VARARGS, (char *)"Page__addAnnot_FromString(Page self, PyObject * linklist) -> int"},
-	 { (char *)"Page__getLinkXrefs", _wrap_Page__getLinkXrefs, METH_VARARGS, (char *)"Page__getLinkXrefs(Page self) -> PyObject *"},
-	 { (char *)"Page__getRectText", _wrap_Page__getRectText, METH_VARARGS, (char *)"Page__getRectText(Page self, Rect rect) -> char *"},
-	 { (char *)"Page__readPageText", _wrap_Page__readPageText, METH_VARARGS, (char *)"Page__readPageText(Page self, int output=0) -> char *"},
+	 { (char *)"Page__addAnnot_FromString", _wrap_Page__addAnnot_FromString, METH_VARARGS, (char *)"Page__addAnnot_FromString(self, linklist) -> int"},
+	 { (char *)"Page__getLinkXrefs", _wrap_Page__getLinkXrefs, METH_VARARGS, (char *)"Page__getLinkXrefs(self) -> PyObject *"},
+	 { (char *)"Page__getRectText", _wrap_Page__getRectText, METH_VARARGS, (char *)"Page__getRectText(self, rect) -> char *"},
+	 { (char *)"Page__readPageText", _wrap_Page__readPageText, METH_VARARGS, (char *)"Page__readPageText(self, output=0) -> char *"},
 	 { (char *)"Page_swigregister", Page_swigregister, METH_VARARGS, NULL},
-	 { (char *)"_fz_transform_rect", _wrap__fz_transform_rect, METH_VARARGS, (char *)"_fz_transform_rect(Rect rect, Matrix transform) -> Rect"},
-	 { (char *)"Rect_x0_set", _wrap_Rect_x0_set, METH_VARARGS, (char *)"Rect_x0_set(Rect self, float x0)"},
-	 { (char *)"Rect_x0_get", _wrap_Rect_x0_get, METH_VARARGS, (char *)"Rect_x0_get(Rect self) -> float"},
-	 { (char *)"Rect_y0_set", _wrap_Rect_y0_set, METH_VARARGS, (char *)"Rect_y0_set(Rect self, float y0)"},
-	 { (char *)"Rect_y0_get", _wrap_Rect_y0_get, METH_VARARGS, (char *)"Rect_y0_get(Rect self) -> float"},
-	 { (char *)"Rect_x1_set", _wrap_Rect_x1_set, METH_VARARGS, (char *)"Rect_x1_set(Rect self, float x1)"},
-	 { (char *)"Rect_x1_get", _wrap_Rect_x1_get, METH_VARARGS, (char *)"Rect_x1_get(Rect self) -> float"},
-	 { (char *)"Rect_y1_set", _wrap_Rect_y1_set, METH_VARARGS, (char *)"Rect_y1_set(Rect self, float y1)"},
-	 { (char *)"Rect_y1_get", _wrap_Rect_y1_get, METH_VARARGS, (char *)"Rect_y1_get(Rect self) -> float"},
+	 { (char *)"_fz_transform_rect", _wrap__fz_transform_rect, METH_VARARGS, (char *)"_fz_transform_rect(rect, transform) -> Rect"},
+	 { (char *)"Rect_x0_set", _wrap_Rect_x0_set, METH_VARARGS, (char *)"Rect_x0_set(self, x0)"},
+	 { (char *)"Rect_x0_get", _wrap_Rect_x0_get, METH_VARARGS, (char *)"Rect_x0_get(self) -> float"},
+	 { (char *)"Rect_y0_set", _wrap_Rect_y0_set, METH_VARARGS, (char *)"Rect_y0_set(self, y0)"},
+	 { (char *)"Rect_y0_get", _wrap_Rect_y0_get, METH_VARARGS, (char *)"Rect_y0_get(self) -> float"},
+	 { (char *)"Rect_x1_set", _wrap_Rect_x1_set, METH_VARARGS, (char *)"Rect_x1_set(self, x1)"},
+	 { (char *)"Rect_x1_get", _wrap_Rect_x1_get, METH_VARARGS, (char *)"Rect_x1_get(self) -> float"},
+	 { (char *)"Rect_y1_set", _wrap_Rect_y1_set, METH_VARARGS, (char *)"Rect_y1_set(self, y1)"},
+	 { (char *)"Rect_y1_get", _wrap_Rect_y1_get, METH_VARARGS, (char *)"Rect_y1_get(self) -> float"},
 	 { (char *)"new_Rect", _wrap_new_Rect, METH_VARARGS, (char *)"\n"
 		"Rect()\n"
-		"Rect(Rect s)\n"
-		"Rect(Point lt, Point rb)\n"
-		"Rect(float x0, float y0, Point rb)\n"
-		"Rect(Point lt, float x1, float y1)\n"
-		"new_Rect(float x0, float y0, float x1, float y1) -> Rect\n"
+		"Rect(s)\n"
+		"Rect(lt, rb)\n"
+		"Rect(x0, y0, rb)\n"
+		"Rect(lt, x1, y1)\n"
+		"Rect(x0, y0, x1, y1)\n"
+		"new_Rect(list) -> Rect\n"
 		""},
-	 { (char *)"delete_Rect", _wrap_delete_Rect, METH_VARARGS, (char *)"delete_Rect(Rect self)"},
-	 { (char *)"Rect_round", _wrap_Rect_round, METH_VARARGS, (char *)"Rect_round(Rect self) -> IRect"},
-	 { (char *)"Rect_includePoint", _wrap_Rect_includePoint, METH_VARARGS, (char *)"Rect_includePoint(Rect self, Point p) -> Rect"},
-	 { (char *)"Rect_intersect", _wrap_Rect_intersect, METH_VARARGS, (char *)"Rect_intersect(Rect self, Rect r) -> Rect"},
-	 { (char *)"Rect_includeRect", _wrap_Rect_includeRect, METH_VARARGS, (char *)"Rect_includeRect(Rect self, Rect r) -> Rect"},
+	 { (char *)"delete_Rect", _wrap_delete_Rect, METH_VARARGS, (char *)"delete_Rect(self)"},
+	 { (char *)"Rect_round", _wrap_Rect_round, METH_VARARGS, (char *)"Create enclosing 'IRect'"},
+	 { (char *)"Rect_includePoint", _wrap_Rect_includePoint, METH_VARARGS, (char *)"Enlarge to include a 'Point' p"},
+	 { (char *)"Rect_intersect", _wrap_Rect_intersect, METH_VARARGS, (char *)"Shrink to intersection with another 'Rect' r"},
+	 { (char *)"Rect_includeRect", _wrap_Rect_includeRect, METH_VARARGS, (char *)"Enlarge to include another 'Rect' r"},
+	 { (char *)"Rect_normalize", _wrap_Rect_normalize, METH_VARARGS, (char *)"Make rectangle finite"},
+	 { (char *)"Rect_contains", _wrap_Rect_contains, METH_VARARGS, (char *)"\n"
+		"contains\n"
+		"contains\n"
+		"contains\n"
+		""},
+	 { (char *)"Rect_isEmpty", _wrap_Rect_isEmpty, METH_VARARGS, (char *)"Rect_isEmpty(self) -> PyObject *"},
+	 { (char *)"Rect_isInfinite", _wrap_Rect_isInfinite, METH_VARARGS, (char *)"Rect_isInfinite(self) -> PyObject *"},
 	 { (char *)"Rect_swigregister", Rect_swigregister, METH_VARARGS, NULL},
-	 { (char *)"IRect_x0_set", _wrap_IRect_x0_set, METH_VARARGS, (char *)"IRect_x0_set(IRect self, int x0)"},
-	 { (char *)"IRect_x0_get", _wrap_IRect_x0_get, METH_VARARGS, (char *)"IRect_x0_get(IRect self) -> int"},
-	 { (char *)"IRect_y0_set", _wrap_IRect_y0_set, METH_VARARGS, (char *)"IRect_y0_set(IRect self, int y0)"},
-	 { (char *)"IRect_y0_get", _wrap_IRect_y0_get, METH_VARARGS, (char *)"IRect_y0_get(IRect self) -> int"},
-	 { (char *)"IRect_x1_set", _wrap_IRect_x1_set, METH_VARARGS, (char *)"IRect_x1_set(IRect self, int x1)"},
-	 { (char *)"IRect_x1_get", _wrap_IRect_x1_get, METH_VARARGS, (char *)"IRect_x1_get(IRect self) -> int"},
-	 { (char *)"IRect_y1_set", _wrap_IRect_y1_set, METH_VARARGS, (char *)"IRect_y1_set(IRect self, int y1)"},
-	 { (char *)"IRect_y1_get", _wrap_IRect_y1_get, METH_VARARGS, (char *)"IRect_y1_get(IRect self) -> int"},
-	 { (char *)"delete_IRect", _wrap_delete_IRect, METH_VARARGS, (char *)"delete_IRect(IRect self)"},
+	 { (char *)"IRect_x0_set", _wrap_IRect_x0_set, METH_VARARGS, (char *)"IRect_x0_set(self, x0)"},
+	 { (char *)"IRect_x0_get", _wrap_IRect_x0_get, METH_VARARGS, (char *)"IRect_x0_get(self) -> int"},
+	 { (char *)"IRect_y0_set", _wrap_IRect_y0_set, METH_VARARGS, (char *)"IRect_y0_set(self, y0)"},
+	 { (char *)"IRect_y0_get", _wrap_IRect_y0_get, METH_VARARGS, (char *)"IRect_y0_get(self) -> int"},
+	 { (char *)"IRect_x1_set", _wrap_IRect_x1_set, METH_VARARGS, (char *)"IRect_x1_set(self, x1)"},
+	 { (char *)"IRect_x1_get", _wrap_IRect_x1_get, METH_VARARGS, (char *)"IRect_x1_get(self) -> int"},
+	 { (char *)"IRect_y1_set", _wrap_IRect_y1_set, METH_VARARGS, (char *)"IRect_y1_set(self, y1)"},
+	 { (char *)"IRect_y1_get", _wrap_IRect_y1_get, METH_VARARGS, (char *)"IRect_y1_get(self) -> int"},
+	 { (char *)"delete_IRect", _wrap_delete_IRect, METH_VARARGS, (char *)"delete_IRect(self)"},
 	 { (char *)"new_IRect", _wrap_new_IRect, METH_VARARGS, (char *)"\n"
 		"IRect()\n"
-		"IRect(IRect s)\n"
-		"new_IRect(int x0, int y0, int x1, int y1) -> IRect\n"
+		"IRect(s)\n"
+		"IRect(x0, y0, x1, y1)\n"
+		"new_IRect(list) -> IRect\n"
 		""},
-	 { (char *)"IRect_translate", _wrap_IRect_translate, METH_VARARGS, (char *)"IRect_translate(IRect self, int xoff, int yoff) -> IRect"},
-	 { (char *)"IRect_intersect", _wrap_IRect_intersect, METH_VARARGS, (char *)"IRect_intersect(IRect self, IRect ir) -> IRect"},
+	 { (char *)"IRect_isEmpty", _wrap_IRect_isEmpty, METH_VARARGS, (char *)"IRect_isEmpty(self) -> PyObject *"},
+	 { (char *)"IRect_isInfinite", _wrap_IRect_isInfinite, METH_VARARGS, (char *)"IRect_isInfinite(self) -> PyObject *"},
+	 { (char *)"IRect_normalize", _wrap_IRect_normalize, METH_VARARGS, (char *)"Make rectangle finite"},
+	 { (char *)"IRect_contains", _wrap_IRect_contains, METH_VARARGS, (char *)"\n"
+		"contains\n"
+		"contains\n"
+		"contains\n"
+		""},
+	 { (char *)"IRect_translate", _wrap_IRect_translate, METH_VARARGS, (char *)"IRect_translate(self, xoff, yoff) -> IRect"},
+	 { (char *)"IRect_intersect", _wrap_IRect_intersect, METH_VARARGS, (char *)"IRect_intersect(self, ir) -> IRect"},
 	 { (char *)"IRect_swigregister", IRect_swigregister, METH_VARARGS, NULL},
-	 { (char *)"Pixmap_x_set", _wrap_Pixmap_x_set, METH_VARARGS, (char *)"Pixmap_x_set(Pixmap self, int x)"},
-	 { (char *)"Pixmap_x_get", _wrap_Pixmap_x_get, METH_VARARGS, (char *)"Pixmap_x_get(Pixmap self) -> int"},
-	 { (char *)"Pixmap_y_set", _wrap_Pixmap_y_set, METH_VARARGS, (char *)"Pixmap_y_set(Pixmap self, int y)"},
-	 { (char *)"Pixmap_y_get", _wrap_Pixmap_y_get, METH_VARARGS, (char *)"Pixmap_y_get(Pixmap self) -> int"},
-	 { (char *)"Pixmap_w_set", _wrap_Pixmap_w_set, METH_VARARGS, (char *)"Pixmap_w_set(Pixmap self, int w)"},
-	 { (char *)"Pixmap_w_get", _wrap_Pixmap_w_get, METH_VARARGS, (char *)"Pixmap_w_get(Pixmap self) -> int"},
-	 { (char *)"Pixmap_h_set", _wrap_Pixmap_h_set, METH_VARARGS, (char *)"Pixmap_h_set(Pixmap self, int h)"},
-	 { (char *)"Pixmap_h_get", _wrap_Pixmap_h_get, METH_VARARGS, (char *)"Pixmap_h_get(Pixmap self) -> int"},
-	 { (char *)"Pixmap_n_set", _wrap_Pixmap_n_set, METH_VARARGS, (char *)"Pixmap_n_set(Pixmap self, int n)"},
-	 { (char *)"Pixmap_n_get", _wrap_Pixmap_n_get, METH_VARARGS, (char *)"Pixmap_n_get(Pixmap self) -> int"},
-	 { (char *)"Pixmap_interpolate_set", _wrap_Pixmap_interpolate_set, METH_VARARGS, (char *)"Pixmap_interpolate_set(Pixmap self, int interpolate)"},
-	 { (char *)"Pixmap_interpolate_get", _wrap_Pixmap_interpolate_get, METH_VARARGS, (char *)"Pixmap_interpolate_get(Pixmap self) -> int"},
-	 { (char *)"Pixmap_xres_set", _wrap_Pixmap_xres_set, METH_VARARGS, (char *)"Pixmap_xres_set(Pixmap self, int xres)"},
-	 { (char *)"Pixmap_xres_get", _wrap_Pixmap_xres_get, METH_VARARGS, (char *)"Pixmap_xres_get(Pixmap self) -> int"},
-	 { (char *)"Pixmap_yres_set", _wrap_Pixmap_yres_set, METH_VARARGS, (char *)"Pixmap_yres_set(Pixmap self, int yres)"},
-	 { (char *)"Pixmap_yres_get", _wrap_Pixmap_yres_get, METH_VARARGS, (char *)"Pixmap_yres_get(Pixmap self) -> int"},
+	 { (char *)"Pixmap_x_set", _wrap_Pixmap_x_set, METH_VARARGS, (char *)"Pixmap_x_set(self, x)"},
+	 { (char *)"Pixmap_x_get", _wrap_Pixmap_x_get, METH_VARARGS, (char *)"Pixmap_x_get(self) -> int"},
+	 { (char *)"Pixmap_y_set", _wrap_Pixmap_y_set, METH_VARARGS, (char *)"Pixmap_y_set(self, y)"},
+	 { (char *)"Pixmap_y_get", _wrap_Pixmap_y_get, METH_VARARGS, (char *)"Pixmap_y_get(self) -> int"},
+	 { (char *)"Pixmap_w_set", _wrap_Pixmap_w_set, METH_VARARGS, (char *)"Pixmap_w_set(self, w)"},
+	 { (char *)"Pixmap_w_get", _wrap_Pixmap_w_get, METH_VARARGS, (char *)"Pixmap_w_get(self) -> int"},
+	 { (char *)"Pixmap_h_set", _wrap_Pixmap_h_set, METH_VARARGS, (char *)"Pixmap_h_set(self, h)"},
+	 { (char *)"Pixmap_h_get", _wrap_Pixmap_h_get, METH_VARARGS, (char *)"Pixmap_h_get(self) -> int"},
+	 { (char *)"Pixmap_n_set", _wrap_Pixmap_n_set, METH_VARARGS, (char *)"Pixmap_n_set(self, n)"},
+	 { (char *)"Pixmap_n_get", _wrap_Pixmap_n_get, METH_VARARGS, (char *)"Pixmap_n_get(self) -> int"},
+	 { (char *)"Pixmap_interpolate_set", _wrap_Pixmap_interpolate_set, METH_VARARGS, (char *)"Pixmap_interpolate_set(self, interpolate)"},
+	 { (char *)"Pixmap_interpolate_get", _wrap_Pixmap_interpolate_get, METH_VARARGS, (char *)"Pixmap_interpolate_get(self) -> int"},
+	 { (char *)"Pixmap_xres_set", _wrap_Pixmap_xres_set, METH_VARARGS, (char *)"Pixmap_xres_set(self, xres)"},
+	 { (char *)"Pixmap_xres_get", _wrap_Pixmap_xres_get, METH_VARARGS, (char *)"Pixmap_xres_get(self) -> int"},
+	 { (char *)"Pixmap_yres_set", _wrap_Pixmap_yres_set, METH_VARARGS, (char *)"Pixmap_yres_set(self, yres)"},
+	 { (char *)"Pixmap_yres_get", _wrap_Pixmap_yres_get, METH_VARARGS, (char *)"Pixmap_yres_get(self) -> int"},
 	 { (char *)"new_Pixmap", _wrap_new_Pixmap, METH_VARARGS, (char *)"\n"
 		"fitz.Pixmap(cs, width, height, samples, alpha)\n"
 		"fitz.Pixmap(cs, fitz.Irect, alpha)\n"
@@ -13736,135 +14722,138 @@ static PyMethodDef SwigMethods[] = {
 		"fitz.Pixmap(bytearray)\n"
 		"fitz.Pixmap(doc, xref)\n"
 		""},
-	 { (char *)"delete_Pixmap", _wrap_delete_Pixmap, METH_VARARGS, (char *)"delete_Pixmap(Pixmap self)"},
-	 { (char *)"Pixmap_gammaWith", _wrap_Pixmap_gammaWith, METH_VARARGS, (char *)"Pixmap_gammaWith(Pixmap self, float gamma)"},
-	 { (char *)"Pixmap_tintWith", _wrap_Pixmap_tintWith, METH_VARARGS, (char *)"Pixmap_tintWith(Pixmap self, int red, int green, int blue)"},
+	 { (char *)"delete_Pixmap", _wrap_delete_Pixmap, METH_VARARGS, (char *)"delete_Pixmap(self)"},
+	 { (char *)"Pixmap_gammaWith", _wrap_Pixmap_gammaWith, METH_VARARGS, (char *)"Pixmap_gammaWith(self, gamma)"},
+	 { (char *)"Pixmap_tintWith", _wrap_Pixmap_tintWith, METH_VARARGS, (char *)"Pixmap_tintWith(self, red, green, blue)"},
 	 { (char *)"Pixmap_clearWith", _wrap_Pixmap_clearWith, METH_VARARGS, (char *)"\n"
-		"clearWith(int value)\n"
-		"Pixmap_clearWith(Pixmap self, int value, IRect bbox)\n"
+		"clearWith(value)\n"
+		"Pixmap_clearWith(self, value, bbox)\n"
 		""},
-	 { (char *)"Pixmap_copyPixmap", _wrap_Pixmap_copyPixmap, METH_VARARGS, (char *)"Pixmap_copyPixmap(Pixmap self, Pixmap src, IRect bbox)"},
-	 { (char *)"Pixmap_stride", _wrap_Pixmap_stride, METH_VARARGS, (char *)"Pixmap_stride(Pixmap self) -> int"},
-	 { (char *)"Pixmap_alpha", _wrap_Pixmap_alpha, METH_VARARGS, (char *)"Pixmap_alpha(Pixmap self) -> int"},
-	 { (char *)"Pixmap_colorspace", _wrap_Pixmap_colorspace, METH_VARARGS, (char *)"Pixmap_colorspace(Pixmap self) -> Colorspace"},
-	 { (char *)"Pixmap_irect", _wrap_Pixmap_irect, METH_VARARGS, (char *)"Pixmap_irect(Pixmap self) -> IRect"},
-	 { (char *)"Pixmap_size", _wrap_Pixmap_size, METH_VARARGS, (char *)"Pixmap_size(Pixmap self) -> int"},
-	 { (char *)"Pixmap_writePNG", _wrap_Pixmap_writePNG, METH_VARARGS, (char *)"Pixmap_writePNG(Pixmap self, char * filename, int savealpha=-1) -> int"},
-	 { (char *)"Pixmap_getPNGData", _wrap_Pixmap_getPNGData, METH_VARARGS, (char *)"Pixmap_getPNGData(Pixmap self, int savealpha=-1) -> PyObject *"},
-	 { (char *)"Pixmap__writeIMG", _wrap_Pixmap__writeIMG, METH_VARARGS, (char *)"Pixmap__writeIMG(Pixmap self, char * filename, int format, int savealpha=-1) -> int"},
+	 { (char *)"Pixmap_copyPixmap", _wrap_Pixmap_copyPixmap, METH_VARARGS, (char *)"Pixmap_copyPixmap(self, src, bbox)"},
+	 { (char *)"Pixmap_stride", _wrap_Pixmap_stride, METH_VARARGS, (char *)"Pixmap_stride(self) -> int"},
+	 { (char *)"Pixmap_alpha", _wrap_Pixmap_alpha, METH_VARARGS, (char *)"Pixmap_alpha(self) -> int"},
+	 { (char *)"Pixmap_colorspace", _wrap_Pixmap_colorspace, METH_VARARGS, (char *)"Pixmap_colorspace(self) -> Colorspace"},
+	 { (char *)"Pixmap_irect", _wrap_Pixmap_irect, METH_VARARGS, (char *)"Pixmap_irect(self) -> IRect"},
+	 { (char *)"Pixmap_size", _wrap_Pixmap_size, METH_VARARGS, (char *)"Pixmap_size(self) -> int"},
+	 { (char *)"Pixmap_writePNG", _wrap_Pixmap_writePNG, METH_VARARGS, (char *)"Pixmap_writePNG(self, filename, savealpha=-1) -> int"},
+	 { (char *)"Pixmap_getPNGData", _wrap_Pixmap_getPNGData, METH_VARARGS, (char *)"Pixmap_getPNGData(self, savealpha=-1) -> PyObject *"},
+	 { (char *)"Pixmap__writeIMG", _wrap_Pixmap__writeIMG, METH_VARARGS, (char *)"Pixmap__writeIMG(self, filename, format, savealpha=-1) -> int"},
 	 { (char *)"Pixmap_invertIRect", _wrap_Pixmap_invertIRect, METH_VARARGS, (char *)"\n"
 		"invertIRect()\n"
-		"Pixmap_invertIRect(Pixmap self, IRect irect)\n"
+		"Pixmap_invertIRect(self, irect)\n"
 		""},
-	 { (char *)"Pixmap_samples", _wrap_Pixmap_samples, METH_VARARGS, (char *)"Pixmap_samples(Pixmap self) -> PyObject *"},
+	 { (char *)"Pixmap_samples", _wrap_Pixmap_samples, METH_VARARGS, (char *)"Pixmap_samples(self) -> PyObject *"},
 	 { (char *)"Pixmap_swigregister", Pixmap_swigregister, METH_VARARGS, NULL},
-	 { (char *)"new_Colorspace", _wrap_new_Colorspace, METH_VARARGS, (char *)"new_Colorspace(int type) -> Colorspace"},
-	 { (char *)"Colorspace_n", _wrap_Colorspace_n, METH_VARARGS, (char *)"Colorspace_n(Colorspace self) -> int"},
-	 { (char *)"Colorspace_name", _wrap_Colorspace_name, METH_VARARGS, (char *)"Colorspace_name(Colorspace self) -> char const *"},
-	 { (char *)"delete_Colorspace", _wrap_delete_Colorspace, METH_VARARGS, (char *)"delete_Colorspace(Colorspace self)"},
+	 { (char *)"new_Colorspace", _wrap_new_Colorspace, METH_VARARGS, (char *)"new_Colorspace(type) -> Colorspace"},
+	 { (char *)"Colorspace_n", _wrap_Colorspace_n, METH_VARARGS, (char *)"Colorspace_n(self) -> int"},
+	 { (char *)"Colorspace_name", _wrap_Colorspace_name, METH_VARARGS, (char *)"Colorspace_name(self) -> char const *"},
+	 { (char *)"delete_Colorspace", _wrap_delete_Colorspace, METH_VARARGS, (char *)"delete_Colorspace(self)"},
 	 { (char *)"Colorspace_swigregister", Colorspace_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_Device", _wrap_new_Device, METH_VARARGS, (char *)"\n"
-		"Device(Pixmap pm, IRect clip)\n"
-		"Device(DisplayList dl)\n"
-		"new_Device(TextSheet ts, TextPage tp) -> Device\n"
+		"Device(pm, clip)\n"
+		"Device(dl)\n"
+		"new_Device(ts, tp) -> Device\n"
 		""},
-	 { (char *)"delete_Device", _wrap_delete_Device, METH_VARARGS, (char *)"delete_Device(Device self)"},
+	 { (char *)"delete_Device", _wrap_delete_Device, METH_VARARGS, (char *)"delete_Device(self)"},
 	 { (char *)"Device_swigregister", Device_swigregister, METH_VARARGS, NULL},
-	 { (char *)"_fz_pre_scale", _wrap__fz_pre_scale, METH_VARARGS, (char *)"_fz_pre_scale(Matrix m, float sx, float sy) -> Matrix"},
-	 { (char *)"_fz_pre_shear", _wrap__fz_pre_shear, METH_VARARGS, (char *)"_fz_pre_shear(Matrix m, float sx, float sy) -> Matrix"},
-	 { (char *)"_fz_pre_rotate", _wrap__fz_pre_rotate, METH_VARARGS, (char *)"_fz_pre_rotate(Matrix m, float degree) -> Matrix"},
-	 { (char *)"Matrix_a_set", _wrap_Matrix_a_set, METH_VARARGS, (char *)"Matrix_a_set(Matrix self, float a)"},
-	 { (char *)"Matrix_a_get", _wrap_Matrix_a_get, METH_VARARGS, (char *)"Matrix_a_get(Matrix self) -> float"},
-	 { (char *)"Matrix_b_set", _wrap_Matrix_b_set, METH_VARARGS, (char *)"Matrix_b_set(Matrix self, float b)"},
-	 { (char *)"Matrix_b_get", _wrap_Matrix_b_get, METH_VARARGS, (char *)"Matrix_b_get(Matrix self) -> float"},
-	 { (char *)"Matrix_c_set", _wrap_Matrix_c_set, METH_VARARGS, (char *)"Matrix_c_set(Matrix self, float c)"},
-	 { (char *)"Matrix_c_get", _wrap_Matrix_c_get, METH_VARARGS, (char *)"Matrix_c_get(Matrix self) -> float"},
-	 { (char *)"Matrix_d_set", _wrap_Matrix_d_set, METH_VARARGS, (char *)"Matrix_d_set(Matrix self, float d)"},
-	 { (char *)"Matrix_d_get", _wrap_Matrix_d_get, METH_VARARGS, (char *)"Matrix_d_get(Matrix self) -> float"},
-	 { (char *)"Matrix_e_set", _wrap_Matrix_e_set, METH_VARARGS, (char *)"Matrix_e_set(Matrix self, float e)"},
-	 { (char *)"Matrix_e_get", _wrap_Matrix_e_get, METH_VARARGS, (char *)"Matrix_e_get(Matrix self) -> float"},
-	 { (char *)"Matrix_f_set", _wrap_Matrix_f_set, METH_VARARGS, (char *)"Matrix_f_set(Matrix self, float f)"},
-	 { (char *)"Matrix_f_get", _wrap_Matrix_f_get, METH_VARARGS, (char *)"Matrix_f_get(Matrix self) -> float"},
-	 { (char *)"delete_Matrix", _wrap_delete_Matrix, METH_VARARGS, (char *)"delete_Matrix(Matrix self)"},
+	 { (char *)"_fz_pre_scale", _wrap__fz_pre_scale, METH_VARARGS, (char *)"_fz_pre_scale(m, sx, sy) -> Matrix"},
+	 { (char *)"_fz_pre_shear", _wrap__fz_pre_shear, METH_VARARGS, (char *)"_fz_pre_shear(m, sx, sy) -> Matrix"},
+	 { (char *)"_fz_pre_rotate", _wrap__fz_pre_rotate, METH_VARARGS, (char *)"_fz_pre_rotate(m, degree) -> Matrix"},
+	 { (char *)"Matrix_a_set", _wrap_Matrix_a_set, METH_VARARGS, (char *)"Matrix_a_set(self, a)"},
+	 { (char *)"Matrix_a_get", _wrap_Matrix_a_get, METH_VARARGS, (char *)"Matrix_a_get(self) -> float"},
+	 { (char *)"Matrix_b_set", _wrap_Matrix_b_set, METH_VARARGS, (char *)"Matrix_b_set(self, b)"},
+	 { (char *)"Matrix_b_get", _wrap_Matrix_b_get, METH_VARARGS, (char *)"Matrix_b_get(self) -> float"},
+	 { (char *)"Matrix_c_set", _wrap_Matrix_c_set, METH_VARARGS, (char *)"Matrix_c_set(self, c)"},
+	 { (char *)"Matrix_c_get", _wrap_Matrix_c_get, METH_VARARGS, (char *)"Matrix_c_get(self) -> float"},
+	 { (char *)"Matrix_d_set", _wrap_Matrix_d_set, METH_VARARGS, (char *)"Matrix_d_set(self, d)"},
+	 { (char *)"Matrix_d_get", _wrap_Matrix_d_get, METH_VARARGS, (char *)"Matrix_d_get(self) -> float"},
+	 { (char *)"Matrix_e_set", _wrap_Matrix_e_set, METH_VARARGS, (char *)"Matrix_e_set(self, e)"},
+	 { (char *)"Matrix_e_get", _wrap_Matrix_e_get, METH_VARARGS, (char *)"Matrix_e_get(self) -> float"},
+	 { (char *)"Matrix_f_set", _wrap_Matrix_f_set, METH_VARARGS, (char *)"Matrix_f_set(self, f)"},
+	 { (char *)"Matrix_f_get", _wrap_Matrix_f_get, METH_VARARGS, (char *)"Matrix_f_get(self) -> float"},
+	 { (char *)"delete_Matrix", _wrap_delete_Matrix, METH_VARARGS, (char *)"delete_Matrix(self)"},
 	 { (char *)"new_Matrix", _wrap_new_Matrix, METH_VARARGS, (char *)"\n"
 		"Matrix()\n"
-		"Matrix(Matrix n)\n"
-		"Matrix(float sx, float sy, int shear=0)\n"
-		"new_Matrix(float degree) -> Matrix\n"
+		"Matrix(n)\n"
+		"Matrix(sx, sy, shear=0)\n"
+		"Matrix(r, s, t, u, v, w)\n"
+		"Matrix(degree)\n"
+		"new_Matrix(list) -> Matrix\n"
 		""},
-	 { (char *)"Matrix_invert", _wrap_Matrix_invert, METH_VARARGS, (char *)"Matrix_invert(Matrix self, Matrix m) -> int"},
-	 { (char *)"Matrix_preTranslate", _wrap_Matrix_preTranslate, METH_VARARGS, (char *)"Matrix_preTranslate(Matrix self, float sx, float sy) -> Matrix"},
-	 { (char *)"Matrix_concat", _wrap_Matrix_concat, METH_VARARGS, (char *)"Matrix_concat(Matrix self, Matrix m1, Matrix m2) -> Matrix"},
+	 { (char *)"Matrix_invert", _wrap_Matrix_invert, METH_VARARGS, (char *)"Matrix_invert(self, m) -> int"},
+	 { (char *)"Matrix_preTranslate", _wrap_Matrix_preTranslate, METH_VARARGS, (char *)"Matrix_preTranslate(self, sx, sy) -> Matrix"},
+	 { (char *)"Matrix_concat", _wrap_Matrix_concat, METH_VARARGS, (char *)"Matrix_concat(self, m1, m2) -> Matrix"},
 	 { (char *)"Matrix_swigregister", Matrix_swigregister, METH_VARARGS, NULL},
-	 { (char *)"Outline_title_get", _wrap_Outline_title_get, METH_VARARGS, (char *)"Outline_title_get(Outline self) -> char *"},
-	 { (char *)"Outline_page_get", _wrap_Outline_page_get, METH_VARARGS, (char *)"Outline_page_get(Outline self) -> int"},
-	 { (char *)"Outline_next_get", _wrap_Outline_next_get, METH_VARARGS, (char *)"Outline_next_get(Outline self) -> Outline"},
-	 { (char *)"Outline_down_get", _wrap_Outline_down_get, METH_VARARGS, (char *)"Outline_down_get(Outline self) -> Outline"},
-	 { (char *)"Outline_is_open_get", _wrap_Outline_is_open_get, METH_VARARGS, (char *)"Outline_is_open_get(Outline self) -> int"},
-	 { (char *)"Outline_saveXML", _wrap_Outline_saveXML, METH_VARARGS, (char *)"Outline_saveXML(Outline self, char const * filename) -> int"},
-	 { (char *)"Outline_saveText", _wrap_Outline_saveText, METH_VARARGS, (char *)"Outline_saveText(Outline self, char const * filename) -> int"},
-	 { (char *)"Outline_uri", _wrap_Outline_uri, METH_VARARGS, (char *)"Outline_uri(Outline self) -> char *"},
-	 { (char *)"Outline_isExternal", _wrap_Outline_isExternal, METH_VARARGS, (char *)"Outline_isExternal(Outline self) -> int"},
-	 { (char *)"delete_Outline", _wrap_delete_Outline, METH_VARARGS, (char *)"delete_Outline(Outline self)"},
+	 { (char *)"Outline_title_get", _wrap_Outline_title_get, METH_VARARGS, (char *)"Outline_title_get(self) -> char *"},
+	 { (char *)"Outline_page_get", _wrap_Outline_page_get, METH_VARARGS, (char *)"Outline_page_get(self) -> int"},
+	 { (char *)"Outline_next_get", _wrap_Outline_next_get, METH_VARARGS, (char *)"Outline_next_get(self) -> Outline"},
+	 { (char *)"Outline_down_get", _wrap_Outline_down_get, METH_VARARGS, (char *)"Outline_down_get(self) -> Outline"},
+	 { (char *)"Outline_is_open_get", _wrap_Outline_is_open_get, METH_VARARGS, (char *)"Outline_is_open_get(self) -> int"},
+	 { (char *)"Outline_saveXML", _wrap_Outline_saveXML, METH_VARARGS, (char *)"Outline_saveXML(self, filename) -> int"},
+	 { (char *)"Outline_saveText", _wrap_Outline_saveText, METH_VARARGS, (char *)"Outline_saveText(self, filename) -> int"},
+	 { (char *)"Outline_uri", _wrap_Outline_uri, METH_VARARGS, (char *)"Outline_uri(self) -> char *"},
+	 { (char *)"Outline_isExternal", _wrap_Outline_isExternal, METH_VARARGS, (char *)"Outline_isExternal(self) -> int"},
+	 { (char *)"delete_Outline", _wrap_delete_Outline, METH_VARARGS, (char *)"delete_Outline(self)"},
 	 { (char *)"Outline_swigregister", Outline_swigregister, METH_VARARGS, NULL},
-	 { (char *)"_fz_transform_point", _wrap__fz_transform_point, METH_VARARGS, (char *)"_fz_transform_point(Point point, Matrix transform) -> Point"},
-	 { (char *)"Point_x_set", _wrap_Point_x_set, METH_VARARGS, (char *)"Point_x_set(Point self, float x)"},
-	 { (char *)"Point_x_get", _wrap_Point_x_get, METH_VARARGS, (char *)"Point_x_get(Point self) -> float"},
-	 { (char *)"Point_y_set", _wrap_Point_y_set, METH_VARARGS, (char *)"Point_y_set(Point self, float y)"},
-	 { (char *)"Point_y_get", _wrap_Point_y_get, METH_VARARGS, (char *)"Point_y_get(Point self) -> float"},
-	 { (char *)"delete_Point", _wrap_delete_Point, METH_VARARGS, (char *)"delete_Point(Point self)"},
+	 { (char *)"_fz_transform_point", _wrap__fz_transform_point, METH_VARARGS, (char *)"_fz_transform_point(point, transform) -> Point"},
+	 { (char *)"Point_x_set", _wrap_Point_x_set, METH_VARARGS, (char *)"Point_x_set(self, x)"},
+	 { (char *)"Point_x_get", _wrap_Point_x_get, METH_VARARGS, (char *)"Point_x_get(self) -> float"},
+	 { (char *)"Point_y_set", _wrap_Point_y_set, METH_VARARGS, (char *)"Point_y_set(self, y)"},
+	 { (char *)"Point_y_get", _wrap_Point_y_get, METH_VARARGS, (char *)"Point_y_get(self) -> float"},
+	 { (char *)"delete_Point", _wrap_delete_Point, METH_VARARGS, (char *)"delete_Point(self)"},
 	 { (char *)"new_Point", _wrap_new_Point, METH_VARARGS, (char *)"\n"
 		"Point()\n"
-		"Point(Point q)\n"
-		"new_Point(float x, float y) -> Point\n"
+		"Point(q)\n"
+		"Point(x, y)\n"
+		"new_Point(list) -> Point\n"
 		""},
 	 { (char *)"Point_swigregister", Point_swigregister, METH_VARARGS, NULL},
-	 { (char *)"delete_Annot", _wrap_delete_Annot, METH_VARARGS, (char *)"delete_Annot(Annot self)"},
+	 { (char *)"delete_Annot", _wrap_delete_Annot, METH_VARARGS, (char *)"delete_Annot(self)"},
 	 { (char *)"Annot_rect", _wrap_Annot_rect, METH_VARARGS, (char *)"rect: rectangle containing the annot"},
 	 { (char *)"Annot__getXref", _wrap_Annot__getXref, METH_VARARGS, (char *)"return xref number of annotation"},
 	 { (char *)"Annot__getAP", _wrap_Annot__getAP, METH_VARARGS, (char *)"_getAP: provides operator source of the /AP"},
 	 { (char *)"Annot__setAP", _wrap_Annot__setAP, METH_VARARGS, (char *)"_setAP: updates operator source of the /AP"},
 	 { (char *)"Annot_setRect", _wrap_Annot_setRect, METH_VARARGS, (char *)"setRect: changes the annot's rectangle"},
-	 { (char *)"Annot_vertices", _wrap_Annot_vertices, METH_VARARGS, (char *)"vertices: point coordinates for various annot typess"},
-	 { (char *)"Annot_colors", _wrap_Annot_colors, METH_VARARGS, (char *)"colors: dictionary of the annot's colors"},
+	 { (char *)"Annot_vertices", _wrap_Annot_vertices, METH_VARARGS, (char *)"vertices: point coordinates for various annot types"},
+	 { (char *)"Annot_colors", _wrap_Annot_colors, METH_VARARGS, (char *)"dictionary of the annot's colors"},
 	 { (char *)"Annot_setColors", _wrap_Annot_setColors, METH_VARARGS, (char *)"\n"
 		"setColors(dict)\n"
-		"Changes the 'common' and 'fill' colors of an annotation. Both values must be lists of up to 4 floats.\n"
+		"Changes the 'common' and 'fill' colors of an annotation. If provided, values must be lists of up to 4 floats.\n"
 		""},
-	 { (char *)"Annot_lineEnds", _wrap_Annot_lineEnds, METH_VARARGS, (char *)"Annot_lineEnds(Annot self) -> PyObject *"},
-	 { (char *)"Annot_setLineEnds", _wrap_Annot_setLineEnds, METH_VARARGS, (char *)"Annot_setLineEnds(Annot self, int start, int end)"},
-	 { (char *)"Annot_type", _wrap_Annot_type, METH_VARARGS, (char *)"Annot_type(Annot self) -> PyObject *"},
-	 { (char *)"Annot_info", _wrap_Annot_info, METH_VARARGS, (char *)"Annot_info(Annot self) -> PyObject *"},
-	 { (char *)"Annot_setInfo", _wrap_Annot_setInfo, METH_VARARGS, (char *)"Annot_setInfo(Annot self, PyObject * info) -> int"},
-	 { (char *)"Annot_border", _wrap_Annot_border, METH_VARARGS, (char *)"Annot_border(Annot self) -> PyObject *"},
-	 { (char *)"Annot_setBorder", _wrap_Annot_setBorder, METH_VARARGS, (char *)"Annot_setBorder(Annot self, PyObject * border) -> int"},
-	 { (char *)"Annot_flags", _wrap_Annot_flags, METH_VARARGS, (char *)"Annot_flags(Annot self) -> int"},
-	 { (char *)"Annot_setFlags", _wrap_Annot_setFlags, METH_VARARGS, (char *)"Annot_setFlags(Annot self, int flags)"},
-	 { (char *)"Annot_next", _wrap_Annot_next, METH_VARARGS, (char *)"Annot_next(Annot self) -> Annot"},
-	 { (char *)"Annot_getPixmap", _wrap_Annot_getPixmap, METH_VARARGS, (char *)"Annot_getPixmap(Annot self, Matrix matrix=None, Colorspace colorspace=None, int alpha=0) -> Pixmap"},
+	 { (char *)"Annot_lineEnds", _wrap_Annot_lineEnds, METH_VARARGS, (char *)"Annot_lineEnds(self) -> PyObject *"},
+	 { (char *)"Annot_setLineEnds", _wrap_Annot_setLineEnds, METH_VARARGS, (char *)"Annot_setLineEnds(self, start, end)"},
+	 { (char *)"Annot_type", _wrap_Annot_type, METH_VARARGS, (char *)"Annot_type(self) -> PyObject *"},
+	 { (char *)"Annot_info", _wrap_Annot_info, METH_VARARGS, (char *)"Annot_info(self) -> PyObject *"},
+	 { (char *)"Annot_setInfo", _wrap_Annot_setInfo, METH_VARARGS, (char *)"Annot_setInfo(self, info) -> int"},
+	 { (char *)"Annot_border", _wrap_Annot_border, METH_VARARGS, (char *)"Annot_border(self) -> PyObject *"},
+	 { (char *)"Annot_setBorder", _wrap_Annot_setBorder, METH_VARARGS, (char *)"Annot_setBorder(self, border) -> int"},
+	 { (char *)"Annot_flags", _wrap_Annot_flags, METH_VARARGS, (char *)"Annot_flags(self) -> int"},
+	 { (char *)"Annot_setFlags", _wrap_Annot_setFlags, METH_VARARGS, (char *)"Annot_setFlags(self, flags)"},
+	 { (char *)"Annot_next", _wrap_Annot_next, METH_VARARGS, (char *)"Annot_next(self) -> Annot"},
+	 { (char *)"Annot_getPixmap", _wrap_Annot_getPixmap, METH_VARARGS, (char *)"Annot_getPixmap(self, matrix=None, colorspace=None, alpha=0) -> Pixmap"},
 	 { (char *)"Annot_swigregister", Annot_swigregister, METH_VARARGS, NULL},
-	 { (char *)"delete_Link", _wrap_delete_Link, METH_VARARGS, (char *)"delete_Link(Link self)"},
-	 { (char *)"Link_uri", _wrap_Link_uri, METH_VARARGS, (char *)"Link_uri(Link self) -> char *"},
-	 { (char *)"Link_isExternal", _wrap_Link_isExternal, METH_VARARGS, (char *)"Link_isExternal(Link self) -> int"},
-	 { (char *)"Link_rect", _wrap_Link_rect, METH_VARARGS, (char *)"Link_rect(Link self) -> Rect"},
-	 { (char *)"Link_next", _wrap_Link_next, METH_VARARGS, (char *)"Link_next(Link self) -> Link"},
+	 { (char *)"delete_Link", _wrap_delete_Link, METH_VARARGS, (char *)"delete_Link(self)"},
+	 { (char *)"Link_uri", _wrap_Link_uri, METH_VARARGS, (char *)"Link_uri(self) -> char *"},
+	 { (char *)"Link_isExternal", _wrap_Link_isExternal, METH_VARARGS, (char *)"Link_isExternal(self) -> int"},
+	 { (char *)"Link_rect", _wrap_Link_rect, METH_VARARGS, (char *)"Link_rect(self) -> Rect"},
+	 { (char *)"Link_next", _wrap_Link_next, METH_VARARGS, (char *)"Link_next(self) -> Link"},
 	 { (char *)"Link_swigregister", Link_swigregister, METH_VARARGS, NULL},
-	 { (char *)"new_DisplayList", _wrap_new_DisplayList, METH_VARARGS, (char *)"new_DisplayList(Rect mediabox) -> DisplayList"},
-	 { (char *)"delete_DisplayList", _wrap_delete_DisplayList, METH_VARARGS, (char *)"delete_DisplayList(DisplayList self)"},
-	 { (char *)"DisplayList_run", _wrap_DisplayList_run, METH_VARARGS, (char *)"DisplayList_run(DisplayList self, Device dw, Matrix m, Rect area) -> int"},
+	 { (char *)"new_DisplayList", _wrap_new_DisplayList, METH_VARARGS, (char *)"new_DisplayList(mediabox) -> DisplayList"},
+	 { (char *)"delete_DisplayList", _wrap_delete_DisplayList, METH_VARARGS, (char *)"delete_DisplayList(self)"},
+	 { (char *)"DisplayList_run", _wrap_DisplayList_run, METH_VARARGS, (char *)"DisplayList_run(self, dw, m, area) -> int"},
 	 { (char *)"DisplayList_swigregister", DisplayList_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_TextSheet", _wrap_new_TextSheet, METH_VARARGS, (char *)"new_TextSheet() -> TextSheet"},
-	 { (char *)"delete_TextSheet", _wrap_delete_TextSheet, METH_VARARGS, (char *)"delete_TextSheet(TextSheet self)"},
+	 { (char *)"delete_TextSheet", _wrap_delete_TextSheet, METH_VARARGS, (char *)"delete_TextSheet(self)"},
 	 { (char *)"TextSheet_swigregister", TextSheet_swigregister, METH_VARARGS, NULL},
-	 { (char *)"TextPage_len_set", _wrap_TextPage_len_set, METH_VARARGS, (char *)"TextPage_len_set(TextPage self, int len)"},
-	 { (char *)"TextPage_len_get", _wrap_TextPage_len_get, METH_VARARGS, (char *)"TextPage_len_get(TextPage self) -> int"},
-	 { (char *)"new_TextPage", _wrap_new_TextPage, METH_VARARGS, (char *)"new_TextPage(Rect mediabox) -> TextPage"},
-	 { (char *)"delete_TextPage", _wrap_delete_TextPage, METH_VARARGS, (char *)"delete_TextPage(TextPage self)"},
-	 { (char *)"TextPage_search", _wrap_TextPage_search, METH_VARARGS, (char *)"TextPage_search(TextPage self, char const * needle, int hit_max=16) -> Rect"},
-	 { (char *)"TextPage_extractText", _wrap_TextPage_extractText, METH_VARARGS, (char *)"TextPage_extractText(TextPage self) -> char const *"},
-	 { (char *)"TextPage_extractXML", _wrap_TextPage_extractXML, METH_VARARGS, (char *)"TextPage_extractXML(TextPage self) -> char const *"},
-	 { (char *)"TextPage_extractHTML", _wrap_TextPage_extractHTML, METH_VARARGS, (char *)"TextPage_extractHTML(TextPage self) -> char const *"},
-	 { (char *)"TextPage_extractJSON", _wrap_TextPage_extractJSON, METH_VARARGS, (char *)"TextPage_extractJSON(TextPage self) -> char const *"},
+	 { (char *)"TextPage_len_set", _wrap_TextPage_len_set, METH_VARARGS, (char *)"TextPage_len_set(self, len)"},
+	 { (char *)"TextPage_len_get", _wrap_TextPage_len_get, METH_VARARGS, (char *)"TextPage_len_get(self) -> int"},
+	 { (char *)"new_TextPage", _wrap_new_TextPage, METH_VARARGS, (char *)"new_TextPage(mediabox) -> TextPage"},
+	 { (char *)"delete_TextPage", _wrap_delete_TextPage, METH_VARARGS, (char *)"delete_TextPage(self)"},
+	 { (char *)"TextPage_search", _wrap_TextPage_search, METH_VARARGS, (char *)"TextPage_search(self, needle, hit_max=16) -> Rect"},
+	 { (char *)"TextPage_extractText", _wrap_TextPage_extractText, METH_VARARGS, (char *)"TextPage_extractText(self) -> char const *"},
+	 { (char *)"TextPage_extractXML", _wrap_TextPage_extractXML, METH_VARARGS, (char *)"TextPage_extractXML(self) -> char const *"},
+	 { (char *)"TextPage_extractHTML", _wrap_TextPage_extractHTML, METH_VARARGS, (char *)"TextPage_extractHTML(self) -> char const *"},
+	 { (char *)"TextPage_extractJSON", _wrap_TextPage_extractJSON, METH_VARARGS, (char *)"TextPage_extractJSON(self) -> char const *"},
 	 { (char *)"TextPage_swigregister", TextPage_swigregister, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
