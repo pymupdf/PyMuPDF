@@ -16,6 +16,10 @@ Files in this Directory
 ======================= ===========================================================================================
 File                    Purpose
 ======================= ===========================================================================================
+embedded-copy.py        copies embedded files between source and target PDF
+embedded-list.py        lists emdedded file infos of a PDF
+embedded-import.py      embeds a new file into a PDF
+embedded-export.py      exports an emdedded file from a PDF
 PDFjoiner.py            a full-featured program to join PDF files
 PDFoutline.py           a program to edit a PDF's table of contents
 PDFoutlineHelp.html     help for PDFoutline.py
