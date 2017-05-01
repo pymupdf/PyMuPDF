@@ -98,7 +98,7 @@ char *getPDFstr(PyObject *obj, Py_ssize_t* psize, const char *name)
     Py_ssize_t j, k;
     PyObject *me;
     unsigned char *nc;
-    int have_uc = 0;    // indicates unicode beyond latin-1 code points
+    int have_uc = 0;    // indicates unicode points > 255
     me = obj;
     if (PyBytes_Check(me))
         {

@@ -98,7 +98,7 @@ except __builtin__.Exception:
 import weakref
 VersionFitz = "1.11"
 VersionBind = "1.11.0"
-VersionDate = "2017-04-28 07:23:16"
+VersionDate = "2017-04-30 14:37:26"
 
 LINK_NONE   = 0
 LINK_GOTO   = 1
@@ -563,7 +563,7 @@ Change filename, description of embedded file, given its entry number or name.""
 
 
     def _getPageRectText(self, pno, rect):
-        """_getPageRectText(self, pno, rect) -> char *"""
+        """_getPageRectText(self, pno, rect) -> char const *"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -802,7 +802,7 @@ class Page(_object):
 
 
     def _getRectText(self, rect):
-        """_getRectText(self, rect) -> char *"""
+        """_getRectText(self, rect) -> char const *"""
         if hasattr(self, "parent"):
             if self.parent is None:
                 raise RuntimeError("orphaned object: parent is None")
@@ -811,7 +811,7 @@ class Page(_object):
 
 
     def _readPageText(self, output=0):
-        """_readPageText(self, output=0) -> char *"""
+        """_readPageText(self, output=0) -> char const *"""
         return _fitz.Page__readPageText(self, output)
 
 

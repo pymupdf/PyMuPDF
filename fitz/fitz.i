@@ -57,7 +57,7 @@ if (!cond) THROWMSG("not a PDF")
 #include <fitz.h>
 #include <pdf.h>
 #include <zlib.h>
-
+#include <time.h>
 void fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page);
 void fz_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox);
 void fz_print_utf8(fz_context *ctx, fz_output *out, int rune);
@@ -257,44 +257,49 @@ struct fz_document_s
         int embeddedFileCount()
         {
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
-            if (!pdf) return 0;
+            if (!pdf) return -1;
             return pdf_count_portfolio_entries(gctx, pdf);
         }
 
+        FITZEXCEPTION(embeddedFileDel, result < 0)
         CLOSECHECK(embeddedFileDel)
         %feature("autodoc","Delete embedded file entry by name") embeddedFileDel;
         int embeddedFileDel(char *name)
         {
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
-            if (!pdf) return -1;            // no PDF
-            // get the EmbeddedFiles entry
-            pdf_obj *efiles = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
-                                         PDF_NAME_Root, PDF_NAME_Names,
-                                         PDF_NAME_EmbeddedFiles, NULL);
-            if (!efiles) return -2;         // no embedded files
-            pdf_obj *names = pdf_dict_get(gctx, efiles, PDF_NAME_Names);
-            pdf_obj *limits = pdf_dict_get(gctx, efiles, PDF_NAME_Limits);
-            char *limit1 = NULL;
-            char *limit2 = NULL;
-            if (limits)                     // have name limits?
-                {
-                    limit1 = pdf_to_str_buf(gctx, pdf_array_get(gctx, limits, 0));
-                    limit2 = pdf_to_str_buf(gctx, pdf_array_get(gctx, limits, 1));
-                }
-            int len = pdf_array_len(gctx, names);     // embedded files count*2
-            int i;
-            pdf_obj *k, *v, *stream;
-            char *tname;
-            for (i=0; i < len; i+=2)        // search for the name
-                {
-                    k = pdf_array_get(gctx, names, i);
-                    tname = pdf_to_str_buf(gctx, k);
-                    if (strcmp(tname, name) == 0) break;   // name found
-                }
-            if (strcmp(tname, name) != 0) return -2;  // name not found
+            pdf_obj *names, *limits, *efiles, *v, *stream;
+            char *limit1, *limit2, *tname;
+            int i, len;
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                // get the EmbeddedFiles entry
+                efiles = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                                      PDF_NAME_Root, PDF_NAME_Names,
+                                      PDF_NAME_EmbeddedFiles, NULL);
+                if (!efiles) THROWMSG("no embedded files");
+                names = pdf_dict_get(gctx, efiles, PDF_NAME_Names);
+                limits = pdf_dict_get(gctx, efiles, PDF_NAME_Limits);
+                limit1 = NULL;
+                limit2 = NULL;
+                if (limits)                     // have name limits?
+                    {
+                        limit1 = pdf_to_str_buf(gctx, pdf_array_get(gctx, limits, 0));
+                        limit2 = pdf_to_str_buf(gctx, pdf_array_get(gctx, limits, 1));
+                    }
+                len = pdf_array_len(gctx, names);     // embedded files count*2
+                for (i=0; i < len; i+=2)              // search for the name
+                    {
+                        tname = pdf_to_str_buf(gctx, pdf_array_get(gctx, names, i));
+                        if (strcmp(tname, name) == 0) break;   // name found
+                    }
+                if (strcmp(tname, name) != 0) THROWMSG("name not found");
+            }
+            fz_catch(gctx) return -1;
+
             v = pdf_array_get(gctx, names, i+1);      // file descriptor
             
-            // stream object that contains stored file contents
+            // stream object containing file contents
             stream = pdf_dict_getl(gctx, v, PDF_NAME_EF, PDF_NAME_F, NULL);
             
             pdf_array_delete(gctx, names, i+1);  // delete file descriptor
@@ -334,19 +339,25 @@ struct fz_document_s
             return 0;
         }
 
+        FITZEXCEPTION(embeddedFileInfo, !result)
         CLOSECHECK(embeddedFileInfo)
         %feature("autodoc","embeddedfilegetinfo") embeddedFileInfo;
         PyObject *embeddedFileInfo(int n)
         {
             PyObject *infodict = PyDict_New();
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
-            if (!pdf) return infodict;      // no PDF
-            int count = pdf_count_portfolio_entries(gctx, pdf); // file count
-            // return if anything is wrong
-            if ((n < 0) || (n >= count)) return infodict;
+            char *name;
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                int count = pdf_count_portfolio_entries(gctx, pdf); // file count
+                if (count < 1) THROWMSG("no embedded files");
+                if ((n < 0) || (n >= count)) THROWMSG("index out of range");
+            }
+            fz_catch(gctx) return NULL;
 
             // name of file entry
-            char *name = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, n));
+            name = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, n));
             PyDict_SetItemString(infodict, "name", 
                    PyUnicode_DecodeUTF8(name, strlen(name), "strict"));
             pdf_obj *o = pdf_portfolio_entry_obj(gctx, pdf, n);
@@ -372,17 +383,22 @@ struct fz_document_s
         {
             PyObject *infodict = PyDict_New();
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
-            if (!pdf) return infodict;
-            int count = pdf_count_portfolio_entries(gctx, pdf);
-            int i;
             char *name;
-            for (i = 0; i < count; i++)
+            int i;
+            fz_try(gctx)
             {
-                name = pdf_to_str_buf(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
-                if (strcmp(tname, name)==0) break;
+                assert_PDF(pdf);
+                int count = pdf_count_portfolio_entries(gctx, pdf);
+                if (count < 1) THROWMSG("no embedded files");
+                for (i = 0; i < count; i++)
+                {
+                    name = pdf_to_str_buf(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
+                    if (strcmp(tname, name)==0) break;
+                }
+                if (strcmp(tname, name) != 0) THROWMSG("name not found");
             }
-            if (strcmp(tname, name) != 0) return infodict;
-            
+            fz_catch(gctx) return NULL;
+
             name = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
             PyDict_SetItemString(infodict, "name", 
                    PyUnicode_DecodeUTF8(name, strlen(name), "strict"));
@@ -393,7 +409,8 @@ struct fz_document_s
             name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_Desc));
             PyDict_SetItemString(infodict, "desc", 
                    PyUnicode_DecodeUTF8(name, strlen(name), "strict"));
-            pdf_obj *olen = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F, PDF_NAME_Length, NULL);
+            pdf_obj *olen = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F,
+                                          PDF_NAME_Length, NULL);
             int len = -1;
             int DL = -1;
             if (olen) len = pdf_to_int(gctx, olen);
@@ -413,33 +430,34 @@ struct fz_document_s
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                if ((!filename) && (!desc)) THROWMSG("nothing to change");
-                int count = pdf_count_portfolio_entries(gctx, pdf);
-                int i;
                 Py_ssize_t file_len, desc_len;
-                char *t;
+                char *f, *d, *t;
+                f = getPDFstr(filename, &file_len, "filename");
+                d = getPDFstr(desc, &desc_len, "desc");
+                if ((!f) && (!d)) THROWMSG("nothing to change");
+                int count = pdf_count_portfolio_entries(gctx, pdf);
+                if (count < 1) THROWMSG("no embedded files");
+                int i;
                 for (i = 0; i < count; i++)
                 {
                     t = pdf_to_str_buf(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
                     if (strcmp(t, name) == 0) break;
                 }
-                if (strcmp(t, name) != 0) THROWMSG("File entry not found");
+                if (strcmp(t, name) != 0) THROWMSG("name not found");
                 pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, i);
                 
-                t = getPDFstr(filename, &file_len, "filename");
-                if (t != NULL)
+                if (f != NULL)
                     {
-                    pdf_dict_put_drop(gctx, entry, PDF_NAME_F,
-                             pdf_new_string(gctx, pdf, t, (int) file_len));
-                    pdf_dict_put_drop(gctx, entry, PDF_NAME_UF,
-                             pdf_new_string(gctx, pdf, t, (int) file_len));
+                        pdf_dict_put_drop(gctx, entry, PDF_NAME_F,
+                             pdf_new_string(gctx, pdf, f, (int) file_len));
+                        pdf_dict_put_drop(gctx, entry, PDF_NAME_UF,
+                             pdf_new_string(gctx, pdf, f, (int) file_len));
                     }
                 
-                t = getPDFstr(desc, &desc_len, "desc");
-                if (t != NULL)
+                if (d != NULL)
                     {
-                    pdf_dict_put_drop(gctx, entry, PDF_NAME_Desc,
-                             pdf_new_string(gctx, pdf, t, (int) desc_len));
+                        pdf_dict_put_drop(gctx, entry, PDF_NAME_Desc,
+                             pdf_new_string(gctx, pdf, d, (int) desc_len));
                     }
             }
             fz_catch(gctx) return -1;
@@ -452,56 +470,62 @@ struct fz_document_s
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                if ((!filename) && (!desc)) THROWMSG("nothing to change");
-                int count = pdf_count_portfolio_entries(gctx, pdf);
-                if ((i < 0) || (i >= count)) THROWMSG("entry number invalid");
+                char *f, *d;
                 Py_ssize_t file_len, desc_len;
-                char *t;
+                f = getPDFstr(filename, &file_len, "filename");
+                d = getPDFstr(desc, &desc_len, "desc");
+                if ((!f) && (!d)) THROWMSG("nothing to change");
+                int count = pdf_count_portfolio_entries(gctx, pdf);
+                if (count < 1) THROWMSG("no embedded files");
+                if ((i < 0) || (i >= count)) THROWMSG("index out of range");
                 pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, i);
 
-                t = getPDFstr(filename, &file_len, "filename");
-                if (t != NULL)
+                if (f != NULL)
                     {
                     pdf_dict_put_drop(gctx, entry, PDF_NAME_F,
-                             pdf_new_string(gctx, pdf, t, (int) file_len));
+                             pdf_new_string(gctx, pdf, f, (int) file_len));
                     pdf_dict_put_drop(gctx, entry, PDF_NAME_UF,
-                             pdf_new_string(gctx, pdf, t, (int) file_len));
+                             pdf_new_string(gctx, pdf, f, (int) file_len));
                     }
                 
-                t = getPDFstr(desc, &desc_len, "desc");
-                if (t != NULL)
+                if (d != NULL)
                     {
                     pdf_dict_put_drop(gctx, entry, PDF_NAME_Desc,
-                             pdf_new_string(gctx, pdf, t, (int) desc_len));
+                             pdf_new_string(gctx, pdf, d, (int) desc_len));
                     }
             }
             fz_catch(gctx) return -1;
             return 0;
         }
 
+        FITZEXCEPTION(embeddedFileGet, !result)
         CLOSECHECK(embeddedFileGet)
         %feature("autodoc","embeddedfileget") embeddedFileGet;
         PyObject *embeddedFileGet(char *name)
         {
             PyObject *cont = PyBytes_FromString("");
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
-            if (!pdf) return cont;
-            int count = pdf_count_portfolio_entries(gctx, pdf);
-            int i;
-            char *tname;
-            for (i = 0; i < count; i++)
+            fz_buffer *buf = NULL;
+            fz_try(gctx)
             {
-                tname = pdf_to_str_buf(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
-                if (strcmp(tname, name) == 0) break;
+                assert_PDF(pdf);
+                int count = pdf_count_portfolio_entries(gctx, pdf);
+                if (count < 1) THROWMSG("no embedded files");
+                char *tname;
+                int i;
+                for (i = 0; i < count; i++)
+                {
+                    tname = pdf_to_str_buf(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
+                    if (strcmp(tname, name) == 0) break;
+                }
+                if (strcmp(tname, name) != 0) THROWMSG("name not found");
+                unsigned char *data;
+                buf = pdf_portfolio_entry(gctx, pdf, i);
+                Py_ssize_t len = (Py_ssize_t) fz_buffer_storage(gctx, buf, &data);
+                cont = PyBytes_FromStringAndSize(data, len);
             }
-            if (strcmp(tname, name) != 0) return cont;
-            fz_buffer *buf;
-            unsigned char *data;
-            int len;
-            buf = pdf_portfolio_entry(gctx, pdf, i);
-            len = (Py_ssize_t) fz_buffer_storage(gctx, buf, &data);
-            cont = PyBytes_FromStringAndSize(data, len);
-            fz_drop_buffer(gctx, buf);
+            fz_always(gctx) if (buf) fz_drop_buffer(gctx, buf);
+            fz_catch(gctx) return NULL;
             return cont;
         }
 
@@ -509,16 +533,20 @@ struct fz_document_s
         {
             PyObject *cont = PyBytes_FromString("");
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
-            if (!pdf) return cont;
-            int count = pdf_count_portfolio_entries(gctx, pdf);
-            if ((n < 0) || (n >= count)) return cont;
-            fz_buffer *buf;
-            unsigned char *data;
-            int len;
-            buf = pdf_portfolio_entry(gctx, pdf, n);
-            len = (Py_ssize_t) fz_buffer_storage(gctx, buf, &data);
-            cont = PyBytes_FromStringAndSize(data, len);
-            fz_drop_buffer(gctx, buf);
+            fz_buffer *buf = NULL;
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                int count = pdf_count_portfolio_entries(gctx, pdf);
+                if (count < 1) THROWMSG("no embedded files");
+                if ((n < 0) || (n >= count)) THROWMSG("index out of range");
+                unsigned char *data;
+                buf = pdf_portfolio_entry(gctx, pdf, n);
+                Py_ssize_t len = (Py_ssize_t) fz_buffer_storage(gctx, buf, &data);
+                cont = PyBytes_FromStringAndSize(data, len);
+            }
+            fz_always(gctx) if (buf) fz_drop_buffer(gctx, buf);
+            fz_catch(gctx) return NULL;
             return cont;
         }
 
@@ -528,22 +556,28 @@ struct fz_document_s
         int embeddedFileAdd(PyObject *buffer, char *name, PyObject *filename=NULL, PyObject *desc=NULL)
         {
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
-            fz_buffer *data;
+            fz_buffer *data = NULL;
+            int entry = 0;
             size_t size = 0;
             int name_len, file_len, desc_len;
-            name_len = strlen(name);
-            int entry = 0;
-            char *f = getPDFstr(filename, &file_len, "filename");
-            char *d = getPDFstr(desc, &desc_len, "desc");
-            if (f == NULL)        // no valid filename provided
+            char *f, *d;
+            fz_try(gctx)
+            {
+                name_len = strlen(name);
+                if (name_len < 1) THROWMSG("name not valid");
+                f = getPDFstr(filename, &file_len, "filename");
+                d = getPDFstr(desc, &desc_len, "desc");
+            }
+            fz_catch(gctx) return -1;
+            if (f == NULL)                  // no filename given
                 {
-                f = name;         // take the name
-                file_len = name_len;
+                   f = name;                // take the name
+                   file_len = name_len;
                 }
-            if (d == NULL)        // no valid description provided
+            if (d == NULL)                  // no description given
                 {
-                d = name;         // take the name
-                desc_len = name_len;
+                    d = name;               // take the name
+                    desc_len = name_len;
                 }
                 
             if (PyByteArray_Check(buffer))
@@ -561,7 +595,7 @@ struct fz_document_s
             fz_try(gctx)
             {
                 assert_PDF(pdf);       // must be PDF
-                if (size == 0) THROWMSG("First argument is not bytes or bytearray");
+                if (size == 0) THROWMSG("argument 1 not bytes or bytearray");
                 
                 int count = pdf_count_portfolio_entries(gctx, pdf);
                 int i;
@@ -570,7 +604,7 @@ struct fz_document_s
                 for (i = 0; i < count; i++)      // check if name already occurs
                 {
                     tname = pdf_to_str_buf(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
-                    if (strcmp(tname, name)==0) THROWMSG("Name already exists in embedded files");
+                    if (strcmp(tname, name)==0) THROWMSG("name already exists");
                 }
                 entry = pdf_add_portfolio_entry(gctx, pdf,
                             name, name_len, /* name */
@@ -1225,7 +1259,7 @@ if sa < 0:
         //*********************************************************************
         FITZEXCEPTION(_getPageRectText, !result)
         CLOSECHECK(_getPageRectText)
-        char *_getPageRectText(int pno, struct fz_rect_s *rect)
+        const char *_getPageRectText(int pno, struct fz_rect_s *rect)
         {
             fz_buffer *res;
             fz_try(gctx)
@@ -1689,7 +1723,7 @@ fannot._erase()
         //*********************************************************************
         FITZEXCEPTION(_getRectText, !result)
         PARENTCHECK(_getRectText)
-        char *_getRectText(struct fz_rect_s *rect)
+        const char *_getRectText(struct fz_rect_s *rect)
         {
             fz_buffer *res;
             fz_try(gctx)
@@ -1705,7 +1739,7 @@ fannot._erase()
         /*********************************************************************/
         FITZEXCEPTION(_readPageText, result==NULL)
         %newobject _readPageText;
-        char *_readPageText(int output=0) {
+        const char *_readPageText(int output=0) {
             char *res = NULL;
             fz_try(gctx) res = readPageText($self, output);
             fz_catch(gctx) return NULL;

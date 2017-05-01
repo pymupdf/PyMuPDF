@@ -13,7 +13,7 @@ import fitz
 # -----------------------------------------------------------------
 # pdftest       pdftest       pdftest                609        460
 # testann.py    testann.py    Beschreibung          1222        577
-# pdftest       pdftest       none                     1          1
+# pdftest1      pdftest       none                     1          1
 # minpdf.py     minpdf.py     minpdf.py             1693       1101
 # -----------------------------------------------------------------
 # 4 embedded files in 'in.pdf'. Totals:
@@ -37,9 +37,10 @@ doc = fitz.open(fn)                    # oprn input
 
 desc_len = name_len = fname_len = 0    # some fields of interest
 tlength = tsize = 0                    # total length and compressed sizes
-ef_list = []                           # store file infos here, because I wanted
+
+ef_list = []  # store file infos here, because I wanted
 # to adjust column widths of the report to actually occurring data ...
-# Of yourse, a direct print is also perfectly possible.
+# Of yourse, a direct print is perfectly possible.
 
 for i in range(doc.embeddedFileCount): # number of embedded files
     info = doc.embeddedFileInfo(i)     # get one info dict
@@ -48,7 +49,7 @@ for i in range(doc.embeddedFileCount): # number of embedded files
     ef_list.append(ef)                 # save in the info list
     name_len = max(len(ef[0]), name_len)    # column width of 'name'
     desc_len = max(len(ef[2]), desc_len)    # column width of 'desc'
-    fname_len = max(len(ef[1]), fname_len)  # column width of filename 
+    fname_len = max(len(ef[1]), fname_len)  # column width of 'filename' 
     tlength += ef[3]                        # add to total orignal file size
     tsize += ef[4]                          # add to total compressed file size
     
@@ -57,7 +58,7 @@ if len(ef_list) < 1:                        # are we being fooled?
     exit(1)
 
 ratio = float(tsize)/ tlength          # compression ration
-saves = 1 - ratio                      # saving percentage
+saves = 1 - ratio                      # savings percentage
 # define header line
 header = "Name".ljust(name_len+4) + "Filename".ljust(fname_len+4) +\
       "Description".ljust(desc_len+4) + "Length".rjust(10) + "Size".rjust(11)

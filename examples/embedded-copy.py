@@ -3,7 +3,7 @@ import sys
 import fitz
 #------------------------------------------------------------------------------    
 # Example script:
-# Copy embedded files from one PDF to another
+# Copy embedded files between PDF documents
 # Invocation line:
 # python embedded-copy.py  in.pdf out.pdf
 #------------------------------------------------------------------------------
@@ -13,12 +13,13 @@ docin = fitz.open(ifn)
 docout = fitz.open(ofn)
 print("Copying embedded files from '%s' to '%s'" % (ifn, ofn))
 for i in range(docin.embeddedFileCount):
-    d = docin.embeddedFileInfo(i)
-    b = docin.embeddedFileGet(i)
-    try:
+    d = docin.embeddedFileInfo(i)      # file metadata
+    b = docin.embeddedFileGet(i)       # file content
+    try:                               # safeguarding against duplicate entries
         print ("copying entry:", d["name"])
         docout.embeddedFileAdd(b, d["name"], d["file"], d["desc"])
     except:
         pass
-    
-docout.saveIncr()                      # save output changes incrementally
+
+# save output (incrementally or to new PDF)
+docout.saveIncr()
