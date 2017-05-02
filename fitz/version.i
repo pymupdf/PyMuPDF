@@ -1,3 +1,3 @@
-%pythoncode %{VersionFitz = "1.10a"
-VersionBind = "1.10.0"
-VersionDate = "2017-04-19 07:02:06"%}
+%pythoncode %{VersionFitz = "1.11"
+VersionBind = "1.11.0"
+VersionDate = "2017-04-30 14:37:26"%}

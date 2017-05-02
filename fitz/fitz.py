@@ -96,9 +96,9 @@ except __builtin__.Exception:
     _newclass = 0
 
 import weakref
-VersionFitz = "1.10a"
-VersionBind = "1.10.0"
-VersionDate = "2017-04-19 07:02:06"
+VersionFitz = "1.11"
+VersionBind = "1.11.0"
+VersionDate = "2017-04-30 14:37:26"
 
 LINK_NONE   = 0
 LINK_GOTO   = 1
@@ -253,8 +253,6 @@ open(filename)"""
 
     def loadPage(self, number):
         """loadPage(self, number) -> Page"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -276,8 +274,6 @@ open(filename)"""
 
     def _loadOutline(self):
         """_loadOutline(self) -> Outline"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -290,10 +286,58 @@ open(filename)"""
 
     @property
 
+    def embeddedFileCount(self):
+        """Return number of embedded files"""
+        if self.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+
+        return _fitz.Document_embeddedFileCount(self)
+
+
+    def embeddedFileDel(self, name):
+        """Delete embedded file entry by name"""
+        if self.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+
+        return _fitz.Document_embeddedFileDel(self, name)
+
+
+    def embeddedFileInfo(self, *args):
+        """Retrieve embedded file information given its entry number or name."""
+        if self.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+
+        return _fitz.Document_embeddedFileInfo(self, *args)
+
+
+    def embeddedFileSetInfo(self, *args):
+        """embeddedFileSetInfo(name, filename, desc)
+Change filename, description of embedded file, given its entry number or name."""
+        if self.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+
+        return _fitz.Document_embeddedFileSetInfo(self, *args)
+
+
+    def embeddedFileGet(self, *args):
+        """Retrieve embedded file content given its entry number or name."""
+        if self.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+
+        return _fitz.Document_embeddedFileGet(self, *args)
+
+
+    def embeddedFileAdd(self, buffer, name, filename=None, desc=None):
+        """Add new file from buffer."""
+        if self.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+
+        return _fitz.Document_embeddedFileAdd(self, buffer, name, filename, desc)
+
+    @property
+
     def pageCount(self):
         """pageCount(self) -> int"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -302,8 +346,6 @@ open(filename)"""
 
     def _getMetadata(self, key):
         """_getMetadata(self, key) -> char *"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -313,8 +355,6 @@ open(filename)"""
 
     def needsPass(self):
         """needsPass(self) -> int"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -333,8 +373,6 @@ open(filename)"""
 
     def authenticate(self, arg2):
         """authenticate(self, arg2) -> int"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -400,12 +438,7 @@ open(filename)"""
 
 
     def deletePage(self, pno):
-        """
-        deletePage(pno) -> int
-        delete page pno from the PDF
-        """
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
+        """delete page 'pno'"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -416,12 +449,7 @@ open(filename)"""
 
 
     def deletePageRange(self, from_page=-1, to_page=-1):
-        """
-        deletePageRange(from_page, to_page) -> int
-        delete page range from the PDF
-        """
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
+        """delete pages 'from' to 'to'"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -432,12 +460,7 @@ open(filename)"""
 
 
     def copyPage(self, pno, to=-1):
-        """
-        copyPage(pno, to=-1) -> int
-        copy a page within a PDF
-        """
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
+        """copy a page in front of 'to'"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -448,12 +471,7 @@ open(filename)"""
 
 
     def movePage(self, pno, to=-1):
-        """
-        movePage(pno, to=-1) -> int
-        move a page within a PDF
-        """
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
+        """move a page in front of 'to'"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -464,9 +482,7 @@ open(filename)"""
 
 
     def select(self, pyliste):
-        """select(list) -> int; build sub-pdf with pages in list"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
+        """select(list) -> int; build sub-pdf with page numbers in 'list'"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -480,9 +496,7 @@ open(filename)"""
     @property
 
     def permissions(self):
-        """permissions -> dictionary containing permissions"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
+        """dictionary containing permissions"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -491,8 +505,6 @@ open(filename)"""
 
     def _getPageObjNumber(self, pno):
         """_getPageObjNumber(self, pno) -> PyObject *"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -500,12 +512,7 @@ open(filename)"""
 
 
     def getPageImageList(self, pno):
-        """
-        getPageImageList(pno) -> int
-        list images used on a PDF page
-        """
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
+        """list of images used on a page"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -513,12 +520,7 @@ open(filename)"""
 
 
     def getPageFontList(self, pno):
-        """
-        getPageFontList(pno) -> int
-        list fonts used on a PDF page
-        """
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
+        """list fonts used on a page"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -527,8 +529,6 @@ open(filename)"""
 
     def _delToC(self):
         """_delToC(self) -> PyObject *"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -540,8 +540,6 @@ open(filename)"""
 
     def _getOLRootNumber(self):
         """_getOLRootNumber(self) -> int"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -550,8 +548,6 @@ open(filename)"""
 
     def _getNewXref(self):
         """_getNewXref(self) -> int"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -560,8 +556,6 @@ open(filename)"""
 
     def _getXrefLength(self):
         """_getXrefLength(self) -> int"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -569,9 +563,7 @@ open(filename)"""
 
 
     def _getPageRectText(self, pno, rect):
-        """_getPageRectText(self, pno, rect) -> char *"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
+        """_getPageRectText(self, pno, rect) -> char const *"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -580,8 +572,6 @@ open(filename)"""
 
     def _delXmlMetadata(self):
         """_delXmlMetadata(self) -> int"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -590,8 +580,6 @@ open(filename)"""
 
     def _getObjectString(self, xnum):
         """_getObjectString(self, xnum) -> char const *"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -600,8 +588,6 @@ open(filename)"""
 
     def _getXrefStream(self, xnum):
         """_getXrefStream(self, xnum) -> PyObject *"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -610,8 +596,6 @@ open(filename)"""
 
     def _updateObject(self, xref, text, page=None):
         """_updateObject(self, xref, text, page=None) -> int"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -620,8 +604,6 @@ open(filename)"""
 
     def _setMetadata(self, text):
         """_setMetadata(self, text) -> int"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -692,10 +674,9 @@ class Page(_object):
 
     def bound(self):
         """bound(self) -> Rect"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         val = _fitz.Page_bound(self)
 
@@ -709,20 +690,18 @@ class Page(_object):
 
     def run(self, dw, m):
         """run(self, dw, m) -> int"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Page_run(self, dw, m)
 
 
     def loadLinks(self):
         """loadLinks(self) -> Link"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         val = _fitz.Page_loadLinks(self)
         if val:
@@ -737,10 +716,9 @@ class Page(_object):
 
     def firstAnnot(self):
         """firstAnnot points to first annot on page"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         val = _fitz.Page_firstAnnot(self)
         if val:
@@ -753,10 +731,9 @@ class Page(_object):
 
     def deleteLink(self, linkdict):
         """Delete link if PDF"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         val = _fitz.Page_deleteLink(self, linkdict)
         if linkdict["xref"] == 0: return
@@ -773,10 +750,9 @@ class Page(_object):
 
     def deleteAnnot(self, fannot):
         """Delete annot if PDF and return next one"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         val = _fitz.Page_deleteAnnot(self, fannot)
         if val:
@@ -795,30 +771,27 @@ class Page(_object):
         rotation -> int
         Return rotation in degrees
         """
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Page_rotation(self)
 
 
     def setRotation(self, rot):
         """setRotation sets page rotation to 'rot' degrees"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Page_setRotation(self, rot)
 
 
     def _addAnnot_FromString(self, linklist):
         """_addAnnot_FromString(self, linklist) -> int"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Page__addAnnot_FromString(self, linklist)
 
@@ -829,17 +802,16 @@ class Page(_object):
 
 
     def _getRectText(self, rect):
-        """_getRectText(self, rect) -> char *"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        """_getRectText(self, rect) -> char const *"""
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Page__getRectText(self, rect)
 
 
     def _readPageText(self, output=0):
-        """_readPageText(self, output=0) -> char *"""
+        """_readPageText(self, output=0) -> char const *"""
         return _fitz.Page__readPageText(self, output)
 
 
@@ -1172,14 +1144,12 @@ IRect_swigregister = _fitz.IRect_swigregister
 IRect_swigregister(IRect)
 
 class Pixmap(_object):
-    """
-    fitz.Pixmap(cs, width, height, samples, alpha)
-    fitz.Pixmap(cs, fitz.Irect, alpha)
-    fitz.Pixmap(cs, fitz.Pixmap)
-    fitz.Pixmap(filename)
-    fitz.Pixmap(bytearray)
-    fitz.Pixmap(doc, xref)
-    """
+    """fitz.Pixmap(cs, width, height, samples, alpha)
+fitz.Pixmap(cs, fitz.Irect, alpha)
+fitz.Pixmap(cs, fitz.Pixmap)
+fitz.Pixmap(filename)
+fitz.Pixmap(bytearray)
+fitz.Pixmap(doc, xref)"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Pixmap, name, value)
@@ -1221,42 +1191,12 @@ class Pixmap(_object):
 
     def __init__(self, *args):
         """
-        fitz.Pixmap(cs, width, height, samples, alpha)
-        fitz.Pixmap(cs, fitz.Irect, alpha)
-        fitz.Pixmap(cs, fitz.Pixmap)
-        fitz.Pixmap(filename)
-        fitz.Pixmap(bytearray)
-        fitz.Pixmap(doc, xref)
-        fitz.Pixmap(cs, width, height, samples, alpha)
-        fitz.Pixmap(cs, fitz.Irect, alpha)
-        fitz.Pixmap(cs, fitz.Pixmap)
-        fitz.Pixmap(filename)
-        fitz.Pixmap(bytearray)
-        fitz.Pixmap(doc, xref)
-        fitz.Pixmap(cs, width, height, samples, alpha)
-        fitz.Pixmap(cs, fitz.Irect, alpha)
-        fitz.Pixmap(cs, fitz.Pixmap)
-        fitz.Pixmap(filename)
-        fitz.Pixmap(bytearray)
-        fitz.Pixmap(doc, xref)
-        fitz.Pixmap(cs, width, height, samples, alpha)
-        fitz.Pixmap(cs, fitz.Irect, alpha)
-        fitz.Pixmap(cs, fitz.Pixmap)
-        fitz.Pixmap(filename)
-        fitz.Pixmap(bytearray)
-        fitz.Pixmap(doc, xref)
-        fitz.Pixmap(cs, width, height, samples, alpha)
-        fitz.Pixmap(cs, fitz.Irect, alpha)
-        fitz.Pixmap(cs, fitz.Pixmap)
-        fitz.Pixmap(filename)
-        fitz.Pixmap(bytearray)
-        fitz.Pixmap(doc, xref)
-        fitz.Pixmap(cs, width, height, samples, alpha)
-        fitz.Pixmap(cs, fitz.Irect, alpha)
-        fitz.Pixmap(cs, fitz.Pixmap)
-        fitz.Pixmap(filename)
-        fitz.Pixmap(bytearray)
-        fitz.Pixmap(doc, xref)
+        __init__(self, cs, bbox, alpha=0) -> Pixmap
+        __init__(self, cs, spix) -> Pixmap
+        __init__(self, cs, w, h, samples, alpha=0) -> Pixmap
+        __init__(self, filename) -> Pixmap
+        __init__(self, imagedata) -> Pixmap
+        __init__(self, doc, xref) -> Pixmap
         """
         this = _fitz.new_Pixmap(*args)
         try:
@@ -1365,13 +1305,13 @@ class Pixmap(_object):
         """
         return _fitz.Pixmap_invertIRect(self, *args)
 
+    @property
 
     def samples(self):
         """samples(self) -> PyObject *"""
         return _fitz.Pixmap_samples(self)
 
 
-    samples = property(samples)
     width  = w
     height = h
 
@@ -1796,50 +1736,45 @@ class Annot(_object):
 
     def rect(self):
         """rect: rectangle containing the annot"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_rect(self)
 
 
     def _getXref(self):
         """return xref number of annotation"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot__getXref(self)
 
 
     def _getAP(self):
         """_getAP: provides operator source of the /AP"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot__getAP(self)
 
 
     def _setAP(self, ap):
         """_setAP: updates operator source of the /AP"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot__setAP(self, ap)
 
 
     def setRect(self, r):
         """setRect: changes the annot's rectangle"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_setRect(self, r)
 
@@ -1847,10 +1782,9 @@ class Annot(_object):
 
     def vertices(self):
         """vertices: point coordinates for various annot types"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_vertices(self)
 
@@ -1858,10 +1792,9 @@ class Annot(_object):
 
     def colors(self):
         """dictionary of the annot's colors"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_colors(self)
 
@@ -1871,10 +1804,9 @@ class Annot(_object):
         setColors(dict)
         Changes the 'common' and 'fill' colors of an annotation. If provided, values must be lists of up to 4 floats.
         """
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_setColors(self, colors)
 
@@ -1882,20 +1814,18 @@ class Annot(_object):
 
     def lineEnds(self):
         """lineEnds(self) -> PyObject *"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_lineEnds(self)
 
 
     def setLineEnds(self, start, end):
         """setLineEnds(self, start, end)"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_setLineEnds(self, start, end)
 
@@ -1903,10 +1833,9 @@ class Annot(_object):
 
     def type(self):
         """type(self) -> PyObject *"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_type(self)
 
@@ -1914,20 +1843,18 @@ class Annot(_object):
 
     def info(self):
         """info(self) -> PyObject *"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_info(self)
 
 
     def setInfo(self, info):
         """setInfo(self, info) -> int"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_setInfo(self, info)
 
@@ -1935,20 +1862,18 @@ class Annot(_object):
 
     def border(self):
         """border(self) -> PyObject *"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_border(self)
 
 
     def setBorder(self, border):
         """setBorder(self, border) -> int"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_setBorder(self, border)
 
@@ -1956,20 +1881,18 @@ class Annot(_object):
 
     def flags(self):
         """flags(self) -> int"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_flags(self)
 
 
     def setFlags(self, flags):
         """setFlags(self, flags)"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_setFlags(self, flags)
 
@@ -1977,10 +1900,9 @@ class Annot(_object):
 
     def next(self):
         """next(self) -> Annot"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         val = _fitz.Annot_next(self)
         if val:
@@ -1993,10 +1915,9 @@ class Annot(_object):
 
     def getPixmap(self, matrix=None, colorspace=None, alpha=0):
         """getPixmap(self, matrix=None, colorspace=None, alpha=0) -> Pixmap"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_getPixmap(self, matrix, colorspace, alpha)
 
@@ -2033,10 +1954,9 @@ class Link(_object):
 
     def uri(self):
         """uri(self) -> char *"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Link_uri(self)
 
@@ -2044,10 +1964,9 @@ class Link(_object):
 
     def isExternal(self):
         """isExternal(self) -> int"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Link_isExternal(self)
 
@@ -2066,10 +1985,9 @@ class Link(_object):
 
     def rect(self):
         """rect(self) -> Rect"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Link_rect(self)
 
@@ -2077,10 +1995,9 @@ class Link(_object):
 
     def next(self):
         """next(self) -> Link"""
-        if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
 
         val = _fitz.Link_next(self)
         if val:
