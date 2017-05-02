@@ -37,10 +37,10 @@ with open(args.csv) as tocfile:
     tocreader = csv.reader(tocfile, delimiter = delim)
     for row in tocreader:
         assert len(row) <= 4, "cannot handle more than 4 entries:\n %s" % (str(row),)
-        if len(row) == 4:
+        try:
             p4 = float(row[3])
             toc.append([int(row[0]), row[1], int(row[2]), p4])
-        else:
+        except:
             toc.append([int(row[0]), row[1], int(row[2])])
 doc.setToC(toc)
 doc.saveIncr()

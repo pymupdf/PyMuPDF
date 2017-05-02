@@ -19,7 +19,7 @@ MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats
 
 With PyMuPDF you therefore can also access files with extensions ``*.pdf``, ``*.xps``, ``*.oxps``, ``*.cbz``, ``*.fb2`` or ``*.epub`` from your Python scripts.
 
-See the `Wiki <https://github.com/rk700/PyMuPDF/wiki>`_ for more info, news, release notes, usage recipies, etc.
+See the `Wiki <https://github.com/rk700/PyMuPDF/wiki>`_ for more information, **news** (https://github.com/rk700/PyMuPDF/wiki/Change-and-News-Log), release notes and usage recipies.
 
 
 Installation
@@ -39,7 +39,7 @@ Ubuntu
 ------
 Since MuPDF v1.11 is not available yet in the official repo, you need to first build it from source. Make sure to add ``-fPIC`` to CFLAGS when compiling. Do have a look at this Wiki https://github.com/rk700/PyMuPDF/wiki/Experience-from-an-Ubuntu-installation which explains the process.
 
-When MuPDF is ready, edit ``setup.py`` in PyMuPDF and comment out the line of ``library_dirs=[]`` to specify the directory which contains ``libmupdf.a`` and other 3rd party libraries. Remove ``crypto`` from ``libraries`` in ``setup.py`` if it complains.
+When MuPDF is ready, edit ``setup.py`` in PyMuPDF and comment out the line of ``library_dirs=[]`` to specify the directory which contains ``libmupdf.a`` and other 3rd party libraries. Remove ``crypto`` from ``libraries`` in ``setup.py`` if it complains. Visit this Wiki page for an installation experience: https://github.com/rk700/PyMuPDF/wiki/Experience-from-an-Ubuntu-installation.
 
 OSX
 ---

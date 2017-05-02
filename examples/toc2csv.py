@@ -22,9 +22,9 @@ for t in toc:
         if t4["kind"] == 1:
             p4 = str(t4["to"].y)
         else:
-            p4 = ""
+            p4 = "0"
     else:
-        p4 = ""
+        p4 = "0"
     rec = delim.join([str(t[0]), t[1].strip(), str(t[2]), p4])
     outf.writelines([rec, "\n"])
 outf.close()
