@@ -98,7 +98,7 @@ except __builtin__.Exception:
 import weakref
 VersionFitz = "1.11"
 VersionBind = "1.11.0"
-VersionDate = "2017-04-30 14:37:26"
+VersionDate = "2017-05-04 06:53:02"
 
 LINK_NONE   = 0
 LINK_GOTO   = 1
@@ -295,36 +295,35 @@ open(filename)"""
 
 
     def embeddedFileDel(self, name):
-        """Delete embedded file entry by name"""
+        """Delete embedded file by name."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
         return _fitz.Document_embeddedFileDel(self, name)
 
 
-    def embeddedFileInfo(self, *args):
+    def embeddedFileInfo(self, id):
         """Retrieve embedded file information given its entry number or name."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
-        return _fitz.Document_embeddedFileInfo(self, *args)
+        return _fitz.Document_embeddedFileInfo(self, id)
 
 
-    def embeddedFileSetInfo(self, *args):
-        """embeddedFileSetInfo(name, filename, desc)
-Change filename, description of embedded file, given its entry number or name."""
+    def embeddedFileSetInfo(self, id, filename=None, desc=None):
+        """Change filename or description of embedded file given its entry number or name."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
-        return _fitz.Document_embeddedFileSetInfo(self, *args)
+        return _fitz.Document_embeddedFileSetInfo(self, id, filename, desc)
 
 
-    def embeddedFileGet(self, *args):
+    def embeddedFileGet(self, id):
         """Retrieve embedded file content given its entry number or name."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
-        return _fitz.Document_embeddedFileGet(self, *args)
+        return _fitz.Document_embeddedFileGet(self, id)
 
 
     def embeddedFileAdd(self, buffer, name, filename=None, desc=None):
@@ -417,10 +416,7 @@ Change filename, description of embedded file, given its entry number or name.""
 
 
     def insertPDF(self, docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=1):
-        """
-        insertPDF(PDFsrc, from_page, to_page, start_at, rotate, links) -> int
-        Insert page range [from, to] of source PDF, starting as page number start_at.
-        """
+        """Insert page range ['from', 'to'] of source PDF, starting as page number 'start_at'."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
         if id(self) == id(docsrc):
@@ -460,7 +456,7 @@ Change filename, description of embedded file, given its entry number or name.""
 
 
     def copyPage(self, pno, to=-1):
-        """copy a page in front of 'to'"""
+        """Copy a page in front of 'to'"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -471,7 +467,7 @@ Change filename, description of embedded file, given its entry number or name.""
 
 
     def movePage(self, pno, to=-1):
-        """move a page in front of 'to'"""
+        """Move page in front of 'to'"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -482,7 +478,7 @@ Change filename, description of embedded file, given its entry number or name.""
 
 
     def select(self, pyliste):
-        """select(list) -> int; build sub-pdf with page numbers in 'list'"""
+        """Build sub-pdf with page numbers in 'list'"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -1639,9 +1635,9 @@ Point(point) - copy of 'point'"""
             return 0.0
         if self.x > r.x1:
             if self.y >= r.y1:
-                return self.distance_to(r.bottom_right, unit = unit)
+                return self.distance_to(r.bottom_right, unit)
             elif self.y <= r.y0:
-                return self.distance_to(r.top_right, unit = unit)
+                return self.distance_to(r.top_right, unit)
             else:
                 return (self.x - r.x1) * f
         elif r.x0 <= self.x <= r.x1:
@@ -1651,9 +1647,9 @@ Point(point) - copy of 'point'"""
                 return (r.y0 - self.y) * f
         else:
             if self.y >= r.y1:
-                return self.distance_to(r.bottom_left, unit = unit)
+                return self.distance_to(r.bottom_left, unit)
             elif self.y <= r.y0:
-                return self.distance_to(r.top_left, unit = unit)
+                return self.distance_to(r.top_left, unit)
             else:
                 return (r.x0 - self.x) * f
 
@@ -1838,6 +1834,24 @@ class Annot(_object):
                 raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_type(self)
+
+
+    def fileInfo(self):
+        """Retrieve attached file information."""
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
+
+        return _fitz.Annot_fileInfo(self)
+
+
+    def fileGet(self):
+        """Retrieve attached file content."""
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
+
+        return _fitz.Annot_fileGet(self)
 
     @property
 

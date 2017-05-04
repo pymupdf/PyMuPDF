@@ -150,15 +150,14 @@ char *getPDFstr(PyObject *obj, Py_ssize_t* psize, const char *name)
         }
     }
     if (have_uc == 1) return nc;            // have large code points: done
-    k=0; j=3;
-    while (j < *psize)                      // kick out BOM & high order bytes
+    *psize = (*psize - 2)/2;                // reduced size
+    j=3;
+    for (k = 0; k < *psize; k++)            // kick out BOM & high order zeros
     {
         nc[k] = nc[j];
-        k += 1;
         j += 2;
     }
-    nc[k+1] = 0;                            // end of string delimiter
-    *psize = (*psize - 2) / 2;              // reduced size
+    nc[*psize] = 0;                         // end of string delimiter
     return nc;
 }
 

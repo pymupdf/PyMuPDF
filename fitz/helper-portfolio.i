@@ -12,47 +12,38 @@
 #define PDF_SCHEMA_FILENAME 7
 #define PDF_SCHEMA_UNKNOWN 8
 
-void portfolio_out_string(fz_output *out, unsigned char *str, int len)
+//-----------------------------------------------------------------------------
+// finds index of an embedded file
+// Object "id" contains either entry name (str) or supposed index
+// pdf is the document in question
+//-----------------------------------------------------------------------------
+int FindEmbedded(PyObject *id, pdf_document *pdf)
 {
-    int c;
-
-    if (len > 1 && str[0] == 0xFE && str[1] == 0xFF)
+    char *name = NULL;
+    Py_ssize_t name_len = 0;
+    char *tname= NULL;
+    int i = -1;
+    int count = pdf_count_portfolio_entries(gctx, pdf);
+    name = getPDFstr(id, &name_len, "id");
+    if (name == NULL)           // entry number provided
     {
-        str += 2;
-        len -= 2;
-        while (len)
-        {
-            c = (*str++<<8);
-            c += *str++;
-            if (c >= 32 && c != 127 && c < 256)
-                fz_write_printf(gctx, out, "%c", c);
-            else
-                fz_write_printf(gctx, out, "<%04x>", c);
-            len -= 2;
-        };
+        if (!PyInt_Check(id))
+            fz_throw(gctx, FZ_ERROR_GENERIC, "id must be string or number");
+
+        i = (int) PyInt_AsLong(id);
+        if ((i < 0) || (i >= count))
+            fz_throw(gctx, FZ_ERROR_GENERIC, "index out of range");
     }
-    else
+    else                        // entry name provided
     {
-        while (len)
-        {
-            c = *str++;
-            if (c >= 32 && c != 127 && c < 256)
-                fz_write_printf(gctx, out, "%c", c);
-            else
-                fz_write_printf(gctx, out, "<%02x>", c);
-            len--;
-        };
+        for (i = 0; i < count; i++)
+            {
+                tname = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
+                if (strcmp(tname, name) == 0) break;
+            }
+        if (strcmp(tname, name) != 0)
+        fz_throw(gctx, FZ_ERROR_GENERIC, "name not found");
     }
+    return i;
 }
-
-void portfolio_out_obj(fz_output *out, pdf_obj *obj, const char *dflt)
-{
-    if (obj == NULL) fz_write_printf(gctx, out, dflt);
-    else if (pdf_is_string(gctx, obj))
-        portfolio_out_string(out, (unsigned char *)pdf_to_str_buf(gctx, obj),
-                                     pdf_to_str_len(gctx, obj));
-    else
-        pdf_print_obj(gctx, out, obj, 1);
-}
-
 %}

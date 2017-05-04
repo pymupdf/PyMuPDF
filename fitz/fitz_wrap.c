@@ -3514,15 +3514,14 @@ char *getPDFstr(PyObject *obj, Py_ssize_t* psize, const char *name)
         }
     }
     if (have_uc == 1) return nc;            // have large code points: done
-    k=0; j=3;
-    while (j < *psize)                      // kick out BOM & high order bytes
+    *psize = (*psize - 2)/2;                // reduced size
+    j=3;
+    for (k = 0; k < *psize; k++)            // kick out BOM & high order zeros
     {
         nc[k] = nc[j];
-        k += 1;
         j += 2;
     }
-    nc[k+1] = 0;                            // end of string delimiter
-    *psize = (*psize - 2) / 2;              // reduced size
+    nc[*psize] = 0;                         // end of string delimiter
     return nc;
 }
 
@@ -3730,49 +3729,40 @@ const char *readPageText(fz_page *page, int output) {
 #define PDF_SCHEMA_FILENAME 7
 #define PDF_SCHEMA_UNKNOWN 8
 
-void portfolio_out_string(fz_output *out, unsigned char *str, int len)
+//-----------------------------------------------------------------------------
+// finds index of an embedded file
+// Object "id" contains either entry name (str) or supposed index
+// pdf is the document in question
+//-----------------------------------------------------------------------------
+int FindEmbedded(PyObject *id, pdf_document *pdf)
 {
-    int c;
-
-    if (len > 1 && str[0] == 0xFE && str[1] == 0xFF)
+    char *name = NULL;
+    Py_ssize_t name_len = 0;
+    char *tname= NULL;
+    int i = -1;
+    int count = pdf_count_portfolio_entries(gctx, pdf);
+    name = getPDFstr(id, &name_len, "id");
+    if (name == NULL)           // entry number provided
     {
-        str += 2;
-        len -= 2;
-        while (len)
-        {
-            c = (*str++<<8);
-            c += *str++;
-            if (c >= 32 && c != 127 && c < 256)
-                fz_write_printf(gctx, out, "%c", c);
-            else
-                fz_write_printf(gctx, out, "<%04x>", c);
-            len -= 2;
-        };
+        if (!PyInt_Check(id))
+            fz_throw(gctx, FZ_ERROR_GENERIC, "id must be string or number");
+
+        i = (int) PyInt_AsLong(id);
+        if ((i < 0) || (i >= count))
+            fz_throw(gctx, FZ_ERROR_GENERIC, "index out of range");
     }
-    else
+    else                        // entry name provided
     {
-        while (len)
-        {
-            c = *str++;
-            if (c >= 32 && c != 127 && c < 256)
-                fz_write_printf(gctx, out, "%c", c);
-            else
-                fz_write_printf(gctx, out, "<%02x>", c);
-            len--;
-        };
+        for (i = 0; i < count; i++)
+            {
+                tname = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
+                if (strcmp(tname, name) == 0) break;
+            }
+        if (strcmp(tname, name) != 0)
+        fz_throw(gctx, FZ_ERROR_GENERIC, "name not found");
     }
+    return i;
 }
-
-void portfolio_out_obj(fz_output *out, pdf_obj *obj, const char *dflt)
-{
-    if (obj == NULL) fz_write_printf(gctx, out, dflt);
-    else if (pdf_is_string(gctx, obj))
-        portfolio_out_string(out, (unsigned char *)pdf_to_str_buf(gctx, obj),
-                                     pdf_to_str_len(gctx, obj));
-    else
-        pdf_print_obj(gctx, out, obj, 1);
-}
-
 
 
 //----------------------------------------------------------------------------
@@ -4547,10 +4537,14 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "name not found")
                                pdf_new_string(gctx, pdf, limit2, strlen(limit2)));
             return 0;
         }
-SWIGINTERN PyObject *fz_document_s_embeddedFileInfo__SWIG_0(struct fz_document_s *self,int n){
+SWIGINTERN PyObject *fz_document_s_embeddedFileInfo(struct fz_document_s *self,PyObject *id){
             PyObject *infodict = PyDict_New();
             pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
-            char *name;
+            Py_ssize_t name_len = 0;
+            int n = -1;
+            int count;
+            char *name = NULL;
+            char *sname = NULL;
             fz_try(gctx)
             {
                 /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
@@ -4558,13 +4552,11 @@ if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
-                int count = pdf_count_portfolio_entries(gctx, pdf); // file count
+                count = pdf_count_portfolio_entries(gctx, pdf); // file count
                 if (count < 1) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "no embedded files")
 /*@SWIG@*/;
-                if ((n < 0) || (n >= count)) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "index out of range")
-/*@SWIG@*/;
+                n = FindEmbedded(id, pdf);
             }
             fz_catch(gctx) return NULL;
 
@@ -4586,59 +4578,11 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "index out of range")
             if (olen) len = pdf_to_int(gctx, olen);
             pdf_obj *oDL = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F, PDF_NAME_DL, NULL);
             if (oDL) DL = pdf_to_int(gctx, oDL);
-            PyDict_SetItemString(infodict, "size", PyLong_FromLong((long) len));
-            PyDict_SetItemString(infodict, "length", PyLong_FromLong((long) DL));
+            PyDict_SetItemString(infodict, "size", PyInt_FromLong((long) len));
+            PyDict_SetItemString(infodict, "length", PyInt_FromLong((long) DL));
             return infodict;
         }
-SWIGINTERN PyObject *fz_document_s_embeddedFileInfo__SWIG_1(struct fz_document_s *self,char *tname){
-            PyObject *infodict = PyDict_New();
-            pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
-            char *name;
-            int i;
-            fz_try(gctx)
-            {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
-/*@SWIG@*/
-/*@SWIG@*/;
-                int count = pdf_count_portfolio_entries(gctx, pdf);
-                if (count < 1) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "no embedded files")
-/*@SWIG@*/;
-                for (i = 0; i < count; i++)
-                {
-                    name = pdf_to_str_buf(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
-                    if (strcmp(tname, name)==0) break;
-                }
-                if (strcmp(tname, name) != 0) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "name not found")
-/*@SWIG@*/;
-            }
-            fz_catch(gctx) return NULL;
-
-            name = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
-            PyDict_SetItemString(infodict, "name", 
-                   PyUnicode_DecodeUTF8(name, strlen(name), "strict"));
-            pdf_obj *o = pdf_portfolio_entry_obj(gctx, pdf, i);
-            name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_F));
-            PyDict_SetItemString(infodict, "file", 
-                   PyUnicode_DecodeUTF8(name, strlen(name), "strict"));
-            name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_Desc));
-            PyDict_SetItemString(infodict, "desc", 
-                   PyUnicode_DecodeUTF8(name, strlen(name), "strict"));
-            pdf_obj *olen = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F,
-                                          PDF_NAME_Length, NULL);
-            int len = -1;
-            int DL = -1;
-            if (olen) len = pdf_to_int(gctx, olen);
-            pdf_obj *oDL = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F, PDF_NAME_DL, NULL);
-            if (oDL) DL = pdf_to_int(gctx, oDL);
-            PyDict_SetItemString(infodict, "size", PyLong_FromLong((long) len));
-            PyDict_SetItemString(infodict, "length", PyLong_FromLong((long) DL));
-            return infodict;
-        }
-SWIGINTERN int fz_document_s_embeddedFileSetInfo__SWIG_0(struct fz_document_s *self,char *name,PyObject *filename,PyObject *desc){
+SWIGINTERN int fz_document_s_embeddedFileSetInfo(struct fz_document_s *self,PyObject *id,PyObject *filename,PyObject *desc){
             pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
             fz_try(gctx)
             {
@@ -4647,8 +4591,10 @@ if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
-                Py_ssize_t file_len, desc_len;
-                char *f, *d, *t;
+                Py_ssize_t name_len, file_len, desc_len;
+                int n;
+                char *f, *d, *t, *name;
+                name = getPDFstr(id, &name_len, "id");
                 f = getPDFstr(filename, &file_len, "filename");
                 d = getPDFstr(desc, &desc_len, "desc");
                 if ((!f) && (!d)) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
@@ -4658,16 +4604,8 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "nothing to change")
                 if (count < 1) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "no embedded files")
 /*@SWIG@*/;
-                int i;
-                for (i = 0; i < count; i++)
-                {
-                    t = pdf_to_str_buf(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
-                    if (strcmp(t, name) == 0) break;
-                }
-                if (strcmp(t, name) != 0) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "name not found")
-/*@SWIG@*/;
-                pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, i);
+                n = FindEmbedded(id, pdf);
+                pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, n);
                 
                 if (f != NULL)
                     {
@@ -4676,7 +4614,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "name not found")
                         pdf_dict_put_drop(gctx, entry, PDF_NAME_UF,
                              pdf_new_string(gctx, pdf, f, (int) file_len));
                     }
-                
+
                 if (d != NULL)
                     {
                         pdf_dict_put_drop(gctx, entry, PDF_NAME_Desc,
@@ -4686,52 +4624,12 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "name not found")
             fz_catch(gctx) return -1;
             return 0;
         }
-SWIGINTERN int fz_document_s_embeddedFileSetInfo__SWIG_1(struct fz_document_s *self,int i,PyObject *filename,PyObject *desc){
-            pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
-            fz_try(gctx)
-            {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
-/*@SWIG@*/
-/*@SWIG@*/;
-                char *f, *d;
-                Py_ssize_t file_len, desc_len;
-                f = getPDFstr(filename, &file_len, "filename");
-                d = getPDFstr(desc, &desc_len, "desc");
-                if ((!f) && (!d)) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "nothing to change")
-/*@SWIG@*/;
-                int count = pdf_count_portfolio_entries(gctx, pdf);
-                if (count < 1) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "no embedded files")
-/*@SWIG@*/;
-                if ((i < 0) || (i >= count)) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "index out of range")
-/*@SWIG@*/;
-                pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, i);
-
-                if (f != NULL)
-                    {
-                    pdf_dict_put_drop(gctx, entry, PDF_NAME_F,
-                             pdf_new_string(gctx, pdf, f, (int) file_len));
-                    pdf_dict_put_drop(gctx, entry, PDF_NAME_UF,
-                             pdf_new_string(gctx, pdf, f, (int) file_len));
-                    }
-                
-                if (d != NULL)
-                    {
-                    pdf_dict_put_drop(gctx, entry, PDF_NAME_Desc,
-                             pdf_new_string(gctx, pdf, d, (int) desc_len));
-                    }
-            }
-            fz_catch(gctx) return -1;
-            return 0;
-        }
-SWIGINTERN PyObject *fz_document_s_embeddedFileGet__SWIG_0(struct fz_document_s *self,char *name){
+SWIGINTERN PyObject *fz_document_s_embeddedFileGet(struct fz_document_s *self,PyObject *id){
             PyObject *cont = PyBytes_FromString("");
             pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
             fz_buffer *buf = NULL;
+            char *name = NULL;
+            Py_ssize_t name_len;
             fz_try(gctx)
             {
                 /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
@@ -4743,45 +4641,9 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
                 if (count < 1) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "no embedded files")
 /*@SWIG@*/;
-                char *tname;
-                int i;
-                for (i = 0; i < count; i++)
-                {
-                    tname = pdf_to_str_buf(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
-                    if (strcmp(tname, name) == 0) break;
-                }
-                if (strcmp(tname, name) != 0) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "name not found")
-/*@SWIG@*/;
+                int i = FindEmbedded(id, pdf);
                 unsigned char *data;
                 buf = pdf_portfolio_entry(gctx, pdf, i);
-                Py_ssize_t len = (Py_ssize_t) fz_buffer_storage(gctx, buf, &data);
-                cont = PyBytes_FromStringAndSize(data, len);
-            }
-            fz_always(gctx) if (buf) fz_drop_buffer(gctx, buf);
-            fz_catch(gctx) return NULL;
-            return cont;
-        }
-SWIGINTERN PyObject *fz_document_s_embeddedFileGet__SWIG_1(struct fz_document_s *self,int n){
-            PyObject *cont = PyBytes_FromString("");
-            pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
-            fz_buffer *buf = NULL;
-            fz_try(gctx)
-            {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
-/*@SWIG@*/
-/*@SWIG@*/;
-                int count = pdf_count_portfolio_entries(gctx, pdf);
-                if (count < 1) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "no embedded files")
-/*@SWIG@*/;
-                if ((n < 0) || (n >= count)) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "index out of range")
-/*@SWIG@*/;
-                unsigned char *data;
-                buf = pdf_portfolio_entry(gctx, pdf, n);
                 Py_ssize_t len = (Py_ssize_t) fz_buffer_storage(gctx, buf, &data);
                 cont = PyBytes_FromStringAndSize(data, len);
             }
@@ -4794,7 +4656,7 @@ SWIGINTERN int fz_document_s_embeddedFileAdd(struct fz_document_s *self,PyObject
             fz_buffer *data = NULL;
             int entry = 0;
             size_t size = 0;
-            int name_len, file_len, desc_len;
+            Py_ssize_t name_len, file_len, desc_len;
             char *f, *d;
             fz_try(gctx)
             {
@@ -6796,6 +6658,87 @@ SWIGINTERN PyObject *fz_annot_s_type(struct fz_annot_s *self){
                 }
             return res;
         }
+SWIGINTERN PyObject *fz_annot_s_fileInfo(struct fz_annot_s *self){
+            PyObject *res = PyDict_New();             // create Python dict
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
+            char *filename = NULL;
+            int length, size;
+            pdf_obj *f_o, *l_o, *s_o, *stream;
+
+            fz_try(gctx)
+            {
+                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
+if (!annot) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
+/*@SWIG@*/
+/*@SWIG@*/;
+                int type = (int) pdf_annot_type(gctx, annot);
+                if (type != 16)
+                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "not a file attachment annot")
+/*@SWIG@*/;
+                stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
+                                   PDF_NAME_EF, PDF_NAME_F, NULL);
+                if (!stream) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: file has no stream")
+/*@SWIG@*/;
+            }
+            fz_catch(gctx) return NULL;
+
+            f_o = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
+                                PDF_NAME_F, NULL);
+
+            l_o = pdf_dict_get(gctx, stream, PDF_NAME_Length);
+            s_o = pdf_dict_getl(gctx, stream, PDF_NAME_Params,
+                                PDF_NAME_Size, NULL);
+
+            if (l_o) length = pdf_to_int(gctx, l_o);
+            else     length = -1;
+
+            if (s_o) size = pdf_to_int(gctx, s_o);
+            else     size = -1;
+
+            if (f_o) filename = pdf_to_utf8(gctx, f_o);
+            else     filename = "<undefined>";
+
+            PyDict_SetItemString(res, "filename",
+                   PyUnicode_DecodeUTF8(filename, strlen(filename), "strict"));
+            PyDict_SetItemString(res, "length", PyInt_FromLong((long) length));
+            PyDict_SetItemString(res, "size", PyInt_FromLong((long) size));
+            return res;
+        }
+SWIGINTERN PyObject *fz_annot_s_fileGet(struct fz_annot_s *self){
+            PyObject *res = NULL;
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
+            pdf_obj *stream = NULL;
+            fz_buffer *buf = NULL;
+            unsigned char *data = NULL;
+            Py_ssize_t len;
+            fz_try(gctx)
+            {
+                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
+if (!annot) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
+/*@SWIG@*/
+/*@SWIG@*/;
+                int type = (int) pdf_annot_type(gctx, annot);
+                if (type != 16)
+                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "no file attachment annot")
+/*@SWIG@*/;
+                stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
+                                   PDF_NAME_EF, PDF_NAME_F, NULL);
+                if (!stream) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: file has no stream")
+/*@SWIG@*/;
+                buf = pdf_load_stream(gctx, stream);
+                len = (Py_ssize_t) fz_buffer_storage(gctx, buf, &data);
+                res = PyBytes_FromStringAndSize(data, len);
+            }
+            fz_always(gctx) if (buf) fz_drop_buffer(gctx, buf);
+            fz_catch(gctx) return NULL;
+            return res;
+        }
 SWIGINTERN PyObject *fz_annot_s_info(struct fz_annot_s *self){
             PyObject *res = PyDict_New();
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
@@ -7474,14 +7417,12 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Document_embeddedFileInfo__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_Document_embeddedFileInfo(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
-  int arg2 ;
+  PyObject *arg2 = (PyObject *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject *result = 0 ;
@@ -7492,13 +7433,9 @@ SWIGINTERN PyObject *_wrap_Document_embeddedFileInfo__SWIG_0(PyObject *SWIGUNUSE
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_embeddedFileInfo" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
   }
   arg1 = (struct fz_document_s *)(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document_embeddedFileInfo" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = (int)(val2);
+  arg2 = obj1;
   {
-    result = (PyObject *)fz_document_s_embeddedFileInfo__SWIG_0(arg1,arg2);
+    result = (PyObject *)fz_document_s_embeddedFileInfo(arg1,arg2);
     if(!result) {
       PyErr_SetString(PyExc_Exception, gctx->error->message);
       return NULL;
@@ -7511,107 +7448,14 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Document_embeddedFileInfo__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_Document_embeddedFileSetInfo(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
-  char *arg2 = (char *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:Document_embeddedFileInfo",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_embeddedFileInfo" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
-  }
-  arg1 = (struct fz_document_s *)(argp1);
-  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Document_embeddedFileInfo" "', argument " "2"" of type '" "char *""'");
-  }
-  arg2 = (char *)(buf2);
-  {
-    result = (PyObject *)fz_document_s_embeddedFileInfo__SWIG_1(arg1,arg2);
-    if(!result) {
-      PyErr_SetString(PyExc_Exception, gctx->error->message);
-      return NULL;
-    }
-  }
-  resultobj = result;
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  return resultobj;
-fail:
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Document_embeddedFileInfo(PyObject *self, PyObject *args) {
-  Py_ssize_t argc;
-  PyObject *argv[3] = {
-    0
-  };
-  Py_ssize_t ii;
-  
-  if (!PyTuple_Check(args)) SWIG_fail;
-  argc = args ? PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 2) && (ii < argc); ii++) {
-    argv[ii] = PyTuple_GET_ITEM(args,ii);
-  }
-  if (argc == 2) {
-    int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_document_s, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      {
-        int res = SWIG_AsVal_int(argv[1], NULL);
-        _v = SWIG_CheckState(res);
-      }
-      if (_v) {
-        return _wrap_Document_embeddedFileInfo__SWIG_0(self, args);
-      }
-    }
-  }
-  if (argc == 2) {
-    int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_document_s, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      int res = SWIG_AsCharPtrAndSize(argv[1], 0, NULL, 0);
-      _v = SWIG_CheckState(res);
-      if (_v) {
-        return _wrap_Document_embeddedFileInfo__SWIG_1(self, args);
-      }
-    }
-  }
-  
-fail:
-  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'Document_embeddedFileInfo'.\n"
-    "  Possible C/C++ prototypes are:\n"
-    "    fz_document_s::embeddedFileInfo(int)\n"
-    "    fz_document_s::embeddedFileInfo(char *)\n");
-  return 0;
-}
-
-
-SWIGINTERN PyObject *_wrap_Document_embeddedFileSetInfo__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
-  char *arg2 = (char *) 0 ;
+  PyObject *arg2 = (PyObject *) 0 ;
   PyObject *arg3 = (PyObject *) NULL ;
   PyObject *arg4 = (PyObject *) NULL ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -7624,11 +7468,7 @@ SWIGINTERN PyObject *_wrap_Document_embeddedFileSetInfo__SWIG_0(PyObject *SWIGUN
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_embeddedFileSetInfo" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
   }
   arg1 = (struct fz_document_s *)(argp1);
-  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Document_embeddedFileSetInfo" "', argument " "2"" of type '" "char *""'");
-  }
-  arg2 = (char *)(buf2);
+  arg2 = obj1;
   if (obj2) {
     arg3 = obj2;
   }
@@ -7636,56 +7476,7 @@ SWIGINTERN PyObject *_wrap_Document_embeddedFileSetInfo__SWIG_0(PyObject *SWIGUN
     arg4 = obj3;
   }
   {
-    result = (int)fz_document_s_embeddedFileSetInfo__SWIG_0(arg1,arg2,arg3,arg4);
-    if(result < 0) {
-      PyErr_SetString(PyExc_Exception, gctx->error->message);
-      return NULL;
-    }
-  }
-  resultobj = SWIG_From_int((int)(result));
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  return resultobj;
-fail:
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Document_embeddedFileSetInfo__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
-  int arg2 ;
-  PyObject *arg3 = (PyObject *) NULL ;
-  PyObject *arg4 = (PyObject *) NULL ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO|OO:Document_embeddedFileSetInfo",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_embeddedFileSetInfo" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
-  }
-  arg1 = (struct fz_document_s *)(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document_embeddedFileSetInfo" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = (int)(val2);
-  if (obj2) {
-    arg3 = obj2;
-  }
-  if (obj3) {
-    arg4 = obj3;
-  }
-  {
-    result = (int)fz_document_s_embeddedFileSetInfo__SWIG_1(arg1,arg2,arg3,arg4);
+    result = (int)fz_document_s_embeddedFileSetInfo(arg1,arg2,arg3,arg4);
     if(result < 0) {
       PyErr_SetString(PyExc_Exception, gctx->error->message);
       return NULL;
@@ -7698,89 +7489,12 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Document_embeddedFileSetInfo(PyObject *self, PyObject *args) {
-  Py_ssize_t argc;
-  PyObject *argv[5] = {
-    0
-  };
-  Py_ssize_t ii;
-  
-  if (!PyTuple_Check(args)) SWIG_fail;
-  argc = args ? PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 4) && (ii < argc); ii++) {
-    argv[ii] = PyTuple_GET_ITEM(args,ii);
-  }
-  if ((argc >= 2) && (argc <= 4)) {
-    int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_document_s, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      {
-        int res = SWIG_AsVal_int(argv[1], NULL);
-        _v = SWIG_CheckState(res);
-      }
-      if (_v) {
-        if (argc <= 2) {
-          return _wrap_Document_embeddedFileSetInfo__SWIG_1(self, args);
-        }
-        _v = (argv[2] != 0);
-        if (_v) {
-          if (argc <= 3) {
-            return _wrap_Document_embeddedFileSetInfo__SWIG_1(self, args);
-          }
-          _v = (argv[3] != 0);
-          if (_v) {
-            return _wrap_Document_embeddedFileSetInfo__SWIG_1(self, args);
-          }
-        }
-      }
-    }
-  }
-  if ((argc >= 2) && (argc <= 4)) {
-    int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_document_s, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      int res = SWIG_AsCharPtrAndSize(argv[1], 0, NULL, 0);
-      _v = SWIG_CheckState(res);
-      if (_v) {
-        if (argc <= 2) {
-          return _wrap_Document_embeddedFileSetInfo__SWIG_0(self, args);
-        }
-        _v = (argv[2] != 0);
-        if (_v) {
-          if (argc <= 3) {
-            return _wrap_Document_embeddedFileSetInfo__SWIG_0(self, args);
-          }
-          _v = (argv[3] != 0);
-          if (_v) {
-            return _wrap_Document_embeddedFileSetInfo__SWIG_0(self, args);
-          }
-        }
-      }
-    }
-  }
-  
-fail:
-  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'Document_embeddedFileSetInfo'.\n"
-    "  Possible C/C++ prototypes are:\n"
-    "    fz_document_s::embeddedFileSetInfo(char *,PyObject *,PyObject *)\n"
-    "    fz_document_s::embeddedFileSetInfo(int,PyObject *,PyObject *)\n");
-  return 0;
-}
-
-
-SWIGINTERN PyObject *_wrap_Document_embeddedFileGet__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_Document_embeddedFileGet(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
-  char *arg2 = (char *) 0 ;
+  PyObject *arg2 = (PyObject *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject *result = 0 ;
@@ -7791,52 +7505,9 @@ SWIGINTERN PyObject *_wrap_Document_embeddedFileGet__SWIG_0(PyObject *SWIGUNUSED
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_embeddedFileGet" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
   }
   arg1 = (struct fz_document_s *)(argp1);
-  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Document_embeddedFileGet" "', argument " "2"" of type '" "char *""'");
-  }
-  arg2 = (char *)(buf2);
+  arg2 = obj1;
   {
-    result = (PyObject *)fz_document_s_embeddedFileGet__SWIG_0(arg1,arg2);
-    if(!result) {
-      PyErr_SetString(PyExc_Exception, gctx->error->message);
-      return NULL;
-    }
-  }
-  resultobj = result;
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  return resultobj;
-fail:
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Document_embeddedFileGet__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
-  int arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:Document_embeddedFileGet",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_embeddedFileGet" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
-  }
-  arg1 = (struct fz_document_s *)(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document_embeddedFileGet" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = (int)(val2);
-  {
-    result = (PyObject *)fz_document_s_embeddedFileGet__SWIG_1(arg1,arg2);
+    result = (PyObject *)fz_document_s_embeddedFileGet(arg1,arg2);
     if(!result) {
       PyErr_SetString(PyExc_Exception, gctx->error->message);
       return NULL;
@@ -7846,56 +7517,6 @@ SWIGINTERN PyObject *_wrap_Document_embeddedFileGet__SWIG_1(PyObject *SWIGUNUSED
   return resultobj;
 fail:
   return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Document_embeddedFileGet(PyObject *self, PyObject *args) {
-  Py_ssize_t argc;
-  PyObject *argv[3] = {
-    0
-  };
-  Py_ssize_t ii;
-  
-  if (!PyTuple_Check(args)) SWIG_fail;
-  argc = args ? PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 2) && (ii < argc); ii++) {
-    argv[ii] = PyTuple_GET_ITEM(args,ii);
-  }
-  if (argc == 2) {
-    int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_document_s, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      {
-        int res = SWIG_AsVal_int(argv[1], NULL);
-        _v = SWIG_CheckState(res);
-      }
-      if (_v) {
-        return _wrap_Document_embeddedFileGet__SWIG_1(self, args);
-      }
-    }
-  }
-  if (argc == 2) {
-    int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_document_s, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      int res = SWIG_AsCharPtrAndSize(argv[1], 0, NULL, 0);
-      _v = SWIG_CheckState(res);
-      if (_v) {
-        return _wrap_Document_embeddedFileGet__SWIG_0(self, args);
-      }
-    }
-  }
-  
-fail:
-  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'Document_embeddedFileGet'.\n"
-    "  Possible C/C++ prototypes are:\n"
-    "    fz_document_s::embeddedFileGet(char *)\n"
-    "    fz_document_s::embeddedFileGet(int)\n");
-  return 0;
 }
 
 
@@ -10259,229 +9880,6 @@ SWIGINTERN PyObject *_wrap_Rect_normalize(PyObject *SWIGUNUSEDPARM(self), PyObje
   arg1 = (struct fz_rect_s *)(argp1);
   result = (struct fz_rect_s *)fz_rect_s_normalize(arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Rect_contains__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
-  struct fz_rect_s *arg2 = (struct fz_rect_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:Rect_contains",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_contains" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
-  }
-  arg1 = (struct fz_rect_s *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_rect_s, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Rect_contains" "', argument " "2"" of type '" "struct fz_rect_s *""'"); 
-  }
-  arg2 = (struct fz_rect_s *)(argp2);
-  result = (PyObject *)fz_rect_s_contains__SWIG_0(arg1,arg2);
-  resultobj = result;
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Rect_contains__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
-  struct fz_irect_s *arg2 = (struct fz_irect_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:Rect_contains",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_contains" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
-  }
-  arg1 = (struct fz_rect_s *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_irect_s, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Rect_contains" "', argument " "2"" of type '" "struct fz_irect_s *""'"); 
-  }
-  arg2 = (struct fz_irect_s *)(argp2);
-  result = (PyObject *)fz_rect_s_contains__SWIG_1(arg1,arg2);
-  resultobj = result;
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Rect_contains__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
-  struct fz_point_s *arg2 = (struct fz_point_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:Rect_contains",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_contains" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
-  }
-  arg1 = (struct fz_rect_s *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_point_s, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Rect_contains" "', argument " "2"" of type '" "struct fz_point_s *""'"); 
-  }
-  arg2 = (struct fz_point_s *)(argp2);
-  result = (PyObject *)fz_rect_s_contains__SWIG_2(arg1,arg2);
-  resultobj = result;
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Rect_contains(PyObject *self, PyObject *args) {
-  Py_ssize_t argc;
-  PyObject *argv[3] = {
-    0
-  };
-  Py_ssize_t ii;
-  
-  if (!PyTuple_Check(args)) SWIG_fail;
-  argc = args ? PyObject_Length(args) : 0;
-  for (ii = 0; (ii < 2) && (ii < argc); ii++) {
-    argv[ii] = PyTuple_GET_ITEM(args,ii);
-  }
-  if (argc == 2) {
-    int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_rect_s, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_fz_rect_s, 0);
-      _v = SWIG_CheckState(res);
-      if (_v) {
-        return _wrap_Rect_contains__SWIG_0(self, args);
-      }
-    }
-  }
-  if (argc == 2) {
-    int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_rect_s, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_fz_irect_s, 0);
-      _v = SWIG_CheckState(res);
-      if (_v) {
-        return _wrap_Rect_contains__SWIG_1(self, args);
-      }
-    }
-  }
-  if (argc == 2) {
-    int _v;
-    void *vptr = 0;
-    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_rect_s, 0);
-    _v = SWIG_CheckState(res);
-    if (_v) {
-      void *vptr = 0;
-      int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_fz_point_s, 0);
-      _v = SWIG_CheckState(res);
-      if (_v) {
-        return _wrap_Rect_contains__SWIG_2(self, args);
-      }
-    }
-  }
-  
-fail:
-  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'Rect_contains'.\n"
-    "  Possible C/C++ prototypes are:\n"
-    "    fz_rect_s::contains(struct fz_rect_s *)\n"
-    "    fz_rect_s::contains(struct fz_irect_s *)\n"
-    "    fz_rect_s::contains(struct fz_point_s *)\n");
-  return 0;
-}
-
-
-SWIGINTERN PyObject *_wrap_Rect_isEmpty(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:Rect_isEmpty",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_isEmpty" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
-  }
-  arg1 = (struct fz_rect_s *)(argp1);
-  result = (PyObject *)fz_rect_s_isEmpty(arg1);
-  resultobj = result;
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Rect_isInfinite(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:Rect_isInfinite",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_isInfinite" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
-  }
-  arg1 = (struct fz_rect_s *)(argp1);
-  result = (PyObject *)fz_rect_s_isInfinite(arg1);
-  resultobj = result;
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Rect_normalize(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:Rect_normalize",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Rect_normalize" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
-  }
-  arg1 = (struct fz_rect_s *)(argp1);
-  fz_rect_s_normalize(arg1);
-  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -14910,6 +14308,62 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Annot_fileInfo(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Annot_fileInfo",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_annot_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot_fileInfo" "', argument " "1"" of type '" "struct fz_annot_s *""'"); 
+  }
+  arg1 = (struct fz_annot_s *)(argp1);
+  {
+    result = (PyObject *)fz_annot_s_fileInfo(arg1);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Annot_fileGet(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Annot_fileGet",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_annot_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot_fileGet" "', argument " "1"" of type '" "struct fz_annot_s *""'"); 
+  }
+  arg1 = (struct fz_annot_s *)(argp1);
+  {
+    result = (PyObject *)fz_annot_s_fileGet(arg1);
+    if(!result) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Annot_info(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
@@ -15716,19 +15170,10 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document__loadOutline", _wrap_Document__loadOutline, METH_VARARGS, (char *)"Document__loadOutline(self) -> Outline"},
 	 { (char *)"Document__dropOutline", _wrap_Document__dropOutline, METH_VARARGS, (char *)"Document__dropOutline(self, ol)"},
 	 { (char *)"Document_embeddedFileCount", _wrap_Document_embeddedFileCount, METH_VARARGS, (char *)"Return number of embedded files"},
-	 { (char *)"Document_embeddedFileDel", _wrap_Document_embeddedFileDel, METH_VARARGS, (char *)"Delete embedded file entry by name"},
-	 { (char *)"Document_embeddedFileInfo", _wrap_Document_embeddedFileInfo, METH_VARARGS, (char *)"\n"
-		"embeddedfilegetinfo\n"
-		"embeddedfilegetinfo\n"
-		""},
-	 { (char *)"Document_embeddedFileSetInfo", _wrap_Document_embeddedFileSetInfo, METH_VARARGS, (char *)"\n"
-		"embeddedfilesetinfo\n"
-		"embeddedfilesetinfo\n"
-		""},
-	 { (char *)"Document_embeddedFileGet", _wrap_Document_embeddedFileGet, METH_VARARGS, (char *)"\n"
-		"embeddedfileget\n"
-		"embeddedfileget\n"
-		""},
+	 { (char *)"Document_embeddedFileDel", _wrap_Document_embeddedFileDel, METH_VARARGS, (char *)"Delete embedded file by name."},
+	 { (char *)"Document_embeddedFileInfo", _wrap_Document_embeddedFileInfo, METH_VARARGS, (char *)"Retrieve embedded file information given its entry number or name."},
+	 { (char *)"Document_embeddedFileSetInfo", _wrap_Document_embeddedFileSetInfo, METH_VARARGS, (char *)"Change filename or description of embedded file given its entry number or name."},
+	 { (char *)"Document_embeddedFileGet", _wrap_Document_embeddedFileGet, METH_VARARGS, (char *)"Retrieve embedded file content given its entry number or name."},
 	 { (char *)"Document_embeddedFileAdd", _wrap_Document_embeddedFileAdd, METH_VARARGS, (char *)"Add new file from buffer."},
 	 { (char *)"Document_pageCount", _wrap_Document_pageCount, METH_VARARGS, (char *)"Document_pageCount(self) -> int"},
 	 { (char *)"Document__getMetadata", _wrap_Document__getMetadata, METH_VARARGS, (char *)"Document__getMetadata(self, key) -> char *"},
@@ -15738,15 +15183,12 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document_authenticate", _wrap_Document_authenticate, METH_VARARGS, (char *)"Document_authenticate(self, arg3) -> int"},
 	 { (char *)"Document_save", _wrap_Document_save, METH_VARARGS, (char *)"Document_save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0) -> int"},
 	 { (char *)"Document_write", _wrap_Document_write, METH_VARARGS, (char *)"Document_write(self, garbage=0, clean=0, deflate=0, ascii=0, expand=0, linear=0) -> PyObject *"},
-	 { (char *)"Document_insertPDF", _wrap_Document_insertPDF, METH_VARARGS, (char *)"\n"
-		"insertPDF(PDFsrc, from_page, to_page, start_at, rotate, links) -> int\n"
-		"Insert page range [from, to] of source PDF, starting as page number start_at.\n"
-		""},
+	 { (char *)"Document_insertPDF", _wrap_Document_insertPDF, METH_VARARGS, (char *)"Insert page range ['from', 'to'] of source PDF, starting as page number 'start_at'."},
 	 { (char *)"Document_deletePage", _wrap_Document_deletePage, METH_VARARGS, (char *)"delete page 'pno'"},
 	 { (char *)"Document_deletePageRange", _wrap_Document_deletePageRange, METH_VARARGS, (char *)"delete pages 'from' to 'to'"},
-	 { (char *)"Document_copyPage", _wrap_Document_copyPage, METH_VARARGS, (char *)"copy a page in front of 'to'"},
-	 { (char *)"Document_movePage", _wrap_Document_movePage, METH_VARARGS, (char *)"move a page in front of 'to'"},
-	 { (char *)"Document_select", _wrap_Document_select, METH_VARARGS, (char *)"select(list) -> int; build sub-pdf with page numbers in 'list'"},
+	 { (char *)"Document_copyPage", _wrap_Document_copyPage, METH_VARARGS, (char *)"Copy a page in front of 'to'"},
+	 { (char *)"Document_movePage", _wrap_Document_movePage, METH_VARARGS, (char *)"Move page in front of 'to'"},
+	 { (char *)"Document_select", _wrap_Document_select, METH_VARARGS, (char *)"Build sub-pdf with page numbers in 'list'"},
 	 { (char *)"Document_permissions", _wrap_Document_permissions, METH_VARARGS, (char *)"dictionary containing permissions"},
 	 { (char *)"Document__getPageObjNumber", _wrap_Document__getPageObjNumber, METH_VARARGS, (char *)"Document__getPageObjNumber(self, pno) -> PyObject *"},
 	 { (char *)"Document_getPageImageList", _wrap_Document_getPageImageList, METH_VARARGS, (char *)"list of images used on a page"},
@@ -15962,6 +15404,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Annot_lineEnds", _wrap_Annot_lineEnds, METH_VARARGS, (char *)"Annot_lineEnds(self) -> PyObject *"},
 	 { (char *)"Annot_setLineEnds", _wrap_Annot_setLineEnds, METH_VARARGS, (char *)"Annot_setLineEnds(self, start, end)"},
 	 { (char *)"Annot_type", _wrap_Annot_type, METH_VARARGS, (char *)"Annot_type(self) -> PyObject *"},
+	 { (char *)"Annot_fileInfo", _wrap_Annot_fileInfo, METH_VARARGS, (char *)"Retrieve attached file information."},
+	 { (char *)"Annot_fileGet", _wrap_Annot_fileGet, METH_VARARGS, (char *)"Retrieve attached file content."},
 	 { (char *)"Annot_info", _wrap_Annot_info, METH_VARARGS, (char *)"Annot_info(self) -> PyObject *"},
 	 { (char *)"Annot_setInfo", _wrap_Annot_setInfo, METH_VARARGS, (char *)"Annot_setInfo(self, info) -> int"},
 	 { (char *)"Annot_border", _wrap_Annot_border, METH_VARARGS, (char *)"Annot_border(self) -> PyObject *"},

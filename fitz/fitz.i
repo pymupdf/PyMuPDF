@@ -263,7 +263,7 @@ struct fz_document_s
 
         FITZEXCEPTION(embeddedFileDel, result < 0)
         CLOSECHECK(embeddedFileDel)
-        %feature("autodoc","Delete embedded file entry by name") embeddedFileDel;
+        %feature("autodoc","Delete embedded file by name.") embeddedFileDel;
         int embeddedFileDel(char *name)
         {
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
@@ -341,18 +341,22 @@ struct fz_document_s
 
         FITZEXCEPTION(embeddedFileInfo, !result)
         CLOSECHECK(embeddedFileInfo)
-        %feature("autodoc","embeddedfilegetinfo") embeddedFileInfo;
-        PyObject *embeddedFileInfo(int n)
+        %feature("autodoc","Retrieve embedded file information given its entry number or name.") embeddedFileInfo;
+        PyObject *embeddedFileInfo(PyObject *id)
         {
             PyObject *infodict = PyDict_New();
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
-            char *name;
+            Py_ssize_t name_len = 0;
+            int n = -1;
+            int count;
+            char *name = NULL;
+            char *sname = NULL;
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                int count = pdf_count_portfolio_entries(gctx, pdf); // file count
+                count = pdf_count_portfolio_entries(gctx, pdf); // file count
                 if (count < 1) THROWMSG("no embedded files");
-                if ((n < 0) || (n >= count)) THROWMSG("index out of range");
+                n = FindEmbedded(id, pdf);
             }
             fz_catch(gctx) return NULL;
 
@@ -374,77 +378,31 @@ struct fz_document_s
             if (olen) len = pdf_to_int(gctx, olen);
             pdf_obj *oDL = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F, PDF_NAME_DL, NULL);
             if (oDL) DL = pdf_to_int(gctx, oDL);
-            PyDict_SetItemString(infodict, "size", PyLong_FromLong((long) len));
-            PyDict_SetItemString(infodict, "length", PyLong_FromLong((long) DL));
-            return infodict;
-        }
-
-        PyObject *embeddedFileInfo(char *tname)
-        {
-            PyObject *infodict = PyDict_New();
-            pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
-            char *name;
-            int i;
-            fz_try(gctx)
-            {
-                assert_PDF(pdf);
-                int count = pdf_count_portfolio_entries(gctx, pdf);
-                if (count < 1) THROWMSG("no embedded files");
-                for (i = 0; i < count; i++)
-                {
-                    name = pdf_to_str_buf(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
-                    if (strcmp(tname, name)==0) break;
-                }
-                if (strcmp(tname, name) != 0) THROWMSG("name not found");
-            }
-            fz_catch(gctx) return NULL;
-
-            name = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
-            PyDict_SetItemString(infodict, "name", 
-                   PyUnicode_DecodeUTF8(name, strlen(name), "strict"));
-            pdf_obj *o = pdf_portfolio_entry_obj(gctx, pdf, i);
-            name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_F));
-            PyDict_SetItemString(infodict, "file", 
-                   PyUnicode_DecodeUTF8(name, strlen(name), "strict"));
-            name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_Desc));
-            PyDict_SetItemString(infodict, "desc", 
-                   PyUnicode_DecodeUTF8(name, strlen(name), "strict"));
-            pdf_obj *olen = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F,
-                                          PDF_NAME_Length, NULL);
-            int len = -1;
-            int DL = -1;
-            if (olen) len = pdf_to_int(gctx, olen);
-            pdf_obj *oDL = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F, PDF_NAME_DL, NULL);
-            if (oDL) DL = pdf_to_int(gctx, oDL);
-            PyDict_SetItemString(infodict, "size", PyLong_FromLong((long) len));
-            PyDict_SetItemString(infodict, "length", PyLong_FromLong((long) DL));
+            PyDict_SetItemString(infodict, "size", PyInt_FromLong((long) len));
+            PyDict_SetItemString(infodict, "length", PyInt_FromLong((long) DL));
             return infodict;
         }
 
         FITZEXCEPTION(embeddedFileSetInfo, result < 0)
         CLOSECHECK(embeddedFileSetInfo)
-        %feature("autodoc","embeddedfilesetinfo") embeddedFileSetInfo;
-        int embeddedFileSetInfo(char *name, PyObject *filename=NULL, PyObject *desc=NULL)
+        %feature("autodoc","Change filename or description of embedded file given its entry number or name.") embeddedFileSetInfo;
+        int embeddedFileSetInfo(PyObject *id, PyObject *filename=NULL, PyObject *desc=NULL)
         {
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                Py_ssize_t file_len, desc_len;
-                char *f, *d, *t;
+                Py_ssize_t name_len, file_len, desc_len;
+                int n;
+                char *f, *d, *t, *name;
+                name = getPDFstr(id, &name_len, "id");
                 f = getPDFstr(filename, &file_len, "filename");
                 d = getPDFstr(desc, &desc_len, "desc");
                 if ((!f) && (!d)) THROWMSG("nothing to change");
                 int count = pdf_count_portfolio_entries(gctx, pdf);
                 if (count < 1) THROWMSG("no embedded files");
-                int i;
-                for (i = 0; i < count; i++)
-                {
-                    t = pdf_to_str_buf(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
-                    if (strcmp(t, name) == 0) break;
-                }
-                if (strcmp(t, name) != 0) THROWMSG("name not found");
-                pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, i);
+                n = FindEmbedded(id, pdf);
+                pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, n);
                 
                 if (f != NULL)
                     {
@@ -453,7 +411,7 @@ struct fz_document_s
                         pdf_dict_put_drop(gctx, entry, PDF_NAME_UF,
                              pdf_new_string(gctx, pdf, f, (int) file_len));
                     }
-                
+
                 if (d != NULL)
                     {
                         pdf_dict_put_drop(gctx, entry, PDF_NAME_Desc,
@@ -464,84 +422,24 @@ struct fz_document_s
             return 0;
         }
 
-        int embeddedFileSetInfo(int i, PyObject *filename=NULL, PyObject *desc=NULL)
-        {
-            pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
-            fz_try(gctx)
-            {
-                assert_PDF(pdf);
-                char *f, *d;
-                Py_ssize_t file_len, desc_len;
-                f = getPDFstr(filename, &file_len, "filename");
-                d = getPDFstr(desc, &desc_len, "desc");
-                if ((!f) && (!d)) THROWMSG("nothing to change");
-                int count = pdf_count_portfolio_entries(gctx, pdf);
-                if (count < 1) THROWMSG("no embedded files");
-                if ((i < 0) || (i >= count)) THROWMSG("index out of range");
-                pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, i);
-
-                if (f != NULL)
-                    {
-                    pdf_dict_put_drop(gctx, entry, PDF_NAME_F,
-                             pdf_new_string(gctx, pdf, f, (int) file_len));
-                    pdf_dict_put_drop(gctx, entry, PDF_NAME_UF,
-                             pdf_new_string(gctx, pdf, f, (int) file_len));
-                    }
-                
-                if (d != NULL)
-                    {
-                    pdf_dict_put_drop(gctx, entry, PDF_NAME_Desc,
-                             pdf_new_string(gctx, pdf, d, (int) desc_len));
-                    }
-            }
-            fz_catch(gctx) return -1;
-            return 0;
-        }
-
         FITZEXCEPTION(embeddedFileGet, !result)
         CLOSECHECK(embeddedFileGet)
-        %feature("autodoc","embeddedfileget") embeddedFileGet;
-        PyObject *embeddedFileGet(char *name)
+        %feature("autodoc","Retrieve embedded file content given its entry number or name.") embeddedFileGet;
+        PyObject *embeddedFileGet(PyObject *id)
         {
             PyObject *cont = PyBytes_FromString("");
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
             fz_buffer *buf = NULL;
+            char *name = NULL;
+            Py_ssize_t name_len;
             fz_try(gctx)
             {
                 assert_PDF(pdf);
                 int count = pdf_count_portfolio_entries(gctx, pdf);
                 if (count < 1) THROWMSG("no embedded files");
-                char *tname;
-                int i;
-                for (i = 0; i < count; i++)
-                {
-                    tname = pdf_to_str_buf(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
-                    if (strcmp(tname, name) == 0) break;
-                }
-                if (strcmp(tname, name) != 0) THROWMSG("name not found");
+                int i = FindEmbedded(id, pdf);
                 unsigned char *data;
                 buf = pdf_portfolio_entry(gctx, pdf, i);
-                Py_ssize_t len = (Py_ssize_t) fz_buffer_storage(gctx, buf, &data);
-                cont = PyBytes_FromStringAndSize(data, len);
-            }
-            fz_always(gctx) if (buf) fz_drop_buffer(gctx, buf);
-            fz_catch(gctx) return NULL;
-            return cont;
-        }
-
-        PyObject *embeddedFileGet(int n)
-        {
-            PyObject *cont = PyBytes_FromString("");
-            pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
-            fz_buffer *buf = NULL;
-            fz_try(gctx)
-            {
-                assert_PDF(pdf);
-                int count = pdf_count_portfolio_entries(gctx, pdf);
-                if (count < 1) THROWMSG("no embedded files");
-                if ((n < 0) || (n >= count)) THROWMSG("index out of range");
-                unsigned char *data;
-                buf = pdf_portfolio_entry(gctx, pdf, n);
                 Py_ssize_t len = (Py_ssize_t) fz_buffer_storage(gctx, buf, &data);
                 cont = PyBytes_FromStringAndSize(data, len);
             }
@@ -559,7 +457,7 @@ struct fz_document_s
             fz_buffer *data = NULL;
             int entry = 0;
             size_t size = 0;
-            int name_len, file_len, desc_len;
+            Py_ssize_t name_len, file_len, desc_len;
             char *f, *d;
             fz_try(gctx)
             {
@@ -784,7 +682,7 @@ if sa < 0:
     self._do_links(docsrc, from_page = from_page, to_page = to_page,
                    start_at = sa)%}
 
-        %feature("autodoc","insertPDF(PDFsrc, from_page, to_page, start_at, rotate, links) -> int\nInsert page range [from, to] of source PDF, starting as page number start_at.") insertPDF;
+        %feature("autodoc","Insert page range ['from', 'to'] of source PDF, starting as page number 'start_at'.") insertPDF;
 
         int insertPDF(struct fz_document_s *docsrc, int from_page=-1, int to_page=-1, int start_at=-1, int rotate=-1, int links = 1)
         {
@@ -872,7 +770,7 @@ if sa < 0:
         //*********************************************************************
         FITZEXCEPTION(copyPage, result<0)
         CLOSECHECK(copyPage)
-        %feature("autodoc","copy a page in front of 'to'") copyPage;
+        %feature("autodoc","Copy a page in front of 'to'") copyPage;
         %pythonappend copyPage %{if val == 0: self._reset_page_refs()%}
         int copyPage(int pno, int to = -1)
         {
@@ -895,7 +793,7 @@ if sa < 0:
         //*********************************************************************
         FITZEXCEPTION(movePage, result<0)
         CLOSECHECK(movePage)
-        %feature("autodoc","move a page in front of 'to'") movePage;
+        %feature("autodoc","Move page in front of 'to'") movePage;
         %pythonappend movePage %{if val == 0: self._reset_page_refs()%}
         int movePage(int pno, int to = -1)
         {
@@ -921,12 +819,12 @@ if sa < 0:
             return 0;
         }
 
-        //*********************************************************************
+        //---------------------------------------------------------------------
         // Create sub-document to keep only selected pages.
         // Parameter is a Python list of the wanted page numbers.
-        //*********************************************************************
+        //---------------------------------------------------------------------
         FITZEXCEPTION(select, result<0)
-        %feature("autodoc","select(list) -> int; build sub-pdf with page numbers in 'list'") select;
+        %feature("autodoc","Build sub-pdf with page numbers in 'list'") select;
         CLOSECHECK(select)
         %pythonappend select
 %{if val == 0:
@@ -2440,60 +2338,60 @@ struct fz_pixmap_s
             fz_tint_pixmap(gctx, $self, red, green, blue);
         }
 
-        /*********************************/
-        /* clear total pixmap with value */
-        /*********************************/
+        //----------------------------------------------------------------------
+        // clear total pixmap with value */
+        //----------------------------------------------------------------------
         void clearWith(int value)
         {
             fz_clear_pixmap_with_value(gctx, $self, value);
         }
 
-        /*************************************/
-        /* clear pixmap rectangle with value */
-        /*************************************/
+        //----------------------------------------------------------------------
+        // clear pixmap rectangle with value
+        //----------------------------------------------------------------------
         void clearWith(int value, const struct fz_irect_s *bbox)
         {
             fz_clear_pixmap_rect_with_value(gctx, $self, value, bbox);
         }
 
-        /***********************************/
-        /* copy pixmaps                    */
-        /***********************************/
+        //----------------------------------------------------------------------
+        // copy pixmaps 
+        //----------------------------------------------------------------------
         void copyPixmap(struct fz_pixmap_s *src, const struct fz_irect_s *bbox)
         {
             fz_copy_pixmap_rect(gctx, $self, src, bbox);
         }
 
-        /*********************************************************************/
+        //----------------------------------------------------------------------
         // get length of one image row
-        /*********************************************************************/
+        //----------------------------------------------------------------------
         %pythoncode %{@property%}
         int stride()
         {
             return fz_pixmap_stride(gctx, $self);
         }
 
-        /*********************************************************************/
+        //----------------------------------------------------------------------
         // check alpha channel
-        /*********************************************************************/
+        //----------------------------------------------------------------------
         %pythoncode %{@property%}
         int alpha()
         {
             return $self->alpha;
         }
 
-        /*********************************************************************/
+        //----------------------------------------------------------------------
         // get colorspace of pixmap
-        /*********************************************************************/
+        //----------------------------------------------------------------------
         %pythoncode %{@property%}
         struct fz_colorspace_s *colorspace()
         {
             return fz_pixmap_colorspace(gctx, $self);
         }
 
-        /*********************************************************************/
-        // get irect of pixmap
-        /*********************************************************************/
+        //----------------------------------------------------------------------
+        // return irect of pixmap
+        //----------------------------------------------------------------------
         %pythoncode %{@property%}
         struct fz_irect_s *irect()
         {
@@ -2505,18 +2403,18 @@ struct fz_pixmap_s
             return fz_pixmap_bbox(gctx, $self, r);
         }
 
-        /**********************/
-        /* get size of pixmap */
-        /**********************/
+        //----------------------------------------------------------------------
+        // return size of pixmap
+        //----------------------------------------------------------------------
         %pythoncode %{@property%}
         int size()
         {
             return (int) fz_pixmap_size(gctx, $self);
         }
 
-        /**********************/
-        /* writePNG           */
-        /**********************/
+        //----------------------------------------------------------------------
+        // writePNG
+        //----------------------------------------------------------------------
         FITZEXCEPTION(writePNG, result)
         %pythonprepend writePNG %{
             if type(filename) == str:
@@ -2538,9 +2436,9 @@ struct fz_pixmap_s
             return 0;
         }
 
-        /**********************/
-        /* getPNGData         */
-        /**********************/
+        //----------------------------------------------------------------------
+        // getPNGData
+        //----------------------------------------------------------------------
         FITZEXCEPTION(getPNGData, !result)
         PyObject *getPNGData(int savealpha=-1)
         {
@@ -2566,9 +2464,9 @@ struct fz_pixmap_s
             return r;
         }
 
-        /************************/
-        /* _writeIMG            */
-        /************************/
+        //----------------------------------------------------------------------
+        // _writeIMG
+        //----------------------------------------------------------------------
         FITZEXCEPTION(_writeIMG, result)
         %pythonprepend _writeIMG
         %{
@@ -2603,21 +2501,24 @@ struct fz_pixmap_s
             return 0;
         }
 
-        /******************************/
-        /* invertIRect (total pixmap) */
-        /******************************/
+        //----------------------------------------------------------------------
+        // invertIRect (total pixmap)
+        //----------------------------------------------------------------------
         void invertIRect()
         {
             fz_invert_pixmap(gctx, $self);
         }
-        /*************************/
-        /* invertIRect           */
-        /*************************/
+        //----------------------------------------------------------------------
+        // invertIRect
+        //----------------------------------------------------------------------
         void invertIRect(const struct fz_irect_s *irect)
         {
             fz_invert_pixmap_rect(gctx, $self, irect);
         }
 
+        //----------------------------------------------------------------------
+        // samples
+        //----------------------------------------------------------------------
         %pythoncode %{@property%}
         PyObject *samples()
         {
@@ -2664,18 +2565,18 @@ struct fz_colorspace_s
                     break;
             }
         }
-/*****************************************************************************/
-// number of bytes to define color of one pixel
-/*****************************************************************************/
+        //----------------------------------------------------------------------
+        // number of bytes to define color of one pixel
+        //----------------------------------------------------------------------
         %pythoncode %{@property%}
         int n()
         {
             return fz_colorspace_n(gctx, $self);
         }
 
-/*****************************************************************************/
-// name of colorspace
-/*****************************************************************************/
+        //----------------------------------------------------------------------
+        // name of colorspace
+        //----------------------------------------------------------------------
         %pythoncode %{@property%}
         const char *name()
         {
@@ -2750,7 +2651,9 @@ struct DeviceWrapper
     }
 };
 
-/* fz_matrix */
+//------------------------------------------------------------------------------
+// fz_matrix
+//------------------------------------------------------------------------------
 %rename(_fz_pre_scale) fz_pre_scale;
 %rename(_fz_pre_shear) fz_pre_shear;
 %rename(_fz_pre_rotate) fz_pre_rotate;
@@ -3093,9 +2996,9 @@ struct fz_point_s
                     return 0.0
                 if self.x > r.x1:
                     if self.y >= r.y1:
-                        return self.distance_to(r.bottom_right, unit = unit)
+                        return self.distance_to(r.bottom_right, unit)
                     elif self.y <= r.y0:
-                        return self.distance_to(r.top_right, unit = unit)
+                        return self.distance_to(r.top_right, unit)
                     else:
                         return (self.x - r.x1) * f
                 elif r.x0 <= self.x <= r.x1:
@@ -3105,9 +3008,9 @@ struct fz_point_s
                         return (r.y0 - self.y) * f
                 else:
                     if self.y >= r.y1:
-                        return self.distance_to(r.bottom_left, unit = unit)
+                        return self.distance_to(r.bottom_left, unit)
                     elif self.y <= r.y0:
-                        return self.distance_to(r.top_left, unit = unit)
+                        return self.distance_to(r.top_left, unit)
                     else:
                         return (r.x0 - self.x) * f
         
@@ -3524,6 +3427,87 @@ struct fz_annot_s
                 cpy = PyUnicode_DecodeUTF8(c, strlen(c), "strict");
                 PyList_Append(res, cpy);
                 }
+            return res;
+        }
+
+        /**********************************************************************/
+        // annotation get attached file info
+        /**********************************************************************/
+        FITZEXCEPTION(fileInfo, !result)
+        PARENTCHECK(fileInfo)
+        %feature("autodoc","Retrieve attached file information.") fileInfo;
+        PyObject *fileInfo()
+        {
+            PyObject *res = PyDict_New();             // create Python dict
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
+            char *filename = NULL;
+            int length, size;
+            pdf_obj *f_o, *l_o, *s_o, *stream;
+
+            fz_try(gctx)
+            {
+                assert_PDF(annot);
+                int type = (int) pdf_annot_type(gctx, annot);
+                if (type != ANNOT_FILEATTACHMENT)
+                    THROWMSG("not a file attachment annot");
+                stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
+                                   PDF_NAME_EF, PDF_NAME_F, NULL);
+                if (!stream) THROWMSG("bad PDF: file has no stream");
+            }
+            fz_catch(gctx) return NULL;
+
+            f_o = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
+                                PDF_NAME_F, NULL);
+
+            l_o = pdf_dict_get(gctx, stream, PDF_NAME_Length);
+            s_o = pdf_dict_getl(gctx, stream, PDF_NAME_Params,
+                                PDF_NAME_Size, NULL);
+
+            if (l_o) length = pdf_to_int(gctx, l_o);
+            else     length = -1;
+
+            if (s_o) size = pdf_to_int(gctx, s_o);
+            else     size = -1;
+
+            if (f_o) filename = pdf_to_utf8(gctx, f_o);
+            else     filename = "<undefined>";
+
+            PyDict_SetItemString(res, "filename",
+                   PyUnicode_DecodeUTF8(filename, strlen(filename), "strict"));
+            PyDict_SetItemString(res, "length", PyInt_FromLong((long) length));
+            PyDict_SetItemString(res, "size", PyInt_FromLong((long) size));
+            return res;
+        }
+
+        /**********************************************************************/
+        // annotation get attached file content
+        /**********************************************************************/
+        FITZEXCEPTION(fileGet, !result)
+        PARENTCHECK(fileGet)
+        %feature("autodoc","Retrieve attached file content.") fileGet;
+        PyObject *fileGet()
+        {
+            PyObject *res = NULL;
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
+            pdf_obj *stream = NULL;
+            fz_buffer *buf = NULL;
+            unsigned char *data = NULL;
+            Py_ssize_t len;
+            fz_try(gctx)
+            {
+                assert_PDF(annot);
+                int type = (int) pdf_annot_type(gctx, annot);
+                if (type != ANNOT_FILEATTACHMENT)
+                    THROWMSG("not a file attachment annot");
+                stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
+                                   PDF_NAME_EF, PDF_NAME_F, NULL);
+                if (!stream) THROWMSG("bad PDF: file has no stream");
+                buf = pdf_load_stream(gctx, stream);
+                len = (Py_ssize_t) fz_buffer_storage(gctx, buf, &data);
+                res = PyBytes_FromStringAndSize(data, len);
+            }
+            fz_always(gctx) if (buf) fz_drop_buffer(gctx, buf);
+            fz_catch(gctx) return NULL;
             return res;
         }
 

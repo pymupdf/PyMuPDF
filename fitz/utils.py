@@ -1093,3 +1093,19 @@ def updateImage(annot):
     ap = b" ".join(aptab)
     annot._setAP(ap)
     return
+
+#-------------------------------------------------------------------------------
+# "Now" timestamp in PDF Format
+#-------------------------------------------------------------------------------
+def getPDFnow():
+    import time
+    tz = "%s'%s'" % (str(time.timezone // 3600).rjust(2, "0"),
+                 str((time.timezone // 60)%60).rjust(2, "0"))
+    tstamp = time.strftime("D:%Y%m%d%H%M%S", time.localtime())
+    if time.timezone > 0:
+        tstamp += "-" + tz
+    elif time.timezone < 0:
+        tstamp = "+" + tz
+    else:
+        pass
+    return tstamp
