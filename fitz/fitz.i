@@ -284,13 +284,13 @@ struct fz_document_s
                 limit2 = NULL;
                 if (limits)                     // have name limits?
                     {
-                        limit1 = pdf_to_str_buf(gctx, pdf_array_get(gctx, limits, 0));
-                        limit2 = pdf_to_str_buf(gctx, pdf_array_get(gctx, limits, 1));
+                        limit1 = pdf_to_utf8(gctx, pdf_array_get(gctx, limits, 0));
+                        limit2 = pdf_to_utf8(gctx, pdf_array_get(gctx, limits, 1));
                     }
                 len = pdf_array_len(gctx, names);     // embedded files count*2
                 for (i=0; i < len; i+=2)              // search for the name
                     {
-                        tname = pdf_to_str_buf(gctx, pdf_array_get(gctx, names, i));
+                        tname = pdf_to_utf8(gctx, pdf_array_get(gctx, names, i));
                         if (strcmp(tname, name) == 0) break;   // name found
                     }
                 if (strcmp(tname, name) != 0) THROWMSG("name not found");
@@ -327,7 +327,7 @@ struct fz_document_s
             limit2 = " ";                   // initialize high entry
             for (i=0; i < len; i+=2)              // search for low / hi names
                 {
-                tname = pdf_to_str_buf(gctx, pdf_array_get(gctx, names, i));
+                tname = pdf_to_utf8(gctx, pdf_array_get(gctx, names, i));
                 if (strcmp(tname, limit1) < 0) limit1 = tname;
                 if (strcmp(tname, limit2) > 0) limit2 = tname;
                 }
@@ -394,7 +394,7 @@ struct fz_document_s
                 assert_PDF(pdf);
                 Py_ssize_t name_len, file_len, desc_len;
                 int n;
-                char *f, *d, *t, *name;
+                char *f, *d, *name;
                 name = getPDFstr(id, &name_len, "id");
                 f = getPDFstr(filename, &file_len, "filename");
                 d = getPDFstr(desc, &desc_len, "desc");
@@ -431,7 +431,6 @@ struct fz_document_s
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
             fz_buffer *buf = NULL;
             char *name = NULL;
-            Py_ssize_t name_len;
             fz_try(gctx)
             {
                 assert_PDF(pdf);
@@ -493,15 +492,15 @@ struct fz_document_s
             fz_try(gctx)
             {
                 assert_PDF(pdf);       // must be PDF
-                if (size == 0) THROWMSG("argument 1 not bytes or bytearray");
+                if (size == 0) THROWMSG("arg 1 not bytes or bytearray");
                 
                 int count = pdf_count_portfolio_entries(gctx, pdf);
                 int i;
                 char *tname;
                 Py_ssize_t len = 0;
-                for (i = 0; i < count; i++)      // check if name already occurs
+                for (i = 0; i < count; i++)      // check if name already exists
                 {
-                    tname = pdf_to_str_buf(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
+                    tname = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
                     if (strcmp(tname, name)==0) THROWMSG("name already exists");
                 }
                 entry = pdf_add_portfolio_entry(gctx, pdf,
@@ -1638,7 +1637,7 @@ fannot._erase()
         FITZEXCEPTION(_readPageText, result==NULL)
         %newobject _readPageText;
         const char *_readPageText(int output=0) {
-            char *res = NULL;
+            const char *res = NULL;
             fz_try(gctx) res = readPageText($self, output);
             fz_catch(gctx) return NULL;
             return res;
@@ -3456,9 +3455,7 @@ struct fz_annot_s
             }
             fz_catch(gctx) return NULL;
 
-            f_o = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
-                                PDF_NAME_F, NULL);
-
+            f_o = pdf_dict_get(gctx, stream, PDF_NAME_F);
             l_o = pdf_dict_get(gctx, stream, PDF_NAME_Length);
             s_o = pdf_dict_getl(gctx, stream, PDF_NAME_Params,
                                 PDF_NAME_Size, NULL);
@@ -3484,7 +3481,7 @@ struct fz_annot_s
         /**********************************************************************/
         FITZEXCEPTION(fileGet, !result)
         PARENTCHECK(fileGet)
-        %feature("autodoc","Retrieve attached file content.") fileGet;
+        %feature("autodoc","Retrieve annotation attached file content.") fileGet;
         PyObject *fileGet()
         {
             PyObject *res = NULL;
@@ -3509,6 +3506,67 @@ struct fz_annot_s
             fz_always(gctx) if (buf) fz_drop_buffer(gctx, buf);
             fz_catch(gctx) return NULL;
             return res;
+        }
+
+        //---------------------------------------------------------------------
+        // annotation update attached file content
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(fileUpd, result < 0)
+        PARENTCHECK(fileUpd)
+        %feature("autodoc","Update annotation attached file content.") fileUpd;
+        int fileUpd(PyObject *buffer, PyObject *filename=NULL)
+        {
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
+            pdf_document *pdf = NULL;       // to be filled in
+            char *data = NULL;              // for new file content
+            fz_buffer *res = NULL;          // for compressed content
+            pdf_obj *stream = NULL;
+            size_t size = 0;
+            Py_ssize_t file_len;
+            char *f;                        // filename
+            fz_try(gctx)
+            {
+                assert_PDF(annot);          // must be a PDF
+                pdf = annot->page->doc;     // this is the PDF
+                int type = (int) pdf_annot_type(gctx, annot);
+                if (type != ANNOT_FILEATTACHMENT)
+                    THROWMSG("not a file attachment annot");
+                stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
+                                   PDF_NAME_EF, PDF_NAME_F, NULL);
+                // the object for file content
+                if (!stream) THROWMSG("bad PDF: attached file has no stream");
+                f = getPDFstr(filename, &file_len, "filename");
+                // new file content must by bytes / bytearray
+                if (PyByteArray_Check(buffer))
+                {
+                    size = (size_t) PyByteArray_Size(buffer);
+                    data = PyByteArray_AsString(buffer);
+                }
+                else if (PyBytes_Check(buffer))
+                {
+                    size = (size_t) PyBytes_Size(buffer);
+                    data = PyBytes_AsString(buffer);
+                }
+                if (size == 0) THROWMSG("arg 1 not bytes or bytearray");
+                if (f != NULL)              // new filename given
+                {
+                    pdf_dict_put_drop(gctx, stream, PDF_NAME_F,
+                         pdf_new_string(gctx, pdf, f, (int) file_len));
+                    pdf_dict_put_drop(gctx, stream, PDF_NAME_UF,
+                         pdf_new_string(gctx, pdf, f, (int) file_len));
+                }
+                // show that we provide a deflated stream
+                pdf_dict_put(gctx, stream, PDF_NAME_Filter,
+                                           PDF_NAME_FlateDecode);
+                pdf_obj *p_o = pdf_dict_get(gctx, stream, PDF_NAME_Params);
+                pdf_dict_put_drop(gctx, p_o, PDF_NAME_Size,
+                                  pdf_new_int(gctx, pdf, (int) size));
+                res = deflatebuf(gctx, data, size);
+                pdf_update_stream(gctx, pdf, stream, res, 1);
+            }
+            fz_always(gctx) ;
+            fz_catch(gctx) return -1;
+            return 0;
         }
 
         /**********************************************************************/

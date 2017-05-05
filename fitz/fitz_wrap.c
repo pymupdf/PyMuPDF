@@ -4481,13 +4481,13 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "no embedded files")
                 limit2 = NULL;
                 if (limits)                     // have name limits?
                     {
-                        limit1 = pdf_to_str_buf(gctx, pdf_array_get(gctx, limits, 0));
-                        limit2 = pdf_to_str_buf(gctx, pdf_array_get(gctx, limits, 1));
+                        limit1 = pdf_to_utf8(gctx, pdf_array_get(gctx, limits, 0));
+                        limit2 = pdf_to_utf8(gctx, pdf_array_get(gctx, limits, 1));
                     }
                 len = pdf_array_len(gctx, names);     // embedded files count*2
                 for (i=0; i < len; i+=2)              // search for the name
                     {
-                        tname = pdf_to_str_buf(gctx, pdf_array_get(gctx, names, i));
+                        tname = pdf_to_utf8(gctx, pdf_array_get(gctx, names, i));
                         if (strcmp(tname, name) == 0) break;   // name found
                     }
                 if (strcmp(tname, name) != 0) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
@@ -4526,7 +4526,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "name not found")
             limit2 = " ";                   // initialize high entry
             for (i=0; i < len; i+=2)              // search for low / hi names
                 {
-                tname = pdf_to_str_buf(gctx, pdf_array_get(gctx, names, i));
+                tname = pdf_to_utf8(gctx, pdf_array_get(gctx, names, i));
                 if (strcmp(tname, limit1) < 0) limit1 = tname;
                 if (strcmp(tname, limit2) > 0) limit2 = tname;
                 }
@@ -4593,7 +4593,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/;
                 Py_ssize_t name_len, file_len, desc_len;
                 int n;
-                char *f, *d, *t, *name;
+                char *f, *d, *name;
                 name = getPDFstr(id, &name_len, "id");
                 f = getPDFstr(filename, &file_len, "filename");
                 d = getPDFstr(desc, &desc_len, "desc");
@@ -4629,7 +4629,6 @@ SWIGINTERN PyObject *fz_document_s_embeddedFileGet(struct fz_document_s *self,Py
             pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
             fz_buffer *buf = NULL;
             char *name = NULL;
-            Py_ssize_t name_len;
             fz_try(gctx)
             {
                 /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
@@ -4699,16 +4698,16 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;       // must be PDF
                 if (size == 0) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "argument 1 not bytes or bytearray")
+fz_throw(gctx, FZ_ERROR_GENERIC, "arg 1 not bytes or bytearray")
 /*@SWIG@*/;
                 
                 int count = pdf_count_portfolio_entries(gctx, pdf);
                 int i;
                 char *tname;
                 Py_ssize_t len = 0;
-                for (i = 0; i < count; i++)      // check if name already occurs
+                for (i = 0; i < count; i++)      // check if name already exists
                 {
-                    tname = pdf_to_str_buf(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
+                    tname = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
                     if (strcmp(tname, name)==0) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "name already exists")
 /*@SWIG@*/;
@@ -5596,7 +5595,7 @@ SWIGINTERN char const *fz_page_s__getRectText(struct fz_page_s *self,struct fz_r
             return fz_string_from_buffer(gctx, res);
         }
 SWIGINTERN char const *fz_page_s__readPageText(struct fz_page_s *self,int output){
-            char *res = NULL;
+            const char *res = NULL;
             fz_try(gctx) res = readPageText(self, output);
             fz_catch(gctx) return NULL;
             return res;
@@ -6685,9 +6684,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: file has no stream")
             }
             fz_catch(gctx) return NULL;
 
-            f_o = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
-                                PDF_NAME_F, NULL);
-
+            f_o = pdf_dict_get(gctx, stream, PDF_NAME_F);
             l_o = pdf_dict_get(gctx, stream, PDF_NAME_Length);
             s_o = pdf_dict_getl(gctx, stream, PDF_NAME_Params,
                                 PDF_NAME_Size, NULL);
@@ -6724,7 +6721,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
                 int type = (int) pdf_annot_type(gctx, annot);
                 if (type != 16)
                     /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "no file attachment annot")
+fz_throw(gctx, FZ_ERROR_GENERIC, "not a file attachment annot")
 /*@SWIG@*/;
                 stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
                                    PDF_NAME_EF, PDF_NAME_F, NULL);
@@ -6738,6 +6735,69 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: file has no stream")
             fz_always(gctx) if (buf) fz_drop_buffer(gctx, buf);
             fz_catch(gctx) return NULL;
             return res;
+        }
+SWIGINTERN int fz_annot_s_fileUpd(struct fz_annot_s *self,PyObject *buffer,PyObject *filename){
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
+            pdf_document *pdf = NULL;       // to be filled in
+            char *data = NULL;              // for new file content
+            fz_buffer *res = NULL;          // for compressed content
+            pdf_obj *stream = NULL;
+            size_t size = 0;
+            Py_ssize_t file_len;
+            char *f;                        // filename
+            fz_try(gctx)
+            {
+                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
+if (!annot) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
+/*@SWIG@*/
+/*@SWIG@*/;          // must be a PDF
+                pdf = annot->page->doc;     // this is the PDF
+                int type = (int) pdf_annot_type(gctx, annot);
+                if (type != 16)
+                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "not a file attachment annot")
+/*@SWIG@*/;
+                stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
+                                   PDF_NAME_EF, PDF_NAME_F, NULL);
+                // the object for file content
+                if (!stream) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: attached file has no stream")
+/*@SWIG@*/;
+                f = getPDFstr(filename, &file_len, "filename");
+                // new file content must by bytes / bytearray
+                if (PyByteArray_Check(buffer))
+                {
+                    size = (size_t) PyByteArray_Size(buffer);
+                    data = PyByteArray_AsString(buffer);
+                }
+                else if (PyBytes_Check(buffer))
+                {
+                    size = (size_t) PyBytes_Size(buffer);
+                    data = PyBytes_AsString(buffer);
+                }
+                if (size == 0) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "arg 1 not bytes or bytearray")
+/*@SWIG@*/;
+                if (f != NULL)              // new filename given
+                {
+                    pdf_dict_put_drop(gctx, stream, PDF_NAME_F,
+                         pdf_new_string(gctx, pdf, f, (int) file_len));
+                    pdf_dict_put_drop(gctx, stream, PDF_NAME_UF,
+                         pdf_new_string(gctx, pdf, f, (int) file_len));
+                }
+                // show that we provide a deflated stream
+                pdf_dict_put(gctx, stream, PDF_NAME_Filter,
+                                           PDF_NAME_FlateDecode);
+                pdf_obj *p_o = pdf_dict_get(gctx, stream, PDF_NAME_Params);
+                pdf_dict_put_drop(gctx, p_o, PDF_NAME_Size,
+                                  pdf_new_int(gctx, pdf, (int) size));
+                res = deflatebuf(gctx, data, size);
+                pdf_update_stream(gctx, pdf, stream, res, 1);
+            }
+            fz_always(gctx) ;
+            fz_catch(gctx) return -1;
+            return 0;
         }
 SWIGINTERN PyObject *fz_annot_s_info(struct fz_annot_s *self){
             PyObject *res = PyDict_New();
@@ -14364,6 +14424,42 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Annot_fileUpd(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
+  PyObject *arg2 = (PyObject *) 0 ;
+  PyObject *arg3 = (PyObject *) NULL ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO|O:Annot_fileUpd",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_annot_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot_fileUpd" "', argument " "1"" of type '" "struct fz_annot_s *""'"); 
+  }
+  arg1 = (struct fz_annot_s *)(argp1);
+  arg2 = obj1;
+  if (obj2) {
+    arg3 = obj2;
+  }
+  {
+    result = (int)fz_annot_s_fileUpd(arg1,arg2,arg3);
+    if(result < 0) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Annot_info(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
@@ -15405,7 +15501,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Annot_setLineEnds", _wrap_Annot_setLineEnds, METH_VARARGS, (char *)"Annot_setLineEnds(self, start, end)"},
 	 { (char *)"Annot_type", _wrap_Annot_type, METH_VARARGS, (char *)"Annot_type(self) -> PyObject *"},
 	 { (char *)"Annot_fileInfo", _wrap_Annot_fileInfo, METH_VARARGS, (char *)"Retrieve attached file information."},
-	 { (char *)"Annot_fileGet", _wrap_Annot_fileGet, METH_VARARGS, (char *)"Retrieve attached file content."},
+	 { (char *)"Annot_fileGet", _wrap_Annot_fileGet, METH_VARARGS, (char *)"Retrieve annotation attached file content."},
+	 { (char *)"Annot_fileUpd", _wrap_Annot_fileUpd, METH_VARARGS, (char *)"Update annotation attached file content."},
 	 { (char *)"Annot_info", _wrap_Annot_info, METH_VARARGS, (char *)"Annot_info(self) -> PyObject *"},
 	 { (char *)"Annot_setInfo", _wrap_Annot_setInfo, METH_VARARGS, (char *)"Annot_setInfo(self, info) -> int"},
 	 { (char *)"Annot_border", _wrap_Annot_border, METH_VARARGS, (char *)"Annot_border(self) -> PyObject *"},

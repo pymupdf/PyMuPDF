@@ -98,7 +98,7 @@ except __builtin__.Exception:
 import weakref
 VersionFitz = "1.11"
 VersionBind = "1.11.0"
-VersionDate = "2017-05-04 06:53:02"
+VersionDate = "2017-05-05 12:47:22"
 
 LINK_NONE   = 0
 LINK_GOTO   = 1
@@ -1846,12 +1846,21 @@ class Annot(_object):
 
 
     def fileGet(self):
-        """Retrieve attached file content."""
+        """Retrieve annotation attached file content."""
         if hasattr(self, "parent"):
             if self.parent is None:
                 raise RuntimeError("orphaned object: parent is None")
 
         return _fitz.Annot_fileGet(self)
+
+
+    def fileUpd(self, buffer, filename=None):
+        """Update annotation attached file content."""
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
+
+        return _fitz.Annot_fileUpd(self, buffer, filename)
 
     @property
 
