@@ -1,7 +1,7 @@
 PyMuPDF 1.11.0
 ================
 
-Release date: April, 2017
+Release date: May 1, 2017
 
 Authors
 =======
