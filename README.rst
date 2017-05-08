@@ -25,7 +25,7 @@ See the `Wiki <https://github.com/rk700/PyMuPDF/wiki>`_ for more information, **
 Installation
 ============
 
-If you had not previously installed MuPDF, you must first do this. This process highly depends on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this. Linux distributions usually also provide their own ways on how to install MuPDF. See below for more details.
+If you had not previously installed MuPDF, you must first do this. This process highly depends on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this. If you decide to generate MuPDF from sources, be sure to download the official release from the above mentioned web site. MuPDF's GitHub repo contains the **current development source**.
 
 Once MuPDF is in place, installing PyMuPDF comes down to running the usual ``python setup.py install``.
 
@@ -37,9 +37,9 @@ AUR: https://aur.archlinux.org/packages/python2-pymupdf/
 
 Ubuntu
 ------
-Since MuPDF v1.11 is not available yet in the official repo, you need to first build it from source. Make sure to add ``-fPIC`` to CFLAGS when compiling. Do have a look at this Wiki https://github.com/rk700/PyMuPDF/wiki/Experience-from-an-Ubuntu-installation which explains the process.
+The required MuPDF version in the official Ubuntu repositories is often not timely available, so you need to build it from source. Make sure to add ``-fPIC`` to CFLAGS when compiling.
 
-When MuPDF is ready, edit ``setup.py`` in PyMuPDF and comment out the line of ``library_dirs=[]`` to specify the directory which contains ``libmupdf.a`` and other 3rd party libraries. Remove ``crypto`` from ``libraries`` in ``setup.py`` if it complains. Visit this Wiki page for an installation experience: https://github.com/rk700/PyMuPDF/wiki/Experience-from-an-Ubuntu-installation.
+When MuPDF is ready, edit ``setup.py`` in PyMuPDF and comment out the line of ``library_dirs=[]`` to specify the directory which contains ``libmupdf.a`` and other 3rd party libraries. Remove ``crypto`` from ``libraries`` in ``setup.py`` if it complains. Visit this Wiki page for a MuPDF installation experience from sources: https://github.com/rk700/PyMuPDF/wiki/Experience-from-an-Ubuntu-installation.
 
 OSX
 ---
@@ -51,9 +51,9 @@ Finally, please double check ``setup.py`` before building. Update ``include_dirs
 
 Windows
 -------
-You can download pre-generated binaries from `here <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/binary_setups>`_ that are suitable for your Python version, and thereby avoid any compilation hassle. Please refer to this `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
+You can download pre-generated binaries from `here <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/binary_setups>`_ that are suitable for your Python / Windows combination, and thereby avoid any compilation hassle. Please refer to this `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
 
-If you want to make your own binary however, have a look at this `Wiki page <https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation>`_. It explains how to use Visual Studio for generating MuPDF in quite some detail. Also do not hesitate to contact us if you need help.
+If you do want to make your own binary however, have a look at this `Wiki page <https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation>`_. It explains how to use Visual Studio for generating MuPDF in quite some detail. Also do not hesitate to contact us if you need help.
 
 Usage and Documentation
 =========================
