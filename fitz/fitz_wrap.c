@@ -3413,7 +3413,7 @@ PyObject *truth_value(int v)
 }
 
 //----------------------------------------------------------------------------
-// deflate a data in a buffer
+// deflate data in a buffer
 //----------------------------------------------------------------------------
 fz_buffer *deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 {
@@ -3447,7 +3447,7 @@ fz_buffer *deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 // In Python 2, this is an alias for PyString and its (char *) is returned.
 // PyUnicode objects are converted to UTF16BE bytes objects (all Python
 // versions). Its (char *) version is returned.
-// If only 1-byte code points are present, BOM and high-order bytes are
+// If only 1-byte code points are present, BOM and high-order 0-bytes are
 // deleted and the (compressed) rest is returned.
 // Parameters:
 // obj = PyBytes / PyString / PyUnicode object
@@ -3634,10 +3634,10 @@ void merge_range(pdf_document* doc_des, pdf_document* doc_src, int spage, int ep
 }
 
 //----------------------------------------------------------------------------
-// Fills table 'res' with outline object numbers
+// Fills table 'res' with outline xref numbers
 // 'res' must be a correctly pre-allocated table of integers
 // 'obj' must be the first OL item
-// returns (int) number of filled-in outline item numbers.
+// returns (int) number of filled-in outline item xref numbers.
 //----------------------------------------------------------------------------
 int fillOLNumbers(int *res, pdf_obj *obj, int oc, int argc)
 {
@@ -4578,8 +4578,8 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "no embedded files")
             if (olen) len = pdf_to_int(gctx, olen);
             pdf_obj *oDL = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F, PDF_NAME_DL, NULL);
             if (oDL) DL = pdf_to_int(gctx, oDL);
-            PyDict_SetItemString(infodict, "size", PyInt_FromLong((long) len));
-            PyDict_SetItemString(infodict, "length", PyInt_FromLong((long) DL));
+            PyDict_SetItemString(infodict, "size", PyInt_FromLong((long) DL));
+            PyDict_SetItemString(infodict, "length", PyInt_FromLong((long) len));
             return infodict;
         }
 SWIGINTERN int fz_document_s_embeddedFileSetInfo(struct fz_document_s *self,PyObject *id,PyObject *filename,PyObject *desc){
@@ -4968,6 +4968,65 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "source page out of range")
             fz_catch(gctx) return -1;
             return 0;
         }
+SWIGINTERN int fz_document_s_insertPage(struct fz_document_s *self,int to,int fontsize,int width,int height,PyObject *text){
+            pdf_document *pdf = pdf_specifics(gctx, self);
+            const char *template = "BT /Tm %i Tf 50 %i TD %s Tj ET\n";
+            char *itxt = NULL;
+            Py_ssize_t itxt_len;
+            PyObject *ntxt = PyUnicode_FromString("");
+            PyObject *t = NULL;
+            fz_rect mediabox = { 0, 0, 595, 842 };
+            Py_ssize_t len, i, maxlen;
+            maxlen = (height - 72) / (fontsize + 2);
+            const char *data;
+            int size;
+            fz_font *font;
+            pdf_obj *font_obj, *page_obj;
+            pdf_obj *resources;
+            fz_buffer *contents;
+            mediabox.x1 = width;
+            mediabox.y1 = height;
+            Py_ssize_t ntxt_len = 0;
+            len = PySequence_Size(text);
+
+            fz_try(gctx)
+            {
+                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
+/*@SWIG@*/
+/*@SWIG@*/;
+                if (len == 0)
+                {
+                    ntxt = PyUnicode_FromFormat(template, fontsize, height-72, "()");
+                }
+                else
+                {
+                    if (len > maxlen) len = maxlen;
+                    for (i = 0; i < len; i++)
+                    {
+                        itxt = getPDFstr(PySequence_GetItem(text, i), &itxt_len, "itxt2");
+                        t = PyUnicode_FromFormat(template, fontsize,
+                                height-72-(fontsize+2)*i, itxt);
+                        ntxt = PyUnicode_Concat(ntxt, t);
+                    }
+                }
+                char *templ_txt = getPDFstr(ntxt, &ntxt_len, "ntxt");
+                data = fz_lookup_base14_font(gctx, "Helvetica", &size);
+                font = fz_new_font_from_memory(gctx, "Helvetica", data, size, 0, 0);
+                font_obj = pdf_add_simple_font(gctx, pdf, font);
+                fz_drop_font(gctx, font);
+                resources = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
+                pdf_dict_putp_drop(gctx, resources, "Font/Tm", font_obj);
+                contents = fz_new_buffer_from_shared_data(gctx, templ_txt, strlen(templ_txt));
+                page_obj = pdf_add_page(gctx, pdf, &mediabox, 0, resources, contents);
+                pdf_insert_page(gctx, pdf, to , page_obj);
+                pdf_drop_obj(gctx, page_obj);
+                fz_drop_buffer(gctx, contents);
+            }
+            fz_catch(gctx) return -1;
+            return 0;
+        }
 SWIGINTERN int fz_document_s_movePage(struct fz_document_s *self,int pno,int to){
             pdf_document *pdf = pdf_specifics(gctx, self);
             fz_try(gctx)
@@ -5116,8 +5175,9 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
             pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, n);
             pdf_obj *pageobj = pdf_resolve_indirect(gctx, pageref);
             pdf_obj *rsrc = pdf_dict_get(gctx, pageobj, PDF_NAME_Resources);
+            // XObject dictionary of the page
             pdf_obj *dict = pdf_dict_get(gctx, rsrc, PDF_NAME_XObject);
-            n = pdf_dict_len(gctx, dict);
+            n = pdf_dict_len(gctx, dict);        // number of entries
             int i;
             for (i = 0; i < n; i++)       // do this for each img of the page
             {
@@ -5218,9 +5278,9 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
                 PyObject *font = PyList_New(0);       // Python list per font
                 PyList_Append(font, PyInt_FromLong(xref));
                 PyList_Append(font, PyInt_FromLong(gen));
-                PyList_Append(font, PyBytes_FromString(pdf_to_name(gctx, subtype)));
-                PyList_Append(font, PyBytes_FromString(pdf_to_name(gctx, bname)));
-                PyList_Append(font, PyBytes_FromString(pdf_to_name(gctx, name)));
+                PyList_Append(font, PyString_FromString(pdf_to_name(gctx, subtype)));
+                PyList_Append(font, PyString_FromString(pdf_to_name(gctx, bname)));
+                PyList_Append(font, PyString_FromString(pdf_to_name(gctx, name)));
                 PyList_Append(fontlist, font);
             }
             return fontlist;
@@ -8215,6 +8275,83 @@ SWIGINTERN PyObject *_wrap_Document_copyPage(PyObject *SWIGUNUSEDPARM(self), PyO
   }
   {
     result = (int)fz_document_s_copyPage(arg1,arg2,arg3);
+    if(result<0) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document_insertPage(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  int arg2 = (int) -1 ;
+  int arg3 = (int) 11 ;
+  int arg4 = (int) 595 ;
+  int arg5 = (int) 842 ;
+  PyObject *arg6 = (PyObject *) NULL ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O|OOOOO:Document_insertPage",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_insertPage" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  if (obj1) {
+    ecode2 = SWIG_AsVal_int(obj1, &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document_insertPage" "', argument " "2"" of type '" "int""'");
+    } 
+    arg2 = (int)(val2);
+  }
+  if (obj2) {
+    ecode3 = SWIG_AsVal_int(obj2, &val3);
+    if (!SWIG_IsOK(ecode3)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Document_insertPage" "', argument " "3"" of type '" "int""'");
+    } 
+    arg3 = (int)(val3);
+  }
+  if (obj3) {
+    ecode4 = SWIG_AsVal_int(obj3, &val4);
+    if (!SWIG_IsOK(ecode4)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "Document_insertPage" "', argument " "4"" of type '" "int""'");
+    } 
+    arg4 = (int)(val4);
+  }
+  if (obj4) {
+    ecode5 = SWIG_AsVal_int(obj4, &val5);
+    if (!SWIG_IsOK(ecode5)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "Document_insertPage" "', argument " "5"" of type '" "int""'");
+    } 
+    arg5 = (int)(val5);
+  }
+  if (obj5) {
+    arg6 = obj5;
+  }
+  {
+    result = (int)fz_document_s_insertPage(arg1,arg2,arg3,arg4,arg5,arg6);
     if(result<0) {
       PyErr_SetString(PyExc_Exception, gctx->error->message);
       return NULL;
@@ -15265,7 +15402,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document_loadPage", _wrap_Document_loadPage, METH_VARARGS, (char *)"Document_loadPage(self, number) -> Page"},
 	 { (char *)"Document__loadOutline", _wrap_Document__loadOutline, METH_VARARGS, (char *)"Document__loadOutline(self) -> Outline"},
 	 { (char *)"Document__dropOutline", _wrap_Document__dropOutline, METH_VARARGS, (char *)"Document__dropOutline(self, ol)"},
-	 { (char *)"Document_embeddedFileCount", _wrap_Document_embeddedFileCount, METH_VARARGS, (char *)"Return number of embedded files"},
+	 { (char *)"Document_embeddedFileCount", _wrap_Document_embeddedFileCount, METH_VARARGS, (char *)"Return number of embedded files."},
 	 { (char *)"Document_embeddedFileDel", _wrap_Document_embeddedFileDel, METH_VARARGS, (char *)"Delete embedded file by name."},
 	 { (char *)"Document_embeddedFileInfo", _wrap_Document_embeddedFileInfo, METH_VARARGS, (char *)"Retrieve embedded file information given its entry number or name."},
 	 { (char *)"Document_embeddedFileSetInfo", _wrap_Document_embeddedFileSetInfo, METH_VARARGS, (char *)"Change filename or description of embedded file given its entry number or name."},
@@ -15276,18 +15413,19 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document_needsPass", _wrap_Document_needsPass, METH_VARARGS, (char *)"Document_needsPass(self) -> int"},
 	 { (char *)"Document__getGCTXerrcode", _wrap_Document__getGCTXerrcode, METH_VARARGS, (char *)"Document__getGCTXerrcode(self) -> int"},
 	 { (char *)"Document__getGCTXerrmsg", _wrap_Document__getGCTXerrmsg, METH_VARARGS, (char *)"Document__getGCTXerrmsg(self) -> char *"},
-	 { (char *)"Document_authenticate", _wrap_Document_authenticate, METH_VARARGS, (char *)"Document_authenticate(self, arg3) -> int"},
+	 { (char *)"Document_authenticate", _wrap_Document_authenticate, METH_VARARGS, (char *)"Decrypt document with a password."},
 	 { (char *)"Document_save", _wrap_Document_save, METH_VARARGS, (char *)"Document_save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0) -> int"},
-	 { (char *)"Document_write", _wrap_Document_write, METH_VARARGS, (char *)"Document_write(self, garbage=0, clean=0, deflate=0, ascii=0, expand=0, linear=0) -> PyObject *"},
-	 { (char *)"Document_insertPDF", _wrap_Document_insertPDF, METH_VARARGS, (char *)"Insert page range ['from', 'to'] of source PDF, starting as page number 'start_at'."},
-	 { (char *)"Document_deletePage", _wrap_Document_deletePage, METH_VARARGS, (char *)"delete page 'pno'"},
-	 { (char *)"Document_deletePageRange", _wrap_Document_deletePageRange, METH_VARARGS, (char *)"delete pages 'from' to 'to'"},
-	 { (char *)"Document_copyPage", _wrap_Document_copyPage, METH_VARARGS, (char *)"Copy a page in front of 'to'"},
-	 { (char *)"Document_movePage", _wrap_Document_movePage, METH_VARARGS, (char *)"Move page in front of 'to'"},
-	 { (char *)"Document_select", _wrap_Document_select, METH_VARARGS, (char *)"Build sub-pdf with page numbers in 'list'"},
-	 { (char *)"Document_permissions", _wrap_Document_permissions, METH_VARARGS, (char *)"dictionary containing permissions"},
+	 { (char *)"Document_write", _wrap_Document_write, METH_VARARGS, (char *)"Write document to bytearray."},
+	 { (char *)"Document_insertPDF", _wrap_Document_insertPDF, METH_VARARGS, (char *)"Copy page range ['from', 'to'] of source PDF, starting as page number 'start_at'."},
+	 { (char *)"Document_deletePage", _wrap_Document_deletePage, METH_VARARGS, (char *)"Delete page 'pno'."},
+	 { (char *)"Document_deletePageRange", _wrap_Document_deletePageRange, METH_VARARGS, (char *)"Delete pages 'from' to 'to'."},
+	 { (char *)"Document_copyPage", _wrap_Document_copyPage, METH_VARARGS, (char *)"Copy a page in front of 'to'."},
+	 { (char *)"Document_insertPage", _wrap_Document_insertPage, METH_VARARGS, (char *)"Insert a new page in front of 'to'."},
+	 { (char *)"Document_movePage", _wrap_Document_movePage, METH_VARARGS, (char *)"Move page in front of 'to'."},
+	 { (char *)"Document_select", _wrap_Document_select, METH_VARARGS, (char *)"Build sub-pdf with page numbers in 'list'."},
+	 { (char *)"Document_permissions", _wrap_Document_permissions, METH_VARARGS, (char *)"Get permissions dictionary."},
 	 { (char *)"Document__getPageObjNumber", _wrap_Document__getPageObjNumber, METH_VARARGS, (char *)"Document__getPageObjNumber(self, pno) -> PyObject *"},
-	 { (char *)"Document_getPageImageList", _wrap_Document_getPageImageList, METH_VARARGS, (char *)"list of images used on a page"},
+	 { (char *)"Document_getPageImageList", _wrap_Document_getPageImageList, METH_VARARGS, (char *)"List images used on a page."},
 	 { (char *)"Document_getPageFontList", _wrap_Document_getPageFontList, METH_VARARGS, (char *)"list fonts used on a page"},
 	 { (char *)"Document__delToC", _wrap_Document__delToC, METH_VARARGS, (char *)"Document__delToC(self) -> PyObject *"},
 	 { (char *)"Document__getOLRootNumber", _wrap_Document__getOLRootNumber, METH_VARARGS, (char *)"Document__getOLRootNumber(self) -> int"},

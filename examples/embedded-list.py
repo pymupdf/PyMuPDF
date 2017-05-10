@@ -50,8 +50,8 @@ for i in range(doc.embeddedFileCount): # number of embedded files
     name_len = max(len(ef[0]), name_len)    # column width of 'name'
     desc_len = max(len(ef[2]), desc_len)    # column width of 'desc'
     fname_len = max(len(ef[1]), fname_len)  # column width of 'filename' 
-    tlength += ef[3]                        # add to total orignal file size
-    tsize += ef[4]                          # add to total compressed file size
+    tlength += ef[4]                        # add to total orignal file size
+    tsize += ef[3]                          # add to total compressed file size
     
 if len(ef_list) < 1:                        # are we being fooled?
     print("no embedded files in", fn)
@@ -74,6 +74,6 @@ for info in ef_list:
 # print some wrap up information
 print(line)
 print(len(ef_list), "embedded files in '%s'. Totals:" % (fn,))
-print("File length: %s, compressed: %s, ratio: %s%% (savings: %s%%)." % (tlength,
+print("File lengths: %s, compressed: %s, ratio: %s%% (savings: %s%%)." % (tlength,
       tsize, str(round(ratio, 2)), str(round(saves, 2))))
 print(line)

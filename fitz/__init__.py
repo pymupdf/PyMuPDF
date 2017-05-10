@@ -35,8 +35,6 @@ csCMYK        = fitz.csCMYK
 
 import fitz.utils
 
-getPDFnow      = fitz.utils.getPDFnow
-fitz.getPDFnow = fitz.utils.getPDFnow
 # copy functions to their respective fitz classes
 
 #------------------------------------------------------------------------------
@@ -95,6 +93,7 @@ fitz.Rect.intersects        = fitz.utils.intersects
 # Rect algebra
 fitz.Rect.__neg__           = lambda x: fitz.Rect(x)*-1 # unary "-"
 fitz.Rect.__pos__           = lambda x: fitz.Rect(x)    # unary "+"
+fitz.Rect.__abs__           = lambda x: fitz.Rect.getArea(x)  # abs
 fitz.Rect.__or__            = fitz.utils.rect_or
 fitz.Rect.__and__           = fitz.utils.rect_and
 fitz.Rect.__add__           = fitz.utils.rect_add
@@ -113,6 +112,7 @@ fitz.IRect.intersects       = fitz.utils.intersects
 # IRect algebra
 fitz.IRect.__neg__          = lambda x: fitz.IRect(x)*-1 # unary "-"
 fitz.IRect.__pos__          = lambda x: fitz.IRect(x)    # unary "+"
+fitz.IRect.__abs__          = lambda x: fitz.IRect.getArea(x)  # abs
 fitz.IRect.__or__           = fitz.utils.rect_or
 fitz.IRect.__and__          = fitz.utils.rect_and
 fitz.IRect.__add__          = fitz.utils.rect_add

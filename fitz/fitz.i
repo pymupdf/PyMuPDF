@@ -88,7 +88,12 @@ struct DeviceWrapper {
 /*****************************************************************************/
 // include version information and several other helpers
 /*****************************************************************************/
-%pythoncode %{import weakref%}
+%pythoncode %{
+import weakref
+from binascii import hexlify
+import math
+import sys
+%}
 %include version.i
 %include helper-annot.i
 %include helper-json.i
@@ -252,7 +257,7 @@ struct fz_document_s
         }
 
         CLOSECHECK(embeddedFileCount)
-        %feature("autodoc","Return number of embedded files") embeddedFileCount;
+        %feature("autodoc","Return number of embedded files.") embeddedFileCount;
         %pythoncode%{@property%}
         int embeddedFileCount()
         {
@@ -378,8 +383,8 @@ struct fz_document_s
             if (olen) len = pdf_to_int(gctx, olen);
             pdf_obj *oDL = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F, PDF_NAME_DL, NULL);
             if (oDL) DL = pdf_to_int(gctx, oDL);
-            PyDict_SetItemString(infodict, "size", PyInt_FromLong((long) len));
-            PyDict_SetItemString(infodict, "length", PyInt_FromLong((long) DL));
+            PyDict_SetItemString(infodict, "size", PyInt_FromLong((long) DL));
+            PyDict_SetItemString(infodict, "length", PyInt_FromLong((long) len));
             return infodict;
         }
 
@@ -550,6 +555,7 @@ struct fz_document_s
         }
 
         CLOSECHECK(authenticate)
+        %feature("autodoc", "Decrypt document with a password.") authenticate;
         %pythonappend authenticate %{
             if val: # the doc is decrypted successfully and we init the outline
                 self.isEncrypted = 0
@@ -616,6 +622,7 @@ struct fz_document_s
         // write document to memory
         /****************************************************************/
         FITZEXCEPTION(write, !result)
+        %feature("autodoc", "Write document to bytearray.") write;
         %pythonprepend write %{
             if self.isClosed:
                 raise ValueError("operation illegal for closed doc")%}
@@ -681,7 +688,7 @@ if sa < 0:
     self._do_links(docsrc, from_page = from_page, to_page = to_page,
                    start_at = sa)%}
 
-        %feature("autodoc","Insert page range ['from', 'to'] of source PDF, starting as page number 'start_at'.") insertPDF;
+        %feature("autodoc","Copy page range ['from', 'to'] of source PDF, starting as page number 'start_at'.") insertPDF;
 
         int insertPDF(struct fz_document_s *docsrc, int from_page=-1, int to_page=-1, int start_at=-1, int rotate=-1, int links = 1)
         {
@@ -716,7 +723,7 @@ if sa < 0:
         //*********************************************************************
         FITZEXCEPTION(deletePage, result<0)
         CLOSECHECK(deletePage)
-        %feature("autodoc","delete page 'pno'") deletePage;
+        %feature("autodoc","Delete page 'pno'.") deletePage;
         %pythonappend deletePage %{if val == 0: self._reset_page_refs()%}
         int deletePage(int pno)
         {
@@ -738,7 +745,7 @@ if sa < 0:
         //*********************************************************************
         FITZEXCEPTION(deletePageRange, result<0)
         CLOSECHECK(deletePageRange)
-        %feature("autodoc","delete pages 'from' to 'to'") deletePageRange;
+        %feature("autodoc","Delete pages 'from' to 'to'.") deletePageRange;
         %pythonappend deletePageRange %{if val == 0: self._reset_page_refs()%}
         int deletePageRange(int from_page = -1, int to_page = -1)
         {
@@ -765,11 +772,11 @@ if sa < 0:
         }
 
         //*********************************************************************
-        // Copy a page from a PDF to another location of it
+        // Copy a page within a PDF
         //*********************************************************************
         FITZEXCEPTION(copyPage, result<0)
         CLOSECHECK(copyPage)
-        %feature("autodoc","Copy a page in front of 'to'") copyPage;
+        %feature("autodoc","Copy a page in front of 'to'.") copyPage;
         %pythonappend copyPage %{if val == 0: self._reset_page_refs()%}
         int copyPage(int pno, int to = -1)
         {
@@ -787,12 +794,90 @@ if sa < 0:
             return 0;
         }
 
+        //---------------------------------------------------------------------
+        // Create / insert a new page (PDF)
+        // Currently, modifications of width / height are supported,
+        // as well as one line of text.
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(insertPage, result<0)
+        CLOSECHECK(insertPage)
+        %feature("autodoc","Insert a new page in front of 'to'.") insertPage;
+        %pythonprepend insertPage %{
+        if self.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+        if text is not None:
+            tab = text.split("\n")
+            newtab = []
+            for t in tab:
+                newtab.append(getPDFstr(t))
+            text = newtab
+        else:
+            text = []
+        %}
+        %pythonappend insertPage %{if val == 0: self._reset_page_refs()%}
+        int insertPage(int to = -1, int fontsize = 11, int width = 595, int height = 842, PyObject *text = NULL)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            const char *template = "BT /Tm %i Tf 50 %i TD %s Tj ET\n";
+            char *itxt = NULL;
+            Py_ssize_t itxt_len;
+            PyObject *ntxt = PyUnicode_FromString("");
+            PyObject *t = NULL;
+            fz_rect mediabox = { 0, 0, 595, 842 };
+            Py_ssize_t len, i, maxlen;
+            maxlen = (height - 72) / (fontsize + 2);
+            const char *data;
+            int size;
+            fz_font *font;
+            pdf_obj *font_obj, *page_obj;
+            pdf_obj *resources;
+            fz_buffer *contents;
+            mediabox.x1 = width;
+            mediabox.y1 = height;
+            Py_ssize_t ntxt_len = 0;
+            len = PySequence_Size(text);
+
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                if (len == 0)
+                {
+                    ntxt = PyUnicode_FromFormat(template, fontsize, height-72, "()");
+                }
+                else
+                {
+                    if (len > maxlen) len = maxlen;
+                    for (i = 0; i < len; i++)
+                    {
+                        itxt = getPDFstr(PySequence_GetItem(text, i), &itxt_len, "itxt2");
+                        t = PyUnicode_FromFormat(template, fontsize,
+                                height-72-(fontsize+2)*i, itxt);
+                        ntxt = PyUnicode_Concat(ntxt, t);
+                    }
+                }
+                char *templ_txt = getPDFstr(ntxt, &ntxt_len, "ntxt");
+                data = fz_lookup_base14_font(gctx, "Helvetica", &size);
+                font = fz_new_font_from_memory(gctx, "Helvetica", data, size, 0, 0);
+                font_obj = pdf_add_simple_font(gctx, pdf, font);
+                fz_drop_font(gctx, font);
+                resources = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
+                pdf_dict_putp_drop(gctx, resources, "Font/Tm", font_obj);
+                contents = fz_new_buffer_from_shared_data(gctx, templ_txt, strlen(templ_txt));
+                page_obj = pdf_add_page(gctx, pdf, &mediabox, 0, resources, contents);
+                pdf_insert_page(gctx, pdf, to , page_obj);
+                pdf_drop_obj(gctx, page_obj);
+                fz_drop_buffer(gctx, contents);
+            }
+            fz_catch(gctx) return -1;
+            return 0;
+        }
+
         //*********************************************************************
-        // Move a page from a PDF to another location of it
+        // Move a page within a PDF
         //*********************************************************************
         FITZEXCEPTION(movePage, result<0)
         CLOSECHECK(movePage)
-        %feature("autodoc","Move page in front of 'to'") movePage;
+        %feature("autodoc","Move page in front of 'to'.") movePage;
         %pythonappend movePage %{if val == 0: self._reset_page_refs()%}
         int movePage(int pno, int to = -1)
         {
@@ -823,7 +908,7 @@ if sa < 0:
         // Parameter is a Python list of the wanted page numbers.
         //---------------------------------------------------------------------
         FITZEXCEPTION(select, result<0)
-        %feature("autodoc","Build sub-pdf with page numbers in 'list'") select;
+        %feature("autodoc","Build sub-pdf with page numbers in 'list'.") select;
         CLOSECHECK(select)
         %pythonappend select
 %{if val == 0:
@@ -886,7 +971,7 @@ if sa < 0:
         //********************************************************************
         // get document permissions
         //********************************************************************
-        %feature("autodoc","dictionary containing permissions") permissions;
+        %feature("autodoc","Get permissions dictionary.") permissions;
         CLOSECHECK(permissions)
         %pythoncode%{@property%}
         PyObject *permissions()
@@ -929,7 +1014,7 @@ if sa < 0:
         //*********************************************************************
         FITZEXCEPTION(getPageImageList, result==NULL)
         CLOSECHECK(getPageImageList)
-        %feature("autodoc","list of images used on a page") getPageImageList;
+        %feature("autodoc","List images used on a page.") getPageImageList;
         PyObject *getPageImageList(int pno)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
@@ -946,8 +1031,9 @@ if sa < 0:
             pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, n);
             pdf_obj *pageobj = pdf_resolve_indirect(gctx, pageref);
             pdf_obj *rsrc = pdf_dict_get(gctx, pageobj, PDF_NAME_Resources);
+            // XObject dictionary of the page
             pdf_obj *dict = pdf_dict_get(gctx, rsrc, PDF_NAME_XObject);
-            n = pdf_dict_len(gctx, dict);
+            n = pdf_dict_len(gctx, dict);        // number of entries
             int i;
             for (i = 0; i < n; i++)       // do this for each img of the page
             {
@@ -1051,9 +1137,9 @@ if sa < 0:
                 PyObject *font = PyList_New(0);       // Python list per font
                 PyList_Append(font, PyInt_FromLong(xref));
                 PyList_Append(font, PyInt_FromLong(gen));
-                PyList_Append(font, PyBytes_FromString(pdf_to_name(gctx, subtype)));
-                PyList_Append(font, PyBytes_FromString(pdf_to_name(gctx, bname)));
-                PyList_Append(font, PyBytes_FromString(pdf_to_name(gctx, name)));
+                PyList_Append(font, PyString_FromString(pdf_to_name(gctx, subtype)));
+                PyList_Append(font, PyString_FromString(pdf_to_name(gctx, bname)));
+                PyList_Append(font, PyString_FromString(pdf_to_name(gctx, name)));
                 PyList_Append(fontlist, font);
             }
             return fontlist;
@@ -1328,7 +1414,7 @@ if sa < 0:
 
             def __getitem__(self, i):
                 if i >= len(self):
-                    raise IndexError
+                    raise IndexError("page number out of range")
                 return self.loadPage(i)
 
             def __len__(self):

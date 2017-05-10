@@ -49,7 +49,7 @@ PyObject *truth_value(int v)
 }
 
 //----------------------------------------------------------------------------
-// deflate a data in a buffer
+// deflate data in a buffer
 //----------------------------------------------------------------------------
 fz_buffer *deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 {
@@ -83,7 +83,7 @@ fz_buffer *deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 // In Python 2, this is an alias for PyString and its (char *) is returned.
 // PyUnicode objects are converted to UTF16BE bytes objects (all Python
 // versions). Its (char *) version is returned.
-// If only 1-byte code points are present, BOM and high-order bytes are
+// If only 1-byte code points are present, BOM and high-order 0-bytes are
 // deleted and the (compressed) rest is returned.
 // Parameters:
 // obj = PyBytes / PyString / PyUnicode object
@@ -270,10 +270,10 @@ void merge_range(pdf_document* doc_des, pdf_document* doc_src, int spage, int ep
 }
 
 //----------------------------------------------------------------------------
-// Fills table 'res' with outline object numbers
+// Fills table 'res' with outline xref numbers
 // 'res' must be a correctly pre-allocated table of integers
 // 'obj' must be the first OL item
-// returns (int) number of filled-in outline item numbers.
+// returns (int) number of filled-in outline item xref numbers.
 //----------------------------------------------------------------------------
 int fillOLNumbers(int *res, pdf_obj *obj, int oc, int argc)
 {

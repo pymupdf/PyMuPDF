@@ -74,4 +74,59 @@ class linkDest():
                 self.isUri = True
                 self.kind = LINK_LAUNCH
 
+#-------------------------------------------------------------------------------
+# "Now" timestamp in PDF Format
+#-------------------------------------------------------------------------------
+def getPDFnow():
+    import time
+    tz = "%s'%s'" % (str(time.timezone // 3600).rjust(2, "0"),
+                 str((time.timezone // 60)%60).rjust(2, "0"))
+    tstamp = time.strftime("D:%Y%m%d%H%M%S", time.localtime())
+    if time.timezone > 0:
+        tstamp += "-" + tz
+    elif time.timezone < 0:
+        tstamp = "+" + tz
+    else:
+        pass
+    return tstamp
+
+#-------------------------------------------------------------------------------
+# Returns a PDF string depending on its coding.
+# If only ascii then "(original)" is returned,
+# else if only 8 bit chars then "(original)" with interspersed octal strings
+# \nnn is returned,
+# else a string "<FEFF[hexstring]>" is returned, where [hexstring] is the
+# UTF-16BE encoding of the original.
+#-------------------------------------------------------------------------------
+def getPDFstr(s):
+    try:
+        x = s.decode("utf-8")
+    except:
+        x = s
+    if x is None: x = ""
+    if isinstance(x, str) or sys.version_info[0] < 3 and isinstance(x, unicode):
+        pass
+    else:
+        raise ValueError("non-string provided to PDFstr function")
+
+    utf16 = False
+    # following returns ascii original string with mixed-in octal numbers \nnn
+    # for chr(128) - chr(255)
+    r = ""
+    for i in range(len(x)):
+        if ord(x[i]) <= 127:
+            r += x[i]                            # copy over ascii chars
+        elif ord(x[i]) <= 255:
+            r += "\\" + oct(ord(x[i]))[-3:]      # octal number with backslash
+        else:                                    # skip to UTF16_BE case
+            utf16 = True
+            break
+    if not utf16:
+        return "(" + r + ")"                     # result in brackets
+
+    # require full unicode: make a UTF-16BE hex string prefixed with "feff"
+    r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
+    t = r.decode("utf-8")                        # make str in Python 3
+    return "<" + t + ">"                         # brackets indicate hex
+
 %}

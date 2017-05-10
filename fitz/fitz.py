@@ -95,10 +95,15 @@ except __builtin__.Exception:
         pass
     _newclass = 0
 
+
 import weakref
+from binascii import hexlify
+import math
+import sys
+
 VersionFitz = "1.11"
 VersionBind = "1.11.0"
-VersionDate = "2017-05-05 12:47:22"
+VersionDate = "2017-05-10 17:20:51"
 
 LINK_NONE   = 0
 LINK_GOTO   = 1
@@ -174,6 +179,61 @@ class linkDest():
             else:
                 self.isUri = True
                 self.kind = LINK_LAUNCH
+
+#-------------------------------------------------------------------------------
+# "Now" timestamp in PDF Format
+#-------------------------------------------------------------------------------
+def getPDFnow():
+    import time
+    tz = "%s'%s'" % (str(time.timezone // 3600).rjust(2, "0"),
+                 str((time.timezone // 60)%60).rjust(2, "0"))
+    tstamp = time.strftime("D:%Y%m%d%H%M%S", time.localtime())
+    if time.timezone > 0:
+        tstamp += "-" + tz
+    elif time.timezone < 0:
+        tstamp = "+" + tz
+    else:
+        pass
+    return tstamp
+
+#-------------------------------------------------------------------------------
+# Returns a PDF string depending on its coding.
+# If only ascii then "(original)" is returned,
+# else if only 8 bit chars then "(original)" with interspersed octal strings
+# \nnn is returned,
+# else a string "<FEFF[hexstring]>" is returned, where [hexstring] is the
+# UTF-16BE encoding of the original.
+#-------------------------------------------------------------------------------
+def getPDFstr(s):
+    try:
+        x = s.decode("utf-8")
+    except:
+        x = s
+    if x is None: x = ""
+    if isinstance(x, str) or sys.version_info[0] < 3 and isinstance(x, unicode):
+        pass
+    else:
+        raise ValueError("non-string provided to PDFstr function")
+
+    utf16 = False
+# following returns ascii original string with mixed-in octal numbers \nnn
+# for chr(128) - chr(255)
+    r = ""
+    for i in range(len(x)):
+        if ord(x[i]) <= 127:
+            r += x[i]                            # copy over ascii chars
+        elif ord(x[i]) <= 255:
+            r += "\\" + oct(ord(x[i]))[-3:]      # octal number with backslash
+        else:                                    # skip to UTF16_BE case
+            utf16 = True
+            break
+    if not utf16:
+        return "(" + r + ")"                     # result in brackets
+
+# require full unicode: make a UTF-16BE hex string prefixed with "feff"
+    r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
+    t = r.decode("utf-8")                        # make str in Python 3
+    return "<" + t + ">"                         # brackets indicate hex
 
 
 class Document(_object):
@@ -287,7 +347,7 @@ open(filename)"""
     @property
 
     def embeddedFileCount(self):
-        """Return number of embedded files"""
+        """Return number of embedded files."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -371,7 +431,7 @@ open(filename)"""
 
 
     def authenticate(self, arg2):
-        """authenticate(self, arg2) -> int"""
+        """Decrypt document with a password."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -407,7 +467,7 @@ open(filename)"""
 
 
     def write(self, garbage=0, clean=0, deflate=0, ascii=0, expand=0, linear=0):
-        """write(self, garbage=0, clean=0, deflate=0, ascii=0, expand=0, linear=0) -> PyObject *"""
+        """Write document to bytearray."""
 
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
@@ -416,7 +476,7 @@ open(filename)"""
 
 
     def insertPDF(self, docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=1):
-        """Insert page range ['from', 'to'] of source PDF, starting as page number 'start_at'."""
+        """Copy page range ['from', 'to'] of source PDF, starting as page number 'start_at'."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
         if id(self) == id(docsrc):
@@ -434,7 +494,7 @@ open(filename)"""
 
 
     def deletePage(self, pno):
-        """delete page 'pno'"""
+        """Delete page 'pno'."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -445,7 +505,7 @@ open(filename)"""
 
 
     def deletePageRange(self, from_page=-1, to_page=-1):
-        """delete pages 'from' to 'to'"""
+        """Delete pages 'from' to 'to'."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -456,7 +516,7 @@ open(filename)"""
 
 
     def copyPage(self, pno, to=-1):
-        """Copy a page in front of 'to'"""
+        """Copy a page in front of 'to'."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -466,8 +526,29 @@ open(filename)"""
         return val
 
 
+    def insertPage(self, to=-1, fontsize=11, width=595, height=842, text=None):
+        """Insert a new page in front of 'to'."""
+
+        if self.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+        if text is not None:
+            tab = text.split("\n")
+            newtab = []
+            for t in tab:
+                newtab.append(getPDFstr(t))
+            text = newtab
+        else:
+            text = []
+
+
+        val = _fitz.Document_insertPage(self, to, fontsize, width, height, text)
+        if val == 0: self._reset_page_refs()
+
+        return val
+
+
     def movePage(self, pno, to=-1):
-        """Move page in front of 'to'"""
+        """Move page in front of 'to'."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -478,7 +559,7 @@ open(filename)"""
 
 
     def select(self, pyliste):
-        """Build sub-pdf with page numbers in 'list'"""
+        """Build sub-pdf with page numbers in 'list'."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -492,7 +573,7 @@ open(filename)"""
     @property
 
     def permissions(self):
-        """dictionary containing permissions"""
+        """Get permissions dictionary."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -508,7 +589,7 @@ open(filename)"""
 
 
     def getPageImageList(self, pno):
-        """list of images used on a page"""
+        """List images used on a page."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -627,7 +708,7 @@ open(filename)"""
 
     def __getitem__(self, i):
         if i >= len(self):
-            raise IndexError
+            raise IndexError("page number out of range")
         return self.loadPage(i)
 
     def __len__(self):
