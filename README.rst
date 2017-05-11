@@ -58,7 +58,7 @@ If you do want to make your own binary however, have a look at this `Wiki page <
 Usage and Documentation
 =========================
 
-Please have a look at the basic `demos <https://github.com/rk700/PyMuPDF/tree/master/demo>`_ or the `examples <https://github.com/rk700/PyMuPDF/tree/master/examples>`_ which contain complete, working programs.
+Please have a look at the basic `demos <https://github.com/rk700/PyMuPDF/tree/master/demo>`_, the `examples <https://github.com/rk700/PyMuPDF/tree/master/examples>`_ which contain complete, working programs, and the **recipies** section of our Wiki https://github.com/rk700/PyMuPDF/wiki. 
 
 You have a variety of options to access the **documentation**:
 
