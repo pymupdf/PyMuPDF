@@ -25,7 +25,7 @@ See the `Wiki <https://github.com/rk700/PyMuPDF/wiki>`_ for more information, **
 Installation
 ============
 
-If you had not previously installed MuPDF, you must first do this. This process highly depends on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this. If you decide to generate MuPDF from sources, be sure to download the official release from the above mentioned web site. MuPDF's GitHub repo contains the **current development source**.
+If you had not previously installed MuPDF, you must first do this. This process highly depends on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this. If you decide to generate MuPDF from sources, be sure to download the official release from https://mupdf.com/downloads/. MuPDF's GitHub repo contains the **current development source** which probably is incompatible with PyMuPDF.
 
 Once MuPDF is in place, installing PyMuPDF comes down to running the usual ``python setup.py install``.
 
