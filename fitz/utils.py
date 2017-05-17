@@ -487,45 +487,6 @@ def point_contains(p, x):
         return x in tuple(p)
 
 #==============================================================================
-# Returns a PDF string depending on its coding.
-# If only ascii then "(original)" is returned,
-# else if only 8 bit chars then "(original)" with interspersed octal strings
-# \nnn is returned,
-# else a string "<FEFF[hexstring]>" is returned, where [hexstring] is the
-# UTF-16BE encoding of the original.
-#==============================================================================
-def PDFstr(s):
-    try:
-        x = s.decode("utf-8")
-    except:
-        x = s
-    if x is None: x = ""
-    if isinstance(x, str) or sys.version_info[0] < 3 and isinstance(x, unicode):
-        pass
-    else:
-        raise ValueError("non-string provided to PDFstr function")
-
-    utf16 = False
-    # following returns ascii original string with mixed-in octal numbers \nnn
-    # for chr(128) - chr(255)
-    r = ""
-    for i in range(len(x)):
-        if ord(x[i]) <= 127:
-            r += x[i]                            # copy over ascii chars
-        elif ord(x[i]) <= 255:
-            r += "\\" + oct(ord(x[i]))[-3:]      # octal number with backslash
-        else:                                    # skip to UTF16_BE case
-            utf16 = True
-            break
-    if not utf16:
-        return "(" + r + ")"                     # result in brackets
-
-    # require full unicode: make a UTF-16BE hex string prefixed with "feff"
-    r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
-    t = r.decode("utf-8")                        # make str in Python 3
-    return "<" + t + ">"                         # brackets indicate hex
-
-#==============================================================================
 # Document method Set Metadata
 #==============================================================================
 def setMetadata(doc, m):
@@ -539,23 +500,22 @@ def setMetadata(doc, m):
                      "encryption", "creationDate", "modDate", "subject",
                      "keywords"):
             raise ValueError("invalid dictionary key: " + k)
-
     d = "<</Author"
-    d += PDFstr(m.get("author", "none"))
+    d += fitz.getPDFstr(m.get("author", "none"))
     d += "/CreationDate"
-    d += PDFstr(m.get("creationDate", "none"))
+    d += fitz.getPDFstr(m.get("creationDate", "none"))
     d += "/Creator"
-    d += PDFstr(m.get("creator", "none"))
+    d += fitz.getPDFstr(m.get("creator", "none"))
     d += "/Keywords"
-    d += PDFstr(m.get("keywords", "none"))
+    d += fitz.getPDFstr(m.get("keywords", "none"))
     d += "/ModDate"
-    d += PDFstr(m.get("modDate", "none"))
+    d += fitz.getPDFstr(m.get("modDate", "none"))
     d += "/Producer"
-    d += PDFstr(m.get("producer", "none"))
+    d += fitz.getPDFstr(m.get("producer", "none"))
     d += "/Subject"
-    d += PDFstr(m.get("subject", "none"))
+    d += fitz.getPDFstr(m.get("subject", "none"))
     d += "/Title"
-    d += PDFstr(m.get("title", "none"))
+    d += fitz.getPDFstr(m.get("title", "none"))
     d += ">>"
     r = doc._setMetadata(d)
     if r == 0:
@@ -590,21 +550,21 @@ def getDestStr(xref, ddict):
     str_uri    = "/A<</S/URI/URI%s/Type/Action>>"
 
     if ddict["kind"] == fitz.LINK_URI:
-        dest = str_uri % (PDFstr(ddict["uri"]),)
+        dest = str_uri % (fitz.getPDFstr(ddict["uri"]),)
         return dest
 
     if ddict["kind"] == fitz.LINK_LAUNCH:
-        fspec = PDFstr(ddict["file"])
+        fspec = fitz.getPDFstr(ddict["file"])
         dest = str_launch % (fspec, fspec)
         return dest
 
     if ddict["kind"] == fitz.LINK_GOTOR and ddict["page"] < 0:
-        fspec = PDFstr(ddict["file"])
-        dest = str_gotor2 % (PDFstr(ddict["to"]), fspec, fspec)
+        fspec = fitz.getPDFstr(ddict["file"])
+        dest = str_gotor2 % (fitz.getPDFstr(ddict["to"]), fspec, fspec)
         return dest
 
     if ddict["kind"] == fitz.LINK_GOTOR and ddict["page"] >= 0:
-        fspec = PDFstr(ddict["file"])
+        fspec = fitz.getPDFstr(ddict["file"])
         dest = str_gotor1 % (ddict["page"], ddict["to"].x, ddict["to"].y,
                                    ddict["zoom"], fspec, fspec)
         return dest
@@ -666,7 +626,7 @@ def setToC(doc, toc):
     for i in range(toclen):
         o = toc[i]
         lvl = o[0] # level
-        title = PDFstr(o[1]) # titel
+        title = fitz.getPDFstr(o[1]) # titel
         pno = min(doc.pageCount - 1, max(0, o[2] - 1)) # page number
         top = 0
         if len(o) < 4:
@@ -897,7 +857,7 @@ def getLinkText(page, lnk):
                            str(pnt.y), rect)
         else:
             txt = annot_goto_n
-            annot = txt % (PDFstr(lnk["to"]), rect)
+            annot = txt % (fitz.getPDFstr(lnk["to"]), rect)
         
     elif lnk["kind"] == fitz.LINK_GOTOR:
         if lnk["page"] >= 0:
@@ -909,7 +869,7 @@ def getLinkText(page, lnk):
                            lnk["file"], lnk["file"], rect)
         else:
             txt = annot_gotor_n
-            annot = txt % (PDFstr(lnk["to"]), lnk["file"], rect)
+            annot = txt % (fitz.getPDFstr(lnk["to"]), lnk["file"], rect)
 
     elif lnk["kind"] == fitz.LINK_LAUNCH:
         txt = annot_launch
@@ -1093,19 +1053,3 @@ def updateImage(annot):
     ap = b" ".join(aptab)
     annot._setAP(ap)
     return
-
-#-------------------------------------------------------------------------------
-# "Now" timestamp in PDF Format
-#-------------------------------------------------------------------------------
-def getPDFnow():
-    import time
-    tz = "%s'%s'" % (str(time.timezone // 3600).rjust(2, "0"),
-                 str((time.timezone // 60)%60).rjust(2, "0"))
-    tstamp = time.strftime("D:%Y%m%d%H%M%S", time.localtime())
-    if time.timezone > 0:
-        tstamp += "-" + tz
-    elif time.timezone < 0:
-        tstamp = "+" + tz
-    else:
-        pass
-    return tstamp

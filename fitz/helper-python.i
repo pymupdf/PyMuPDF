@@ -1,4 +1,7 @@
 %pythoncode %{
+#------------------------------------------------------------------------------
+# link kinds and link flags
+#------------------------------------------------------------------------------
 LINK_NONE   = 0
 LINK_GOTO   = 1
 LINK_URI    = 2
@@ -13,6 +16,19 @@ LINK_FLAG_FIT_H = 16
 LINK_FLAG_FIT_V = 32
 LINK_FLAG_R_IS_ZOOM = 64
 
+#------------------------------------------------------------------------------
+# Base 14 font names
+#------------------------------------------------------------------------------
+
+Base14_fontnames = ("Courier", "Courier-Oblique", "Courier-Bold",
+    "Courier-BoldOblique", "Helvetica", "Helvetica-Oblique",
+    "Helvetica-Bold", "Helvetica-BoldOblique",
+    "Times-Roman", "Times-Italic", "Times-Bold",
+    "Times-BoldItalic", "Symbol", "ZapfDingbats")
+
+#------------------------------------------------------------------------------
+# Emulate old linkDest class
+#------------------------------------------------------------------------------
 class linkDest():
     '''link or outline destination details'''
     def __init__(self, obj):
@@ -103,18 +119,18 @@ def getPDFstr(s):
         x = s.decode("utf-8")
     except:
         x = s
-    if x is None: x = ""
-    if isinstance(x, str) or sys.version_info[0] < 3 and isinstance(x, unicode):
+    if x is None: return "()"
+    if type(x) in (str, bytes) or sys.version_info[0] < 3 and type(x) in (str, unicode):
         pass
     else:
-        raise ValueError("non-string provided to PDFstr function")
+        raise ValueError("non-string passed to getPDFstr")
 
     utf16 = False
-    # following returns ascii original string with mixed-in octal numbers \nnn
-    # for chr(128) - chr(255)
+    # following returns ascii original string with mixed-in 
+    # octal numbers \nnn if <= chr(255)
     r = ""
     for i in range(len(x)):
-        if ord(x[i]) <= 127:
+        if 31 <= ord(x[i]) <= 127:
             r += x[i]                            # copy over ascii chars
         elif ord(x[i]) <= 255:
             r += "\\" + oct(ord(x[i]))[-3:]      # octal number with backslash

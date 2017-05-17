@@ -103,8 +103,11 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.0"
-VersionDate = "2017-05-10 17:20:51"
+VersionDate = "2017-05-17 08:23:28"
 
+#------------------------------------------------------------------------------
+# link kinds and link flags
+#------------------------------------------------------------------------------
 LINK_NONE   = 0
 LINK_GOTO   = 1
 LINK_URI    = 2
@@ -119,6 +122,19 @@ LINK_FLAG_FIT_H = 16
 LINK_FLAG_FIT_V = 32
 LINK_FLAG_R_IS_ZOOM = 64
 
+#------------------------------------------------------------------------------
+# Base 14 font names
+#------------------------------------------------------------------------------
+
+Base14_fontnames = ("Courier", "Courier-Oblique", "Courier-Bold",
+    "Courier-BoldOblique", "Helvetica", "Helvetica-Oblique",
+    "Helvetica-Bold", "Helvetica-BoldOblique",
+    "Times-Roman", "Times-Italic", "Times-Bold",
+    "Times-BoldItalic", "Symbol", "ZapfDingbats")
+
+#------------------------------------------------------------------------------
+# Emulate old linkDest class
+#------------------------------------------------------------------------------
 class linkDest():
     '''link or outline destination details'''
     def __init__(self, obj):
@@ -209,18 +225,18 @@ def getPDFstr(s):
         x = s.decode("utf-8")
     except:
         x = s
-    if x is None: x = ""
-    if isinstance(x, str) or sys.version_info[0] < 3 and isinstance(x, unicode):
+    if x is None: return "()"
+    if type(x) in (str, bytes) or sys.version_info[0] < 3 and type(x) in (str, unicode):
         pass
     else:
-        raise ValueError("non-string provided to PDFstr function")
+        raise ValueError("non-string passed to getPDFstr")
 
     utf16 = False
-# following returns ascii original string with mixed-in octal numbers \nnn
-# for chr(128) - chr(255)
+# following returns ascii original string with mixed-in 
+# octal numbers \nnn if <= chr(255)
     r = ""
     for i in range(len(x)):
-        if ord(x[i]) <= 127:
+        if 31 <= ord(x[i]) <= 127:
             r += x[i]                            # copy over ascii chars
         elif ord(x[i]) <= 255:
             r += "\\" + oct(ord(x[i]))[-3:]      # octal number with backslash
@@ -526,22 +542,30 @@ open(filename)"""
         return val
 
 
-    def insertPage(self, to=-1, fontsize=11, width=595, height=842, text=None):
+    def insertPage(self, to=-1, fontsize=11, width=595, height=842, fontname=None, text=None):
         """Insert a new page in front of 'to'."""
 
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
+        # ensure 'text' is a list of strings
         if text is not None:
-            tab = text.split("\n")
+            if type(text) not in (list, tuple):
+                tab = text.split("\n")
+            else:
+                tab = text
             newtab = []
             for t in tab:
                 newtab.append(getPDFstr(t))
             text = newtab
         else:
             text = []
+        # ensure 'fontname' is valid if specified
+        if fontname is not None:
+            if fontname not in Base14_fontnames:
+                fontname = "Helvetica"
 
 
-        val = _fitz.Document_insertPage(self, to, fontsize, width, height, text)
+        val = _fitz.Document_insertPage(self, to, fontsize, width, height, fontname, text)
         if val == 0: self._reset_page_refs()
 
         return val
@@ -597,7 +621,7 @@ open(filename)"""
 
 
     def getPageFontList(self, pno):
-        """list fonts used on a page"""
+        """List fonts used on a page."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -844,10 +868,7 @@ class Page(_object):
     @property
 
     def rotation(self):
-        """
-        rotation -> int
-        Return rotation in degrees
-        """
+        """Retrieve page rotation."""
         if hasattr(self, "parent"):
             if self.parent is None:
                 raise RuntimeError("orphaned object: parent is None")
@@ -856,7 +877,7 @@ class Page(_object):
 
 
     def setRotation(self, rot):
-        """setRotation sets page rotation to 'rot' degrees"""
+        """Set page rotation to 'rot' degrees."""
         if hasattr(self, "parent"):
             if self.parent is None:
                 raise RuntimeError("orphaned object: parent is None")
@@ -876,6 +897,15 @@ class Page(_object):
     def _getLinkXrefs(self):
         """_getLinkXrefs(self) -> PyObject *"""
         return _fitz.Page__getLinkXrefs(self)
+
+
+    def insertImage(self, rect, filename=None, pixmap=None):
+        """Insert a new image in a rectangle."""
+        if hasattr(self, "parent"):
+            if self.parent is None:
+                raise RuntimeError("orphaned object: parent is None")
+
+        return _fitz.Page_insertImage(self, rect, filename, pixmap)
 
 
     def _getRectText(self, rect):
@@ -1223,9 +1253,9 @@ IRect_swigregister(IRect)
 class Pixmap(_object):
     """fitz.Pixmap(cs, width, height, samples, alpha)
 fitz.Pixmap(cs, fitz.Irect, alpha)
-fitz.Pixmap(cs, fitz.Pixmap)
+fitz.Pixmap(cs, fitz.Pixmap [, alpha])
 fitz.Pixmap(filename)
-fitz.Pixmap(bytearray)
+fitz.Pixmap(image buffer)
 fitz.Pixmap(doc, xref)"""
 
     __swig_setmethods__ = {}
@@ -1269,7 +1299,7 @@ fitz.Pixmap(doc, xref)"""
     def __init__(self, *args):
         """
         __init__(self, cs, bbox, alpha=0) -> Pixmap
-        __init__(self, cs, spix) -> Pixmap
+        __init__(self, cs, spix, alpha=1) -> Pixmap
         __init__(self, cs, w, h, samples, alpha=0) -> Pixmap
         __init__(self, filename) -> Pixmap
         __init__(self, imagedata) -> Pixmap

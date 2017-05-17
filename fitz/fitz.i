@@ -15,6 +15,22 @@
 //=============================================================================
 
 //=============================================================================
+// SWIG macro: return string representation of an integer
+//=============================================================================
+%define INT_str(i, l)
+getPDFstr(PyObject_Str(PyLong_FromSize_t((size_t) i)), l, "i")
+%enddef
+//=============================================================================
+
+//=============================================================================
+// SWIG macro: return string representation of a float
+//=============================================================================
+%define FLOAT_str(d, l)
+getPDFstr(PyObject_Str(PyFloat_FromDouble((double) d)), l, "d")
+%enddef
+//=============================================================================
+
+//=============================================================================
 // SWIG macro: check that a document is not closed
 //=============================================================================
 %define CLOSECHECK(meth)
@@ -97,7 +113,7 @@ import sys
 %include version.i
 %include helper-annot.i
 %include helper-json.i
-%include helper-linkdest.i
+%include helper-python.i
 %include helper-other.i
 %include helper-portfolio.i
 %include helper-select.i
@@ -795,9 +811,7 @@ if sa < 0:
         }
 
         //---------------------------------------------------------------------
-        // Create / insert a new page (PDF)
-        // Currently, modifications of width / height are supported,
-        // as well as one line of text.
+        // Create and insert a new page (PDF)
         //---------------------------------------------------------------------
         FITZEXCEPTION(insertPage, result<0)
         CLOSECHECK(insertPage)
@@ -805,64 +819,93 @@ if sa < 0:
         %pythonprepend insertPage %{
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
+        # ensure 'text' is a list of strings
         if text is not None:
-            tab = text.split("\n")
+            if type(text) not in (list, tuple):
+                tab = text.split("\n")
+            else:
+                tab = text
             newtab = []
             for t in tab:
                 newtab.append(getPDFstr(t))
             text = newtab
         else:
             text = []
+        # ensure 'fontname' is valid if specified
+        if fontname is not None:
+            if fontname not in Base14_fontnames:
+                fontname = "Helvetica"
         %}
         %pythonappend insertPage %{if val == 0: self._reset_page_refs()%}
-        int insertPage(int to = -1, int fontsize = 11, int width = 595, int height = 842, PyObject *text = NULL)
+        int insertPage(int to = -1, float fontsize = 11, float width = 595,
+                     float height = 842, char *fontname = NULL, PyObject *text = NULL)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            const char *template = "BT /Tm %i Tf 50 %i TD %s Tj ET\n";
+            
+            const char *template = "BT 0 0 0 rg 1 0 0 1 50 %s Tm /Tm %s Tf %sTj 0 -%s TD\n";
+            fz_rect mediabox = { 0, 0, 595, 842 };    // DIN-A4 values
+            mediabox.x1 = width;
+            mediabox.y1 = height;
             char *itxt = NULL;
-            Py_ssize_t itxt_len;
+            Py_ssize_t itxt_len, len, i, c_len, ntxt_len = 0;
             PyObject *ntxt = PyUnicode_FromString("");
             PyObject *t = NULL;
-            fz_rect mediabox = { 0, 0, 595, 842 };
-            Py_ssize_t len, i, maxlen;
-            maxlen = (height - 72) / (fontsize + 2);
+            float lheight = fontsize * 1.2;
+            char *lheight_str = FLOAT_str(lheight, &c_len);
+            float top = height - 72 - lheight;
+            char *top_str = FLOAT_str(top, &c_len);
+            char *fontsize_str = FLOAT_str(fontsize, &c_len);
+            char *font_str = "Helvetica";
             const char *data;
             int size;
             fz_font *font;
-            pdf_obj *font_obj, *page_obj;
-            pdf_obj *resources;
+            pdf_obj *font_obj, *page_obj, *resources;
             fz_buffer *contents;
-            mediabox.x1 = width;
-            mediabox.y1 = height;
-            Py_ssize_t ntxt_len = 0;
             len = PySequence_Size(text);
 
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                if (len == 0)
+                if (len > 0)
                 {
-                    ntxt = PyUnicode_FromFormat(template, fontsize, height-72, "()");
-                }
-                else
-                {
-                    if (len > maxlen) len = maxlen;
-                    for (i = 0; i < len; i++)
+                    itxt = getPDFstr(PySequence_GetItem(text, 0), &itxt_len, "itxt2");
+                    t = PyUnicode_FromFormat(template, top_str, fontsize_str,
+                                             itxt, lheight_str);
+                    ntxt = PyUnicode_Concat(ntxt, t);
+                    top -= lheight;
+                    if (len > 1)
                     {
-                        itxt = getPDFstr(PySequence_GetItem(text, i), &itxt_len, "itxt2");
-                        t = PyUnicode_FromFormat(template, fontsize,
-                                height-72-(fontsize+2)*i, itxt);
-                        ntxt = PyUnicode_Concat(ntxt, t);
+                        ntxt = PyUnicode_Concat(ntxt, PySequence_GetItem(text, 1));
+                        ntxt = PyUnicode_Concat(ntxt, PyUnicode_FromString("Tj\n"));
+                        top -= lheight;
                     }
+                    for (i = 2; i < len; i++)
+                    {
+                        top -= lheight;
+                        ntxt = PyUnicode_Concat(ntxt, PyUnicode_FromString("T* "));
+                        ntxt = PyUnicode_Concat(ntxt, PySequence_GetItem(text, i));
+                        ntxt = PyUnicode_Concat(ntxt, PyUnicode_FromString("Tj\n"));
+                        if (top < 36) break;
+                    }
+                    ntxt = PyUnicode_Concat(ntxt, PyUnicode_FromString("ET\n"));
                 }
                 char *templ_txt = getPDFstr(ntxt, &ntxt_len, "ntxt");
-                data = fz_lookup_base14_font(gctx, "Helvetica", &size);
-                font = fz_new_font_from_memory(gctx, "Helvetica", data, size, 0, 0);
+                contents = fz_new_buffer_from_shared_data(gctx, templ_txt, strlen(templ_txt));
+
+                // content stream done, now insert the font
+                if (fontname) font_str = fontname;
+                data = fz_lookup_base14_font(gctx, font_str, &size);
+                if (data)              // valid base 14 font found
+                    font = fz_new_font_from_memory(gctx, font_str, data, size, 0, 0);
+                else
+                    THROWMSG("unknown PDF base 14 font");
                 font_obj = pdf_add_simple_font(gctx, pdf, font);
                 fz_drop_font(gctx, font);
+                // resources obj contains named reference "/Tm" to font
                 resources = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
                 pdf_dict_putp_drop(gctx, resources, "Font/Tm", font_obj);
-                contents = fz_new_buffer_from_shared_data(gctx, templ_txt, strlen(templ_txt));
+
+                // ready to create and insert page
                 page_obj = pdf_add_page(gctx, pdf, &mediabox, 0, resources, contents);
                 pdf_insert_page(gctx, pdf, to , page_obj);
                 pdf_drop_obj(gctx, page_obj);
@@ -1027,11 +1070,11 @@ if sa < 0:
                 assert_PDF(pdf);
             }
             fz_catch(gctx) return NULL;
-            PyObject *imglist = PyList_New(0);        // resulting Python list
+            PyObject *imglist = PyList_New(0);   // we will return this
             pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, n);
             pdf_obj *pageobj = pdf_resolve_indirect(gctx, pageref);
             pdf_obj *rsrc = pdf_dict_get(gctx, pageobj, PDF_NAME_Resources);
-            // XObject dictionary of the page
+            // XObject dictionary of page
             pdf_obj *dict = pdf_dict_get(gctx, rsrc, PDF_NAME_XObject);
             n = pdf_dict_len(gctx, dict);        // number of entries
             int i;
@@ -1094,37 +1137,35 @@ if sa < 0:
         //*********************************************************************
         FITZEXCEPTION(getPageFontList, result==NULL)
         CLOSECHECK(getPageFontList)
-        %feature("autodoc","list fonts used on a page") getPageFontList;
+        %feature("autodoc","List fonts used on a page.") getPageFontList;
         PyObject *getPageFontList(int pno)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
             int pageCount = fz_count_pages(gctx, $self);
-            int n = pno;
+            int n = pno;          // pno might be < 0
             while (n < 0) n += pageCount;
             fz_try(gctx)
             {
-                if (n >= pageCount)
-                    THROWMSG("page number out of range");
+                if (n >= pageCount) THROWMSG("page number out of range");
                 assert_PDF(pdf);
             }
             fz_catch(gctx) return NULL;
 
-            PyObject *fontlist = PyList_New(0);  // Python list to be returned
-            pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, n);
-            pdf_obj *pageobj = pdf_resolve_indirect(gctx, pageref);
-            pdf_obj *rsrc = pdf_dict_get(gctx, pageobj, PDF_NAME_Resources);
-            pdf_obj *dict = pdf_dict_get(gctx, rsrc, PDF_NAME_Font);
+            pdf_obj *fontdict, *subtype, *basefont, *name, *bname;
+            pdf_obj *pageref, *pageobj, *rsrc, *dict;
+            PyObject *fontlist = PyList_New(0);  // we will return this
+            pageref = pdf_lookup_page_obj(gctx, pdf, n);
+            pageobj = pdf_resolve_indirect(gctx, pageref);
+            rsrc = pdf_dict_get(gctx, pageobj, PDF_NAME_Resources);
+            dict = pdf_dict_get(gctx, rsrc, PDF_NAME_Font);
             n = pdf_dict_len(gctx, dict);
             int i;
             for (i = 0; i < n; i++)      /* do this for each font of the page */
             {
-                pdf_obj *fontdict = NULL;
-                pdf_obj *subtype = NULL;
-                pdf_obj *basefont = NULL;
-                pdf_obj *name = NULL;
-                pdf_obj *bname = NULL;
+                basefont = name = bname = NULL;
                 fontdict = pdf_dict_get_val(gctx, dict, i);
-                if (!pdf_is_dict(gctx, fontdict)) continue;  // no valid font on page
+                if (!pdf_is_dict(gctx, fontdict))
+                    continue;  // not a valid font
                 long xref = (long) pdf_to_num(gctx, fontdict);
                 long gen  = (long) pdf_to_gen(gctx, fontdict);
                 subtype = pdf_dict_get(gctx, fontdict, PDF_NAME_Subtype);
@@ -1133,7 +1174,7 @@ if sa < 0:
                     bname = pdf_dict_get(gctx, fontdict, PDF_NAME_Name);
                 else
                     bname = basefont;
-                name = pdf_dict_get(gctx, fontdict, PDF_NAME_Name);
+                name = pdf_dict_get_key(gctx, dict, i);
                 PyObject *font = PyList_New(0);       // Python list per font
                 PyList_Append(font, PyInt_FromLong(xref));
                 PyList_Append(font, PyInt_FromLong(gen));
@@ -1590,7 +1631,7 @@ fannot._erase()
         /*********************************************************************/
         PARENTCHECK(rotation)
         %pythoncode %{@property%}
-        %feature("autodoc","rotation -> int\nReturn rotation in degrees") rotation;
+        %feature("autodoc","Retrieve page rotation.") rotation;
         int rotation()
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
@@ -1604,7 +1645,7 @@ fannot._erase()
         // setRotation() - set page rotation
         /*********************************************************************/
         PARENTCHECK(setRotation)
-        %feature("autodoc","setRotation sets page rotation to 'rot' degrees") setRotation;
+        %feature("autodoc","Set page rotation to 'rot' degrees.") setRotation;
         int setRotation(int rot)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
@@ -1701,9 +1742,105 @@ fannot._erase()
             return linkxrefs;
         }
 
-        //*********************************************************************
+        //---------------------------------------------------------------------
+        // insert an image
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(insertImage, result<0)
+        PARENTCHECK(insertImage)
+        %feature("autodoc", "Insert a new image in a rectangle.") insertImage;
+        int insertImage(struct fz_rect_s *rect, const char *filename=NULL, struct fz_pixmap_s *pixmap = NULL)
+        {
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            pdf_document *pdf;
+            pdf_obj *resources, *subres, *contents, *ref;
+            fz_buffer *res = NULL;
+            fz_buffer *nres = NULL;
+            char *content_str;
+            const char *template = " q %s 0 0 %s %s %s cm /%s Do Q \n";
+            Py_ssize_t c_len = 0;
+            fz_rect *prect = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_bound_page(gctx, $self, prect);
+            char *X, *Y, *W, *H;
+            char *cont = NULL;
+            const char *name_templ = "PyMuPDF%s-%s-%s-%s";
+            Py_ssize_t name_len = 0;
+            char *name = NULL;
+            fz_image *image = NULL;
+            fz_try(gctx)
+            {
+                assert_PDF(page);
+                pdf = page->doc;
+                if ((pixmap) && (filename) || (!pixmap) && (!filename))
+                    THROWMSG("exactly one of filename, pixmap must be given");
+                if (!fz_contains_rect(prect, rect))
+                    THROWMSG("rect must be contained in page rect");
+                if (fz_is_empty_rect(rect) || fz_is_infinite_rect(rect))
+                    THROWMSG("rect must be finite and not empty");
+
+                // create strings for image rectangle
+                X = FLOAT_str(rect->x0, &c_len);
+                Y = FLOAT_str(prect->y1 - rect->y1, &c_len);
+                W = FLOAT_str(rect->x1 - rect->x0, &c_len);
+                H = FLOAT_str(rect->y1 - rect->y0, &c_len);
+
+                // get objects "Resources", "XObject"
+                contents = pdf_dict_get(gctx, page->obj, PDF_NAME_Contents);
+                resources = pdf_dict_get(gctx, page->obj, PDF_NAME_Resources);
+                subres = pdf_dict_get(gctx, resources, PDF_NAME_XObject);
+                if (!subres)           // has no XObject yet
+                {
+                    subres = pdf_new_dict(gctx, pdf, 10);
+                    pdf_dict_put_drop(gctx, resources, PDF_NAME_XObject, subres);
+                }
+
+                // create the image
+                if (filename)
+                    image = fz_new_image_from_file(gctx, filename);
+                else
+                    image = fz_new_image_from_pixmap(gctx, pixmap, NULL);
+
+                // put image info in PDF objects
+                ref = JM_pdf_add_image(gctx, pdf, image, 0);
+
+                // generate XObject name: "PyMuPDFimgsize-xref-X-Y"
+                char *size_str = INT_str(fz_image_size(gctx, image), &name_len);
+                char *xref_str = INT_str(pdf_to_num(gctx, page->obj), &name_len);
+                name = getPDFstr(PyUnicode_FromFormat(name_templ, size_str, xref_str, X, Y),
+                                 &name_len, "name");
+                pdf_dict_puts(gctx, subres, name, ref);
+
+                // retrieve and update content stream
+                if (pdf_is_array(gctx, contents))
+                {            // take last if more than one contents object
+                    int i = pdf_array_len(gctx, contents) - 1;
+                    contents = pdf_array_get(gctx, contents, i);
+                }
+                res = pdf_load_stream(gctx, contents);
+                if (!res) THROWMSG("bad PDF: Contents is no stream object");
+
+                // append our string to contents
+                fz_append_printf(gctx, res, template, W, H, X, Y, name);
+                fz_terminate_buffer(gctx, res);
+                pdf_dict_put(gctx, contents, PDF_NAME_Filter,
+                             PDF_NAME_FlateDecode);
+                c_len = (Py_ssize_t) fz_buffer_storage(gctx, res, &content_str);
+                nres = deflatebuf(gctx, content_str, (size_t) c_len);
+                pdf_update_stream(gctx, pdf, contents, nres, 1);
+            }
+            fz_always(gctx)
+            {
+                if (image) fz_drop_image(gctx, image);
+                if (res) fz_drop_buffer(gctx, res);
+                if (nres) fz_drop_buffer(gctx, nres);
+                free(prect);
+            }
+            fz_catch(gctx) return -1;
+            return 0;
+        }
+
+        //---------------------------------------------------------------------
         // Get bare text inside a rectangle of a page
-        //*********************************************************************
+        //---------------------------------------------------------------------
         FITZEXCEPTION(_getRectText, !result)
         PARENTCHECK(_getRectText)
         const char *_getRectText(struct fz_rect_s *rect)
@@ -1717,9 +1854,9 @@ fannot._erase()
             return fz_string_from_buffer(gctx, res);
         }
 
-        /*********************************************************************/
+        //---------------------------------------------------------------------
         // Page._readPageText()
-        /*********************************************************************/
+        //---------------------------------------------------------------------
         FITZEXCEPTION(_readPageText, result==NULL)
         %newobject _readPageText;
         const char *_readPageText(int output=0) {
@@ -1841,7 +1978,7 @@ struct fz_rect_s
             fz_try(gctx)
             {
                 if (!PySequence_Check(list)) THROWMSG("expected a sequence");
-                if (PySequence_Size(list) != 4) THROWMSG("sequence length must be 4");
+                if (PySequence_Size(list) != 4) THROWMSG("len(sequence) must be 4");
                 r->x0 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
                 r->y0 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 1));
                 r->x1 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 2));
@@ -2253,9 +2390,9 @@ struct fz_pixmap_s
     int xres, yres;
     %extend {
         FITZEXCEPTION(fz_pixmap_s, !result)
-        /***********************************************************/
-        /* create empty pixmap with colorspace and IRect specified */
-        /***********************************************************/
+        //---------------------------------------------------------------------
+        // create empty pixmap with colorspace and IRect
+        //---------------------------------------------------------------------
         fz_pixmap_s(struct fz_colorspace_s *cs, const struct fz_irect_s *bbox, int alpha = 0)
         {
             struct fz_pixmap_s *pm = NULL;
@@ -2265,23 +2402,24 @@ struct fz_pixmap_s
             return pm;
         }
 
-        /***********************************************************/
-        // create new pixmap as converted copy of another one
-        /***********************************************************/
-        fz_pixmap_s(struct fz_colorspace_s *cs, struct fz_pixmap_s *spix)
+        //---------------------------------------------------------------------
+        // create pixmap as converted copy of another one
+        // New in v1.11: option to remove alpha
+        //---------------------------------------------------------------------
+        fz_pixmap_s(struct fz_colorspace_s *cs, struct fz_pixmap_s *spix, int alpha = 1)
         {
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
             {
-                pm = fz_convert_pixmap(gctx, spix, cs, 1);
+                pm = fz_convert_pixmap(gctx, spix, cs, alpha);
             }
             fz_catch(gctx) return NULL;
             return pm;
         }
 
-        /***********************************************************/
-        // create a pixmap from samples data
-        /***********************************************************/
+        //---------------------------------------------------------------------
+        // create pixmap from samples data
+        //---------------------------------------------------------------------
         fz_pixmap_s(struct fz_colorspace_s *cs, int w, int h, PyObject *samples, int alpha = 0)
         {
             char *data;
@@ -2312,9 +2450,9 @@ struct fz_pixmap_s
             return pm;
         }
 
-        /******************************************/
-        // create a pixmap from filename
-        /******************************************/
+        //---------------------------------------------------------------------
+        // create pixmap from filename
+        //---------------------------------------------------------------------
         fz_pixmap_s(char *filename)
         {
             struct fz_image_s *img = NULL;
@@ -2328,9 +2466,9 @@ struct fz_pixmap_s
             return pm;
         }
 
-        /*********************************************************************/
-        // create a pixmap from bytes / bytearray
-        /*********************************************************************/
+        //---------------------------------------------------------------------
+        // create pixmap from in-memory image
+        //---------------------------------------------------------------------
         fz_pixmap_s(PyObject *imagedata)
         {
             size_t size;
@@ -2362,14 +2500,15 @@ struct fz_pixmap_s
             return pm;
         }
 
-        /***********************************************************************
-        Create pixmap from an image identified by XREF number
-        ***********************************************************************/
+        //---------------------------------------------------------------------
+        // Create pixmap from PDF image identified by XREF number
+        //---------------------------------------------------------------------
         fz_pixmap_s(struct fz_document_s *doc, int xref)
         {
             struct fz_image_s *img = NULL;
             struct fz_pixmap_s *pix = NULL;
             pdf_obj *ref = NULL;
+            pdf_obj *type;
             pdf_document *pdf = pdf_specifics(gctx, doc);
             fz_try(gctx)
             {
@@ -2378,6 +2517,9 @@ struct fz_pixmap_s
                 if ((xref < 1) | (xref >= xreflen))
                     THROWMSG("xref out of range");
                 ref = pdf_new_indirect(gctx, pdf, xref, 0);
+                type = pdf_dict_get(gctx, ref, PDF_NAME_Subtype);
+                if (!pdf_name_eq(gctx, type, PDF_NAME_Image))
+                    THROWMSG("xref entry is not an image");
                 img = pdf_load_image(gctx, pdf, ref);
                 pdf_drop_obj(gctx, ref);
                 pix = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
@@ -4289,9 +4431,9 @@ struct fz_stext_page_s {
             fz_catch(gctx) return NULL;
             return fz_string_from_buffer(gctx, res);
         }
-        /*******************************************/
-        /* method extractJSON()                    */
-        /*******************************************/
+        //---------------------------------------------------------------------
+        // method extractJSON()
+        //---------------------------------------------------------------------
         FITZEXCEPTION(extractJSON, !result)
         %newobject extractJSON;
         const char *extractJSON() {

@@ -3363,6 +3363,282 @@ fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page)
 }
 
 
+//=============================================================================
+//=============================================================================
+
+static void
+JM_fz_md5_image(fz_context *ctx, fz_image *image, unsigned char digest[16])
+{
+    fz_pixmap *pixmap;
+    fz_md5 state;
+    int h;
+    unsigned char *d;
+
+    pixmap = fz_get_pixmap_from_image(ctx, image, NULL, NULL, 0, 0);
+    fz_md5_init(&state);
+    d = pixmap->samples;
+    h = pixmap->h;
+    while (h--)
+    {
+        fz_md5_update(&state, d, pixmap->w * pixmap->n);
+        d += pixmap->stride;
+    }
+    fz_md5_final(&state, digest);
+    fz_drop_pixmap(ctx, pixmap);
+}
+
+static void
+JM_pdf_preload_image_resources(fz_context *ctx, pdf_document *doc)
+{
+    int len, k;
+    pdf_obj *obj;
+    pdf_obj *type;
+    pdf_obj *res = NULL;
+    fz_image *image = NULL;
+    unsigned char digest[16];
+
+    fz_var(obj);
+    fz_var(image);
+    fz_var(res);
+    fz_try(ctx)
+    {
+        len = pdf_count_objects(ctx, doc);
+        for (k = 1; k < len; k++)
+        {
+            
+            // obj = pdf_load_object(ctx, doc, k);
+            obj = pdf_new_indirect(gctx, doc, k, 0);
+            type = pdf_dict_get(ctx, obj, PDF_NAME_Subtype);
+            if (pdf_name_eq(ctx, type, PDF_NAME_Image))
+            {
+                image = pdf_load_image(ctx, doc, obj);
+                JM_fz_md5_image(ctx, image, digest);
+                fz_drop_image(ctx, image);
+                image = NULL;
+
+                /* Do not allow overwrites. */
+                if (!fz_hash_find(ctx, doc->resources.images, digest))
+                    fz_hash_insert(ctx, doc->resources.images, digest, pdf_keep_obj(ctx, obj));
+            }
+            pdf_drop_obj(ctx, obj);
+            obj = NULL;
+        }
+    }
+    fz_always(ctx)
+    {
+        fz_drop_image(ctx, image);
+        pdf_drop_obj(ctx, obj);
+    }
+    fz_catch(ctx)
+    {
+        fz_rethrow(ctx);
+    }
+}
+
+pdf_obj *
+JM_pdf_find_image_resource(fz_context *ctx, pdf_document *doc, fz_image *item, unsigned char digest[16])
+{
+    pdf_obj *res;
+    if (!doc->resources.images)
+    {
+        doc->resources.images = fz_new_hash_table(ctx, 4096, 16, -1, (fz_hash_table_drop_fn)pdf_drop_obj);
+        JM_pdf_preload_image_resources(ctx, doc);
+    }
+
+    /* Create md5 and see if we have the item in our table */
+    JM_fz_md5_image(ctx, item, digest);
+    res = fz_hash_find(ctx, doc->resources.images, digest);
+    if (res)
+        pdf_keep_obj(ctx, res);
+    return res;
+}
+
+
+pdf_obj *
+JM_pdf_add_image(fz_context *ctx, pdf_document *doc, fz_image *image, int mask)
+{
+    fz_pixmap *pixmap = NULL;
+    pdf_obj *imobj = NULL;
+    fz_buffer *buffer = NULL;
+    pdf_obj *imref = NULL;
+    fz_compressed_buffer *cbuffer;
+    unsigned char digest[16];
+    int n;
+
+    /* If we can maintain compression, do so */
+    cbuffer = fz_compressed_image_buffer(ctx, image);
+    fz_var(pixmap);
+    fz_var(buffer);
+    fz_var(imobj);
+    fz_var(imref);
+
+    /* Check if the same image already exists in this doc. */
+    imref = JM_pdf_find_image_resource(ctx, doc, image, digest);
+    if (imref)
+        return imref;
+
+    fz_try(ctx)
+    {
+        imobj = pdf_new_dict(ctx, doc, 3);
+        pdf_dict_put_drop(ctx, imobj, PDF_NAME_Type, PDF_NAME_XObject);
+        pdf_dict_put_drop(ctx, imobj, PDF_NAME_Subtype, PDF_NAME_Image);
+
+        if (cbuffer)
+        {
+            fz_compression_params *cp = &cbuffer->params;
+            switch (cp ? cp->type : FZ_IMAGE_UNKNOWN)
+            {
+            default:
+                goto raw_or_unknown_compression;
+            case FZ_IMAGE_JPEG:
+                if (cp->u.jpeg.color_transform != -1)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_ColorTransform, pdf_new_int(ctx, doc, cp->u.jpeg.color_transform));
+                pdf_dict_put_drop(ctx, imobj, PDF_NAME_Filter, PDF_NAME_DCTDecode);
+                break;
+            case FZ_IMAGE_JPX:
+                if (cp->u.jpx.smask_in_data)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_SMaskInData, pdf_new_int(ctx, doc, cp->u.jpx.smask_in_data));
+                pdf_dict_put_drop(ctx, imobj, PDF_NAME_Filter, PDF_NAME_JPXDecode);
+                break;
+            case FZ_IMAGE_FAX:
+                if (cp->u.fax.columns)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Columns, pdf_new_int(ctx, doc, cp->u.fax.columns));
+                if (cp->u.fax.rows)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Rows, pdf_new_int(ctx, doc, cp->u.fax.rows));
+                if (cp->u.fax.k)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_K, pdf_new_int(ctx, doc, cp->u.fax.k));
+                if (cp->u.fax.end_of_line)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_EndOfLine, pdf_new_int(ctx, doc, cp->u.fax.end_of_line));
+                if (cp->u.fax.encoded_byte_align)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_EncodedByteAlign, pdf_new_int(ctx, doc, cp->u.fax.encoded_byte_align));
+                if (cp->u.fax.end_of_block)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_EndOfBlock, pdf_new_int(ctx, doc, cp->u.fax.end_of_block));
+                if (cp->u.fax.black_is_1)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_BlackIs1, pdf_new_int(ctx, doc, cp->u.fax.black_is_1));
+                if (cp->u.fax.damaged_rows_before_error)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_DamagedRowsBeforeError, pdf_new_int(ctx, doc, cp->u.fax.damaged_rows_before_error));
+                pdf_dict_put_drop(ctx, imobj, PDF_NAME_Filter, PDF_NAME_CCITTFaxDecode);
+                break;
+            case FZ_IMAGE_FLATE:
+                if (cp->u.flate.columns)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Columns, pdf_new_int(ctx, doc, cp->u.flate.columns));
+                if (cp->u.flate.colors)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Colors, pdf_new_int(ctx, doc, cp->u.flate.colors));
+                if (cp->u.flate.predictor)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Predictor, pdf_new_int(ctx, doc, cp->u.flate.predictor));
+                pdf_dict_put_drop(ctx, imobj, PDF_NAME_Filter, PDF_NAME_FlateDecode);
+                pdf_dict_put_drop(ctx, imobj, PDF_NAME_BitsPerComponent, pdf_new_int(ctx, doc, image->bpc));
+                break;
+            case FZ_IMAGE_LZW:
+                if (cp->u.lzw.columns)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Columns, pdf_new_int(ctx, doc, cp->u.lzw.columns));
+                if (cp->u.lzw.colors)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Colors, pdf_new_int(ctx, doc, cp->u.lzw.colors));
+                if (cp->u.lzw.predictor)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Predictor, pdf_new_int(ctx, doc, cp->u.lzw.predictor));
+                if (cp->u.lzw.early_change)
+                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_EarlyChange, pdf_new_int(ctx, doc, cp->u.lzw.early_change));
+                pdf_dict_put_drop(ctx, imobj, PDF_NAME_Filter, PDF_NAME_LZWDecode);
+                break;
+            case FZ_IMAGE_RLD:
+                pdf_dict_put_drop(ctx, imobj, PDF_NAME_Filter, PDF_NAME_RunLengthDecode);
+                break;
+            }
+            buffer = fz_keep_buffer(ctx, cbuffer->buffer);
+        }
+        else
+        {
+            unsigned int size;
+            int n, h;
+            unsigned char *d, *s;
+
+raw_or_unknown_compression:
+            /* Currently, set to maintain resolution; should we consider
+             * subsampling here according to desired output res? */
+            pixmap = fz_get_pixmap_from_image(ctx, image, NULL, NULL, NULL, NULL);
+            n = (pixmap->n == 1 ? 1 : pixmap->n - pixmap->alpha);
+            s = pixmap->samples;
+            h = image->h;
+            size = image->w * n;
+            d = fz_malloc(ctx, size * h);
+            buffer = fz_new_buffer_from_data(ctx, d, size * h);
+            if (pixmap->alpha == 0 || n == 1)
+            {
+                while (h--)
+                {
+                    memcpy(d, s, size);
+                    d += size;
+                    s += pixmap->stride;
+                }
+            }
+            else
+            {
+                /* Need to remove the alpha plane */
+                /* TODO: extract alpha plane to a soft mask */
+                int pad = pixmap->stride - pixmap->w * pixmap->n;
+                while (h--)
+                {
+                    unsigned int size2 = size;
+                    int mod = n;
+                    while (size2--)
+                    {
+                        *d++ = *s++;
+                        mod--;
+                        if (mod == 0)
+                            s++, mod = n;
+                    }
+                    s += pad;
+                }
+            }
+        }
+
+        pdf_dict_put_drop(ctx, imobj, PDF_NAME_Width, pdf_new_int(ctx, doc, pixmap ? pixmap->w : image->w));
+        pdf_dict_put_drop(ctx, imobj, PDF_NAME_Height, pdf_new_int(ctx, doc, pixmap ? pixmap->h : image->h));
+        if (mask)
+        {
+            pdf_dict_put_drop(ctx, imobj, PDF_NAME_ImageMask, pdf_new_bool(ctx, doc, 1));
+        }
+        else
+        {
+            pdf_dict_put_drop(ctx, imobj, PDF_NAME_BitsPerComponent, pdf_new_int(ctx, doc, image->bpc));
+
+            n = fz_colorspace_n(ctx, pixmap ? pixmap->colorspace : image->colorspace);
+            if (n <= 1)
+                pdf_dict_put_drop(ctx, imobj, PDF_NAME_ColorSpace, PDF_NAME_DeviceGray);
+            else if (n == 3)
+                // TODO: Lab colorspace?
+                pdf_dict_put_drop(ctx, imobj, PDF_NAME_ColorSpace, PDF_NAME_DeviceRGB);
+            else if (n == 4)
+                pdf_dict_put_drop(ctx, imobj, PDF_NAME_ColorSpace, PDF_NAME_DeviceCMYK);
+            else
+                // TODO: convert to RGB!
+                fz_throw(ctx, FZ_ERROR_GENERIC, "only Gray, RGB, and CMYK colorspaces supported");
+        }
+        if (image->mask)
+        {
+            pdf_dict_put_drop(ctx, imobj, PDF_NAME_SMask, pdf_add_image(ctx, doc, image->mask, 0));
+        }
+        imref = pdf_add_object(ctx, doc, imobj);
+        pdf_update_stream(ctx, doc, imref, buffer, 1);
+        /* Add ref to our image resource hash table. */
+        imref = pdf_insert_image_resource(ctx, doc, digest, imref);
+    }
+    fz_always(ctx)
+    {
+        fz_drop_pixmap(ctx, pixmap);
+        fz_drop_buffer(ctx, buffer);
+        pdf_drop_obj(ctx, imobj);
+    }
+    fz_catch(ctx)
+    {
+        pdf_drop_obj(ctx, imref);
+        fz_rethrow(ctx);
+    }
+    return imref;
+}
+//=============================================================================
+//=============================================================================
+
 //----------------------------------------------------------------------------
 // Return set(dict.keys()) <= set([vkeys, ...])
 // keys of dict must be string or unicode in Py2 and string in Py3!
@@ -4463,8 +4739,8 @@ SWIGINTERN int fz_document_s_embeddedFileDel(struct fz_document_s *self,char *na
             int i, len;
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
@@ -4472,7 +4748,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
                 efiles = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
                                       PDF_NAME_Root, PDF_NAME_Names,
                                       PDF_NAME_EmbeddedFiles, NULL);
-                if (!efiles) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (!efiles) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "no embedded files")
 /*@SWIG@*/;
                 names = pdf_dict_get(gctx, efiles, PDF_NAME_Names);
@@ -4490,7 +4766,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "no embedded files")
                         tname = pdf_to_utf8(gctx, pdf_array_get(gctx, names, i));
                         if (strcmp(tname, name) == 0) break;   // name found
                     }
-                if (strcmp(tname, name) != 0) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (strcmp(tname, name) != 0) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "name not found")
 /*@SWIG@*/;
             }
@@ -4547,13 +4823,13 @@ SWIGINTERN PyObject *fz_document_s_embeddedFileInfo(struct fz_document_s *self,P
             char *sname = NULL;
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 count = pdf_count_portfolio_entries(gctx, pdf); // file count
-                if (count < 1) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (count < 1) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "no embedded files")
 /*@SWIG@*/;
                 n = FindEmbedded(id, pdf);
@@ -4586,8 +4862,8 @@ SWIGINTERN int fz_document_s_embeddedFileSetInfo(struct fz_document_s *self,PyOb
             pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
@@ -4597,11 +4873,11 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
                 name = getPDFstr(id, &name_len, "id");
                 f = getPDFstr(filename, &file_len, "filename");
                 d = getPDFstr(desc, &desc_len, "desc");
-                if ((!f) && (!d)) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if ((!f) && (!d)) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "nothing to change")
 /*@SWIG@*/;
                 int count = pdf_count_portfolio_entries(gctx, pdf);
-                if (count < 1) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (count < 1) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "no embedded files")
 /*@SWIG@*/;
                 n = FindEmbedded(id, pdf);
@@ -4631,13 +4907,13 @@ SWIGINTERN PyObject *fz_document_s_embeddedFileGet(struct fz_document_s *self,Py
             char *name = NULL;
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 int count = pdf_count_portfolio_entries(gctx, pdf);
-                if (count < 1) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (count < 1) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "no embedded files")
 /*@SWIG@*/;
                 int i = FindEmbedded(id, pdf);
@@ -4660,7 +4936,7 @@ SWIGINTERN int fz_document_s_embeddedFileAdd(struct fz_document_s *self,PyObject
             fz_try(gctx)
             {
                 name_len = strlen(name);
-                if (name_len < 1) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (name_len < 1) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "name not valid")
 /*@SWIG@*/;
                 f = getPDFstr(filename, &file_len, "filename");
@@ -4692,12 +4968,12 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "name not valid")
             }
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;       // must be PDF
-                if (size == 0) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (size == 0) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "arg 1 not bytes or bytearray")
 /*@SWIG@*/;
                 
@@ -4708,7 +4984,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "arg 1 not bytes or bytearray")
                 for (i = 0; i < count; i++)      // check if name already exists
                 {
                     tname = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
-                    if (strcmp(tname, name)==0) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    if (strcmp(tname, name)==0) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "name already exists")
 /*@SWIG@*/;
                 }
@@ -4803,25 +5079,25 @@ SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename,int 
             pdf_document *pdf = pdf_specifics(gctx, self);
             fz_try(gctx)
                 {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 if ((incremental) && (garbage))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "incremental excludes garbage")
 /*@SWIG@*/;
                 if ((incremental) && (pdf->repair_attempted))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "repaired file - save to new")
 /*@SWIG@*/;
                 if ((incremental) && (fz_needs_password(gctx, self)))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "encrypted file - save to new")
 /*@SWIG@*/;
                 if ((incremental) && (linear))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "incremental excludes linear")
 /*@SWIG@*/;
                 pdf_save_document(gctx, pdf, filename, &opts);
@@ -4852,8 +5128,8 @@ SWIGINTERN PyObject *fz_document_s_write(struct fz_document_s *self,int garbage,
             pdf_document *pdf = pdf_specifics(gctx, self);
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
@@ -4890,10 +5166,10 @@ SWIGINTERN int fz_document_s_insertPDF(struct fz_document_s *self,struct fz_docu
             if (sa > outCount) sa = outCount;
             fz_try(gctx)
             {
-                if (!pdfout) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (!pdfout) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "target not a PDF")
 /*@SWIG@*/;
-                if (!pdfsrc) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (!pdfsrc) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "source not a PDF")
 /*@SWIG@*/;
                 merge_range(pdfout, pdfsrc, fp, tp, sa, rotate);
@@ -4905,14 +5181,14 @@ SWIGINTERN int fz_document_s_deletePage(struct fz_document_s *self,int pno){
             pdf_document *pdf = pdf_specifics(gctx, self);
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 int pageCount = fz_count_pages(gctx, self);
                 if ((pno < 0) | (pno >= pageCount))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range")
 /*@SWIG@*/;
                 pdf_delete_page(gctx, pdf, pno);
@@ -4924,8 +5200,8 @@ SWIGINTERN int fz_document_s_deletePageRange(struct fz_document_s *self,int from
             pdf_document *pdf = pdf_specifics(gctx, self);
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
@@ -4935,7 +5211,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
                 if (f < 0) f = pageCount - 1;
                 if (t < 0) t = pageCount - 1;
                 if ((t >= pageCount) | (f > t))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "invalid page range")
 /*@SWIG@*/;
                 int i = t + 1 - f;
@@ -4952,14 +5228,14 @@ SWIGINTERN int fz_document_s_copyPage(struct fz_document_s *self,int pno,int to)
             pdf_document *pdf = pdf_specifics(gctx, self);
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 int pageCount = fz_count_pages(gctx, self);
                 if ((pno < 0) | (pno >= pageCount))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "source page out of range")
 /*@SWIG@*/;
                 pdf_obj *page = pdf_lookup_page_obj(gctx, pdf, pno);
@@ -4968,57 +5244,137 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "source page out of range")
             fz_catch(gctx) return -1;
             return 0;
         }
-SWIGINTERN int fz_document_s_insertPage(struct fz_document_s *self,int to,int fontsize,int width,int height,PyObject *text){
+
+/* Getting isfinite working pre C99 across multiple platforms is non-trivial. Users can provide SWIG_isfinite on older platforms. */
+#ifndef SWIG_isfinite
+/* isfinite() is a macro for C99 */
+# if defined(isfinite)
+#  define SWIG_isfinite(X) (isfinite(X))
+# elif defined __cplusplus && __cplusplus >= 201103L
+/* Use a template so that this works whether isfinite() is std::isfinite() or
+ * in the global namespace.  The reality seems to vary between compiler
+ * versions.
+ *
+ * Make sure namespace std exists to avoid compiler warnings.
+ */
+namespace std { }
+template<typename T>
+inline int SWIG_isfinite_func(T x) {
+  using namespace std;
+  return isfinite(x);
+}
+#  define SWIG_isfinite(X) (SWIG_isfinite_func(X))
+# elif defined(_MSC_VER)
+#  define SWIG_isfinite(X) (_finite(X))
+# elif defined(__sun) && defined(__SVR4)
+#  include <ieeefp.h>
+#  define SWIG_isfinite(X) (finite(X))
+# endif
+#endif
+
+
+/* Accept infinite as a valid float value unless we are unable to check if a value is finite */
+#ifdef SWIG_isfinite
+# define SWIG_Float_Overflow_Check(X) ((X < -FLT_MAX || X > FLT_MAX) && SWIG_isfinite(X))
+#else
+# define SWIG_Float_Overflow_Check(X) ((X < -FLT_MAX || X > FLT_MAX))
+#endif
+
+
+SWIGINTERN int
+SWIG_AsVal_float (PyObject * obj, float *val)
+{
+  double v;
+  int res = SWIG_AsVal_double (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if (SWIG_Float_Overflow_Check(v)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = (float)(v);
+    }
+  }  
+  return res;
+}
+
+SWIGINTERN int fz_document_s_insertPage(struct fz_document_s *self,int to,float fontsize,float width,float height,char *fontname,PyObject *text){
             pdf_document *pdf = pdf_specifics(gctx, self);
-            const char *template = "BT /Tm %i Tf 50 %i TD %s Tj ET\n";
+            
+            const char *template = "BT 0 0 0 rg 1 0 0 1 50 %s Tm /Tm %s Tf %sTj 0 -%s TD\n";
+            fz_rect mediabox = { 0, 0, 595, 842 };    // DIN-A4 values
+            mediabox.x1 = width;
+            mediabox.y1 = height;
             char *itxt = NULL;
-            Py_ssize_t itxt_len;
+            Py_ssize_t itxt_len, len, i, c_len, ntxt_len = 0;
             PyObject *ntxt = PyUnicode_FromString("");
             PyObject *t = NULL;
-            fz_rect mediabox = { 0, 0, 595, 842 };
-            Py_ssize_t len, i, maxlen;
-            maxlen = (height - 72) / (fontsize + 2);
+            float lheight = fontsize * 1.2;
+            char *lheight_str = /*@SWIG:fitz\fitz.i,28,FLOAT_str@*/
+getPDFstr(PyObject_Str(PyFloat_FromDouble((double) lheight)), &c_len, "lheight")
+/*@SWIG@*/;
+            float top = height - 72 - lheight;
+            char *top_str = /*@SWIG:fitz\fitz.i,28,FLOAT_str@*/
+getPDFstr(PyObject_Str(PyFloat_FromDouble((double) top)), &c_len, "top")
+/*@SWIG@*/;
+            char *fontsize_str = /*@SWIG:fitz\fitz.i,28,FLOAT_str@*/
+getPDFstr(PyObject_Str(PyFloat_FromDouble((double) fontsize)), &c_len, "fontsize")
+/*@SWIG@*/;
+            char *font_str = "Helvetica";
             const char *data;
             int size;
             fz_font *font;
-            pdf_obj *font_obj, *page_obj;
-            pdf_obj *resources;
+            pdf_obj *font_obj, *page_obj, *resources;
             fz_buffer *contents;
-            mediabox.x1 = width;
-            mediabox.y1 = height;
-            Py_ssize_t ntxt_len = 0;
             len = PySequence_Size(text);
 
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
-                if (len == 0)
+                if (len > 0)
                 {
-                    ntxt = PyUnicode_FromFormat(template, fontsize, height-72, "()");
-                }
-                else
-                {
-                    if (len > maxlen) len = maxlen;
-                    for (i = 0; i < len; i++)
+                    itxt = getPDFstr(PySequence_GetItem(text, 0), &itxt_len, "itxt2");
+                    t = PyUnicode_FromFormat(template, top_str, fontsize_str,
+                                             itxt, lheight_str);
+                    ntxt = PyUnicode_Concat(ntxt, t);
+                    top -= lheight;
+                    if (len > 1)
                     {
-                        itxt = getPDFstr(PySequence_GetItem(text, i), &itxt_len, "itxt2");
-                        t = PyUnicode_FromFormat(template, fontsize,
-                                height-72-(fontsize+2)*i, itxt);
-                        ntxt = PyUnicode_Concat(ntxt, t);
+                        ntxt = PyUnicode_Concat(ntxt, PySequence_GetItem(text, 1));
+                        ntxt = PyUnicode_Concat(ntxt, PyUnicode_FromString("Tj\n"));
+                        top -= lheight;
                     }
+                    for (i = 2; i < len; i++)
+                    {
+                        top -= lheight;
+                        ntxt = PyUnicode_Concat(ntxt, PyUnicode_FromString("T* "));
+                        ntxt = PyUnicode_Concat(ntxt, PySequence_GetItem(text, i));
+                        ntxt = PyUnicode_Concat(ntxt, PyUnicode_FromString("Tj\n"));
+                        if (top < 36) break;
+                    }
+                    ntxt = PyUnicode_Concat(ntxt, PyUnicode_FromString("ET\n"));
                 }
                 char *templ_txt = getPDFstr(ntxt, &ntxt_len, "ntxt");
-                data = fz_lookup_base14_font(gctx, "Helvetica", &size);
-                font = fz_new_font_from_memory(gctx, "Helvetica", data, size, 0, 0);
+                contents = fz_new_buffer_from_shared_data(gctx, templ_txt, strlen(templ_txt));
+
+                // content stream done, now insert the font
+                if (fontname) font_str = fontname;
+                data = fz_lookup_base14_font(gctx, font_str, &size);
+                if (data)              // valid base 14 font found
+                    font = fz_new_font_from_memory(gctx, font_str, data, size, 0, 0);
+                else
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "unknown PDF base 14 font")
+/*@SWIG@*/;
                 font_obj = pdf_add_simple_font(gctx, pdf, font);
                 fz_drop_font(gctx, font);
+                // resources obj contains named reference "/Tm" to font
                 resources = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
                 pdf_dict_putp_drop(gctx, resources, "Font/Tm", font_obj);
-                contents = fz_new_buffer_from_shared_data(gctx, templ_txt, strlen(templ_txt));
+
+                // ready to create and insert page
                 page_obj = pdf_add_page(gctx, pdf, &mediabox, 0, resources, contents);
                 pdf_insert_page(gctx, pdf, to , page_obj);
                 pdf_drop_obj(gctx, page_obj);
@@ -5031,20 +5387,20 @@ SWIGINTERN int fz_document_s_movePage(struct fz_document_s *self,int pno,int to)
             pdf_document *pdf = pdf_specifics(gctx, self);
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 int pageCount = fz_count_pages(gctx, self);
                 if ((pno < 0) | (pno >= pageCount))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "source page out of range")
 /*@SWIG@*/;
                 int t = to;
                 if (t < 0) t = pageCount;
                 if ((t == pno) | (pno == t - 1))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "source and target too close")
 /*@SWIG@*/;
                 pdf_obj *page = pdf_lookup_page_obj(gctx, pdf, pno);
@@ -5066,18 +5422,18 @@ SWIGINTERN int fz_document_s_select(struct fz_document_s *self,PyObject *pyliste
             int argc;
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 if (!PySequence_Check(pyliste))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "expected a sequence")
 /*@SWIG@*/;
                 argc = (int) PySequence_Size(pyliste);
                 if (argc < 1)
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "sequence is empty")
 /*@SWIG@*/;
             }
@@ -5097,12 +5453,12 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "sequence is empty")
                     {
                         liste[i] = (int) PyInt_AsLong(o);
                         if ((liste[i] < 0) | (liste[i] >= pageCount))
-                            /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                            /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "some page numbers not in range")
 /*@SWIG@*/;
                     }
                     else
-                        /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                        /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "page numbers must be integers")
 /*@SWIG@*/;
                 }
@@ -5139,11 +5495,11 @@ SWIGINTERN PyObject *fz_document_s__getPageObjNumber(struct fz_document_s *self,
             fz_try(gctx)
             {
                 if ((pno < 0) | (pno >= pageCount))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range")
 /*@SWIG@*/;
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
@@ -5161,21 +5517,21 @@ SWIGINTERN PyObject *fz_document_s_getPageImageList(struct fz_document_s *self,i
             while (n < 0) n += pageCount;
             fz_try(gctx)
             {
-                if (n >= pageCount) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (n >= pageCount) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range")
 /*@SWIG@*/;
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
             }
             fz_catch(gctx) return NULL;
-            PyObject *imglist = PyList_New(0);        // resulting Python list
+            PyObject *imglist = PyList_New(0);   // we will return this
             pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, n);
             pdf_obj *pageobj = pdf_resolve_indirect(gctx, pageref);
             pdf_obj *rsrc = pdf_dict_get(gctx, pageobj, PDF_NAME_Resources);
-            // XObject dictionary of the page
+            // XObject dictionary of page
             pdf_obj *dict = pdf_dict_get(gctx, rsrc, PDF_NAME_XObject);
             n = pdf_dict_len(gctx, dict);        // number of entries
             int i;
@@ -5234,38 +5590,36 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 SWIGINTERN PyObject *fz_document_s_getPageFontList(struct fz_document_s *self,int pno){
             pdf_document *pdf = pdf_specifics(gctx, self);
             int pageCount = fz_count_pages(gctx, self);
-            int n = pno;
+            int n = pno;          // pno might be < 0
             while (n < 0) n += pageCount;
             fz_try(gctx)
             {
-                if (n >= pageCount)
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (n >= pageCount) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range")
 /*@SWIG@*/;
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
             }
             fz_catch(gctx) return NULL;
 
-            PyObject *fontlist = PyList_New(0);  // Python list to be returned
-            pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, n);
-            pdf_obj *pageobj = pdf_resolve_indirect(gctx, pageref);
-            pdf_obj *rsrc = pdf_dict_get(gctx, pageobj, PDF_NAME_Resources);
-            pdf_obj *dict = pdf_dict_get(gctx, rsrc, PDF_NAME_Font);
+            pdf_obj *fontdict, *subtype, *basefont, *name, *bname;
+            pdf_obj *pageref, *pageobj, *rsrc, *dict;
+            PyObject *fontlist = PyList_New(0);  // we will return this
+            pageref = pdf_lookup_page_obj(gctx, pdf, n);
+            pageobj = pdf_resolve_indirect(gctx, pageref);
+            rsrc = pdf_dict_get(gctx, pageobj, PDF_NAME_Resources);
+            dict = pdf_dict_get(gctx, rsrc, PDF_NAME_Font);
             n = pdf_dict_len(gctx, dict);
             int i;
             for (i = 0; i < n; i++)      /* do this for each font of the page */
             {
-                pdf_obj *fontdict = NULL;
-                pdf_obj *subtype = NULL;
-                pdf_obj *basefont = NULL;
-                pdf_obj *name = NULL;
-                pdf_obj *bname = NULL;
+                basefont = name = bname = NULL;
                 fontdict = pdf_dict_get_val(gctx, dict, i);
-                if (!pdf_is_dict(gctx, fontdict)) continue;  // no valid font on page
+                if (!pdf_is_dict(gctx, fontdict))
+                    continue;  // not a valid font
                 long xref = (long) pdf_to_num(gctx, fontdict);
                 long gen  = (long) pdf_to_gen(gctx, fontdict);
                 subtype = pdf_dict_get(gctx, fontdict, PDF_NAME_Subtype);
@@ -5274,7 +5628,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
                     bname = pdf_dict_get(gctx, fontdict, PDF_NAME_Name);
                 else
                     bname = basefont;
-                name = pdf_dict_get(gctx, fontdict, PDF_NAME_Name);
+                name = pdf_dict_get_key(gctx, dict, i);
                 PyObject *font = PyList_New(0);       // Python list per font
                 PyList_Append(font, PyInt_FromLong(xref));
                 PyList_Append(font, PyInt_FromLong(gen));
@@ -5319,8 +5673,8 @@ SWIGINTERN PyObject *fz_document_s__delToC(struct fz_document_s *self){
         }
 SWIGINTERN int fz_document_s__getOLRootNumber(struct fz_document_s *self){
             pdf_document *pdf = pdf_specifics(gctx, self);
-            fz_try(gctx) /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+            fz_try(gctx) /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
@@ -5344,8 +5698,8 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
         }
 SWIGINTERN int fz_document_s__getNewXref(struct fz_document_s *self){
             pdf_document *pdf = pdf_specifics(gctx, self); /* conv doc to pdf*/
-            fz_try(gctx) /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+            fz_try(gctx) /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
@@ -5373,7 +5727,7 @@ SWIGINTERN int fz_document_s__delXmlMetadata(struct fz_document_s *self){
             {
                 pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root);
                 if (root) pdf_dict_dels(gctx, root, "Metadata");
-                else /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                else /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "could not load root object")
 /*@SWIG@*/;
             }
@@ -5387,14 +5741,14 @@ SWIGINTERN char const *fz_document_s__getObjectString(struct fz_document_s *self
             fz_output *out;
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if ((xnum < 1) | (xnum >= xreflen))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "xnum out of range")
 /*@SWIG@*/;
                 res = fz_new_buffer(gctx, 1024);
@@ -5418,14 +5772,14 @@ SWIGINTERN PyObject *fz_document_s__getXrefStream(struct fz_document_s *self,int
             struct fz_buffer_s *res;
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if ((xnum < 1) | (xnum >= xreflen))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "xnum out of range")
 /*@SWIG@*/;
                 res = pdf_load_stream_number(gctx, pdf, xnum);
@@ -5441,14 +5795,14 @@ SWIGINTERN int fz_document_s__updateObject(struct fz_document_s *self,int xref,c
             pdf_document *pdf = pdf_specifics(gctx, self);     // get pdf doc
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if ((xref < 1) | (xref >= xreflen))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "xref out of range")
 /*@SWIG@*/;
                 // create new object based on passed-in string
@@ -5465,8 +5819,8 @@ SWIGINTERN int fz_document_s__setMetadata(struct fz_document_s *self,char *text)
             int info_num = 0;               // will contain xref no of info object
             pdf_document *pdf = pdf_specifics(gctx, self);     // get pdf doc
             fz_try(gctx) {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
@@ -5576,8 +5930,8 @@ SWIGINTERN int fz_page_s__addAnnot_FromString(struct fz_page_s *self,PyObject *l
             int lcount = (int) PySequence_Size(linklist); // new object count
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!page) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!page) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;                // make sure we have a PDF
@@ -5645,6 +5999,118 @@ SWIGINTERN PyObject *fz_page_s__getLinkXrefs(struct fz_page_s *self){
                 }
             return linkxrefs;
         }
+SWIGINTERN int fz_page_s_insertImage(struct fz_page_s *self,struct fz_rect_s *rect,char const *filename,struct fz_pixmap_s *pixmap){
+            pdf_page *page = pdf_page_from_fz_page(gctx, self);
+            pdf_document *pdf;
+            pdf_obj *resources, *subres, *contents, *ref;
+            fz_buffer *res = NULL;
+            fz_buffer *nres = NULL;
+            char *content_str;
+            const char *template = " q %s 0 0 %s %s %s cm /%s Do Q \n";
+            Py_ssize_t c_len = 0;
+            fz_rect *prect = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_bound_page(gctx, self, prect);
+            char *X, *Y, *W, *H;
+            char *cont = NULL;
+            const char *name_templ = "PyMuPDF%s-%s-%s-%s";
+            Py_ssize_t name_len = 0;
+            char *name = NULL;
+            fz_image *image = NULL;
+            fz_try(gctx)
+            {
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!page) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
+/*@SWIG@*/
+/*@SWIG@*/;
+                pdf = page->doc;
+                if ((pixmap) && (filename) || (!pixmap) && (!filename))
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "exactly one of filename, pixmap must be given")
+/*@SWIG@*/;
+                if (!fz_contains_rect(prect, rect))
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "rect must be contained in page rect")
+/*@SWIG@*/;
+                if (fz_is_empty_rect(rect) || fz_is_infinite_rect(rect))
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "rect must be finite and not empty")
+/*@SWIG@*/;
+
+                // create strings for image rectangle
+                X = /*@SWIG:fitz\fitz.i,28,FLOAT_str@*/
+getPDFstr(PyObject_Str(PyFloat_FromDouble((double) rect->x0)), &c_len, "rect->x0")
+/*@SWIG@*/;
+                Y = /*@SWIG:fitz\fitz.i,28,FLOAT_str@*/
+getPDFstr(PyObject_Str(PyFloat_FromDouble((double) prect->y1 - rect->y1)), &c_len, "prect->y1 - rect->y1")
+/*@SWIG@*/;
+                W = /*@SWIG:fitz\fitz.i,28,FLOAT_str@*/
+getPDFstr(PyObject_Str(PyFloat_FromDouble((double) rect->x1 - rect->x0)), &c_len, "rect->x1 - rect->x0")
+/*@SWIG@*/;
+                H = /*@SWIG:fitz\fitz.i,28,FLOAT_str@*/
+getPDFstr(PyObject_Str(PyFloat_FromDouble((double) rect->y1 - rect->y0)), &c_len, "rect->y1 - rect->y0")
+/*@SWIG@*/;
+
+                // get objects "Resources", "XObject"
+                contents = pdf_dict_get(gctx, page->obj, PDF_NAME_Contents);
+                resources = pdf_dict_get(gctx, page->obj, PDF_NAME_Resources);
+                subres = pdf_dict_get(gctx, resources, PDF_NAME_XObject);
+                if (!subres)           // has no XObject yet
+                {
+                    subres = pdf_new_dict(gctx, pdf, 10);
+                    pdf_dict_put_drop(gctx, resources, PDF_NAME_XObject, subres);
+                }
+
+                // create the image
+                if (filename)
+                    image = fz_new_image_from_file(gctx, filename);
+                else
+                    image = fz_new_image_from_pixmap(gctx, pixmap, NULL);
+
+                // put image info in PDF objects
+                ref = JM_pdf_add_image(gctx, pdf, image, 0);
+
+                // generate XObject name: "PyMuPDFimgsize-xref-X-Y"
+                char *size_str = /*@SWIG:fitz\fitz.i,20,INT_str@*/
+getPDFstr(PyObject_Str(PyLong_FromSize_t((size_t) fz_image_size(gctx, image))), &name_len, "fz_image_size(gctx, image)")
+/*@SWIG@*/;
+                char *xref_str = /*@SWIG:fitz\fitz.i,20,INT_str@*/
+getPDFstr(PyObject_Str(PyLong_FromSize_t((size_t) pdf_to_num(gctx, page->obj))), &name_len, "pdf_to_num(gctx, page->obj)")
+/*@SWIG@*/;
+                name = getPDFstr(PyUnicode_FromFormat(name_templ, size_str, xref_str, X, Y),
+                                 &name_len, "name");
+                pdf_dict_puts(gctx, subres, name, ref);
+
+                // retrieve and update content stream
+                if (pdf_is_array(gctx, contents))
+                {            // take last if more than one contents object
+                    int i = pdf_array_len(gctx, contents) - 1;
+                    contents = pdf_array_get(gctx, contents, i);
+                }
+                res = pdf_load_stream(gctx, contents);
+                if (!res) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: Contents is no stream object")
+/*@SWIG@*/;
+
+                // append our string to contents
+                fz_append_printf(gctx, res, template, W, H, X, Y, name);
+                fz_terminate_buffer(gctx, res);
+                pdf_dict_put(gctx, contents, PDF_NAME_Filter,
+                             PDF_NAME_FlateDecode);
+                c_len = (Py_ssize_t) fz_buffer_storage(gctx, res, &content_str);
+                nres = deflatebuf(gctx, content_str, (size_t) c_len);
+                pdf_update_stream(gctx, pdf, contents, nres, 1);
+            }
+            fz_always(gctx)
+            {
+                if (image) fz_drop_image(gctx, image);
+                if (res) fz_drop_buffer(gctx, res);
+                if (nres) fz_drop_buffer(gctx, nres);
+                free(prect);
+            }
+            fz_catch(gctx) return -1;
+            return 0;
+        }
 SWIGINTERN char const *fz_page_s__getRectText(struct fz_page_s *self,struct fz_rect_s *rect){
             fz_buffer *res;
             fz_try(gctx)
@@ -5660,58 +6126,6 @@ SWIGINTERN char const *fz_page_s__readPageText(struct fz_page_s *self,int output
             fz_catch(gctx) return NULL;
             return res;
         }
-
-/* Getting isfinite working pre C99 across multiple platforms is non-trivial. Users can provide SWIG_isfinite on older platforms. */
-#ifndef SWIG_isfinite
-/* isfinite() is a macro for C99 */
-# if defined(isfinite)
-#  define SWIG_isfinite(X) (isfinite(X))
-# elif defined __cplusplus && __cplusplus >= 201103L
-/* Use a template so that this works whether isfinite() is std::isfinite() or
- * in the global namespace.  The reality seems to vary between compiler
- * versions.
- *
- * Make sure namespace std exists to avoid compiler warnings.
- */
-namespace std { }
-template<typename T>
-inline int SWIG_isfinite_func(T x) {
-  using namespace std;
-  return isfinite(x);
-}
-#  define SWIG_isfinite(X) (SWIG_isfinite_func(X))
-# elif defined(_MSC_VER)
-#  define SWIG_isfinite(X) (_finite(X))
-# elif defined(__sun) && defined(__SVR4)
-#  include <ieeefp.h>
-#  define SWIG_isfinite(X) (finite(X))
-# endif
-#endif
-
-
-/* Accept infinite as a valid float value unless we are unable to check if a value is finite */
-#ifdef SWIG_isfinite
-# define SWIG_Float_Overflow_Check(X) ((X < -FLT_MAX || X > FLT_MAX) && SWIG_isfinite(X))
-#else
-# define SWIG_Float_Overflow_Check(X) ((X < -FLT_MAX || X > FLT_MAX))
-#endif
-
-
-SWIGINTERN int
-SWIG_AsVal_float (PyObject * obj, float *val)
-{
-  double v;
-  int res = SWIG_AsVal_double (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if (SWIG_Float_Overflow_Check(v)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = (float)(v);
-    }
-  }  
-  return res;
-}
-
 
   #define SWIG_From_double   PyFloat_FromDouble 
 
@@ -5763,11 +6177,11 @@ SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_6(PyObject *list){
             fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
             fz_try(gctx)
             {
-                if (!PySequence_Check(list)) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (!PySequence_Check(list)) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "expected a sequence")
 /*@SWIG@*/;
-                if (PySequence_Size(list) != 4) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "sequence length must be 4")
+                if (PySequence_Size(list) != 4) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "len(sequence) must be 4")
 /*@SWIG@*/;
                 r->x0 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
                 r->y0 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 1));
@@ -5904,10 +6318,10 @@ SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_3(PyObject *list){
             fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
             fz_try(gctx)
             {
-                if (!PySequence_Check(list)) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (!PySequence_Check(list)) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "expected a sequence")
 /*@SWIG@*/;
-                if (PySequence_Size(list) != 4) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (PySequence_Size(list) != 4) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "sequence length must be 4")
 /*@SWIG@*/;
                 r->x0 = (int) PyInt_AsLong(PySequence_GetItem(list, 0));
@@ -6005,11 +6419,11 @@ SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_0(struct fz_colorspace_s *c
             fz_catch(gctx) return NULL;
             return pm;
         }
-SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_1(struct fz_colorspace_s *cs,struct fz_pixmap_s *spix){
+SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_1(struct fz_colorspace_s *cs,struct fz_pixmap_s *spix,int alpha){
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
             {
-                pm = fz_convert_pixmap(gctx, spix, cs, 1);
+                pm = fz_convert_pixmap(gctx, spix, cs, alpha);
             }
             fz_catch(gctx) return NULL;
             return pm;
@@ -6029,10 +6443,10 @@ SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_2(struct fz_colorspace_s *c
             }
             fz_try(gctx)
             {
-                if (size == 0) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (size == 0) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "type(samples) invalid")
 /*@SWIG@*/;
-                if (stride * h != size) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (stride * h != size) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "len(samples) invalid")
 /*@SWIG@*/;
             }
@@ -6078,7 +6492,7 @@ SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_4(PyObject *imagedata){
             fz_try(gctx)
             {
                 if (size == 0)
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "type(imagedata) invalid")
 /*@SWIG@*/;
                 img = fz_new_image_from_buffer(gctx, data);
@@ -6092,20 +6506,26 @@ SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_5(struct fz_document_s *doc
             struct fz_image_s *img = NULL;
             struct fz_pixmap_s *pix = NULL;
             pdf_obj *ref = NULL;
+            pdf_obj *type;
             pdf_document *pdf = pdf_specifics(gctx, doc);
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!pdf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!pdf) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if ((xref < 1) | (xref >= xreflen))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "xref out of range")
 /*@SWIG@*/;
                 ref = pdf_new_indirect(gctx, pdf, xref, 0);
+                type = pdf_dict_get(gctx, ref, PDF_NAME_Subtype);
+                if (!pdf_name_eq(gctx, type, PDF_NAME_Image))
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "xref entry is not an image")
+/*@SWIG@*/;
                 img = pdf_load_image(gctx, pdf, ref);
                 pdf_drop_obj(gctx, ref);
                 pix = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
@@ -6343,10 +6763,10 @@ SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_5(PyObject *list){
             fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
             fz_try(gctx)
             {
-                if (!PySequence_Check(list)) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (!PySequence_Check(list)) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "expected a sequence")
 /*@SWIG@*/;
-                if (PySequence_Size(list) != 6) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (PySequence_Size(list) != 6) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "sequence length must be 6")
 /*@SWIG@*/;
                 m->a = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
@@ -6428,10 +6848,10 @@ SWIGINTERN struct fz_point_s *new_fz_point_s__SWIG_3(PyObject *list){
             fz_point *p = (fz_point *)malloc(sizeof(fz_point));
             fz_try(gctx)
             {
-                if (!PySequence_Check(list)) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (!PySequence_Check(list)) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "expected a sequence")
 /*@SWIG@*/;
-                if (PySequence_Size(list) != 2) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (PySequence_Size(list) != 2) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "sequence length must be 2")
 /*@SWIG@*/;
                 p->x = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
@@ -6470,12 +6890,12 @@ SWIGINTERN PyObject *fz_annot_s__getAP(struct fz_annot_s *self){
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!annot) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!annot) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
-                if (!annot->ap) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (!annot->ap) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "annot has no /AP")
 /*@SWIG@*/;
                 res = pdf_load_stream(gctx, annot->ap->obj);
@@ -6502,15 +6922,15 @@ SWIGINTERN int fz_annot_s__setAP(struct fz_annot_s *self,PyObject *ap){
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!annot) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!annot) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
-                if (!annot->ap) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (!annot->ap) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "annot has no /AP")
 /*@SWIG@*/;
-                if (!c) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (!c) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "type(ap) invalid")
 /*@SWIG@*/;
                 pdf_dict_put(gctx, annot->ap->obj, PDF_NAME_Filter,
@@ -6726,19 +7146,19 @@ SWIGINTERN PyObject *fz_annot_s_fileInfo(struct fz_annot_s *self){
 
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!annot) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!annot) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 int type = (int) pdf_annot_type(gctx, annot);
                 if (type != 16)
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a file attachment annot")
 /*@SWIG@*/;
                 stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
                                    PDF_NAME_EF, PDF_NAME_F, NULL);
-                if (!stream) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (!stream) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: file has no stream")
 /*@SWIG@*/;
             }
@@ -6773,19 +7193,19 @@ SWIGINTERN PyObject *fz_annot_s_fileGet(struct fz_annot_s *self){
             Py_ssize_t len;
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!annot) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!annot) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 int type = (int) pdf_annot_type(gctx, annot);
                 if (type != 16)
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a file attachment annot")
 /*@SWIG@*/;
                 stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
                                    PDF_NAME_EF, PDF_NAME_F, NULL);
-                if (!stream) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (!stream) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: file has no stream")
 /*@SWIG@*/;
                 buf = pdf_load_stream(gctx, stream);
@@ -6807,21 +7227,21 @@ SWIGINTERN int fz_annot_s_fileUpd(struct fz_annot_s *self,PyObject *buffer,PyObj
             char *f;                        // filename
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!annot) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!annot) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;          // must be a PDF
                 pdf = annot->page->doc;     // this is the PDF
                 int type = (int) pdf_annot_type(gctx, annot);
                 if (type != 16)
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a file attachment annot")
 /*@SWIG@*/;
                 stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
                                    PDF_NAME_EF, PDF_NAME_F, NULL);
                 // the object for file content
-                if (!stream) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (!stream) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: attached file has no stream")
 /*@SWIG@*/;
                 f = getPDFstr(filename, &file_len, "filename");
@@ -6836,7 +7256,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: attached file has no stream")
                     size = (size_t) PyBytes_Size(buffer);
                     data = PyBytes_AsString(buffer);
                 }
-                if (size == 0) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                if (size == 0) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "arg 1 not bytes or bytearray")
 /*@SWIG@*/;
                 if (f != NULL)              // new filename given
@@ -6915,17 +7335,17 @@ SWIGINTERN int fz_annot_s_setInfo(struct fz_annot_s *self,PyObject *info){
             int dictvalid = checkDictKeys(info, "content", "title", "modDate", "creationDate", "subject", "name", 0);
             fz_try(gctx)
             {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!annot) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                /*@SWIG:fitz\fitz.i,63,assert_PDF@*/
+if (!annot) /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 if (!PyDict_Check(info))
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "info not a Python dict")
 /*@SWIG@*/;
                 if (!dictvalid)
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    /*@SWIG:fitz\fitz.i,57,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "invalid key in info dict")
 /*@SWIG@*/;
 
@@ -8291,29 +8711,34 @@ SWIGINTERN PyObject *_wrap_Document_insertPage(PyObject *SWIGUNUSEDPARM(self), P
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
   int arg2 = (int) -1 ;
-  int arg3 = (int) 11 ;
-  int arg4 = (int) 595 ;
-  int arg5 = (int) 842 ;
-  PyObject *arg6 = (PyObject *) NULL ;
+  float arg3 = (float) 11 ;
+  float arg4 = (float) 595 ;
+  float arg5 = (float) 842 ;
+  char *arg6 = (char *) NULL ;
+  PyObject *arg7 = (PyObject *) NULL ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
-  int val3 ;
+  float val3 ;
   int ecode3 = 0 ;
-  int val4 ;
+  float val4 ;
   int ecode4 = 0 ;
-  int val5 ;
+  float val5 ;
   int ecode5 = 0 ;
+  int res6 ;
+  char *buf6 = 0 ;
+  int alloc6 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
   PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O|OOOOO:Document_insertPage",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O|OOOOOO:Document_insertPage",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_insertPage" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
@@ -8327,39 +8752,48 @@ SWIGINTERN PyObject *_wrap_Document_insertPage(PyObject *SWIGUNUSEDPARM(self), P
     arg2 = (int)(val2);
   }
   if (obj2) {
-    ecode3 = SWIG_AsVal_int(obj2, &val3);
+    ecode3 = SWIG_AsVal_float(obj2, &val3);
     if (!SWIG_IsOK(ecode3)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Document_insertPage" "', argument " "3"" of type '" "int""'");
+      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Document_insertPage" "', argument " "3"" of type '" "float""'");
     } 
-    arg3 = (int)(val3);
+    arg3 = (float)(val3);
   }
   if (obj3) {
-    ecode4 = SWIG_AsVal_int(obj3, &val4);
+    ecode4 = SWIG_AsVal_float(obj3, &val4);
     if (!SWIG_IsOK(ecode4)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "Document_insertPage" "', argument " "4"" of type '" "int""'");
+      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "Document_insertPage" "', argument " "4"" of type '" "float""'");
     } 
-    arg4 = (int)(val4);
+    arg4 = (float)(val4);
   }
   if (obj4) {
-    ecode5 = SWIG_AsVal_int(obj4, &val5);
+    ecode5 = SWIG_AsVal_float(obj4, &val5);
     if (!SWIG_IsOK(ecode5)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "Document_insertPage" "', argument " "5"" of type '" "int""'");
+      SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "Document_insertPage" "', argument " "5"" of type '" "float""'");
     } 
-    arg5 = (int)(val5);
+    arg5 = (float)(val5);
   }
   if (obj5) {
-    arg6 = obj5;
+    res6 = SWIG_AsCharPtrAndSize(obj5, &buf6, NULL, &alloc6);
+    if (!SWIG_IsOK(res6)) {
+      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "Document_insertPage" "', argument " "6"" of type '" "char *""'");
+    }
+    arg6 = (char *)(buf6);
+  }
+  if (obj6) {
+    arg7 = obj6;
   }
   {
-    result = (int)fz_document_s_insertPage(arg1,arg2,arg3,arg4,arg5,arg6);
+    result = (int)fz_document_s_insertPage(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
     if(result<0) {
       PyErr_SetString(PyExc_Exception, gctx->error->message);
       return NULL;
     }
   }
   resultobj = SWIG_From_int((int)(result));
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
   return resultobj;
 fail:
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
   return NULL;
 }
 
@@ -9221,6 +9655,68 @@ SWIGINTERN PyObject *_wrap_Page__getLinkXrefs(PyObject *SWIGUNUSEDPARM(self), Py
   resultobj = result;
   return resultobj;
 fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Page_insertImage(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
+  struct fz_rect_s *arg2 = (struct fz_rect_s *) 0 ;
+  char *arg3 = (char *) NULL ;
+  struct fz_pixmap_s *arg4 = (struct fz_pixmap_s *) NULL ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  void *argp4 = 0 ;
+  int res4 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO|OO:Page_insertImage",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_insertImage" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
+  }
+  arg1 = (struct fz_page_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Page_insertImage" "', argument " "2"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg2 = (struct fz_rect_s *)(argp2);
+  if (obj2) {
+    res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Page_insertImage" "', argument " "3"" of type '" "char const *""'");
+    }
+    arg3 = (char *)(buf3);
+  }
+  if (obj3) {
+    res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "Page_insertImage" "', argument " "4"" of type '" "struct fz_pixmap_s *""'"); 
+    }
+    arg4 = (struct fz_pixmap_s *)(argp4);
+  }
+  {
+    result = (int)fz_page_s_insertImage(arg1,arg2,(char const *)arg3,arg4);
+    if(result<0) {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_From_int((int)(result));
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return resultobj;
+fail:
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return NULL;
 }
 
@@ -11480,15 +11976,19 @@ SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_1(PyObject *SWIGUNUSEDPARM(self), Py
   PyObject *resultobj = 0;
   struct fz_colorspace_s *arg1 = (struct fz_colorspace_s *) 0 ;
   struct fz_pixmap_s *arg2 = (struct fz_pixmap_s *) 0 ;
+  int arg3 = (int) 1 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
   struct fz_pixmap_s *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:new_Pixmap",&obj0,&obj1)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO|O:new_Pixmap",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_colorspace_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Pixmap" "', argument " "1"" of type '" "struct fz_colorspace_s *""'"); 
@@ -11499,8 +11999,15 @@ SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_1(PyObject *SWIGUNUSEDPARM(self), Py
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_Pixmap" "', argument " "2"" of type '" "struct fz_pixmap_s *""'"); 
   }
   arg2 = (struct fz_pixmap_s *)(argp2);
+  if (obj2) {
+    ecode3 = SWIG_AsVal_int(obj2, &val3);
+    if (!SWIG_IsOK(ecode3)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "new_Pixmap" "', argument " "3"" of type '" "int""'");
+    } 
+    arg3 = (int)(val3);
+  }
   {
-    result = (struct fz_pixmap_s *)new_fz_pixmap_s__SWIG_1(arg1,arg2);
+    result = (struct fz_pixmap_s *)new_fz_pixmap_s__SWIG_1(arg1,arg2,arg3);
     if(!result) {
       PyErr_SetString(PyExc_Exception, gctx->error->message);
       return NULL;
@@ -11713,7 +12220,7 @@ SWIGINTERN PyObject *_wrap_new_Pixmap(PyObject *self, PyObject *args) {
       }
     }
   }
-  if (argc == 2) {
+  if ((argc >= 2) && (argc <= 3)) {
     int _v;
     void *vptr = 0;
     int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_fz_colorspace_s, 0);
@@ -11723,7 +12230,16 @@ SWIGINTERN PyObject *_wrap_new_Pixmap(PyObject *self, PyObject *args) {
       int res = SWIG_ConvertPtr(argv[1], &vptr, SWIGTYPE_p_fz_pixmap_s, 0);
       _v = SWIG_CheckState(res);
       if (_v) {
-        return _wrap_new_Pixmap__SWIG_1(self, args);
+        if (argc <= 2) {
+          return _wrap_new_Pixmap__SWIG_1(self, args);
+        }
+        {
+          int res = SWIG_AsVal_int(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          return _wrap_new_Pixmap__SWIG_1(self, args);
+        }
       }
     }
   }
@@ -11780,7 +12296,7 @@ fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_Pixmap'.\n"
     "  Possible C/C++ prototypes are:\n"
     "    fz_pixmap_s::fz_pixmap_s(struct fz_colorspace_s *,struct fz_irect_s const *,int)\n"
-    "    fz_pixmap_s::fz_pixmap_s(struct fz_colorspace_s *,struct fz_pixmap_s *)\n"
+    "    fz_pixmap_s::fz_pixmap_s(struct fz_colorspace_s *,struct fz_pixmap_s *,int)\n"
     "    fz_pixmap_s::fz_pixmap_s(struct fz_colorspace_s *,int,int,PyObject *,int)\n"
     "    fz_pixmap_s::fz_pixmap_s(char *)\n"
     "    fz_pixmap_s::fz_pixmap_s(PyObject *)\n"
@@ -15426,7 +15942,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document_permissions", _wrap_Document_permissions, METH_VARARGS, (char *)"Get permissions dictionary."},
 	 { (char *)"Document__getPageObjNumber", _wrap_Document__getPageObjNumber, METH_VARARGS, (char *)"Document__getPageObjNumber(self, pno) -> PyObject *"},
 	 { (char *)"Document_getPageImageList", _wrap_Document_getPageImageList, METH_VARARGS, (char *)"List images used on a page."},
-	 { (char *)"Document_getPageFontList", _wrap_Document_getPageFontList, METH_VARARGS, (char *)"list fonts used on a page"},
+	 { (char *)"Document_getPageFontList", _wrap_Document_getPageFontList, METH_VARARGS, (char *)"List fonts used on a page."},
 	 { (char *)"Document__delToC", _wrap_Document__delToC, METH_VARARGS, (char *)"Document__delToC(self) -> PyObject *"},
 	 { (char *)"Document__getOLRootNumber", _wrap_Document__getOLRootNumber, METH_VARARGS, (char *)"Document__getOLRootNumber(self) -> int"},
 	 { (char *)"Document__getNewXref", _wrap_Document__getNewXref, METH_VARARGS, (char *)"Document__getNewXref(self) -> int"},
@@ -15445,13 +15961,11 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Page_firstAnnot", _wrap_Page_firstAnnot, METH_VARARGS, (char *)"firstAnnot points to first annot on page"},
 	 { (char *)"Page_deleteLink", _wrap_Page_deleteLink, METH_VARARGS, (char *)"Delete link if PDF"},
 	 { (char *)"Page_deleteAnnot", _wrap_Page_deleteAnnot, METH_VARARGS, (char *)"Delete annot if PDF and return next one"},
-	 { (char *)"Page_rotation", _wrap_Page_rotation, METH_VARARGS, (char *)"\n"
-		"rotation -> int\n"
-		"Return rotation in degrees\n"
-		""},
-	 { (char *)"Page_setRotation", _wrap_Page_setRotation, METH_VARARGS, (char *)"setRotation sets page rotation to 'rot' degrees"},
+	 { (char *)"Page_rotation", _wrap_Page_rotation, METH_VARARGS, (char *)"Retrieve page rotation."},
+	 { (char *)"Page_setRotation", _wrap_Page_setRotation, METH_VARARGS, (char *)"Set page rotation to 'rot' degrees."},
 	 { (char *)"Page__addAnnot_FromString", _wrap_Page__addAnnot_FromString, METH_VARARGS, (char *)"Page__addAnnot_FromString(self, linklist) -> int"},
 	 { (char *)"Page__getLinkXrefs", _wrap_Page__getLinkXrefs, METH_VARARGS, (char *)"Page__getLinkXrefs(self) -> PyObject *"},
+	 { (char *)"Page_insertImage", _wrap_Page_insertImage, METH_VARARGS, (char *)"Insert a new image in a rectangle."},
 	 { (char *)"Page__getRectText", _wrap_Page__getRectText, METH_VARARGS, (char *)"Page__getRectText(self, rect) -> char const *"},
 	 { (char *)"Page__readPageText", _wrap_Page__readPageText, METH_VARARGS, (char *)"Page__readPageText(self, output=0) -> char const *"},
 	 { (char *)"Page_swigregister", Page_swigregister, METH_VARARGS, NULL},
@@ -15531,7 +16045,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Pixmap_yres_get", _wrap_Pixmap_yres_get, METH_VARARGS, (char *)"Pixmap_yres_get(self) -> int"},
 	 { (char *)"new_Pixmap", _wrap_new_Pixmap, METH_VARARGS, (char *)"\n"
 		"Pixmap(cs, bbox, alpha=0)\n"
-		"Pixmap(cs, spix)\n"
+		"Pixmap(cs, spix, alpha=1)\n"
 		"Pixmap(cs, w, h, samples, alpha=0)\n"
 		"Pixmap(filename)\n"
 		"Pixmap(imagedata)\n"

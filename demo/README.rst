@@ -16,4 +16,5 @@ PIL2fitz.py           create a pixmap from any PIL / Pillow supported file
 fitz2PIL.py           save a pixmap as a PIL / Pillow supported file
 extract_img1.py       PDF only: extracts all **page-referenced** images as PNG files
 extract_img2.py       PDF only: extracts **all** images as PNG files
+text2pdf.py           convert a text file to PDF
 ===================== ===============================================================
