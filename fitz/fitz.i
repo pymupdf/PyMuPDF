@@ -842,74 +842,81 @@ if sa < 0:
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
             
-            const char *template = "BT 0 0 0 rg 1 0 0 1 50 %s Tm /Tm %s Tf %sTj 0 -%s TD\n";
-            fz_rect mediabox = { 0, 0, 595, 842 };    // DIN-A4 values
+            const char *template = "BT 0 0 0 rg 1 0 0 1 50 %g Tm /%s %g Tf %sTj 0 -%g TD\n";
+            fz_rect mediabox = { 0, 0, 595, 842 };    // DIN-A4 portrait values
             mediabox.x1 = width;
             mediabox.y1 = height;
             char *itxt = NULL;
-            Py_ssize_t itxt_len, len, i, c_len, ntxt_len = 0;
-            PyObject *ntxt = PyUnicode_FromString("");
+            size_t len, i, c_len, maxlen = 0;
             PyObject *t = NULL;
             float lheight = fontsize * 1.2;
-            char *lheight_str = FLOAT_str(lheight, &c_len);
-            float top = height - 72 - lheight;
-            char *top_str = FLOAT_str(top, &c_len);
-            char *fontsize_str = FLOAT_str(fontsize, &c_len);
-            char *font_str = "Helvetica";
+            float top = height - 72 - fontsize;
+            char *font_str;
             const char *data;
             int size;
             fz_font *font;
-            pdf_obj *font_obj, *page_obj, *resources;
-            fz_buffer *contents;
-            len = PySequence_Size(text);
+            pdf_obj *font_obj, *resources;
+            pdf_obj *page_obj = NULL;
+            fz_buffer *contents = fz_new_buffer(gctx, 1024);
+            fz_append_string(gctx, contents, "");
+            maxlen = (height - 108)/lheight;     // max lines per page
+            len = (size_t) PySequence_Size(text);
+            if (len > maxlen) len = maxlen;
+            if (fontname)
+                font_str = fontname;
+            else
+                font_str = "Helvetica";
 
             fz_try(gctx)
             {
                 assert_PDF(pdf);
                 if (len > 0)
                 {
-                    itxt = getPDFstr(PySequence_GetItem(text, 0), &itxt_len, "itxt2");
-                    t = PyUnicode_FromFormat(template, top_str, fontsize_str,
-                                             itxt, lheight_str);
-                    ntxt = PyUnicode_Concat(ntxt, t);
-                    top -= lheight;
+                    itxt = getPDFstr(PySequence_GetItem(text, 0), &c_len, "text0");
+                    fz_append_printf(gctx, contents, template,
+                                     top, font_str, fontsize, itxt, lheight);
                     if (len > 1)
                     {
-                        ntxt = PyUnicode_Concat(ntxt, PySequence_GetItem(text, 1));
-                        ntxt = PyUnicode_Concat(ntxt, PyUnicode_FromString("Tj\n"));
-                        top -= lheight;
+                        itxt = getPDFstr(PySequence_GetItem(text, 1), &c_len, "text1");
+                        fz_append_string(gctx, contents, itxt);
+                        fz_append_string(gctx, contents, "Tj\n");
                     }
                     for (i = 2; i < len; i++)
                     {
-                        top -= lheight;
-                        ntxt = PyUnicode_Concat(ntxt, PyUnicode_FromString("T* "));
-                        ntxt = PyUnicode_Concat(ntxt, PySequence_GetItem(text, i));
-                        ntxt = PyUnicode_Concat(ntxt, PyUnicode_FromString("Tj\n"));
-                        if (top < 36) break;
+                        fz_append_string(gctx, contents, "T* ");
+                        itxt = getPDFstr(PySequence_GetItem(text, i), &c_len, "texti");
+                        fz_append_string(gctx, contents, itxt);
+                        fz_append_string(gctx, contents, "Tj\n");
                     }
-                    ntxt = PyUnicode_Concat(ntxt, PyUnicode_FromString("ET\n"));
+                    fz_append_string(gctx, contents, "ET\n");
                 }
-                char *templ_txt = getPDFstr(ntxt, &ntxt_len, "ntxt");
-                contents = fz_new_buffer_from_shared_data(gctx, templ_txt, strlen(templ_txt));
-
-                // content stream done, now insert the font
-                if (fontname) font_str = fontname;
-                data = fz_lookup_base14_font(gctx, font_str, &size);
-                if (data)              // valid base 14 font found
-                    font = fz_new_font_from_memory(gctx, font_str, data, size, 0, 0);
-                else
-                    THROWMSG("unknown PDF base 14 font");
-                font_obj = pdf_add_simple_font(gctx, pdf, font);
-                fz_drop_font(gctx, font);
-                // resources obj contains named reference "/Tm" to font
                 resources = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
-                pdf_dict_putp_drop(gctx, resources, "Font/Tm", font_obj);
 
+                if (len > 0)           // only if there was some text:
+                {
+                    // content stream done, now insert the font
+                    data = fz_lookup_base14_font(gctx, font_str, &size);
+                    if (data)              // base 14 font found
+                        font = fz_new_font_from_memory(gctx, font_str, data, size, 0, 0);
+                    else
+                        THROWMSG("unknown PDF Base 14 font");
+                    font_obj = pdf_add_simple_font(gctx, pdf, font);
+                    fz_drop_font(gctx, font);
+                    // resources obj will contain named reference to font
+                    itxt = getPDFstr(PyUnicode_Concat(PyUnicode_FromString("Font/"), 
+                                    PyUnicode_FromString(font_str)), &c_len, "font");
+                    // itxt = "Font/fontname"
+                    pdf_dict_putp_drop(gctx, resources, itxt, font_obj);
+                }
                 // ready to create and insert page
+                fz_terminate_buffer(gctx, contents);
                 page_obj = pdf_add_page(gctx, pdf, &mediabox, 0, resources, contents);
                 pdf_insert_page(gctx, pdf, to , page_obj);
-                pdf_drop_obj(gctx, page_obj);
+            }
+            fz_always(gctx)
+            {
                 fz_drop_buffer(gctx, contents);
+                if (page_obj) pdf_drop_obj(gctx, page_obj);
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -1758,8 +1765,8 @@ fannot._erase()
             char *content_str;
             const char *template = " q %s 0 0 %s %s %s cm /%s Do Q \n";
             Py_ssize_t c_len = 0;
-            fz_rect *prect = (fz_rect *)malloc(sizeof(fz_rect));
-            fz_bound_page(gctx, $self, prect);
+            fz_rect prect = { 0, 0, 0, 0};
+            fz_bound_page(gctx, $self, &prect);
             char *X, *Y, *W, *H;
             char *cont = NULL;
             const char *name_templ = "PyMuPDF%s-%s-%s-%s";
@@ -1772,14 +1779,14 @@ fannot._erase()
                 pdf = page->doc;
                 if ((pixmap) && (filename) || (!pixmap) && (!filename))
                     THROWMSG("exactly one of filename, pixmap must be given");
-                if (!fz_contains_rect(prect, rect))
+                if (!fz_contains_rect(&prect, rect))
                     THROWMSG("rect must be contained in page rect");
                 if (fz_is_empty_rect(rect) || fz_is_infinite_rect(rect))
                     THROWMSG("rect must be finite and not empty");
 
                 // create strings for image rectangle
                 X = FLOAT_str(rect->x0, &c_len);
-                Y = FLOAT_str(prect->y1 - rect->y1, &c_len);
+                Y = FLOAT_str(prect.y1 - rect->y1, &c_len);
                 W = FLOAT_str(rect->x1 - rect->x0, &c_len);
                 H = FLOAT_str(rect->y1 - rect->y0, &c_len);
 
@@ -1802,7 +1809,7 @@ fannot._erase()
                 // put image info in PDF objects
                 ref = JM_pdf_add_image(gctx, pdf, image, 0);
 
-                // generate XObject name: "PyMuPDFimgsize-xref-X-Y"
+                // generate XObject name: "PyMuPDF<imgsize>-xref-X-Y"
                 char *size_str = INT_str(fz_image_size(gctx, image), &name_len);
                 char *xref_str = INT_str(pdf_to_num(gctx, page->obj), &name_len);
                 name = getPDFstr(PyUnicode_FromFormat(name_templ, size_str, xref_str, X, Y),
@@ -1832,14 +1839,14 @@ fannot._erase()
                 if (image) fz_drop_image(gctx, image);
                 if (res) fz_drop_buffer(gctx, res);
                 if (nres) fz_drop_buffer(gctx, nres);
-                free(prect);
+                // free(prect);
             }
             fz_catch(gctx) return -1;
             return 0;
         }
 
         //---------------------------------------------------------------------
-        // Get bare text inside a rectangle of a page
+        // Get raw text contained in a rectangle
         //---------------------------------------------------------------------
         FITZEXCEPTION(_getRectText, !result)
         PARENTCHECK(_getRectText)
@@ -1872,7 +1879,7 @@ fannot._erase()
                 return "page %s of %s" % (self.number, repr(self.parent))
             else:
                 return "orphaned page"
-                
+
         def __repr__(self):
             if self.parent:
                 return repr(self.parent) + "[" + str(self.number) + "]"

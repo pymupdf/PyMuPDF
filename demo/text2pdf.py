@@ -4,17 +4,23 @@ import sys
 assert len(sys.argv) == 2,"usage: python %s text.file" % (sys.argv[0],)
 ifn = sys.argv[1]
 ofn = ifn + ".pdf"           # name of PDF output
-#------------------------------------------------------------------------------
-# A very basic text-to-PDF converter.
-#------------------------------------------------------------------------------
+"""
+------------------------------------------------------------------------------
+A very basic text-to-PDF converter.
+-------------------------------------
+Some text file.xxx will be converted to text.xxx.pdf
+Adjust preferred page format, fontsize and possibly fontname below.
+Formula of lines per page (nlines) is also used by the 'insertPage' method.
+------------------------------------------------------------------------------
+"""
 width = 595                  # these are DIN-A4
 height = 842                 # portrait values
-fontsz = 24
+fontsz = 9
 font = "Courier"             # choose a Base 14 font here
 lineheight = fontsz * 1.2    # line height is 20% larger
 
 # this gives the following lines per page:
-nlines = int((height - 108.0) / lineheight + 0.5) - 1
+nlines = int((height - 108.0) / lineheight)
 
 sourcefile = open(ifn)       # we are going to convert this file
 line_ctr = 0

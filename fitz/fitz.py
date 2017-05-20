@@ -103,7 +103,7 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.0"
-VersionDate = "2017-05-17 08:23:28"
+VersionDate = "2017-05-20 07:46:01"
 
 #------------------------------------------------------------------------------
 # link kinds and link flags
@@ -254,7 +254,7 @@ def getPDFstr(s):
 
 class Document(_object):
     """open() - new empty PDF
-open('pdf', stream) - bytes/bytearray/string
+open('pdf', stream) - bytes/bytearray 'stream'/string
 open(filename)"""
 
     __swig_setmethods__ = {}
@@ -1255,8 +1255,8 @@ class Pixmap(_object):
 fitz.Pixmap(cs, fitz.Irect, alpha)
 fitz.Pixmap(cs, fitz.Pixmap [, alpha])
 fitz.Pixmap(filename)
-fitz.Pixmap(image buffer)
-fitz.Pixmap(doc, xref)"""
+fitz.Pixmap(image buffer) - from a bytearray
+fitz.Pixmap(doc, xref) - use image in a PDF"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Pixmap, name, value)
@@ -1694,7 +1694,8 @@ def _fz_transform_point(point, transform):
 class Point(_object):
     """Point() - all zeros
 Point(x, y)
-Point(point) - copy of 'point'"""
+Point(point) - copy of 'point'
+Point(list) - from 'list'"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Point, name, value)
