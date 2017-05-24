@@ -576,8 +576,6 @@ def getDestStr(xref, ddict):
 #==============================================================================
 def setToC(doc, toc):
     '''Create new outline tree (table of contents)\ntoc: a Python list of lists. Each entry must contain level, title, page and optionally top margin on the page.'''
-    if not doc.name.lower().endswith(("/pdf", ".pdf")) and len(doc.name) > 0:
-        raise ValueError("not a PDF document")
     if doc.isClosed or doc.isEncrypted:
         raise ValueError("operation on closed or encrypted document")
 

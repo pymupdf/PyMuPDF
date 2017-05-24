@@ -15,22 +15,6 @@
 //=============================================================================
 
 //=============================================================================
-// SWIG macro: return string representation of an integer
-//=============================================================================
-%define INT_str(i, l)
-getPDFstr(PyObject_Str(PyLong_FromSize_t((size_t) i)), l, "i")
-%enddef
-//=============================================================================
-
-//=============================================================================
-// SWIG macro: return string representation of a float
-//=============================================================================
-%define FLOAT_str(d, l)
-getPDFstr(PyObject_Str(PyFloat_FromDouble((double) d)), l, "d")
-%enddef
-//=============================================================================
-
-//=============================================================================
 // SWIG macro: check that a document is not closed
 //=============================================================================
 %define CLOSECHECK(meth)
@@ -822,13 +806,11 @@ if sa < 0:
         # ensure 'text' is a list of strings
         if text is not None:
             if type(text) not in (list, tuple):
-                tab = text.split("\n")
-            else:
-                tab = text
-            newtab = []
-            for t in tab:
-                newtab.append(getPDFstr(t))
-            text = newtab
+                text = text.split("\n")
+            tab = []
+            for t in text:
+                tab.append(getPDFstr(t, brackets = False))
+            text = tab
         else:
             text = []
         # ensure 'fontname' is valid if specified
@@ -837,20 +819,21 @@ if sa < 0:
                 fontname = "Helvetica"
         %}
         %pythonappend insertPage %{if val == 0: self._reset_page_refs()%}
-        int insertPage(int to = -1, float fontsize = 11, float width = 595,
-                     float height = 842, char *fontname = NULL, PyObject *text = NULL)
+        int insertPage(int to = -1, PyObject *text = NULL, float fontsize = 11, float width = 595,
+                     float height = 842, char *fontname = NULL)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
             
-            const char *template = "BT 0 0 0 rg 1 0 0 1 50 %g Tm /%s %g Tf %sTj 0 -%g TD\n";
+            const char *templ1 = "BT 0 0 0 rg 1 0 0 1 50 %g Tm /%s %g Tf";
+            const char *templ2 = "Tj 0 -%g TD\n";
             fz_rect mediabox = { 0, 0, 595, 842 };    // DIN-A4 portrait values
             mediabox.x1 = width;
             mediabox.y1 = height;
             char *itxt = NULL;
             size_t len, i, c_len, maxlen = 0;
             PyObject *t = NULL;
-            float lheight = fontsize * 1.2;
-            float top = height - 72 - fontsize;
+            float lheight = fontsize * 1.2;      // line height
+            float top = height - 72 - fontsize;  // y of 1st line
             char *font_str;
             const char *data;
             int size;
@@ -859,7 +842,7 @@ if sa < 0:
             pdf_obj *page_obj = NULL;
             fz_buffer *contents = fz_new_buffer(gctx, 1024);
             fz_append_string(gctx, contents, "");
-            maxlen = (height - 108)/lheight;     // max lines per page
+            maxlen = (height - 108) / lheight;   // max lines per page
             len = (size_t) PySequence_Size(text);
             if (len > maxlen) len = maxlen;
             if (fontname)
@@ -872,20 +855,22 @@ if sa < 0:
                 assert_PDF(pdf);
                 if (len > 0)
                 {
+                    fz_append_printf(gctx, contents, templ1, top,
+                                     font_str, fontsize);
                     itxt = getPDFstr(PySequence_GetItem(text, 0), &c_len, "text0");
-                    fz_append_printf(gctx, contents, template,
-                                     top, font_str, fontsize, itxt, lheight);
-                    if (len > 1)
-                    {
-                        itxt = getPDFstr(PySequence_GetItem(text, 1), &c_len, "text1");
+                    if ((strncmp(itxt, "<feff", 5) == 0) || (strncmp(itxt, "<FEFF", 5) == 0))
                         fz_append_string(gctx, contents, itxt);
-                        fz_append_string(gctx, contents, "Tj\n");
-                    }
-                    for (i = 2; i < len; i++)
+                    else
+                        fz_append_pdf_string(gctx, contents, itxt);
+                    fz_append_printf(gctx, contents, templ2, lheight);
+                    for (i = 1; i < len; i++)
                     {
-                        fz_append_string(gctx, contents, "T* ");
+                        if (i>1) fz_append_string(gctx, contents, "T* ");
                         itxt = getPDFstr(PySequence_GetItem(text, i), &c_len, "texti");
-                        fz_append_string(gctx, contents, itxt);
+                        if ((strncmp(itxt, "<feff", 5) == 0) || (strncmp(itxt, "<FEFF", 5) == 0))
+                            fz_append_string(gctx, contents, itxt);
+                        else
+                            fz_append_pdf_string(gctx, contents, itxt);
                         fz_append_string(gctx, contents, "Tj\n");
                     }
                     fz_append_string(gctx, contents, "ET\n");
@@ -919,7 +904,7 @@ if sa < 0:
                 if (page_obj) pdf_drop_obj(gctx, page_obj);
             }
             fz_catch(gctx) return -1;
-            return 0;
+            return (int) len;
         }
 
         //*********************************************************************
@@ -1350,7 +1335,8 @@ if sa < 0:
             fz_catch(gctx) return NULL;
             return fz_string_from_buffer(gctx, res);
         }
-
+        %pythoncode %{_getXrefString = _getObjectString%}
+        
         /*********************************************************************/
         // Get decompressed stream of an object by xref
         // Throws exception if not a stream.
@@ -1767,11 +1753,10 @@ fannot._erase()
             Py_ssize_t c_len = 0;
             fz_rect prect = { 0, 0, 0, 0};
             fz_bound_page(gctx, $self, &prect);
-            char *X, *Y, *W, *H;
+            char X[15], Y[15], W[15], H[15], size_str[15], xref_str[15], name[50];
             char *cont = NULL;
-            const char *name_templ = "PyMuPDF%s-%s-%s-%s";
+            const char *name_templ = "Img%s-%s-%s-%s";
             Py_ssize_t name_len = 0;
-            char *name = NULL;
             fz_image *image = NULL;
             fz_try(gctx)
             {
@@ -1785,10 +1770,10 @@ fannot._erase()
                     THROWMSG("rect must be finite and not empty");
 
                 // create strings for image rectangle
-                X = FLOAT_str(rect->x0, &c_len);
-                Y = FLOAT_str(prect.y1 - rect->y1, &c_len);
-                W = FLOAT_str(rect->x1 - rect->x0, &c_len);
-                H = FLOAT_str(rect->y1 - rect->y0, &c_len);
+                snprintf(X, 15, "%g", (double) rect->x0);
+                snprintf(Y, 15, "%g", (double) (prect.y1 - rect->y1));
+                snprintf(W, 15, "%g", (double) (rect->x1 - rect->x0));
+                snprintf(H, 15, "%g", (double) (rect->y1 - rect->y0));
 
                 // get objects "Resources", "XObject"
                 contents = pdf_dict_get(gctx, page->obj, PDF_NAME_Contents);
@@ -1810,13 +1795,12 @@ fannot._erase()
                 ref = JM_pdf_add_image(gctx, pdf, image, 0);
 
                 // generate XObject name: "PyMuPDF<imgsize>-xref-X-Y"
-                char *size_str = INT_str(fz_image_size(gctx, image), &name_len);
-                char *xref_str = INT_str(pdf_to_num(gctx, page->obj), &name_len);
-                name = getPDFstr(PyUnicode_FromFormat(name_templ, size_str, xref_str, X, Y),
-                                 &name_len, "name");
+                snprintf(size_str, 15, "%i", (int) fz_image_size(gctx, image));
+                snprintf(xref_str, 15, "%i", (int) pdf_to_num(gctx, page->obj));
+                snprintf(name, 50, name_templ, size_str, xref_str, X, Y);
                 pdf_dict_puts(gctx, subres, name, ref);
 
-                // retrieve and update content stream
+                // retrieve and update contents stream
                 if (pdf_is_array(gctx, contents))
                 {            // take last if more than one contents object
                     int i = pdf_array_len(gctx, contents) - 1;
@@ -1843,6 +1827,153 @@ fannot._erase()
             }
             fz_catch(gctx) return -1;
             return 0;
+        }
+
+        //---------------------------------------------------------------------
+        // insert text
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(insertText, result<0)
+        %pythonprepend insertText %{
+        if not self.parent:
+            raise RuntimeError("orphaned object: no parent exists")
+        # ensure 'text' is a list of strings
+        if text is not None:
+            if type(text) not in (list, tuple):
+                text = text.split("\n")
+            tab = []
+            for t in text:
+                tab.append(getPDFstr(t, brackets = False))
+            text = tab
+        else:
+            text = []
+        # ensure valid 'fontname'
+        if fontname is None:
+            fontname = "Helvetica"
+        else:
+            if fontname.startswith("/"):
+                fontlist = self.parent.getPageFontList(self.number)
+                fontrefs = [fontlist[i][4] for i in range(len(fontlist))]
+                assert fontname[1:] in fontrefs, "invalid font name reference: " + fontname
+            elif fontname not in Base14_fontnames:
+                fontname = "Helvetica"%}
+        %feature("autodoc", "Insert new text on a page.") insertText;
+        int insertText(struct fz_point_s *point, PyObject *text = NULL, float fontsize = 11, const char *fontname = NULL, PyObject *color = NULL)
+        {
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            pdf_document *pdf;
+            pdf_obj *resources, *contents, *fonts;
+
+            fz_buffer *cont_buf, *cont_buf_compr;
+            cont_buf = cont_buf_compr = NULL;
+            char *content_str;              // updated content string
+            const char *templ1 = " BT %g %g %g rg 1 0 0 1 %g %g Tm %s%s %g Tf";
+            const char *templ2 = "Tj 0 -%g TD\n";
+            Py_ssize_t c_len, len;
+            int i, nlines;
+            char *itxt;
+            fz_rect prect = { 0, 0, 0, 0};
+            fz_bound_page(gctx, $self, &prect);
+            float top = prect.y1 - point->y;
+            float left = point->x;
+            float red, green, blue;
+            red = green = blue = 0;
+            float lheight = fontsize * 1.2; // line height
+            float pheight = prect.y1;       // page height
+            const char *data;
+            int size;
+            fz_font *font;
+            pdf_obj *font_obj;
+            fz_try(gctx)
+            {
+                assert_PDF(page);
+                pdf = page->doc;
+                if (top < lheight || point->y < lheight)
+                    THROWMSG("text position outside vertical page range");
+                if (PySequence_Check(color))
+                {
+                    if (PySequence_Size(color) != 3) THROWMSG("need 3 color components");
+                    red   = (float) PyFloat_AsDouble(PySequence_GetItem(color, 0));
+                    green = (float) PyFloat_AsDouble(PySequence_GetItem(color, 1));
+                    blue  = (float) PyFloat_AsDouble(PySequence_GetItem(color, 2));
+                    if (red < 0 || red > 1 || green < 0 || green > 1 || blue < 0 || blue > 1)
+                        THROWMSG("color components must in range [0, 1]");
+                }
+                if (!PySequence_Check(text)) THROWMSG("text must be specified");
+                else
+                {
+                    len = PySequence_Size(text);
+                    if (len < 1) THROWMSG("at least one line of text must be given");
+                }
+                // get objects "Resources", "Contents", "Font"
+                resources = pdf_dict_get(gctx, page->obj, PDF_NAME_Resources);
+                fonts = pdf_dict_get(gctx, resources, PDF_NAME_Font);
+                if (!fonts)
+                    fonts = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
+                contents = pdf_dict_get(gctx, page->obj, PDF_NAME_Contents);
+                if (pdf_is_array(gctx, contents))
+                {   // take last if more than one contents object
+                    i = pdf_array_len(gctx, contents) - 1;
+                    contents = pdf_array_get(gctx, contents, i);
+                }
+                cont_buf = pdf_load_stream(gctx, contents);
+                if (!cont_buf) THROWMSG("bad PDF: Contents is no stream object");
+
+                // append our stuff to contents
+                char *font_pref = "/";
+                if (strncmp(fontname, "/", 1) == 0) font_pref = " ";
+                fz_append_printf(gctx, cont_buf, templ1, red, green, blue,
+                                 left, top, font_pref, fontname, fontsize);
+                itxt = getPDFstr(PySequence_GetItem(text, 0), &c_len, "text0");
+                if ((strncmp(itxt, "<feff", 5) == 0) || (strncmp(itxt, "<FEFF", 5) == 0))
+                    fz_append_string(gctx, cont_buf, itxt);
+                else
+                    fz_append_pdf_string(gctx, cont_buf, itxt);
+                top -= lheight;
+                nlines = 1;
+                fz_append_printf(gctx, cont_buf, templ2, lheight);
+                for (i = 1; i < len; i++)
+                {
+                    if (top < lheight) break;
+                    if (i > 1) fz_append_string(gctx, cont_buf, "T* ");
+                    itxt = getPDFstr(PySequence_GetItem(text, i), &c_len, "texti");
+                    if ((strncmp(itxt, "<feff", 5) == 0) || (strncmp(itxt, "<FEFF", 5) == 0))
+                        fz_append_string(gctx, cont_buf, itxt);
+                    else
+                        fz_append_pdf_string(gctx, cont_buf, itxt);
+                    fz_append_string(gctx, cont_buf, "Tj\n");
+                    top -= lheight;
+                    nlines++;
+                }
+                fz_append_string(gctx, cont_buf, "ET\n");
+                fz_terminate_buffer(gctx, cont_buf);
+
+                pdf_dict_put(gctx, contents, PDF_NAME_Filter,
+                             PDF_NAME_FlateDecode);
+                c_len = (Py_ssize_t) fz_buffer_storage(gctx, cont_buf, &content_str);
+                cont_buf_compr = deflatebuf(gctx, content_str, (size_t) c_len);
+                pdf_update_stream(gctx, pdf, contents, cont_buf_compr, 1);
+                if (strncmp(fontname, "/", 1) != 0)
+                {   // insert new font
+                    data = fz_lookup_base14_font(gctx, fontname, &size);
+                    if (data)              // base 14 font found
+                        font = fz_new_font_from_memory(gctx, fontname, data, size, 0, 0);
+                    else
+                        THROWMSG("unknown PDF Base 14 font");
+                    font_obj = pdf_add_simple_font(gctx, pdf, font);
+                    fz_drop_font(gctx, font);
+                    // resources obj will contain named reference to font
+                    pdf_dict_puts(gctx, fonts, fontname, font_obj);
+                    pdf_dict_put(gctx, resources, PDF_NAME_Font, fonts);
+                    // pdf_dict_put(gctx, page->obj, PDF_NAME_Resources, resources);
+                }
+            }
+            fz_always(gctx)
+            {
+                if (cont_buf) fz_drop_buffer(gctx, cont_buf);
+                if (cont_buf_compr) fz_drop_buffer(gctx, cont_buf_compr);
+            }
+            fz_catch(gctx) return -1;
+            return nlines;
         }
 
         //---------------------------------------------------------------------
@@ -1916,6 +2047,13 @@ fannot._erase()
             
         def __del__(self):
             self._erase()
+
+        def getFontList(self):
+            return self.parent.getPageFontList(self.number)
+
+        def getImageList(self):
+            return self.parent.getPageImageList(self.number)
+
         %}
     }
 };
@@ -2429,7 +2567,7 @@ struct fz_pixmap_s
         //---------------------------------------------------------------------
         fz_pixmap_s(struct fz_colorspace_s *cs, int w, int h, PyObject *samples, int alpha = 0)
         {
-            char *data;
+            char *data = NULL;
             size_t size = 0;
             int n = fz_colorspace_n(gctx, cs);
             int stride = (n + alpha)*w;
@@ -2468,8 +2606,8 @@ struct fz_pixmap_s
                 img = fz_new_image_from_file(gctx, filename);
                 pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
             }
+            fz_always(gctx) if (img) fz_drop_image(gctx, img);
             fz_catch(gctx) return NULL;
-            fz_drop_image(gctx, img);
             return pm;
         }
 
@@ -2478,20 +2616,19 @@ struct fz_pixmap_s
         //---------------------------------------------------------------------
         fz_pixmap_s(PyObject *imagedata)
         {
-            size_t size;
-            size = 0;
-            fz_buffer *data;
+            size_t size = 0;
+            fz_buffer *data = NULL;
             if (PyByteArray_Check(imagedata))
             {
                 size = (size_t) PyByteArray_Size(imagedata);
                 data = fz_new_buffer_from_shared_data(gctx,
-                                          PyByteArray_AsString(imagedata), size);
+                          PyByteArray_AsString(imagedata), size);
             }
             else if (PyBytes_Check(imagedata))
             {
                 size = (size_t) PyBytes_Size(imagedata);
                 data = fz_new_buffer_from_shared_data(gctx,
-                                          PyBytes_AsString(imagedata), size);
+                          PyBytes_AsString(imagedata), size);
             }
             struct fz_image_s *img = NULL;
             struct fz_pixmap_s *pm = NULL;
@@ -2502,7 +2639,11 @@ struct fz_pixmap_s
                 img = fz_new_image_from_buffer(gctx, data);
                 pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
             }
-            fz_always(gctx) if (img) fz_drop_image(gctx, img);
+            fz_always(gctx)
+            {
+                if (img) fz_drop_image(gctx, img);
+                if (data) fz_drop_buffer(gctx, data);
+            }
             fz_catch(gctx) return NULL;
             return pm;
         }
@@ -2662,7 +2803,7 @@ struct fz_pixmap_s
         %}
         int writePNG(char *filename, int savealpha=-1)
         {
-            if (savealpha >= 0) fz_warn(gctx, "ignoring savealpha");
+            if (savealpha != -1) fz_warn(gctx, "ignoring savealpha");
             fz_try(gctx) {
                 fz_save_pixmap_as_png(gctx, $self, filename);
             }
@@ -2681,7 +2822,7 @@ struct fz_pixmap_s
             unsigned char *c;
             PyObject *r;
             size_t len;
-            if (savealpha >= 0) fz_warn(gctx, "ignoring savealpha");
+            if (savealpha != -1) fz_warn(gctx, "ignoring savealpha");
             fz_try(gctx) {
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
@@ -2713,7 +2854,7 @@ struct fz_pixmap_s
         %}
         int _writeIMG(char *filename, int format, int savealpha=-1)
         {
-            if (savealpha >= 0) fz_warn(gctx, "ignoring savealpha");
+            if (savealpha != -1) fz_warn(gctx, "ignoring savealpha");
             fz_try(gctx) {
                 switch(format)
                 {

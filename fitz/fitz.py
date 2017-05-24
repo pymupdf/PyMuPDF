@@ -103,7 +103,7 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.0"
-VersionDate = "2017-05-20 07:46:01"
+VersionDate = "2017-05-24 11:13:26"
 
 #------------------------------------------------------------------------------
 # link kinds and link flags
@@ -220,12 +220,13 @@ def getPDFnow():
 # else a string "<FEFF[hexstring]>" is returned, where [hexstring] is the
 # UTF-16BE encoding of the original.
 #-------------------------------------------------------------------------------
-def getPDFstr(s):
+def getPDFstr(s, brackets = True):
     try:
         x = s.decode("utf-8")
     except:
         x = s
-    if x is None: return "()"
+    if x is None:
+        return "()" if brackets else ""
     if type(x) in (str, bytes) or sys.version_info[0] < 3 and type(x) in (str, unicode):
         pass
     else:
@@ -236,15 +237,19 @@ def getPDFstr(s):
 # octal numbers \nnn if <= chr(255)
     r = ""
     for i in range(len(x)):
-        if 31 <= ord(x[i]) <= 127:
-            r += x[i]                            # copy over ascii chars
-        elif ord(x[i]) <= 255:
-            r += "\\" + oct(ord(x[i]))[-3:]      # octal number with backslash
-        else:                                    # skip to UTF16_BE case
+        if ord(x[i]) > 255:
             utf16 = True
             break
+        if not brackets:
+            r += x[i]
+            continue
+        if ord(x[i]) > 127:
+            r += "\\" + oct(ord(x[i]))[-3:]
+        else:
+            r += x[i]
+
     if not utf16:
-        return "(" + r + ")"                     # result in brackets
+        return "(" + r + ")" if brackets else r
 
 # require full unicode: make a UTF-16BE hex string prefixed with "feff"
     r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
@@ -542,7 +547,7 @@ open(filename)"""
         return val
 
 
-    def insertPage(self, to=-1, fontsize=11, width=595, height=842, fontname=None, text=None):
+    def insertPage(self, to=-1, text=None, fontsize=11, width=595, height=842, fontname=None):
         """Insert a new page in front of 'to'."""
 
         if self.isClosed:
@@ -550,13 +555,11 @@ open(filename)"""
         # ensure 'text' is a list of strings
         if text is not None:
             if type(text) not in (list, tuple):
-                tab = text.split("\n")
-            else:
-                tab = text
-            newtab = []
-            for t in tab:
-                newtab.append(getPDFstr(t))
-            text = newtab
+                text = text.split("\n")
+            tab = []
+            for t in text:
+                tab.append(getPDFstr(t, brackets = False))
+            text = tab
         else:
             text = []
         # ensure 'fontname' is valid if specified
@@ -565,7 +568,7 @@ open(filename)"""
                 fontname = "Helvetica"
 
 
-        val = _fitz.Document_insertPage(self, to, fontsize, width, height, fontname, text)
+        val = _fitz.Document_insertPage(self, to, text, fontsize, width, height, fontname)
         if val == 0: self._reset_page_refs()
 
         return val
@@ -686,6 +689,7 @@ open(filename)"""
 
         return _fitz.Document__getObjectString(self, xnum)
 
+    _getXrefString = _getObjectString
 
     def _getXrefStream(self, xnum):
         """_getXrefStream(self, xnum) -> PyObject *"""
@@ -908,6 +912,35 @@ class Page(_object):
         return _fitz.Page_insertImage(self, rect, filename, pixmap)
 
 
+    def insertText(self, point, text=None, fontsize=11, fontname=None, color=None):
+        """Insert new text on a page."""
+
+        if not self.parent:
+            raise RuntimeError("orphaned object: no parent exists")
+        # ensure 'text' is a list of strings
+        if text is not None:
+            if type(text) not in (list, tuple):
+                text = text.split("\n")
+            tab = []
+            for t in text:
+                tab.append(getPDFstr(t, brackets = False))
+            text = tab
+        else:
+            text = []
+        # ensure valid 'fontname'
+        if fontname is None:
+            fontname = "Helvetica"
+        else:
+            if fontname.startswith("/"):
+                fontlist = self.parent.getPageFontList(self.number)
+                fontrefs = [fontlist[i][4] for i in range(len(fontlist))]
+                assert fontname[1:] in fontrefs, "invalid font name reference: " + fontname
+            elif fontname not in Base14_fontnames:
+                fontname = "Helvetica"
+
+        return _fitz.Page_insertText(self, point, text, fontsize, fontname, color)
+
+
     def _getRectText(self, rect):
         """_getRectText(self, rect) -> char const *"""
         if hasattr(self, "parent"):
@@ -964,6 +997,13 @@ class Page(_object):
 
     def __del__(self):
         self._erase()
+
+    def getFontList(self):
+        return self.parent.getPageFontList(self.number)
+
+    def getImageList(self):
+        return self.parent.getPageImageList(self.number)
+
 
 Page_swigregister = _fitz.Page_swigregister
 Page_swigregister(Page)

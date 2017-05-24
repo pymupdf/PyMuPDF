@@ -50,6 +50,23 @@ if len(out_buf) > 0:
 print("Statistics for PDF conversion of", ifn)
 print(total_ctr, "lines written,", nlines, "lines per page.")
 print(ofn, "contains", len(doc), "pages.")
+
+# for convenience, we insert a header on each page and fill in
+# some metadata
+txt = "Content of file '%s' - page %i of %i"
+for page in doc:
+    page.insertText(fitz.Point(50, 50),
+                    txt % (ifn, page.number +1, len(doc)),
+                    color = (0,0,1),        # this is blue
+                    fontsize = 16)
+m = {"creationDate": fitz.getPDFnow(),      # current timestamp
+     "modDate": fitz.getPDFnow(),           # current timestamp
+     "creator": "text2pdf.py",
+     "producer": "PyMuPDF v1.11.0",
+     "title": "Content of file " + ifn,
+     "subject": "Demonstrate the use of methods insertPage and insertText",
+     "author": "Jorj McKie"}
+doc.setMetadata(m)
 doc.save(ofn, garbage=4, deflate=True)
 doc.close()
     

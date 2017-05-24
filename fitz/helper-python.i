@@ -114,12 +114,13 @@ def getPDFnow():
 # else a string "<FEFF[hexstring]>" is returned, where [hexstring] is the
 # UTF-16BE encoding of the original.
 #-------------------------------------------------------------------------------
-def getPDFstr(s):
+def getPDFstr(s, brackets = True):
     try:
         x = s.decode("utf-8")
     except:
         x = s
-    if x is None: return "()"
+    if x is None:
+        return "()" if brackets else ""
     if type(x) in (str, bytes) or sys.version_info[0] < 3 and type(x) in (str, unicode):
         pass
     else:
@@ -130,15 +131,19 @@ def getPDFstr(s):
     # octal numbers \nnn if <= chr(255)
     r = ""
     for i in range(len(x)):
-        if 31 <= ord(x[i]) <= 127:
-            r += x[i]                            # copy over ascii chars
-        elif ord(x[i]) <= 255:
-            r += "\\" + oct(ord(x[i]))[-3:]      # octal number with backslash
-        else:                                    # skip to UTF16_BE case
+        if ord(x[i]) > 255:
             utf16 = True
             break
+        if not brackets:
+            r += x[i]
+            continue
+        if ord(x[i]) > 127:
+            r += "\\" + oct(ord(x[i]))[-3:]
+        else:
+            r += x[i]
+
     if not utf16:
-        return "(" + r + ")"                     # result in brackets
+        return "(" + r + ")" if brackets else r
 
     # require full unicode: make a UTF-16BE hex string prefixed with "feff"
     r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
