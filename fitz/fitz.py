@@ -103,7 +103,7 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.0"
-VersionDate = "2017-05-24 11:13:26"
+VersionDate = "2017-05-26 15:52:19"
 
 #------------------------------------------------------------------------------
 # link kinds and link flags
@@ -1291,9 +1291,9 @@ IRect_swigregister = _fitz.IRect_swigregister
 IRect_swigregister(IRect)
 
 class Pixmap(_object):
-    """fitz.Pixmap(cs, width, height, samples, alpha)
-fitz.Pixmap(cs, fitz.Irect, alpha)
-fitz.Pixmap(cs, fitz.Pixmap [, alpha])
+    """fitz.Pixmap(colorspace, width, height, samples, alpha)
+fitz.Pixmap(colorspace, fitz.Irect, alpha)
+fitz.Pixmap(colorspace, fitz.Pixmap [, alpha])
 fitz.Pixmap(filename)
 fitz.Pixmap(image buffer) - from a bytearray
 fitz.Pixmap(doc, xref) - use image in a PDF"""
@@ -1466,7 +1466,10 @@ fitz.Pixmap(doc, xref) - use image in a PDF"""
         return self.size
 
     def __repr__(self):
-        return "fitz.Pixmap(%s, %s, %s)" % (self.colorspace.name, self.irect, self.alpha)
+        if self.colorspace:
+            return "fitz.Pixmap(%s, %s, %s)" % (self.colorspace.name, self.irect, self.alpha)
+        else:
+            return "fitz.Pixmap(%s, %s, %s)" % ('None', self.irect, self.alpha)
 Pixmap_swigregister = _fitz.Pixmap_swigregister
 Pixmap_swigregister(Pixmap)
 

@@ -1,5 +1,13 @@
 %{
 //=============================================================================
+// Circumvention of MuPDF bug in 'pdf_preload_image_resources'
+// This bug affects 'pdf_add_image' calls when images already exist, i.e.
+// almost always!
+// This fix uses a modified version of 'pdf_preload_image_resources'.
+// Because of 'static' declarations, 'fz_md5_image',
+// 'pdf_preload_image_resources' and 'pdf_find_image_resource' had to
+// special-versioned as well ...
+// Start
 //=============================================================================
 
 static void
@@ -41,8 +49,9 @@ JM_pdf_preload_image_resources(fz_context *ctx, pdf_document *doc)
         len = pdf_count_objects(ctx, doc);
         for (k = 1; k < len; k++)
         {
-            
+            // this is the buggy statement: -----------------------------------
             // obj = pdf_load_object(ctx, doc, k);
+            // replaced with the following: -----------------------------------
             obj = pdf_new_indirect(gctx, doc, k, 0);
             type = pdf_dict_get(ctx, obj, PDF_NAME_Subtype);
             if (pdf_name_eq(ctx, type, PDF_NAME_Image))
@@ -89,190 +98,18 @@ JM_pdf_find_image_resource(fz_context *ctx, pdf_document *doc, fz_image *item, u
     return res;
 }
 
-
 pdf_obj *
-JM_pdf_add_image(fz_context *ctx, pdf_document *doc, fz_image *image, int mask)
+JM_add_image(fz_context *ctx, pdf_document *doc, fz_image *image, int mask)
 {
-    fz_pixmap *pixmap = NULL;
-    pdf_obj *imobj = NULL;
-    fz_buffer *buffer = NULL;
-    pdf_obj *imref = NULL;
-    fz_compressed_buffer *cbuffer;
     unsigned char digest[16];
-    int n;
-
-    /* If we can maintain compression, do so */
-    cbuffer = fz_compressed_image_buffer(ctx, image);
-    fz_var(pixmap);
-    fz_var(buffer);
-    fz_var(imobj);
-    fz_var(imref);
-
-    /* Check if the same image already exists in this doc. */
+    pdf_obj *imref = NULL;
     imref = JM_pdf_find_image_resource(ctx, doc, image, digest);
-    if (imref)
-        return imref;
-
-    fz_try(ctx)
-    {
-        imobj = pdf_new_dict(ctx, doc, 3);
-        pdf_dict_put_drop(ctx, imobj, PDF_NAME_Type, PDF_NAME_XObject);
-        pdf_dict_put_drop(ctx, imobj, PDF_NAME_Subtype, PDF_NAME_Image);
-
-        if (cbuffer)
-        {
-            fz_compression_params *cp = &cbuffer->params;
-            switch (cp ? cp->type : FZ_IMAGE_UNKNOWN)
-            {
-            default:
-                goto raw_or_unknown_compression;
-            case FZ_IMAGE_JPEG:
-                if (cp->u.jpeg.color_transform != -1)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_ColorTransform, pdf_new_int(ctx, doc, cp->u.jpeg.color_transform));
-                pdf_dict_put_drop(ctx, imobj, PDF_NAME_Filter, PDF_NAME_DCTDecode);
-                break;
-            case FZ_IMAGE_JPX:
-                if (cp->u.jpx.smask_in_data)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_SMaskInData, pdf_new_int(ctx, doc, cp->u.jpx.smask_in_data));
-                pdf_dict_put_drop(ctx, imobj, PDF_NAME_Filter, PDF_NAME_JPXDecode);
-                break;
-            case FZ_IMAGE_FAX:
-                if (cp->u.fax.columns)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Columns, pdf_new_int(ctx, doc, cp->u.fax.columns));
-                if (cp->u.fax.rows)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Rows, pdf_new_int(ctx, doc, cp->u.fax.rows));
-                if (cp->u.fax.k)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_K, pdf_new_int(ctx, doc, cp->u.fax.k));
-                if (cp->u.fax.end_of_line)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_EndOfLine, pdf_new_int(ctx, doc, cp->u.fax.end_of_line));
-                if (cp->u.fax.encoded_byte_align)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_EncodedByteAlign, pdf_new_int(ctx, doc, cp->u.fax.encoded_byte_align));
-                if (cp->u.fax.end_of_block)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_EndOfBlock, pdf_new_int(ctx, doc, cp->u.fax.end_of_block));
-                if (cp->u.fax.black_is_1)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_BlackIs1, pdf_new_int(ctx, doc, cp->u.fax.black_is_1));
-                if (cp->u.fax.damaged_rows_before_error)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_DamagedRowsBeforeError, pdf_new_int(ctx, doc, cp->u.fax.damaged_rows_before_error));
-                pdf_dict_put_drop(ctx, imobj, PDF_NAME_Filter, PDF_NAME_CCITTFaxDecode);
-                break;
-            case FZ_IMAGE_FLATE:
-                if (cp->u.flate.columns)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Columns, pdf_new_int(ctx, doc, cp->u.flate.columns));
-                if (cp->u.flate.colors)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Colors, pdf_new_int(ctx, doc, cp->u.flate.colors));
-                if (cp->u.flate.predictor)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Predictor, pdf_new_int(ctx, doc, cp->u.flate.predictor));
-                pdf_dict_put_drop(ctx, imobj, PDF_NAME_Filter, PDF_NAME_FlateDecode);
-                pdf_dict_put_drop(ctx, imobj, PDF_NAME_BitsPerComponent, pdf_new_int(ctx, doc, image->bpc));
-                break;
-            case FZ_IMAGE_LZW:
-                if (cp->u.lzw.columns)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Columns, pdf_new_int(ctx, doc, cp->u.lzw.columns));
-                if (cp->u.lzw.colors)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Colors, pdf_new_int(ctx, doc, cp->u.lzw.colors));
-                if (cp->u.lzw.predictor)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_Predictor, pdf_new_int(ctx, doc, cp->u.lzw.predictor));
-                if (cp->u.lzw.early_change)
-                    pdf_dict_put_drop(ctx, imobj, PDF_NAME_EarlyChange, pdf_new_int(ctx, doc, cp->u.lzw.early_change));
-                pdf_dict_put_drop(ctx, imobj, PDF_NAME_Filter, PDF_NAME_LZWDecode);
-                break;
-            case FZ_IMAGE_RLD:
-                pdf_dict_put_drop(ctx, imobj, PDF_NAME_Filter, PDF_NAME_RunLengthDecode);
-                break;
-            }
-            buffer = fz_keep_buffer(ctx, cbuffer->buffer);
-        }
-        else
-        {
-            unsigned int size;
-            int n, h;
-            unsigned char *d, *s;
-
-raw_or_unknown_compression:
-            /* Currently, set to maintain resolution; should we consider
-             * subsampling here according to desired output res? */
-            pixmap = fz_get_pixmap_from_image(ctx, image, NULL, NULL, NULL, NULL);
-            n = (pixmap->n == 1 ? 1 : pixmap->n - pixmap->alpha);
-            s = pixmap->samples;
-            h = image->h;
-            size = image->w * n;
-            d = fz_malloc(ctx, size * h);
-            buffer = fz_new_buffer_from_data(ctx, d, size * h);
-            if (pixmap->alpha == 0 || n == 1)
-            {
-                while (h--)
-                {
-                    memcpy(d, s, size);
-                    d += size;
-                    s += pixmap->stride;
-                }
-            }
-            else
-            {
-                /* Need to remove the alpha plane */
-                /* TODO: extract alpha plane to a soft mask */
-                int pad = pixmap->stride - pixmap->w * pixmap->n;
-                while (h--)
-                {
-                    unsigned int size2 = size;
-                    int mod = n;
-                    while (size2--)
-                    {
-                        *d++ = *s++;
-                        mod--;
-                        if (mod == 0)
-                            s++, mod = n;
-                    }
-                    s += pad;
-                }
-            }
-        }
-
-        pdf_dict_put_drop(ctx, imobj, PDF_NAME_Width, pdf_new_int(ctx, doc, pixmap ? pixmap->w : image->w));
-        pdf_dict_put_drop(ctx, imobj, PDF_NAME_Height, pdf_new_int(ctx, doc, pixmap ? pixmap->h : image->h));
-        if (mask)
-        {
-            pdf_dict_put_drop(ctx, imobj, PDF_NAME_ImageMask, pdf_new_bool(ctx, doc, 1));
-        }
-        else
-        {
-            pdf_dict_put_drop(ctx, imobj, PDF_NAME_BitsPerComponent, pdf_new_int(ctx, doc, image->bpc));
-
-            n = fz_colorspace_n(ctx, pixmap ? pixmap->colorspace : image->colorspace);
-            if (n <= 1)
-                pdf_dict_put_drop(ctx, imobj, PDF_NAME_ColorSpace, PDF_NAME_DeviceGray);
-            else if (n == 3)
-                // TODO: Lab colorspace?
-                pdf_dict_put_drop(ctx, imobj, PDF_NAME_ColorSpace, PDF_NAME_DeviceRGB);
-            else if (n == 4)
-                pdf_dict_put_drop(ctx, imobj, PDF_NAME_ColorSpace, PDF_NAME_DeviceCMYK);
-            else
-                // TODO: convert to RGB!
-                fz_throw(ctx, FZ_ERROR_GENERIC, "only Gray, RGB, and CMYK colorspaces supported");
-        }
-        if (image->mask)
-        {
-            pdf_dict_put_drop(ctx, imobj, PDF_NAME_SMask, pdf_add_image(ctx, doc, image->mask, 0));
-        }
-        imref = pdf_add_object(ctx, doc, imobj);
-        pdf_update_stream(ctx, doc, imref, buffer, 1);
-        /* Add ref to our image resource hash table. */
-        imref = pdf_insert_image_resource(ctx, doc, digest, imref);
-    }
-    fz_always(ctx)
-    {
-        fz_drop_pixmap(ctx, pixmap);
-        fz_drop_buffer(ctx, buffer);
-        pdf_drop_obj(ctx, imobj);
-    }
-    fz_catch(ctx)
-    {
-        pdf_drop_obj(ctx, imref);
-        fz_rethrow(ctx);
-    }
-    return imref;
+    if (imref) return imref;
+    return pdf_add_image(ctx, doc, image, mask);
 }
 //=============================================================================
+// End
+// Circumvention of MuPDF bug in pdf_preload_image_resources
 //=============================================================================
 
 //----------------------------------------------------------------------------

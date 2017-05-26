@@ -1745,9 +1745,14 @@ fannot._erase()
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_document *pdf;
+            fz_pixmap *pm = NULL;
+            fz_pixmap *pix = NULL;
+            fz_image *mask = NULL;
             pdf_obj *resources, *subres, *contents, *ref;
             fz_buffer *res = NULL;
             fz_buffer *nres = NULL;
+            int i, j;
+            unsigned char *s, *t;
             char *content_str;
             const char *template = " q %s 0 0 %s %s %s cm /%s Do Q \n";
             Py_ssize_t c_len = 0;
@@ -1786,15 +1791,42 @@ fannot._erase()
                 }
 
                 // create the image
+                // we always create a stencil mask if the image contains an alpha
                 if (filename)
                     image = fz_new_image_from_file(gctx, filename);
-                else
-                    image = fz_new_image_from_pixmap(gctx, pixmap, NULL);
+                    pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
+                    if (pix->alpha == 1)
+                    {
+                        j = pix->n - 1;
+                        pm = fz_new_pixmap(gctx, NULL, pix->w, pix->h, 0);
+                        s = pix->samples;
+                        t = pm->samples;
+                        for (i = 0; i < pix->w * pix->h; i++)
+                            t[i] = s[j + i * pix->n];
+                        mask = fz_new_image_from_pixmap(gctx, pm, NULL);
+                        image = fz_new_image_from_pixmap(gctx, pix, mask);
+                    }
+                else if (pixmap)
+                    if (pixmap->alpha == 0)
+                        image = fz_new_image_from_pixmap(gctx, pixmap, NULL);
+                    else
+                    {   // pixmap has alpha, therefore create a mask
+                        j = pixmap->n - 1;
+                        // pm will consist of pixmap's alpha as 'samples'
+                        pm = fz_new_pixmap(gctx, NULL, pixmap->w, pixmap->h, 0);
+                        s = pixmap->samples;
+                        t = pm->samples;
+                        for (i = 0; i < pixmap->w * pixmap->h; i++)
+                            t[i] = s[j + i * pixmap->n];
+                        mask = fz_new_image_from_pixmap(gctx, pm, NULL);
+                        image = fz_new_image_from_pixmap(gctx, pixmap, mask);
+                    }
 
-                // put image info in PDF objects
-                ref = JM_pdf_add_image(gctx, pdf, image, 0);
+                // put image in the PDF
+                ref = JM_add_image(gctx, pdf, image, 0);
 
-                // generate XObject name: "PyMuPDF<imgsize>-xref-X-Y"
+                // we need a unique name for image and combine image size, page xref,
+                // and top-left coordinates for this:
                 snprintf(size_str, 15, "%i", (int) fz_image_size(gctx, image));
                 snprintf(xref_str, 15, "%i", (int) pdf_to_num(gctx, page->obj));
                 snprintf(name, 50, name_templ, size_str, xref_str, X, Y);
@@ -1823,7 +1855,9 @@ fannot._erase()
                 if (image) fz_drop_image(gctx, image);
                 if (res) fz_drop_buffer(gctx, res);
                 if (nres) fz_drop_buffer(gctx, nres);
-                // free(prect);
+                if (mask) fz_drop_image(gctx, mask);
+                if (pix) fz_drop_pixmap(gctx, pix);
+                if (pm) fz_drop_pixmap(gctx, pm);
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -2771,10 +2805,7 @@ struct fz_pixmap_s
         struct fz_irect_s *irect()
         {
             fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
-            r->x0 = 0;
-            r->y0 = 0;
-            r->x1 = 0;
-            r->y1 = 0;
+            r->x0 = r->y0 = r->x1 = r->y1 = 0;
             return fz_pixmap_bbox(gctx, $self, r);
         }
 
@@ -2908,7 +2939,10 @@ struct fz_pixmap_s
                 return self.size
 
             def __repr__(self):
-                return "fitz.Pixmap(%s, %s, %s)" % (self.colorspace.name, self.irect, self.alpha)%}
+                if self.colorspace:
+                    return "fitz.Pixmap(%s, %s, %s)" % (self.colorspace.name, self.irect, self.alpha)
+                else:
+                    return "fitz.Pixmap(%s, %s, %s)" % ('None', self.irect, self.alpha)%}
     }
 };
 
