@@ -30,11 +30,13 @@ for i in range(1, lenXREF):            # scan through all objects
     isImage   = re.search(checkIM, text)    # tests for Image
     if not isXObject or not isImage:   # not an image object if not both True
         continue
-    imgcount += 1
     pix = fitz.Pixmap(doc, i)          # make pixmap from image
+    if pix.colorspace is None:         # this is just a mask!
+        continue
+    imgcount += 1
     if pix.colorspace.n < 4:           # can be saved as PNG
         pix.writePNG("img-%s.png" % (i,))
-    else:                              # must convert the CMYK first
+    else:                              # CMYK: must convert it
         pix0 = fitz.Pixmap(fitz.csRGB, pix)
         pix0.writePNG("img-%s.png" % (i,))
         pix0 = None                    # free Pixmap resources

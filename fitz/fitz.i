@@ -1741,7 +1741,7 @@ fannot._erase()
         FITZEXCEPTION(insertImage, result<0)
         PARENTCHECK(insertImage)
         %feature("autodoc", "Insert a new image in a rectangle.") insertImage;
-        int insertImage(struct fz_rect_s *rect, const char *filename=NULL, struct fz_pixmap_s *pixmap = NULL)
+        int insertImage(struct fz_rect_s *rect, const char *filename=NULL, struct fz_pixmap_s *pixmap = NULL, int overlay = 1)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_document *pdf;
@@ -1758,11 +1758,13 @@ fannot._erase()
             Py_ssize_t c_len = 0;
             fz_rect prect = { 0, 0, 0, 0};
             fz_bound_page(gctx, $self, &prect);
-            char X[15], Y[15], W[15], H[15], size_str[15], xref_str[15], name[50];
+            char X[15], Y[15], W[15], H[15];
+            char name[50], md5hex[33];
+            unsigned char md5[16];
             char *cont = NULL;
-            const char *name_templ = "Img%s-%s-%s-%s";
+            const char *name_templ = "Img.%s";
             Py_ssize_t name_len = 0;
-            fz_image *image = NULL;
+            fz_image *zimg, *image = NULL;
             fz_try(gctx)
             {
                 assert_PDF(page);
@@ -1791,8 +1793,9 @@ fannot._erase()
                 }
 
                 // create the image
-                // we always create a stencil mask if the image contains an alpha
+                // we always create a mask if the image contains an alpha
                 if (filename)
+                {
                     image = fz_new_image_from_file(gctx, filename);
                     pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
                     if (pix->alpha == 1)
@@ -1804,9 +1807,14 @@ fannot._erase()
                         for (i = 0; i < pix->w * pix->h; i++)
                             t[i] = s[j + i * pix->n];
                         mask = fz_new_image_from_pixmap(gctx, pm, NULL);
-                        image = fz_new_image_from_pixmap(gctx, pix, mask);
+                        zimg = fz_new_image_from_pixmap(gctx, pix, mask);
+                        fz_drop_image(gctx, image);
+                        image = zimg;
+                        zimg = NULL;
                     }
-                else if (pixmap)
+                }
+                if (pixmap)
+                {
                     if (pixmap->alpha == 0)
                         image = fz_new_image_from_pixmap(gctx, pixmap, NULL);
                     else
@@ -1821,28 +1829,39 @@ fannot._erase()
                         mask = fz_new_image_from_pixmap(gctx, pm, NULL);
                         image = fz_new_image_from_pixmap(gctx, pixmap, mask);
                     }
-
+                }
                 // put image in the PDF
-                ref = JM_add_image(gctx, pdf, image, 0);
-
-                // we need a unique name for image and combine image size, page xref,
-                // and top-left coordinates for this:
-                snprintf(size_str, 15, "%i", (int) fz_image_size(gctx, image));
-                snprintf(xref_str, 15, "%i", (int) pdf_to_num(gctx, page->obj));
-                snprintf(name, 50, name_templ, size_str, xref_str, X, Y);
+                ref = JM_add_image(gctx, pdf, image, 0, md5);
+                // we need a unique image name:
+                // take md5 code of image
+                hexlify(16, md5, md5hex);
+                snprintf(name, 50, name_templ, md5hex);
                 pdf_dict_puts(gctx, subres, name, ref);
 
                 // retrieve and update contents stream
-                if (pdf_is_array(gctx, contents))
-                {            // take last if more than one contents object
-                    int i = pdf_array_len(gctx, contents) - 1;
+                if (pdf_is_array(gctx, contents))     // multiple contents obj
+                {   // choose the right one
+                    if (overlay == 1) i = pdf_array_len(gctx, contents) - 1;
+                    else              i = 0;
                     contents = pdf_array_get(gctx, contents, i);
                 }
                 res = pdf_load_stream(gctx, contents);
                 if (!res) THROWMSG("bad PDF: Contents is no stream object");
-
-                // append our string to contents
-                fz_append_printf(gctx, res, template, W, H, X, Y, name);
+                nres = fz_new_buffer(gctx, 1024);
+                // insert our string into contents buffer
+                fz_append_printf(gctx, nres, template, W, H, X, Y, name);
+                if (overlay == 1)      // append our string
+                {
+                    fz_append_buffer(gctx, res, nres);
+                    fz_drop_buffer(gctx, nres);
+                    nres = NULL;
+                }
+                else                   // prepend our string
+                {
+                    fz_append_buffer(gctx, nres, res);
+                    fz_drop_buffer(gctx, res);
+                    res = nres;
+                }
                 fz_terminate_buffer(gctx, res);
                 pdf_dict_put(gctx, contents, PDF_NAME_Filter,
                              PDF_NAME_FlateDecode);

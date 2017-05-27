@@ -10,7 +10,7 @@
 // Start
 //=============================================================================
 
-static void
+void
 JM_fz_md5_image(fz_context *ctx, fz_image *image, unsigned char digest[16])
 {
     fz_pixmap *pixmap;
@@ -31,7 +31,7 @@ JM_fz_md5_image(fz_context *ctx, fz_image *image, unsigned char digest[16])
     fz_drop_pixmap(ctx, pixmap);
 }
 
-static void
+void
 JM_pdf_preload_image_resources(fz_context *ctx, pdf_document *doc)
 {
     int len, k;
@@ -99,9 +99,8 @@ JM_pdf_find_image_resource(fz_context *ctx, pdf_document *doc, fz_image *item, u
 }
 
 pdf_obj *
-JM_add_image(fz_context *ctx, pdf_document *doc, fz_image *image, int mask)
+JM_add_image(fz_context *ctx, pdf_document *doc, fz_image *image, int mask, unsigned char *digest)
 {
-    unsigned char digest[16];
     pdf_obj *imref = NULL;
     imref = JM_pdf_find_image_resource(ctx, doc, image, digest);
     if (imref) return imref;
@@ -111,6 +110,24 @@ JM_add_image(fz_context *ctx, pdf_document *doc, fz_image *image, int mask)
 // End
 // Circumvention of MuPDF bug in pdf_preload_image_resources
 //=============================================================================
+
+void hexlify(int n, unsigned char *in, unsigned char *out)
+{
+    const unsigned char hdigit[16] = "0123456789abcedf";
+    int i, i1, i2;
+    for (i = 0; i < n; i++)
+    {
+        i1 = in[i]>>4;
+        i2 = in[i] - i1*16;
+        out[2*i] = hdigit[i1];
+        out[2*i + 1] = hdigit[i2];
+    }
+    out[2*n] = 0;
+}
+
+
+
+
 
 //----------------------------------------------------------------------------
 // Return set(dict.keys()) <= set([vkeys, ...])

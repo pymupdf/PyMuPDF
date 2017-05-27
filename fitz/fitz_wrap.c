@@ -3374,7 +3374,7 @@ fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page)
 // Start
 //=============================================================================
 
-static void
+void
 JM_fz_md5_image(fz_context *ctx, fz_image *image, unsigned char digest[16])
 {
     fz_pixmap *pixmap;
@@ -3395,7 +3395,7 @@ JM_fz_md5_image(fz_context *ctx, fz_image *image, unsigned char digest[16])
     fz_drop_pixmap(ctx, pixmap);
 }
 
-static void
+void
 JM_pdf_preload_image_resources(fz_context *ctx, pdf_document *doc)
 {
     int len, k;
@@ -3463,9 +3463,8 @@ JM_pdf_find_image_resource(fz_context *ctx, pdf_document *doc, fz_image *item, u
 }
 
 pdf_obj *
-JM_add_image(fz_context *ctx, pdf_document *doc, fz_image *image, int mask)
+JM_add_image(fz_context *ctx, pdf_document *doc, fz_image *image, int mask, unsigned char *digest)
 {
-    unsigned char digest[16];
     pdf_obj *imref = NULL;
     imref = JM_pdf_find_image_resource(ctx, doc, image, digest);
     if (imref) return imref;
@@ -3475,6 +3474,24 @@ JM_add_image(fz_context *ctx, pdf_document *doc, fz_image *image, int mask)
 // End
 // Circumvention of MuPDF bug in pdf_preload_image_resources
 //=============================================================================
+
+void hexlify(int n, unsigned char *in, unsigned char *out)
+{
+    const unsigned char hdigit[16] = "0123456789abcedf";
+    int i, i1, i2;
+    for (i = 0; i < n; i++)
+    {
+        i1 = in[i]>>4;
+        i2 = in[i] - i1*16;
+        out[2*i] = hdigit[i1];
+        out[2*i + 1] = hdigit[i2];
+    }
+    out[2*n] = 0;
+}
+
+
+
+
 
 //----------------------------------------------------------------------------
 // Return set(dict.keys()) <= set([vkeys, ...])
@@ -5840,7 +5857,7 @@ SWIGINTERN PyObject *fz_page_s__getLinkXrefs(struct fz_page_s *self){
                 }
             return linkxrefs;
         }
-SWIGINTERN int fz_page_s_insertImage(struct fz_page_s *self,struct fz_rect_s *rect,char const *filename,struct fz_pixmap_s *pixmap){
+SWIGINTERN int fz_page_s_insertImage(struct fz_page_s *self,struct fz_rect_s *rect,char const *filename,struct fz_pixmap_s *pixmap,int overlay){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
             pdf_document *pdf;
             fz_pixmap *pm = NULL;
@@ -5856,11 +5873,13 @@ SWIGINTERN int fz_page_s_insertImage(struct fz_page_s *self,struct fz_rect_s *re
             Py_ssize_t c_len = 0;
             fz_rect prect = { 0, 0, 0, 0};
             fz_bound_page(gctx, self, &prect);
-            char X[15], Y[15], W[15], H[15], size_str[15], xref_str[15], name[50];
+            char X[15], Y[15], W[15], H[15];
+            char name[50], md5hex[33];
+            unsigned char md5[16];
             char *cont = NULL;
-            const char *name_templ = "Img%s-%s-%s-%s";
+            const char *name_templ = "Img.%s";
             Py_ssize_t name_len = 0;
-            fz_image *image = NULL;
+            fz_image *zimg, *image = NULL;
             fz_try(gctx)
             {
                 /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
@@ -5899,8 +5918,9 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "rect must be finite and not empty")
                 }
 
                 // create the image
-                // we always create a stencil mask if the image contains an alpha
+                // we always create a mask if the image contains an alpha
                 if (filename)
+                {
                     image = fz_new_image_from_file(gctx, filename);
                     pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
                     if (pix->alpha == 1)
@@ -5912,9 +5932,14 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "rect must be finite and not empty")
                         for (i = 0; i < pix->w * pix->h; i++)
                             t[i] = s[j + i * pix->n];
                         mask = fz_new_image_from_pixmap(gctx, pm, NULL);
-                        image = fz_new_image_from_pixmap(gctx, pix, mask);
+                        zimg = fz_new_image_from_pixmap(gctx, pix, mask);
+                        fz_drop_image(gctx, image);
+                        image = zimg;
+                        zimg = NULL;
                     }
-                else if (pixmap)
+                }
+                if (pixmap)
+                {
                     if (pixmap->alpha == 0)
                         image = fz_new_image_from_pixmap(gctx, pixmap, NULL);
                     else
@@ -5929,30 +5954,41 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "rect must be finite and not empty")
                         mask = fz_new_image_from_pixmap(gctx, pm, NULL);
                         image = fz_new_image_from_pixmap(gctx, pixmap, mask);
                     }
-
+                }
                 // put image in the PDF
-                ref = JM_add_image(gctx, pdf, image, 0);
-
-                // we need a unique name for image and combine image size, page xref,
-                // and top-left coordinates for this:
-                snprintf(size_str, 15, "%i", (int) fz_image_size(gctx, image));
-                snprintf(xref_str, 15, "%i", (int) pdf_to_num(gctx, page->obj));
-                snprintf(name, 50, name_templ, size_str, xref_str, X, Y);
+                ref = JM_add_image(gctx, pdf, image, 0, md5);
+                // we need a unique image name:
+                // take md5 code of image
+                hexlify(16, md5, md5hex);
+                snprintf(name, 50, name_templ, md5hex);
                 pdf_dict_puts(gctx, subres, name, ref);
 
                 // retrieve and update contents stream
-                if (pdf_is_array(gctx, contents))
-                {            // take last if more than one contents object
-                    int i = pdf_array_len(gctx, contents) - 1;
+                if (pdf_is_array(gctx, contents))     // multiple contents obj
+                {   // choose the right one
+                    if (overlay == 1) i = pdf_array_len(gctx, contents) - 1;
+                    else              i = 0;
                     contents = pdf_array_get(gctx, contents, i);
                 }
                 res = pdf_load_stream(gctx, contents);
                 if (!res) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: Contents is no stream object")
 /*@SWIG@*/;
-
-                // append our string to contents
-                fz_append_printf(gctx, res, template, W, H, X, Y, name);
+                nres = fz_new_buffer(gctx, 1024);
+                // insert our string into contents buffer
+                fz_append_printf(gctx, nres, template, W, H, X, Y, name);
+                if (overlay == 1)      // append our string
+                {
+                    fz_append_buffer(gctx, res, nres);
+                    fz_drop_buffer(gctx, nres);
+                    nres = NULL;
+                }
+                else                   // prepend our string
+                {
+                    fz_append_buffer(gctx, nres, res);
+                    fz_drop_buffer(gctx, res);
+                    res = nres;
+                }
                 fz_terminate_buffer(gctx, res);
                 pdf_dict_put(gctx, contents, PDF_NAME_Filter,
                              PDF_NAME_FlateDecode);
@@ -9661,6 +9697,7 @@ SWIGINTERN PyObject *_wrap_Page_insertImage(PyObject *SWIGUNUSEDPARM(self), PyOb
   struct fz_rect_s *arg2 = (struct fz_rect_s *) 0 ;
   char *arg3 = (char *) NULL ;
   struct fz_pixmap_s *arg4 = (struct fz_pixmap_s *) NULL ;
+  int arg5 = (int) 1 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -9670,13 +9707,16 @@ SWIGINTERN PyObject *_wrap_Page_insertImage(PyObject *SWIGUNUSEDPARM(self), PyOb
   int alloc3 = 0 ;
   void *argp4 = 0 ;
   int res4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO|OO:Page_insertImage",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO|OOO:Page_insertImage",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_insertImage" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
@@ -9701,8 +9741,15 @@ SWIGINTERN PyObject *_wrap_Page_insertImage(PyObject *SWIGUNUSEDPARM(self), PyOb
     }
     arg4 = (struct fz_pixmap_s *)(argp4);
   }
+  if (obj4) {
+    ecode5 = SWIG_AsVal_int(obj4, &val5);
+    if (!SWIG_IsOK(ecode5)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "Page_insertImage" "', argument " "5"" of type '" "int""'");
+    } 
+    arg5 = (int)(val5);
+  }
   {
-    result = (int)fz_page_s_insertImage(arg1,arg2,(char const *)arg3,arg4);
+    result = (int)fz_page_s_insertImage(arg1,arg2,(char const *)arg3,arg4,arg5);
     if(result<0) {
       PyErr_SetString(PyExc_Exception, gctx->error->message);
       return NULL;

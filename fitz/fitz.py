@@ -103,7 +103,7 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.0"
-VersionDate = "2017-05-26 15:52:19"
+VersionDate = "2017-05-27 16:23:47"
 
 #------------------------------------------------------------------------------
 # link kinds and link flags
@@ -903,13 +903,13 @@ class Page(_object):
         return _fitz.Page__getLinkXrefs(self)
 
 
-    def insertImage(self, rect, filename=None, pixmap=None):
+    def insertImage(self, rect, filename=None, pixmap=None, overlay=1):
         """Insert a new image in a rectangle."""
         if hasattr(self, "parent"):
             if self.parent is None:
                 raise RuntimeError("orphaned object: parent is None")
 
-        return _fitz.Page_insertImage(self, rect, filename, pixmap)
+        return _fitz.Page_insertImage(self, rect, filename, pixmap, overlay)
 
 
     def insertText(self, point, text=None, fontsize=11, fontname=None, color=None):
