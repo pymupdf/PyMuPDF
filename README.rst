@@ -92,7 +92,7 @@ PyMuPDF is distributed under GNU GPL V3.
 Contact
 =======
 
-You can also find PyMuPDF on the Python Package Index `PyPI <https://pypi.python.org/pypi/PyMuPDF/1.10.0>`_.
+You can also find PyMuPDF on the Python Package Index `PyPI <https://pypi.python.org/pypi/PyMuPDF/1.11.0>`_.
 
 We invite you to join our efforts by contributing to the the wiki pages.
 
