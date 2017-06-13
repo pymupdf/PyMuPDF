@@ -98,12 +98,11 @@ except __builtin__.Exception:
 
 import weakref
 from binascii import hexlify
-import math
 import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.0"
-VersionDate = "2017-05-27 16:23:47"
+VersionDate = "2017-06-13 06:15:22"
 
 #------------------------------------------------------------------------------
 # link kinds and link flags
@@ -256,10 +255,77 @@ def getPDFstr(s, brackets = True):
     t = r.decode("utf-8")                        # make str in Python 3
     return "<" + t + ">"                         # brackets indicate hex
 
+'''
+www.din-formate.de
+www.din-formate.info/amerikanische-formate.html
+www.directtools.de/wissen/normen/iso.htm
+'''
+def PaperSize(s):
+    """Return a tuple (width, height) for a given paper format string. 'A4-L' will
+    return (842, 595), the values for A4 landscape. Suffix '-P' and no suffix
+    returns portrait."""
+    sizes = {                     # known paper formats @ 72 dpi
+        'a0': (2384, 3370),
+        'a1': (1684, 2384),
+        'a10': (74, 105),
+        'a2': (1191, 1684),
+        'a3': (842, 1191),
+        'a4': (595, 842),
+        'a5': (420, 595),
+        'a6': (298, 420),
+        'a7': (210, 298),
+        'a8': (147, 210),
+        'a9': (105, 147),
+        'b0': (2835, 4008),
+        'b1': (2004, 2835),
+        'b10': (88, 125),
+        'b2': (1417, 2004),
+        'b3': (1001, 1417),
+        'b4': (709, 1001),
+        'b5': (499, 709),
+        'b6': (354, 499),
+        'b7': (249, 354),
+        'b8': (176, 249),
+        'b9': (125, 176),
+        'c0': (2599, 3677),
+        'c1': (1837, 2599),
+        'c10': (79, 113),
+        'c2': (1298, 1837),
+        'c3': (918, 1298),
+        'c4': (649, 918),
+        'c5': (459, 649),
+        'c6': (323, 459),
+        'c7': (230, 323),
+        'c8': (162, 230),
+        'c9': (113, 162),
+        'card-4x6': (288, 432),
+        'card-5x7': (360, 504),
+        'commercial': (297, 684),
+        'executive': (522, 756),
+        'invoice': (396, 612),
+        'ledger': (792, 1224),
+        'legal': (612, 1008),
+        'legal-13': (612, 936),
+        'letter': (612, 792),
+        'monarch': (279, 540),
+        'tabloid-extra': (864, 1296),
+        }
+    size = s.lower()
+    f = "p"
+    if size.endswith("-l"):
+        f = "l"
+        size = size[:-2]
+    if size.endswith("-p"):
+        size = size[:-2]
+    rc = sizes.get(size, (-1, -1))
+    if f == "p":
+        return rc
+    return (rc[1], rc[0])
+
 
 class Document(_object):
     """open() - new empty PDF
-open('pdf', stream) - bytes/bytearray 'stream'/string
+open('pdf', stream) - 'stream': bytes/bytearray/string
 open(filename)"""
 
     __swig_setmethods__ = {}
@@ -481,7 +547,7 @@ open(filename)"""
         if filename == self.name and not incremental:
             raise ValueError("save to original requires incremental")
         if incremental and (self.name != filename or self.streamlen > 0):
-            raise ValueError("incremental save requires original file")
+            raise ValueError("incremental save needs original file")
 
 
         return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear)
@@ -547,7 +613,7 @@ open(filename)"""
         return val
 
 
-    def insertPage(self, to=-1, text=None, fontsize=11, width=595, height=842, fontname=None):
+    def insertPage(self, to=-1, text=None, fontsize=11, width=595, height=842, fontname=None, color=None):
         """Insert a new page in front of 'to'."""
 
         if self.isClosed:
@@ -562,13 +628,12 @@ open(filename)"""
             text = tab
         else:
             text = []
-        # ensure 'fontname' is valid if specified
-        if fontname is not None:
-            if fontname not in Base14_fontnames:
-                fontname = "Helvetica"
+        # ensure 'fontname' is valid
+        if fontname is None or fontname not in Base14_fontnames:
+            fontname = "Helvetica"
 
 
-        val = _fitz.Document_insertPage(self, to, text, fontsize, width, height, fontname)
+        val = _fitz.Document_insertPage(self, to, text, fontsize, width, height, fontname, color)
         if val == 0: self._reset_page_refs()
 
         return val
@@ -682,21 +747,21 @@ open(filename)"""
         return _fitz.Document__delXmlMetadata(self)
 
 
-    def _getObjectString(self, xnum):
-        """_getObjectString(self, xnum) -> char const *"""
+    def _getObjectString(self, xref):
+        """_getObjectString(self, xref) -> char const *"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
-        return _fitz.Document__getObjectString(self, xnum)
+        return _fitz.Document__getObjectString(self, xref)
 
     _getXrefString = _getObjectString
 
-    def _getXrefStream(self, xnum):
-        """_getXrefStream(self, xnum) -> PyObject *"""
+    def _getXrefStream(self, xref):
+        """_getXrefStream(self, xref) -> PyObject *"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
-        return _fitz.Document__getXrefStream(self, xnum)
+        return _fitz.Document__getXrefStream(self, xref)
 
 
     def _updateObject(self, xref, text, page=None):
@@ -705,6 +770,14 @@ open(filename)"""
             raise RuntimeError("operation illegal for closed doc")
 
         return _fitz.Document__updateObject(self, xref, text, page)
+
+
+    def _updateStream(self, xref, stream):
+        """_updateStream(self, xref, stream) -> int"""
+        if self.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+
+        return _fitz.Document__updateStream(self, xref, stream)
 
 
     def _setMetadata(self, text):
@@ -779,9 +852,8 @@ class Page(_object):
 
     def bound(self):
         """bound(self) -> Rect"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         val = _fitz.Page_bound(self)
 
@@ -795,18 +867,16 @@ class Page(_object):
 
     def run(self, dw, m):
         """run(self, dw, m) -> int"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Page_run(self, dw, m)
 
 
     def loadLinks(self):
         """loadLinks(self) -> Link"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         val = _fitz.Page_loadLinks(self)
         if val:
@@ -821,9 +891,8 @@ class Page(_object):
 
     def firstAnnot(self):
         """firstAnnot points to first annot on page"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         val = _fitz.Page_firstAnnot(self)
         if val:
@@ -836,9 +905,8 @@ class Page(_object):
 
     def deleteLink(self, linkdict):
         """Delete link if PDF"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         val = _fitz.Page_deleteLink(self, linkdict)
         if linkdict["xref"] == 0: return
@@ -855,9 +923,8 @@ class Page(_object):
 
     def deleteAnnot(self, fannot):
         """Delete annot if PDF and return next one"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         val = _fitz.Page_deleteAnnot(self, fannot)
         if val:
@@ -873,27 +940,24 @@ class Page(_object):
 
     def rotation(self):
         """Retrieve page rotation."""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Page_rotation(self)
 
 
     def setRotation(self, rot):
         """Set page rotation to 'rot' degrees."""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Page_setRotation(self, rot)
 
 
     def _addAnnot_FromString(self, linklist):
         """_addAnnot_FromString(self, linklist) -> int"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Page__addAnnot_FromString(self, linklist)
 
@@ -905,9 +969,8 @@ class Page(_object):
 
     def insertImage(self, rect, filename=None, pixmap=None, overlay=1):
         """Insert a new image in a rectangle."""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Page_insertImage(self, rect, filename, pixmap, overlay)
 
@@ -941,11 +1004,23 @@ class Page(_object):
         return _fitz.Page_insertText(self, point, text, fontsize, fontname, color)
 
 
+    def drawLine(self, p1, p2, color=None, width=1, dashes=None):
+        """Draw a line from point 'p1' to 'p2'."""
+        return _fitz.Page_drawLine(self, p1, p2, color, width, dashes)
+
+
+    def _getContents(self):
+        """_getContents(self) -> PyObject *"""
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
+
+        return _fitz.Page__getContents(self)
+
+
     def _getRectText(self, rect):
         """_getRectText(self, rect) -> char const *"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Page__getRectText(self, rect)
 
@@ -1445,12 +1520,9 @@ fitz.Pixmap(doc, xref) - use image in a PDF"""
         return _fitz.Pixmap__writeIMG(self, filename, format, savealpha)
 
 
-    def invertIRect(self, *args):
-        """
-        invertIRect(self)
-        invertIRect(self, irect)
-        """
-        return _fitz.Pixmap_invertIRect(self, *args)
+    def invertIRect(self, irect=None):
+        """invertIRect(self, irect=None)"""
+        return _fitz.Pixmap_invertIRect(self, irect)
 
     @property
 
@@ -1887,45 +1959,40 @@ class Annot(_object):
 
     def rect(self):
         """rect: rectangle containing the annot"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_rect(self)
 
 
     def _getXref(self):
         """return xref number of annotation"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot__getXref(self)
 
 
     def _getAP(self):
         """_getAP: provides operator source of the /AP"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot__getAP(self)
 
 
     def _setAP(self, ap):
         """_setAP: updates operator source of the /AP"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot__setAP(self, ap)
 
 
     def setRect(self, r):
         """setRect: changes the annot's rectangle"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_setRect(self, r)
 
@@ -1933,9 +2000,8 @@ class Annot(_object):
 
     def vertices(self):
         """vertices: point coordinates for various annot types"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_vertices(self)
 
@@ -1943,9 +2009,8 @@ class Annot(_object):
 
     def colors(self):
         """dictionary of the annot's colors"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_colors(self)
 
@@ -1955,9 +2020,8 @@ class Annot(_object):
         setColors(dict)
         Changes the 'common' and 'fill' colors of an annotation. If provided, values must be lists of up to 4 floats.
         """
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_setColors(self, colors)
 
@@ -1965,18 +2029,16 @@ class Annot(_object):
 
     def lineEnds(self):
         """lineEnds(self) -> PyObject *"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_lineEnds(self)
 
 
     def setLineEnds(self, start, end):
         """setLineEnds(self, start, end)"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_setLineEnds(self, start, end)
 
@@ -1984,36 +2046,32 @@ class Annot(_object):
 
     def type(self):
         """type(self) -> PyObject *"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_type(self)
 
 
     def fileInfo(self):
         """Retrieve attached file information."""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_fileInfo(self)
 
 
     def fileGet(self):
         """Retrieve annotation attached file content."""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_fileGet(self)
 
 
     def fileUpd(self, buffer, filename=None):
         """Update annotation attached file content."""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_fileUpd(self, buffer, filename)
 
@@ -2021,18 +2079,16 @@ class Annot(_object):
 
     def info(self):
         """info(self) -> PyObject *"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_info(self)
 
 
     def setInfo(self, info):
         """setInfo(self, info) -> int"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_setInfo(self, info)
 
@@ -2040,18 +2096,16 @@ class Annot(_object):
 
     def border(self):
         """border(self) -> PyObject *"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_border(self)
 
 
     def setBorder(self, border):
         """setBorder(self, border) -> int"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_setBorder(self, border)
 
@@ -2059,18 +2113,16 @@ class Annot(_object):
 
     def flags(self):
         """flags(self) -> int"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_flags(self)
 
 
     def setFlags(self, flags):
         """setFlags(self, flags)"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_setFlags(self, flags)
 
@@ -2078,9 +2130,8 @@ class Annot(_object):
 
     def next(self):
         """next(self) -> Annot"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         val = _fitz.Annot_next(self)
         if val:
@@ -2093,9 +2144,8 @@ class Annot(_object):
 
     def getPixmap(self, matrix=None, colorspace=None, alpha=0):
         """getPixmap(self, matrix=None, colorspace=None, alpha=0) -> Pixmap"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Annot_getPixmap(self, matrix, colorspace, alpha)
 
@@ -2132,9 +2182,8 @@ class Link(_object):
 
     def uri(self):
         """uri(self) -> char *"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Link_uri(self)
 
@@ -2142,9 +2191,8 @@ class Link(_object):
 
     def isExternal(self):
         """isExternal(self) -> int"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Link_isExternal(self)
 
@@ -2163,9 +2211,8 @@ class Link(_object):
 
     def rect(self):
         """rect(self) -> Rect"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         return _fitz.Link_rect(self)
 
@@ -2173,9 +2220,8 @@ class Link(_object):
 
     def next(self):
         """next(self) -> Link"""
-        if hasattr(self, "parent"):
-            if self.parent is None:
-                raise RuntimeError("orphaned object: parent is None")
+        if not hasattr(self, "parent") or self.parent is None:
+            raise RuntimeError("orphaned object: has no parent")
 
         val = _fitz.Link_next(self)
         if val:

@@ -98,8 +98,16 @@ JM_pdf_find_image_resource(fz_context *ctx, pdf_document *doc, fz_image *item, u
     return res;
 }
 
+//-----------------------------------------------------------------------------
+// The following is invoked to add new images to a PDF in PyMuPDF.
+// Its approach is to preload existing images with the routines present here,
+// and then invoke the original pdf_add_image.
+// In order to use an image's md5 code for other purposes, it is handed in here
+// from the PyMuPDF level.
+//-----------------------------------------------------------------------------
 pdf_obj *
-JM_add_image(fz_context *ctx, pdf_document *doc, fz_image *image, int mask, unsigned char *digest)
+JM_add_image(fz_context *ctx, pdf_document *doc, fz_image *image,
+             int mask, unsigned char *digest)
 {
     pdf_obj *imref = NULL;
     imref = JM_pdf_find_image_resource(ctx, doc, image, digest);
@@ -111,6 +119,7 @@ JM_add_image(fz_context *ctx, pdf_document *doc, fz_image *image, int mask, unsi
 // Circumvention of MuPDF bug in pdf_preload_image_resources
 //=============================================================================
 
+// return hex characters for input 'in'
 void hexlify(int n, unsigned char *in, unsigned char *out)
 {
     const unsigned char hdigit[16] = "0123456789abcedf";
