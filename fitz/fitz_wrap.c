@@ -5159,7 +5159,7 @@ SWIG_AsVal_float (PyObject * obj, float *val)
   return res;
 }
 
-SWIGINTERN int fz_document_s_insertPage(struct fz_document_s *self,int to,PyObject *text,float fontsize,float width,float height,char *fontname,PyObject *color){
+SWIGINTERN int fz_document_s_insertPage(struct fz_document_s *self,int to,PyObject *text,float fontsize,float width,float height,char *fontname,char *fontfile,PyObject *color){
             pdf_document *pdf = pdf_specifics(gctx, self);
             const char *templ1 = "BT %g %g %g rg 1 0 0 1 50 %g Tm /%s %g Tf";
             const char *templ2 = "Tj 0 -%g TD\n";
@@ -5241,9 +5241,13 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "fontname must be supplied")
                     if (data)              // base 14 font found
                         font = fz_new_font_from_memory(gctx, font_str, data, size, 0, 0);
                     else
-                        /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    {
+                        if (!fontfile) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "unknown PDF Base 14 font")
 /*@SWIG@*/;
+                        font = fz_new_font_from_file(gctx, NULL, fontfile, 0, 0);
+                    }
+
                     font_obj = pdf_add_simple_font(gctx, pdf, font);
                     fz_drop_font(gctx, font);
                     // resources obj will contain named reference to font
@@ -6092,7 +6096,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: Contents is no stream object")
             fz_catch(gctx) return -1;
             return 0;
         }
-SWIGINTERN int fz_page_s_insertText(struct fz_page_s *self,struct fz_point_s *point,PyObject *text,float fontsize,char const *fontname,PyObject *color){
+SWIGINTERN int fz_page_s_insertText(struct fz_page_s *self,struct fz_point_s *point,PyObject *text,float fontsize,char const *fontname,char const *fontfile,PyObject *color){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
             pdf_document *pdf;
             pdf_obj *resources, *contents, *fonts;
@@ -6214,9 +6218,13 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: Contents is no stream object")
                     if (data)              // base 14 font found
                         font = fz_new_font_from_memory(gctx, fontname, data, size, 0, 0);
                     else
-                        /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
+                    {
+                        if (!fontfile) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "unknown PDF Base 14 font")
 /*@SWIG@*/;
+                        font = fz_new_font_from_file(gctx, NULL, fontfile, 0, 0);
+                    }
+
                     font_obj = pdf_add_simple_font(gctx, pdf, font);
                     fz_drop_font(gctx, font);
                     // resources obj will contain named reference to font
@@ -8955,7 +8963,8 @@ SWIGINTERN PyObject *_wrap_Document_insertPage(PyObject *SWIGUNUSEDPARM(self), P
   float arg5 = (float) 595 ;
   float arg6 = (float) 842 ;
   char *arg7 = (char *) NULL ;
-  PyObject *arg8 = (PyObject *) NULL ;
+  char *arg8 = (char *) NULL ;
+  PyObject *arg9 = (PyObject *) NULL ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
@@ -8969,6 +8978,9 @@ SWIGINTERN PyObject *_wrap_Document_insertPage(PyObject *SWIGUNUSEDPARM(self), P
   int res7 ;
   char *buf7 = 0 ;
   int alloc7 = 0 ;
+  int res8 ;
+  char *buf8 = 0 ;
+  int alloc8 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -8977,9 +8989,10 @@ SWIGINTERN PyObject *_wrap_Document_insertPage(PyObject *SWIGUNUSEDPARM(self), P
   PyObject * obj5 = 0 ;
   PyObject * obj6 = 0 ;
   PyObject * obj7 = 0 ;
+  PyObject * obj8 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O|OOOOOOO:Document_insertPage",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O|OOOOOOOO:Document_insertPage",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_insertPage" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
@@ -9024,10 +9037,17 @@ SWIGINTERN PyObject *_wrap_Document_insertPage(PyObject *SWIGUNUSEDPARM(self), P
     arg7 = (char *)(buf7);
   }
   if (obj7) {
-    arg8 = obj7;
+    res8 = SWIG_AsCharPtrAndSize(obj7, &buf8, NULL, &alloc8);
+    if (!SWIG_IsOK(res8)) {
+      SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "Document_insertPage" "', argument " "8"" of type '" "char *""'");
+    }
+    arg8 = (char *)(buf8);
+  }
+  if (obj8) {
+    arg9 = obj8;
   }
   {
-    result = (int)fz_document_s_insertPage(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8);
+    result = (int)fz_document_s_insertPage(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9);
     if(result<0)
     {
       PyErr_SetString(PyExc_Exception, gctx->error->message);
@@ -9036,9 +9056,11 @@ SWIGINTERN PyObject *_wrap_Document_insertPage(PyObject *SWIGUNUSEDPARM(self), P
   }
   resultobj = SWIG_From_int((int)(result));
   if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
+  if (alloc8 == SWIG_NEWOBJ) free((char*)buf8);
   return resultobj;
 fail:
   if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
+  if (alloc8 == SWIG_NEWOBJ) free((char*)buf8);
   return NULL;
 }
 
@@ -10041,7 +10063,8 @@ SWIGINTERN PyObject *_wrap_Page_insertText(PyObject *SWIGUNUSEDPARM(self), PyObj
   PyObject *arg3 = (PyObject *) NULL ;
   float arg4 = (float) 11 ;
   char *arg5 = (char *) NULL ;
-  PyObject *arg6 = (PyObject *) NULL ;
+  char *arg6 = (char *) NULL ;
+  PyObject *arg7 = (PyObject *) NULL ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -10051,15 +10074,19 @@ SWIGINTERN PyObject *_wrap_Page_insertText(PyObject *SWIGUNUSEDPARM(self), PyObj
   int res5 ;
   char *buf5 = 0 ;
   int alloc5 = 0 ;
+  int res6 ;
+  char *buf6 = 0 ;
+  int alloc6 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
   PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO|OOOO:Page_insertText",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO|OOOOO:Page_insertText",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_insertText" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
@@ -10088,10 +10115,17 @@ SWIGINTERN PyObject *_wrap_Page_insertText(PyObject *SWIGUNUSEDPARM(self), PyObj
     arg5 = (char *)(buf5);
   }
   if (obj5) {
-    arg6 = obj5;
+    res6 = SWIG_AsCharPtrAndSize(obj5, &buf6, NULL, &alloc6);
+    if (!SWIG_IsOK(res6)) {
+      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "Page_insertText" "', argument " "6"" of type '" "char const *""'");
+    }
+    arg6 = (char *)(buf6);
+  }
+  if (obj6) {
+    arg7 = obj6;
   }
   {
-    result = (int)fz_page_s_insertText(arg1,arg2,arg3,arg4,(char const *)arg5,arg6);
+    result = (int)fz_page_s_insertText(arg1,arg2,arg3,arg4,(char const *)arg5,(char const *)arg6,arg7);
     if(result<0)
     {
       PyErr_SetString(PyExc_Exception, gctx->error->message);
@@ -10100,9 +10134,11 @@ SWIGINTERN PyObject *_wrap_Page_insertText(PyObject *SWIGUNUSEDPARM(self), PyObj
   }
   resultobj = SWIG_From_int((int)(result));
   if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
   return resultobj;
 fail:
   if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
   return NULL;
 }
 

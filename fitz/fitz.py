@@ -102,7 +102,7 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.0"
-VersionDate = "2017-06-13 06:15:22"
+VersionDate = "2017-06-14 07:51:19"
 
 #------------------------------------------------------------------------------
 # link kinds and link flags
@@ -613,7 +613,7 @@ open(filename)"""
         return val
 
 
-    def insertPage(self, to=-1, text=None, fontsize=11, width=595, height=842, fontname=None, color=None):
+    def insertPage(self, to=-1, text=None, fontsize=11, width=595, height=842, fontname=None, fontfile=None, color=None):
         """Insert a new page in front of 'to'."""
 
         if self.isClosed:
@@ -629,11 +629,12 @@ open(filename)"""
         else:
             text = []
         # ensure 'fontname' is valid
-        if fontname is None or fontname not in Base14_fontnames:
-            fontname = "Helvetica"
+        if not fontfile:
+            if (not fontname) or fontname not in Base14_fontnames:
+                fontname = "Helvetica"
 
 
-        val = _fitz.Document_insertPage(self, to, text, fontsize, width, height, fontname, color)
+        val = _fitz.Document_insertPage(self, to, text, fontsize, width, height, fontname, fontfile, color)
         if val == 0: self._reset_page_refs()
 
         return val
@@ -975,7 +976,7 @@ class Page(_object):
         return _fitz.Page_insertImage(self, rect, filename, pixmap, overlay)
 
 
-    def insertText(self, point, text=None, fontsize=11, fontname=None, color=None):
+    def insertText(self, point, text=None, fontsize=11, fontname=None, fontfile=None, color=None):
         """Insert new text on a page."""
 
         if not self.parent:
@@ -991,17 +992,18 @@ class Page(_object):
         else:
             text = []
         # ensure valid 'fontname'
-        if fontname is None:
-            fontname = "Helvetica"
-        else:
-            if fontname.startswith("/"):
-                fontlist = self.parent.getPageFontList(self.number)
-                fontrefs = [fontlist[i][4] for i in range(len(fontlist))]
-                assert fontname[1:] in fontrefs, "invalid font name reference: " + fontname
-            elif fontname not in Base14_fontnames:
+        if not fontfile:
+            if not fontname:
                 fontname = "Helvetica"
+            else:
+                if fontname.startswith("/"):
+                    fontlist = self.parent.getPageFontList(self.number)
+                    fontrefs = [fontlist[i][4] for i in range(len(fontlist))]
+                    assert fontname[1:] in fontrefs, "invalid font name reference: " + fontname
+                elif fontname not in Base14_fontnames:
+                    fontname = "Helvetica"
 
-        return _fitz.Page_insertText(self, point, text, fontsize, fontname, color)
+        return _fitz.Page_insertText(self, point, text, fontsize, fontname, fontfile, color)
 
 
     def drawLine(self, p1, p2, color=None, width=1, dashes=None):

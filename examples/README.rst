@@ -16,22 +16,23 @@ Files in this Directory
 ======================= ===========================================================================================
 File                    Purpose
 ======================= ===========================================================================================
+cal-maker.py            creates a PDF with 3-year calendars
+csv2meta.py             load a PDF metadata dictionary from a CSV file's contents
+csv2toc.py              load a PDF TOC (table of contents) from a CSV file's contents
 embedded-copy.py        copies embedded files between source and target PDF
-embedded-list.py        lists emdedded file infos of a PDF
-embedded-import.py      embeds a new file into a PDF
 embedded-export.py      exports an emdedded file from a PDF
-PDFjoiner.py            a full-featured program to join PDF files
-PDFoutline.py           a program to edit a PDF's table of contents
-PDFoutlineHelp.html     help for PDFoutline.py
-PDFoptimizer.py         a wrapper for FileOptimizer - see WIKI page
+embedded-import.py      embeds a new file into a PDF
+embedded-list.py        lists emdedded file infos of a PDF
+meta2csv.py             export a document metadata dictionary to a CSV file
+PageFormat.py           function returns a page's paper format
+ParseTab.py             a function to parse tables within documents
 PDF2Text.py             a program to extract all text of a PDF
 PDF2TextJS.py           a program to extract all text of a PDF preserving normal reading sequence
-ParseTab.py             a function to parse tables within documents
-PageFormat.py           function returns a page's paper format
+PDFjoiner.py            a full-featured program to join PDF files
+PDFoptimizer.py         a wrapper for FileOptimizer - see WIKI page
+PDFoutline.py           a program to edit a PDF's table of contents
+PDFoutlineHelp.html     help for PDFoutline.py
 TableExtract.py         example CLI program using ParseTab
-wxTableExtract.py       full-featured GUI using ParseTab. Supports automatic and manual column definitions
-csv2toc.py              load a PDF TOC (table of contents) from a CSV file's contents
 toc2csv.py              export a document TOC (Table of contents) to a CSV file
-csv2meta.py             load a PDF metadata dictionary from a CSV file's contents
-meta2csv.py             export a document metadata dictionary to a CSV file
+wxTableExtract.py       full-featured GUI using ParseTab. Supports automatic and manual column definitions
 ======================= ===========================================================================================

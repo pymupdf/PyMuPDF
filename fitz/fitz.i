@@ -813,13 +813,15 @@ if sa < 0:
         else:
             text = []
         # ensure 'fontname' is valid
-        if fontname is None or fontname not in Base14_fontnames:
-            fontname = "Helvetica"
+        if not fontfile:
+            if (not fontname) or fontname not in Base14_fontnames:
+                fontname = "Helvetica"
         %}
         %pythonappend insertPage %{if val == 0: self._reset_page_refs()%}
         int insertPage(int to = -1, PyObject *text = NULL, float fontsize = 11,
                        float width = 595, float height = 842,
-                       char *fontname = NULL, PyObject *color = NULL)
+                       char *fontname = NULL, char *fontfile = NULL,
+                       PyObject *color = NULL)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
             const char *templ1 = "BT %g %g %g rg 1 0 0 1 50 %g Tm /%s %g Tf";
@@ -892,7 +894,11 @@ if sa < 0:
                     if (data)              // base 14 font found
                         font = fz_new_font_from_memory(gctx, font_str, data, size, 0, 0);
                     else
-                        THROWMSG("unknown PDF Base 14 font");
+                    {
+                        if (!fontfile) THROWMSG("unknown PDF Base 14 font");
+                        font = fz_new_font_from_file(gctx, NULL, fontfile, 0, 0);
+                    }
+
                     font_obj = pdf_add_simple_font(gctx, pdf, font);
                     fz_drop_font(gctx, font);
                     // resources obj will contain named reference to font
@@ -1959,17 +1965,20 @@ fannot._erase()
         else:
             text = []
         # ensure valid 'fontname'
-        if fontname is None:
-            fontname = "Helvetica"
-        else:
-            if fontname.startswith("/"):
-                fontlist = self.parent.getPageFontList(self.number)
-                fontrefs = [fontlist[i][4] for i in range(len(fontlist))]
-                assert fontname[1:] in fontrefs, "invalid font name reference: " + fontname
-            elif fontname not in Base14_fontnames:
-                fontname = "Helvetica"%}
+        if not fontfile:
+            if not fontname:
+                fontname = "Helvetica"
+            else:
+                if fontname.startswith("/"):
+                    fontlist = self.parent.getPageFontList(self.number)
+                    fontrefs = [fontlist[i][4] for i in range(len(fontlist))]
+                    assert fontname[1:] in fontrefs, "invalid font name reference: " + fontname
+                elif fontname not in Base14_fontnames:
+                    fontname = "Helvetica"%}
         %feature("autodoc", "Insert new text on a page.") insertText;
-        int insertText(struct fz_point_s *point, PyObject *text = NULL, float fontsize = 11, const char *fontname = NULL, PyObject *color = NULL)
+        int insertText(struct fz_point_s *point, PyObject *text = NULL,
+                       float fontsize = 11, const char *fontname = NULL,
+                       const char *fontfile = NULL, PyObject *color = NULL)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_document *pdf;
@@ -2074,7 +2083,11 @@ fannot._erase()
                     if (data)              // base 14 font found
                         font = fz_new_font_from_memory(gctx, fontname, data, size, 0, 0);
                     else
-                        THROWMSG("unknown PDF Base 14 font");
+                    {
+                        if (!fontfile) THROWMSG("unknown PDF Base 14 font");
+                        font = fz_new_font_from_file(gctx, NULL, fontfile, 0, 0);
+                    }
+
                     font_obj = pdf_add_simple_font(gctx, pdf, font);
                     fz_drop_font(gctx, font);
                     // resources obj will contain named reference to font
