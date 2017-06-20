@@ -155,11 +155,7 @@ www.din-formate.de
 www.din-formate.info/amerikanische-formate.html
 www.directtools.de/wissen/normen/iso.htm
 '''
-def PaperSize(s):
-    """Return a tuple (width, height) for a given paper format string. 'A4-L' will
-    return (842, 595), the values for A4 landscape. Suffix '-P' and no suffix
-    returns portrait."""
-    sizes = {                     # known paper formats @ 72 dpi
+paperSizes = {                     # known paper formats @ 72 dpi
         'a0': (2384, 3370),
         'a1': (1684, 2384),
         'a10': (74, 105),
@@ -205,6 +201,10 @@ def PaperSize(s):
         'monarch': (279, 540),
         'tabloid-extra': (864, 1296),
         }
+def PaperSize(s):
+    """Return a tuple (width, height) for a given paper format string. 'A4-L' will
+    return (842, 595), the values for A4 landscape. Suffix '-P' and no suffix
+    returns portrait."""
     size = s.lower()
     f = "p"
     if size.endswith("-l"):
@@ -212,7 +212,7 @@ def PaperSize(s):
         size = size[:-2]
     if size.endswith("-p"):
         size = size[:-2]
-    rc = sizes.get(size, (-1, -1))
+    rc = paperSizes.get(size, (-1, -1))
     if f == "p":
         return rc
     return (rc[1], rc[0])

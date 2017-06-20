@@ -200,7 +200,7 @@ fz_buffer *deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
     size_t cap;
 
     if (n != (size_t)longN)
-        fz_throw(ctx, FZ_ERROR_GENERIC, "Buffer to large to deflate");
+        fz_throw(ctx, FZ_ERROR_GENERIC, "buffer too large to deflate");
 
     cap = compressBound(longN);
     data = fz_malloc(ctx, cap);

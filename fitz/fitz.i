@@ -31,7 +31,7 @@
 %define PARENTCHECK(meth)
 %pythonprepend meth
 %{if not hasattr(self, "parent") or self.parent is None:
-    raise RuntimeError("orphaned object: has no parent")%}
+    raise RuntimeError("orphaned object: parent is None")%}
 %enddef
 //=============================================================================
 
@@ -125,7 +125,7 @@ struct fz_document_s
             elif type(filename) == unicode:
                 filename = filename.encode('utf8')
             else:
-                raise TypeError("if specified, filename must be a string.")
+                raise TypeError("filename must be string or None")
             self.name = filename if filename else ""
             self.streamlen = len(stream) if stream else 0
             if stream and not filename:
@@ -859,7 +859,7 @@ if sa < 0:
                     green = (float) PyFloat_AsDouble(PySequence_GetItem(color, 1));
                     blue  = (float) PyFloat_AsDouble(PySequence_GetItem(color, 2));
                     if (red < 0 || red > 1 || green < 0 || green > 1 || blue < 0 || blue > 1)
-                        THROWMSG("color components must in range [0, 1]");
+                        THROWMSG("color components must be in range 0 to 1");
                 }
                 if (len > 0)
                 {
@@ -1818,7 +1818,7 @@ fannot._erase()
             int i, j;
             unsigned char *s, *t;
             char *content_str;
-            const char *template = " q %s 0 0 %s %s %s cm /%s Do Q\n";
+            const char *template = "\nq %s 0 0 %s %s %s cm /%s Do Q\n";
             Py_ssize_t c_len = 0;
             fz_rect prect = { 0, 0, 0, 0};
             fz_bound_page(gctx, $self, &prect);  // get page mediabox
@@ -1953,7 +1953,7 @@ fannot._erase()
         FITZEXCEPTION(insertText, result<0)
         %pythonprepend insertText %{
         if not self.parent:
-            raise RuntimeError("orphaned object: no parent exists")
+            raise RuntimeError("orphaned object: parent is None")
         # ensure 'text' is a list of strings
         if text is not None:
             if type(text) not in (list, tuple):
@@ -2008,7 +2008,7 @@ fannot._erase()
                 assert_PDF(page);
                 pdf = page->doc;
                 if (top < lheight || point->y < lheight)
-                    THROWMSG("text position outside vertical page range");
+                    THROWMSG("text position outside page height range");
                 if (!fontname) THROWMSG("fontname must be supplied");
                 if (PySequence_Check(color))
                 {
@@ -2017,9 +2017,9 @@ fannot._erase()
                     green = (float) PyFloat_AsDouble(PySequence_GetItem(color, 1));
                     blue  = (float) PyFloat_AsDouble(PySequence_GetItem(color, 2));
                     if (red < 0 || red > 1 || green < 0 || green > 1 || blue < 0 || blue > 1)
-                        THROWMSG("color components must in range [0, 1]");
+                        THROWMSG("color components must be in range 0 to 1");
                 }
-                if (!PySequence_Check(text)) THROWMSG("text must be specified");
+                if (!PySequence_Check(text)) THROWMSG("some text is needed");
                 else
                 {
                     len = PySequence_Size(text);
@@ -2102,83 +2102,6 @@ fannot._erase()
             }
             fz_catch(gctx) return -1;
             return nlines;
-        }
-
-        //---------------------------------------------------------------------
-        // draw line
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(drawLine, result<0)
-        %feature("autodoc", "Draw a line from point 'p1' to 'p2'.") drawLine;
-        int drawLine(struct fz_point_s *p1, struct fz_point_s *p2,
-                     PyObject *color = NULL, float width = 1, char *dashes = NULL)
-        {
-            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            pdf_document *pdf;
-            pdf_obj *resources, *contents;
-            fz_buffer *cont_buf, *cont_buf_compr;
-            cont_buf = cont_buf_compr = NULL;
-            char *content_str;              // updated content string
-            const char *templ1 = "\nq 1 J %s d %g %g %g RG %g w %g %g m %g %g l S Q\n";
-            char *dash_str = "[]0";
-            Py_ssize_t c_len;
-            int i;
-            fz_rect prect = { 0, 0, 0, 0};
-            fz_bound_page(gctx, $self, &prect);
-            float red, green, blue, from_y, to_y;
-            red = green = blue = 0;
-            from_y = prect.y1 - p1->y;
-            to_y = prect.y1 - p2->y;
-            fz_try(gctx)
-            {
-                assert_PDF(page);
-                pdf = page->doc;
-                if (p1->y < prect.y0 || p1->y > prect.y1 ||
-                    p2->y < prect.y0 || to_y > prect.y1 || 
-                    p1->x < prect.x0 || p1->x > prect.x1 ||
-                    p2->x < prect.x0 || p2->x > prect.x1)
-                    THROWMSG("line endpoints must be within page rect");
-                if (PySequence_Check(color))
-                {
-                    if (PySequence_Size(color) != 3) THROWMSG("need 3 color components");
-                    red   = (float) PyFloat_AsDouble(PySequence_GetItem(color, 0));
-                    green = (float) PyFloat_AsDouble(PySequence_GetItem(color, 1));
-                    blue  = (float) PyFloat_AsDouble(PySequence_GetItem(color, 2));
-                    if (red < 0 || red > 1 || green < 0 || green > 1 || blue < 0 || blue > 1)
-                        THROWMSG("color components must in range 0 to 1");
-                }
-                if (dashes) dash_str = dashes;
-                // get objects "Resources", "Contents", "Resources/Font"
-                resources = pdf_dict_get(gctx, page->obj, PDF_NAME_Resources);
-                contents = pdf_dict_get(gctx, page->obj, PDF_NAME_Contents);
-                if (pdf_is_array(gctx, contents))
-                {   // take last if more than one contents object
-                    i = pdf_array_len(gctx, contents) - 1;
-                    contents = pdf_array_get(gctx, contents, i);
-                }
-                // extract decompressed contents string in a buffer
-                cont_buf = pdf_load_stream(gctx, contents);
-                if (!cont_buf) THROWMSG("bad PDF: Contents is no stream object");
-
-                // append our stuff to contents
-                fz_append_printf(gctx, cont_buf, templ1, dash_str, red, green,
-                                 blue, width, p1->x, from_y, p2->x, to_y);
-                fz_terminate_buffer(gctx, cont_buf);
-
-                // indicate we will turn in compressed contents
-                pdf_dict_put(gctx, contents, PDF_NAME_Filter,
-                             PDF_NAME_FlateDecode);
-                c_len = (Py_ssize_t) fz_buffer_storage(gctx, cont_buf, &content_str);
-                cont_buf_compr = deflatebuf(gctx, content_str, (size_t) c_len);
-                pdf_update_stream(gctx, pdf, contents, cont_buf_compr, 1);
-
-            }
-            fz_always(gctx)
-            {
-                if (cont_buf) fz_drop_buffer(gctx, cont_buf);
-                if (cont_buf_compr) fz_drop_buffer(gctx, cont_buf_compr);
-            }
-            fz_catch(gctx) return -1;
-            return 0;
         }
 
         //---------------------------------------------------------------------
@@ -2544,7 +2467,7 @@ struct fz_rect_s
                 elif i == 2: self.x1 = v
                 elif i == 3: self.y1 = v
                 else:
-                    raise IndexError("list index out of range")
+                    raise IndexError("index out of range")
                 return
 
             def __len__(self):
@@ -2751,7 +2674,7 @@ struct fz_irect_s
                 elif i == 2: self.x1 = v
                 elif i == 3: self.y1 = v
                 else:
-                    raise IndexError("list index out of range")
+                    raise IndexError("index out of range")
                 return
 
             def __len__(self):
@@ -3397,7 +3320,7 @@ struct fz_matrix_s
                 elif i == 4: self.e = v
                 elif i == 5: self.f = v
                 else:
-                    raise IndexError("list index out of range")
+                    raise IndexError("index out of range")
                 return
 
             def __len__(self):
@@ -4138,7 +4061,7 @@ struct fz_annot_s
                 stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
                                    PDF_NAME_EF, PDF_NAME_F, NULL);
                 // the object for file content
-                if (!stream) THROWMSG("bad PDF: attached file has no stream");
+                if (!stream) THROWMSG("bad PDF: file has no stream");
                 f = getPDFstr(filename, &file_len, "filename");
                 // new file content must by bytes / bytearray
                 if (PyByteArray_Check(buffer))
@@ -4244,7 +4167,7 @@ struct fz_annot_s
             {
                 assert_PDF(annot);
                 if (!PyDict_Check(info))
-                    THROWMSG("info not a Python dict");
+                    THROWMSG("info not a dict");
                 if (!dictvalid)
                     THROWMSG("invalid key in info dict");
 

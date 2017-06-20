@@ -1,8 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from . import fitz
-import math, sys
-from binascii import hexlify
+import math
 '''
 The following is a collection of commodity functions to simplify the use of PyMupdf.
 '''
@@ -677,7 +676,7 @@ def setToC(doc, toc):
     for i, ol in enumerate(olitems):
         txt = "<<"
         if ol["count"] > 0:
-            txt += "/Count " + str(ol["count"])
+            txt += "/Count -" + str(ol["count"])
         try:
             txt += ol["dest"]
         except: pass
@@ -909,7 +908,233 @@ def intersects(me, rect):
     return True
 
 #-------------------------------------------------------------------------------
-# Annot method
+# Page.drawLine
+#-------------------------------------------------------------------------------
+def drawLine(page, p1, p2, color = (0, 0, 0), dashes = "[]0",
+               width = 1, roundCap = True, overlay = True):
+    """Draws a circle on a PDF page given its center and radius.
+    """
+    if page.parent is None:
+        raise RuntimeError("orphaned object: parent is None")
+    
+    doc = page.parent
+    xreflist = page._getContents()
+    if overlay:
+        xref = xreflist[-1]
+    else:
+        xref = xreflist[0]
+        
+    cont = doc._getXrefStream(xref).decode("utf-8")
+    
+    h = page.rect.y1
+    
+    templ1 = "\n%i J %s d %g %g %g RG %g w %g %g m %g %g l h s "
+    
+    c  = templ1 % (roundCap, dashes, color[0], color[1], color[2], width,
+                   p1.x, h - p1.y, p2.x, h - p2.y)
+    
+    if overlay:
+        cont += c
+    else:
+        cont = c + cont
+    
+    doc._updateStream(xref, bytearray(cont, "utf-8"))
+    
+    return
+
+
+#-------------------------------------------------------------------------------
+# Page.drawPolyline
+#-------------------------------------------------------------------------------
+def drawPolyline(page, points, color = (0, 0, 0), fill = None, dashes = "[]0",
+               width = 1, roundCap = True, overlay = True, closePath = False):
+    """Draws a circle on a PDF page given its center and radius.
+    """
+    if page.parent is None:
+        raise RuntimeError("orphaned object: parent is None")
+    assert len(points) > 1, "need at least two points to draw polyline"
+    doc = page.parent
+    
+    xreflist = page._getContents()
+    if overlay:
+        xref = xreflist[-1]
+    else:
+        xref = xreflist[0]
+        
+    cont = doc._getXrefStream(xref).decode("utf-8")
+    
+    h = page.rect.y1
+    
+    tempfl = "%g %g %g rg\n"
+    templ1 = "\n%i J %i j %s d %g %g %g RG %g w %g %g m\n"
+    templ2 = "%g %g l\n"
+    
+    for i, p in enumerate(points):
+        if i == 0:
+            c = templ1 % (roundCap, roundCap, dashes,
+                          color[0], color[1], color[2],
+                          width, p.x, h - p.y)
+            if fill is not None:
+                c += tempfl % (fill[0], fill[1], fill[2])
+        else:
+            c += templ2 % (p.x, h - p.y)
+    
+    if closePath:
+        c += "h "
+    if fill is not None:
+        c += "B "
+    else:
+        c += "S "
+    
+    if overlay:
+        cont += c
+    else:
+        cont = c + cont
+    
+    doc._updateStream(xref, bytearray(cont, "utf-8"))
+    
+    return
+
+
+#-------------------------------------------------------------------------------
+# Page.drawCircle
+#-------------------------------------------------------------------------------
+def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
+               dashes = "[]0", width = 1, roundCap = True, overlay = True):
+    """Draws a circle on a PDF page given its center and radius.
+    """
+    if page.parent is None:
+        raise RuntimeError("orphaned object: parent is None")
+
+    doc = page.parent
+    xreflist = page._getContents()
+    if overlay:
+        xref = xreflist[-1]
+    else:
+        xref = xreflist[0]
+        
+    cont = doc._getXrefStream(xref).decode("utf-8")
+    
+    h = page.rect.y1
+    kappa = 0.552 * radius
+    
+    l0 = "%g %g %g rg\n"
+    l1 = "\n%g %g %g RG %g w %i J\n"
+    l2 = "%s d\n"
+    l3 = "%g %g m\n"
+    l4 = "%g %g %g %g %g %g c\n"
+    
+    # the list of points needed for the Bézier curves
+    # approximating the circle
+    p00  = [center.x - radius, h - (center.y)]                  # p0
+    p00 += [center.x - radius, h - (center.y - kappa)]          # p1
+    p00 += [center.x - kappa,  h - (center.y - radius)]         # p2
+    p00 += [center.x,          h - (center.y - radius)]         # p3
+    p00 += [center.x + kappa,  h - (center.y - radius)]         # p4
+    p00 += [center.x + radius, h - (center.y - kappa)]          # p5
+    p00 += [center.x + radius, h - (center.y)]                  # p6
+    p00 += [center.x + radius, h - (center.y + kappa)]          # p7
+    p00 += [center.x + kappa,  h - (center.y + radius)]         # p8
+    p00 += [center.x,          h - (center.y + radius)]         # p9
+    p00 += [center.x - kappa,  h - (center.y + radius)]         # p10
+    p00 += [center.x - radius, h - (center.y + kappa)]          # p11
+    
+    c  = l1 % (color[0], color[1], color[2], width, roundCap)
+    c += l2 % dashes
+    if fill is not None:
+        c+= l0 % (fill[0], fill[1], fill[2])
+    c += l3 % (p00[0], p00[1])
+    c += l4 % (p00[2], p00[3], p00[4], p00[5], p00[6], p00[7])
+    c += l4 % (p00[8], p00[9], p00[10], p00[11], p00[12], p00[13])
+    c += l4 % (p00[14], p00[15], p00[16], p00[17], p00[18], p00[19])
+    c += l4 % (p00[20], p00[21], p00[22], p00[23], p00[0], p00[1])
+    if fill is not None:
+        c += "h B "
+    else:
+        c += "h S "
+    
+    if overlay:
+        cont += c
+    else:
+        cont = c + cont
+    
+    doc._updateStream(xref, bytearray(cont, "utf-8"))
+    
+    return
+
+
+#-------------------------------------------------------------------------------
+# Page.drawOval
+#-------------------------------------------------------------------------------
+def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = "[]0",
+               width = 1, roundCap = True, overlay = True):
+    """Draws an oval on a PDF page given its containing rectangle.
+    """
+    if page.parent is None:
+        raise RuntimeError("orphaned object: parent is None")
+    
+    doc = page.parent
+    xreflist = page._getContents()
+    if overlay:
+        xref = xreflist[-1]
+    else:
+        xref = xreflist[0]
+        
+    cont = doc._getXrefStream(xref).decode("utf-8")
+    
+    h = page.rect.y1
+    
+    kappah = 0.552 * rect.width / 2
+    kappav = 0.552 * rect.height / 2
+    
+    l0 = "%g %g %g rg\n"
+    l1 = "\n%g %g %g RG %g w %i J\n"
+    l2 = "%s d\n"
+    l3 = "%g %g m\n"
+    l4 = "%g %g %g %g %g %g c\n"
+    
+    # the list of points needed for the Bézier curves
+    # approximating the ellipse
+    p00  = [rect.x0, h - (rect.y0 + rect.height / 2)]            # p0
+    p00 += [rect.x0, h - (rect.y0 + rect.height / 2 - kappav)]   # p1
+    p00 += [rect.x0 + rect.width / 2 - kappah, h - (rect.y0)]    # p2
+    p00 += [rect.x0 + rect.width / 2, h - (rect.y0)]             # p3
+    p00 += [rect.x0 + rect.width / 2 + kappah, h - (rect.y0)]    # p4
+    p00 += [rect.x1, h - (rect.y0 + rect.height / 2 - kappav)]   # p5
+    p00 += [rect.x1, h - (rect.y0 + rect.height / 2)]            # p6
+    p00 += [rect.x1, h - (rect.y0 + rect.height / 2 + kappav)]   # p7
+    p00 += [rect.x0 + rect.width / 2 + kappah, h - (rect.y1)]    # p8
+    p00 += [rect.x0 + rect.width / 2, h - (rect.y1)]             # p9
+    p00 += [rect.x0 + rect.width / 2 - kappah, h - (rect.y1)]    # p10
+    p00 += [rect.x0, h - (rect.y0 + rect.height / 2 + kappav)]   # p11
+    
+    c  = l1 % (color[0], color[1], color[2], width, roundCap)
+    if fill is not None:
+        c+= l0 % (fill[0], fill[1], fill[2])
+    c += l2 % dashes
+    c += l3 % (p00[0], p00[1])
+    c += l4 % (p00[2], p00[3], p00[4], p00[5], p00[6], p00[7])
+    c += l4 % (p00[8], p00[9], p00[10], p00[11], p00[12], p00[13])
+    c += l4 % (p00[14], p00[15], p00[16], p00[17], p00[18], p00[19])
+    c += l4 % (p00[20], p00[21], p00[22], p00[23], p00[0], p00[1])
+    if fill is not None:
+        c += "h B "
+    else:
+        c += "h S "
+    
+    
+    if overlay:
+        cont += c
+    else:
+        cont = c + cont
+    
+    doc._updateStream(xref, bytearray(cont, "utf-8"))
+    
+    return
+
+
+#-------------------------------------------------------------------------------
+# Annot.updateImage
 #-------------------------------------------------------------------------------
 def updateImage(annot):
     '''Update border and color information in the appearance dictionary /AP.'''

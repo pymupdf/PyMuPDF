@@ -58,6 +58,10 @@ fitz.Page.getText           = fitz.utils.getText
 fitz.Page.searchFor         = fitz.utils.searchFor
 fitz.Page.updateLink        = fitz.utils.updateLink
 fitz.Page.insertLink        = fitz.utils.insertLink
+fitz.Page.drawLine          = fitz.utils.drawLine
+fitz.Page.drawPolyline      = fitz.utils.drawPolyline
+fitz.Page.drawCircle        = fitz.utils.drawCircle
+fitz.Page.drawOval          = fitz.utils.drawOval
 
 #------------------------------------------------------------------------------
 # Pixmap

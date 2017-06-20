@@ -40,7 +40,7 @@ ffile = "c:/windows/fonts/dejavusansmono.ttf"
 fname = "F0"
 
 doc = fitz.open()
-cal = calendar.LocaleTextCalendar(locale = "de") # use your locale
+cal = calendar.LocaleTextCalendar(locale = "es") # use your locale
 #cal = calendar.TextCalendar()                   # or stick with English
 
 w, h = fitz.PaperSize("a4-l")          # get sizes for A4 landscape paper

@@ -3564,7 +3564,7 @@ fz_buffer *deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
     size_t cap;
 
     if (n != (size_t)longN)
-        fz_throw(ctx, FZ_ERROR_GENERIC, "Buffer to large to deflate");
+        fz_throw(ctx, FZ_ERROR_GENERIC, "buffer too large to deflate");
 
     cap = compressBound(longN);
     data = fz_malloc(ctx, cap);
@@ -5203,7 +5203,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "need 3 color components")
                     blue  = (float) PyFloat_AsDouble(PySequence_GetItem(color, 2));
                     if (red < 0 || red > 1 || green < 0 || green > 1 || blue < 0 || blue > 1)
                         /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "color components must in range [0, 1]")
+fz_throw(gctx, FZ_ERROR_GENERIC, "color components must be in range 0 to 1")
 /*@SWIG@*/;
                 }
                 if (len > 0)
@@ -5956,7 +5956,7 @@ SWIGINTERN int fz_page_s_insertImage(struct fz_page_s *self,struct fz_rect_s *re
             int i, j;
             unsigned char *s, *t;
             char *content_str;
-            const char *template = " q %s 0 0 %s %s %s cm /%s Do Q\n";
+            const char *template = "\nq %s 0 0 %s %s %s cm /%s Do Q\n";
             Py_ssize_t c_len = 0;
             fz_rect prect = { 0, 0, 0, 0};
             fz_bound_page(gctx, self, &prect);  // get page mediabox
@@ -6130,7 +6130,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
                 pdf = page->doc;
                 if (top < lheight || point->y < lheight)
                     /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "text position outside vertical page range")
+fz_throw(gctx, FZ_ERROR_GENERIC, "text position outside page height range")
 /*@SWIG@*/;
                 if (!fontname) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "fontname must be supplied")
@@ -6145,11 +6145,11 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "need 3 color components")
                     blue  = (float) PyFloat_AsDouble(PySequence_GetItem(color, 2));
                     if (red < 0 || red > 1 || green < 0 || green > 1 || blue < 0 || blue > 1)
                         /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "color components must in range [0, 1]")
+fz_throw(gctx, FZ_ERROR_GENERIC, "color components must be in range 0 to 1")
 /*@SWIG@*/;
                 }
                 if (!PySequence_Check(text)) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "text must be specified")
+fz_throw(gctx, FZ_ERROR_GENERIC, "some text is needed")
 /*@SWIG@*/;
                 else
                 {
@@ -6239,87 +6239,6 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "unknown PDF Base 14 font")
             }
             fz_catch(gctx) return -1;
             return nlines;
-        }
-SWIGINTERN int fz_page_s_drawLine(struct fz_page_s *self,struct fz_point_s *p1,struct fz_point_s *p2,PyObject *color,float width,char *dashes){
-            pdf_page *page = pdf_page_from_fz_page(gctx, self);
-            pdf_document *pdf;
-            pdf_obj *resources, *contents;
-            fz_buffer *cont_buf, *cont_buf_compr;
-            cont_buf = cont_buf_compr = NULL;
-            char *content_str;              // updated content string
-            const char *templ1 = "\nq 1 J %s d %g %g %g RG %g w %g %g m %g %g l S Q\n";
-            char *dash_str = "[]0";
-            Py_ssize_t c_len;
-            int i;
-            fz_rect prect = { 0, 0, 0, 0};
-            fz_bound_page(gctx, self, &prect);
-            float red, green, blue, from_y, to_y;
-            red = green = blue = 0;
-            from_y = prect.y1 - p1->y;
-            to_y = prect.y1 - p2->y;
-            fz_try(gctx)
-            {
-                /*@SWIG:fitz\fitz.i,47,assert_PDF@*/
-if (!page) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
-/*@SWIG@*/
-/*@SWIG@*/;
-                pdf = page->doc;
-                if (p1->y < prect.y0 || p1->y > prect.y1 ||
-                    p2->y < prect.y0 || to_y > prect.y1 || 
-                    p1->x < prect.x0 || p1->x > prect.x1 ||
-                    p2->x < prect.x0 || p2->x > prect.x1)
-                    /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "line endpoints must be within page rect")
-/*@SWIG@*/;
-                if (PySequence_Check(color))
-                {
-                    if (PySequence_Size(color) != 3) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "need 3 color components")
-/*@SWIG@*/;
-                    red   = (float) PyFloat_AsDouble(PySequence_GetItem(color, 0));
-                    green = (float) PyFloat_AsDouble(PySequence_GetItem(color, 1));
-                    blue  = (float) PyFloat_AsDouble(PySequence_GetItem(color, 2));
-                    if (red < 0 || red > 1 || green < 0 || green > 1 || blue < 0 || blue > 1)
-                        /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "color components must in range 0 to 1")
-/*@SWIG@*/;
-                }
-                if (dashes) dash_str = dashes;
-                // get objects "Resources", "Contents", "Resources/Font"
-                resources = pdf_dict_get(gctx, page->obj, PDF_NAME_Resources);
-                contents = pdf_dict_get(gctx, page->obj, PDF_NAME_Contents);
-                if (pdf_is_array(gctx, contents))
-                {   // take last if more than one contents object
-                    i = pdf_array_len(gctx, contents) - 1;
-                    contents = pdf_array_get(gctx, contents, i);
-                }
-                // extract decompressed contents string in a buffer
-                cont_buf = pdf_load_stream(gctx, contents);
-                if (!cont_buf) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: Contents is no stream object")
-/*@SWIG@*/;
-
-                // append our stuff to contents
-                fz_append_printf(gctx, cont_buf, templ1, dash_str, red, green,
-                                 blue, width, p1->x, from_y, p2->x, to_y);
-                fz_terminate_buffer(gctx, cont_buf);
-
-                // indicate we will turn in compressed contents
-                pdf_dict_put(gctx, contents, PDF_NAME_Filter,
-                             PDF_NAME_FlateDecode);
-                c_len = (Py_ssize_t) fz_buffer_storage(gctx, cont_buf, &content_str);
-                cont_buf_compr = deflatebuf(gctx, content_str, (size_t) c_len);
-                pdf_update_stream(gctx, pdf, contents, cont_buf_compr, 1);
-
-            }
-            fz_always(gctx)
-            {
-                if (cont_buf) fz_drop_buffer(gctx, cont_buf);
-                if (cont_buf_compr) fz_drop_buffer(gctx, cont_buf_compr);
-            }
-            fz_catch(gctx) return -1;
-            return 0;
         }
 SWIGINTERN PyObject *fz_page_s__getContents(struct fz_page_s *self){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -7476,7 +7395,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a file attachment annot")
                                    PDF_NAME_EF, PDF_NAME_F, NULL);
                 // the object for file content
                 if (!stream) /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: attached file has no stream")
+fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: file has no stream")
 /*@SWIG@*/;
                 f = getPDFstr(filename, &file_len, "filename");
                 // new file content must by bytes / bytearray
@@ -7576,7 +7495,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/;
                 if (!PyDict_Check(info))
                     /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "info not a Python dict")
+fz_throw(gctx, FZ_ERROR_GENERIC, "info not a dict")
 /*@SWIG@*/;
                 if (!dictvalid)
                     /*@SWIG:fitz\fitz.i,41,THROWMSG@*/
@@ -10138,83 +10057,6 @@ SWIGINTERN PyObject *_wrap_Page_insertText(PyObject *SWIGUNUSEDPARM(self), PyObj
   return resultobj;
 fail:
   if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
-  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Page_drawLine(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
-  struct fz_point_s *arg2 = (struct fz_point_s *) 0 ;
-  struct fz_point_s *arg3 = (struct fz_point_s *) 0 ;
-  PyObject *arg4 = (PyObject *) NULL ;
-  float arg5 = (float) 1 ;
-  char *arg6 = (char *) NULL ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  float val5 ;
-  int ecode5 = 0 ;
-  int res6 ;
-  char *buf6 = 0 ;
-  int alloc6 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
-  PyObject * obj5 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO|OOO:Page_drawLine",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_drawLine" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
-  }
-  arg1 = (struct fz_page_s *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_point_s, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Page_drawLine" "', argument " "2"" of type '" "struct fz_point_s *""'"); 
-  }
-  arg2 = (struct fz_point_s *)(argp2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_fz_point_s, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Page_drawLine" "', argument " "3"" of type '" "struct fz_point_s *""'"); 
-  }
-  arg3 = (struct fz_point_s *)(argp3);
-  if (obj3) {
-    arg4 = obj3;
-  }
-  if (obj4) {
-    ecode5 = SWIG_AsVal_float(obj4, &val5);
-    if (!SWIG_IsOK(ecode5)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "Page_drawLine" "', argument " "5"" of type '" "float""'");
-    } 
-    arg5 = (float)(val5);
-  }
-  if (obj5) {
-    res6 = SWIG_AsCharPtrAndSize(obj5, &buf6, NULL, &alloc6);
-    if (!SWIG_IsOK(res6)) {
-      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "Page_drawLine" "', argument " "6"" of type '" "char *""'");
-    }
-    arg6 = (char *)(buf6);
-  }
-  {
-    result = (int)fz_page_s_drawLine(arg1,arg2,arg3,arg4,arg5,arg6);
-    if(result<0)
-    {
-      PyErr_SetString(PyExc_Exception, gctx->error->message);
-      return NULL;
-    }
-  }
-  resultobj = SWIG_From_int((int)(result));
-  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
-  return resultobj;
-fail:
   if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
   return NULL;
 }
@@ -16480,7 +16322,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Page__getLinkXrefs", _wrap_Page__getLinkXrefs, METH_VARARGS, (char *)"Page__getLinkXrefs(self) -> PyObject *"},
 	 { (char *)"Page_insertImage", _wrap_Page_insertImage, METH_VARARGS, (char *)"Insert a new image in a rectangle."},
 	 { (char *)"Page_insertText", _wrap_Page_insertText, METH_VARARGS, (char *)"Insert new text on a page."},
-	 { (char *)"Page_drawLine", _wrap_Page_drawLine, METH_VARARGS, (char *)"Draw a line from point 'p1' to 'p2'."},
 	 { (char *)"Page__getContents", _wrap_Page__getContents, METH_VARARGS, (char *)"Page__getContents(self) -> PyObject *"},
 	 { (char *)"Page__getRectText", _wrap_Page__getRectText, METH_VARARGS, (char *)"Page__getRectText(self, rect) -> char const *"},
 	 { (char *)"Page__readPageText", _wrap_Page__readPageText, METH_VARARGS, (char *)"Page__readPageText(self, output=0) -> char const *"},

@@ -5,6 +5,7 @@ Content of this directory
 ===================== ===============================================================
 Program               Purpose
 ===================== ===============================================================
+caustic.py            demo of Page.drawLine() to produce a PDF with a caustic image
 demo.py               demonstrates a broad range of functions available with PyMuPDF
 extract.py            demonstrates text extraction methods technical details
 numpy2fitz.py         how to create pixmaps from numpy arrays
