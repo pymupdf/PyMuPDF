@@ -60,8 +60,10 @@ fitz.Page.updateLink        = fitz.utils.updateLink
 fitz.Page.insertLink        = fitz.utils.insertLink
 fitz.Page.drawLine          = fitz.utils.drawLine
 fitz.Page.drawPolyline      = fitz.utils.drawPolyline
+fitz.Page.drawRect          = fitz.utils.drawRect
 fitz.Page.drawCircle        = fitz.utils.drawCircle
 fitz.Page.drawOval          = fitz.utils.drawOval
+fitz.Page.insertTextbox     = fitz.utils.insertTextbox
 
 #------------------------------------------------------------------------------
 # Pixmap

@@ -29,9 +29,7 @@
 // SWIG macro: check if object has valid parent
 //=============================================================================
 %define PARENTCHECK(meth)
-%pythonprepend meth
-%{if not hasattr(self, "parent") or self.parent is None:
-    raise RuntimeError("orphaned object: parent is None")%}
+%pythonprepend meth %{CheckParent(self)%}
 %enddef
 //=============================================================================
 
@@ -805,7 +803,7 @@ if sa < 0:
         # ensure 'text' is a list of strings
         if text is not None:
             if type(text) not in (list, tuple):
-                text = text.split("\n")
+                text = text.splitlines()
             tab = []
             for t in text:
                 tab.append(getPDFstr(t, brackets = False))
@@ -826,7 +824,7 @@ if sa < 0:
             pdf_document *pdf = pdf_specifics(gctx, $self);
             const char *templ1 = "BT %g %g %g rg 1 0 0 1 50 %g Tm /%s %g Tf";
             const char *templ2 = "Tj 0 -%g TD\n";
-            fz_rect mediabox = { 0, 0, 595, 842 };    // DIN-A4 portrait values
+            fz_rect mediabox = { 0, 0, 595, 842 };    // ISO-A4 portrait values
             mediabox.x1 = width;
             mediabox.y1 = height;
             float red, green, blue;
@@ -1035,6 +1033,76 @@ if sa < 0:
             PyDict_SetItemString(res, "copy", c);
             PyDict_SetItemString(res, "note", n);
             return res;
+        }
+
+        FITZEXCEPTION(_getCharWidths, !result)
+        CLOSECHECK(_getCharWidths)
+        %feature("autodoc","List of font glyph widths.") _getCharWidths;
+        PyObject *_getCharWidths(const char *fontname = NULL,
+                                 const char *fontfile = NULL,
+                                 int xref = 0, int limit = 256)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            PyObject *wlist = PyList_New(0);
+            int i, glyph;
+            float dist;
+            const char *data;
+            int size;
+            fz_font *font = NULL;
+            fz_buffer *buf = NULL;
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                if (fontname && fontfile || fontname && xref || fontfile && xref)
+                    THROWMSG("exactly one of fontfile, fontname, xref is required");
+                if (fontname)
+                {
+                    data = fz_lookup_base14_font(gctx, fontname, &size);
+                    if (!data) THROWMSG("unknown PDF Base 14 font");
+                    font = fz_new_font_from_memory(gctx, fontname, data, size, 0, 0);
+                }
+                else
+                {
+                    if (fontfile)
+                        font = fz_new_font_from_file(gctx, NULL, fontfile, 0, 0);
+                    else
+                    {
+                        if (xref < 1)
+                            THROWMSG("exactly one of fontfile, fontname, xref is required");
+                        else
+                        {
+                            buf = fontbuffer(pdf, xref);
+                            if (!buf) THROWMSG("xref is not a font, or not supported");
+                            font = fz_new_font_from_buffer(gctx, NULL, buf, 0, 0);
+                        }
+                    }
+                }
+
+                for (i = 0; i < limit; i++)
+                {
+                    glyph = fz_encode_character(gctx, font, i);
+                    if (glyph > 0)
+                    {
+                        dist = fz_advance_glyph(gctx, font, glyph, 0);
+                        PyList_Append(wlist, PyFloat_FromDouble((double) dist));
+                    }
+                    else
+                    {
+                        PyList_Append(wlist, PyFloat_FromDouble((double) 0.0));
+                    }
+                }
+            }
+            fz_always(gctx)
+            {
+                if (buf) fz_drop_buffer(gctx, buf);
+                if (font) fz_drop_font(gctx, font);
+            }
+            fz_catch(gctx)
+            {
+                Py_DECREF(wlist);
+                return NULL;
+            }
+            return wlist;
         }
 
         FITZEXCEPTION(_getPageObjNumber, !result)
@@ -1555,7 +1623,6 @@ struct fz_page_s {
             fprintf(stderr, " done!\n");
 #endif
         }
-
         PARENTCHECK(bound)
         %pythonappend bound %{
             if val:
@@ -1957,7 +2024,7 @@ fannot._erase()
         # ensure 'text' is a list of strings
         if text is not None:
             if type(text) not in (list, tuple):
-                text = text.split("\n")
+                text = text.splitlines()
             tab = []
             for t in text:
                 tab.append(getPDFstr(t, brackets = False))
@@ -1986,8 +2053,8 @@ fannot._erase()
             fz_buffer *cont_buf, *cont_buf_compr;
             cont_buf = cont_buf_compr = NULL;
             char *content_str;              // updated content string
-            const char *templ1 = " BT %g %g %g rg 1 0 0 1 %g %g Tm %s%s %g Tf";
-            const char *templ2 = "Tj 0 -%g TD\n";
+            const char *templ1 = "\nBT %g %g %g rg 1 0 0 1 %g %g Tm %s%s %g Tf ";
+            const char *templ2 = "Tj 0 -%g TD ";
             Py_ssize_t c_len, len;
             int i, nlines;
             char *itxt;
@@ -2057,17 +2124,17 @@ fannot._erase()
                 for (i = 1; i < len; i++)
                 {
                     if (top < lheight) break;    // no space left on page
-                    if (i > 1) fz_append_string(gctx, cont_buf, "T* ");
+                    if (i > 1) fz_append_string(gctx, cont_buf, "\nT* ");
                     itxt = getPDFstr(PySequence_GetItem(text, i), &c_len, "texti");
                     if ((strncmp(itxt, "<feff", 5) == 0) || (strncmp(itxt, "<FEFF", 5) == 0))
                         fz_append_string(gctx, cont_buf, itxt);
                     else
                         fz_append_pdf_string(gctx, cont_buf, itxt);
-                    fz_append_string(gctx, cont_buf, "Tj\n");
+                    fz_append_string(gctx, cont_buf, "Tj ");
                     top -= lheight;
                     nlines++;
                 }
-                fz_append_string(gctx, cont_buf, "ET\n");
+                fz_append_string(gctx, cont_buf, "\nET ");
                 fz_terminate_buffer(gctx, cont_buf);
 
                 // indicate we will turn in compressed contents
@@ -4676,59 +4743,27 @@ struct fz_stext_page_s {
 #endif
             return result;
         }
-        /*******************************************/
-        /* method extractText()                    */
-        /*******************************************/
+        //---------------------------------------------------------------------
+        // method extractText()
+        //---------------------------------------------------------------------
         FITZEXCEPTION(extractText, !result)
         %newobject extractText;
         const char *extractText() {
-            struct fz_buffer_s *res = NULL;
-            fz_output *out;
-            fz_try(gctx) {
-                /* inital size for text */
-                res = fz_new_buffer(gctx, 1024);
-                out = fz_new_output_with_buffer(gctx, res);
-                fz_print_stext_page(gctx, out, $self);
-            }
-            fz_always(gctx) fz_drop_output(gctx, out);
+            const char *c = NULL;
+            fz_try(gctx) c = readTPageText($self, 0);
             fz_catch(gctx) return NULL;
-            return fz_string_from_buffer(gctx, res);
+            return c;
         }
-        /*******************************************/
-        /* method extractXML()                     */
-        /*******************************************/
-        FITZEXCEPTION(extractXML, !result)
-        %newobject extractXML;
-        const char *extractXML() {
-            struct fz_buffer_s *res = NULL;
-            fz_output *out;
-            fz_try(gctx) {
-                /* inital size for text */
-                res = fz_new_buffer(gctx, 1024);
-                out = fz_new_output_with_buffer(gctx, res);
-                fz_print_stext_page_xml(gctx, out, $self);
-            }
-            fz_always(gctx) fz_drop_output(gctx, out);
-            fz_catch(gctx) return NULL;
-            return fz_string_from_buffer(gctx, res);
-        }
-        /*******************************************/
-        /* method extractHTML()                    */
-        /*******************************************/
+        //---------------------------------------------------------------------
+        // method extractHTML()
+        //---------------------------------------------------------------------
         FITZEXCEPTION(extractHTML, !result)
         %newobject extractHTML;
         const char *extractHTML() {
-            struct fz_buffer_s *res = NULL;
-            fz_output *out;
-            fz_try(gctx) {
-                /* inital size for text */
-                res = fz_new_buffer(gctx, 1024);
-                out = fz_new_output_with_buffer(gctx, res);
-                fz_print_stext_page_html(gctx, out, $self);
-            }
-            fz_always(gctx) fz_drop_output(gctx, out);
+            const char *c = NULL;
+            fz_try(gctx) c = readTPageText($self, 1);
             fz_catch(gctx) return NULL;
-            return fz_string_from_buffer(gctx, res);
+            return c;
         }
         //---------------------------------------------------------------------
         // method extractJSON()
@@ -4736,17 +4771,21 @@ struct fz_stext_page_s {
         FITZEXCEPTION(extractJSON, !result)
         %newobject extractJSON;
         const char *extractJSON() {
-            struct fz_buffer_s *res = NULL;
-            fz_output *out;
-            fz_try(gctx) {
-                /* inital size for text */
-                res = fz_new_buffer(gctx, 1024);
-                out = fz_new_output_with_buffer(gctx, res);
-                fz_print_stext_page_json(gctx, out, $self);
-            }
-            fz_always(gctx) fz_drop_output(gctx, out);
+            const char *c = NULL;
+            fz_try(gctx) c = readTPageText($self, 2);
             fz_catch(gctx) return NULL;
-            return fz_string_from_buffer(gctx, res);
+            return c;
+        }
+        //---------------------------------------------------------------------
+        // method extractXML()
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(extractXML, !result)
+        %newobject extractXML;
+        const char *extractXML() {
+            const char *c = NULL;
+            fz_try(gctx) c = readTPageText($self, 3);
+            fz_catch(gctx) return NULL;
+            return c;
         }
     }
 };

@@ -17,6 +17,13 @@ LINK_FLAG_FIT_V = 32
 LINK_FLAG_R_IS_ZOOM = 64
 
 #------------------------------------------------------------------------------
+# Text alignment
+#------------------------------------------------------------------------------
+TEXT_ALIGN_LEFT     = 0
+TEXT_ALIGN_CENTER   = 1
+TEXT_ALIGN_RIGHT    = 2
+
+#------------------------------------------------------------------------------
 # Base 14 font names
 #------------------------------------------------------------------------------
 
@@ -217,4 +224,7 @@ def PaperSize(s):
         return rc
     return (rc[1], rc[0])
 
+def CheckParent(o):
+    if not hasattr(o, "parent") or o.parent is None:
+        raise RuntimeError("orphaned object: parent is None") 
 %}

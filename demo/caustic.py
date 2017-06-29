@@ -31,7 +31,7 @@ def pbis(a):
 
 doc = fitz.open()                                # new empty PDF 
 doc.insertPage(-1, width = 800, height = 800)    # new square page in it
-page = doc[0]                                    # get the page just created
+page = doc[-1]                                   # get the page just created
 
 center = fitz.Point(page.rect.width / 2,         # center of circle on page
                     page.rect.height / 2)
@@ -54,3 +54,7 @@ for i in range(1, count):
 
 page.drawCircle(center, radius, color = (0, 0, 1)) # cup border is blue
 doc.save("caustic.pdf", garbage = 4, deflate = True)
+
+# create an image file of the PDF page
+pix = doc.getPagePixmap(0)
+pix.writePNG("caustic.png")

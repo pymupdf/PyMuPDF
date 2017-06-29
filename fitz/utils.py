@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from . import fitz
-import math
+import math, sys
 '''
 The following is a collection of commodity functions to simplify the use of PyMupdf.
 '''
@@ -11,9 +11,7 @@ The following is a collection of commodity functions to simplify the use of PyMu
 #def searchFor(page, text, hit_max = 16):
 def searchFor(page, text, hit_max = 16):
     '''Search for a string on a page. Parameters:\ntext: string to be searched for\nhit_max: maximum hits.\nReturns a list of rectangles, each of which surrounds a found occurrence.'''
-    if page.parent is None:
-        raise RuntimeError("orphaned object: parent is None")
-
+    fitz.CheckParent(page)
     rect = page.rect
     dl = fitz.DisplayList(rect)         # create DisplayList
     page.run(fitz.Device(dl), fitz.Identity) # run page through it
@@ -36,8 +34,7 @@ def searchPageFor(doc, pno, text, hit_max=16):
 #def getText(page, output = "text"):
 def getText(page, output = "text"):
     '''Extract a PDF page's text. Parameters:\noutput option: text, html, json or xml.\nReturns strings like the TextPage extraction methods extractText, extractHTML, extractJSON, or etractXML respectively. Default and misspelling choice is "text".'''
-    if page.parent is None:
-        raise RuntimeError("orphaned object: parent is None")
+    fitz.CheckParent(page)
 
     # return requested text format
     if output.lower() == "json":
@@ -64,8 +61,7 @@ def getPageText(doc, pno, output = "text"):
 def getPixmap(page, matrix = fitz.Identity, colorspace = "rgb", clip = None,
               alpha = True):
     '''Create pixmap of page.\nmatrix: fitz.Matrix for transformation (default: fitz.Identity).\ncolorspace: text string / fitz.Colorspace (rgb, rgb, gray - case ignored), default fitz.csRGB.\nclip: a fitz.IRect to restrict rendering to this area.'''
-    if page.parent is None:
-        raise RuntimeError("orphaned object: parent is None")
+    fitz.CheckParent(page)
 
     # determine required colorspace
     cs = colorspace
@@ -168,8 +164,7 @@ def getLinkDict(ln):
 def getLinks(page):
     '''Create a list of all links contained in a PDF page as dictionaries - see PyMuPDF ducmentation for details.'''
 
-    if page.parent is None:
-        raise RuntimeError("orphaned object: parent is None")
+    fitz.CheckParent(page)
     ln = page.firstLink
     links = []
     while ln:
@@ -884,6 +879,7 @@ def getLinkText(page, lnk):
     
 def updateLink(page, lnk):
     """ Update a link on the current page. """
+    fitz.CheckParent(page)
     annot = getLinkText(page, lnk)
     assert annot != "", "link kind not supported"
     page.parent._updateObject(lnk["xref"], annot, page = page) 
@@ -891,6 +887,7 @@ def updateLink(page, lnk):
 
 def insertLink(page, lnk, mark = True):
     """ Insert a new link for the current page. """
+    fitz.CheckParent(page)
     annot = getLinkText(page, lnk)
     assert annot != "", "link kind not supported"
     page._addAnnot_FromString([annot])
@@ -908,15 +905,153 @@ def intersects(me, rect):
     return True
 
 #-------------------------------------------------------------------------------
+# Page.insertTextbox
+#-------------------------------------------------------------------------------
+def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
+                  xref = 0, fontsize = 11, color = (0,0,0), expandtabs = 1,
+                  charwidths = None, charlimit = 256, align = 0):
+    """Insert text into a given rectangle.
+    Parameters:
+    buffer - string of text to be inserted
+    fontname - name of a Base-14 font, font reference or font reference
+    fontfile - file name of a font to be included
+    color - RGB color tuple
+    expandtabs - handles tab chars with string function
+    charwidths - list of glyph widths
+    charlimit - limit number of glyphs if width list should be created
+    align - align left, center or right
+    Returns: float of unused rectangle height
+    
+    """
+    fitz.CheckParent(page)
+    if rect not in page.rect:
+        raise ValueError("rect not contained in page")
+    if rect.isEmpty or rect.isInfinite:
+        raise ValueError("rect must be finite and not empty")
+    widthtab = charwidths
+    if not widthtab:                   # need to build our own ...
+        fname = fontname
+        ffile = fontfile
+        xref  = 0
+        if ffile:                      # filename given
+            fname = None
+        elif fname.startswith("/"):    # existing fontname given
+            fl = page.getFontList()    # get font list
+            for f in fl:
+                if f[4] == fname[1:]:  # reference found
+                    if f[3] == f[4]:   # means: Base-14-Font!
+                        xref = -1      # ignore xref
+                        fname = f[4]   # use Base-14 name
+                        break
+                    xref = f[0]        # xref of referenced font
+                    break
+            if xref == 0:              # /fontname not in list
+                raise ValueError("invalid page font reference")
+            elif xref > 0:             # found font reference
+                fname = ffile = None
+            else:                      # Base-14 name given
+                xref = 0
+                ffile = None
+        widthtab = page.parent._getCharWidths(fontname = fname, xref = xref,
+                   fontfile = ffile, limit = charlimit)
+    def pixlen(x):
+        if len(x) == 0: return 0.0
+        pl = 0.0
+        for c in x:
+            try:
+                pl += widthtab[ord(c)] * fontsize
+            except IndexError:
+                print("found code point %i increase charlimit" % ord(c))
+        return pl
+
+    text = ""
+    lheight = fontsize * 1.2
+    maxpos = rect.y1
+    point = fitz.Point(rect.x0, rect.y0 + fontsize)   # text starts here
+    pos = point.y                           # y of first line    
+    blen = pixlen(" ")                      # pixel size of space
+    maxwidth = rect.width                   # pixels of one full line
+    t0 = buffer.splitlines()
+
+    #===========================================================================
+    # line loop
+    #===========================================================================
+    for i, line in enumerate(t0):
+        line_t = line.expandtabs(expandtabs).split(" ")  # split line into words
+        lbuff = ""                          # init line buffer
+        rest = maxwidth                     # available line pixels
+        #=======================================================================
+        # word loop
+        #=======================================================================
+        for word in line_t:
+            pl_w = pixlen(word)             # pixel len of 1 word
+            if rest >= pl_w:                # will it fit on the line?
+                lbuff += word + " "         # yes, and append word
+                rest -= (pl_w + blen)       # update available line space
+                continue
+            # word won't fit in remaining space - output the line
+            lbuff = lbuff.rstrip() + "\n"   # line full, append line break
+            text += lbuff                   # append to total page text
+            pos += lheight                  # increase line position
+            lbuff = ""                      # re-init line buffer
+            rest = maxwidth                 # re-init avail. space
+            if pl_w <= maxwidth:            # word shorter than 1 line?
+                lbuff = word + " "          # start new line with it
+                rest = maxwidth - pl_w - blen    # update free space
+                continue
+            # long word: split across multiple lines - char by char ...
+            for c in word:
+                if pixlen(lbuff) <= maxwidth - pixlen(c):
+                    lbuff += c
+                else:                       # line full
+                    lbuff += "\n"           # close line
+                    text += lbuff           # append to text
+                    pos += lheight          # increase line position
+                    lbuff = c               # start new line with this char
+            lbuff += " "                    # finish long word
+            rest = maxwidth - pixlen(lbuff) # long word stored
+                
+        if lbuff != "":                     # unprocessed line content?
+            text += lbuff.rstrip()          # append to text
+        if i < len(t0) - 1:                 # not the last line?
+            text += "\n"                    # insert line break
+            pos += lheight                  # increase line position
+    
+    more = pos - maxpos                     # difference to rect bottom
+    if more > 1e-5:                         # landed too much below
+        raise ValueError("rect must be %g pixels higher to store text" % more)
+        
+    more = abs(more)
+    if more < 1e-5:
+        more = 0                            # don't bother with small epsilons
+    if align == 0:                          # left alignment: output full chunk
+        page.insertText(point, text, fontsize = fontsize,
+                        fontname = fontname, fontfile = fontfile, color = color)
+        return more
+    # center / right: output each line with its own horizontal shift
+    text_t = text.splitlines()              # split text in lines again
+    for i, t in enumerate(text_t):
+        pl = maxwidth - pixlen(t)           # width of the line
+        if align == 1:                      # center: right shift by half width
+            pnt = fitz.Point(point.x + pl / 2, point.y + i * lheight)
+        else:                               # right: right shift by full width
+            pnt = fitz.Point(point.x + pl, point.y + i * lheight)
+        page.insertText(pnt, t, fontsize = fontsize,
+                        fontname = fontname, fontfile = fontfile, color = color)
+    return more
+
+#-------------------------------------------------------------------------------
 # Page.drawLine
 #-------------------------------------------------------------------------------
 def drawLine(page, p1, p2, color = (0, 0, 0), dashes = "[]0",
                width = 1, roundCap = True, overlay = True):
     """Draws a circle on a PDF page given its center and radius.
     """
-    if page.parent is None:
-        raise RuntimeError("orphaned object: parent is None")
-    
+    fitz.CheckParent(page)
+    if color is not None:
+        if len(color) != 3 or not (0 <= color[0] <=1) or \
+            not (0 <= color[1] <= 1) or not (0 <= color[2] <= 1):
+            raise ValueError("need 3 color components in interval 0 to 1")
     doc = page.parent
     xreflist = page._getContents()
     if overlay:
@@ -924,22 +1059,39 @@ def drawLine(page, p1, p2, color = (0, 0, 0), dashes = "[]0",
     else:
         xref = xreflist[0]
         
-    cont = doc._getXrefStream(xref).decode("utf-8")
+    cont = doc._getXrefStream(xref)
     
     h = page.rect.y1
     
-    templ1 = "\n%i J %s d %g %g %g RG %g w %g %g m %g %g l h s "
+    templ1 = "\n%i J %s d %g %g %g RG %g w %g %g m %g %g l h S "
     
     c  = templ1 % (roundCap, dashes, color[0], color[1], color[2], width,
                    p1.x, h - p1.y, p2.x, h - p2.y)
     
+    if sys.version_info[0] > 2:
+        c = bytes(c, "utf-8")
+    
     if overlay:
-        cont += c
+        cont += c        
     else:
         cont = c + cont
+
+    doc._updateStream(xref, cont)
     
-    doc._updateStream(xref, bytearray(cont, "utf-8"))
-    
+    return
+
+
+#-------------------------------------------------------------------------------
+# Page.drawRect
+#-------------------------------------------------------------------------------
+def drawRect(page, rect, color = (0, 0, 0), fill = None, dashes = "[]0",
+               width = 1, roundCap = True, overlay = True):
+    """Draw a rectangle on a PDF page.
+    """
+    page.drawPolyline((rect.top_left, rect.top_right, rect.bottom_right,
+                       rect.bottom_left), color = color, fill = fill,
+                       dashes = dashes, width = width, roundCap = roundCap,
+                       closePath = True, overlay = overlay)
     return
 
 
@@ -950,9 +1102,16 @@ def drawPolyline(page, points, color = (0, 0, 0), fill = None, dashes = "[]0",
                width = 1, roundCap = True, overlay = True, closePath = False):
     """Draws a circle on a PDF page given its center and radius.
     """
-    if page.parent is None:
-        raise RuntimeError("orphaned object: parent is None")
+    fitz.CheckParent(page)
     assert len(points) > 1, "need at least two points to draw polyline"
+    if color is not None:
+        if len(color) != 3 or not (0 <= color[0] <=1) or \
+            not (0 <= color[1] <= 1) or not (0 <= color[2] <= 1):
+            raise ValueError("need 3 color components in interval 0 to 1")
+    if fill is not None:
+        if len(fill) != 3 or not (0 <= fill[0] <=1) or \
+            not (0 <= fill[1] <= 1) or not (0 <= fill[2] <= 1):
+            raise ValueError("need 3 fill components in interval 0 to 1")
     doc = page.parent
     
     xreflist = page._getContents()
@@ -961,7 +1120,7 @@ def drawPolyline(page, points, color = (0, 0, 0), fill = None, dashes = "[]0",
     else:
         xref = xreflist[0]
         
-    cont = doc._getXrefStream(xref).decode("utf-8")
+    cont = doc._getXrefStream(xref)
     
     h = page.rect.y1
     
@@ -986,12 +1145,15 @@ def drawPolyline(page, points, color = (0, 0, 0), fill = None, dashes = "[]0",
     else:
         c += "S "
     
+    if sys.version_info[0] > 2:
+        c = bytes(c, "utf-8")
+        
     if overlay:
         cont += c
     else:
         cont = c + cont
     
-    doc._updateStream(xref, bytearray(cont, "utf-8"))
+    doc._updateStream(xref, cont)
     
     return
 
@@ -1003,9 +1165,15 @@ def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
                dashes = "[]0", width = 1, roundCap = True, overlay = True):
     """Draws a circle on a PDF page given its center and radius.
     """
-    if page.parent is None:
-        raise RuntimeError("orphaned object: parent is None")
-
+    fitz.CheckParent(page)
+    if color is not None:
+        if len(color) != 3 or not (0 <= color[0] <=1) or \
+            not (0 <= color[1] <= 1) or not (0 <= color[2] <= 1):
+            raise ValueError("need 3 color components in interval 0 to 1")
+    if fill is not None:
+        if len(fill) != 3 or not (0 <= fill[0] <=1) or \
+            not (0 <= fill[1] <= 1) or not (0 <= fill[2] <= 1):
+            raise ValueError("need 3 fill components in interval 0 to 1")
     doc = page.parent
     xreflist = page._getContents()
     if overlay:
@@ -1013,7 +1181,7 @@ def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
     else:
         xref = xreflist[0]
         
-    cont = doc._getXrefStream(xref).decode("utf-8")
+    cont = doc._getXrefStream(xref)
     
     h = page.rect.y1
     kappa = 0.552 * radius
@@ -1053,12 +1221,15 @@ def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
     else:
         c += "h S "
     
+    if sys.version_info[0] > 2:
+        c = bytes(c, "utf-8")
+        
     if overlay:
         cont += c
     else:
         cont = c + cont
     
-    doc._updateStream(xref, bytearray(cont, "utf-8"))
+    doc._updateStream(xref, cont)
     
     return
 
@@ -1070,8 +1241,15 @@ def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = "[]0",
                width = 1, roundCap = True, overlay = True):
     """Draws an oval on a PDF page given its containing rectangle.
     """
-    if page.parent is None:
-        raise RuntimeError("orphaned object: parent is None")
+    fitz.CheckParent(page)
+    if color is not None:
+        if len(color) != 3 or not (0 <= color[0] <=1) or \
+            not (0 <= color[1] <= 1) or not (0 <= color[2] <= 1):
+            raise ValueError("need 3 color components in interval 0 to 1")
+    if fill is not None:
+        if len(fill) != 3 or not (0 <= fill[0] <=1) or \
+            not (0 <= fill[1] <= 1) or not (0 <= fill[2] <= 1):
+            raise ValueError("need 3 fill components in interval 0 to 1")
     
     doc = page.parent
     xreflist = page._getContents()
@@ -1080,7 +1258,7 @@ def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = "[]0",
     else:
         xref = xreflist[0]
         
-    cont = doc._getXrefStream(xref).decode("utf-8")
+    cont = doc._getXrefStream(xref)
     
     h = page.rect.y1
     
@@ -1122,13 +1300,15 @@ def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = "[]0",
     else:
         c += "h S "
     
-    
+    if sys.version_info[0] > 2:
+        c = bytes(c, "utf-8")
+        
     if overlay:
         cont += c
     else:
         cont = c + cont
     
-    doc._updateStream(xref, bytearray(cont, "utf-8"))
+    doc._updateStream(xref, cont)
     
     return
 
@@ -1138,10 +1318,7 @@ def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = "[]0",
 #-------------------------------------------------------------------------------
 def updateImage(annot):
     '''Update border and color information in the appearance dictionary /AP.'''
-    if annot.parent is None:
-        raise RuntimeError("orphaned object: parent is None")
-    if annot.parent.parent.isClosed:
-        raise RuntimeError("illegal operation on closed document")
+    fitz.CheckParent(annot)
     
     def modAP(tab, ctab, ftab, wtab, dtab):
         '''replace all occurrences of colors, width and dashes by provided values.'''

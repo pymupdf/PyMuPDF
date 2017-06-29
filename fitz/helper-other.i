@@ -135,9 +135,6 @@ void hexlify(int n, unsigned char *in, unsigned char *out)
 }
 
 
-
-
-
 //----------------------------------------------------------------------------
 // Return set(dict.keys()) <= set([vkeys, ...])
 // keys of dict must be string or unicode in Py2 and string in Py3!
@@ -462,14 +459,11 @@ int countOutlines(pdf_obj *obj, int oc)
 // deletes the device and returns the text buffer in the requested format.
 // A display list is not used in the process.
 //----------------------------------------------------------------------------
-const char *readPageText(fz_page *page, int output) {
-    fz_buffer *res;
-    fz_output *out;
-    fz_stext_sheet *ts;
-    fz_stext_page *tp;
+const char *readTPageText(fz_stext_page *tp, int output)
+{
+    fz_buffer *res = NULL;
+    fz_output *out = NULL;
     fz_try(gctx) {
-        ts = fz_new_stext_sheet(gctx);
-        tp = fz_new_stext_page_from_page(gctx, page, ts, NULL);
         res = fz_new_buffer(gctx, 1024);
         out = fz_new_output_with_buffer(gctx, res);
         if (output<=0) fz_print_stext_page(gctx, out, tp);
@@ -477,16 +471,98 @@ const char *readPageText(fz_page *page, int output) {
         if (output==2) fz_print_stext_page_json(gctx, out, tp);
         if (output>=3) fz_print_stext_page_xml(gctx, out, tp);
     }
-    fz_always(gctx)
-    {
-        fz_drop_output(gctx, out);
-        fz_drop_stext_page(gctx, tp);
-        fz_drop_stext_sheet(gctx, ts);
-    }
+    fz_always(gctx) if (out) fz_drop_output(gctx, out);
     fz_catch(gctx) {
         if (res) fz_drop_buffer(gctx, res);
         fz_rethrow(gctx);
     }
     return fz_string_from_buffer(gctx, res);
+}
+const char *readPageText(fz_page *page, int output)
+{
+    fz_stext_sheet *ts = NULL;
+    fz_stext_page *tp = NULL;
+    const char *c;
+    fz_try(gctx) {
+        ts = fz_new_stext_sheet(gctx);
+        tp = fz_new_stext_page_from_page(gctx, page, ts, NULL);
+        c = readTPageText(tp, output);
+    }
+    fz_always(gctx)
+    {
+        if (ts) fz_drop_stext_sheet(gctx, ts);
+        if (tp) fz_drop_stext_page(gctx, tp);
+    }
+    fz_catch(gctx) {
+        fz_rethrow(gctx);
+    }
+    return c;
+}
+
+//-----------------------------------------------------------------------------
+// Return the contents of an embedded font file
+//-----------------------------------------------------------------------------
+fz_buffer *fontbuffer(pdf_document *doc, int num)
+{
+    pdf_obj *o, *obj = NULL, *desft, *stream = NULL;
+    fz_buffer *buf = NULL;
+    char *ext = "";
+    o = pdf_load_object(gctx, doc, num);
+    desft = pdf_dict_get(gctx, o, PDF_NAME_DescendantFonts);
+    if (desft)
+    {
+        obj = pdf_resolve_indirect(gctx, pdf_array_get(gctx, desft, 0));
+        obj = pdf_dict_get(gctx, obj, PDF_NAME_FontDescriptor);
+    }
+    else
+    {
+        obj = pdf_dict_get(gctx, o, PDF_NAME_FontDescriptor);
+    }
+
+    if (!obj)
+    {
+        pdf_drop_obj(gctx, o);
+        fz_throw(gctx, FZ_ERROR_GENERIC, "invalid font - FontDescriptor missing");
+    }
+    pdf_drop_obj(gctx, o);
+    o = obj;
+
+    obj = pdf_dict_get(gctx, o, PDF_NAME_FontFile);
+    if (obj)
+    {
+        stream = obj;
+        ext = "pfa";
+    }
+
+    obj = pdf_dict_get(gctx, o, PDF_NAME_FontFile2);
+    if (obj)
+    {
+        stream = obj;
+        ext = "ttf";
+    }
+
+    obj = pdf_dict_get(gctx, o, PDF_NAME_FontFile3);
+    if (obj)
+    {
+        stream = obj;
+
+        obj = pdf_dict_get(gctx, obj, PDF_NAME_Subtype);
+        if (obj && !pdf_is_name(gctx, obj))
+            fz_throw(gctx, FZ_ERROR_GENERIC, "invalid font descriptor subtype");
+
+        if (pdf_name_eq(gctx, obj, PDF_NAME_Type1C))
+            ext = "cff";
+        else if (pdf_name_eq(gctx, obj, PDF_NAME_CIDFontType0C))
+            ext = "cid";
+        else if (pdf_name_eq(gctx, obj, PDF_NAME_OpenType))
+            ext = "otf";
+        else
+            fz_throw(gctx, FZ_ERROR_GENERIC, "unhandled font type '%s'", pdf_to_name(gctx, obj));
+    }
+
+    if (!stream) fz_throw(gctx, FZ_ERROR_GENERIC, "unhandled font type");
+
+    buf = pdf_load_stream(gctx, stream);
+    return buf;
 }
 %}
