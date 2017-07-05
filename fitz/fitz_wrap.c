@@ -3030,6 +3030,7 @@ static swig_module_info swig_module = {swig_types, 16, 0, 0, 0, 0};
 
 #define SWIG_FILE_WITH_INIT
 #define SWIG_PYTHON_2_UNICODE
+#define Py_LIMITED_API
 #include <fitz.h>
 #include <pdf.h>
 #include <zlib.h>
@@ -4640,10 +4641,16 @@ SWIG_AsVal_int (PyObject * obj, int *val)
 
 SWIGINTERN struct fz_page_s *fz_document_s_loadPage(struct fz_document_s *self,int number){
             struct fz_page_s *page = NULL;
-            int pageCount = fz_count_pages(gctx, self);
-            int n = number;
-            while (n < 0) n += pageCount;
-            fz_try(gctx) page = fz_load_page(gctx, self, n);
+            fz_try(gctx)
+            {
+                int pageCount = fz_count_pages(gctx, self);
+                if (pageCount < 1) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "document has no pages")
+/*@SWIG@*/;
+                int n = number;
+                while (n < 0) n += pageCount;
+                page = fz_load_page(gctx, self, n);
+            }
             fz_catch(gctx) return NULL;
             return page;
         }
@@ -5361,7 +5368,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "source page out of range")
 /*@SWIG@*/;
                 int t = to;
                 if (t < 0) t = pageCount;
-                if ((t == pno) | (pno == t - 1))
+                if ((t == pno) || (pno == t - 1))
                     /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "source and target too close")
 /*@SWIG@*/;
@@ -6247,14 +6254,14 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: Contents is no stream object")
             fz_catch(gctx) return -1;
             return 0;
         }
-SWIGINTERN int fz_page_s_insertText(struct fz_page_s *self,struct fz_point_s *point,PyObject *text,float fontsize,char const *fontname,char const *fontfile,PyObject *color){
+SWIGINTERN int fz_page_s_insertText(struct fz_page_s *self,struct fz_point_s *point,PyObject *text,float fontsize,char const *fontname,char const *fontfile,PyObject *color,float wordspacing){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
             pdf_document *pdf;
             pdf_obj *resources, *contents, *fonts;
             fz_buffer *cont_buf, *cont_buf_compr;
             cont_buf = cont_buf_compr = NULL;
             char *content_str;              // updated content string
-            const char *templ1 = "\nBT %g %g %g rg 1 0 0 1 %g %g Tm %s%s %g Tf ";
+            const char *templ1 = "\nBT %g %g %g rg 1 0 0 1 %g %g Tm %s%s %g Tf %g Tw ";
             const char *templ2 = "Tj 0 -%g TD ";
             Py_ssize_t c_len, len;
             int i, nlines;
@@ -6328,9 +6335,9 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: Contents is no stream object")
 
                 // append our stuff to contents
                 char *font_pref = "/";
-                if (strncmp(fontname, "/", 1) == 0) font_pref = " ";
+                if (strncmp(fontname, "/", 1) == 0) font_pref = "";
                 fz_append_printf(gctx, cont_buf, templ1, red, green, blue,
-                                 left, top, font_pref, fontname, fontsize);
+                                 left, top, font_pref, fontname, fontsize, wordspacing);
                 itxt = getPDFstr(PySequence_GetItem(text, 0), &c_len, "text0");
                 // append as string if UTF-16BE encoded, else as PDF string
                 if ((strncmp(itxt, "<feff", 5) == 0) || (strncmp(itxt, "<FEFF", 5) == 0))
@@ -10186,6 +10193,7 @@ SWIGINTERN PyObject *_wrap_Page_insertText(PyObject *SWIGUNUSEDPARM(self), PyObj
   char *arg5 = (char *) NULL ;
   char *arg6 = (char *) NULL ;
   PyObject *arg7 = (PyObject *) NULL ;
+  float arg8 = (float) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -10198,6 +10206,8 @@ SWIGINTERN PyObject *_wrap_Page_insertText(PyObject *SWIGUNUSEDPARM(self), PyObj
   int res6 ;
   char *buf6 = 0 ;
   int alloc6 = 0 ;
+  float val8 ;
+  int ecode8 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -10205,9 +10215,10 @@ SWIGINTERN PyObject *_wrap_Page_insertText(PyObject *SWIGUNUSEDPARM(self), PyObj
   PyObject * obj4 = 0 ;
   PyObject * obj5 = 0 ;
   PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO|OOOOO:Page_insertText",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO|OOOOOO:Page_insertText",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_insertText" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
@@ -10245,8 +10256,15 @@ SWIGINTERN PyObject *_wrap_Page_insertText(PyObject *SWIGUNUSEDPARM(self), PyObj
   if (obj6) {
     arg7 = obj6;
   }
+  if (obj7) {
+    ecode8 = SWIG_AsVal_float(obj7, &val8);
+    if (!SWIG_IsOK(ecode8)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "Page_insertText" "', argument " "8"" of type '" "float""'");
+    } 
+    arg8 = (float)(val8);
+  }
   {
-    result = (int)fz_page_s_insertText(arg1,arg2,arg3,arg4,(char const *)arg5,(char const *)arg6,arg7);
+    result = (int)fz_page_s_insertText(arg1,arg2,arg3,arg4,(char const *)arg5,(char const *)arg6,arg7,arg8);
     if(result<0)
     {
       PyErr_SetString(PyExc_Exception, gctx->error->message);

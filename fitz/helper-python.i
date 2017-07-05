@@ -17,11 +17,16 @@ LINK_FLAG_FIT_V = 32
 LINK_FLAG_R_IS_ZOOM = 64
 
 #------------------------------------------------------------------------------
-# Text alignment
+# Text alignment and output flags
 #------------------------------------------------------------------------------
 TEXT_ALIGN_LEFT     = 0
 TEXT_ALIGN_CENTER   = 1
 TEXT_ALIGN_RIGHT    = 2
+TEXT_ALIGN_JUSTIFY  = 3
+TEXT_OUTPUT_TEXT    = 0
+TEXT_OUTPUT_HTML    = 1
+TEXT_OUTPUT_JSON    = 2
+TEXT_OUTPUT_XML     = 3
 
 #------------------------------------------------------------------------------
 # Base 14 font names
@@ -227,4 +232,10 @@ def PaperSize(s):
 def CheckParent(o):
     if not hasattr(o, "parent") or o.parent is None:
         raise RuntimeError("orphaned object: parent is None") 
+
+def CheckColor(color):
+    if color is not None:
+        if len(color) != 3 or not (0 <= color[0] <=1) or \
+            not (0 <= color[1] <= 1) or not (0 <= color[2] <= 1):
+            raise ValueError("need 3 color components in range 0 to 1")
 %}

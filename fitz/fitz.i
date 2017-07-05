@@ -52,6 +52,7 @@ if (!cond) THROWMSG("not a PDF")
 %{
 #define SWIG_FILE_WITH_INIT
 #define SWIG_PYTHON_2_UNICODE
+#define Py_LIMITED_API
 #include <fitz.h>
 #include <pdf.h>
 #include <zlib.h>
@@ -229,10 +230,14 @@ struct fz_document_s
         struct fz_page_s *loadPage(int number)
         {
             struct fz_page_s *page = NULL;
-            int pageCount = fz_count_pages(gctx, $self);
-            int n = number;
-            while (n < 0) n += pageCount;
-            fz_try(gctx) page = fz_load_page(gctx, $self, n);
+            fz_try(gctx)
+            {
+                int pageCount = fz_count_pages(gctx, $self);
+                if (pageCount < 1) THROWMSG("document has no pages");
+                int n = number;
+                while (n < 0) n += pageCount;
+                page = fz_load_page(gctx, $self, n);
+            }
             fz_catch(gctx) return NULL;
             return page;
         }
@@ -937,7 +942,7 @@ if sa < 0:
                     THROWMSG("source page out of range");
                 int t = to;
                 if (t < 0) t = pageCount;
-                if ((t == pno) | (pno == t - 1))
+                if ((t == pno) || (pno == t - 1))
                     THROWMSG("source and target too close");
                 pdf_obj *page = pdf_lookup_page_obj(gctx, pdf, pno);
                 pdf_insert_page(gctx, pdf, t, page);
@@ -2045,7 +2050,8 @@ fannot._erase()
         %feature("autodoc", "Insert new text on a page.") insertText;
         int insertText(struct fz_point_s *point, PyObject *text = NULL,
                        float fontsize = 11, const char *fontname = NULL,
-                       const char *fontfile = NULL, PyObject *color = NULL)
+                       const char *fontfile = NULL, PyObject *color = NULL,
+                       float wordspacing = 0)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_document *pdf;
@@ -2053,7 +2059,7 @@ fannot._erase()
             fz_buffer *cont_buf, *cont_buf_compr;
             cont_buf = cont_buf_compr = NULL;
             char *content_str;              // updated content string
-            const char *templ1 = "\nBT %g %g %g rg 1 0 0 1 %g %g Tm %s%s %g Tf ";
+            const char *templ1 = "\nBT %g %g %g rg 1 0 0 1 %g %g Tm %s%s %g Tf %g Tw ";
             const char *templ2 = "Tj 0 -%g TD ";
             Py_ssize_t c_len, len;
             int i, nlines;
@@ -2109,9 +2115,9 @@ fannot._erase()
 
                 // append our stuff to contents
                 char *font_pref = "/";
-                if (strncmp(fontname, "/", 1) == 0) font_pref = " ";
+                if (strncmp(fontname, "/", 1) == 0) font_pref = "";
                 fz_append_printf(gctx, cont_buf, templ1, red, green, blue,
-                                 left, top, font_pref, fontname, fontsize);
+                                 left, top, font_pref, fontname, fontsize, wordspacing);
                 itxt = getPDFstr(PySequence_GetItem(text, 0), &c_len, "text0");
                 // append as string if UTF-16BE encoded, else as PDF string
                 if ((strncmp(itxt, "<feff", 5) == 0) || (strncmp(itxt, "<FEFF", 5) == 0))

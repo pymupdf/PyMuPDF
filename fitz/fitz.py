@@ -102,7 +102,7 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.0"
-VersionDate = "2017-06-29 13:10:26"
+VersionDate = "2017-07-04 12:57:42"
 
 #------------------------------------------------------------------------------
 # link kinds and link flags
@@ -122,11 +122,16 @@ LINK_FLAG_FIT_V = 32
 LINK_FLAG_R_IS_ZOOM = 64
 
 #------------------------------------------------------------------------------
-# Text alignment
+# Text alignment and output flags
 #------------------------------------------------------------------------------
 TEXT_ALIGN_LEFT     = 0
 TEXT_ALIGN_CENTER   = 1
 TEXT_ALIGN_RIGHT    = 2
+TEXT_ALIGN_JUSTIFY  = 3
+TEXT_OUTPUT_TEXT    = 0
+TEXT_OUTPUT_HTML    = 1
+TEXT_OUTPUT_JSON    = 2
+TEXT_OUTPUT_XML     = 3
 
 #------------------------------------------------------------------------------
 # Base 14 font names
@@ -332,6 +337,12 @@ def PaperSize(s):
 def CheckParent(o):
     if not hasattr(o, "parent") or o.parent is None:
         raise RuntimeError("orphaned object: parent is None") 
+
+def CheckColor(color):
+    if color is not None:
+        if len(color) != 3 or not (0 <= color[0] <=1) or \
+            not (0 <= color[1] <= 1) or not (0 <= color[2] <= 1):
+            raise ValueError("need 3 color components in range 0 to 1")
 
 class Document(_object):
     """open() - new empty PDF
@@ -984,7 +995,7 @@ class Page(_object):
         return _fitz.Page_insertImage(self, rect, filename, pixmap, overlay)
 
 
-    def insertText(self, point, text=None, fontsize=11, fontname=None, fontfile=None, color=None):
+    def insertText(self, point, text=None, fontsize=11, fontname=None, fontfile=None, color=None, wordspacing=0):
         """Insert new text on a page."""
 
         if not self.parent:
@@ -1011,7 +1022,7 @@ class Page(_object):
                 elif fontname not in Base14_fontnames:
                     fontname = "Helvetica"
 
-        return _fitz.Page_insertText(self, point, text, fontsize, fontname, fontfile, color)
+        return _fitz.Page_insertText(self, point, text, fontsize, fontname, fontfile, color, wordspacing)
 
 
     def _getContents(self):

@@ -63,6 +63,8 @@ fitz.Page.drawPolyline      = fitz.utils.drawPolyline
 fitz.Page.drawRect          = fitz.utils.drawRect
 fitz.Page.drawCircle        = fitz.utils.drawCircle
 fitz.Page.drawOval          = fitz.utils.drawOval
+fitz.Page.drawCurve         = fitz.utils.drawCurve
+fitz.Page.drawBezier        = fitz.utils.drawBezier
 fitz.Page.insertTextbox     = fitz.utils.insertTextbox
 
 #------------------------------------------------------------------------------
