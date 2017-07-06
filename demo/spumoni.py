@@ -55,4 +55,4 @@ page.drawCircle(fitz.Point(width*0.5, top + rheight*0.5), width*0.1, fill = pink
 page.drawCircle(fitz.Point(width*0.5, top + rheight*0.35), width*0.1, fill = green)
 page.drawCircle(fitz.Point(width*0.5, top + rheight*0.2), width*0.1, fill = brown)
 # done!
-doc.save("t.pdf")
+doc.save("spumoni.pdf")
