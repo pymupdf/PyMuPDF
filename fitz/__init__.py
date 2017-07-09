@@ -65,6 +65,7 @@ fitz.Page.drawCircle        = fitz.utils.drawCircle
 fitz.Page.drawOval          = fitz.utils.drawOval
 fitz.Page.drawCurve         = fitz.utils.drawCurve
 fitz.Page.drawBezier        = fitz.utils.drawBezier
+fitz.Page.drawSector        = fitz.utils.drawSector
 fitz.Page.insertTextbox     = fitz.utils.insertTextbox
 
 #------------------------------------------------------------------------------

@@ -12,9 +12,10 @@ extract_img1.py       PDF only: extracts all **page-referenced** images as PNG f
 extract_img2.py       PDF only: extracts **all** images as PNG files
 fitz2PIL.py           save a pixmap as a PIL / Pillow supported file
 numpy2fitz.py         how to create pixmaps from numpy arrays
-PageFormat.py
 PDFdisplay.py         display a document using wxPython
 pencil.py             create the pencil of the ReportLab User Guide with PyMuPDF
+piechart1.py          create a circular pie chart
+piechart2.py          create a semi-circular pie chart
 PIL2fitz.py           create a pixmap from any PIL / Pillow supported file
 pixmap.py             use pixmap to create tiled copies of an image file
 removePass.py         create a decrypted copy of a PDF file

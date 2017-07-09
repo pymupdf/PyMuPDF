@@ -1191,7 +1191,7 @@ def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
     cont = doc._getXrefStream(xref)
     
     h = page.rect.y1
-    kappa = 0.552 * radius
+    kappa = 0.552285 * radius
     
     l0 = "%g %g %g rg\n"
     l1 = "\nq %g %g %g RG %g w %i J\n"
@@ -1264,8 +1264,8 @@ def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = None,
     
     h = page.rect.y1
     
-    kappah = 0.552 * rect.width / 2
-    kappav = 0.552 * rect.height / 2
+    kappah = 0.552285 * rect.width / 2
+    kappav = 0.552285 * rect.height / 2
     
     l0 = "%g %g %g rg\n"
     l1 = "\nq %g %g %g RG %g w %i J\n"
@@ -1323,7 +1323,7 @@ def drawCurve(page, p1, p2, p3, color = (0, 0, 0), fill = None, dashes = None,
                width = 1, closePath = False, roundCap = True, overlay = True):
     """Draws a Bézier curve along three arbitray points, using control points on their connecting lines p1 -> p2 and p2 - > p3. Points p1 and p3 are the start and end point of the curve, respectively.
     """
-    kappa = 0.552
+    kappa = 0.552285
     k1 = p1 + (p2 - p1) * kappa
     k2 = p3 + (p2 - p3) * kappa
     drawBezier(page, p1, k1, k2, p3, fill = fill, color = color,
@@ -1383,6 +1383,125 @@ def drawBezier(page, p1, p2, p3, p4, color = (0, 0, 0), fill = None, dashes = No
     doc._updateStream(xref, cont)
     
     return
+
+#==============================================================================
+# Draw circular sector
+#==============================================================================
+def drawSector(page, center, point, beta, color = (0, 0, 0), fill = None,
+            dashes = None, fullSector = True,
+            width = 1, closePath = False, roundCap = True, overlay = True):
+    fitz.CheckParent(page)
+    fitz.CheckColor(color)
+    fitz.CheckColor(fill)
+    doc = page.parent
+    h = page.rect.y1
+    xreflist = page._getContents()
+    if overlay:
+        xref = xreflist[-1]
+    else:
+        xref = xreflist[0]
+    cont = doc._getXrefStream(xref)
+    # PDF operator instructions
+    l0 = "%g %g %g rg\n"
+    l1 = "\nq %g %g %g RG %g w %i J %i j\n"
+    l2 = "%s d\n"
+    l3 = "%g %g m\n"
+    l4 = "%g %g %g %g %g %g c\n"
+    l5 = "%g %g l\n"
+    
+    betar = math.radians(beta)
+    w360 = math.radians(math.copysign(360, betar)) * (-1)
+    w90  = math.radians(math.copysign(90, betar))
+    w45  = w90 / 2
+    while abs(betar) > 2 * math.pi:
+        betar += w360                       # bring angle below 360 degrees
+    
+    # finished preliminaries, now start drawing
+    c  = l1 % (color[0], color[1], color[2], width, roundCap, roundCap)
+    if fill is not None:
+        c+= l0 % (fill[0], fill[1], fill[2])
+    if dashes is not None and len(dashes) > 0:
+        c += l2 % dashes
+    c += l3 % (point.x, h - point.y)
+    
+    # We will draw cubic Bezier curves from P to Q using R as a helper point:
+    # R is the point where the tangents through P and Q are crossing.
+    # The intermediate two Bezier control points are located on these tangents.
+    # They have an equal distance 'kappa' from P, resp. Q.
+    # Parameter 'point' is the first P.
+    Q = fitz.Point(0, 0)                    # just make sure it exists
+    C = center
+    P = point
+    S = P - C                               # vector 'center' -> 'point'
+    rad = abs(S)                            # circle radius
+    alfa = math.asin(abs(S.y) / rad)        # absolute angle from horizontal
+    if P.x < C.x:                           # make arcsin result unique
+        if P.y <= C.y:
+            alfa = -(math.pi - alfa)
+        else:
+            alfa = math.pi - alfa
+    else:
+        if P.y >= C.y:
+            pass
+        else:
+            alfa = - alfa
+
+    # Angle 'beta' will be processed in multiples of 90 degrees.
+    # The end point of an arc is start of next arc.
+    while abs(betar) > abs(w90):            # draw 90 degree arcs
+        q1 = C.x + math.cos(alfa + w90) * rad
+        q2 = C.y + math.sin(alfa + w90) * rad
+        Q = fitz.Point(q1, q2)              # the arc's end point
+        r1 = C.x + math.cos(alfa + w45) * rad / math.cos(w45)
+        r2 = C.y + math.sin(alfa + w45) * rad / math.cos(w45)
+        R = fitz.Point(r1, r2)              # crossing point of tangents
+        kappah = (1 - math.cos(w45)) * 4 / 3 / abs(R - Q)
+        kappa = kappah * abs(P - Q) / (1 - math.cos(w90))
+        cp1 = P + (R - P) * kappa           # control point 1
+        cp2 = Q + (R - Q) * kappa           # control point 2
+        c += l4 % (cp1.x, h - cp1.y, cp2.x, h - cp2.y, Q.x, h - Q.y) # draw
+        betar -= w90                        # reduce parameter angle
+        alfa  += w90                        # advance start angle
+        P = Q                               # advance to arc end point
+    # draw (remaining) arc
+    if abs(betar) > 1e-3:                   # significant degrees left?
+        beta2 = betar / 2
+        q1 = C.x + math.cos(alfa + betar) * rad
+        q2 = C.y + math.sin(alfa + betar) * rad
+        Q = fitz.Point(q1, q2)              # the arc's end point
+        r1 = C.x + math.cos(alfa + beta2) * rad / math.cos(beta2)
+        r2 = C.y + math.sin(alfa + beta2) * rad / math.cos(beta2)
+        R = fitz.Point(r1, r2)              # crossing point of tangents
+        # kappa height is 4/3 of segment height
+        kappah = (1 - math.cos(beta2)) * 4 / 3 / abs(R - Q) # kappa height
+        kappa = kappah * abs(P - Q) / (1 - math.cos(betar))
+        cp1 = P + (R - P) * kappa           # control point 1
+        cp2 = Q + (R - Q) * kappa           # control point 2
+        c += l4 % (cp1.x, h - cp1.y, cp2.x, h - cp2.y, Q.x, h - Q.y) # draw
+
+    # draw lines from Q to 'center' and then to 'point'
+    if fullSector:
+        c += l5 % (center.x, h - center.y)
+        c += l5 % (point.x, h - point.y)
+        
+    if closePath:
+        c += "h "
+    if fill is not None:
+        c += "B Q "
+    else:
+        c += "S Q "
+    
+    if sys.version_info[0] > 2:
+        c = bytes(c, "utf-8")
+        
+    if overlay:
+        cont += c
+    else:
+        cont = c + cont
+    
+    doc._updateStream(xref, cont)
+    
+    return Q
 
 
 #-------------------------------------------------------------------------------
