@@ -31,7 +31,7 @@ ts_h  = center.x + radius + 50         # horizontal coord of legend block
 table  = (       # seats, party color & name 
           (64, "violetred", "Die Linke"),
           (193, "red", "SPD"),
-          (63, "green", "Die Grünen"),
+          (63, "green", "Die GrÃ¼nen"),
           (253, "black", "CDU"),
           (56, "dodgerblue", "CSU"),
           (1, "gray", "fraktionslos"),
@@ -50,10 +50,11 @@ page.insertText(fitz.Point(ts_h - 30, ts_v - 30), stitle,
 # draw the table data
 for i, c in enumerate(table):
     beta = c[0] / seats * 180          # express seats as angle in semi circle
+    color = getColor(c[1])             # avoid multiple color lookups
     # the method delivers point of other end of the constructed arc
     # we will use it as input for next round
     point = page.drawSector(center, point, beta, color = white,
-                    fullSector = True, fill = getColor(c[1]))
+                    fullSector = True, fill = color)
                     
     text = "%s, %i %s" % (c[2], c[0], "Sitze" if c[0] > 1 else "Sitz")
     pos  = fitz.Point(ts_h, ts_v + i*lineheight)
@@ -61,7 +62,7 @@ for i, c in enumerate(table):
     tl = fitz.Point(pos.x - 30, ts_v - 10 + i*lineheight)
     br = fitz.Point(pos.x - 10, ts_v + i*lineheight)
     rect = fitz.Rect(tl, br)                # legend color bar
-    page.drawRect(rect, fill = getColor(c[1]), color = getColor(c[1]))
+    page.drawRect(rect, fill = color), color = color)
 
 # overlay center of circle with white
 page.drawCircle(center, radius - 70, color = white, fill = white)
