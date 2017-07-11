@@ -1,6 +1,10 @@
 PyMuPDF 1.11.0
 ================
 
+.. image:: demo/pymupdf.jpg
+   :align: center
+
+
 Release date: May 1, 2017
 
 Authors
