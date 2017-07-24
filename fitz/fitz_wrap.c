@@ -5242,10 +5242,10 @@ SWIG_AsVal_float (PyObject * obj, float *val)
   return res;
 }
 
-SWIGINTERN int fz_document_s_insertPage(struct fz_document_s *self,int to,PyObject *text,float fontsize,float width,float height,char *fontname,char *fontfile,PyObject *color){
+SWIGINTERN int fz_document_s_insertPage(struct fz_document_s *self,int pno,PyObject *text,float fontsize,float width,float height,char *fontname,char *fontfile,PyObject *color){
             pdf_document *pdf = pdf_specifics(gctx, self);
             const char *templ1 = "BT %g %g %g rg 1 0 0 1 50 %g Tm /%s %g Tf";
-            const char *templ2 = "Tj 0 -%g TD\n";
+            const char *templ2 = "TJ 0 -%g TD\n";
             fz_rect mediabox = { 0, 0, 595, 842 };    // ISO-A4 portrait values
             mediabox.x1 = width;
             mediabox.y1 = height;
@@ -5297,20 +5297,14 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "fontname must be supplied")
                     fz_append_printf(gctx, contents, templ1, red, green, blue, top,
                                      font_str, fontsize);
                     itxt = getPDFstr(PySequence_GetItem(text, 0), &c_len, "text0");
-                    if ((strncmp(itxt, "<feff", 5) == 0) || (strncmp(itxt, "<FEFF", 5) == 0))
-                        fz_append_string(gctx, contents, itxt);
-                    else
-                        fz_append_pdf_string(gctx, contents, itxt);
+                    fz_append_string(gctx, contents, itxt);
                     fz_append_printf(gctx, contents, templ2, lheight);
                     for (i = 1; i < len; i++)
                     {
                         if (i>1) fz_append_string(gctx, contents, "T* ");
                         itxt = getPDFstr(PySequence_GetItem(text, i), &c_len, "texti");
-                        if ((strncmp(itxt, "<feff", 5) == 0) || (strncmp(itxt, "<FEFF", 5) == 0))
-                            fz_append_string(gctx, contents, itxt);
-                        else
-                            fz_append_pdf_string(gctx, contents, itxt);
-                        fz_append_string(gctx, contents, "Tj\n");
+                        fz_append_string(gctx, contents, itxt);
+                        fz_append_string(gctx, contents, "TJ\n");
                     }
                     fz_append_string(gctx, contents, "ET\n");
                 }
@@ -5342,7 +5336,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "unknown PDF Base 14 font")
                 // ready to create and insert page
                 fz_terminate_buffer(gctx, contents);
                 page_obj = pdf_add_page(gctx, pdf, &mediabox, 0, resources, contents);
-                pdf_insert_page(gctx, pdf, to , page_obj);
+                pdf_insert_page(gctx, pdf, pno , page_obj);
             }
             fz_always(gctx)
             {
@@ -6102,6 +6096,20 @@ SWIGINTERN PyObject *fz_page_s__getLinkXrefs(struct fz_page_s *self){
                 }
             return linkxrefs;
         }
+SWIGINTERN int fz_page_s__cleanContent(struct fz_page_s *self){
+            pdf_page *page = pdf_page_from_fz_page(gctx, self);// get pdf page
+            fz_try(gctx)
+            {
+                /*@SWIG:fitz\fitz.i,45,assert_PDF@*/
+if (!page) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
+/*@SWIG@*/
+/*@SWIG@*/;
+                pdf_clean_page_contents(gctx, page->doc, page, NULL, NULL, NULL, 0);
+            }
+            fz_catch(gctx) return -1;
+            return 0;
+        }
 SWIGINTERN int fz_page_s_insertImage(struct fz_page_s *self,struct fz_rect_s *rect,char const *filename,struct fz_pixmap_s *pixmap,int overlay){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
             pdf_document *pdf;
@@ -6109,12 +6117,11 @@ SWIGINTERN int fz_page_s_insertImage(struct fz_page_s *self,struct fz_rect_s *re
             fz_pixmap *pix = NULL;
             fz_image *mask = NULL;
             pdf_obj *resources, *subres, *contents, *ref;
-            fz_buffer *res = NULL;
-            fz_buffer *nres = NULL;
+            fz_buffer *res = NULL, *nres = NULL;
             int i, j;
             unsigned char *s, *t;
             char *content_str;
-            const char *template = "\nq %s 0 0 %s %s %s cm /%s Do Q\n";
+            const char *template = "\nh q %s 0 0 %s %s %s cm /%s Do Q\n";
             Py_ssize_t c_len = 0;
             fz_rect prect = { 0, 0, 0, 0};
             fz_bound_page(gctx, self, &prect);  // get page mediabox
@@ -6254,26 +6261,56 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: Contents is no stream object")
             fz_catch(gctx) return -1;
             return 0;
         }
-SWIGINTERN int fz_page_s_insertText(struct fz_page_s *self,struct fz_point_s *point,PyObject *text,float fontsize,char const *fontname,char const *fontfile,PyObject *color,float wordspacing){
+SWIGINTERN int fz_page_s_insertText(struct fz_page_s *self,struct fz_point_s *point,PyObject *text,float fontsize,char const *fontname,char const *fontfile,PyObject *color,float wordspacing,int rotate,int overlay){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
             pdf_document *pdf;
             pdf_obj *resources, *contents, *fonts;
-            fz_buffer *cont_buf, *cont_buf_compr;
-            cont_buf = cont_buf_compr = NULL;
+            fz_buffer *res = NULL, *res_compr = NULL, *nres = NULL;
             char *content_str;              // updated content string
-            const char *templ1 = "\nBT %g %g %g rg 1 0 0 1 %g %g Tm %s%s %g Tf %g Tw ";
-            const char *templ2 = "Tj 0 -%g TD ";
+            const char *templ1 = "\nh q BT %g %g %g rg %s 1 0 0 1 %g %g Tm %s%s %g Tf %g Tw ";
+            const char *templ2 = "TJ 0 -%g TD ";
+            char *cm = "";
+            char *cmp90 = "0 1 -1 0 0 0 cm";    // rotates counter-clockwise
+            char *cmm90 = "0 -1 1 0 0 0 cm";    // rotates clockwise
+            char *cm180 = "-1 0 0 -1 0 0 cm";   // rotates by 180 deg.
             Py_ssize_t c_len, len;
             int i, nlines;
             char *itxt;
             fz_rect prect = { 0, 0, 0, 0};
             fz_bound_page(gctx, self, &prect);
+            int rot = rotate;
+            while (rot < 0) rot += 360;
+            rot = rot % 360;       // text rotate = 0, 90, 270, 180
+            float red = 0, green = 0, blue = 0;
+            float lheight = fontsize * 1.2; // line height
             float top = prect.y1 - point->y;
             float left = point->x;
-            float red, green, blue;
-            red = green = blue = 0;
-            float lheight = fontsize * 1.2; // line height
-            float pheight = prect.y1;       // page height
+            float space = top;
+            float headroom = point->y;      // distance to page border
+            if (rot == 90)
+            {
+                left = prect.y1 - point->y;
+                top = -point->x;
+                cm = cmp90;
+                space = prect.x1 - abs(top);
+                headroom = point->x;
+            }
+            else if (rot == 270)
+            {
+                left = -prect.y1 + point->y;
+                top = point->x;
+                cm = cmm90;
+                space = abs(top);
+                headroom = prect.x1 - point->x;
+            }
+            else if (rot == 180)
+            {
+                left = -point->x;
+                top = -prect.y1 + point->y;
+                cm = cm180;
+                space = abs(point->y);
+                headroom = prect.y1 - point->y;
+            }
             const char *data;
             int size;
             fz_font *font;
@@ -6286,12 +6323,14 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 pdf = page->doc;
-                if (top < lheight || point->y < lheight)
-                    /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "text position outside page height range")
-/*@SWIG@*/;
                 if (!fontname) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "fontname must be supplied")
+/*@SWIG@*/;
+                if (rot % 90 != 0) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "rotate must be multiple of 90")
+/*@SWIG@*/;
+                if (headroom < fontsize) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "text outside page")
 /*@SWIG@*/;
                 if (PySequence_Check(color))
                 {
@@ -6306,69 +6345,78 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "need 3 color components")
 fz_throw(gctx, FZ_ERROR_GENERIC, "color components must be in range 0 to 1")
 /*@SWIG@*/;
                 }
-                if (!PySequence_Check(text)) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "some text is needed")
-/*@SWIG@*/;
-                else
-                {
-                    len = PySequence_Size(text);
-                    if (len < 1) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "some text is needed")
-/*@SWIG@*/;
-                }
+
+                len = PySequence_Size(text);
+                
                 // get objects "Resources", "Contents", "Resources/Font"
                 resources = pdf_dict_get(gctx, page->obj, PDF_NAME_Resources);
                 fonts = pdf_dict_get(gctx, resources, PDF_NAME_Font);
                 if (!fonts)
                     fonts = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
+
                 contents = pdf_dict_get(gctx, page->obj, PDF_NAME_Contents);
+
                 if (pdf_is_array(gctx, contents))
-                {   // take last if more than one contents object
-                    i = pdf_array_len(gctx, contents) - 1;
+                {   // choose the correct one if multiple: 1st or last
+                    if (overlay == 1) i = pdf_array_len(gctx, contents) - 1;
+                    else              i = 0;
                     contents = pdf_array_get(gctx, contents, i);
                 }
+
                 // extract decompressed contents string in a buffer
-                cont_buf = pdf_load_stream(gctx, contents);
-                if (!cont_buf) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+                res = pdf_load_stream(gctx, contents);
+                if (!res) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: Contents is no stream object")
 /*@SWIG@*/;
 
-                // append our stuff to contents
+                // create buffer for our stuff
+                nres = fz_new_buffer(gctx, 1024);
                 char *font_pref = "/";
                 if (strncmp(fontname, "/", 1) == 0) font_pref = "";
-                fz_append_printf(gctx, cont_buf, templ1, red, green, blue,
+                fz_append_printf(gctx, nres, templ1, red, green, blue, cm,
                                  left, top, font_pref, fontname, fontsize, wordspacing);
+                //-------------------------------------------------------------
+                // start text insertion
+                //-------------------------------------------------------------
                 itxt = getPDFstr(PySequence_GetItem(text, 0), &c_len, "text0");
-                // append as string if UTF-16BE encoded, else as PDF string
-                if ((strncmp(itxt, "<feff", 5) == 0) || (strncmp(itxt, "<FEFF", 5) == 0))
-                    fz_append_string(gctx, cont_buf, itxt);
-                else
-                    fz_append_pdf_string(gctx, cont_buf, itxt);
-                top -= lheight;
-                nlines = 1;
-                fz_append_printf(gctx, cont_buf, templ2, lheight);   // line 1
+                fz_append_string(gctx, nres, itxt);
+                nlines = 1;                 // set output line counter
+                fz_append_printf(gctx, nres, templ2, lheight);   // line 1
                 for (i = 1; i < len; i++)
                 {
-                    if (top < lheight) break;    // no space left on page
-                    if (i > 1) fz_append_string(gctx, cont_buf, "\nT* ");
+                    if (space < lheight) break;    // no space left on page
+                    if (i > 1) fz_append_string(gctx, nres, "\nT* ");
                     itxt = getPDFstr(PySequence_GetItem(text, i), &c_len, "texti");
-                    if ((strncmp(itxt, "<feff", 5) == 0) || (strncmp(itxt, "<FEFF", 5) == 0))
-                        fz_append_string(gctx, cont_buf, itxt);
-                    else
-                        fz_append_pdf_string(gctx, cont_buf, itxt);
-                    fz_append_string(gctx, cont_buf, "Tj ");
-                    top -= lheight;
+                    fz_append_string(gctx, nres, itxt); // hex string
+                    fz_append_string(gctx, nres, "TJ ");
+                    space -= lheight;
                     nlines++;
                 }
-                fz_append_string(gctx, cont_buf, "\nET ");
-                fz_terminate_buffer(gctx, cont_buf);
+                fz_append_string(gctx, nres, "\nET Q ");
+                //-------------------------------------------------------------
+                // end of text insertion
+                //-------------------------------------------------------------
+                // create resulting contents buffer
+                if (overlay == 1)      // append our string
+                {
+                    fz_append_buffer(gctx, res, nres);
+                    fz_drop_buffer(gctx, nres);
+                    nres = NULL;
+                }
+                else                   // prepend our string
+                {
+                    fz_append_buffer(gctx, nres, res);
+                    fz_drop_buffer(gctx, res);
+                    res = nres;
+                }
+                fz_terminate_buffer(gctx, res);
 
                 // indicate we will turn in compressed contents
                 pdf_dict_put(gctx, contents, PDF_NAME_Filter,
                              PDF_NAME_FlateDecode);
-                c_len = (Py_ssize_t) fz_buffer_storage(gctx, cont_buf, &content_str);
-                cont_buf_compr = deflatebuf(gctx, content_str, (size_t) c_len);
-                pdf_update_stream(gctx, pdf, contents, cont_buf_compr, 1);
+                c_len = (Py_ssize_t) fz_buffer_storage(gctx, res, &content_str);
+                res_compr = deflatebuf(gctx, content_str, (size_t) c_len);
+                pdf_update_stream(gctx, pdf, contents, res_compr, 1);
 
                 if (strncmp(fontname, "/", 1) != 0)   // new font given
                 {   // insert new font
@@ -6392,8 +6440,8 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "unknown PDF Base 14 font")
             }
             fz_always(gctx)
             {
-                if (cont_buf) fz_drop_buffer(gctx, cont_buf);
-                if (cont_buf_compr) fz_drop_buffer(gctx, cont_buf_compr);
+                if (res) fz_drop_buffer(gctx, res);
+                if (res_compr) fz_drop_buffer(gctx, res_compr);
             }
             fz_catch(gctx) return -1;
             return nlines;
@@ -10110,6 +10158,35 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Page__cleanContent(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Page__cleanContent",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page__cleanContent" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
+  }
+  arg1 = (struct fz_page_s *)(argp1);
+  {
+    result = (int)fz_page_s__cleanContent(arg1);
+    if(result!=0)
+    {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Page_insertImage(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
@@ -10194,6 +10271,8 @@ SWIGINTERN PyObject *_wrap_Page_insertText(PyObject *SWIGUNUSEDPARM(self), PyObj
   char *arg6 = (char *) NULL ;
   PyObject *arg7 = (PyObject *) NULL ;
   float arg8 = (float) 0 ;
+  int arg9 = (int) 0 ;
+  int arg10 = (int) 1 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -10208,6 +10287,10 @@ SWIGINTERN PyObject *_wrap_Page_insertText(PyObject *SWIGUNUSEDPARM(self), PyObj
   int alloc6 = 0 ;
   float val8 ;
   int ecode8 = 0 ;
+  int val9 ;
+  int ecode9 = 0 ;
+  int val10 ;
+  int ecode10 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -10216,9 +10299,11 @@ SWIGINTERN PyObject *_wrap_Page_insertText(PyObject *SWIGUNUSEDPARM(self), PyObj
   PyObject * obj5 = 0 ;
   PyObject * obj6 = 0 ;
   PyObject * obj7 = 0 ;
+  PyObject * obj8 = 0 ;
+  PyObject * obj9 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO|OOOOOO:Page_insertText",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO|OOOOOOOO:Page_insertText",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_insertText" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
@@ -10263,8 +10348,22 @@ SWIGINTERN PyObject *_wrap_Page_insertText(PyObject *SWIGUNUSEDPARM(self), PyObj
     } 
     arg8 = (float)(val8);
   }
+  if (obj8) {
+    ecode9 = SWIG_AsVal_int(obj8, &val9);
+    if (!SWIG_IsOK(ecode9)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "Page_insertText" "', argument " "9"" of type '" "int""'");
+    } 
+    arg9 = (int)(val9);
+  }
+  if (obj9) {
+    ecode10 = SWIG_AsVal_int(obj9, &val10);
+    if (!SWIG_IsOK(ecode10)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "Page_insertText" "', argument " "10"" of type '" "int""'");
+    } 
+    arg10 = (int)(val10);
+  }
   {
-    result = (int)fz_page_s_insertText(arg1,arg2,arg3,arg4,(char const *)arg5,(char const *)arg6,arg7,arg8);
+    result = (int)fz_page_s_insertText(arg1,arg2,arg3,arg4,(char const *)arg5,(char const *)arg6,arg7,arg8,arg9,arg10);
     if(result<0)
     {
       PyErr_SetString(PyExc_Exception, gctx->error->message);
@@ -16510,7 +16609,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document_deletePage", _wrap_Document_deletePage, METH_VARARGS, (char *)"Delete page 'pno'."},
 	 { (char *)"Document_deletePageRange", _wrap_Document_deletePageRange, METH_VARARGS, (char *)"Delete pages 'from' to 'to'."},
 	 { (char *)"Document_copyPage", _wrap_Document_copyPage, METH_VARARGS, (char *)"Copy a page in front of 'to'."},
-	 { (char *)"Document_insertPage", _wrap_Document_insertPage, METH_VARARGS, (char *)"Insert a new page in front of 'to'."},
+	 { (char *)"Document_insertPage", _wrap_Document_insertPage, METH_VARARGS, (char *)"Insert a new page in front of 'pno'."},
 	 { (char *)"Document_movePage", _wrap_Document_movePage, METH_VARARGS, (char *)"Move page in front of 'to'."},
 	 { (char *)"Document_select", _wrap_Document_select, METH_VARARGS, (char *)"Build sub-pdf with page numbers in 'list'."},
 	 { (char *)"Document_permissions", _wrap_Document_permissions, METH_VARARGS, (char *)"Get permissions dictionary."},
@@ -16541,6 +16640,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Page_setRotation", _wrap_Page_setRotation, METH_VARARGS, (char *)"Set page rotation to 'rot' degrees."},
 	 { (char *)"Page__addAnnot_FromString", _wrap_Page__addAnnot_FromString, METH_VARARGS, (char *)"Page__addAnnot_FromString(self, linklist) -> int"},
 	 { (char *)"Page__getLinkXrefs", _wrap_Page__getLinkXrefs, METH_VARARGS, (char *)"Page__getLinkXrefs(self) -> PyObject *"},
+	 { (char *)"Page__cleanContent", _wrap_Page__cleanContent, METH_VARARGS, (char *)"Page__cleanContent(self) -> int"},
 	 { (char *)"Page_insertImage", _wrap_Page_insertImage, METH_VARARGS, (char *)"Insert a new image in a rectangle."},
 	 { (char *)"Page_insertText", _wrap_Page_insertText, METH_VARARGS, (char *)"Insert new text on a page."},
 	 { (char *)"Page__getContents", _wrap_Page__getContents, METH_VARARGS, (char *)"Page__getContents(self) -> PyObject *"},

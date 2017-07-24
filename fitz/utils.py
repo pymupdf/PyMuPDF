@@ -1,5 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 from . import fitz
 import math, sys
 '''
@@ -302,21 +300,27 @@ def mat_add(m1, m2):      # __add__
     if type(m2) in (int, float):
         return fitz.Matrix(m1.a + m2, m1.b + m2, m1.c + m2,
                            m1.d + m2, m1.e + m2, m1.f + m2)
+    if len(m2) == 6:
+        return fitz.Matrix(m1.a + m2[0], m1.b + m2[1], m1.c + m2[2],
+                           m1.d + m2[3], m1.e + m2[4], m1.f + m2[5])
     try:
         return fitz.Matrix(m1.a + m2.a, m1.b + m2.b, m1.c + m2.c,
                            m1.d + m2.d, m1.e + m2.e, m1.f + m2.f)
     except:
-        raise NotImplementedError("op2 must be 'Matrix' or number")
+        raise NotImplementedError("op2 must be 'Matrix', sequence or number")
 
 def mat_sub(m1, m2):      # __sub__
     if type(m2) in (int, float):
         return fitz.Matrix(m1.a - m2, m1.b - m2, m1.c - m2,
                            m1.d - m2, m1.e - m2, m1.f - m2)
+    if len(m2) == 6:
+        return fitz.Matrix(m1.a - m2[0], m1.b - m2[1], m1.c - m2[2],
+                           m1.d - m2[3], m1.e - m2[4], m1.f - m2[5])
     try:
         return fitz.Matrix(m1.a - m2.a, m1.b - m2.b, m1.c - m2.c,
                            m1.d - m2.d, m1.e - m2.e, m1.f - m2.f)
     except:
-        raise NotImplementedError("op2 must be 'Matrix' or number")
+        raise NotImplementedError("op2 must be 'Matrix', sequence or number")
 
 def mat_abs(m):           # __abs__
     a = m.a**2 + m.b**2 + m.c**2 + m.d**2 + m.e**2 + m.f**2
@@ -380,8 +384,10 @@ def rect_add(r1, r2):        # __add__: add number, rect or irect to rect
         a = r2
     elif type(r2) in (int, float):
         a = fitz.Rect(r2, r2, r2, r2)
+    elif len(r2) == 4:
+        a = fitz.Rect(r2)
     else:
-        raise NotImplementedError("op2 must be 'Rect', 'Irect' or number")
+        raise NotImplementedError("op2 must be a rectangle, sequence or number")
     r.x0 += a.x0
     r.y0 += a.y0
     r.x1 += a.x1
@@ -401,8 +407,10 @@ def rect_sub(r1, r2):        # __sub__: subtract number, rect or irect from rect
         a = r2
     elif type(r2) in (int, float):
         a = fitz.Rect(r2, r2, r2, r2)
+    elif len(r2) == 4:
+        a = fitz.Rect(r2)
     else:
-        raise NotImplementedError("op2 must be 'Rect', 'Irect' or number")
+        raise NotImplementedError("op2 must be a rectangle, sequence or number")
     r.x0 -= a.x0
     r.y0 -= a.y0
     r.x1 -= a.x1
@@ -443,8 +451,10 @@ def point_add(p1, p2):
         p = p2
     elif type(p2) in (int, float):
         p = fitz.Point(p2, p2)
+    elif len(p2) == 2:
+        p = fitz.Point(p2)
     else:
-        raise NotImplementedError("op2 must be 'Point' or number")
+        raise NotImplementedError("op2 must be 'Point', sequence or number")
     return fitz.Point(p1.x + p.x, p1.y + p.y)
 
 def point_sub(p1, p2):
@@ -452,8 +462,10 @@ def point_sub(p1, p2):
         p = p2
     elif type(p2) in (int, float):
         p = fitz.Point(p2, p2)
+    elif len(p2) == 2:
+        p = fitz.Point(p2)
     else:
-        raise NotImplementedError("op2 must be 'Point' or number")
+        raise NotImplementedError("op2 must be 'Point', sequence or number")
     return fitz.Point(p1.x - p.x, p1.y - p.y)
 
 def point_mul(p, m):
@@ -908,19 +920,23 @@ def intersects(me, rect):
 # Page.insertTextbox
 #-------------------------------------------------------------------------------
 def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
-                  xref = 0, fontsize = 11, color = (0,0,0), expandtabs = 1,
-                  charwidths = None, charlimit = 256, align = 0):
+                  fontsize = 11, color = (0,0,0), expandtabs = 1,
+                  charwidths = None, align = 0, rotate = 0,
+                  overlay = True):
     """Insert text into a given rectangle.
     Parameters:
-    buffer - string of text to be inserted
-    fontname - name of a Base-14 font, font reference or font reference
+    rect - the textbox to fill
+    buffer - text to be inserted
+    fontname - a Base-14 font, font name or '/namr'
     fontfile - file name of a font to be included
-    color - RGB color tuple
+    fontsize - font size
+    color - RGB color triple
     expandtabs - handles tab chars with string function
     charwidths - list of glyph widths
-    charlimit - limit number of glyphs if width list should be created
-    align - align left, center or right
-    Returns: float of unused rectangle height
+    align - left, center, right, justified
+    rotate - 0, 90, 180, or 270 degrees
+    overlay - put text to foreground / background
+    Returns: float of unused or deficit rectangle size
     
     """
     fitz.CheckParent(page)
@@ -929,17 +945,22 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
     if rect.isEmpty or rect.isInfinite:
         raise ValueError("text box must be finite and not empty")
     fitz.CheckColor(color)
-
-    widthtab = charwidths
-    if not widthtab:                   # need to build our own ...
+    assert rotate % 90 == 0, "rotate must be multiple of 90"
+    
+    # ensure we have a list of glyph widths for the given font
+    widthtab = charwidths              # hopefully we have been given one
+    if not widthtab:                   # need to build our own (sigh!)
         fname = fontname
         ffile = fontfile
         xref  = 0
+        if not (fname or ffile):
+            fname = "Helvetica"
+
         if ffile:                      # filename given
             fname = None
-        elif fname.startswith("/"):    # existing fontname given
-            fl = page.getFontList()    # get font list
-            for f in fl:
+        elif fname.startswith("/"):    # existing font ref given - check it out
+            fl = page.getFontList()    # get font list of page
+            for f in fl:               # will return xref>0 or xref=-1
                 if f[4] == fname[1:]:  # reference found
                     if f[3] in fitz.Base14_fontnames:   # means: Base-14-Font!
                         xref = -1      # ignore xref
@@ -950,32 +971,73 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
             if xref == 0:              # /fontname not in list
                 raise ValueError("invalid font reference for page")
             elif xref > 0:             # found font reference
-                fname = ffile = None
+                fname = None
             else:                      # Base-14 name given
                 xref = 0
-                ffile = None
         widthtab = page.parent._getCharWidths(fontname = fname, xref = xref,
-                   fontfile = ffile, limit = charlimit)
+                   fontfile = ffile)
+    
+    # calculate pixel length of a string
     def pixlen(x):
+        """Calculate pixel length of x."""
         try:
             return sum([widthtab[ord(c)] for c in x]) * fontsize
         except IndexError:
             m = max([ord(c) for c in x])
-            print("max. code point: % - increase charlimit" % m)
+            raise ValueError("max. code point %i not < 256" % m)
 
-    text = ""
-    lheight = fontsize * 1.2
-    maxpos = rect.y1
-    point = fitz.Point(rect.x0, rect.y0 + fontsize)   # text starts here
-    pos = point.y                           # y of first line    
-    blen = pixlen(" ")                      # pixel size of space
-    maxwidth = rect.width                   # pixels of one full line
-    t0 = buffer.splitlines()
+    blen = widthtab[32] * fontsize          # pixel size of space character
+    text = ""                               # output buffer
+    lheight = fontsize * 1.2                # line height
+    rot = rotate % 360                      # rot in (0, 90, 270, 180)
+    
+    #---------------------------------------------------------------------------
+    # adjust for text orientation / rotation
+    #---------------------------------------------------------------------------
+    progr = 1                               # direction of line progress
+    c_pnt = fitz.Point(0, fontsize)         # used for line progress
+    if rot == 0:                            # normal orientation
+        point = rect.top_left + c_pnt       # line 1 is 'fontsize' below top
+        pos = point.y                       # y of first line
+        maxwidth = rect.width               # pixels available in one line
+        maxpos = rect.y1                    # lines must not be below this
+        
+    elif rot == 90:                         # rotate counter clockwise
+        c_pnt = fitz.Point(fontsize, 0)     # progress in x-direction
+        point = rect.bottom_left + c_pnt    # line 1 'fontsize' away from left
+        pos = point.x                       # position of first line
+        maxwidth = rect.height              # pixels available in one line
+        maxpos = rect.x1                    # lines must not be right of this
+        
+    elif rot == 180:                        # text upside down
+        c_pnt = -fitz.Point(0, fontsize)    # progress upwards in y direction
+        point = rect.bottom_right + c_pnt   # line 1 'fontsize' above bottom
+        pos = point.y                       # position of first line
+        maxwidth = rect.width               # pixels available in one line
+        progr = -1                          # subtract lheight for next line
+        maxpos = rect.y0                    # lines must not be above this
+        
+    else:                                   # rotate clockwise (270 or -90)
+        c_pnt = -fitz.Point(fontsize, 0)    # progress from right to left
+        point = rect.top_right + c_pnt      # line 1 'fontsize' left of right
+        pos = point.x                       # position of first line
+        maxwidth = rect.height              # pixels available in one line
+        progr = -1                          # subtract lheight for next line
+        maxpos = rect.x0                    # lines must not left of this
+    
+    # create a list of buffer, split into its lines
+    
+    if type(buffer) in (list, tuple):
+        t0 = "\n".join(buffer)
+    else:
+        t0 = buffer
+    
+    t0 = t0.splitlines()
 
     #===========================================================================
     # line loop
     #===========================================================================
-    just_tab = []                           # stores 'justify' indicators
+    just_tab = []                           # 'justify' indicators per line
     for i, line in enumerate(t0):
         line_t = line.expandtabs(expandtabs).split(" ")  # split line into words
         lbuff = ""                          # init line buffer
@@ -984,16 +1046,16 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
         # word loop
         #=======================================================================
         for word in line_t:
-            pl_w = pixlen(word)             # pixel len of 1 word
+            pl_w = pixlen(word)             # pixel len of word
             if rest >= pl_w:                # will it fit on the line?
                 lbuff += word + " "         # yes, and append word
                 rest -= (pl_w + blen)       # update available line space
                 continue
             # word won't fit in remaining space - output the line
             lbuff = lbuff.rstrip() + "\n"   # line full, append line break
-            text += lbuff                   # append to total page text
-            pos += lheight                  # increase line position
-            just_tab.append(True)           # line may be justified
+            text += lbuff                   # append to total text
+            pos += lheight * progr          # increase line position
+            just_tab.append(True)           # line is justify candidate
             lbuff = ""                      # re-init line buffer
             rest = maxwidth                 # re-init avail. space
             if pl_w <= maxwidth:            # word shorter than 1 line?
@@ -1008,7 +1070,7 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
                 else:                       # line full
                     lbuff += "\n"           # close line
                     text += lbuff           # append to text
-                    pos += lheight          # increase line position
+                    pos += lheight * progr  # increase line position
                     just_tab.append(False)  # do not justify line
                     lbuff = c               # start new line with this char
             lbuff += " "                    # finish long word
@@ -1019,30 +1081,37 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
             just_tab.append(False)          # do not justify line
         if i < len(t0) - 1:                 # not the last line?
             text += "\n"                    # insert line break
-            pos += lheight                  # increase line position
+            pos += lheight * progr          # increase line position
     
-    more = pos - maxpos                     # difference to rect bottom
+    more = (pos - maxpos) * progr           # difference to rect size limit
     
-    if more > 1e-5:                         # landed too much below
-        raise ValueError("rect must be %g pixels higher to store text" % more)
+    if more > 1e-5:                         # landed too much outside rect
+        return (-1) * more                  # return deficit, don't output
 
     more = abs(more)
     if more < 1e-5:
         more = 0                            # don't bother with small epsilons
     if align == 0:                          # left alignment: output full chunk
-        page.insertText(point, text, fontsize = fontsize,
-                        fontname = fontname, fontfile = fontfile, color = color)
+        page.insertText(point, text, fontsize = fontsize, rotate = rotate,
+                        fontname = fontname, fontfile = fontfile,
+                        color = color, overlay = overlay)
         return more
     # center, right, justify: output each line with its own specifics
     spacing = 0
     text_t = text.splitlines()              # split text in lines again
     for i, t in enumerate(text_t):
         pl = maxwidth - pixlen(t)           # pixel amount of empty line space
-        pnt = fitz.Point(point.x, point.y + i * lheight)   # text start of line
+        pnt = point + c_pnt * (i * 1.2)     # text start of line
         if align == 1:                      # center: right shift by half width
-            pnt = fitz.Point(pnt.x + pl / 2, pnt.y)
+            if rot in (0, 180):
+                pnt = pnt + fitz.Point(pl / 2, 0) * progr
+            else:
+                pnt = pnt - fitz.Point(0, pl / 2) * progr
         elif align == 2:                    # right: right shift by full width
-            pnt = fitz.Point(pnt.x + pl, pnt.y)
+            if rot in (0, 180):
+                pnt = pnt + fitz.Point(pl, 0) * progr
+            else:
+                pnt = pnt - fitz.Point(0, pl) * progr
         else:                               # justify
             spaces = t.count(" ")           # number of spaces in line
             if spaces > 0 and just_tab[i]:  # if any, and we may justify
@@ -1051,8 +1120,8 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
                 spacing = 0                 # keep normal space length
 
         page.insertText(pnt, t, fontsize = fontsize, fontname = fontname,
-                        fontfile = fontfile, color = color,
-                        wordspacing = spacing)
+                        fontfile = fontfile, color = color, rotate = rotate,
+                        wordspacing = spacing, overlay = overlay)
     return more
 
 #-------------------------------------------------------------------------------
@@ -1060,7 +1129,7 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
 #-------------------------------------------------------------------------------
 def drawLine(page, p1, p2, color = (0, 0, 0), dashes = None,
                width = 1, roundCap = True, overlay = True):
-    """Draw a line between points p1 and p2.
+    """Draw a line from point p1 to point p2.
     """
     fitz.CheckParent(page)
     fitz.CheckColor(color)
@@ -1080,7 +1149,7 @@ def drawLine(page, p1, p2, color = (0, 0, 0), dashes = None,
     if dashes is not None and len(dashes) > 0:
         d = dashes + "d"
     
-    templ1 = "\nq %i J %s %g %g %g RG %g w %g %g m %g %g l h S Q "
+    templ1 = "\nh q %i J %s %g %g %g RG %g w %g %g m %g %g l h S Q "
     
     c  = templ1 % (roundCap, d, color[0], color[1], color[2], width,
                    p1.x, h - p1.y, p2.x, h - p2.y)
@@ -1117,10 +1186,10 @@ def drawRect(page, rect, color = (0, 0, 0), fill = None, dashes = None,
 #-------------------------------------------------------------------------------
 def drawPolyline(page, points, color = (0, 0, 0), fill = None, dashes = None,
                width = 1, roundCap = True, overlay = True, closePath = False):
-    """Draws a circle on a PDF page given its center and radius.
+    """Draw multiple connected line segments.
     """
     fitz.CheckParent(page)
-    assert len(points) > 1, "need at least two points to draw polyline"
+    assert len(points) > 1, "need at least two points for polyline"
     fitz.CheckColor(color)
     fitz.CheckColor(fill)
     doc = page.parent
@@ -1138,7 +1207,7 @@ def drawPolyline(page, points, color = (0, 0, 0), fill = None, dashes = None,
     if dashes is not None and len(dashes) > 0:
         d = dashes + "d"
     tempfl = "%g %g %g rg\n"
-    templ1 = "\nq %i J %i j %s %g %g %g RG %g w %g %g m\n"
+    templ1 = "\nh q %i J %i j %s %g %g %g RG %g w %g %g m\n"
     templ2 = "%g %g l\n"
     
     for i, p in enumerate(points):
@@ -1176,7 +1245,7 @@ def drawPolyline(page, points, color = (0, 0, 0), fill = None, dashes = None,
 #-------------------------------------------------------------------------------
 def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
                dashes = None, width = 1, roundCap = True, overlay = True):
-    """Draws a circle on a PDF page given its center and radius.
+    """Draw a circle on a PDF page given its center and radius.
     """
     fitz.CheckParent(page)
     fitz.CheckColor(color)
@@ -1194,7 +1263,7 @@ def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
     kappa = 0.552285 * radius
     
     l0 = "%g %g %g rg\n"
-    l1 = "\nq %g %g %g RG %g w %i J\n"
+    l1 = "\nh q %g %g %g RG %g w %i J\n"
     l2 = "%s d\n"
     l3 = "%g %g m\n"
     l4 = "%g %g %g %g %g %g c\n"
@@ -1247,7 +1316,7 @@ def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
 #-------------------------------------------------------------------------------
 def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = None,
                width = 1, roundCap = True, overlay = True):
-    """Draws an oval on a PDF page given its containing rectangle.
+    """Draw an oval on a PDF page given its containing rectangle.
     """
     fitz.CheckParent(page)
     fitz.CheckColor(color)
@@ -1268,7 +1337,7 @@ def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = None,
     kappav = 0.552285 * rect.height / 2
     
     l0 = "%g %g %g rg\n"
-    l1 = "\nq %g %g %g RG %g w %i J\n"
+    l1 = "\nh q %g %g %g RG %g w %i J\n"
     l2 = "%s d\n"
     l3 = "%g %g m\n"
     l4 = "%g %g %g %g %g %g c\n"
@@ -1321,7 +1390,7 @@ def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = None,
 #-------------------------------------------------------------------------------
 def drawCurve(page, p1, p2, p3, color = (0, 0, 0), fill = None, dashes = None,
                width = 1, closePath = False, roundCap = True, overlay = True):
-    """Draws a Bézier curve along three arbitray points, using control points on their connecting lines p1 -> p2 and p2 - > p3. Points p1 and p3 are the start and end point of the curve, respectively.
+    """Draw a Bézier curve from p1 to p3, generating control points on connecting lines p1 -> p2 and p2 - > p3.
     """
     kappa = 0.552285
     k1 = p1 + (p2 - p1) * kappa
@@ -1338,7 +1407,7 @@ def drawCurve(page, p1, p2, p3, color = (0, 0, 0), fill = None, dashes = None,
 #-------------------------------------------------------------------------------
 def drawBezier(page, p1, p2, p3, p4, color = (0, 0, 0), fill = None, dashes = None,
                width = 1, closePath = False, roundCap = True, overlay = True):
-    """Draws a Bézier curve for four points. Start and end are p1 and p4, respectively. p2 and p3 are usedas control points only.
+    """Draw a general cubic Bézier curve from p1 to p4 using control points p2 and p3.
     """
     fitz.CheckParent(page)
     fitz.CheckColor(color)
@@ -1353,7 +1422,7 @@ def drawBezier(page, p1, p2, p3, p4, color = (0, 0, 0), fill = None, dashes = No
     h = page.rect.y1
     cont = doc._getXrefStream(xref)
     l0 = "%g %g %g rg\n"
-    l1 = "\nq %g %g %g RG %g w %i J %i j\n"
+    l1 = "\nh q %g %g %g RG %g w %i J %i j\n"
     l2 = "%s d\n"
     l3 = "%g %g m\n"
     l4 = "%g %g %g %g %g %g c\n"
@@ -1390,26 +1459,32 @@ def drawBezier(page, p1, p2, p3, p4, color = (0, 0, 0), fill = None, dashes = No
 def drawSector(page, center, point, beta, color = (0, 0, 0), fill = None,
             dashes = None, fullSector = True,
             width = 1, closePath = False, roundCap = True, overlay = True):
+    """Draw a circle sector given circle center, one arc end point and the angle of the arc. Parameters:
+    center - center of circle
+    point - arc end point
+    beta - angle of arc (degrees)
+    fullSector - draw lines to center
+    """
     fitz.CheckParent(page)
     fitz.CheckColor(color)
     fitz.CheckColor(fill)
     doc = page.parent
     h = page.rect.y1
-    xreflist = page._getContents()
+    xreflist = page._getContents()          # /Contents objects of page
     if overlay:
-        xref = xreflist[-1]
+        xref = xreflist[-1]                 # last object
     else:
-        xref = xreflist[0]
+        xref = xreflist[0]                  # first object
     cont = doc._getXrefStream(xref)
     # PDF operator instructions
     l0 = "%g %g %g rg\n"
-    l1 = "\nq %g %g %g RG %g w %i J %i j\n"
+    l1 = "\nh q %g %g %g RG %g w %i J %i j\n"
     l2 = "%s d\n"
     l3 = "%g %g m\n"
     l4 = "%g %g %g %g %g %g c\n"
     l5 = "%g %g l\n"
     
-    betar = math.radians(beta)
+    betar = math.radians(-beta)
     w360 = math.radians(math.copysign(360, betar)) * (-1)
     w90  = math.radians(math.copysign(90, betar))
     w45  = w90 / 2
@@ -1424,11 +1499,13 @@ def drawSector(page, center, point, beta, color = (0, 0, 0), fill = None,
         c += l2 % dashes
     c += l3 % (point.x, h - point.y)
     
-    # We will draw cubic Bezier curves from P to Q using R as a helper point:
-    # R is the point where the tangents through P and Q are crossing.
-    # The intermediate two Bezier control points are located on these tangents.
-    # They have an equal distance 'kappa' from P, resp. Q.
-    # Parameter 'point' is the first P.
+    """
+    We will draw cubic Bezier curves from P to Q using R as a helper point:
+    R is the point where the tangents through P and Q are crossing.
+    The intermediate two Bezier control points are located on these tangents.
+    They have equal distances 'kappa' from P, resp. Q.
+    Argument 'point' is taken as the first P.
+    """
     Q = fitz.Point(0, 0)                    # just make sure it exists
     C = center
     P = point
@@ -1456,7 +1533,7 @@ def drawSector(page, center, point, beta, color = (0, 0, 0), fill = None,
         r2 = C.y + math.sin(alfa + w45) * rad / math.cos(w45)
         R = fitz.Point(r1, r2)              # crossing point of tangents
         kappah = (1 - math.cos(w45)) * 4 / 3 / abs(R - Q)
-        kappa = kappah * abs(P - Q) / (1 - math.cos(w90))
+        kappa = kappah * abs(P - Q)
         cp1 = P + (R - P) * kappa           # control point 1
         cp2 = Q + (R - Q) * kappa           # control point 2
         c += l4 % (cp1.x, h - cp1.y, cp2.x, h - cp2.y, Q.x, h - Q.y) # draw

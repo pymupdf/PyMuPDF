@@ -49,7 +49,7 @@ page.insertText(fitz.Point(ts_h - 30, ts_v - 30), stitle,
 
 # draw the table data
 for i, c in enumerate(table):
-    beta = c[0] / seats * 180          # express seats as angle in semi circle
+    beta = -c[0] / seats * 180         # express seats as angle in semi circle
     color = getColor(c[1])             # avoid multiple color lookups
     # the method delivers point of other end of the constructed arc
     # we will use it as input for next round
@@ -62,7 +62,7 @@ for i, c in enumerate(table):
     tl = fitz.Point(pos.x - 30, ts_v - 10 + i*lineheight)
     br = fitz.Point(pos.x - 10, ts_v + i*lineheight)
     rect = fitz.Rect(tl, br)                # legend color bar
-    page.drawRect(rect, fill = color), color = color)
+    page.drawRect(rect, fill = color, color = color)
 
 # overlay center of circle with white
 page.drawCircle(center, radius - 70, color = white, fill = white)

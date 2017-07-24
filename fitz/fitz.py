@@ -102,7 +102,7 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.0"
-VersionDate = "2017-07-08 08:30:51"
+VersionDate = "2017-07-24 06:59:59"
 
 #------------------------------------------------------------------------------
 # link kinds and link flags
@@ -224,7 +224,7 @@ def getPDFnow():
     return tstamp
 
 #-------------------------------------------------------------------------------
-# Returns a PDF string depending on its coding.
+# Return a PDF string depending on its coding.
 # If only ascii then "(original)" is returned,
 # else if only 8 bit chars then "(original)" with interspersed octal strings
 # \nnn is returned,
@@ -266,6 +266,31 @@ def getPDFstr(s, brackets = True):
     r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
     t = r.decode("utf-8")                        # make str in Python 3
     return "<" + t + ">"                         # brackets indicate hex
+
+#===============================================================================
+# Return a PDF string suitable for the TJ operator enclosed in "[]" brackets.
+# The input string is aplit in segments of code points less than
+# or greater-equal 256, where each segment is enclosed in "<>" brackets.
+#===============================================================================
+def getTJstr(text):
+    if text.startswith("[<") and text.endswith(">]"): # already done
+        return text
+    otxt = "<"
+    modus = 0
+    for c in text:
+        if ord(c) < 256:
+            if modus == 2:
+                otxt += "><"
+            modus = 1
+            otxt += hex(ord(c))[-2:]
+        else:
+            if modus == 1:
+                otxt += "><"
+            modus = 2
+            otxt += hex(ord(c))[-4:]
+    if not otxt.endswith(">"):
+        otxt += ">"
+    return "[" + otxt + "]"
 
 '''
 www.din-formate.de
@@ -634,8 +659,8 @@ open(filename)"""
         return val
 
 
-    def insertPage(self, to=-1, text=None, fontsize=11, width=595, height=842, fontname=None, fontfile=None, color=None):
-        """Insert a new page in front of 'to'."""
+    def insertPage(self, pno=-1, text=None, fontsize=11, width=595, height=842, fontname=None, fontfile=None, color=None):
+        """Insert a new page in front of 'pno'."""
 
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
@@ -645,7 +670,7 @@ open(filename)"""
                 text = text.splitlines()
             tab = []
             for t in text:
-                tab.append(getPDFstr(t, brackets = False))
+                tab.append(getTJstr(t))
             text = tab
         else:
             text = []
@@ -655,7 +680,7 @@ open(filename)"""
                 fontname = "Helvetica"
 
 
-        val = _fitz.Document_insertPage(self, to, text, fontsize, width, height, fontname, fontfile, color)
+        val = _fitz.Document_insertPage(self, pno, text, fontsize, width, height, fontname, fontfile, color)
         if val == 0: self._reset_page_refs()
 
         return val
@@ -988,6 +1013,11 @@ class Page(_object):
         return _fitz.Page__getLinkXrefs(self)
 
 
+    def _cleanContent(self):
+        """_cleanContent(self) -> int"""
+        return _fitz.Page__cleanContent(self)
+
+
     def insertImage(self, rect, filename=None, pixmap=None, overlay=1):
         """Insert a new image in a rectangle."""
         CheckParent(self)
@@ -995,21 +1025,20 @@ class Page(_object):
         return _fitz.Page_insertImage(self, rect, filename, pixmap, overlay)
 
 
-    def insertText(self, point, text=None, fontsize=11, fontname=None, fontfile=None, color=None, wordspacing=0):
+    def insertText(self, point, text=None, fontsize=11, fontname=None, fontfile=None, color=None, wordspacing=0, rotate=0, overlay=1):
         """Insert new text on a page."""
 
         if not self.parent:
             raise RuntimeError("orphaned object: parent is None")
         # ensure 'text' is a list of strings
-        if text is not None:
-            if type(text) not in (list, tuple):
-                text = text.splitlines()
-            tab = []
-            for t in text:
-                tab.append(getPDFstr(t, brackets = False))
-            text = tab
-        else:
-            text = []
+        assert text, "some text is needed"
+        assert len(text) > 0, "some text is needed"
+        tab = []
+        if type(text) not in (list, tuple):
+            text = text.splitlines()
+        for t in text:
+            tab.append(getTJstr(t))
+        text = tab
         # ensure valid 'fontname'
         if not fontfile:
             if not fontname:
@@ -1022,7 +1051,7 @@ class Page(_object):
                 elif fontname not in Base14_fontnames:
                     fontname = "Helvetica"
 
-        return _fitz.Page_insertText(self, point, text, fontsize, fontname, fontfile, color, wordspacing)
+        return _fitz.Page_insertText(self, point, text, fontsize, fontname, fontfile, color, wordspacing, rotate, overlay)
 
 
     def _getContents(self):

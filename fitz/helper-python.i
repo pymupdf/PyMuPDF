@@ -119,7 +119,7 @@ def getPDFnow():
     return tstamp
 
 #-------------------------------------------------------------------------------
-# Returns a PDF string depending on its coding.
+# Return a PDF string depending on its coding.
 # If only ascii then "(original)" is returned,
 # else if only 8 bit chars then "(original)" with interspersed octal strings
 # \nnn is returned,
@@ -161,6 +161,31 @@ def getPDFstr(s, brackets = True):
     r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
     t = r.decode("utf-8")                        # make str in Python 3
     return "<" + t + ">"                         # brackets indicate hex
+
+#===============================================================================
+# Return a PDF string suitable for the TJ operator enclosed in "[]" brackets.
+# The input string is aplit in segments of code points less than
+# or greater-equal 256, where each segment is enclosed in "<>" brackets.
+#===============================================================================
+def getTJstr(text):
+    if text.startswith("[<") and text.endswith(">]"): # already done
+        return text
+    otxt = "<"
+    modus = 0
+    for c in text:
+        if ord(c) < 256:
+            if modus == 2:
+                otxt += "><"
+            modus = 1
+            otxt += hex(ord(c))[-2:]
+        else:
+            if modus == 1:
+                otxt += "><"
+            modus = 2
+            otxt += hex(ord(c))[-4:]
+    if not otxt.endswith(">"):
+        otxt += ">"
+    return "[" + otxt + "]"
 
 '''
 www.din-formate.de
