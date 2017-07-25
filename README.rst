@@ -91,7 +91,7 @@ Earlier Versions
 License
 =======
 
-PyMuPDF is distributed under GNU GPL V3.
+PyMuPDF is distributed under GNU GPL V3. The implied use of MuPDF also implies its license GNU AFFERO GPL V3. A copy of both licenses are included in this repository.
 
 Contact
 =======
