@@ -829,11 +829,11 @@ def getLinkText(page, lnk):
     #--------------------------------------------------------------------------
     # define skeletons for /Annots object texts
     #--------------------------------------------------------------------------
-    annot_goto = "<</Dest[%s 0 R/XYZ %s %s 0]/Rect[%s]/Subtype/Link>>"
+    annot_goto = "<</Dest[%i 0 R/XYZ %g %g 0]/Rect[%s]/Subtype/Link>>"
 
     annot_goto_n = "<</A<</D%s/S/GoTo>>/Rect[%s]/Subtype/Link>>"
 
-    annot_gotor = '''<</A<</D[%s /XYZ %s %s 0]/F<</F(%s)/UF(%s)/Type/Filespec
+    annot_gotor = '''<</A<</D[%s /XYZ %g %g 0]/F<</F(%s)/UF(%s)/Type/Filespec
     >>/S/GoToR>>/Rect[%s]/Subtype/Link>>'''
 
     annot_gotor_n = "<</A<</D%s/F(%s)/S/GoToR>>/Rect[%s]/Subtype/Link>>"
@@ -847,8 +847,7 @@ def getLinkText(page, lnk):
 
     r = lnk["from"]
     height = page.rect.height
-    rect = "%s %s %s %s" % (str(r.x0), str(height - r.y0),   # correct y0
-                            str(r.x1), str(height - r.y1))   # correct y1
+    rect = "%g %g %g %g" % (r.x0, height - r.y0, r.x1, height - r.y1)
 
     annot = ""
     if lnk["kind"] == fitz.LINK_GOTO:
@@ -857,8 +856,7 @@ def getLinkText(page, lnk):
             pno = lnk["page"]
             xref = page.parent._getPageXref(pno)[0]
             pnt = lnk.get("to", fitz.Point(0, 0))          # destination point
-            annot = txt % (xref, str(pnt.x),
-                           str(pnt.y), rect)
+            annot = txt % (xref, pnt.x, pnt.y, rect)
         else:
             txt = annot_goto_n
             annot = txt % (fitz.getPDFstr(lnk["to"]), rect)
@@ -869,7 +867,7 @@ def getLinkText(page, lnk):
             pnt = lnk.get("to", fitz.Point(0, 0))          # destination point
             if type(pnt) is not fitz.Point:
                 pnt = fitz.Point(0, 0)
-            annot = txt % (str(lnk["page"]), str(pnt.x), str(pnt.y),
+            annot = txt % (str(lnk["page"]), pnt.x, pnt.y,
                            lnk["file"], lnk["file"], rect)
         else:
             txt = annot_gotor_n
@@ -927,16 +925,16 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
     Parameters:
     rect - the textbox to fill
     buffer - text to be inserted
-    fontname - a Base-14 font, font name or '/namr'
-    fontfile - file name of a font to be included
+    fontname - a Base-14 font, font name or '/name'
+    fontfile - name of a font file
     fontsize - font size
     color - RGB color triple
-    expandtabs - handles tab chars with string function
+    expandtabs - handles tabulators with string function
     charwidths - list of glyph widths
     align - left, center, right, justified
     rotate - 0, 90, 180, or 270 degrees
-    overlay - put text to foreground / background
-    Returns: float of unused or deficit rectangle size
+    overlay - put text in foreground or background
+    Returns: float of unused or deficit rectangle area
     
     """
     fitz.CheckParent(page)
@@ -1172,7 +1170,7 @@ def drawLine(page, p1, p2, color = (0, 0, 0), dashes = None,
 #-------------------------------------------------------------------------------
 def drawRect(page, rect, color = (0, 0, 0), fill = None, dashes = None,
                width = 1, roundCap = True, overlay = True):
-    """Draw a rectangle on a PDF page.
+    """Draw a rectangle.
     """
     page.drawPolyline((rect.top_left, rect.top_right, rect.bottom_right,
                        rect.bottom_left), color = color, fill = fill,
@@ -1245,7 +1243,7 @@ def drawPolyline(page, points, color = (0, 0, 0), fill = None, dashes = None,
 #-------------------------------------------------------------------------------
 def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
                dashes = None, width = 1, roundCap = True, overlay = True):
-    """Draw a circle on a PDF page given its center and radius.
+    """Draw a circle given its center and radius.
     """
     fitz.CheckParent(page)
     fitz.CheckColor(color)
@@ -1316,7 +1314,7 @@ def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
 #-------------------------------------------------------------------------------
 def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = None,
                width = 1, roundCap = True, overlay = True):
-    """Draw an oval on a PDF page given its containing rectangle.
+    """Draw an oval given its containing rectangle.
     """
     fitz.CheckParent(page)
     fitz.CheckColor(color)
@@ -1390,7 +1388,7 @@ def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = None,
 #-------------------------------------------------------------------------------
 def drawCurve(page, p1, p2, p3, color = (0, 0, 0), fill = None, dashes = None,
                width = 1, closePath = False, roundCap = True, overlay = True):
-    """Draw a Bézier curve from p1 to p3, generating control points on connecting lines p1 -> p2 and p2 - > p3.
+    """Draw a special Bezier curve from p1 to p3, generating control points on lines p1 to p2 and p2 to p3.
     """
     kappa = 0.552285
     k1 = p1 + (p2 - p1) * kappa
@@ -1407,7 +1405,7 @@ def drawCurve(page, p1, p2, p3, color = (0, 0, 0), fill = None, dashes = None,
 #-------------------------------------------------------------------------------
 def drawBezier(page, p1, p2, p3, p4, color = (0, 0, 0), fill = None, dashes = None,
                width = 1, closePath = False, roundCap = True, overlay = True):
-    """Draw a general cubic Bézier curve from p1 to p4 using control points p2 and p3.
+    """Draw a general cubic Bezier curve from p1 to p4 using control points p2 and p3.
     """
     fitz.CheckParent(page)
     fitz.CheckColor(color)
@@ -1463,7 +1461,7 @@ def drawSector(page, center, point, beta, color = (0, 0, 0), fill = None,
     center - center of circle
     point - arc end point
     beta - angle of arc (degrees)
-    fullSector - draw lines to center
+    fullSector - connect arc ends with center
     """
     fitz.CheckParent(page)
     fitz.CheckColor(color)
@@ -2310,3 +2308,41 @@ def getColor(name):
         return (c[1] / 255., c[2] / 255., c[3] / 255.)
     except:
         return (1, 1, 1)
+    
+def getColorHSV(name):
+    """Retrieve the hue, saturation, value triple of a color name.
+    Returns a triple (degree, percent, percent). If not found (-1, -1, -1) is
+    returned.
+    """
+    try:
+        x = getColorInfoList()[getColorList().index(name.upper())]
+    except:
+        return (-1, -1, -1)
+    
+    r = x[1] / 255.
+    g = x[2] / 255.
+    b = x[3] / 255.
+    cmax = max(r, g, b)
+    V = round(cmax * 100, 1)
+    cmin = min(r, g, b)
+    delta = cmax - cmin
+    if delta == 0:
+        hue = 0
+    elif cmax == r:
+        hue = 60. * (((g - b)/delta) % 6)
+    elif cmax == g:
+        hue = 60. * (((b - r)/delta) + 2)
+    else:
+        hue = 60. * (((r - g)/delta) + 4)
+        
+    H = int(round(hue))
+    
+    if cmax == 0:
+        sat = 0
+    else:
+        sat = delta / cmax
+    S = int(round(sat  * 100))
+
+    return (H, S, V)
+
+    

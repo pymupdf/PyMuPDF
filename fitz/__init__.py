@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from fitz.fitz import *
 
 class M_Identity(fitz.Matrix):
+    """Identity matrix [1, 0, 0, 1, 0, 0]"""
     def __init__(self):
         fitz.Matrix.__init__(self, 1.0, 1.0)
     def __setattr__(self, name, value):

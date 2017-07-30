@@ -100,9 +100,12 @@ import weakref
 from binascii import hexlify
 import sys
 
+
 VersionFitz = "1.11"
 VersionBind = "1.11.0"
-VersionDate = "2017-07-24 06:59:59"
+VersionDate = "2017-07-30 12:12:11"
+version = (VersionBind, VersionFitz, "20170730121211")
+
 
 #------------------------------------------------------------------------------
 # link kinds and link flags
@@ -660,7 +663,7 @@ open(filename)"""
 
 
     def insertPage(self, pno=-1, text=None, fontsize=11, width=595, height=842, fontname=None, fontfile=None, color=None):
-        """Insert a new page in front of 'pno'."""
+        """Insert a new page in front of 'pno'. Use arguments 'width', 'height' to specify a non-default page size, and optionally text insertion arguments."""
 
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
@@ -720,7 +723,7 @@ open(filename)"""
 
 
     def _getCharWidths(self, fontname=None, fontfile=None, xref=0, limit=256):
-        """List of font glyph widths."""
+        """List the glyph widths of a font."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -1013,9 +1016,11 @@ class Page(_object):
         return _fitz.Page__getLinkXrefs(self)
 
 
-    def _cleanContent(self):
-        """_cleanContent(self) -> int"""
-        return _fitz.Page__cleanContent(self)
+    def _cleanContents(self):
+        """_cleanContents(self) -> int"""
+        CheckParent(self)
+
+        return _fitz.Page__cleanContents(self)
 
 
     def insertImage(self, rect, filename=None, pixmap=None, overlay=1):
@@ -1026,7 +1031,7 @@ class Page(_object):
 
 
     def insertText(self, point, text=None, fontsize=11, fontname=None, fontfile=None, color=None, wordspacing=0, rotate=0, overlay=1):
-        """Insert new text on a page."""
+        """Starting at 'point', insert 'text', optionally using 'fontsize', 'fontname', 'fontfile', 'color', 'rotate', 'wordspacing', or 'overlay'. """
 
         if not self.parent:
             raise RuntimeError("orphaned object: parent is None")
@@ -1621,6 +1626,11 @@ class Colorspace(_object):
 
     __swig_destroy__ = _fitz.delete_Colorspace
     __del__ = lambda self: None
+
+    def __repr__(self):
+        x = ("", "GRAY", "", "RGB", "CMYK")[self.n]
+        return "fitz.Colorspace(fitz.CS_%s) - %s" % (x, self.name)
+
 Colorspace_swigregister = _fitz.Colorspace_swigregister
 Colorspace_swigregister(Colorspace)
 
@@ -2141,6 +2151,13 @@ class Annot(_object):
         CheckParent(self)
 
         return _fitz.Annot_flags(self)
+
+
+    def _cleanContents(self):
+        """_cleanContents(self) -> int"""
+        CheckParent(self)
+
+        return _fitz.Annot__cleanContents(self)
 
 
     def setFlags(self, flags):

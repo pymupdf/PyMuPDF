@@ -5456,7 +5456,6 @@ SWIGINTERN PyObject *fz_document_s__getCharWidths(struct fz_document_s *self,cha
             pdf_document *pdf = pdf_specifics(gctx, self);
             PyObject *wlist = PyList_New(0);
             int i, glyph;
-            float dist;
             const char *data;
             int size;
             fz_font *font = NULL;
@@ -5500,20 +5499,23 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "xref is not a font, or not supported")
                         }
                     }
                 }
-
+                int valid_font = 0;
                 for (i = 0; i < limit; i++)
                 {
                     glyph = fz_encode_character(gctx, font, i);
                     if (glyph > 0)
                     {
-                        dist = fz_advance_glyph(gctx, font, glyph, 0);
-                        PyList_Append(wlist, PyFloat_FromDouble((double) dist));
+                        PyList_Append(wlist, Py_BuildValue("f", fz_advance_glyph(gctx, font, glyph, 0)));
+                        valid_font = 1;
                     }
                     else
                     {
-                        PyList_Append(wlist, PyFloat_FromDouble((double) 0.0));
+                        PyList_Append(wlist, Py_BuildValue("f", 0.0));
                     }
                 }
+                if (!valid_font) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "invalid font: zero widths up to 0xff")
+/*@SWIG@*/;
             }
             fz_always(gctx)
             {
@@ -5532,8 +5534,7 @@ SWIGINTERN PyObject *fz_document_s__getPageObjNumber(struct fz_document_s *self,
             pdf_document *pdf = pdf_specifics(gctx, self);
             fz_try(gctx)
             {
-                if ((pno < 0) | (pno >= pageCount))
-                    /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+                if (pno >= pageCount) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "page number out of range")
 /*@SWIG@*/;
                 /*@SWIG:fitz\fitz.i,45,assert_PDF@*/
@@ -5543,7 +5544,9 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/;
             }
             fz_catch(gctx) return NULL;
-            pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, pno);
+            int n = pno;
+            while (n < 0) n += pageCount;
+            pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, n);
             long objnum = (long) pdf_to_num(gctx, pageref);
             long objgen = (long) pdf_to_gen(gctx, pageref);
             return Py_BuildValue("(l, l)", objnum, objgen);
@@ -5575,9 +5578,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
             int i;
             for (i = 0; i < n; i++)       // do this for each img of the page
             {
-                pdf_obj *imagedict, *imagename, *type, *altcs, *o, *cs;
-                PyObject *xref, *gen, *width, *height, *bpc, *cs_py, *altcs_py;
-                PyObject *name_py;
+                pdf_obj *imagedict, *imagename, *type, *altcs, *cs;
                 imagedict = pdf_dict_get_val(gctx, dict, i);
                 imagename = pdf_dict_get_key(gctx, dict, i);
                 if (!pdf_is_dict(gctx, imagedict)) continue;
@@ -5585,17 +5586,17 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
                 type = pdf_dict_get(gctx, imagedict, PDF_NAME_Subtype);
                 if (!pdf_name_eq(gctx, type, PDF_NAME_Image)) continue;
 
-                xref = PyInt_FromLong((long) pdf_to_num(gctx, imagedict));
-                gen  = PyInt_FromLong((long) pdf_to_gen(gctx, imagedict));
+                int xref = pdf_to_num(gctx, imagedict);
+                int gen  = pdf_to_gen(gctx, imagedict);
 
-                o = pdf_dict_get(gctx, imagedict, PDF_NAME_Width);
-                width = PyInt_FromLong((long) pdf_to_int(gctx, o));
+                int width = pdf_to_int(gctx, pdf_dict_get(gctx, imagedict,
+                                       PDF_NAME_Width));
 
-                o = pdf_dict_get(gctx, imagedict, PDF_NAME_Height);
-                height = PyInt_FromLong((long) pdf_to_int(gctx, o));
+                int height = pdf_to_int(gctx, pdf_dict_get(gctx, imagedict,
+                                        PDF_NAME_Height));
 
-                o = pdf_dict_get(gctx, imagedict, PDF_NAME_BitsPerComponent);
-                bpc = PyInt_FromLong((long) pdf_to_int(gctx, o));
+                int bpc = pdf_to_int(gctx, pdf_dict_get(gctx, imagedict,
+                                     PDF_NAME_BitsPerComponent));
 
                 cs = pdf_dict_get(gctx, imagedict, PDF_NAME_ColorSpace);
                 altcs = NULL;
@@ -5611,19 +5612,11 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
                     }
                 }
 
-                cs_py = PyString_FromString(pdf_to_name(gctx, cs));
-                altcs_py = PyString_FromString(pdf_to_name(gctx, altcs));
-                name_py = PyString_FromString(pdf_to_name(gctx, imagename));
-                PyObject *img = PyList_New(0);         /* Python list per img */
-                PyList_Append(img, xref);
-                PyList_Append(img, gen);
-                PyList_Append(img, width);
-                PyList_Append(img, height);
-                PyList_Append(img, bpc);
-                PyList_Append(img, cs_py);
-                PyList_Append(img, altcs_py);
-                PyList_Append(img, name_py);
-                PyList_Append(imglist, img);
+                PyList_Append(imglist, Py_BuildValue("(i,i,i,i,i,s,s,s)",
+                                       xref, gen, width, height, bpc,
+                                       pdf_to_name(gctx, cs),
+                                       pdf_to_name(gctx, altcs),
+                                       pdf_to_name(gctx, imagename)));
             }
             return imglist;
         }
@@ -5669,13 +5662,10 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
                 else
                     bname = basefont;
                 name = pdf_dict_get_key(gctx, dict, i);
-                PyObject *font = PyList_New(0);       // Python list per font
-                PyList_Append(font, PyInt_FromLong(xref));
-                PyList_Append(font, PyInt_FromLong(gen));
-                PyList_Append(font, PyString_FromString(pdf_to_name(gctx, subtype)));
-                PyList_Append(font, PyString_FromString(pdf_to_name(gctx, bname)));
-                PyList_Append(font, PyString_FromString(pdf_to_name(gctx, name)));
-                PyList_Append(fontlist, font);
+                PyList_Append(fontlist, Py_BuildValue("(i,i,s,s,s)", xref, gen,
+                                                      pdf_to_name(gctx, subtype),
+                                                      pdf_to_name(gctx, bname),
+                                                      pdf_to_name(gctx, name)));
             }
             return fontlist;
         }
@@ -6013,10 +6003,21 @@ SWIGINTERN int fz_page_s_rotation(struct fz_page_s *self){
             return pdf_to_int(gctx, o);
         }
 SWIGINTERN int fz_page_s_setRotation(struct fz_page_s *self,int rot){
-            pdf_page *page = pdf_page_from_fz_page(gctx, self);
-            if (!page) return -1;
-            pdf_obj *rot_o = pdf_new_int(gctx, page->doc, rot);
-            pdf_dict_put_drop(gctx, page->obj, PDF_NAME_Rotate, rot_o);
+            fz_try(gctx)
+            {
+                pdf_page *page = pdf_page_from_fz_page(gctx, self);
+                /*@SWIG:fitz\fitz.i,45,assert_PDF@*/
+if (!page) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
+/*@SWIG@*/
+/*@SWIG@*/;
+                if (rot % 90) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "rotate by multiples of 90 only")
+/*@SWIG@*/;
+                pdf_obj *rot_o = pdf_new_int(gctx, page->doc, rot);
+                pdf_dict_put_drop(gctx, page->obj, PDF_NAME_Rotate, rot_o);
+            }
+            fz_catch(gctx) return -1;
             return 0;
         }
 SWIGINTERN int fz_page_s__addAnnot_FromString(struct fz_page_s *self,PyObject *linklist){
@@ -6096,8 +6097,9 @@ SWIGINTERN PyObject *fz_page_s__getLinkXrefs(struct fz_page_s *self){
                 }
             return linkxrefs;
         }
-SWIGINTERN int fz_page_s__cleanContent(struct fz_page_s *self){
-            pdf_page *page = pdf_page_from_fz_page(gctx, self);// get pdf page
+SWIGINTERN int fz_page_s__cleanContents(struct fz_page_s *self){
+            pdf_page *page = pdf_page_from_fz_page(gctx, self);
+            pdf_annot *annot;
             fz_try(gctx)
             {
                 /*@SWIG:fitz\fitz.i,45,assert_PDF@*/
@@ -6106,6 +6108,10 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 pdf_clean_page_contents(gctx, page->doc, page, NULL, NULL, NULL, 0);
+                for (annot = pdf_first_annot(gctx, page); annot != NULL; annot = pdf_next_annot(gctx, annot))
+                {
+                    pdf_clean_annot_contents(gctx, page->doc, annot, NULL, NULL, NULL, 0);
+                }
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -7908,6 +7914,21 @@ SWIGINTERN int fz_annot_s_flags(struct fz_annot_s *self){
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
             if (annot) return pdf_annot_flags(gctx, annot);
             return -1;
+        }
+SWIGINTERN int fz_annot_s__cleanContents(struct fz_annot_s *self){
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
+            fz_try(gctx)
+            {
+                /*@SWIG:fitz\fitz.i,45,assert_PDF@*/
+if (!annot) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
+/*@SWIG@*/
+/*@SWIG@*/;
+                pdf_clean_annot_contents(gctx, annot->page->doc, annot,
+                                         NULL, NULL, NULL, 0);
+            }
+            fz_catch(gctx) return -1;
+            return 0;
         }
 SWIGINTERN void fz_annot_s_setFlags(struct fz_annot_s *self,int flags){
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
@@ -10096,7 +10117,14 @@ SWIGINTERN PyObject *_wrap_Page_setRotation(PyObject *SWIGUNUSEDPARM(self), PyOb
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Page_setRotation" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = (int)(val2);
-  result = (int)fz_page_s_setRotation(arg1,arg2);
+  {
+    result = (int)fz_page_s_setRotation(arg1,arg2);
+    if(result!=0)
+    {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
@@ -10158,7 +10186,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Page__cleanContent(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_Page__cleanContents(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
   void *argp1 = 0 ;
@@ -10166,14 +10194,14 @@ SWIGINTERN PyObject *_wrap_Page__cleanContent(PyObject *SWIGUNUSEDPARM(self), Py
   PyObject * obj0 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:Page__cleanContent",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:Page__cleanContents",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page__cleanContent" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page__cleanContents" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
   }
   arg1 = (struct fz_page_s *)(argp1);
   {
-    result = (int)fz_page_s__cleanContent(arg1);
+    result = (int)fz_page_s__cleanContents(arg1);
     if(result!=0)
     {
       PyErr_SetString(PyExc_Exception, gctx->error->message);
@@ -15899,6 +15927,35 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Annot__cleanContents(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Annot__cleanContents",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_annot_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot__cleanContents" "', argument " "1"" of type '" "struct fz_annot_s *""'"); 
+  }
+  arg1 = (struct fz_annot_s *)(argp1);
+  {
+    result = (int)fz_annot_s__cleanContents(arg1);
+    if(result!=0)
+    {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Annot_setFlags(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
@@ -16609,11 +16666,11 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document_deletePage", _wrap_Document_deletePage, METH_VARARGS, (char *)"Delete page 'pno'."},
 	 { (char *)"Document_deletePageRange", _wrap_Document_deletePageRange, METH_VARARGS, (char *)"Delete pages 'from' to 'to'."},
 	 { (char *)"Document_copyPage", _wrap_Document_copyPage, METH_VARARGS, (char *)"Copy a page in front of 'to'."},
-	 { (char *)"Document_insertPage", _wrap_Document_insertPage, METH_VARARGS, (char *)"Insert a new page in front of 'pno'."},
+	 { (char *)"Document_insertPage", _wrap_Document_insertPage, METH_VARARGS, (char *)"Insert a new page in front of 'pno'. Use arguments 'width', 'height' to specify a non-default page size, and optionally text insertion arguments."},
 	 { (char *)"Document_movePage", _wrap_Document_movePage, METH_VARARGS, (char *)"Move page in front of 'to'."},
 	 { (char *)"Document_select", _wrap_Document_select, METH_VARARGS, (char *)"Build sub-pdf with page numbers in 'list'."},
 	 { (char *)"Document_permissions", _wrap_Document_permissions, METH_VARARGS, (char *)"Get permissions dictionary."},
-	 { (char *)"Document__getCharWidths", _wrap_Document__getCharWidths, METH_VARARGS, (char *)"List of font glyph widths."},
+	 { (char *)"Document__getCharWidths", _wrap_Document__getCharWidths, METH_VARARGS, (char *)"List the glyph widths of a font."},
 	 { (char *)"Document__getPageObjNumber", _wrap_Document__getPageObjNumber, METH_VARARGS, (char *)"Document__getPageObjNumber(self, pno) -> PyObject *"},
 	 { (char *)"Document_getPageImageList", _wrap_Document_getPageImageList, METH_VARARGS, (char *)"List images used on a page."},
 	 { (char *)"Document_getPageFontList", _wrap_Document_getPageFontList, METH_VARARGS, (char *)"List fonts used on a page."},
@@ -16640,9 +16697,9 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Page_setRotation", _wrap_Page_setRotation, METH_VARARGS, (char *)"Set page rotation to 'rot' degrees."},
 	 { (char *)"Page__addAnnot_FromString", _wrap_Page__addAnnot_FromString, METH_VARARGS, (char *)"Page__addAnnot_FromString(self, linklist) -> int"},
 	 { (char *)"Page__getLinkXrefs", _wrap_Page__getLinkXrefs, METH_VARARGS, (char *)"Page__getLinkXrefs(self) -> PyObject *"},
-	 { (char *)"Page__cleanContent", _wrap_Page__cleanContent, METH_VARARGS, (char *)"Page__cleanContent(self) -> int"},
+	 { (char *)"Page__cleanContents", _wrap_Page__cleanContents, METH_VARARGS, (char *)"Page__cleanContents(self) -> int"},
 	 { (char *)"Page_insertImage", _wrap_Page_insertImage, METH_VARARGS, (char *)"Insert a new image in a rectangle."},
-	 { (char *)"Page_insertText", _wrap_Page_insertText, METH_VARARGS, (char *)"Insert new text on a page."},
+	 { (char *)"Page_insertText", _wrap_Page_insertText, METH_VARARGS, (char *)"Starting at 'point', insert 'text', optionally using 'fontsize', 'fontname', 'fontfile', 'color', 'rotate', 'wordspacing', or 'overlay'. "},
 	 { (char *)"Page__getContents", _wrap_Page__getContents, METH_VARARGS, (char *)"Page__getContents(self) -> PyObject *"},
 	 { (char *)"Page__getRectText", _wrap_Page__getRectText, METH_VARARGS, (char *)"Page__getRectText(self, rect) -> char const *"},
 	 { (char *)"Page__readPageText", _wrap_Page__readPageText, METH_VARARGS, (char *)"Page__readPageText(self, output=0) -> char const *"},
@@ -16835,6 +16892,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Annot_border", _wrap_Annot_border, METH_VARARGS, (char *)"Annot_border(self) -> PyObject *"},
 	 { (char *)"Annot_setBorder", _wrap_Annot_setBorder, METH_VARARGS, (char *)"Annot_setBorder(self, border) -> int"},
 	 { (char *)"Annot_flags", _wrap_Annot_flags, METH_VARARGS, (char *)"Annot_flags(self) -> int"},
+	 { (char *)"Annot__cleanContents", _wrap_Annot__cleanContents, METH_VARARGS, (char *)"Annot__cleanContents(self) -> int"},
 	 { (char *)"Annot_setFlags", _wrap_Annot_setFlags, METH_VARARGS, (char *)"Annot_setFlags(self, flags)"},
 	 { (char *)"Annot_next", _wrap_Annot_next, METH_VARARGS, (char *)"Annot_next(self) -> Annot"},
 	 { (char *)"Annot_getPixmap", _wrap_Annot_getPixmap, METH_VARARGS, (char *)"Annot_getPixmap(self, matrix=None, colorspace=None, alpha=0) -> Pixmap"},

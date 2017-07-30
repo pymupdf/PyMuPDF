@@ -801,7 +801,7 @@ if sa < 0:
         //---------------------------------------------------------------------
         FITZEXCEPTION(insertPage, result<0)
         CLOSECHECK(insertPage)
-        %feature("autodoc","Insert a new page in front of 'pno'.") insertPage;
+        %feature("autodoc","Insert a new page in front of 'pno'. Use arguments 'width', 'height' to specify a non-default page size, and optionally text insertion arguments.") insertPage;
         %pythonprepend insertPage %{
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
@@ -1036,7 +1036,7 @@ if sa < 0:
 
         FITZEXCEPTION(_getCharWidths, !result)
         CLOSECHECK(_getCharWidths)
-        %feature("autodoc","List of font glyph widths.") _getCharWidths;
+        %feature("autodoc","List the glyph widths of a font.") _getCharWidths;
         PyObject *_getCharWidths(const char *fontname = NULL,
                                  const char *fontfile = NULL,
                                  int xref = 0, int limit = 256)
@@ -1044,7 +1044,6 @@ if sa < 0:
             pdf_document *pdf = pdf_specifics(gctx, $self);
             PyObject *wlist = PyList_New(0);
             int i, glyph;
-            float dist;
             const char *data;
             int size;
             fz_font *font = NULL;
@@ -1076,20 +1075,21 @@ if sa < 0:
                         }
                     }
                 }
-
+                int valid_font = 0;
                 for (i = 0; i < limit; i++)
                 {
                     glyph = fz_encode_character(gctx, font, i);
                     if (glyph > 0)
                     {
-                        dist = fz_advance_glyph(gctx, font, glyph, 0);
-                        PyList_Append(wlist, PyFloat_FromDouble((double) dist));
+                        PyList_Append(wlist, Py_BuildValue("f", fz_advance_glyph(gctx, font, glyph, 0)));
+                        valid_font = 1;
                     }
                     else
                     {
-                        PyList_Append(wlist, PyFloat_FromDouble((double) 0.0));
+                        PyList_Append(wlist, Py_BuildValue("f", 0.0));
                     }
                 }
+                if (!valid_font) THROWMSG("invalid font: zero widths up to 0xff");
             }
             fz_always(gctx)
             {
@@ -1154,9 +1154,7 @@ if sa < 0:
             int i;
             for (i = 0; i < n; i++)       // do this for each img of the page
             {
-                pdf_obj *imagedict, *imagename, *type, *altcs, *o, *cs;
-                PyObject *xref, *gen, *width, *height, *bpc, *cs_py, *altcs_py;
-                PyObject *name_py;
+                pdf_obj *imagedict, *imagename, *type, *altcs, *cs;
                 imagedict = pdf_dict_get_val(gctx, dict, i);
                 imagename = pdf_dict_get_key(gctx, dict, i);
                 if (!pdf_is_dict(gctx, imagedict)) continue;
@@ -1164,17 +1162,17 @@ if sa < 0:
                 type = pdf_dict_get(gctx, imagedict, PDF_NAME_Subtype);
                 if (!pdf_name_eq(gctx, type, PDF_NAME_Image)) continue;
 
-                xref = PyInt_FromLong((long) pdf_to_num(gctx, imagedict));
-                gen  = PyInt_FromLong((long) pdf_to_gen(gctx, imagedict));
+                int xref = pdf_to_num(gctx, imagedict);
+                int gen  = pdf_to_gen(gctx, imagedict);
 
-                o = pdf_dict_get(gctx, imagedict, PDF_NAME_Width);
-                width = PyInt_FromLong((long) pdf_to_int(gctx, o));
+                int width = pdf_to_int(gctx, pdf_dict_get(gctx, imagedict,
+                                       PDF_NAME_Width));
 
-                o = pdf_dict_get(gctx, imagedict, PDF_NAME_Height);
-                height = PyInt_FromLong((long) pdf_to_int(gctx, o));
+                int height = pdf_to_int(gctx, pdf_dict_get(gctx, imagedict,
+                                        PDF_NAME_Height));
 
-                o = pdf_dict_get(gctx, imagedict, PDF_NAME_BitsPerComponent);
-                bpc = PyInt_FromLong((long) pdf_to_int(gctx, o));
+                int bpc = pdf_to_int(gctx, pdf_dict_get(gctx, imagedict,
+                                     PDF_NAME_BitsPerComponent));
 
                 cs = pdf_dict_get(gctx, imagedict, PDF_NAME_ColorSpace);
                 altcs = NULL;
@@ -1190,19 +1188,11 @@ if sa < 0:
                     }
                 }
 
-                cs_py = PyString_FromString(pdf_to_name(gctx, cs));
-                altcs_py = PyString_FromString(pdf_to_name(gctx, altcs));
-                name_py = PyString_FromString(pdf_to_name(gctx, imagename));
-                PyObject *img = PyList_New(0);         /* Python list per img */
-                PyList_Append(img, xref);
-                PyList_Append(img, gen);
-                PyList_Append(img, width);
-                PyList_Append(img, height);
-                PyList_Append(img, bpc);
-                PyList_Append(img, cs_py);
-                PyList_Append(img, altcs_py);
-                PyList_Append(img, name_py);
-                PyList_Append(imglist, img);
+                PyList_Append(imglist, Py_BuildValue("(i,i,i,i,i,s,s,s)",
+                                       xref, gen, width, height, bpc,
+                                       pdf_to_name(gctx, cs),
+                                       pdf_to_name(gctx, altcs),
+                                       pdf_to_name(gctx, imagename)));
             }
             return imglist;
         }
@@ -1251,13 +1241,10 @@ if sa < 0:
                 else
                     bname = basefont;
                 name = pdf_dict_get_key(gctx, dict, i);
-                PyObject *font = PyList_New(0);       // Python list per font
-                PyList_Append(font, PyInt_FromLong(xref));
-                PyList_Append(font, PyInt_FromLong(gen));
-                PyList_Append(font, PyString_FromString(pdf_to_name(gctx, subtype)));
-                PyList_Append(font, PyString_FromString(pdf_to_name(gctx, bname)));
-                PyList_Append(font, PyString_FromString(pdf_to_name(gctx, name)));
-                PyList_Append(fontlist, font);
+                PyList_Append(fontlist, Py_BuildValue("(i,i,s,s,s)", xref, gen,
+                                                      pdf_to_name(gctx, subtype),
+                                                      pdf_to_name(gctx, bname),
+                                                      pdf_to_name(gctx, name)));
             }
             return fontlist;
         }
@@ -1390,7 +1377,7 @@ if sa < 0:
         }
 
         //*********************************************************************
-        // Get Object String by Xref Number
+        // Get Object String of xref
         //*********************************************************************
         FITZEXCEPTION(_getObjectString, !result)
         CLOSECHECK(_getObjectString)
@@ -1768,14 +1755,20 @@ fannot._erase()
         /*********************************************************************/
         // setRotation() - set page rotation
         /*********************************************************************/
+        FITZEXCEPTION(setRotation, result!=0)
         PARENTCHECK(setRotation)
         %feature("autodoc","Set page rotation to 'rot' degrees.") setRotation;
         int setRotation(int rot)
         {
-            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            if (!page) return -1;
-            pdf_obj *rot_o = pdf_new_int(gctx, page->doc, rot);
-            pdf_dict_put_drop(gctx, page->obj, PDF_NAME_Rotate, rot_o);
+            fz_try(gctx)
+            {
+                pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+                assert_PDF(page);
+                if (rot % 90) THROWMSG("rotate by multiples of 90 only");
+                pdf_obj *rot_o = pdf_new_int(gctx, page->doc, rot);
+                pdf_dict_put_drop(gctx, page->obj, PDF_NAME_Rotate, rot_o);
+            }
+            fz_catch(gctx) return -1;
             return 0;
         }
 
@@ -1867,16 +1860,22 @@ fannot._erase()
         }
 
         //---------------------------------------------------------------------
-        // clean contents stream -- TEST --
+        // clean contents stream
         //---------------------------------------------------------------------
-        FITZEXCEPTION(_cleanContent, result!=0)
-        int _cleanContent()
+        FITZEXCEPTION(_cleanContents, result!=0)
+        PARENTCHECK(_cleanContents)
+        int _cleanContents()
         {
-            pdf_page *page = pdf_page_from_fz_page(gctx, $self);// get pdf page
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            pdf_annot *annot;
             fz_try(gctx)
             {
                 assert_PDF(page);
                 pdf_clean_page_contents(gctx, page->doc, page, NULL, NULL, NULL, 0);
+                for (annot = pdf_first_annot(gctx, page); annot != NULL; annot = pdf_next_annot(gctx, annot))
+                {
+                    pdf_clean_annot_contents(gctx, page->doc, annot, NULL, NULL, NULL, 0);
+                }
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -2056,7 +2055,7 @@ fannot._erase()
                     assert fontname[1:] in fontrefs, "invalid font name reference: " + fontname
                 elif fontname not in Base14_fontnames:
                     fontname = "Helvetica"%}
-        %feature("autodoc", "Insert new text on a page.") insertText;
+        %feature("autodoc", "Starting at 'point', insert 'text', optionally using 'fontsize', 'fontname', 'fontfile', 'color', 'rotate', 'wordspacing', or 'overlay'. ") insertText;
         int insertText(struct fz_point_s *point, PyObject *text = NULL,
                        float fontsize = 11, const char *fontname = NULL,
                        const char *fontfile = NULL, PyObject *color = NULL,
@@ -3243,6 +3242,12 @@ struct fz_colorspace_s
             fprintf(stderr, "done!\n");
 #endif
         }
+
+        %pythoncode %{
+        def __repr__(self):
+            x = ("", "GRAY", "", "RGB", "CMYK")[self.n]
+            return "fitz.Colorspace(fitz.CS_%s) - %s" % (x, self.name)
+        %}
     }
 };
 
@@ -4446,11 +4451,11 @@ struct fz_annot_s
             return res;
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // set annotation border (destroys any /BE or /BS entries)
         // Argument 'border' must be number or dict.
         // Width and dashes may both be modified.
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(setBorder)
         int setBorder(PyObject *border)
         {
@@ -4510,9 +4515,9 @@ struct fz_annot_s
             return 0;
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // annotation flags
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(flags)
         %pythoncode %{@property%}
         int flags()
@@ -4522,9 +4527,27 @@ struct fz_annot_s
             return -1;
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
+        // annotation clean contents
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(_cleanContents, result!=0)
+        PARENTCHECK(_cleanContents)
+        int _cleanContents()
+        {
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
+            fz_try(gctx)
+            {
+                assert_PDF(annot);
+                pdf_clean_annot_contents(gctx, annot->page->doc, annot,
+                                         NULL, NULL, NULL, 0);
+            }
+            fz_catch(gctx) return -1;
+            return 0;
+        }
+
+        //---------------------------------------------------------------------
         // set annotation flags
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(setFlags)
         void setFlags(int flags)
         {
@@ -4536,9 +4559,9 @@ struct fz_annot_s
                 }
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // next annotation
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(next)
         %pythonappend next
 %{if val:
@@ -4554,9 +4577,9 @@ struct fz_annot_s
             return annot;
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // annotation pixmap
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         FITZEXCEPTION(getPixmap, !result)
         PARENTCHECK(getPixmap)
         struct fz_pixmap_s *getPixmap(struct fz_matrix_s *matrix = NULL, struct fz_colorspace_s *colorspace = NULL, int alpha = 0)
