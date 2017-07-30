@@ -3,5 +3,4 @@
 *.o
 *.swp
 build/
-examples/
 demo/README.rst
