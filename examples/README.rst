@@ -19,6 +19,8 @@ File                    Purpose
 cal-maker.py            creates a PDF with 3-year calendars
 csv2meta.py             load a PDF metadata dictionary from a CSV file's contents
 csv2toc.py              load a PDF TOC (table of contents) from a CSV file's contents
+colordbRGB.py           creates a PDF showing all available color database colors
+colordbHSV.py           like colordbRGB.py but in sort order "Hue, Saturation, Value"
 embedded-copy.py        copies embedded files between source and target PDF
 embedded-export.py      exports an emdedded file from a PDF
 embedded-import.py      embeds a new file into a PDF

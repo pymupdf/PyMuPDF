@@ -49,6 +49,7 @@ fitz.Document.getPageText   = fitz.utils.getPageText
 fitz.Document.setMetadata   = fitz.utils.setMetadata
 fitz.Document.setToC        = fitz.utils.setToC
 fitz.Document.searchPageFor = fitz.utils.searchPageFor
+fitz.Document.newPage       = fitz.utils.newPage
 
 #------------------------------------------------------------------------------
 # Page

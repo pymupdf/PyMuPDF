@@ -75,5 +75,5 @@ for info in ef_list:
 print(line)
 print(len(ef_list), "embedded files in '%s'. Totals:" % (fn,))
 print("File lengths: %s, compressed: %s, ratio: %s%% (savings: %s%%)." % (tlength,
-      tsize, str(round(ratio, 2)), str(round(saves, 2))))
+      tsize, str(round(ratio*100, 2)), str(round(saves*100, 2))))
 print(line)

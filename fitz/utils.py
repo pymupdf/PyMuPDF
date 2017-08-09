@@ -1266,7 +1266,7 @@ def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
     l3 = "%g %g m\n"
     l4 = "%g %g %g %g %g %g c\n"
     
-    # the list of points needed for the Bézier curves
+    # the list of points needed for the Bezier curves
     # approximating the circle
     p00  = [center.x - radius, h - (center.y)]                  # p0
     p00 += [center.x - radius, h - (center.y - kappa)]          # p1
@@ -1340,7 +1340,7 @@ def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = None,
     l3 = "%g %g m\n"
     l4 = "%g %g %g %g %g %g c\n"
     
-    # the list of points needed for the Bézier curves
+    # the list of points needed for the Bezier curves
     # approximating the ellipse
     p00  = [rect.x0, h - (rect.y0 + rect.height / 2)]            # p0
     p00 += [rect.x0, h - (rect.y0 + rect.height / 2 - kappav)]   # p1
@@ -1381,6 +1381,15 @@ def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = None,
     doc._updateStream(xref, cont)
     
     return
+
+#-------------------------------------------------------------------------------
+# Document.newPage
+#-------------------------------------------------------------------------------
+def newPage(doc, pno = -1, width = 595, height = 842):
+    """Create and return a new page object.
+    """
+    doc.insertPage(pno, width = width, height = height)
+    return doc[pno]
 
 
 #-------------------------------------------------------------------------------
@@ -1521,7 +1530,8 @@ def drawSector(page, center, point, beta, color = (0, 0, 0), fill = None,
         else:
             alfa = - alfa
 
-    # Angle 'beta' will be processed in multiples of 90 degrees.
+    # Angle 'beta' will be processed in multiples of 90 degrees. Because Bezier
+    # curves don't approximate circle arc good enough for larger angles.
     # The end point of an arc is start of next arc.
     while abs(betar) > abs(w90):            # draw 90 degree arcs
         q1 = C.x + math.cos(alfa + w90) * rad
@@ -1535,8 +1545,8 @@ def drawSector(page, center, point, beta, color = (0, 0, 0), fill = None,
         cp1 = P + (R - P) * kappa           # control point 1
         cp2 = Q + (R - Q) * kappa           # control point 2
         c += l4 % (cp1.x, h - cp1.y, cp2.x, h - cp2.y, Q.x, h - Q.y) # draw
-        betar -= w90                        # reduce parameter angle
-        alfa  += w90                        # advance start angle
+        betar -= w90                        # reduce parameter angle by 90 deg
+        alfa  += w90                        # advance start angle by 90 deg
         P = Q                               # advance to arc end point
     # draw (remaining) arc
     if abs(betar) > 1e-3:                   # significant degrees left?
@@ -1554,7 +1564,9 @@ def drawSector(page, center, point, beta, color = (0, 0, 0), fill = None,
         cp2 = Q + (R - Q) * kappa           # control point 2
         c += l4 % (cp1.x, h - cp1.y, cp2.x, h - cp2.y, Q.x, h - Q.y) # draw
 
+    #--------------------------------------------------------------------------
     # draw lines from Q to 'center' and then to 'point'
+    #--------------------------------------------------------------------------
     if fullSector:
         c += l5 % (center.x, h - center.y)
         c += l5 % (point.x, h - point.y)

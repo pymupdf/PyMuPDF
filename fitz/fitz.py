@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.0"
-VersionDate = "2017-07-30 12:12:11"
-version = (VersionBind, VersionFitz, "20170730121211")
+VersionDate = "2017-08-09 08:10:51"
+version = (VersionBind, VersionFitz, "20170809081051")
 
 
 #------------------------------------------------------------------------------
@@ -622,8 +622,10 @@ open(filename)"""
             sa = self.pageCount
 
         val = _fitz.Document_insertPDF(self, docsrc, from_page, to_page, start_at, rotate, links)
-        if links:
-            self._do_links(docsrc, from_page = from_page, to_page = to_page,
+        if val == 0:
+            self._reset_page_refs()
+            if links:
+                self._do_links(docsrc, from_page = from_page, to_page = to_page,
                            start_at = sa)
 
         return val
@@ -684,7 +686,7 @@ open(filename)"""
 
 
         val = _fitz.Document_insertPage(self, pno, text, fontsize, width, height, fontname, fontfile, color)
-        if val == 0: self._reset_page_refs()
+        if val >= 0: self._reset_page_refs()
 
         return val
 
@@ -867,7 +869,7 @@ open(filename)"""
 
     def __getitem__(self, i):
         if i >= len(self):
-            raise IndexError("page number out of range")
+            raise IndexError(msg0003)
         return self.loadPage(i)
 
     def __len__(self):
@@ -1079,16 +1081,22 @@ class Page(_object):
 
 
     def __str__(self):
-        if self.parent:
-            return "page %s of %s" % (self.number, repr(self.parent))
-        else:
-            return "orphaned page"
+        CheckParent(self)
+        x = self.parent.name
+        if self.parent.streamlen > 0:
+            x += " (memory)"
+        if x == "":
+            x = "<new PDF>"
+        return "page %s of %s" % (self.number, x)
 
     def __repr__(self):
-        if self.parent:
-            return repr(self.parent) + "[" + str(self.number) + "]"
-        else:
-            return "orphaned page"
+        CheckParent(self)
+        x = self.parent.name
+        if self.parent.streamlen > 0:
+            x += " (memory)"
+        if x == "":
+            x = "<new PDF>"
+        return "page %s of %s" % (self.number, x)
 
     def _forget_annot(self, annot):
         """Remove an annot from reference dictionary."""
@@ -1105,6 +1113,7 @@ class Page(_object):
 
     def _getXref(self):
         """Return PDF XREF number of page."""
+        CheckParent(self)
         return self.parent._getPageXref(self.number)[0]
 
     def _erase(self):
@@ -1117,14 +1126,17 @@ class Page(_object):
             self.__swig_destroy__(self)
         self.parent = None
         self.thisown = False
+        self.number = None
 
     def __del__(self):
         self._erase()
 
     def getFontList(self):
+        CheckParent(self)
         return self.parent.getPageFontList(self.number)
 
     def getImageList(self):
+        CheckParent(self)
         return self.parent.getPageImageList(self.number)
 
 
@@ -2198,6 +2210,14 @@ class Annot(_object):
         self.parent = None
         self.thisown = False
 
+    def __str__(self):
+        CheckParent(self)
+        return "'%s' annotation on %s" % (self.type[1], str(self.parent))
+
+    def __repr__(self):
+        CheckParent(self)
+        return "'%s' annotation on %s" % (self.type[1], str(self.parent))
+
     def __del__(self):
         self._erase()
 Annot_swigregister = _fitz.Annot_swigregister
@@ -2275,6 +2295,14 @@ class Link(_object):
             self.__swig_destroy__(self)
         self.parent = None
         self.thisown = False
+
+    def __str__(self):
+        CheckParent(self)
+        return "link on " + str(self.parent)
+
+    def __repr__(self):
+        CheckParent(self)
+        return "link on " + str(self.parent)
 
     def __del__(self):
         self._erase()

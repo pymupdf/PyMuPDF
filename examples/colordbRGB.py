@@ -1,3 +1,4 @@
+#! /usr/bin/python
 """
 Created on Sun Jul 30 08:21:13 2017
 
@@ -12,43 +13,19 @@ The colors are sorted depending on color tuple. Each color is drawn in a
 rectangle together with its name (in back and in white to ensure readability).
 A PDF page has dimensions 800 x 600 pixels.
 """
-import fitz
+from __future__ import print_function
+import fitz, sys, os
 from fitz.utils import getColor, getColorInfoList
+print(sys.version)
+print(fitz.__doc__)
+print("Running:", __file__)
 
 def sortkey(x):
     """Return '001002003' for (colorname, 1, 2, 3)"""
     k = str(x[1]).zfill(3) + str(x[2]).zfill(3) + str(x[3]).zfill(3)
     return k
 
-# create color list sorted down by integer RGB value triple
-    """Return Hue, Saturation, Value string for (colorname, r, g, b)."""
-    r = x[1] / 255.
-    g = x[2] / 255.
-    b = x[3] / 255.
-    cmax = max(r, g, b)
-    V = str(int(round(cmax * 100))).zfill(3)
-    cmin = min(r, g, b)
-    delta = cmax - cmin
-    if delta == 0:
-        hue = 0
-    elif cmax == r:
-        hue = 60. * (((g - b)/delta) % 6)
-    elif cmax == g:
-        hue = 60. * (((b - r)/delta) + 2)
-    else:
-        hue = 60. * (((r - g)/delta) + 4)
-        
-    H = str(int(round(hue))).zfill(3)
-    
-    if cmax == 0:
-        sat = 0
-    else:
-        sat = delta / cmax
-    S = str(int(round(sat  * 100))).zfill(3)
-
-    return H + S + V
-
-# create color list sorted down by hue, value, saturation
+# create color list sorted down RGB values
 mylist = sorted(getColorInfoList(), reverse = True, key=lambda x: sortkey(x))
 
 w = 800            # page width
@@ -88,5 +65,7 @@ m = {"author": "Jorj X. McKie", "producer": "PyMuPDF", "creator": "colordb.py",
    "title": "PyMuPDF Color Database", "subject": "Sorted down by RGB values"}
 
 doc.setMetadata(m)
-doc.save("colordbRGB.pdf", garbage = 4, deflate = True, clean=True)
-
+path = os.path.dirname(os.path.abspath(__file__))
+ofn = os.path.join(path, "colordbRGB.pdf")
+print("Writing:", ofn)
+doc.save(ofn, garbage = 4, deflate = True, clean=True)
