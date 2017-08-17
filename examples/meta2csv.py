@@ -2,6 +2,7 @@ from __future__ import print_function
 import fitz
 import argparse
 #--------------------------------------------------------------------
+# License: GNU GPL V3
 # use argparse to handle invocation arguments
 #--------------------------------------------------------------------
 parser = argparse.ArgumentParser(description="Enter CSV delimiter [;] and documment filename")

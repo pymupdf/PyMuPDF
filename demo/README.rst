@@ -7,6 +7,7 @@ Program               Purpose
 ===================== ===============================================================
 caustic.py            demo of Page.drawLine() to produce a PDF with a caustic image
 demo.py               demonstrates a broad range of functions available with PyMuPDF
+drawSines.py          draw sine / cosine functions using Bézier curves
 extract.py            demonstrates text extraction methods technical details
 extract_img1.py       PDF only: extracts all **page-referenced** images as PNG files
 extract_img2.py       PDF only: extracts **all** images as PNG files

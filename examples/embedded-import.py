@@ -3,6 +3,7 @@ import sys
 import fitz
 #------------------------------------------------------------------------------
 # Example program
+# License: GNU GPL V3
 # Imports a new file into an existing PDF
 # Command line:
 # python embedded-import.py out.pdf input.file

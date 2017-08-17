@@ -9,13 +9,13 @@ import sys
 #==============================================================================
 from fitz.utils import getColor   # retrieves RGB colors by name
 doc = fitz.open()                 # new empty PDF
-doc.insertPage()                  # without parms, this is an ISO-A4 format page
-page = doc[-1]                    # the just created page
+page = doc.newPage()              # without parms, this is an ISO-A4 format page
+
 # title line
 title = "Sitzverteilung nach der Bundestagswahl 2013"
 # pie chart center and point of 1st data pie
 center = fitz.Point(200, 250)
-point  = fitz.Point(200, 150)          # will cycle through table data
+point  = fitz.Point(200, 150)          # this will cycle through table data
 # this is the radius
 radius = abs(point - center)
 
@@ -29,11 +29,11 @@ ts_h  = center.x + radius + 50         # horizontal coord of legend block
 # these are the data to visualize:
 # number of seats of political parties in German parliament since 2013
 table  = (
-          (253, "black", "CDU"),       # seats, party color & name 
+          (253, "black", "CDU"),       # seats, party color & party name 
           (56, "dodgerblue", "CSU"),
           (193, "red", "SPD"),
           (64, "violetred", "Die Linke"),
-          (63, "green", "Die GrÃ¼nen"),
+          (63, "green", "Die Grünen"),
           (1, "gray", "fraktionslos"),
          )
 
@@ -54,13 +54,13 @@ for i, c in enumerate(table):
     # we will use it as input for next round
     point = page.drawSector(center, point, beta, color = white,
                     fullSector = True, fill = color)
-    # legend text (takes care of German plural, too)
+    # legend text (takes care of German plural of "Sitz", too)
     text = "%s, %i %s" % (c[2], c[0], "Sitze" if c[0] > 1 else "Sitz")
     pos  = fitz.Point(ts_h, ts_v + i*lineheight)
     page.insertText(pos, text, color = blue)     # legend text
     tl = fitz.Point(pos.x - 30, ts_v - 10 + i*lineheight)
     br = fitz.Point(pos.x - 10, ts_v + i*lineheight)
-    rect = fitz.Rect(tl, br)                # legend color bar
+    rect = fitz.Rect(tl, br)                     # legend color bar
     page.drawRect(rect, fill = color, color = color)
     
 doc.save("piechart1.pdf")

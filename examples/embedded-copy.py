@@ -1,8 +1,9 @@
 from __future__ import print_function
 import sys
 import fitz
-#------------------------------------------------------------------------------    
+#------------------------------------------------------------------------------
 # Example script:
+# License: GNU GPL V3
 # Copy embedded files between PDF documents
 # Invocation line:
 # python embedded-copy.py  in.pdf out.pdf

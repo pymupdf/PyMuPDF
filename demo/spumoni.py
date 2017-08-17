@@ -30,8 +30,7 @@ cw = doc._getCharWidths(fname)     # get glyph widths of the font
 text = "SPUMONI"                   # the ominous text
 textl = sum([cw[ord(c)] for c in text])     # get total glyph width of text
 width, height = fitz.PaperSize("letter")
-doc.insertPage(-1, width = width, height = height)    # empty new page
-page = doc[-1]                     # this is that page
+page = doc.newPage(-1, width = width, height = height)     # insert new page
 rwidth = (width - 2*left) / nrects # rect width, leaves borders of 36 px
 fsize = (width - 2*left) / textl   # optimum fontsize
 rheight = 400                      # rect height

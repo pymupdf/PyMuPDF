@@ -16,7 +16,7 @@ This program joins PDF files into one output file. Its features include:
 * Selection of page ranges - in ascending or descending sequence
 * Optional rotation in steps of 90 degrees
 * Copy any table of content segments to the output (can be switched off)
-* Specify PDF metadata
+* Specify PDF metadata of resulting PDF
 
 Dependencies:
 wxPython v3.0.x, PyMuPDF v1.9.2
@@ -31,17 +31,31 @@ Dependency on PyPDF2 has been removed, because v1.9.2 of PyMuPDF now has all
 required functionality.
 This also has generated a **huge** speed improvement!
 """
+from __future__ import print_function
 import os, sys, time
-import wx
-import wx.grid as gridlib
-import wx.lib.gridmovers as gridmovers
-import fitz
+print("Python:", sys.version)
+try:
+    import wx
+    import wx.grid as gridlib
+    import wx.lib.gridmovers as gridmovers
+except:
+    print(__file__, "needs wxPython.")
+    raise SystemExit
+print("wxPython:", wx.version())
+    
+try:
+    import fitz
+except:
+    print(__file__, "needs PyMuPDF (fitz).")
+    raise SystemExit
+print(fitz.__doc__)
+
 try:
     from icons import ico_pdf
     show_icon = True
 except:
     show_icon = False
-
+    
 # some abbreviations
 defPos = wx.DefaultPosition
 defSiz = wx.DefaultSize
@@ -285,7 +299,7 @@ class PDFDialog (wx.Dialog):
                         )
         szr01.Add(self.btn_neu, 0, wx.ALIGN_TOP|wx.ALL, 5)
 
-        msg_txt ="""ADD files with this button. Path and total page number will be appended to the table below.\nDUPLICATE row: double-click its number. MOVE row: drag its number with the mouse. DELETE row: CTRL+RightClick its number."""
+        msg_txt ="""ADD files with this button. Path and total page number will be appended to the table below.\nDUPLICATE row: double-click its number. MOVE row: drag its number with the mouse. DELETE row: CTRL+RightClick its number.\nAdjust "from" / "to" (also for reversing sequences)."""
         msg = wx.StaticText(self, wx.ID_ANY, msg_txt,
                     defPos, wx.Size(-1, 50), wx.ALIGN_LEFT)
         msg.Wrap(-1)
@@ -366,7 +380,7 @@ class PDFDialog (wx.Dialog):
                            defPos, defSiz, wx.ALIGN_RIGHT)
         szr03.Add( tx_blank, 0, wx.RIGHT, 5 )
         self.noToC = wx.CheckBox( self, wx.ID_ANY,
-                           u"no table of content",
+                           u"check to suppress table of content",
                            defPos, defSiz, wx.ALIGN_LEFT)
         szr03.Add( self.noToC, 0, wx.ALL, 5 )
 
@@ -452,16 +466,7 @@ def make_pdf(dlg):
     if not len(dlg.szr02.Table.data):       # no files there - quit
         return None
     # create time zone value in PDF format
-    tz = "%s'%s'" % (str(time.timezone / 3600).rjust(2,"0"),
-                                str((time.timezone / 60)%60).rjust(2, "0"))
-    if time.timezone > 0:              # east of Greenwich
-        tz = "-" + tz
-    elif time.timezone < 0:            # west of Greenwich
-        tz = "+" + tz
-    else:                              # GMT - omit time zone
-        tz = ""
-
-    cdate = time.strftime("D:%Y%m%d%H%M%S",time.localtime()) + tz
+    cdate = fitz.getPDFnow()
     ausgabe = dlg.btn_aus.GetPath()
     pdf_out = fitz.open()              # empty new PDF document
     aus_nr = 0                         # current page number in output
@@ -512,10 +517,10 @@ def make_pdf(dlg):
         toc = doc.getToC(simple = False)    # get file's TOC
         last_lvl = 1                        # immunize against hierarchy gaps
         for t in toc:
-            lnk_type = t[3]["type"]         # if "goto", page must be in range
-            if (t[2] - 1) not in pno_range and lnk_type == "goto":
+            lnk_type = t[3]["kind"]         # if "goto", page must be in range
+            if (t[2] - 1) not in pno_range and lnk_type == fitz.LINK_GOTO:
                 continue
-            if lnk_type == "goto":
+            if lnk_type == fitz.LINK_GOTO:
                 pno = pno_range.index(t[2] - 1) + aus_nr + 1
             # repair hierarchy gaps by filler bookmarks
             while (t[0] > last_lvl + 1):
@@ -543,20 +548,16 @@ def make_pdf(dlg):
 # Main program
 #
 #==============================================================================
-assert wx.version() >= "3.0.2", "need at least wxPython v3.0.2"
-assert fitz.VersionBind >= "1.9.2", "need at least PyMuPDF v1.9.2"
+assert (wx.VERSION[0], wx.VERSION[1], wx.VERSION[2]) >= (3,0,2), "need wxPython 3.0.2 or later"
+assert [int(x) for x in fitz.VersionBind.split(".")] >= [1,11,0], "need PyMuPDF 1.11.0 or later"
 app = None
 app = wx.App()
 this_dir = os.getcwd()
 
 #==============================================================================
-# create dialog
+# create dialog, show it and wait
 #==============================================================================
 dlg = PDFDialog(None)
-
-#==============================================================================
-# Show dialog and wait ...
-#==============================================================================
 rc = dlg.ShowModal()
 
 #==============================================================================

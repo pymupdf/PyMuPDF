@@ -3,6 +3,7 @@ import sys
 import fitz
 #------------------------------------------------------------------------------
 # Example script
+# License: GNU GPL V3
 # List embedded files of a PDF
 # Invocation line:
 # python embedded-list.py in.pf

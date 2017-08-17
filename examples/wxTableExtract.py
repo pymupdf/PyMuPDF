@@ -5,6 +5,7 @@
 @created: 2016-04-07 07:00:00
 
 @author: Jorj X. McKie
+License: GNU GPL V3
 
 Display and parse tables of a document.
 

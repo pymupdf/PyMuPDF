@@ -5,6 +5,7 @@
 @created: 2017-03-10 13:40:00
 
 @author: Jorj X. McKie
+License: GNU GPL V3
 
 Let the user select a Python file to display and update its links.
 

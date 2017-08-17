@@ -3,6 +3,7 @@ import sys
 import fitz
 #------------------------------------------------------------------------------
 # Example program
+# License: GNU GPL V3
 # Extracts an embedded file from an existing PDF
 # Command line:
 # python embedded-export.py input.pdf name export.file

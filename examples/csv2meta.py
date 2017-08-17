@@ -2,6 +2,7 @@ import csv
 import fitz
 import argparse
 #--------------------------------------------------------------------
+# License: GNU GPL V3
 # use argparse to handle invocation arguments
 #--------------------------------------------------------------------
 parser = argparse.ArgumentParser(description="Enter CSV delimiter [;], CSV filename and documment filename")

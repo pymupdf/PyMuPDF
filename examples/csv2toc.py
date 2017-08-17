@@ -4,6 +4,8 @@ import argparse
 '''
 load a PDF TOC from CSV file contents
 -------------------------------------
+License: GNU GPL V3
+
 !!! All existing outline entries (bookmarks) of the PDF will be replaced by this. !!!
 Each CSV line must contain 3 or 4 entries:
 lvl     A positive integer indicating the hierarchy level of the entry. First line must have lvl = 1.

@@ -4,6 +4,8 @@ Created on Sun Jul 30 08:21:13 2017
 
 @author: (c) 2017, Jorj X. McKie
 
+License: GNU GPL V3
+
 PyMuPDF demo program to print the the database of stored RGB colors as a PDF
 ----------------------------------------------------------------------------
 The colors are sorted depending on color tuple. Each color is drawn in a

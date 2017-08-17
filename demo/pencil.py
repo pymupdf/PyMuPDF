@@ -56,13 +56,16 @@ def pencil(page, penciltip, pb_height, left):
         a = 0
         b = 1
         s = -1
-        
+    
+    def oneof(x, y):
+        return x*a + y*b
+    
     w = pb_height * 0.01                         # standard line thickness
     pb_width  = 2 * pb_height                    # pencil body width
     tipendtop = penciltip + fitz.Point(1, -0.5) * pb_height * s
     tipendbot = penciltip + fitz.Point(1, 0.5) * pb_height * s
     r = fitz.Rect(tipendtop,
-                  tipendbot + fitz.Point(pb_width, 0) * s) # pencil body
+                  tipendbot + (pb_width * s, 0)) # pencil body
     r.normalize()                                 # force r to be finite
     # topline / botline indicate the pencil edges
     topline0  = fitz.Point(r.x0 + r.width*0.1,
@@ -75,9 +78,9 @@ def pencil(page, penciltip, pb_height, left):
                            botline0.y)    # lower pencil edge - right
     
     # control point 1 for pencil rubber
-    hp1 = r.top_right * a + r.top_left * b + fitz.Point(pb_height*0.6, 0) * s
+    hp1 = oneof(r.top_right, r.top_left) + (pb_height*0.6*s, 0)
     # control point 2 for pencil rubber
-    hp2 = r.bottom_right * a + r.bottom_left * b + fitz.Point(pb_height*0.6, 0) * s
+    hp2 = oneof(r.bottom_right, r.bottom_left) + (pb_height*0.6*s, 0)
     # pencil body is some type of yellow
     page.drawRect(r, fill = yellow, color = wood, width = w)
     page.drawPolyline((r.top_left, topline0, botline0, r.bottom_left),
@@ -91,17 +94,17 @@ def pencil(page, penciltip, pb_height, left):
     #===========================================================================
     # draw the pencil rubber
     #===========================================================================
-    page.drawBezier(r.top_right*a + r.top_left*b,
+    page.drawBezier(oneof(r.top_right, r.top_left),
                     hp1, hp2,
-                    r.bottom_right*a + r.bottom_left*b,
+                    oneof(r.bottom_right, r.bottom_left),
                     fill = red, width = w)
     #===========================================================================
     # black rectangle near pencil rubber
     #===========================================================================
-    blackrect = fitz.Rect((r.top_right - fitz.Point(pb_height/2.,0))*a +\
-                           r.top_left*b,
-                           r.bottom_right*a + (r.bottom_left + \
-                                              fitz.Point(pb_height/2.,0))*b)
+    blackrect = fitz.Rect(oneof((r.top_right - (pb_height/2., 0)),
+                                r.top_left),
+                          oneof(r.bottom_right,
+                                (r.bottom_left + (pb_height/2., 0))))
     page.drawRect(blackrect, fill = black, width = w)
     
     #===========================================================================
@@ -109,10 +112,10 @@ def pencil(page, penciltip, pb_height, left):
     #===========================================================================
     page.drawPolyline((tipendtop, penciltip, tipendbot), width = w,
                       fill = wood)          # pencil tip
-    p1 = r.top_left*a + r.top_right*b       # either left or right
-    p2 = topline0*a + topline1*b
-    p3 = botline0*a + botline1*b
-    p4 = r.bottom_left*a + r.bottom_right*b
+    p1 = oneof(r.top_left, r.top_right)     # either left or right
+    p2 = oneof(topline0, topline1)
+    p3 = oneof(botline0, botline1)
+    p4 = oneof(r.bottom_left, r.bottom_right)
     p0 = -fitz.Point(pb_height/5., 0)*s     # horiz. displacment of ctrl points
     cp1 = p1 + (p2-p1)*0.5 + p0             # ctrl point upper rounding
     cp2 = p2 + (p3-p2)*0.5 + p0*2.9         # ctrl point middle rounding
@@ -132,9 +135,9 @@ def pencil(page, penciltip, pb_height, left):
     # add a curve to indicate lead mine is round
     #===========================================================================
     page.drawCurve(penciltip+(tipendtop - penciltip)*0.4,
-                    fitz.Point(penciltip.x+pb_height*0.6*s, penciltip.y),
-                    penciltip+(tipendbot - penciltip)*0.4, 
-                    width = w, fill = black)
+                   fitz.Point(penciltip.x+pb_height*0.6*s, penciltip.y),
+                   penciltip+(tipendbot - penciltip)*0.4, 
+                   width = w, fill = black)
                     
     #===========================================================================
     # re-border pencil body getting rid of some pesky pixels
@@ -147,8 +150,8 @@ def pencil(page, penciltip, pb_height, left):
     #===========================================================================
     p1 = fitz.Point(0.65, 0.15) * pb_height
     p2 = fitz.Point(0.45, 0.15) * pb_height
-    lblrect = fitz.Rect(topline0 + p1*a + p2*b,
-                        botline1 - p2*a - p1*b)
+    lblrect = fitz.Rect(topline0 + oneof(p1, p2),
+                        botline1 - oneof(p2, p1))
     page.drawRect(lblrect, width = w, fill = black)
     page.drawCurve(lblrect.top_right,
                    fitz.Point(lblrect.x1+pb_height/4., penciltip.y),
@@ -157,8 +160,9 @@ def pencil(page, penciltip, pb_height, left):
                    fitz.Point(lblrect.x0-pb_height/4., penciltip.y),
                    lblrect.bottom_left, width = w, fill = black)
     # ... then text indicating it's a medium pencil
-    if page.insertTextbox(lblrect, "No.2", color = white, fontname = "Helvetica", 
-                       fontsize = pb_height * 0.22, align = 1) < 0:
+    if page.insertTextbox(lblrect, "No.2", color = white,
+                          fontname = "Helvetica", 
+                          fontsize = pb_height * 0.22, align = 1) < 0:
         raise ValueError("not enough space to store pencil text")
                        
     #===========================================================================
@@ -176,8 +180,7 @@ def pencil(page, penciltip, pb_height, left):
 # invoke the pencil function
 #==============================================================================
 doc=fitz.open()
-doc.insertPage()
-page=doc[0]
+page = doc.newPage()
 
 penheight = 100
 
