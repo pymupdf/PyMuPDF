@@ -1,13 +1,11 @@
-#!/usr/bin/python
-# -*- coding: latin-1 -*-
 from __future__ import print_function
 import fitz
+from fitz.utils import getColor 
 import sys
 
 #==============================================================================
 # Pie Chart program
 #==============================================================================
-from fitz.utils import getColor   # retrieves RGB colors by name
 doc = fitz.open()                 # new empty PDF
 page = doc.newPage()              # without parms, this is an ISO-A4 format page
 
@@ -33,7 +31,7 @@ table  = (
           (56, "dodgerblue", "CSU"),
           (193, "red", "SPD"),
           (64, "violetred", "Die Linke"),
-          (63, "green", "Die Grünen"),
+          (63, "green", "Die GrÃ¼nen"),
           (1, "gray", "fraktionslos"),
          )
 

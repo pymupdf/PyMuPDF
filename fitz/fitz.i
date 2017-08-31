@@ -74,6 +74,7 @@ const char *msg0007 = "need 3 color components";
 const char *msg0008 = "name not found";
 const char *msg0009 = "source or target not a PDF";
 const char *msg0010 = "len(sequence) invalid";
+const char *msg0011 = "invalid argument type";
 %}
 
 /* global context */
@@ -565,6 +566,14 @@ struct fz_document_s
             return fz_needs_password(gctx, $self);
         }
 
+        CLOSECHECK(isPDF)
+        %pythoncode%{@property%}
+        PyObject *isPDF()
+        {
+            if (pdf_specifics(gctx, $self)) return Py_True;
+            else return Py_False;
+        }
+
         int _getGCTXerrcode() {
             return gctx->error->errcode;
         }
@@ -623,6 +632,7 @@ struct fz_document_s
             fz_try(gctx)
                 {
                 assert_PDF(pdf);
+                if (fz_count_pages(gctx, $self) < 1) THROWMSG("document has zero pages");
                 if ((incremental) && (garbage))
                     THROWMSG("incremental excludes garbage");
                 if ((incremental) && (pdf->repair_attempted))
@@ -672,6 +682,7 @@ struct fz_document_s
             fz_try(gctx)
             {
                 assert_PDF(pdf);
+                if (fz_count_pages(gctx, $self) < 1) THROWMSG("document has zero pages");
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 pdf_write_document(gctx, pdf, out, &opts);
@@ -1580,12 +1591,14 @@ if sa < 0:
 
             def __repr__(self):
                 if self.streamlen == 0:
+                    if self.name == "":
+                        return "fitz.Document(<new PDF>)"
                     return "fitz.Document('%s')" % (self.name,)
-                return "fitz.Document('%s', bytearray)" % (self.name,)
+                return "fitz.Document('%s', <memory>)" % (self.name,)
 
             def __getitem__(self, i):
                 if i >= len(self):
-                    raise IndexError(msg0003)
+                    raise IndexError("page number(s) out of range")
                 return self.loadPage(i)
 
             def __len__(self):
@@ -1917,16 +1930,21 @@ fannot._erase()
             int i, j;
             unsigned char *s, *t;
             char *content_str;
-            const char *template = "\nh q %s 0 0 %s %s %s cm /%s Do Q\n";
+            const char *template = "\nh q %g 0 0 %g %g %g cm /%s Do Q\n";
             Py_ssize_t c_len = 0;
             fz_rect prect = { 0, 0, 0, 0};
             fz_bound_page(gctx, $self, &prect);  // get page mediabox
-            char X[15], Y[15], W[15], H[15];     // rect coord as strings
-            char name[50], md5hex[33];           // image ref
+            char name[50], md5hex[33];           // for image reference
             unsigned char md5[16];               // md5 of the image
             char *cont = NULL;
             const char *name_templ = "FITZ%s";   // template for image ref
             Py_ssize_t name_len = 0;
+            // calculate coordinates of image matrix
+            float X = rect->x0;
+            float Y = prect.y1 - rect->y1;
+            float W = rect->x1 - rect->x0;
+            float H = rect->y1 - rect->y0;
+
             fz_image *zimg, *image = NULL;
             fz_try(gctx)
             {
@@ -1938,12 +1956,6 @@ fannot._erase()
                     THROWMSG("rect not contained in page rect");
                 if (fz_is_empty_rect(rect) || fz_is_infinite_rect(rect))
                     THROWMSG("rect must be finite and not empty");
-
-                // create strings for rect coordinates
-                snprintf(X, 15, "%g", (double) rect->x0);
-                snprintf(Y, 15, "%g", (double) (prect.y1 - rect->y1));
-                snprintf(W, 15, "%g", (double) (rect->x1 - rect->x0));
-                snprintf(H, 15, "%g", (double) (rect->y1 - rect->y0));
 
                 // get objects "Resources" and "XObject"
                 contents = pdf_dict_get(gctx, page->obj, PDF_NAME_Contents);
@@ -2388,7 +2400,11 @@ struct fz_rect_s
         FITZEXCEPTION(fz_rect_s, !result)
         fz_rect_s(const struct fz_rect_s *s) {
             fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
-            *r = *s;
+            if (!s)
+            {
+                r->x0 = r->y0 = r->x1 = r->y1 = 0;
+            }
+            else *r = *s;
             return r;
         }
 
@@ -2631,6 +2647,11 @@ struct fz_rect_s
             irect = property(round)
             width = property(lambda self: self.x1-self.x0)
             height = property(lambda self: self.y1-self.y0)
+            tl = top_left
+            tr = top_right
+            br = bottom_right
+            bl = bottom_left
+            
         %}
     }
 };
@@ -2656,7 +2677,11 @@ struct fz_irect_s
         }
         fz_irect_s(const struct fz_irect_s *s) {
             fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
-            *r = *s;
+            if (!s)
+            {
+                r->x0 = r->y0 = r->x1 = r->y1 = 0;
+            }
+            else *r = *s;
             return r;
         }
 
@@ -2787,9 +2812,6 @@ struct fz_irect_s
         }
 
         %pythoncode %{
-            width = property(lambda self: self.x1-self.x0)
-            height = property(lambda self: self.y1-self.y0)
-
             def getRect(self):
                 return Rect(self.x0, self.y0, self.x1, self.y1)
             
@@ -2834,6 +2856,14 @@ struct fz_irect_s
 
             def __repr__(self):
                 return "fitz.IRect" + str((self.x0, self.y0, self.x1, self.y1))
+
+            width = property(lambda self: self.x1-self.x0)
+            height = property(lambda self: self.y1-self.y0)
+            tl = top_left
+            tr = top_right
+            br = bottom_right
+            bl = bottom_left
+            
         %}
     }
 };
@@ -2896,7 +2926,7 @@ struct fz_pixmap_s
             }
             fz_try(gctx)
             {
-                if (size == 0) THROWMSG("type(samples) invalid");
+                if (size == 0) THROWMSG(msg0011);
                 if (stride * h != size) THROWMSG("len(samples) invalid");
                 pm = fz_new_pixmap_with_data(gctx, cs, w, h, alpha, stride, data);
             }
@@ -2912,6 +2942,7 @@ struct fz_pixmap_s
             struct fz_image_s *img = NULL;
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx) {
+                if (!filename) THROWMSG(msg0011);
                 img = fz_new_image_from_file(gctx, filename);
                 pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
             }
@@ -2927,24 +2958,24 @@ struct fz_pixmap_s
         {
             size_t size = 0;
             fz_buffer *data = NULL;
-            if (PyByteArray_Check(imagedata))
-            {
-                size = (size_t) PyByteArray_Size(imagedata);
-                data = fz_new_buffer_from_shared_data(gctx,
-                          PyByteArray_AsString(imagedata), size);
-            }
-            else if (PyBytes_Check(imagedata))
-            {
-                size = (size_t) PyBytes_Size(imagedata);
-                data = fz_new_buffer_from_shared_data(gctx,
-                          PyBytes_AsString(imagedata), size);
-            }
             struct fz_image_s *img = NULL;
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
             {
-                if (size == 0)
-                    THROWMSG("type(imagedata) invalid");
+                if (!imagedata) THROWMSG(msg0011);
+                if (PyByteArray_Check(imagedata))
+                {
+                    size = (size_t) PyByteArray_Size(imagedata);
+                    data = fz_new_buffer_from_shared_data(gctx,
+                              PyByteArray_AsString(imagedata), size);
+                }
+                else if (PyBytes_Check(imagedata))
+                {
+                    size = (size_t) PyBytes_Size(imagedata);
+                    data = fz_new_buffer_from_shared_data(gctx,
+                              PyBytes_AsString(imagedata), size);
+                }
+                if (size == 0) THROWMSG(msg0011);
                 img = fz_new_image_from_buffer(gctx, data);
                 pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
             }
@@ -3368,7 +3399,15 @@ struct fz_matrix_s
         fz_matrix_s(const struct fz_matrix_s* n)
         {
             fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
-            return fz_copy_matrix(m, n);
+            if (!n)
+            {
+                m->a = m->b = m->c = m->d = m->e = m->f = 0;
+            }
+            else
+            {
+                *m = *n;
+            }
+            return m;
         }
         
         //--------------------------------------------------------------------
@@ -3406,7 +3445,7 @@ struct fz_matrix_s
         }
 
         //--------------------------------------------------------------------
-        // create matrix from Python list
+        // create matrix from Python sequence
         //--------------------------------------------------------------------
         fz_matrix_s(PyObject *list)
         {
@@ -3626,7 +3665,11 @@ struct fz_point_s
         }
         fz_point_s(const struct fz_point_s *q) {
             fz_point *p = (fz_point *)malloc(sizeof(fz_point));
-            *p = *q;
+            if (!q)
+            {
+                p->x = p->y = 0;
+            }
+            else *p = *q;
             return p;
         }
 
@@ -3858,7 +3901,7 @@ struct fz_annot_s
             {
                 assert_PDF(annot);
                 if (!annot->ap) THROWMSG("annot has no /AP");
-                if (!c) THROWMSG("type(ap) invalid");
+                if (!c) THROWMSG(msg0011);
                 pdf_dict_put(gctx, annot->ap->obj, PDF_NAME_Filter,
                                                    PDF_NAME_FlateDecode);
                 res = deflatebuf(gctx, c, (size_t) len);

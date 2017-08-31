@@ -140,9 +140,6 @@ if __name__ == "__main__":
     for p in pnt:                 # containing all the points
         rect = rect | p
     # leave 5 px space around the picture
-    rect.x0 -= 5
-    rect.y0 -= 5
-    rect.x1 += 5
-    rect.y1 += 5
+    rect += (-5, -5, 5, 5)
     page.drawRect(rect, width = w, fill = yellow, overlay = False)
     doc.save("drawSines.pdf")

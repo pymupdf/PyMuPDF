@@ -31,7 +31,7 @@ pb_height - the thickness of the pencil. This controls the dimension of the
 left      - a bool indicating whether the pencil points left (True) or right.
 
 """
-def pencil(page, penciltip, pb_height, left):
+def pencil(img, penciltip, pb_height, left):
     """Draws a pencil image. 
     """
     from fitz.utils import getColor
@@ -52,7 +52,7 @@ def pencil(page, penciltip, pb_height, left):
         a = 1
         b = 0
         s = 1
-    else:
+    else:                                        # pencil tip is right
         a = 0
         b = 1
         s = -1
@@ -66,7 +66,7 @@ def pencil(page, penciltip, pb_height, left):
     tipendbot = penciltip + fitz.Point(1, 0.5) * pb_height * s
     r = fitz.Rect(tipendtop,
                   tipendbot + (pb_width * s, 0)) # pencil body
-    r.normalize()                                 # force r to be finite
+    r.normalize()                                # force r to be finite
     # topline / botline indicate the pencil edges
     topline0  = fitz.Point(r.x0 + r.width*0.1,
                            r.y0 + pb_height/5.) # upper pencil edge - left
@@ -82,69 +82,75 @@ def pencil(page, penciltip, pb_height, left):
     # control point 2 for pencil rubber
     hp2 = oneof(r.bottom_right, r.bottom_left) + (pb_height*0.6*s, 0)
     # pencil body is some type of yellow
-    page.drawRect(r, fill = yellow, color = wood, width = w)
-    page.drawPolyline((r.top_left, topline0, botline0, r.bottom_left),
-                      fill = wood, color = yellow, width = w)
-    page.drawPolyline((r.top_right, topline1, botline1, r.bottom_right),
-                      fill = wood, color = yellow, width = w)
+    img.drawRect(r)
+    img.finish(fill = yellow, color = wood, width = w)
+    img.drawPolyline((r.tl, topline0, botline0, r.bl))
+    img.drawPolyline((r.tr, topline1, botline1, r.br))
+    img.finish(fill = wood, color = wood, width = w, closePath = False)
     # draw pencil edge lines
-    page.drawLine(topline0, topline1, width = w, color=wood2)
-    page.drawLine(botline0, botline1, width = w, color=wood2)
+    img.drawLine(topline0, topline1)
+    img.drawLine(botline0, botline1)
+    img.finish(width = w, color=wood2, closePath = False)
     
     #===========================================================================
     # draw the pencil rubber
     #===========================================================================
-    page.drawBezier(oneof(r.top_right, r.top_left),
-                    hp1, hp2,
-                    oneof(r.bottom_right, r.bottom_left),
-                    fill = red, width = w)
+    img.drawBezier(oneof(r.tr, r.tl), hp1, hp2, oneof(r.br, r.bl))
+    img.finish(fill = red, width = w, closePath = False)
     #===========================================================================
     # black rectangle near pencil rubber
     #===========================================================================
-    blackrect = fitz.Rect(oneof((r.top_right - (pb_height/2., 0)),
-                                r.top_left),
-                          oneof(r.bottom_right,
-                                (r.bottom_left + (pb_height/2., 0))))
-    page.drawRect(blackrect, fill = black, width = w)
+    blackrect = fitz.Rect(oneof((r.tr - (pb_height/2., 0)), r.tl),
+                          oneof(r.br, (r.bl + (pb_height/2., 0))))
+    img.drawRect(blackrect)
+    img.finish(fill = black, width = w)
     
     #===========================================================================
     # draw pencil tip and curves indicating pencil sharpening traces
     #===========================================================================
-    page.drawPolyline((tipendtop, penciltip, tipendbot), width = w,
-                      fill = wood)          # pencil tip
-    p1 = oneof(r.top_left, r.top_right)     # either left or right
+    img.drawPolyline((tipendtop, penciltip, tipendbot))
+    img.finish(width = w, fill = wood, closePath = False)          # pencil tip
+    p1 = oneof(r.tl, r.tr)                      # either left or right
     p2 = oneof(topline0, topline1)
     p3 = oneof(botline0, botline1)
-    p4 = oneof(r.bottom_left, r.bottom_right)
+    p4 = oneof(r.bl, r.br)
     p0 = -fitz.Point(pb_height/5., 0)*s     # horiz. displacment of ctrl points
     cp1 = p1 + (p2-p1)*0.5 + p0             # ctrl point upper rounding
     cp2 = p2 + (p3-p2)*0.5 + p0*2.9         # ctrl point middle rounding
     cp3 = p3 + (p4-p3)*0.5 + p0             # ctrl point lower rounding
-    page.drawCurve(p1, cp1, p2, fill = yellow, width = w, color=wood)
-    page.drawCurve(p2, cp2, p3, fill = yellow, width = w, color=wood)
-    page.drawCurve(p3, cp3, p4, fill = yellow, width = w, color=wood)
+    img.drawCurve(p1, cp1, p2)
+    img.finish(fill = yellow, width = w, color=yellow,
+               closePath = True)
+    img.drawCurve(p2, cp2, p3)
+    img.finish(fill = yellow, width = w, color=yellow,
+               closePath = True)
+    img.drawCurve(p3, cp3, p4)
+    img.finish(fill = yellow, width = w, color=yellow,
+               closePath = True)
     
     #===========================================================================
     # draw the pencil tip lead mine
     #===========================================================================
-    page.drawPolyline((penciltip+(tipendtop - penciltip)*0.4,
+    img.drawPolyline((penciltip + (tipendtop - penciltip)*0.4,
                        penciltip,
-                       penciltip+(tipendbot - penciltip)*0.4),
-                       fill = black, width = w, closePath = True)
+                       penciltip + (tipendbot - penciltip)*0.4))
     #===========================================================================
     # add a curve to indicate lead mine is round
     #===========================================================================
-    page.drawCurve(penciltip+(tipendtop - penciltip)*0.4,
-                   fitz.Point(penciltip.x+pb_height*0.6*s, penciltip.y),
-                   penciltip+(tipendbot - penciltip)*0.4, 
-                   width = w, fill = black)
+    img.drawCurve(penciltip + (tipendtop - penciltip)*0.4,
+                   penciltip + (pb_height * 0.6 * s, 0),
+                   penciltip + (tipendbot - penciltip)*0.4)
+    img.finish(width = w, fill = black)
                     
     #===========================================================================
     # re-border pencil body getting rid of some pesky pixels
     #===========================================================================
-    page.drawLine(r.top_left, r.top_right, width = w)
-    page.drawLine(r.bottom_left, r.bottom_right, width = w)
-    page.drawPolyline((tipendtop, penciltip, tipendbot), width = w)
+    img.drawPolyline((p1, p2, p3, p4))
+    img.finish(color = yellow, closePath = False, width = w)
+    img.drawLine(r.tl, r.tr)
+    img.drawLine(r.bl, r.br)
+    img.drawPolyline((tipendtop, penciltip, tipendbot))
+    img.finish(width = w, closePath = False)
     #===========================================================================
     # draw pencil label - first a rounded rectangle
     #===========================================================================
@@ -152,28 +158,33 @@ def pencil(page, penciltip, pb_height, left):
     p2 = fitz.Point(0.45, 0.15) * pb_height
     lblrect = fitz.Rect(topline0 + oneof(p1, p2),
                         botline1 - oneof(p2, p1))
-    page.drawRect(lblrect, width = w, fill = black)
-    page.drawCurve(lblrect.top_right,
+    img.drawRect(lblrect)
+    img.drawCurve(lblrect.tr,
                    fitz.Point(lblrect.x1+pb_height/4., penciltip.y),
-                   lblrect.bottom_right, width = w, fill = black)
-    page.drawCurve(lblrect.top_left,
+                   lblrect.br)
+    img.drawCurve(lblrect.tl,
                    fitz.Point(lblrect.x0-pb_height/4., penciltip.y),
-                   lblrect.bottom_left, width = w, fill = black)
+                   lblrect.bl)
+    img.finish(width = w, fill = black)
+    
+    #===========================================================================
+    # finally the white vertical stripes - whatever they are good for
+    #===========================================================================
+    p1t = blackrect.tl + fitz.Point(blackrect.width/3., pb_height/20.)
+    p1b = blackrect.bl + fitz.Point(blackrect.width/3., -pb_height/20.)
+    p2t = blackrect.tl + fitz.Point(blackrect.width*2/3., pb_height/20.)
+    p2b = blackrect.bl + fitz.Point(blackrect.width*2/3., -pb_height/20.)
+    img.drawLine(p1t, p1b)
+    img.drawLine(p2t, p2b)
+    img.finish(color=white, width = pb_height*0.08, roundCap = False)
+
     # ... then text indicating it's a medium pencil
+    img.commit(True)
     if page.insertTextbox(lblrect, "No.2", color = white,
                           fontname = "Helvetica", 
                           fontsize = pb_height * 0.22, align = 1) < 0:
         raise ValueError("not enough space to store pencil text")
                        
-    #===========================================================================
-    # finally the white vertical stripes - whatever they are good for
-    #===========================================================================
-    p1t = blackrect.top_left + fitz.Point(blackrect.width/3., pb_height/20.)
-    p1b = blackrect.bottom_left + fitz.Point(blackrect.width/3., -pb_height/20.)
-    p2t = blackrect.top_left + fitz.Point(blackrect.width*2/3., pb_height/20.)
-    p2b = blackrect.bottom_left + fitz.Point(blackrect.width*2/3., -pb_height/20.)
-    page.drawLine(p1t, p1b, color=white, width = pb_height*0.08, roundCap = False)
-    page.drawLine(p2t, p2b, color=white, width = pb_height*0.08, roundCap = False)
     return
 
 #==============================================================================
@@ -181,16 +192,16 @@ def pencil(page, penciltip, pb_height, left):
 #==============================================================================
 doc=fitz.open()
 page = doc.newPage()
-
+img  = page.newShape()
 penheight = 100
 
 pentip2 = fitz.Point(100, 150)
-pencil(page, pentip2, penheight, True)
+pencil(img, pentip2, penheight, True)
 
 penheight = 20
 
 pentip1 = fitz.Point(100, 250)
-pencil(page, pentip1, penheight, False)
+pencil(img, pentip1, penheight, False)
 pentip1.x += 10                        # insert a litle distance
 text = "Like the ReportLab User Guide does,\nyou may want to use this image, to\nemphasize content, e.g. cautionary\nremarks, notes, examples, etc."
 page.insertText(pentip1, text)

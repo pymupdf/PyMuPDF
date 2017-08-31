@@ -3052,6 +3052,7 @@ const char *msg0007 = "need 3 color components";
 const char *msg0008 = "name not found";
 const char *msg0009 = "source or target not a PDF";
 const char *msg0010 = "len(sequence) invalid";
+const char *msg0011 = "invalid argument type";
 
 
     fz_context *gctx;
@@ -5015,6 +5016,10 @@ SWIG_FromCharPtr(const char *cptr)
 SWIGINTERN int fz_document_s_needsPass(struct fz_document_s *self){
             return fz_needs_password(gctx, self);
         }
+SWIGINTERN PyObject *fz_document_s_isPDF(struct fz_document_s *self){
+            if (pdf_specifics(gctx, self)) return Py_True;
+            else return Py_False;
+        }
 SWIGINTERN int fz_document_s__getGCTXerrcode(struct fz_document_s *self){
             return gctx->error->errcode;
         }
@@ -5046,6 +5051,9 @@ SWIGINTERN int fz_document_s_save(struct fz_document_s *self,char *filename,int 
 if (!pdf) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, msg0001)
 /*@SWIG@*/
+/*@SWIG@*/;
+                if (fz_count_pages(gctx, self) < 1) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "document has zero pages")
 /*@SWIG@*/;
                 if ((incremental) && (garbage))
                     /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
@@ -5095,6 +5103,9 @@ SWIGINTERN PyObject *fz_document_s_write(struct fz_document_s *self,int garbage,
 if (!pdf) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, msg0001)
 /*@SWIG@*/
+/*@SWIG@*/;
+                if (fz_count_pages(gctx, self) < 1) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "document has zero pages")
 /*@SWIG@*/;
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
@@ -6143,16 +6154,21 @@ SWIGINTERN int fz_page_s_insertImage(struct fz_page_s *self,struct fz_rect_s *re
             int i, j;
             unsigned char *s, *t;
             char *content_str;
-            const char *template = "\nh q %s 0 0 %s %s %s cm /%s Do Q\n";
+            const char *template = "\nh q %g 0 0 %g %g %g cm /%s Do Q\n";
             Py_ssize_t c_len = 0;
             fz_rect prect = { 0, 0, 0, 0};
             fz_bound_page(gctx, self, &prect);  // get page mediabox
-            char X[15], Y[15], W[15], H[15];     // rect coord as strings
-            char name[50], md5hex[33];           // image ref
+            char name[50], md5hex[33];           // for image reference
             unsigned char md5[16];               // md5 of the image
             char *cont = NULL;
             const char *name_templ = "FITZ%s";   // template for image ref
             Py_ssize_t name_len = 0;
+            // calculate coordinates of image matrix
+            float X = rect->x0;
+            float Y = prect.y1 - rect->y1;
+            float W = rect->x1 - rect->x0;
+            float H = rect->y1 - rect->y0;
+
             fz_image *zimg, *image = NULL;
             fz_try(gctx)
             {
@@ -6174,12 +6190,6 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "rect not contained in page rect")
                     /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "rect must be finite and not empty")
 /*@SWIG@*/;
-
-                // create strings for rect coordinates
-                snprintf(X, 15, "%g", (double) rect->x0);
-                snprintf(Y, 15, "%g", (double) (prect.y1 - rect->y1));
-                snprintf(W, 15, "%g", (double) (rect->x1 - rect->x0));
-                snprintf(H, 15, "%g", (double) (rect->y1 - rect->y0));
 
                 // get objects "Resources" and "XObject"
                 contents = pdf_dict_get(gctx, page->obj, PDF_NAME_Contents);
@@ -6526,7 +6536,11 @@ SWIG_From_float  (float value)
 
 SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_1(struct fz_rect_s const *s){
             fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
-            *r = *s;
+            if (!s)
+            {
+                r->x0 = r->y0 = r->x1 = r->y1 = 0;
+            }
+            else *r = *s;
             return r;
         }
 SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_2(struct fz_point_s const *lt,struct fz_point_s const *rb){
@@ -6691,7 +6705,11 @@ SWIGINTERN void delete_fz_irect_s(struct fz_irect_s *self){
         }
 SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_1(struct fz_irect_s const *s){
             fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
-            *r = *s;
+            if (!s)
+            {
+                r->x0 = r->y0 = r->x1 = r->y1 = 0;
+            }
+            else *r = *s;
             return r;
         }
 SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_2(int x0,int y0,int x1,int y1){
@@ -6833,7 +6851,7 @@ SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_2(struct fz_colorspace_s *c
             fz_try(gctx)
             {
                 if (size == 0) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "type(samples) invalid")
+fz_throw(gctx, FZ_ERROR_GENERIC, msg0011)
 /*@SWIG@*/;
                 if (stride * h != size) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "len(samples) invalid")
@@ -6847,6 +6865,9 @@ SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_3(char *filename){
             struct fz_image_s *img = NULL;
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx) {
+                if (!filename) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, msg0011)
+/*@SWIG@*/;
                 img = fz_new_image_from_file(gctx, filename);
                 pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
             }
@@ -6857,25 +6878,27 @@ SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_3(char *filename){
 SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_4(PyObject *imagedata){
             size_t size = 0;
             fz_buffer *data = NULL;
-            if (PyByteArray_Check(imagedata))
-            {
-                size = (size_t) PyByteArray_Size(imagedata);
-                data = fz_new_buffer_from_shared_data(gctx,
-                          PyByteArray_AsString(imagedata), size);
-            }
-            else if (PyBytes_Check(imagedata))
-            {
-                size = (size_t) PyBytes_Size(imagedata);
-                data = fz_new_buffer_from_shared_data(gctx,
-                          PyBytes_AsString(imagedata), size);
-            }
             struct fz_image_s *img = NULL;
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
             {
-                if (size == 0)
-                    /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "type(imagedata) invalid")
+                if (!imagedata) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, msg0011)
+/*@SWIG@*/;
+                if (PyByteArray_Check(imagedata))
+                {
+                    size = (size_t) PyByteArray_Size(imagedata);
+                    data = fz_new_buffer_from_shared_data(gctx,
+                              PyByteArray_AsString(imagedata), size);
+                }
+                else if (PyBytes_Check(imagedata))
+                {
+                    size = (size_t) PyBytes_Size(imagedata);
+                    data = fz_new_buffer_from_shared_data(gctx,
+                              PyBytes_AsString(imagedata), size);
+                }
+                if (size == 0) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, msg0011)
 /*@SWIG@*/;
                 img = fz_new_image_from_buffer(gctx, data);
                 pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
@@ -7119,7 +7142,15 @@ SWIGINTERN void delete_fz_matrix_s(struct fz_matrix_s *self){
         }
 SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_1(struct fz_matrix_s const *n){
             fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
-            return fz_copy_matrix(m, n);
+            if (!n)
+            {
+                m->a = m->b = m->c = m->d = m->e = m->f = 0;
+            }
+            else
+            {
+                *m = *n;
+            }
+            return m;
         }
 SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_2(float sx,float sy,int shear){
             fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
@@ -7216,7 +7247,11 @@ SWIGINTERN void delete_fz_point_s(struct fz_point_s *self){
         }
 SWIGINTERN struct fz_point_s *new_fz_point_s__SWIG_1(struct fz_point_s const *q){
             fz_point *p = (fz_point *)malloc(sizeof(fz_point));
-            *p = *q;
+            if (!q)
+            {
+                p->x = p->y = 0;
+            }
+            else *p = *q;
             return p;
         }
 SWIGINTERN struct fz_point_s *new_fz_point_s__SWIG_2(float x,float y){
@@ -7312,7 +7347,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, msg0001)
 fz_throw(gctx, FZ_ERROR_GENERIC, "annot has no /AP")
 /*@SWIG@*/;
                 if (!c) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "type(ap) invalid")
+fz_throw(gctx, FZ_ERROR_GENERIC, msg0011)
 /*@SWIG@*/;
                 pdf_dict_put(gctx, annot->ap->obj, PDF_NAME_Filter,
                                                    PDF_NAME_FlateDecode);
@@ -8552,6 +8587,28 @@ SWIGINTERN PyObject *_wrap_Document_needsPass(PyObject *SWIGUNUSEDPARM(self), Py
   arg1 = (struct fz_document_s *)(argp1);
   result = (int)fz_document_s_needsPass(arg1);
   resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document_isPDF(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Document_isPDF",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_isPDF" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  result = (PyObject *)fz_document_s_isPDF(arg1);
+  resultobj = result;
   return resultobj;
 fail:
   return NULL;
@@ -16665,6 +16722,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document_pageCount", _wrap_Document_pageCount, METH_VARARGS, (char *)"Document_pageCount(self) -> int"},
 	 { (char *)"Document__getMetadata", _wrap_Document__getMetadata, METH_VARARGS, (char *)"Document__getMetadata(self, key) -> char *"},
 	 { (char *)"Document_needsPass", _wrap_Document_needsPass, METH_VARARGS, (char *)"Document_needsPass(self) -> int"},
+	 { (char *)"Document_isPDF", _wrap_Document_isPDF, METH_VARARGS, (char *)"Document_isPDF(self) -> PyObject *"},
 	 { (char *)"Document__getGCTXerrcode", _wrap_Document__getGCTXerrcode, METH_VARARGS, (char *)"Document__getGCTXerrcode(self) -> int"},
 	 { (char *)"Document__getGCTXerrmsg", _wrap_Document__getGCTXerrmsg, METH_VARARGS, (char *)"Document__getGCTXerrmsg(self) -> char *"},
 	 { (char *)"Document_authenticate", _wrap_Document_authenticate, METH_VARARGS, (char *)"Decrypt document with a password."},

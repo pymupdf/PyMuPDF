@@ -286,9 +286,21 @@ def mat_mult(m1, m2):     # __mul__
                            m1.d * m2, m1.e * m2, m1.f * m2)
     m = fitz.Matrix()
     try:
-        m.concat(m1, m2)
+        m.concat(m1, fitz.Matrix(m2))
     except:
-        raise NotImplementedError("op2 must be 'Matrix' or number")
+        raise NotImplementedError("op2 must be 'Matrix', sequence or number")
+    return m
+
+def mat_div(m1, m2):     # __mul__
+    if type(m2) in (int, float):
+        return fitz.Matrix(m1.a * 1./m2, m1.b * 1./m2, m1.c * 1./m2,
+                           m1.d * 1./m2, m1.e * 1./m2, m1.f * 1./m2)
+    m = fitz.Matrix()
+    mi1 = fitz.Matrix(m2)
+    mi2 = mat_invert(mi1)
+    if not bool(mi2):
+        raise ZeroDivisionError("op2 is not invertible")
+    m.concat(m1, mi2)
     return m
 
 def mat_invert(me):       # __invert__
@@ -298,29 +310,20 @@ def mat_invert(me):       # __invert__
 
 def mat_add(m1, m2):      # __add__
     if type(m2) in (int, float):
-        return fitz.Matrix(m1.a + m2, m1.b + m2, m1.c + m2,
-                           m1.d + m2, m1.e + m2, m1.f + m2)
-    if len(m2) == 6:
-        return fitz.Matrix(m1.a + m2[0], m1.b + m2[1], m1.c + m2[2],
-                           m1.d + m2[3], m1.e + m2[4], m1.f + m2[5])
-    try:
-        return fitz.Matrix(m1.a + m2.a, m1.b + m2.b, m1.c + m2.c,
-                           m1.d + m2.d, m1.e + m2.e, m1.f + m2.f)
-    except:
-        raise NotImplementedError("op2 must be 'Matrix', sequence or number")
+        me = fitz.Matrix(m2, m2, m2, m2, m2, m2)
+    else:
+        me = fitz.Matrix(m2)
+    return fitz.Matrix(m1.a + me.a, m1.b + me.b, m1.c + me.c,
+                       m1.d + me.d, m1.e + me.e, m1.f + me.f)
+
 
 def mat_sub(m1, m2):      # __sub__
     if type(m2) in (int, float):
-        return fitz.Matrix(m1.a - m2, m1.b - m2, m1.c - m2,
-                           m1.d - m2, m1.e - m2, m1.f - m2)
-    if len(m2) == 6:
-        return fitz.Matrix(m1.a - m2[0], m1.b - m2[1], m1.c - m2[2],
-                           m1.d - m2[3], m1.e - m2[4], m1.f - m2[5])
-    try:
-        return fitz.Matrix(m1.a - m2.a, m1.b - m2.b, m1.c - m2.c,
-                           m1.d - m2.d, m1.e - m2.e, m1.f - m2.f)
-    except:
-        raise NotImplementedError("op2 must be 'Matrix', sequence or number")
+        me = fitz.Matrix(m2, m2, m2, m2, m2, m2)
+    else:
+        me = fitz.Matrix(m2)
+    return fitz.Matrix(m1.a - me.a, m1.b - me.b, m1.c - me.c,
+                       m1.d - me.d, m1.e - me.e, m1.f - me.f)
 
 def mat_abs(m):           # __abs__
     a = m.a**2 + m.b**2 + m.c**2 + m.d**2 + m.e**2 + m.f**2
@@ -344,98 +347,68 @@ def mat_contains(m, x):
 def rect_or(r1, r2):         # __or__: include point, rect or irect
     if type(r2) not in (fitz.Rect, fitz.IRect, fitz.Point):
         raise NotImplementedError("op2 must be 'Rect', 'IRect' or 'Point'")
-    if type(r1) is fitz.Rect:
-        r = fitz.Rect(r1)
-    else:
-        r = r1.rect
+    r = fitz.Rect(r1)
+
     if type(r2) is fitz.Rect:
         r.includeRect(r2)
     elif type(r2) is fitz.IRect:
         r.includeRect(r2.rect)
     else:
         r.includePoint(r2)
-    if type(r1) is fitz.Rect:
-        return r
-    else:
-        return r.irect
+    return r if type(r1) is fitz.Rect else r.irect
 
 def rect_and(r1, r2):        # __and__: intersection with rect or irect
     if type(r2) not in (fitz.Rect, fitz.IRect):
         raise NotImplementedError("op2 must be 'Rect' or 'IRect'")
-    if type(r1) is fitz.Rect:
-        r = fitz.Rect(r1)
-    else:
-        r = r1.rect
+    r = fitz.Rect(r1)
     if type(r2) is fitz.Rect:
         r.intersect(r2)
     else:
         r.intersect(r2.rect)
-    if type(r1) is fitz.Rect:
-        return r
-    else:
-        return r.irect
+    return r if type(r1) is fitz.Rect else r.irect
 
 def rect_add(r1, r2):        # __add__: add number, rect or irect to rect
-    if type(r1) is fitz.Rect:
-        r = fitz.Rect(r1)
-    else:
-        r = r1.rect
-    if type(r2) in (fitz.Rect, fitz.IRect):
-        a = r2
-    elif type(r2) in (int, float):
+    r = fitz.Rect(r1)
+    if type(r2) in (int, float):
         a = fitz.Rect(r2, r2, r2, r2)
-    elif len(r2) == 4:
-        a = fitz.Rect(r2)
     else:
-        raise NotImplementedError("op2 must be a rectangle, sequence or number")
+        a = fitz.Rect(r2)
     r.x0 += a.x0
     r.y0 += a.y0
     r.x1 += a.x1
     r.y1 += a.y1
-    if type(r1) is fitz.Rect:
-        return r
-    else:
-        return r.irect
+    return r if type(r1) is fitz.Rect else r.irect
 
 def rect_sub(r1, r2):        # __sub__: subtract number, rect or irect from rect
-    if type(r1) is fitz.Rect:
-        r = fitz.Rect(r1)
-    else:
-        r = r1.rect
-
-    if type(r2) in (fitz.Rect, fitz.IRect):
-        a = r2
-    elif type(r2) in (int, float):
+    r = fitz.Rect(r1)
+    if type(r2) in (int, float):
         a = fitz.Rect(r2, r2, r2, r2)
-    elif len(r2) == 4:
-        a = fitz.Rect(r2)
     else:
-        raise NotImplementedError("op2 must be a rectangle, sequence or number")
+        a = fitz.Rect(r2)
     r.x0 -= a.x0
     r.y0 -= a.y0
     r.x1 -= a.x1
     r.y1 -= a.y1
-    if type(r1) is fitz.Rect:
-        return r
-    else:
-        return r.irect
+    return r if type(r1) is fitz.Rect else r.irect
 
 def rect_mul(r, m):          # __mul__: transform with matrix
-    if type(r) is fitz.Rect:
-        r1 = fitz.Rect(r)
-    else:
-        r1 = r.rect
+    r1 = fitz.Rect(r)
     if type(m) in (int, float):
         r1 = fitz.Rect(r1.x0 * m, r1.y0 * m, r1.x1 * m, r1.y1 * m)
     else:
-        try:
-            r1.transform(m)
-        except:
-            raise NotImplementedError("op2 must be number or 'Matrix'")
-    if type(r) is fitz.Rect:
-        return r1
+        r1.transform(fitz.Matrix(m))
+    return r1 if type(r) is fitz.Rect else r1.irect
+
+def rect_div(r, m):          # __div__ / __truediv__
+    r1 = fitz.Rect(r)
+    if type(m) in (int, float):
+        r1 = fitz.Rect(r1.x0 * 1. / m, r1.y0 * 1. / m, r1.x1 * 1. / m, r1.y1 * 1. / m)
     else:
-        return r1.irect
+        m1 = ~fitz.Matrix(m)
+        if not bool(m1):
+            raise ZeroDivisionError("op2 is not invertible")
+        r1.transform(m1)
+    return r1 if type(r) is fitz.Rect else r1.irect
 
 def rect_equ(r, r2):       # __equ__
     return type(r) == type(r2) and rect_true(r - r2) == 0
@@ -447,35 +420,33 @@ def rect_true(r):
 # arithmetic methods for fitz.Point
 #==============================================================================
 def point_add(p1, p2):
-    if type(p2) is fitz.Point:
-        p = p2
-    elif type(p2) in (int, float):
+    if type(p2) in (int, float):
         p = fitz.Point(p2, p2)
-    elif len(p2) == 2:
-        p = fitz.Point(p2)
     else:
-        raise NotImplementedError("op2 must be 'Point', sequence or number")
+        p = fitz.Point(p2)
     return fitz.Point(p1.x + p.x, p1.y + p.y)
 
 def point_sub(p1, p2):
-    if type(p2) is fitz.Point:
-        p = p2
-    elif type(p2) in (int, float):
+    if type(p2) in (int, float):
         p = fitz.Point(p2, p2)
-    elif len(p2) == 2:
-        p = fitz.Point(p2)
     else:
-        raise NotImplementedError("op2 must be 'Point', sequence or number")
+        p = fitz.Point(p2)
     return fitz.Point(p1.x - p.x, p1.y - p.y)
 
 def point_mul(p, m):
     if type(m) in (int, float):
         return fitz.Point(p.x*m, p.y*m)
     p1 = fitz.Point(p)
-    try:
-        return p1.transform(m)
-    except:
-        raise NotImplementedError("op2 must be 'Matrix' or number")
+    return p1.transform(fitz.Matrix(m))
+
+def point_div(p, m):
+    if type(m) in (int, float):
+        return fitz.Point(p.x*1./m, p.y*1./m)
+    p1 = fitz.Point(p)
+    m1 = ~fitz.Matrix(m)
+    if not bool(m1):
+        raise ZeroDivisionError("op2 is not invertible")
+    return p1.transform(m1)
 
 def point_abs(p):
     return math.sqrt(p.x**2 + p.y**2)
@@ -1123,266 +1094,6 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
     return more
 
 #-------------------------------------------------------------------------------
-# Page.drawLine
-#-------------------------------------------------------------------------------
-def drawLine(page, p1, p2, color = (0, 0, 0), dashes = None,
-               width = 1, roundCap = True, overlay = True):
-    """Draw a line from point p1 to point p2.
-    """
-    fitz.CheckParent(page)
-    fitz.CheckColor(color)
-
-    doc = page.parent
-    xreflist = page._getContents()
-    if overlay:
-        xref = xreflist[-1]
-    else:
-        xref = xreflist[0]
-        
-    cont = doc._getXrefStream(xref)
-    
-    h = page.rect.y1
-    
-    d = ""
-    if dashes is not None and len(dashes) > 0:
-        d = dashes + "d"
-    
-    templ1 = "\nh q %i J %s %g %g %g RG %g w %g %g m %g %g l h S Q "
-    
-    c  = templ1 % (roundCap, d, color[0], color[1], color[2], width,
-                   p1.x, h - p1.y, p2.x, h - p2.y)
-    
-    if sys.version_info[0] > 2:
-        c = bytes(c, "utf-8")
-    
-    if overlay:
-        cont += c        
-    else:
-        cont = c + cont
-
-    doc._updateStream(xref, cont)
-    
-    return
-
-
-#-------------------------------------------------------------------------------
-# Page.drawRect
-#-------------------------------------------------------------------------------
-def drawRect(page, rect, color = (0, 0, 0), fill = None, dashes = None,
-               width = 1, roundCap = True, overlay = True):
-    """Draw a rectangle.
-    """
-    page.drawPolyline((rect.top_left, rect.top_right, rect.bottom_right,
-                       rect.bottom_left), color = color, fill = fill,
-                       dashes = dashes, width = width, roundCap = roundCap,
-                       closePath = True, overlay = overlay)
-    return
-
-
-#-------------------------------------------------------------------------------
-# Page.drawPolyline
-#-------------------------------------------------------------------------------
-def drawPolyline(page, points, color = (0, 0, 0), fill = None, dashes = None,
-               width = 1, roundCap = True, overlay = True, closePath = False):
-    """Draw multiple connected line segments.
-    """
-    fitz.CheckParent(page)
-    assert len(points) > 1, "need at least two points for polyline"
-    fitz.CheckColor(color)
-    fitz.CheckColor(fill)
-    doc = page.parent
-    
-    xreflist = page._getContents()
-    if overlay:
-        xref = xreflist[-1]
-    else:
-        xref = xreflist[0]
-        
-    cont = doc._getXrefStream(xref)
-    
-    h = page.rect.y1
-    d = ""
-    if dashes is not None and len(dashes) > 0:
-        d = dashes + "d"
-    tempfl = "%g %g %g rg\n"
-    templ1 = "\nh q %i J %i j %s %g %g %g RG %g w %g %g m\n"
-    templ2 = "%g %g l\n"
-    
-    for i, p in enumerate(points):
-        if i == 0:
-            c = templ1 % (roundCap, roundCap, d,
-                          color[0], color[1], color[2],
-                          width, p.x, h - p.y)
-            if fill is not None:
-                c += tempfl % (fill[0], fill[1], fill[2])
-        else:
-            c += templ2 % (p.x, h - p.y)
-    
-    if closePath:
-        c += "h "
-    if fill is not None:
-        c += "B Q "
-    else:
-        c += "S Q "
-    
-    if sys.version_info[0] > 2:
-        c = bytes(c, "utf-8")
-        
-    if overlay:
-        cont += c
-    else:
-        cont = c + cont
-    
-    doc._updateStream(xref, cont)
-    
-    return
-
-
-#-------------------------------------------------------------------------------
-# Page.drawCircle
-#-------------------------------------------------------------------------------
-def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
-               dashes = None, width = 1, roundCap = True, overlay = True):
-    """Draw a circle given its center and radius.
-    """
-    fitz.CheckParent(page)
-    fitz.CheckColor(color)
-    fitz.CheckColor(fill)
-    doc = page.parent
-    xreflist = page._getContents()
-    if overlay:
-        xref = xreflist[-1]
-    else:
-        xref = xreflist[0]
-        
-    cont = doc._getXrefStream(xref)
-    
-    h = page.rect.y1
-    kappa = 0.552285 * radius
-    
-    l0 = "%g %g %g rg\n"
-    l1 = "\nh q %g %g %g RG %g w %i J\n"
-    l2 = "%s d\n"
-    l3 = "%g %g m\n"
-    l4 = "%g %g %g %g %g %g c\n"
-    
-    # the list of points needed for the Bezier curves
-    # approximating the circle
-    p00  = [center.x - radius, h - (center.y)]                  # p0
-    p00 += [center.x - radius, h - (center.y - kappa)]          # p1
-    p00 += [center.x - kappa,  h - (center.y - radius)]         # p2
-    p00 += [center.x,          h - (center.y - radius)]         # p3
-    p00 += [center.x + kappa,  h - (center.y - radius)]         # p4
-    p00 += [center.x + radius, h - (center.y - kappa)]          # p5
-    p00 += [center.x + radius, h - (center.y)]                  # p6
-    p00 += [center.x + radius, h - (center.y + kappa)]          # p7
-    p00 += [center.x + kappa,  h - (center.y + radius)]         # p8
-    p00 += [center.x,          h - (center.y + radius)]         # p9
-    p00 += [center.x - kappa,  h - (center.y + radius)]         # p10
-    p00 += [center.x - radius, h - (center.y + kappa)]          # p11
-    
-    c  = l1 % (color[0], color[1], color[2], width, roundCap)
-    if dashes is not None and len(dashes) > 0:
-        c += l2 % dashes
-    if fill is not None:
-        c+= l0 % (fill[0], fill[1], fill[2])
-    c += l3 % (p00[0], p00[1])
-    c += l4 % (p00[2], p00[3], p00[4], p00[5], p00[6], p00[7])
-    c += l4 % (p00[8], p00[9], p00[10], p00[11], p00[12], p00[13])
-    c += l4 % (p00[14], p00[15], p00[16], p00[17], p00[18], p00[19])
-    c += l4 % (p00[20], p00[21], p00[22], p00[23], p00[0], p00[1])
-    if fill is not None:
-        c += "h B Q "
-    else:
-        c += "h S Q "
-    
-    if sys.version_info[0] > 2:
-        c = bytes(c, "utf-8")
-        
-    if overlay:
-        cont += c
-    else:
-        cont = c + cont
-    
-    doc._updateStream(xref, cont)
-    
-    return
-
-
-#-------------------------------------------------------------------------------
-# Page.drawOval
-#-------------------------------------------------------------------------------
-def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = None,
-               width = 1, roundCap = True, overlay = True):
-    """Draw an oval given its containing rectangle.
-    """
-    fitz.CheckParent(page)
-    fitz.CheckColor(color)
-    fitz.CheckColor(fill)
-    
-    doc = page.parent
-    xreflist = page._getContents()
-    if overlay:
-        xref = xreflist[-1]
-    else:
-        xref = xreflist[0]
-        
-    cont = doc._getXrefStream(xref)
-    
-    h = page.rect.y1
-    
-    kappah = 0.552285 * rect.width / 2
-    kappav = 0.552285 * rect.height / 2
-    
-    l0 = "%g %g %g rg\n"
-    l1 = "\nh q %g %g %g RG %g w %i J\n"
-    l2 = "%s d\n"
-    l3 = "%g %g m\n"
-    l4 = "%g %g %g %g %g %g c\n"
-    
-    # the list of points needed for the Bezier curves
-    # approximating the ellipse
-    p00  = [rect.x0, h - (rect.y0 + rect.height / 2)]            # p0
-    p00 += [rect.x0, h - (rect.y0 + rect.height / 2 - kappav)]   # p1
-    p00 += [rect.x0 + rect.width / 2 - kappah, h - (rect.y0)]    # p2
-    p00 += [rect.x0 + rect.width / 2, h - (rect.y0)]             # p3
-    p00 += [rect.x0 + rect.width / 2 + kappah, h - (rect.y0)]    # p4
-    p00 += [rect.x1, h - (rect.y0 + rect.height / 2 - kappav)]   # p5
-    p00 += [rect.x1, h - (rect.y0 + rect.height / 2)]            # p6
-    p00 += [rect.x1, h - (rect.y0 + rect.height / 2 + kappav)]   # p7
-    p00 += [rect.x0 + rect.width / 2 + kappah, h - (rect.y1)]    # p8
-    p00 += [rect.x0 + rect.width / 2, h - (rect.y1)]             # p9
-    p00 += [rect.x0 + rect.width / 2 - kappah, h - (rect.y1)]    # p10
-    p00 += [rect.x0, h - (rect.y0 + rect.height / 2 + kappav)]   # p11
-    
-    c  = l1 % (color[0], color[1], color[2], width, roundCap)
-    if fill is not None:
-        c+= l0 % (fill[0], fill[1], fill[2])
-    if dashes is not None and len(dashes) > 0:
-        c += l2 % dashes
-    c += l3 % (p00[0], p00[1])
-    c += l4 % (p00[2], p00[3], p00[4], p00[5], p00[6], p00[7])
-    c += l4 % (p00[8], p00[9], p00[10], p00[11], p00[12], p00[13])
-    c += l4 % (p00[14], p00[15], p00[16], p00[17], p00[18], p00[19])
-    c += l4 % (p00[20], p00[21], p00[22], p00[23], p00[0], p00[1])
-    if fill is not None:
-        c += "h B Q "
-    else:
-        c += "h S Q "
-    
-    if sys.version_info[0] > 2:
-        c = bytes(c, "utf-8")
-        
-    if overlay:
-        cont += c
-    else:
-        cont = c + cont
-    
-    doc._updateStream(xref, cont)
-    
-    return
-
-#-------------------------------------------------------------------------------
 # Document.newPage
 #-------------------------------------------------------------------------------
 def newPage(doc, pno = -1, width = 595, height = 842):
@@ -1391,202 +1102,163 @@ def newPage(doc, pno = -1, width = 595, height = 842):
     doc.insertPage(pno, width = width, height = height)
     return doc[pno]
 
+#-------------------------------------------------------------------------------
+# Page.drawLine
+#-------------------------------------------------------------------------------
+def drawLine(page, p1, p2, color = (0, 0, 0), dashes = None,
+               width = 1, roundCap = True, overlay = True, morph = None):
+    """Draw a line from point p1 to point p2.
+    """
+    img = page.newShape()
+    img.drawLine(p1, p2)
+    img.finish(color = color, dashes = dashes, width = width, closePath = False,
+               roundCap = roundCap, morph = morph)
+    img.commit(overlay)
+
+    return p2
+
+#-------------------------------------------------------------------------------
+# Page.drawSquiggle
+#-------------------------------------------------------------------------------
+def drawSquiggle(page, p1, p2, breadth = 2, color = (0, 0, 0), dashes = None,
+               width = 1, roundCap = True, overlay = True, morph = None):
+    """Draw a squiggly line from point p1 to point p2.
+    """
+    img = page.newShape()
+    img.drawSquiggle(p1, p2, breadth = breadth)
+    img.finish(color = color, dashes = dashes, width = width, closePath = False,
+               roundCap = roundCap, morph = morph)
+    img.commit(overlay)
+
+    return p2
+
+#-------------------------------------------------------------------------------
+# Page.drawZigzag
+#-------------------------------------------------------------------------------
+def drawZigzag(page, p1, p2, breadth = 2, color = (0, 0, 0), dashes = None,
+               width = 1, roundCap = True, overlay = True, morph = None):
+    """Draw a zigzag line from point p1 to point p2.
+    """
+    img = page.newShape()
+    img.drawZigzag(p1, p2, breadth = breadth)
+    img.finish(color = color, dashes = dashes, width = width, closePath = False,
+               roundCap = roundCap, morph = morph)
+    img.commit(overlay)
+
+    return p2
+
+#-------------------------------------------------------------------------------
+# Page.drawRect
+#-------------------------------------------------------------------------------
+def drawRect(page, rect, color = (0, 0, 0), fill = None, dashes = None,
+             width = 1, roundCap = True, morph = None, overlay = True):
+    """Draw a rectangle.
+    """
+    img = page.newShape()
+    img.drawRect(rect)
+    Q = img.finish(color = color, fill = fill, dashes = dashes, width = width,
+                   roundCap = roundCap, morph = morph)
+    img.commit(overlay)
+
+    return Q
+
+#-------------------------------------------------------------------------------
+# Page.drawPolyline
+#-------------------------------------------------------------------------------
+def drawPolyline(page, points, color = (0, 0, 0), fill = None, dashes = None,
+                 width = 1, morph = None, roundCap = True, overlay = True,
+                 closePath = False):
+    """Draw multiple connected line segments.
+    """
+    img = page.newShape()
+    Q = img.drawPolyline(points)
+    img.finish(color = color, fill = fill, dashes = dashes, width = width,
+               roundCap = roundCap, morph = morph, closePath = closePath)
+    img.commit(overlay)
+
+    return Q
+
+#-------------------------------------------------------------------------------
+# Page.drawCircle
+#-------------------------------------------------------------------------------
+def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
+               morph = None, dashes = None, width = 1,
+               roundCap = True, overlay = True):
+    """Draw a circle given its center and radius.
+    """
+    img = page.newShape()
+    Q = img.drawCircle(center, radius)
+    img.finish(color = color, fill = fill, dashes = dashes, width = width,
+               roundCap = roundCap, morph = morph)
+    img.commit(overlay)
+    return Q
+
+#-------------------------------------------------------------------------------
+# Page.drawOval
+#-------------------------------------------------------------------------------
+def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = None,
+             morph = None,
+             width = 1, roundCap = True, overlay = True):
+    """Draw an oval given its containing rectangle.
+    """
+    img = page.newShape()
+    Q = img.drawOval(rect)
+    img.finish(color = color, fill = fill, dashes = dashes, width = width,
+               roundCap = roundCap, morph = morph)
+    img.commit(overlay)
+    
+    return Q
 
 #-------------------------------------------------------------------------------
 # Page.drawCurve
 #-------------------------------------------------------------------------------
 def drawCurve(page, p1, p2, p3, color = (0, 0, 0), fill = None, dashes = None,
-               width = 1, closePath = False, roundCap = True, overlay = True):
+              width = 1, morph = None, closePath = False,
+              roundCap = True, overlay = True):
     """Draw a special Bezier curve from p1 to p3, generating control points on lines p1 to p2 and p2 to p3.
     """
-    kappa = 0.552285
-    k1 = p1 + (p2 - p1) * kappa
-    k2 = p3 + (p2 - p3) * kappa
-    drawBezier(page, p1, k1, k2, p3, fill = fill, color = color,
-               dashes = dashes, width = width, closePath = closePath,
-               roundCap = roundCap, overlay = overlay)
+    img = page.newShape()
+    Q = img.drawCurve(p1, p2, p3)
+    img.finish(color = color, fill = fill, dashes = dashes, width = width,
+               roundCap = roundCap, morph = morph, closePath = closePath)
+    img.commit(overlay)
 
-    return
+    return Q
 
 
 #-------------------------------------------------------------------------------
 # Page.drawBezier
 #-------------------------------------------------------------------------------
-def drawBezier(page, p1, p2, p3, p4, color = (0, 0, 0), fill = None, dashes = None,
-               width = 1, closePath = False, roundCap = True, overlay = True):
+def drawBezier(page, p1, p2, p3, p4, color = (0, 0, 0), fill = None,
+               dashes = None, width = 1, morph = None,
+               closePath = False, roundCap = True, overlay = True):
     """Draw a general cubic Bezier curve from p1 to p4 using control points p2 and p3.
     """
-    fitz.CheckParent(page)
-    fitz.CheckColor(color)
-    fitz.CheckColor(fill)
+    img = page.newShape()
+    Q = img.drawBezier(p1, p2, p3, p4)
+    img.finish(color = color, fill = fill, dashes = dashes, width = width,
+               roundCap = roundCap, morph = morph, closePath = closePath)
+    img.commit(overlay)
     
-    doc = page.parent
-    xreflist = page._getContents()
-    if overlay:
-        xref = xreflist[-1]
-    else:
-        xref = xreflist[0]
-    h = page.rect.y1
-    cont = doc._getXrefStream(xref)
-    l0 = "%g %g %g rg\n"
-    l1 = "\nh q %g %g %g RG %g w %i J %i j\n"
-    l2 = "%s d\n"
-    l3 = "%g %g m\n"
-    l4 = "%g %g %g %g %g %g c\n"
-    
-    c  = l1 % (color[0], color[1], color[2], width, roundCap, roundCap)
-    if fill is not None:
-        c+= l0 % (fill[0], fill[1], fill[2])
-    if dashes is not None and len(dashes) > 0:
-        c += l2 % dashes
-    c += l3 % (p1.x, h - p1.y)
-    c += l4 % (p2.x, h - p2.y, p3.x, h - p3.y, p4.x, h - p4.y)
-    if closePath:
-        c += "h "
-    if fill is not None:
-        c += "B Q "
-    else:
-        c += "S Q "
-    
-    if sys.version_info[0] > 2:
-        c = bytes(c, "utf-8")
-        
-    if overlay:
-        cont += c
-    else:
-        cont = c + cont
-    
-    doc._updateStream(xref, cont)
-    
-    return
+    return Q
 
 #==============================================================================
 # Draw circular sector
 #==============================================================================
 def drawSector(page, center, point, beta, color = (0, 0, 0), fill = None,
-            dashes = None, fullSector = True,
-            width = 1, closePath = False, roundCap = True, overlay = True):
+              dashes = None, fullSector = True, morph = None,
+              width = 1, closePath = False, roundCap = True, overlay = True):
     """Draw a circle sector given circle center, one arc end point and the angle of the arc. Parameters:
     center - center of circle
     point - arc end point
     beta - angle of arc (degrees)
     fullSector - connect arc ends with center
     """
-    fitz.CheckParent(page)
-    fitz.CheckColor(color)
-    fitz.CheckColor(fill)
-    doc = page.parent
-    h = page.rect.y1
-    xreflist = page._getContents()          # /Contents objects of page
-    if overlay:
-        xref = xreflist[-1]                 # last object
-    else:
-        xref = xreflist[0]                  # first object
-    cont = doc._getXrefStream(xref)
-    # PDF operator instructions
-    l0 = "%g %g %g rg\n"
-    l1 = "\nh q %g %g %g RG %g w %i J %i j\n"
-    l2 = "%s d\n"
-    l3 = "%g %g m\n"
-    l4 = "%g %g %g %g %g %g c\n"
-    l5 = "%g %g l\n"
-    
-    betar = math.radians(-beta)
-    w360 = math.radians(math.copysign(360, betar)) * (-1)
-    w90  = math.radians(math.copysign(90, betar))
-    w45  = w90 / 2
-    while abs(betar) > 2 * math.pi:
-        betar += w360                       # bring angle below 360 degrees
-    
-    # finished preliminaries, now start drawing
-    c  = l1 % (color[0], color[1], color[2], width, roundCap, roundCap)
-    if fill is not None:
-        c+= l0 % (fill[0], fill[1], fill[2])
-    if dashes is not None and len(dashes) > 0:
-        c += l2 % dashes
-    c += l3 % (point.x, h - point.y)
-    
-    """
-    We will draw cubic Bezier curves from P to Q using R as a helper point:
-    R is the point where the tangents through P and Q are crossing.
-    The intermediate two Bezier control points are located on these tangents.
-    They have equal distances 'kappa' from P, resp. Q.
-    Argument 'point' is taken as the first P.
-    """
-    Q = fitz.Point(0, 0)                    # just make sure it exists
-    C = center
-    P = point
-    S = P - C                               # vector 'center' -> 'point'
-    rad = abs(S)                            # circle radius
-    alfa = math.asin(abs(S.y) / rad)        # absolute angle from horizontal
-    if P.x < C.x:                           # make arcsin result unique
-        if P.y <= C.y:
-            alfa = -(math.pi - alfa)
-        else:
-            alfa = math.pi - alfa
-    else:
-        if P.y >= C.y:
-            pass
-        else:
-            alfa = - alfa
-
-    # Angle 'beta' will be processed in multiples of 90 degrees. Because Bezier
-    # curves don't approximate circle arc good enough for larger angles.
-    # The end point of an arc is start of next arc.
-    while abs(betar) > abs(w90):            # draw 90 degree arcs
-        q1 = C.x + math.cos(alfa + w90) * rad
-        q2 = C.y + math.sin(alfa + w90) * rad
-        Q = fitz.Point(q1, q2)              # the arc's end point
-        r1 = C.x + math.cos(alfa + w45) * rad / math.cos(w45)
-        r2 = C.y + math.sin(alfa + w45) * rad / math.cos(w45)
-        R = fitz.Point(r1, r2)              # crossing point of tangents
-        kappah = (1 - math.cos(w45)) * 4 / 3 / abs(R - Q)
-        kappa = kappah * abs(P - Q)
-        cp1 = P + (R - P) * kappa           # control point 1
-        cp2 = Q + (R - Q) * kappa           # control point 2
-        c += l4 % (cp1.x, h - cp1.y, cp2.x, h - cp2.y, Q.x, h - Q.y) # draw
-        betar -= w90                        # reduce parameter angle by 90 deg
-        alfa  += w90                        # advance start angle by 90 deg
-        P = Q                               # advance to arc end point
-    # draw (remaining) arc
-    if abs(betar) > 1e-3:                   # significant degrees left?
-        beta2 = betar / 2
-        q1 = C.x + math.cos(alfa + betar) * rad
-        q2 = C.y + math.sin(alfa + betar) * rad
-        Q = fitz.Point(q1, q2)              # the arc's end point
-        r1 = C.x + math.cos(alfa + beta2) * rad / math.cos(beta2)
-        r2 = C.y + math.sin(alfa + beta2) * rad / math.cos(beta2)
-        R = fitz.Point(r1, r2)              # crossing point of tangents
-        # kappa height is 4/3 of segment height
-        kappah = (1 - math.cos(beta2)) * 4 / 3 / abs(R - Q) # kappa height
-        kappa = kappah * abs(P - Q) / (1 - math.cos(betar))
-        cp1 = P + (R - P) * kappa           # control point 1
-        cp2 = Q + (R - Q) * kappa           # control point 2
-        c += l4 % (cp1.x, h - cp1.y, cp2.x, h - cp2.y, Q.x, h - Q.y) # draw
-
-    #--------------------------------------------------------------------------
-    # draw lines from Q to 'center' and then to 'point'
-    #--------------------------------------------------------------------------
-    if fullSector:
-        c += l5 % (center.x, h - center.y)
-        c += l5 % (point.x, h - point.y)
-        
-    if closePath:
-        c += "h "
-    if fill is not None:
-        c += "B Q "
-    else:
-        c += "S Q "
-    
-    if sys.version_info[0] > 2:
-        c = bytes(c, "utf-8")
-        
-    if overlay:
-        cont += c
-    else:
-        cont = c + cont
-    
-    doc._updateStream(xref, cont)
+    img = page.newShape()
+    Q = img.drawSector(center, point, beta, fullSector = fullSector)
+    img.finish(color = color, fill = fill, dashes = dashes, width = width,
+               roundCap = roundCap, morph = morph, closePath = closePath)
+    img.commit(overlay)
     
     return Q
 
@@ -2357,4 +2029,311 @@ def getColorHSV(name):
 
     return (H, S, V)
 
+#------------------------------------------------------------------------------
+# Create connected graphics elements on a PDF page
+#------------------------------------------------------------------------------
+class Shape():
+    fitz.Page.newShape = lambda x: Shape(x)
+    def __init__(self, page):
+        fitz.CheckParent(page)
+        self.page      = page
+        self.doc       = page.parent
+        if not self.doc.isPDF:
+            raise ValueError("not a PDF")
+        self.height    = page.rect.height
+        self.width     = page.rect.width
+        self.contents  = ""
+        self.totalcont = ""
+        self.lastPoint = None
     
+    def drawLine(self, p1, p2):
+        """Draw a line between two points.
+        """
+        if not (self.lastPoint == p1):
+            self.contents += "%g %g m\n" % (p1.x, self.height - p1.y)
+            self.lastPoint = p1
+        self.contents += "%g %g l\n" % (p2.x, self.height - p2.y)
+        self.lastPoint = p2
+        return self.lastPoint
+    
+    def drawPolyline(self, points):
+        """Draw several connected line segments.
+        """
+        for i, p in enumerate(points):
+            if i == 0:
+                if not (self.lastPoint == p):
+                    self.contents += "%g %g m\n" % (p.x, self.height - p.y)
+                    self.lastPoint = p
+            else:
+                self.contents += "%g %g l\n" % (p.x, self.height - p.y)
+        self.lastPoint = points[-1]
+        return self.lastPoint
+
+    def drawBezier(self, p1, p2, p3, p4):
+        """Draw a standard cubic Bezier curve.
+        """
+        if not (self.lastPoint == p1):
+            self.contents += "%g %g m\n" % (p1.x, self.height - p1.y)
+        self.contents += "%g %g %g %g %g %g c\n" % (p2.x, self.height - p2.y,
+                                                    p3.x, self.height - p3.y,
+                                                    p4.x, self.height - p4.y)
+        self.lastPoint = p4
+        return self.lastPoint
+
+    def drawOval(self, rect):
+        """Draw an ellipse inside a rectangle.
+        """
+        if rect.isEmpty or rect.isInfinite:
+            raise ValueError("rectangle must be finite and not empty")
+        mt = rect.tl + (rect.tr - rect.tl)*0.5
+        mr = rect.tr + (rect.br - rect.tr)*0.5
+        mb = rect.bl + (rect.br - rect.bl)*0.5
+        ml = rect.tl + (rect.bl - rect.tl)*0.5
+        if not (self.lastPoint == ml):
+            self.contents += "%g %g m\n" % (ml.x, self.height - ml.y)
+            self.lastPoint = ml
+        self.drawCurve(ml, rect.tl, mt)
+        self.drawCurve(mt, rect.tr, mr)
+        self.drawCurve(mr, rect.br, mb)
+        self.drawCurve(mb, rect.bl, ml)
+        self.lastPoint = ml
+        return self.lastPoint
+    
+    def drawCircle(self, center, radius):
+        """Draw a circle given its center and radius.
+        """
+        p1 = center - (radius, 0)
+        return self.drawSector(center, p1, -360, fullSector = False)
+
+    def drawCurve(self, p1, p2, p3):
+        """Draw a curve between points using one control point.
+        """
+        kappa = 0.55228474983
+        k1 = p1 + (p2 - p1) * kappa
+        k2 = p3 + (p2 - p3) * kappa
+        return self.drawBezier(p1, k1, k2, p3)
+
+    def drawSector(self, center, point, beta, fullSector = True):
+        """Draw a circle sector.
+        """
+        h = self.height
+        l3 = "%g %g m\n"
+        l4 = "%g %g %g %g %g %g c\n"
+        l5 = "%g %g l\n"
+        betar = math.radians(-beta)
+        w360 = math.radians(math.copysign(360, betar)) * (-1)
+        w90  = math.radians(math.copysign(90, betar))
+        w45  = w90 / 2
+        while abs(betar) > 2 * math.pi:
+            betar += w360                       # bring angle below 360 degrees
+        if not (self.lastPoint == point):
+            self.contents += l3 % (point.x, h - point.y)
+            self.lastPoint = point
+        Q = fitz.Point(0, 0)                    # just make sure it exists
+        C = center
+        P = point
+        S = P - C                               # vector 'center' -> 'point'
+        rad = abs(S)                            # circle radius
+        alfa = math.asin(abs(S.y) / rad)        # absolute angle from horizontal
+        if P.x < C.x:                           # make arcsin result unique
+            if P.y <= C.y:
+                alfa = -(math.pi - alfa)
+            else:
+                alfa = math.pi - alfa
+        else:
+            if P.y >= C.y:
+                pass
+            else:
+                alfa = - alfa
+        while abs(betar) > abs(w90):            # draw 90 degree arcs
+            q1 = C.x + math.cos(alfa + w90) * rad
+            q2 = C.y + math.sin(alfa + w90) * rad
+            Q = fitz.Point(q1, q2)              # the arc's end point
+            r1 = C.x + math.cos(alfa + w45) * rad / math.cos(w45)
+            r2 = C.y + math.sin(alfa + w45) * rad / math.cos(w45)
+            R = fitz.Point(r1, r2)              # crossing point of tangents
+            kappah = (1 - math.cos(w45)) * 4 / 3 / abs(R - Q)
+            kappa = kappah * abs(P - Q)
+            cp1 = P + (R - P) * kappa           # control point 1
+            cp2 = Q + (R - Q) * kappa           # control point 2
+            self.contents += l4 % (cp1.x, h - cp1.y, cp2.x, h - cp2.y,
+                                   Q.x, h - Q.y) # draw
+            betar -= w90                        # reduce parm angle by 90 deg
+            alfa  += w90                        # advance start angle by 90 deg
+            P = Q                               # advance to arc end point
+        # draw (remaining) arc
+        if abs(betar) > 1e-3:                   # significant degrees left?
+            beta2 = betar / 2
+            q1 = C.x + math.cos(alfa + betar) * rad
+            q2 = C.y + math.sin(alfa + betar) * rad
+            Q = fitz.Point(q1, q2)              # the arc's end point
+            r1 = C.x + math.cos(alfa + beta2) * rad / math.cos(beta2)
+            r2 = C.y + math.sin(alfa + beta2) * rad / math.cos(beta2)
+            R = fitz.Point(r1, r2)              # crossing point of tangents
+            # kappa height is 4/3 of segment height
+            kappah = (1 - math.cos(beta2)) * 4 / 3 / abs(R - Q) # kappa height
+            kappa = kappah * abs(P - Q) / (1 - math.cos(betar))
+            cp1 = P + (R - P) * kappa           # control point 1
+            cp2 = Q + (R - Q) * kappa           # control point 2
+            self.contents += l4 % (cp1.x, h - cp1.y, cp2.x, h - cp2.y,
+                                   Q.x, h - Q.y) # draw
+        if fullSector:
+            self.contents += l3 % (point.x, h - point.y)
+            self.contents += l5 % (center.x, h - center.y)
+            self.contents += l5 % (Q.x, h - Q.y)
+        self.lastPoint = Q
+        return self.lastPoint
+    
+    def drawRect(self, rect):
+        """Draw a rectangle.
+        """
+        points = (rect.tl, rect.tr, rect.br, rect.bl, rect.tl)
+        return self.drawPolyline(points)
+
+    def drawZigzag(self, p1, p2, breadth = 2):
+        """Draw a zig-zagged line from p1 to p2.
+        """
+        S = p2 - p1                             # vector start - end
+        rad = abs(S)                            # distance of points
+        cnt = 4 * int(round(rad / (4 * breadth), 0)) # always take full phases
+        if cnt < 4:
+            raise ValueError("points too close")
+        mb = rad / cnt                          # revised breadth
+        alfa = math.asin(abs(S.y) / rad)        # absolute angle from horizontal
+        if p2.x < p1.x:                         # make arcsin result unique
+            if p2.y <= p1.y:
+                alfa = -(math.pi - alfa)
+            else:
+                alfa = math.pi - alfa
+        else:
+            if p2.y >= p1.y:
+                pass
+            else:
+                alfa = - alfa
+        calfa = math.cos(alfa)                  # need these ...
+        salfa = math.sin(alfa)                  # ... values later
+        points = []                             # stores edges
+        for i in range (1, cnt):                
+            if i % 4 == 1:                      # point "above" connection
+                p = fitz.Point(i * mb, -mb)
+            elif i % 4 == 3:                    # point "below" connection
+                p = fitz.Point(i * mb, mb)
+            else:                               # ignore others
+                continue
+            r = abs(p)                          
+            p /= r                              # now p = (cos, sin)
+            # this is the point rotated by alfa
+            np = fitz.Point(p.x * calfa - p.y * salfa,
+                            p.y * calfa + p.x * salfa) * r
+            points.append(p1 + np)
+        self.drawPolyline([p1] + points + [p2])  # add start and end points
+        return p2
+        
+    def drawSquiggle(self, p1, p2, breadth = 2):
+        """Draw a squiggly line from p1 to p2.
+        """
+        S = p2 - p1                             # vector start - end
+        rad = abs(S)                            # distance of points
+        cnt = 4 * int(round(rad / (4 * breadth), 0)) # always take full phases
+        if cnt < 4:
+            raise ValueError("points too close")
+        mb = rad / cnt                          # revised breadth
+        alfa = math.asin(abs(S.y) / rad)        # absolute angle from horizontal
+        if p2.x < p1.x:                         # make arcsin result unique
+            if p2.y <= p1.y:
+                alfa = -(math.pi - alfa)
+            else:
+                alfa = math.pi - alfa
+        else:
+            if p2.y >= p1.y:
+                pass
+            else:
+                alfa = - alfa
+        calfa = math.cos(alfa)                  # need these ...
+        salfa = math.sin(alfa)                  # ... values later
+        points = []                             # stores edges
+        for i in range (1, cnt):                
+            if i % 4 == 1:                      # point "above" connection
+                p = fitz.Point(i * mb, -2 * mb)
+            elif i % 4 == 3:                    # point "below" connection
+                p = fitz.Point(i * mb, 2 * mb)
+            else:                               # else on connection
+                p = fitz.Point(i * mb, 0)
+            r = abs(p)                          
+            p /= r                              # now p = (cos, sin)
+            # this is the point rotated by alfa
+            np = fitz.Point(p.x * calfa - p.y * salfa,
+                            p.y * calfa + p.x * salfa) * r
+            points.append(p1 + np)
+        points = [p1] + points + [p2]
+        cnt = len(points)
+        i = 0
+        while i + 2 < cnt:
+            self.drawCurve(points[i], points[i+1], points[i+2])
+            i += 2
+        return p2
+        
+    def finish(self, width = 1,
+                   color = (0, 0, 0),
+                   fill = None,
+                   roundCap = True,
+                   dashes = None,
+                   even_odd = False,
+                   morph = None,
+                   closePath = True):
+        """Finish this drawing segment by applying colors, dashes, rotation, etc.
+        """
+        fitz.CheckColor(color)
+        fitz.CheckColor(fill)
+        self.contents += "%g w\n%i J\n%i j\n" % (width, roundCap,
+                                                 roundCap)
+        if dashes is not None and len(dashes) > 0:
+            self.contents += "%s d\n" % dashes
+        if closePath:
+            self.contents += "h\n"
+        self.contents += "%g %g %g RG\n" % color
+        if fill is not None:
+            self.contents += "%g %g %g rg\n" % fill
+            if not even_odd:
+                self.contents += "B\n"
+            else:
+                self.contents += "B*\n"
+        else:
+            self.contents += "S\n"
+        self.totalcont += "\nn q\n"
+        if morph:
+            if type(morph[0]) is fitz.Point and type(morph[1]) is fitz.Matrix:
+                if morph[1].e == morph[1].f == 0:
+                    m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x,
+                                     self.height - morph[0].y)
+                    m2 = morph[1]
+                    mat = ~m1 * m2 * m1
+                    self.totalcont += "%g %g %g %g %g %g cm\n" % tuple(mat)
+                else:
+                    raise ValueError("invalid morph paratemers")
+        self.totalcont += self.contents + "Q\n"
+        self.contents = ""
+        self.lastPoint = None
+
+    def commit(self, overlay = True):
+        """Update the page's /Contents object.
+        """
+        fitz.CheckParent(self.page)         # doc may have died meanwhile
+        if not self.totalcont.endswith("Q\n"):
+            raise RuntimeError("finish method missing")
+
+        if sys.version_info[0] > 2:
+            self.totalcont = bytes(self.totalcont, "utf-8")
+        
+        if overlay:
+            xref = self.page._getContents()[-1]
+            cont = self.doc._getXrefStream(xref)
+            cont += self.totalcont
+        else:
+            xref = self.page._getContents()[0]
+            cont = self.doc._getXrefStream(xref)
+            cont = self.totalcont + cont
+        self.doc._updateStream(xref, cont)
+        self.lastPoint = None
+        self.contents  = ""
+        self.totalcont = ""
