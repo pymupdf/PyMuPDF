@@ -1,5 +1,3 @@
-#!/usr/bin/python
-# -*- coding: latin-1 -*-
 from __future__ import print_function
 import fitz
 import sys

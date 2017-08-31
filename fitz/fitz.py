@@ -102,9 +102,9 @@ import sys
 
 
 VersionFitz = "1.11"
-VersionBind = "1.11.0"
-VersionDate = "2017-08-09 08:10:51"
-version = (VersionBind, VersionFitz, "20170809081051")
+VersionBind = "1.11.1"
+VersionDate = "2017-08-31 17:30:53"
+version = (VersionBind, VersionFitz, "20170831173053")
 
 
 #------------------------------------------------------------------------------
@@ -555,6 +555,15 @@ open(filename)"""
 
         return _fitz.Document_needsPass(self)
 
+    @property
+
+    def isPDF(self):
+        """isPDF(self) -> PyObject *"""
+        if self.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+
+        return _fitz.Document_isPDF(self)
+
 
     def _getGCTXerrcode(self):
         """_getGCTXerrcode(self) -> int"""
@@ -864,12 +873,14 @@ open(filename)"""
 
     def __repr__(self):
         if self.streamlen == 0:
+            if self.name == "":
+                return "fitz.Document(<new PDF>)"
             return "fitz.Document('%s')" % (self.name,)
-        return "fitz.Document('%s', bytearray)" % (self.name,)
+        return "fitz.Document('%s', <memory>)" % (self.name,)
 
     def __getitem__(self, i):
         if i >= len(self):
-            raise IndexError(msg0003)
+            raise IndexError("page number(s) out of range")
         return self.loadPage(i)
 
     def __len__(self):
@@ -1295,6 +1306,11 @@ Rect(list) - from 'list'"""
     irect = property(round)
     width = property(lambda self: self.x1-self.x0)
     height = property(lambda self: self.y1-self.y0)
+    tl = top_left
+    tr = top_right
+    br = bottom_right
+    bl = bottom_left
+
 
 Rect_swigregister = _fitz.Rect_swigregister
 Rect_swigregister(Rect)
@@ -1374,9 +1390,6 @@ IRect(list) - from 'list'"""
         return _fitz.IRect_intersect(self, ir)
 
 
-    width = property(lambda self: self.x1-self.x0)
-    height = property(lambda self: self.y1-self.y0)
-
     def getRect(self):
         return Rect(self.x0, self.y0, self.x1, self.y1)
 
@@ -1421,6 +1434,14 @@ IRect(list) - from 'list'"""
 
     def __repr__(self):
         return "fitz.IRect" + str((self.x0, self.y0, self.x1, self.y1))
+
+    width = property(lambda self: self.x1-self.x0)
+    height = property(lambda self: self.y1-self.y0)
+    tl = top_left
+    tr = top_right
+    br = bottom_right
+    bl = bottom_left
+
 
 IRect_swigregister = _fitz.IRect_swigregister
 IRect_swigregister(IRect)
