@@ -1656,9 +1656,9 @@ struct fz_page_s {
         }
         %pythoncode %{rect = property(bound, doc="Rect (mediabox) of the page")%}
 
-        /***********************************************************/
+        //---------------------------------------------------------------------
         // run()
-        /***********************************************************/
+        //---------------------------------------------------------------------
         FITZEXCEPTION(run, result)
         PARENTCHECK(run)
         int run(struct DeviceWrapper *dw, const struct fz_matrix_s *m)
@@ -1666,6 +1666,22 @@ struct fz_page_s {
             fz_try(gctx) fz_run_page(gctx, $self, dw->device, m, NULL);
             fz_catch(gctx) return 1;
             return 0;
+        }
+
+        //---------------------------------------------------------------------
+        // getDisplayList()
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(getDisplayList, !result)
+        PARENTCHECK(getDisplayList)
+        struct fz_display_list_s *getDisplayList()
+        {
+            fz_display_list *dl = NULL;
+            fz_try(gctx)
+            {
+                dl = fz_new_display_list_from_page(gctx, $self);
+            }
+            fz_catch(gctx) return NULL;
+            return dl;
         }
 
         /***********************************************************/
@@ -4822,6 +4838,48 @@ struct fz_display_list_s {
             fz_catch(gctx) return 1;
             return 0;
         }
+
+        %pythoncode%{@property%}
+        struct fz_rect_s *rect()
+        {
+            fz_rect *mediabox = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_bound_display_list(gctx, $self, mediabox);
+            return mediabox;
+        }
+
+        FITZEXCEPTION(getPixmap, !result)
+        struct fz_pixmap_s *getPixmap(const struct fz_matrix_s *matrix = NULL, struct fz_colorspace_s *colorspace = NULL, int alpha = 0, struct fz_rect_s *clip = NULL)
+        {
+            struct fz_matrix_s *m = NULL;
+            struct fz_colorspace_s *cs = NULL;
+            fz_pixmap *pix = NULL;
+            if (matrix) m = matrix;
+            else m = &fz_identity;
+
+            if (colorspace) cs = colorspace;
+            else cs = fz_device_rgb(gctx);
+
+            fz_try(gctx)
+            {
+                pix = JM_pixmap_from_display_list(gctx, $self, m, cs, alpha, clip);
+            }
+            fz_catch(gctx) return NULL;
+            return pix;
+        }
+
+        FITZEXCEPTION(getTextPage, !result)
+        struct fz_stext_page_s *getTextPage(struct fz_stext_sheet_s *textsheet)
+        {
+            struct fz_stext_page_s *tp;
+            fz_try(gctx)
+            {
+                tp = fz_new_stext_page_from_display_list(gctx, $self,
+                                                           textsheet, NULL);
+            }
+            fz_catch(gctx) return NULL;
+            return tp;
+        }
+
     }
 };
 

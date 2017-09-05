@@ -11,8 +11,7 @@ def searchFor(page, text, hit_max = 16):
     '''Search for a string on a page. Parameters:\ntext: string to be searched for\nhit_max: maximum hits.\nReturns a list of rectangles, each of which surrounds a found occurrence.'''
     fitz.CheckParent(page)
     rect = page.rect
-    dl = fitz.DisplayList(rect)         # create DisplayList
-    page.run(fitz.Device(dl), fitz.Identity) # run page through it
+    dl = page.getDisplayList()         # create DisplayList
     ts = fitz.TextSheet()                    # create TextSheet
     tp = fitz.TextPage(rect)            # create TextPage
     dl.run(fitz.Device(ts, tp), fitz.Identity, rect)   # run the page
@@ -36,12 +35,12 @@ def getText(page, output = "text"):
 
     # return requested text format
     if output.lower() == "json":
-        return page._readPageText(output = 2)
+        return page._readPageText(2)
     elif output.lower() == "html":
-        return page._readPageText(output = 1)
+        return page._readPageText(1)
     elif output.lower() == "xml":
-        return page._readPageText(output = 3)
-    return page._readPageText(output = 0)
+        return page._readPageText(3)
+    return page._readPageText(0)
 
 #==============================================================================
 # A function for extracting a page's text.
@@ -49,14 +48,14 @@ def getText(page, output = "text"):
 #def getPageText(pno, output = "text"):
 def getPageText(doc, pno, output = "text"):
     '''Extract a PDF page's text by page number. Parameters:\npno: page number\noutput option: text, html, json or xml.\nReturns strings like the TextPage extraction methods extractText, extractHTML, extractJSON, or etractXML respectively. Default and misspelling choice is "text".'''
-    return doc[pno].getText(output = output)
+    return doc[pno].getText(output)
 
 #==============================================================================
 # A function for rendering a page's image.
 # Requires a page object.
 #==============================================================================
 
-def getPixmap(page, matrix = fitz.Identity, colorspace = "rgb", clip = None,
+def getPixmap(page, matrix = fitz.Identity, colorspace = fitz.csRGB, clip = None,
               alpha = True):
     '''Create pixmap of page.\nmatrix: fitz.Matrix for transformation (default: fitz.Identity).\ncolorspace: text string / fitz.Colorspace (rgb, rgb, gray - case ignored), default fitz.csRGB.\nclip: a fitz.IRect to restrict rendering to this area.'''
     fitz.CheckParent(page)
@@ -70,29 +69,18 @@ def getPixmap(page, matrix = fitz.Identity, colorspace = "rgb", clip = None,
             cs = fitz.csCMYK
         else:
             cs = fitz.csRGB
-    assert cs.n in (1,3,4), "unsupported colorspace"    
+    assert cs.n in (1,3,4), "unsupported colorspace"
 
     r = page.rect                            # get page boundaries
-    dl = fitz.DisplayList(r)                 # create DisplayList
-    page.run(fitz.Device(dl), fitz.Identity) # run page through it
-
-    if clip:
-        r.intersect(clip.getRect())          # only the part within clip
-        r.transform(matrix)                  # transform it
-        clip = r.irect                       # make IRect copy of it
-        ir = clip
-    else:                                    # take full page
-        r.transform(matrix)                  # transform it
-        ir = r.irect                         # make IRect copy of it
-
-    pix = fitz.Pixmap(cs, ir, alpha)         # create an empty pixmap
-    pix.clearWith(255)                       # clear it with color "white"
-    dv = fitz.Device(pix, clip)              # create a "draw" device
-    dl.run(dv, matrix, r)                    # render the page
-    dv = None
-    dl = None
-    pix.x = 0
-    pix.y = 0
+    dl = page.getDisplayList()               # create DisplayList
+    if type(clip) is fitz.IRect:
+        scissor = clip.rect
+    else:
+        scissor = clip
+    pix = dl.getPixmap(matrix = matrix,
+                       colorspace = colorspace,
+                       alpha = alpha,
+                       clip = scissor)
     return pix
 
 #==============================================================================
@@ -2033,7 +2021,31 @@ def getColorHSV(name):
 # Create connected graphics elements on a PDF page
 #------------------------------------------------------------------------------
 class Shape():
+    """Create a new shape
+    """
     fitz.Page.newShape = lambda x: Shape(x)
+    
+    @staticmethod
+    def horizontal_angle(C, P):
+        """Return the angle to the horizontol for the connection from C to P.
+        This uses the arcus sine function and resolves its inherent ambiguity by
+        looking up in which quadrant vector S = P - C is located.
+        """
+        S = P - C                               # vector 'C' -> 'P'
+        rad = abs(S)                            # distance of C to P
+        alfa = math.asin(abs(S.y) / rad)        # absolute angle from horizontal
+        if S.x < 0:                             # make arcsin result unique
+            if S.y <= 0:                        # bottom-left
+                alfa = -(math.pi - alfa)
+            else:                               # top-left
+                alfa = math.pi - alfa
+        else:
+            if S.y >= 0:                        # top-right
+                pass
+            else:                               # bottom-right
+                alfa = - alfa
+        return alfa
+
     def __init__(self, page):
         fitz.CheckParent(page)
         self.page      = page
@@ -2134,17 +2146,7 @@ class Shape():
         P = point
         S = P - C                               # vector 'center' -> 'point'
         rad = abs(S)                            # circle radius
-        alfa = math.asin(abs(S.y) / rad)        # absolute angle from horizontal
-        if P.x < C.x:                           # make arcsin result unique
-            if P.y <= C.y:
-                alfa = -(math.pi - alfa)
-            else:
-                alfa = math.pi - alfa
-        else:
-            if P.y >= C.y:
-                pass
-            else:
-                alfa = - alfa
+        alfa = self.horizontal_angle(center, point)
         while abs(betar) > abs(w90):            # draw 90 degree arcs
             q1 = C.x + math.cos(alfa + w90) * rad
             q2 = C.y + math.sin(alfa + w90) * rad
@@ -2199,17 +2201,7 @@ class Shape():
         if cnt < 4:
             raise ValueError("points too close")
         mb = rad / cnt                          # revised breadth
-        alfa = math.asin(abs(S.y) / rad)        # absolute angle from horizontal
-        if p2.x < p1.x:                         # make arcsin result unique
-            if p2.y <= p1.y:
-                alfa = -(math.pi - alfa)
-            else:
-                alfa = math.pi - alfa
-        else:
-            if p2.y >= p1.y:
-                pass
-            else:
-                alfa = - alfa
+        alfa = self.horizontal_angle(p1, p2)
         calfa = math.cos(alfa)                  # need these ...
         salfa = math.sin(alfa)                  # ... values later
         points = []                             # stores edges
@@ -2238,17 +2230,7 @@ class Shape():
         if cnt < 4:
             raise ValueError("points too close")
         mb = rad / cnt                          # revised breadth
-        alfa = math.asin(abs(S.y) / rad)        # absolute angle from horizontal
-        if p2.x < p1.x:                         # make arcsin result unique
-            if p2.y <= p1.y:
-                alfa = -(math.pi - alfa)
-            else:
-                alfa = math.pi - alfa
-        else:
-            if p2.y >= p1.y:
-                pass
-            else:
-                alfa = - alfa
+        alfa = self.horizontal_angle(p1, p2)
         calfa = math.cos(alfa)                  # need these ...
         salfa = math.sin(alfa)                  # ... values later
         points = []                             # stores edges

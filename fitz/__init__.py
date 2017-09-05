@@ -54,21 +54,23 @@ fitz.Document.newPage       = fitz.utils.newPage
 #------------------------------------------------------------------------------
 # Page
 #------------------------------------------------------------------------------
+fitz.Page.drawBezier        = fitz.utils.drawBezier
+fitz.Page.drawCircle        = fitz.utils.drawCircle
+fitz.Page.drawCurve         = fitz.utils.drawCurve
+fitz.Page.drawLine          = fitz.utils.drawLine
+fitz.Page.drawOval          = fitz.utils.drawOval
+fitz.Page.drawPolyline      = fitz.utils.drawPolyline
+fitz.Page.drawRect          = fitz.utils.drawRect
+fitz.Page.drawSector        = fitz.utils.drawSector
+fitz.Page.drawSquiggle      = fitz.utils.drawSquiggle
+fitz.Page.drawZigzag        = fitz.utils.drawZigzag
 fitz.Page.getLinks          = fitz.utils.getLinks
 fitz.Page.getPixmap         = fitz.utils.getPixmap
 fitz.Page.getText           = fitz.utils.getText
+fitz.Page.insertLink        = fitz.utils.insertLink
+fitz.Page.insertTextbox     = fitz.utils.insertTextbox
 fitz.Page.searchFor         = fitz.utils.searchFor
 fitz.Page.updateLink        = fitz.utils.updateLink
-fitz.Page.insertLink        = fitz.utils.insertLink
-fitz.Page.drawLine          = fitz.utils.drawLine
-fitz.Page.drawPolyline      = fitz.utils.drawPolyline
-fitz.Page.drawRect          = fitz.utils.drawRect
-fitz.Page.drawCircle        = fitz.utils.drawCircle
-fitz.Page.drawOval          = fitz.utils.drawOval
-fitz.Page.drawCurve         = fitz.utils.drawCurve
-fitz.Page.drawBezier        = fitz.utils.drawBezier
-fitz.Page.drawSector        = fitz.utils.drawSector
-fitz.Page.insertTextbox     = fitz.utils.insertTextbox
 
 #------------------------------------------------------------------------------
 # Pixmap
@@ -83,19 +85,20 @@ fitz.Annot.updateImage      = fitz.utils.updateImage
 #------------------------------------------------------------------------------
 # Matrix algebra
 #------------------------------------------------------------------------------
-fitz.Matrix.__mul__         = fitz.utils.mat_mult
-fitz.Matrix.__truediv__     = fitz.utils.mat_div
-fitz.Matrix.__div__         = fitz.utils.mat_div
-fitz.Matrix.__add__         = fitz.utils.mat_add
-fitz.Matrix.__sub__         = fitz.utils.mat_sub
 fitz.Matrix.__abs__         = fitz.utils.mat_abs
-fitz.Matrix.__neg__         = lambda x: fitz.Matrix(x)*-1 # unary "-"
-fitz.Matrix.__pos__         = lambda x: fitz.Matrix(x)    # unary "+"
-fitz.Matrix.__invert__      = fitz.utils.mat_invert
-fitz.Matrix.__nonzero__     = fitz.utils.mat_true
+fitz.Matrix.__add__         = fitz.utils.mat_add
 fitz.Matrix.__bool__        = fitz.utils.mat_true
-fitz.Matrix.__eq__          = fitz.utils.mat_equ
 fitz.Matrix.__contains__    = fitz.utils.mat_contains
+fitz.Matrix.__div__         = fitz.utils.mat_div
+fitz.Matrix.__eq__          = fitz.utils.mat_equ
+fitz.Matrix.__invert__      = fitz.utils.mat_invert
+fitz.Matrix.__mul__         = fitz.utils.mat_mult
+fitz.Matrix.__neg__         = lambda x: fitz.Matrix(x)*-1 # unary "-"
+fitz.Matrix.__nonzero__     = fitz.utils.mat_true
+fitz.Matrix.__pos__         = lambda x: fitz.Matrix(x)    # unary "+"
+fitz.Matrix.__sub__         = fitz.utils.mat_sub
+fitz.Matrix.__truediv__     = fitz.utils.mat_div
+
 
 #------------------------------------------------------------------------------
 # Rect
@@ -160,4 +163,3 @@ del utils
 
 fitz.__doc__ = "PyMuPDF %s: Python bindings for the MuPDF %s library,\nbuilt on %s" \
                % (fitz.VersionBind, fitz.VersionFitz, fitz.VersionDate)
-

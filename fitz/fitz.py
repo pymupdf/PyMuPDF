@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.1"
-VersionDate = "2017-08-31 17:30:53"
-version = (VersionBind, VersionFitz, "20170831173053")
+VersionDate = "2017-09-05 13:15:23"
+version = (VersionBind, VersionFitz, "20170905131523")
 
 
 #------------------------------------------------------------------------------
@@ -940,6 +940,13 @@ class Page(_object):
         CheckParent(self)
 
         return _fitz.Page_run(self, dw, m)
+
+
+    def getDisplayList(self):
+        """getDisplayList(self) -> DisplayList"""
+        CheckParent(self)
+
+        return _fitz.Page_getDisplayList(self)
 
 
     def loadLinks(self):
@@ -2352,6 +2359,22 @@ class DisplayList(_object):
     def run(self, dw, m, area):
         """run(self, dw, m, area) -> int"""
         return _fitz.DisplayList_run(self, dw, m, area)
+
+    @property
+
+    def rect(self):
+        """rect(self) -> Rect"""
+        return _fitz.DisplayList_rect(self)
+
+
+    def getPixmap(self, matrix=None, colorspace=None, alpha=0, clip=None):
+        """getPixmap(self, matrix=None, colorspace=None, alpha=0, clip=None) -> Pixmap"""
+        return _fitz.DisplayList_getPixmap(self, matrix, colorspace, alpha, clip)
+
+
+    def getTextPage(self, textsheet):
+        """getTextPage(self, textsheet) -> TextPage"""
+        return _fitz.DisplayList_getTextPage(self, textsheet)
 
 DisplayList_swigregister = _fitz.DisplayList_swigregister
 DisplayList_swigregister(DisplayList)

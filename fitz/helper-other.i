@@ -1,4 +1,46 @@
 %{
+
+fz_pixmap *
+JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_matrix *ctm, fz_colorspace *cs, int alpha, const fz_rect *clip)
+{
+    fz_rect rect;
+    fz_irect irect;
+    fz_pixmap *pix;
+    fz_device *dev;
+
+    fz_bound_display_list(ctx, list, &rect);
+    if (clip) fz_intersect_rect(&rect, clip);
+    fz_transform_rect(&rect, ctm);
+    fz_round_rect(&irect, &rect);
+
+    pix = fz_new_pixmap_with_bbox(ctx, cs, &irect, alpha);
+    if (alpha)
+        fz_clear_pixmap(ctx, pix);
+    else
+        fz_clear_pixmap_with_value(ctx, pix, 0xFF);
+
+    fz_try(ctx)
+    {
+        if (clip)
+            dev = fz_new_draw_device_with_bbox(ctx, ctm, pix, &irect);
+        else
+            dev = fz_new_draw_device(ctx, ctm, pix);
+        fz_run_display_list(ctx, list, dev, &fz_identity, clip, NULL);
+        fz_close_device(ctx, dev);
+    }
+    fz_always(ctx)
+    {
+        fz_drop_device(ctx, dev);
+    }
+    fz_catch(ctx)
+    {
+        fz_drop_pixmap(ctx, pix);
+        fz_rethrow(ctx);
+    }
+
+    return pix;
+}
+
 //=============================================================================
 // Circumvention of MuPDF bug in 'pdf_preload_image_resources'
 // This bug affects 'pdf_add_image' calls when images already exist, i.e.

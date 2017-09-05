@@ -3376,6 +3376,48 @@ fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page)
 }
 
 
+
+fz_pixmap *
+JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_matrix *ctm, fz_colorspace *cs, int alpha, const fz_rect *clip)
+{
+    fz_rect rect;
+    fz_irect irect;
+    fz_pixmap *pix;
+    fz_device *dev;
+
+    fz_bound_display_list(ctx, list, &rect);
+    if (clip) fz_intersect_rect(&rect, clip);
+    fz_transform_rect(&rect, ctm);
+    fz_round_rect(&irect, &rect);
+
+    pix = fz_new_pixmap_with_bbox(ctx, cs, &irect, alpha);
+    if (alpha)
+        fz_clear_pixmap(ctx, pix);
+    else
+        fz_clear_pixmap_with_value(ctx, pix, 0xFF);
+
+    fz_try(ctx)
+    {
+        if (clip)
+            dev = fz_new_draw_device_with_bbox(ctx, ctm, pix, &irect);
+        else
+            dev = fz_new_draw_device(ctx, ctm, pix);
+        fz_run_display_list(ctx, list, dev, &fz_identity, clip, NULL);
+        fz_close_device(ctx, dev);
+    }
+    fz_always(ctx)
+    {
+        fz_drop_device(ctx, dev);
+    }
+    fz_catch(ctx)
+    {
+        fz_drop_pixmap(ctx, pix);
+        fz_rethrow(ctx);
+    }
+
+    return pix;
+}
+
 //=============================================================================
 // Circumvention of MuPDF bug in 'pdf_preload_image_resources'
 // This bug affects 'pdf_add_image' calls when images already exist, i.e.
@@ -5977,6 +6019,15 @@ SWIGINTERN int fz_page_s_run(struct fz_page_s *self,struct DeviceWrapper *dw,str
             fz_catch(gctx) return 1;
             return 0;
         }
+SWIGINTERN struct fz_display_list_s *fz_page_s_getDisplayList(struct fz_page_s *self){
+            fz_display_list *dl = NULL;
+            fz_try(gctx)
+            {
+                dl = fz_new_display_list_from_page(gctx, self);
+            }
+            fz_catch(gctx) return NULL;
+            return dl;
+        }
 SWIGINTERN struct fz_link_s *fz_page_s_loadLinks(struct fz_page_s *self){
             return fz_load_links(gctx, self);
         }
@@ -8053,6 +8104,38 @@ SWIGINTERN int fz_display_list_s_run(struct fz_display_list_s *self,struct Devic
             fz_catch(gctx) return 1;
             return 0;
         }
+SWIGINTERN struct fz_rect_s *fz_display_list_s_rect(struct fz_display_list_s *self){
+            fz_rect *mediabox = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_bound_display_list(gctx, self, mediabox);
+            return mediabox;
+        }
+SWIGINTERN struct fz_pixmap_s *fz_display_list_s_getPixmap(struct fz_display_list_s *self,struct fz_matrix_s const *matrix,struct fz_colorspace_s *colorspace,int alpha,struct fz_rect_s *clip){
+            struct fz_matrix_s *m = NULL;
+            struct fz_colorspace_s *cs = NULL;
+            fz_pixmap *pix = NULL;
+            if (matrix) m = matrix;
+            else m = &fz_identity;
+
+            if (colorspace) cs = colorspace;
+            else cs = fz_device_rgb(gctx);
+
+            fz_try(gctx)
+            {
+                pix = JM_pixmap_from_display_list(gctx, self, m, cs, alpha, clip);
+            }
+            fz_catch(gctx) return NULL;
+            return pix;
+        }
+SWIGINTERN struct fz_stext_page_s *fz_display_list_s_getTextPage(struct fz_display_list_s *self,struct fz_stext_sheet_s *textsheet){
+            struct fz_stext_page_s *tp;
+            fz_try(gctx)
+            {
+                tp = fz_new_stext_page_from_display_list(gctx, self,
+                                                           textsheet, NULL);
+            }
+            fz_catch(gctx) return NULL;
+            return tp;
+        }
 SWIGINTERN struct fz_stext_sheet_s *new_fz_stext_sheet_s(void){
             struct fz_stext_sheet_s *ts = NULL;
             fz_try(gctx)
@@ -10032,6 +10115,35 @@ SWIGINTERN PyObject *_wrap_Page_run(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
     }
   }
   resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Page_getDisplayList(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  struct fz_display_list_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Page_getDisplayList",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_getDisplayList" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
+  }
+  arg1 = (struct fz_page_s *)(argp1);
+  {
+    result = (struct fz_display_list_s *)fz_page_s_getDisplayList(arg1);
+    if(!result)
+    {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_display_list_s, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -16364,6 +16476,139 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_DisplayList_rect(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_display_list_s *arg1 = (struct fz_display_list_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  struct fz_rect_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:DisplayList_rect",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_display_list_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DisplayList_rect" "', argument " "1"" of type '" "struct fz_display_list_s *""'"); 
+  }
+  arg1 = (struct fz_display_list_s *)(argp1);
+  result = (struct fz_rect_s *)fz_display_list_s_rect(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DisplayList_getPixmap(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_display_list_s *arg1 = (struct fz_display_list_s *) 0 ;
+  struct fz_matrix_s *arg2 = (struct fz_matrix_s *) NULL ;
+  struct fz_colorspace_s *arg3 = (struct fz_colorspace_s *) NULL ;
+  int arg4 = (int) 0 ;
+  struct fz_rect_s *arg5 = (struct fz_rect_s *) NULL ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  void *argp5 = 0 ;
+  int res5 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  struct fz_pixmap_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O|OOOO:DisplayList_getPixmap",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_display_list_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DisplayList_getPixmap" "', argument " "1"" of type '" "struct fz_display_list_s *""'"); 
+  }
+  arg1 = (struct fz_display_list_s *)(argp1);
+  if (obj1) {
+    res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DisplayList_getPixmap" "', argument " "2"" of type '" "struct fz_matrix_s const *""'"); 
+    }
+    arg2 = (struct fz_matrix_s *)(argp2);
+  }
+  if (obj2) {
+    res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_fz_colorspace_s, 0 |  0 );
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DisplayList_getPixmap" "', argument " "3"" of type '" "struct fz_colorspace_s *""'"); 
+    }
+    arg3 = (struct fz_colorspace_s *)(argp3);
+  }
+  if (obj3) {
+    ecode4 = SWIG_AsVal_int(obj3, &val4);
+    if (!SWIG_IsOK(ecode4)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "DisplayList_getPixmap" "', argument " "4"" of type '" "int""'");
+    } 
+    arg4 = (int)(val4);
+  }
+  if (obj4) {
+    res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+    if (!SWIG_IsOK(res5)) {
+      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "DisplayList_getPixmap" "', argument " "5"" of type '" "struct fz_rect_s *""'"); 
+    }
+    arg5 = (struct fz_rect_s *)(argp5);
+  }
+  {
+    result = (struct fz_pixmap_s *)fz_display_list_s_getPixmap(arg1,(struct fz_matrix_s const *)arg2,arg3,arg4,arg5);
+    if(!result)
+    {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_DisplayList_getTextPage(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_display_list_s *arg1 = (struct fz_display_list_s *) 0 ;
+  struct fz_stext_sheet_s *arg2 = (struct fz_stext_sheet_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  struct fz_stext_page_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:DisplayList_getTextPage",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_display_list_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DisplayList_getTextPage" "', argument " "1"" of type '" "struct fz_display_list_s *""'"); 
+  }
+  arg1 = (struct fz_display_list_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_stext_sheet_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DisplayList_getTextPage" "', argument " "2"" of type '" "struct fz_stext_sheet_s *""'"); 
+  }
+  arg2 = (struct fz_stext_sheet_s *)(argp2);
+  {
+    result = (struct fz_stext_page_s *)fz_display_list_s_getTextPage(arg1,arg2);
+    if(!result)
+    {
+      PyErr_SetString(PyExc_Exception, gctx->error->message);
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_stext_page_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *DisplayList_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
@@ -16755,6 +17000,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, (char *)"delete_Page(self)"},
 	 { (char *)"Page_bound", _wrap_Page_bound, METH_VARARGS, (char *)"Page_bound(self) -> Rect"},
 	 { (char *)"Page_run", _wrap_Page_run, METH_VARARGS, (char *)"Page_run(self, dw, m) -> int"},
+	 { (char *)"Page_getDisplayList", _wrap_Page_getDisplayList, METH_VARARGS, (char *)"Page_getDisplayList(self) -> DisplayList"},
 	 { (char *)"Page_loadLinks", _wrap_Page_loadLinks, METH_VARARGS, (char *)"Page_loadLinks(self) -> Link"},
 	 { (char *)"Page_firstAnnot", _wrap_Page_firstAnnot, METH_VARARGS, (char *)"firstAnnot points to first annot on page"},
 	 { (char *)"Page_deleteLink", _wrap_Page_deleteLink, METH_VARARGS, (char *)"Delete link if PDF"},
@@ -16972,6 +17218,9 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_DisplayList", _wrap_new_DisplayList, METH_VARARGS, (char *)"new_DisplayList(mediabox) -> DisplayList"},
 	 { (char *)"delete_DisplayList", _wrap_delete_DisplayList, METH_VARARGS, (char *)"delete_DisplayList(self)"},
 	 { (char *)"DisplayList_run", _wrap_DisplayList_run, METH_VARARGS, (char *)"DisplayList_run(self, dw, m, area) -> int"},
+	 { (char *)"DisplayList_rect", _wrap_DisplayList_rect, METH_VARARGS, (char *)"DisplayList_rect(self) -> Rect"},
+	 { (char *)"DisplayList_getPixmap", _wrap_DisplayList_getPixmap, METH_VARARGS, (char *)"DisplayList_getPixmap(self, matrix=None, colorspace=None, alpha=0, clip=None) -> Pixmap"},
+	 { (char *)"DisplayList_getTextPage", _wrap_DisplayList_getTextPage, METH_VARARGS, (char *)"DisplayList_getTextPage(self, textsheet) -> TextPage"},
 	 { (char *)"DisplayList_swigregister", DisplayList_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_TextSheet", _wrap_new_TextSheet, METH_VARARGS, (char *)"new_TextSheet() -> TextSheet"},
 	 { (char *)"delete_TextSheet", _wrap_delete_TextSheet, METH_VARARGS, (char *)"delete_TextSheet(self)"},
