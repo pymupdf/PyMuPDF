@@ -7,7 +7,7 @@ Program               Purpose
 ===================== ===============================================================
 caustic.py            demo of Page.drawLine() to produce a PDF with a caustic image
 demo.py               demonstrates a broad range of functions available with PyMuPDF
-drawSines.py          draw sine / cosine functions using Bézier curves
+draw-sines.py         draw sine / cosine functions
 extract.py            demonstrates text extraction methods technical details
 extract_img1.py       PDF only: extracts all **page-referenced** images as PNG files
 extract_img2.py       PDF only: extracts **all** images as PNG files
@@ -23,4 +23,5 @@ removePass.py         create a decrypted copy of a PDF file
 sierpinski.py         create a Sierpinski carpet (fractal) fast with pixmaps
 spumoni.py            create the ReportLab drawing on page 26 with PyMuPDF
 text2pdf.py           convert a text file to PDF
+wavy-polygon.py       draw a regular polygon with curly borders
 ===================== ===============================================================
