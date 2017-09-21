@@ -2,16 +2,16 @@
 //----------------------------------------------------------------------------
 // refreshes the link and annotation tables of a page
 //----------------------------------------------------------------------------
-void refresh_link_table (pdf_page *page)
+void refresh_link_table(fz_context *ctx, pdf_page *page)
 {
-    pdf_obj *annots_arr = pdf_dict_get(gctx, page->obj, PDF_NAME_Annots);
+    pdf_obj *annots_arr = pdf_dict_get(ctx, page->obj, PDF_NAME_Annots);
     if (annots_arr)
     {
         fz_rect page_mediabox;
         fz_matrix page_ctm;
-        pdf_page_transform(gctx, page, &page_mediabox, &page_ctm);
-        page->links = pdf_load_link_annots(gctx, page->doc, annots_arr, &page_ctm);
-        pdf_load_annots(gctx, page, annots_arr);
+        pdf_page_transform(ctx, page, &page_mediabox, &page_ctm);
+        page->links = pdf_load_link_annots(ctx, page->doc, annots_arr, &page_ctm);
+        pdf_load_annots(ctx, page, annots_arr);
     }
     return;
 }

@@ -71,6 +71,7 @@ fitz.Page.insertLink        = fitz.utils.insertLink
 fitz.Page.insertTextbox     = fitz.utils.insertTextbox
 fitz.Page.searchFor         = fitz.utils.searchFor
 fitz.Page.updateLink        = fitz.utils.updateLink
+fitz.Page.newShape          = lambda x: fitz.utils.Shape(x)
 
 #------------------------------------------------------------------------------
 # Pixmap
@@ -159,7 +160,7 @@ fitz.Point.__eq__           = fitz.utils.point_equ
 fitz.Point.__contains__     = fitz.utils.point_contains
 
 # ... and delete them from here
-del utils
+#del utils
 
 fitz.__doc__ = "PyMuPDF %s: Python bindings for the MuPDF %s library,\nbuilt on %s" \
                % (fitz.VersionBind, fitz.VersionFitz, fitz.VersionDate)

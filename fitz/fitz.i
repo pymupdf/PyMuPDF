@@ -52,7 +52,6 @@ if (!cond) THROWMSG(msg0001)
 %{
 #define SWIG_FILE_WITH_INIT
 #define SWIG_PYTHON_2_UNICODE
-#define Py_LIMITED_API
 #include <fitz.h>
 #include <pdf.h>
 #include <zlib.h>
@@ -153,12 +152,11 @@ struct fz_document_s
             if this:
                 self.openErrCode = self._getGCTXerrcode()
                 self.openErrMsg  = self._getGCTXerrmsg()
-            if this and self.needsPass:
-                self.isEncrypted = 1
-            # we won't init encrypted doc until it is decrypted
-            if this and not self.needsPass:
-                self.initData()
-                self.thisown = True
+                if self.needsPass:
+                    self.isEncrypted = 1
+                else: # we won't init until doc is decrypted
+                    self.initData()
+                    self.thisown = True
         %}
 
         fz_document_s(const char *filename = NULL, PyObject *stream = NULL)
@@ -342,8 +340,8 @@ struct fz_document_s
                 pdf_array_delete(gctx, limits, 0);
                 return 0;
                 }
-            limit1 = "�";                   // initialize low entry
-            limit2 = " ";                   // initialize high entry
+            limit1[0] = 0xff;                    // initialize low entry
+            limit2[0] = 0x00;                    // initialize high entry
             for (i=0; i < len; i+=2)              // search for low / hi names
                 {
                 tname = pdf_to_utf8(gctx, pdf_array_get(gctx, names, i));
@@ -375,7 +373,7 @@ struct fz_document_s
                 assert_PDF(pdf);
                 count = pdf_count_portfolio_entries(gctx, pdf); // file count
                 if (count < 1) THROWMSG(msg0002);
-                n = FindEmbedded(id, pdf);
+                n = FindEmbedded(gctx, id, pdf);
             }
             fz_catch(gctx) return NULL;
 
@@ -414,13 +412,13 @@ struct fz_document_s
                 Py_ssize_t name_len, file_len, desc_len;
                 int n;
                 char *f, *d, *name;
-                name = getPDFstr(id, &name_len, "id");
-                f = getPDFstr(filename, &file_len, "filename");
-                d = getPDFstr(desc, &desc_len, "desc");
+                name = getPDFstr(gctx, id, &name_len, "id");
+                f = getPDFstr(gctx, filename, &file_len, "filename");
+                d = getPDFstr(gctx, desc, &desc_len, "desc");
                 if ((!f) && (!d)) THROWMSG("nothing to change");
                 int count = pdf_count_portfolio_entries(gctx, pdf);
                 if (count < 1) THROWMSG(msg0002);
-                n = FindEmbedded(id, pdf);
+                n = FindEmbedded(gctx, id, pdf);
                 pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, n);
                 
                 if (f != NULL)
@@ -455,7 +453,7 @@ struct fz_document_s
                 assert_PDF(pdf);
                 int count = pdf_count_portfolio_entries(gctx, pdf);
                 if (count < 1) THROWMSG(msg0002);
-                int i = FindEmbedded(id, pdf);
+                int i = FindEmbedded(gctx, id, pdf);
                 unsigned char *data;
                 buf = pdf_portfolio_entry(gctx, pdf, i);
                 Py_ssize_t len = (Py_ssize_t) fz_buffer_storage(gctx, buf, &data);
@@ -481,8 +479,8 @@ struct fz_document_s
             {
                 name_len = strlen(name);
                 if (name_len < 1) THROWMSG(msg0008);
-                f = getPDFstr(filename, &file_len, "filename");
-                d = getPDFstr(desc, &desc_len, "desc");
+                f = getPDFstr(gctx, filename, &file_len, "filename");
+                d = getPDFstr(gctx, desc, &desc_len, "desc");
             }
             fz_catch(gctx) return -1;
             if (f == NULL)                  // no filename given
@@ -743,7 +741,7 @@ if sa < 0:
             fz_try(gctx)
             {
                 if (!pdfout || !pdfsrc) THROWMSG(msg0009);
-                merge_range(pdfout, pdfsrc, fp, tp, sa, rotate);
+                merge_range(gctx, pdfout, pdfsrc, fp, tp, sa, rotate);
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -898,13 +896,13 @@ if sa < 0:
                     if (!fontname) THROWMSG("need fontname");
                     fz_append_printf(gctx, contents, templ1, red, green, blue, top,
                                      font_str, fontsize);
-                    itxt = getPDFstr(PySequence_GetItem(text, 0), &c_len, "text0");
+                    itxt = getPDFstr(gctx, PySequence_GetItem(text, 0), &c_len, "text0");
                     fz_append_string(gctx, contents, itxt);
                     fz_append_printf(gctx, contents, templ2, lheight);
                     for (i = 1; i < len; i++)
                     {
                         if (i>1) fz_append_string(gctx, contents, "T* ");
-                        itxt = getPDFstr(PySequence_GetItem(text, i), &c_len, "texti");
+                        itxt = getPDFstr(gctx, PySequence_GetItem(text, i), &c_len, "texti");
                         fz_append_string(gctx, contents, itxt);
                         fz_append_string(gctx, contents, "TJ\n");
                     }
@@ -928,7 +926,7 @@ if sa < 0:
                     font_obj = pdf_add_simple_font(gctx, pdf, font);
                     fz_drop_font(gctx, font);
                     // resources obj will contain named reference to font
-                    itxt = getPDFstr(PyUnicode_Concat(PyUnicode_FromString("Font/"), 
+                    itxt = getPDFstr(gctx, PyUnicode_Concat(PyUnicode_FromString("Font/"), 
                                     PyUnicode_FromString(font_str)), &c_len, "font");
                     // itxt = "Font/font_str"
                     pdf_dict_putp_drop(gctx, resources, itxt, font_obj);
@@ -1098,7 +1096,7 @@ if sa < 0:
                             THROWMSG("need exactly one of fontfile, fontname, xref");
                         else
                         {
-                            buf = fontbuffer(pdf, xref);
+                            buf = fontbuffer(gctx, pdf, xref);
                             if (!buf) THROWMSG("xref not a font, or not supported");
                             font = fz_new_font_from_buffer(gctx, NULL, buf, 0, 0);
                         }
@@ -1302,10 +1300,10 @@ if sa < 0:
             argc = 0;
             first = pdf_dict_get(gctx, olroot, PDF_NAME_First); // first outline
             if (!first) return xrefs;
-            argc = countOutlines(first, argc);         // get number outlines
+            argc = countOutlines(gctx, first, argc);         // get number outlines
             if (argc < 1) return xrefs;
             res = malloc(argc * sizeof(int));          // object number table
-            objcount = fillOLNumbers(res, first, objcount, argc); // fill table
+            objcount = fillOLNumbers(gctx, res, first, objcount, argc); // fill table
             pdf_dict_del(gctx, olroot, PDF_NAME_First);
             pdf_dict_del(gctx, olroot, PDF_NAME_Last);
             pdf_dict_del(gctx, olroot, PDF_NAME_Count);
@@ -1488,7 +1486,7 @@ if sa < 0:
                 new_obj = pdf_new_obj_from_str(gctx, pdf, text);
                 pdf_update_object(gctx, pdf, xref, new_obj);
                 pdf_drop_obj(gctx, new_obj);
-                if (page) refresh_link_table(pdf_page_from_fz_page(gctx, page));
+                if (page) refresh_link_table(gctx, pdf_page_from_fz_page(gctx, page));
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -1752,7 +1750,7 @@ except:
             pdf_array_delete(gctx, annots, i);   // delete entry in annotations
             pdf_delete_object(gctx, page->doc, xref);      // delete link object
             pdf_dict_put(gctx, page->obj, PDF_NAME_Annots, annots);
-            refresh_link_table(page);            // reload link / annot tables
+            refresh_link_table(gctx, page);            // reload link / annot tables
             return;
         }
 
@@ -1869,7 +1867,7 @@ fannot._erase()
                         pdf_drop_obj(gctx, annot);
                     }
                 pdf_dict_put_drop(gctx, page->obj, PDF_NAME_Annots, new_array);
-                refresh_link_table(page);
+                refresh_link_table(gctx, page);
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -2103,6 +2101,7 @@ fannot._erase()
                     fontname = "Helvetica"%}
         %feature("autodoc", "Starting at 'point', insert 'text', optionally using 'fontsize', 'fontname', 'fontfile', 'color', 'rotate', 'wordspacing', or 'overlay'. ") insertText;
         int insertText(struct fz_point_s *point, PyObject *text = NULL,
+                       const char *_matrix = NULL,
                        float fontsize = 11, const char *fontname = NULL,
                        const char *fontfile = NULL, PyObject *color = NULL,
                        float wordspacing = 0, int rotate = 0, int overlay = 1)
@@ -2156,6 +2155,10 @@ fannot._erase()
                 space = abs(point->y);
                 headroom = prect.y1 - point->y;
             }
+            else if (_matrix)
+            {
+                cm = _matrix;
+            }
             const char *data;
             int size;
             fz_font *font;
@@ -2207,7 +2210,7 @@ fannot._erase()
                 //-------------------------------------------------------------
                 // start text insertion
                 //-------------------------------------------------------------
-                itxt = getPDFstr(PySequence_GetItem(text, 0), &c_len, "text0");
+                itxt = getPDFstr(gctx, PySequence_GetItem(text, 0), &c_len, "text0");
                 fz_append_string(gctx, nres, itxt);
                 nlines = 1;                 // set output line counter
                 fz_append_printf(gctx, nres, templ2, lheight);   // line 1
@@ -2215,7 +2218,7 @@ fannot._erase()
                 {
                     if (space < lheight) break;    // no space left on page
                     if (i > 1) fz_append_string(gctx, nres, "\nT* ");
-                    itxt = getPDFstr(PySequence_GetItem(text, i), &c_len, "texti");
+                    itxt = getPDFstr(gctx, PySequence_GetItem(text, i), &c_len, "texti");
                     fz_append_string(gctx, nres, itxt); // hex string
                     fz_append_string(gctx, nres, "TJ ");
                     space -= lheight;
@@ -2331,7 +2334,7 @@ fannot._erase()
         %newobject _readPageText;
         const char *_readPageText(int output=0) {
             const char *res = NULL;
-            fz_try(gctx) res = readPageText($self, output);
+            fz_try(gctx) res = readPageText(gctx, $self, output);
             fz_catch(gctx) return NULL;
             return res;
         }
@@ -4271,7 +4274,7 @@ struct fz_annot_s
                                    PDF_NAME_EF, PDF_NAME_F, NULL);
                 // the object for file content
                 if (!stream) THROWMSG("bad PDF: file has no stream");
-                f = getPDFstr(filename, &file_len, "filename");
+                f = getPDFstr(gctx, filename, &file_len, "filename");
                 // new file content must by bytes / bytearray
                 if (PyByteArray_Check(buffer))
                 {
@@ -4384,7 +4387,7 @@ struct fz_annot_s
                 value = PyDict_GetItemString(info, "content");
                 if (value)
                     {
-                    uc = getPDFstr(value, &i, "content");
+                    uc = getPDFstr(gctx, value, &i, "content");
                     if (!uc) return -1;
                     pdf_dict_put_drop(gctx, annot->obj, PDF_NAME_Contents,
                                       pdf_new_string(gctx, pdf, uc, i));
@@ -4394,7 +4397,7 @@ struct fz_annot_s
                 value = PyDict_GetItemString(info, "title");
                 if (value)
                     {
-                    uc = getPDFstr(value, &i, "title");
+                    uc = getPDFstr(gctx, value, &i, "title");
                     if (!uc) return -1;
                     pdf_dict_put_drop(gctx, annot->obj, PDF_NAME_T,
                                       pdf_new_string(gctx, pdf, uc, i));
@@ -4404,7 +4407,7 @@ struct fz_annot_s
                 value = PyDict_GetItemString(info, "creationDate");
                 if (value)
                     {
-                    uc = getPDFstr(value, &i, "creationDate");
+                    uc = getPDFstr(gctx, value, &i, "creationDate");
                     if (!uc) return -1;
                     pdf_dict_puts_drop(gctx, annot->obj, "CreationDate",
                                        pdf_new_string(gctx, pdf, uc, i));
@@ -4414,7 +4417,7 @@ struct fz_annot_s
                 value = PyDict_GetItemString(info, "modDate");
                 if (value)
                     {
-                    uc = getPDFstr(value, &i, "modDate");
+                    uc = getPDFstr(gctx, value, &i, "modDate");
                     if (!uc) return -1;
                     pdf_dict_put_drop(gctx, annot->obj, PDF_NAME_M,
                                       pdf_new_string(gctx, pdf, uc, i));
@@ -4424,7 +4427,7 @@ struct fz_annot_s
                 value = PyDict_GetItemString(info, "subject");
                 if (value)
                     {
-                    uc = getPDFstr(value, &i, "subject");
+                    uc = getPDFstr(gctx, value, &i, "subject");
                     if (!uc) return -1;
                     pdf_dict_puts_drop(gctx, annot->obj, "Subj",
                                        pdf_new_string(gctx, pdf, uc, i));
@@ -4839,6 +4842,9 @@ struct fz_display_list_s {
             return 0;
         }
 
+        //---------------------------------------------------------------------
+        // DisplayList.rect
+        //---------------------------------------------------------------------
         %pythoncode%{@property%}
         struct fz_rect_s *rect()
         {
@@ -4846,7 +4852,9 @@ struct fz_display_list_s {
             fz_bound_display_list(gctx, $self, mediabox);
             return mediabox;
         }
-
+        //---------------------------------------------------------------------
+        // DisplayList.getPixmap
+        //---------------------------------------------------------------------
         FITZEXCEPTION(getPixmap, !result)
         struct fz_pixmap_s *getPixmap(const struct fz_matrix_s *matrix = NULL, struct fz_colorspace_s *colorspace = NULL, int alpha = 0, struct fz_rect_s *clip = NULL)
         {
@@ -4864,9 +4872,17 @@ struct fz_display_list_s {
                 pix = JM_pixmap_from_display_list(gctx, $self, m, cs, alpha, clip);
             }
             fz_catch(gctx) return NULL;
+            if (pix->free_samples == 0)
+            {
+                fprintf(stderr,"correcting free_samples");
+                pix->free_samples = 1;
+            }
             return pix;
         }
 
+        //---------------------------------------------------------------------
+        // DisplayList.getTextPage
+        //---------------------------------------------------------------------
         FITZEXCEPTION(getTextPage, !result)
         struct fz_stext_page_s *getTextPage(struct fz_stext_sheet_s *textsheet)
         {
@@ -4874,7 +4890,7 @@ struct fz_display_list_s {
             fz_try(gctx)
             {
                 tp = fz_new_stext_page_from_display_list(gctx, $self,
-                                                           textsheet, NULL);
+                                                         textsheet, NULL);
             }
             fz_catch(gctx) return NULL;
             return tp;
@@ -4883,9 +4899,9 @@ struct fz_display_list_s {
     }
 };
 
-/*****************************************************************************/
+//-----------------------------------------------------------------------------
 // fz_stext_sheet
-/*****************************************************************************/
+//-----------------------------------------------------------------------------
 %rename(TextSheet) fz_stext_sheet_s;
 struct fz_stext_sheet_s {
     %extend {
@@ -4907,9 +4923,9 @@ struct fz_stext_sheet_s {
     }
 };
 
-/*****************************************************************************/
+//-----------------------------------------------------------------------------
 // fz_stext_page
-/*****************************************************************************/
+//-----------------------------------------------------------------------------
 %typemap(out) struct fz_rect_s * {
     PyObject *pyRect;
     struct fz_rect_s *rect;
@@ -4943,9 +4959,9 @@ struct fz_stext_page_s {
 #endif
             fz_drop_stext_page(gctx, $self);
         }
-        /*******************************************/
+        //---------------------------------------------------------------------
         // method search()
-        /*******************************************/
+        //---------------------------------------------------------------------
         struct fz_rect_s *search(const char *needle, int hit_max=16) {
             fz_rect *result;
             int count;
@@ -4968,7 +4984,7 @@ struct fz_stext_page_s {
         %newobject extractText;
         const char *extractText() {
             const char *c = NULL;
-            fz_try(gctx) c = readTPageText($self, 0);
+            fz_try(gctx) c = readTPageText(gctx, $self, 0);
             fz_catch(gctx) return NULL;
             return c;
         }
@@ -4979,7 +4995,7 @@ struct fz_stext_page_s {
         %newobject extractHTML;
         const char *extractHTML() {
             const char *c = NULL;
-            fz_try(gctx) c = readTPageText($self, 1);
+            fz_try(gctx) c = readTPageText(gctx, $self, 1);
             fz_catch(gctx) return NULL;
             return c;
         }
@@ -4990,7 +5006,7 @@ struct fz_stext_page_s {
         %newobject extractJSON;
         const char *extractJSON() {
             const char *c = NULL;
-            fz_try(gctx) c = readTPageText($self, 2);
+            fz_try(gctx) c = readTPageText(gctx, $self, 2);
             fz_catch(gctx) return NULL;
             return c;
         }
@@ -5001,7 +5017,7 @@ struct fz_stext_page_s {
         %newobject extractXML;
         const char *extractXML() {
             const char *c = NULL;
-            fz_try(gctx) c = readTPageText($self, 3);
+            fz_try(gctx) c = readTPageText(gctx, $self, 3);
             fz_catch(gctx) return NULL;
             return c;
         }

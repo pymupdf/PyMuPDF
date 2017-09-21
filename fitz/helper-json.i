@@ -56,7 +56,7 @@ fz_send_data_base64(fz_context *ctx, fz_output *out, struct fz_buffer_s *buffer)
     size_t i;
     static const char set[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     unsigned char *buff;
-    size_t bufflen = fz_buffer_storage(gctx, buffer, &buff);
+    size_t bufflen = fz_buffer_storage(ctx, buffer, &buff);
     size_t len = bufflen/3;
     for (i = 0; i < len; i++)
     {
@@ -153,7 +153,7 @@ fz_print_stext_page_json(fz_context *ctx, fz_output *out, fz_stext_page *page)
             case FZ_PAGE_BLOCK_IMAGE:
             {
                 fz_image_block *image = page->blocks[block_n].u.image;
-                fz_compressed_buffer *buffer = fz_compressed_image_buffer(gctx, image->image);
+                fz_compressed_buffer *buffer = fz_compressed_image_buffer(ctx, image->image);
                 fz_print_rect_json(ctx, out, &(image->bbox));
                 fz_write_printf(ctx, out, "\"imgtype\":%d,\"width\":%d,\"height\":%d,",
                                     buffer->params.type,

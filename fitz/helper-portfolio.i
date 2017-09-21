@@ -17,32 +17,32 @@
 // Object "id" contains either entry name (str) or supposed index
 // pdf is the document in question
 //-----------------------------------------------------------------------------
-int FindEmbedded(PyObject *id, pdf_document *pdf)
+int FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
 {
     char *name = NULL;
     Py_ssize_t name_len = 0;
     char *tname= NULL;
     int i = -1;
-    int count = pdf_count_portfolio_entries(gctx, pdf);
-    name = getPDFstr(id, &name_len, "id");
+    int count = pdf_count_portfolio_entries(ctx, pdf);
+    name = getPDFstr(ctx, id, &name_len, "id");
     if (name == NULL)           // entry number provided
     {
         if (!PyInt_Check(id))
-            fz_throw(gctx, FZ_ERROR_GENERIC, "id must be string or number");
+            fz_throw(ctx, FZ_ERROR_GENERIC, "id must be string or number");
 
         i = (int) PyInt_AsLong(id);
         if ((i < 0) || (i >= count))
-            fz_throw(gctx, FZ_ERROR_GENERIC, "index out of range");
+            fz_throw(ctx, FZ_ERROR_GENERIC, "index out of range");
     }
     else                        // entry name provided
     {
         for (i = 0; i < count; i++)
             {
-                tname = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
+                tname = pdf_to_utf8(ctx, pdf_portfolio_entry_name(ctx, pdf, i));
                 if (strcmp(tname, name) == 0) break;
             }
         if (strcmp(tname, name) != 0)
-        fz_throw(gctx, FZ_ERROR_GENERIC, msg0008);
+        fz_throw(ctx, FZ_ERROR_GENERIC, msg0008);
     }
     return i;
 }

@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.1"
-VersionDate = "2017-09-05 13:15:23"
-version = (VersionBind, VersionFitz, "20170905131523")
+VersionDate = "2017-09-20 09:32:27"
+version = (VersionBind, VersionFitz, "20170920093227")
 
 
 #------------------------------------------------------------------------------
@@ -416,12 +416,11 @@ open(filename)"""
         if this:
             self.openErrCode = self._getGCTXerrcode()
             self.openErrMsg  = self._getGCTXerrmsg()
-        if this and self.needsPass:
-            self.isEncrypted = 1
-        # we won't init encrypted doc until it is decrypted
-        if this and not self.needsPass:
-            self.initData()
-            self.thisown = True
+            if self.needsPass:
+                self.isEncrypted = 1
+            else: # we won't init until doc is decrypted
+                self.initData()
+                self.thisown = True
 
 
 
@@ -1050,7 +1049,7 @@ class Page(_object):
         return _fitz.Page_insertImage(self, rect, filename, pixmap, overlay)
 
 
-    def insertText(self, point, text=None, fontsize=11, fontname=None, fontfile=None, color=None, wordspacing=0, rotate=0, overlay=1):
+    def insertText(self, point, text=None, _matrix=None, fontsize=11, fontname=None, fontfile=None, color=None, wordspacing=0, rotate=0, overlay=1):
         """Starting at 'point', insert 'text', optionally using 'fontsize', 'fontname', 'fontfile', 'color', 'rotate', 'wordspacing', or 'overlay'. """
 
         if not self.parent:
@@ -1076,7 +1075,7 @@ class Page(_object):
                 elif fontname not in Base14_fontnames:
                     fontname = "Helvetica"
 
-        return _fitz.Page_insertText(self, point, text, fontsize, fontname, fontfile, color, wordspacing, rotate, overlay)
+        return _fitz.Page_insertText(self, point, text, _matrix, fontsize, fontname, fontfile, color, wordspacing, rotate, overlay)
 
 
     def _getContents(self):

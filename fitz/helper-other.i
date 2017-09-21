@@ -94,7 +94,7 @@ JM_pdf_preload_image_resources(fz_context *ctx, pdf_document *doc)
             // this is the buggy statement: -----------------------------------
             // obj = pdf_load_object(ctx, doc, k);
             // replaced with the following: -----------------------------------
-            obj = pdf_new_indirect(gctx, doc, k, 0);
+            obj = pdf_new_indirect(ctx, doc, k, 0);
             type = pdf_dict_get(ctx, obj, PDF_NAME_Subtype);
             if (pdf_name_eq(ctx, type, PDF_NAME_Image))
             {
@@ -268,7 +268,7 @@ fz_buffer *deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 // psize = pointer to a Py_ssize_t number for storing the returned length
 // name = name of object to use in error messages
 //----------------------------------------------------------------------------
-char *getPDFstr(PyObject *obj, Py_ssize_t* psize, const char *name)
+char *getPDFstr(fz_context *ctx, PyObject *obj, Py_ssize_t* psize, const char *name)
 {
     if (obj == NULL) return NULL;
     if (!PyBytes_Check(obj) && !PyUnicode_Check(obj)) return NULL;
@@ -283,7 +283,7 @@ char *getPDFstr(PyObject *obj, Py_ssize_t* psize, const char *name)
         ok = PyBytes_AsStringAndSize(me, &nc, psize);
         if (ok != 0)
             {
-            fz_throw(gctx, FZ_ERROR_GENERIC, "could not get string of '%s'", name);
+            fz_throw(ctx, FZ_ERROR_GENERIC, "could not get string of '%s'", name);
             return NULL;
             }
 #if PY_MAJOR_VERSION < 3
@@ -294,13 +294,13 @@ char *getPDFstr(PyObject *obj, Py_ssize_t* psize, const char *name)
     PyObject *uc = PyUnicode_AsUTF16String(me);
     if (!uc)
         {
-        fz_throw(gctx, FZ_ERROR_GENERIC, "could not create UTF16 for '%s'", name);
+        fz_throw(ctx, FZ_ERROR_GENERIC, "could not create UTF16 for '%s'", name);
         return NULL;
         }
     ok = PyBytes_AsStringAndSize(uc, &nc, psize);
     if (ok != 0)
         {
-        fz_throw(gctx, FZ_ERROR_GENERIC, "could not get UTF16 string of '%s'", name);
+        fz_throw(ctx, FZ_ERROR_GENERIC, "could not get UTF16 string of '%s'", name);
         return NULL;
         }
     // UTF16-BE (big endian) is required for PDF if code points > 0xff
@@ -342,7 +342,7 @@ char *getPDFstr(PyObject *obj, Py_ssize_t* psize, const char *name)
 //----------------------------------------------------------------------------
 // Deep-copies a specified source page to the target location.
 //----------------------------------------------------------------------------
-void page_merge(pdf_document* doc_des, pdf_document* doc_src, int page_from, int page_to, int rotate, pdf_graft_map *graft_map)
+void page_merge(fz_context *ctx, pdf_document* doc_des, pdf_document* doc_src, int page_from, int page_to, int rotate, pdf_graft_map *graft_map)
 {
     pdf_obj *pageref = NULL;
     pdf_obj *page_dict;
@@ -358,59 +358,59 @@ void page_merge(pdf_document* doc_des, pdf_document* doc_src, int page_from, int
     fz_var(obj);
     fz_var(ref);
 
-    fz_try(gctx)
+    fz_try(ctx)
     {
-        pageref = pdf_lookup_page_obj(gctx, doc_src, page_from);
-        pdf_flatten_inheritable_page_items(gctx, pageref);
+        pageref = pdf_lookup_page_obj(ctx, doc_src, page_from);
+        pdf_flatten_inheritable_page_items(ctx, pageref);
         // make a new page
-        page_dict = pdf_new_dict(gctx, doc_des, 4);
-        pdf_dict_put_drop(gctx, page_dict, PDF_NAME_Type, PDF_NAME_Page);
+        page_dict = pdf_new_dict(ctx, doc_des, 4);
+        pdf_dict_put_drop(ctx, page_dict, PDF_NAME_Type, PDF_NAME_Page);
 
         // copy objects of source page into it
         for (i = 0; i < n; i++)
             {
-            obj = pdf_dict_get(gctx, pageref, known_page_objs[i]);
+            obj = pdf_dict_get(ctx, pageref, known_page_objs[i]);
             if (obj != NULL)
-                pdf_dict_put_drop(gctx, page_dict, known_page_objs[i], pdf_graft_object(gctx, doc_des, doc_src, obj, graft_map));
+                pdf_dict_put_drop(ctx, page_dict, known_page_objs[i], pdf_graft_object(ctx, doc_des, doc_src, obj, graft_map));
             }
         // remove any links from annots array
-        pdf_obj *annots = pdf_dict_get(gctx, page_dict, PDF_NAME_Annots);
-        int len = pdf_array_len(gctx, annots);
+        pdf_obj *annots = pdf_dict_get(ctx, page_dict, PDF_NAME_Annots);
+        int len = pdf_array_len(ctx, annots);
         for (j = 0; j < len; j++)
         {
-            pdf_obj *o = pdf_array_get(gctx, annots, j);
-            if (!pdf_name_eq(gctx, pdf_dict_get(gctx, o, PDF_NAME_Subtype), PDF_NAME_Link))
+            pdf_obj *o = pdf_array_get(ctx, annots, j);
+            if (!pdf_name_eq(ctx, pdf_dict_get(ctx, o, PDF_NAME_Subtype), PDF_NAME_Link))
                 continue;
             // remove the link annotation
-            pdf_array_delete(gctx, annots, j);
+            pdf_array_delete(ctx, annots, j);
             len--;
             j--;
         }
         // rotate the page as requested
         if (rotate != -1)
             {
-            pdf_obj *rotateobj = pdf_new_int(gctx, doc_des, rotate);
-            pdf_dict_put_drop(gctx, page_dict, PDF_NAME_Rotate, rotateobj);
+            pdf_obj *rotateobj = pdf_new_int(ctx, doc_des, rotate);
+            pdf_dict_put_drop(ctx, page_dict, PDF_NAME_Rotate, rotateobj);
             }
         // Now add the page dictionary to dest PDF
-        obj = pdf_add_object_drop(gctx, doc_des, page_dict);
+        obj = pdf_add_object_drop(ctx, doc_des, page_dict);
 
         // Get indirect ref of the page
-        num = pdf_to_num(gctx, obj);
-        ref = pdf_new_indirect(gctx, doc_des, num, 0);
+        num = pdf_to_num(ctx, obj);
+        ref = pdf_new_indirect(ctx, doc_des, num, 0);
 
         // Insert new page at specified location
-        pdf_insert_page(gctx, doc_des, page_to, ref);
+        pdf_insert_page(ctx, doc_des, page_to, ref);
 
     }
-    fz_always(gctx)
+    fz_always(ctx)
     {
-        pdf_drop_obj(gctx, obj);
-        pdf_drop_obj(gctx, ref);
+        pdf_drop_obj(ctx, obj);
+        pdf_drop_obj(ctx, ref);
     }
-    fz_catch(gctx)
+    fz_catch(ctx)
     {
-        fz_rethrow(gctx);
+        fz_rethrow(ctx);
     }
 }
 
@@ -419,31 +419,31 @@ void page_merge(pdf_document* doc_des, pdf_document* doc_src, int page_from, int
 // (apage) of the target PDF.
 // If spage > epage, the sequence of source pages is reversed.
 //----------------------------------------------------------------------------
-void merge_range(pdf_document* doc_des, pdf_document* doc_src, int spage, int epage, int apage, int rotate)
+void merge_range(fz_context *ctx, pdf_document* doc_des, pdf_document* doc_src, int spage, int epage, int apage, int rotate)
 {
     int page, afterpage;
     pdf_graft_map *graft_map;
     afterpage = apage;
 
-    graft_map = pdf_new_graft_map(gctx, doc_src);
+    graft_map = pdf_new_graft_map(ctx, doc_src);
 
-    fz_try(gctx)
+    fz_try(ctx)
     {
         if (spage < epage)
             for (page = spage; page <= epage; page++, afterpage++)
-                page_merge(doc_des, doc_src, page, afterpage, rotate, graft_map);
+                page_merge(ctx, doc_des, doc_src, page, afterpage, rotate, graft_map);
         else
             for (page = spage; page >= epage; page--, afterpage++)
-                page_merge(doc_des, doc_src, page, afterpage, rotate, graft_map);
+                page_merge(ctx, doc_des, doc_src, page, afterpage, rotate, graft_map);
     }
 
-    fz_always(gctx)
+    fz_always(ctx)
     {
-        pdf_drop_graft_map(gctx, graft_map);
+        pdf_drop_graft_map(ctx, graft_map);
     }
-    fz_catch(gctx)
+    fz_catch(ctx)
     {
-        fz_rethrow(gctx);
+        fz_rethrow(ctx);
     }
 }
 
@@ -453,7 +453,7 @@ void merge_range(pdf_document* doc_des, pdf_document* doc_src, int spage, int ep
 // 'obj' must be the first OL item
 // returns (int) number of filled-in outline item xref numbers.
 //----------------------------------------------------------------------------
-int fillOLNumbers(int *res, pdf_obj *obj, int oc, int argc)
+int fillOLNumbers(fz_context *ctx, int *res, pdf_obj *obj, int oc, int argc)
 {
     int onum;
     pdf_obj *first, *parent, *thisobj;
@@ -461,13 +461,13 @@ int fillOLNumbers(int *res, pdf_obj *obj, int oc, int argc)
     if (oc >= argc) return oc;
     thisobj = obj;
     while (thisobj) {
-        onum = pdf_to_num(gctx, thisobj);
+        onum = pdf_to_num(ctx, thisobj);
         res[oc] = onum;
         oc += 1;
-        first = pdf_dict_get(gctx, thisobj, PDF_NAME_First);   /* try go down */
-        if (first) oc = fillOLNumbers(res, first, oc, argc);   /* recurse     */
-        thisobj = pdf_dict_get(gctx, thisobj, PDF_NAME_Next);  /* try go next */
-        parent = pdf_dict_get(gctx, thisobj, PDF_NAME_Parent); /* get parent  */
+        first = pdf_dict_get(ctx, thisobj, PDF_NAME_First);   /* try go down */
+        if (first) oc = fillOLNumbers(ctx, res, first, oc, argc);   /* recurse     */
+        thisobj = pdf_dict_get(ctx, thisobj, PDF_NAME_Next);  /* try go next */
+        parent = pdf_dict_get(ctx, thisobj, PDF_NAME_Parent); /* get parent  */
         if (!thisobj) thisobj = parent;         /* goto parent if no next obj */
     }
     return oc;
@@ -477,17 +477,17 @@ int fillOLNumbers(int *res, pdf_obj *obj, int oc, int argc)
 // Returns (int) number of outlines
 // 'obj' must be first OL item
 //----------------------------------------------------------------------------
-int countOutlines(pdf_obj *obj, int oc)
+int countOutlines(fz_context *ctx, pdf_obj *obj, int oc)
 {
     pdf_obj *first, *parent, *thisobj;
     if (!obj) return oc;
     thisobj = obj;
     while (thisobj) {
         oc += 1;
-        first = pdf_dict_get(gctx, thisobj, PDF_NAME_First);   /* try go down */
-        if (first) oc = countOutlines(first, oc);
-        thisobj = pdf_dict_get(gctx, thisobj, PDF_NAME_Next);  /* try go next */
-        parent = pdf_dict_get(gctx, thisobj, PDF_NAME_Parent); /* get parent  */
+        first = pdf_dict_get(ctx, thisobj, PDF_NAME_First);   /* try go down */
+        if (first) oc = countOutlines(ctx, first, oc);
+        thisobj = pdf_dict_get(ctx, thisobj, PDF_NAME_Next);  /* try go next */
+        parent = pdf_dict_get(ctx, thisobj, PDF_NAME_Parent); /* get parent  */
         if (!thisobj) thisobj = parent;      /* goto parent if no next exists */
     }
     return oc;
@@ -501,42 +501,42 @@ int countOutlines(pdf_obj *obj, int oc)
 // deletes the device and returns the text buffer in the requested format.
 // A display list is not used in the process.
 //----------------------------------------------------------------------------
-const char *readTPageText(fz_stext_page *tp, int output)
+const char *readTPageText(fz_context *ctx, fz_stext_page *tp, int output)
 {
     fz_buffer *res = NULL;
     fz_output *out = NULL;
-    fz_try(gctx) {
-        res = fz_new_buffer(gctx, 1024);
-        out = fz_new_output_with_buffer(gctx, res);
-        if (output<=0) fz_print_stext_page(gctx, out, tp);
-        if (output==1) fz_print_stext_page_html(gctx, out, tp);
-        if (output==2) fz_print_stext_page_json(gctx, out, tp);
-        if (output>=3) fz_print_stext_page_xml(gctx, out, tp);
+    fz_try(ctx) {
+        res = fz_new_buffer(ctx, 1024);
+        out = fz_new_output_with_buffer(ctx, res);
+        if (output<=0) fz_print_stext_page(ctx, out, tp);
+        if (output==1) fz_print_stext_page_html(ctx, out, tp);
+        if (output==2) fz_print_stext_page_json(ctx, out, tp);
+        if (output>=3) fz_print_stext_page_xml(ctx, out, tp);
     }
-    fz_always(gctx) if (out) fz_drop_output(gctx, out);
-    fz_catch(gctx) {
-        if (res) fz_drop_buffer(gctx, res);
-        fz_rethrow(gctx);
+    fz_always(ctx) if (out) fz_drop_output(ctx, out);
+    fz_catch(ctx) {
+        if (res) fz_drop_buffer(ctx, res);
+        fz_rethrow(ctx);
     }
-    return fz_string_from_buffer(gctx, res);
+    return fz_string_from_buffer(ctx, res);
 }
-const char *readPageText(fz_page *page, int output)
+const char *readPageText(fz_context *ctx, fz_page *page, int output)
 {
     fz_stext_sheet *ts = NULL;
     fz_stext_page *tp = NULL;
     const char *c;
-    fz_try(gctx) {
-        ts = fz_new_stext_sheet(gctx);
-        tp = fz_new_stext_page_from_page(gctx, page, ts, NULL);
-        c = readTPageText(tp, output);
+    fz_try(ctx) {
+        ts = fz_new_stext_sheet(ctx);
+        tp = fz_new_stext_page_from_page(ctx, page, ts, NULL);
+        c = readTPageText(ctx, tp, output);
     }
-    fz_always(gctx)
+    fz_always(ctx)
     {
-        if (ts) fz_drop_stext_sheet(gctx, ts);
-        if (tp) fz_drop_stext_page(gctx, tp);
+        if (ts) fz_drop_stext_sheet(ctx, ts);
+        if (tp) fz_drop_stext_page(ctx, tp);
     }
-    fz_catch(gctx) {
-        fz_rethrow(gctx);
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
     }
     return c;
 }
@@ -544,67 +544,67 @@ const char *readPageText(fz_page *page, int output)
 //-----------------------------------------------------------------------------
 // Return the contents of an embedded font file
 //-----------------------------------------------------------------------------
-fz_buffer *fontbuffer(pdf_document *doc, int num)
+fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
 {
     pdf_obj *o, *obj = NULL, *desft, *stream = NULL;
     fz_buffer *buf = NULL;
     char *ext = "";
-    o = pdf_load_object(gctx, doc, num);
-    desft = pdf_dict_get(gctx, o, PDF_NAME_DescendantFonts);
+    o = pdf_load_object(ctx, doc, num);
+    desft = pdf_dict_get(ctx, o, PDF_NAME_DescendantFonts);
     if (desft)
     {
-        obj = pdf_resolve_indirect(gctx, pdf_array_get(gctx, desft, 0));
-        obj = pdf_dict_get(gctx, obj, PDF_NAME_FontDescriptor);
+        obj = pdf_resolve_indirect(ctx, pdf_array_get(ctx, desft, 0));
+        obj = pdf_dict_get(ctx, obj, PDF_NAME_FontDescriptor);
     }
     else
     {
-        obj = pdf_dict_get(gctx, o, PDF_NAME_FontDescriptor);
+        obj = pdf_dict_get(ctx, o, PDF_NAME_FontDescriptor);
     }
 
     if (!obj)
     {
-        pdf_drop_obj(gctx, o);
-        fz_throw(gctx, FZ_ERROR_GENERIC, "invalid font - FontDescriptor missing");
+        pdf_drop_obj(ctx, o);
+        fz_throw(ctx, FZ_ERROR_GENERIC, "invalid font - FontDescriptor missing");
     }
-    pdf_drop_obj(gctx, o);
+    pdf_drop_obj(ctx, o);
     o = obj;
 
-    obj = pdf_dict_get(gctx, o, PDF_NAME_FontFile);
+    obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile);
     if (obj)
     {
         stream = obj;
         ext = "pfa";
     }
 
-    obj = pdf_dict_get(gctx, o, PDF_NAME_FontFile2);
+    obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile2);
     if (obj)
     {
         stream = obj;
         ext = "ttf";
     }
 
-    obj = pdf_dict_get(gctx, o, PDF_NAME_FontFile3);
+    obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile3);
     if (obj)
     {
         stream = obj;
 
-        obj = pdf_dict_get(gctx, obj, PDF_NAME_Subtype);
-        if (obj && !pdf_is_name(gctx, obj))
-            fz_throw(gctx, FZ_ERROR_GENERIC, "invalid font descriptor subtype");
+        obj = pdf_dict_get(ctx, obj, PDF_NAME_Subtype);
+        if (obj && !pdf_is_name(ctx, obj))
+            fz_throw(ctx, FZ_ERROR_GENERIC, "invalid font descriptor subtype");
 
-        if (pdf_name_eq(gctx, obj, PDF_NAME_Type1C))
+        if (pdf_name_eq(ctx, obj, PDF_NAME_Type1C))
             ext = "cff";
-        else if (pdf_name_eq(gctx, obj, PDF_NAME_CIDFontType0C))
+        else if (pdf_name_eq(ctx, obj, PDF_NAME_CIDFontType0C))
             ext = "cid";
-        else if (pdf_name_eq(gctx, obj, PDF_NAME_OpenType))
+        else if (pdf_name_eq(ctx, obj, PDF_NAME_OpenType))
             ext = "otf";
         else
-            fz_throw(gctx, FZ_ERROR_GENERIC, "unhandled font type '%s'", pdf_to_name(gctx, obj));
+            fz_throw(ctx, FZ_ERROR_GENERIC, "unhandled font type '%s'", pdf_to_name(ctx, obj));
     }
 
-    if (!stream) fz_throw(gctx, FZ_ERROR_GENERIC, "unhandled font type");
+    if (!stream) fz_throw(ctx, FZ_ERROR_GENERIC, "unhandled font type");
 
-    buf = pdf_load_stream(gctx, stream);
+    buf = pdf_load_stream(ctx, stream);
     return buf;
 }
 %}

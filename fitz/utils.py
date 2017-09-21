@@ -78,7 +78,7 @@ def getPixmap(page, matrix = fitz.Identity, colorspace = fitz.csRGB, clip = None
     else:
         scissor = clip
     pix = dl.getPixmap(matrix = matrix,
-                       colorspace = colorspace,
+                       colorspace = cs,
                        alpha = alpha,
                        clip = scissor)
     return pix
@@ -87,7 +87,7 @@ def getPixmap(page, matrix = fitz.Identity, colorspace = fitz.csRGB, clip = None
 # A function for rendering a page by its number
 #==============================================================================
 # getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = "RGB", clip = None, alpha = False):
-def getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = "rgb",
+def getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = fitz.csRGB,
                   clip = None, alpha = True):
     '''Create pixmap of page number.\nmatrix: fitz.Matrix for transformation (default: fitz.Identity).\ncolorspace: text string / fitz.Colorspace (rgb, rgb, gray - case ignored), default fitz.csRGB.\nclip: a fitz.IRect to restrict rendering to this area.'''
     return doc[pno].getPixmap(matrix = matrix, colorspace = colorspace,
@@ -878,7 +878,7 @@ def intersects(me, rect):
 #-------------------------------------------------------------------------------
 def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
                   fontsize = 11, color = (0,0,0), expandtabs = 1,
-                  charwidths = None, align = 0, rotate = 0,
+                  charwidths = None, align = 0, rotate = 0, morph = None,
                   overlay = True):
     """Insert text into a given rectangle.
     Parameters:
@@ -893,7 +893,7 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
     align - left, center, right, justified
     rotate - 0, 90, 180, or 270 degrees
     overlay - put text in foreground or background
-    Returns: float of unused or deficit rectangle area
+    Returns: unused or deficit rectangle area (float)
     
     """
     fitz.CheckParent(page)
@@ -903,7 +903,8 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
         raise ValueError("text box must be finite and not empty")
     fitz.CheckColor(color)
     assert rotate % 90 == 0, "rotate must be multiple of 90"
-    
+    if morph and rotate != 0:
+        raise ValueError("cannot morph and also rotate")
     # ensure we have a list of glyph widths for the given font
     widthtab = charwidths              # hopefully we have been given one
     if not widthtab:                   # need to build our own (sigh!)
@@ -947,7 +948,13 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
     text = ""                               # output buffer
     lheight = fontsize * 1.2                # line height
     rot = rotate % 360                      # rot in (0, 90, 270, 180)
-    
+    if morph:
+        m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x, page.rect.height - morph[0].y)
+        mat = ~m1 * morph[1] * m1
+        mat = "%g %g %g %g %g %g cm\n" % tuple(mat)
+    else:
+        mat = None
+        
     #---------------------------------------------------------------------------
     # adjust for text orientation / rotation
     #---------------------------------------------------------------------------
@@ -1050,7 +1057,7 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
         more = 0                            # don't bother with small epsilons
     if align == 0:                          # left alignment: output full chunk
         page.insertText(point, text, fontsize = fontsize, rotate = rotate,
-                        fontname = fontname, fontfile = fontfile,
+                        fontname = fontname, fontfile = fontfile, _matrix = mat,
                         color = color, overlay = overlay)
         return more
     # center, right, justify: output each line with its own specifics
@@ -1078,7 +1085,7 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
 
         page.insertText(pnt, t, fontsize = fontsize, fontname = fontname,
                         fontfile = fontfile, color = color, rotate = rotate,
-                        wordspacing = spacing, overlay = overlay)
+                        _matrix = mat, wordspacing = spacing, overlay = overlay)
     return more
 
 #-------------------------------------------------------------------------------
@@ -2023,7 +2030,6 @@ def getColorHSV(name):
 class Shape():
     """Create a new shape
     """
-    fitz.Page.newShape = lambda x: Shape(x)
     
     @staticmethod
     def horizontal_angle(C, P):
@@ -2236,9 +2242,9 @@ class Shape():
         points = []                             # stores edges
         for i in range (1, cnt):                
             if i % 4 == 1:                      # point "above" connection
-                p = fitz.Point(i * mb, -2 * mb)
+                p = fitz.Point(i * mb, -2.4 * mb)
             elif i % 4 == 3:                    # point "below" connection
-                p = fitz.Point(i * mb, 2 * mb)
+                p = fitz.Point(i * mb, 2.4 * mb)
             else:                               # else on connection
                 p = fitz.Point(i * mb, 0)
             r = abs(p)                          
