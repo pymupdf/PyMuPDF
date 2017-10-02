@@ -237,7 +237,7 @@ struct fz_document_s
                 self._page_refs[id(val)] = val
                 val._annot_refs = weakref.WeakValueDictionary()
         %}
-        struct fz_page_s *loadPage(int number)
+        struct fz_page_s *loadPage(int number=0)
         {
             struct fz_page_s *page = NULL;
             fz_try(gctx)
@@ -827,122 +827,54 @@ if sa < 0:
         // Create and insert a new page (PDF)
         //---------------------------------------------------------------------
         FITZEXCEPTION(insertPage, result<0)
-        CLOSECHECK(insertPage)
         %feature("autodoc","Insert a new page in front of 'pno'. Use arguments 'width', 'height' to specify a non-default page size, and optionally text insertion arguments.") insertPage;
         %pythonprepend insertPage %{
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
-        # ensure 'text' is a list of strings
-        if text is not None:
-            if type(text) not in (list, tuple):
-                text = text.splitlines()
-            tab = []
-            for t in text:
-                tab.append(getTJstr(t))
-            text = tab
-        else:
-            text = []
-        # ensure 'fontname' is valid
-        if not fontfile:
-            if (not fontname) or fontname not in Base14_fontnames:
-                fontname = "Helvetica"
+        if bool(text):
+            CheckColor(color)
+            if fontname and fontname[0] == "/":
+                raise ValueError("invalid font reference")
         %}
-        %pythonappend insertPage %{if val >= 0: self._reset_page_refs()%}
+        %pythonappend insertPage %{
+        if val < 0: return val
+        self._reset_page_refs()
+        if not bool(text): return val
+        page = self.loadPage(pno)
+        val = page.insertText(Point(50, 72), text, fontsize = fontsize,
+                              fontname = fontname, fontfile = fontfile,
+                              color = color)
+        %}
         int insertPage(int pno = -1, PyObject *text = NULL, float fontsize = 11,
                        float width = 595, float height = 842,
                        char *fontname = NULL, char *fontfile = NULL,
                        PyObject *color = NULL)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            const char *templ1 = "BT %g %g %g rg 1 0 0 1 50 %g Tm /%s %g Tf";
-            const char *templ2 = "TJ 0 -%g TD\n";
             fz_rect mediabox = { 0, 0, 595, 842 };    // ISO-A4 portrait values
             mediabox.x1 = width;
             mediabox.y1 = height;
-            float red = 0, green = 0, blue = 0;
-            char *itxt = NULL;
-            size_t len, i, c_len, maxlen = 0;
-            PyObject *t = NULL;
-            float lheight = fontsize * 1.2;      // line height
-            float top = height - 72 - fontsize;  // y of 1st line
-            const char *data;
-            int size;
-            fz_font *font;
-            pdf_obj *font_obj, *resources;
-            pdf_obj *page_obj = NULL;
-            // this will contain the /Contents stream:
-            fz_buffer *contents = fz_new_buffer(gctx, 1024);
-            fz_append_string(gctx, contents, "");
-            maxlen = (height - 108) / lheight;   // max lines per page
-            len = (size_t) PySequence_Size(text);
-            if (len > maxlen) len = maxlen;
-            char *font_str = fontname;
-
+            pdf_obj *resources = NULL, *page_obj = NULL;
+            fz_buffer *contents = NULL;
             fz_try(gctx)
             {
                 assert_PDF(pdf);
                 if (pno < -1) THROWMSG(msg0003);
-                if (PySequence_Check(color))
-                {
-                    if (PySequence_Size(color) != 3) THROWMSG(msg0007);
-                    red   = (float) PyFloat_AsDouble(PySequence_GetItem(color, 0));
-                    green = (float) PyFloat_AsDouble(PySequence_GetItem(color, 1));
-                    blue  = (float) PyFloat_AsDouble(PySequence_GetItem(color, 2));
-                    if (red < 0 || red > 1 || green < 0 || green > 1 || blue < 0 || blue > 1)
-                        THROWMSG(msg0006);
-                }
-                if (len > 0)
-                {
-                    if (!fontname) THROWMSG("need fontname");
-                    fz_append_printf(gctx, contents, templ1, red, green, blue, top,
-                                     font_str, fontsize);
-                    itxt = getPDFstr(gctx, PySequence_GetItem(text, 0), &c_len, "text0");
-                    fz_append_string(gctx, contents, itxt);
-                    fz_append_printf(gctx, contents, templ2, lheight);
-                    for (i = 1; i < len; i++)
-                    {
-                        if (i>1) fz_append_string(gctx, contents, "T* ");
-                        itxt = getPDFstr(gctx, PySequence_GetItem(text, i), &c_len, "texti");
-                        fz_append_string(gctx, contents, itxt);
-                        fz_append_string(gctx, contents, "TJ\n");
-                    }
-                    fz_append_string(gctx, contents, "ET\n");
-                }
-                // the new /Resources object:
+                // create /Resources and /Contents objects
                 resources = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
-
-                if (len > 0)           // only if there was some text:
-                {
-                    // content stream done, now insert the font
-                    data = fz_lookup_base14_font(gctx, font_str, &size);
-                    if (data)              // base 14 font found
-                        font = fz_new_font_from_memory(gctx, font_str, data, size, 0, 0);
-                    else
-                    {
-                        if (!fontfile) THROWMSG("unknown PDF Base 14 font");
-                        font = fz_new_font_from_file(gctx, NULL, fontfile, 0, 0);
-                    }
-
-                    font_obj = pdf_add_simple_font(gctx, pdf, font);
-                    fz_drop_font(gctx, font);
-                    // resources obj will contain named reference to font
-                    itxt = getPDFstr(gctx, PyUnicode_Concat(PyUnicode_FromString("Font/"), 
-                                    PyUnicode_FromString(font_str)), &c_len, "font");
-                    // itxt = "Font/font_str"
-                    pdf_dict_putp_drop(gctx, resources, itxt, font_obj);
-                }
-                // ready to create and insert page
+                contents = fz_new_buffer(gctx, 10);
+                fz_append_string(gctx, contents, "");
                 fz_terminate_buffer(gctx, contents);
                 page_obj = pdf_add_page(gctx, pdf, &mediabox, 0, resources, contents);
                 pdf_insert_page(gctx, pdf, pno , page_obj);
             }
             fz_always(gctx)
             {
-                fz_drop_buffer(gctx, contents);
+                if (contents) fz_drop_buffer(gctx, contents);
                 if (page_obj) pdf_drop_obj(gctx, page_obj);
             }
             fz_catch(gctx) return -1;
-            return (int) len;
+            return (int) 0;
         }
 
         //*********************************************************************
@@ -1075,6 +1007,8 @@ if sa < 0:
             int size;
             fz_font *font = NULL;
             fz_buffer *buf = NULL;
+            pdf_obj *basefont = NULL;
+            const char *bfname = NULL;
             fz_try(gctx)
             {
                 assert_PDF(pdf);
@@ -1095,10 +1029,33 @@ if sa < 0:
                         if (xref < 1)
                             THROWMSG("need exactly one of fontfile, fontname, xref");
                         else
-                        {
-                            buf = fontbuffer(gctx, pdf, xref);
-                            if (!buf) THROWMSG("xref not a font, or not supported");
-                            font = fz_new_font_from_buffer(gctx, NULL, buf, 0, 0);
+                        { // xref parm supplied
+                            pdf_obj *o = pdf_load_object(gctx, pdf, xref);
+                            if (pdf_is_dict(gctx, o))
+                            {
+                                basefont = pdf_dict_get(gctx, o, PDF_NAME_BaseFont);
+                                if (pdf_is_name(gctx, basefont))
+                                {
+                                    bfname = pdf_to_name(gctx, basefont);
+                                    data = fz_lookup_base14_font(gctx, bfname, &size);
+                                    if (data)
+                                    {
+                                        font = fz_new_font_from_memory(gctx, bfname, data, size, 0, 0);
+                                    }
+                                    else
+                                    {
+                                        buf = fontbuffer(gctx, pdf, xref);
+                                        if (!buf) THROWMSG("xref not a font, or not supported");
+                                        font = fz_new_font_from_buffer(gctx, NULL, buf, 0, 0);
+                                    }
+                                }
+                            }
+                            else if (!font)
+                            {
+                                buf = fontbuffer(gctx, pdf, xref);
+                                if (!buf) THROWMSG("xref not a font, or not supported");
+                                font = fz_new_font_from_buffer(gctx, NULL, buf, 0, 0);
+                            }
                         }
                     }
                 }
@@ -1181,7 +1138,8 @@ if sa < 0:
             int i;
             for (i = 0; i < n; i++)       // do this for each img of the page
             {
-                pdf_obj *imagedict, *imagename, *type, *altcs, *cs;
+                pdf_obj *imagedict, *imagename, *type, *altcs, *cs, *smask;
+                int xref, gen;
                 imagedict = pdf_dict_get_val(gctx, dict, i);
                 imagename = pdf_dict_get_key(gctx, dict, i);
                 if (!pdf_is_dict(gctx, imagedict)) continue;
@@ -1189,9 +1147,11 @@ if sa < 0:
                 type = pdf_dict_get(gctx, imagedict, PDF_NAME_Subtype);
                 if (!pdf_name_eq(gctx, type, PDF_NAME_Image)) continue;
 
-                int xref = pdf_to_num(gctx, imagedict);
-                int gen  = pdf_to_gen(gctx, imagedict);
-
+                xref = pdf_to_num(gctx, imagedict);
+                gen  = pdf_to_gen(gctx, imagedict);
+                smask = pdf_dict_get(gctx, imagedict, PDF_NAME_SMask);
+                if (smask)
+                    gen = pdf_to_num(gctx, smask);
                 int width = pdf_to_int(gctx, pdf_dict_get(gctx, imagedict,
                                        PDF_NAME_Width));
 
@@ -1384,9 +1344,35 @@ if sa < 0:
             return fz_string_from_buffer(gctx, res);
         }
 
-        //*********************************************************************
+        //---------------------------------------------------------------------
+        // Get XML Metadata xref
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(_getXmlMetadataXref, result<0)
+        CLOSECHECK(_getXmlMetadataXref)
+        int _getXmlMetadataXref()
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self); // get pdf document
+            pdf_obj *xml;
+            int xref = 0;
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root);
+                if (!root) THROWMSG("could not load root object");
+                xml = pdf_dict_gets(gctx, root, "Metadata");
+                if (xml)
+                {
+                    xref = pdf_to_num(gctx, xml);
+                }
+
+            }
+            fz_catch(gctx) return -1;
+            return xref;
+        }
+
+        //---------------------------------------------------------------------
         // Delete XML-based Metadata
-        //*********************************************************************
+        //---------------------------------------------------------------------
         FITZEXCEPTION(_delXmlMetadata, result<0)
         CLOSECHECK(_delXmlMetadata)
         int _delXmlMetadata()
@@ -2073,208 +2059,55 @@ fannot._erase()
         }
 
         //---------------------------------------------------------------------
-        // insert text
+        // insert font
         //---------------------------------------------------------------------
-        FITZEXCEPTION(insertText, result<0)
-        %pythonprepend insertText %{
+        FITZEXCEPTION(insertFont, result<0)
+        %pythonprepend insertFont %{
         if not self.parent:
             raise RuntimeError("orphaned object: parent is None")
-        # ensure 'text' is a list of strings
-        assert text, "some text is needed"
-        assert len(text) > 0, "some text is needed"
-        tab = []
-        if type(text) not in (list, tuple):
-            text = text.splitlines()
-        for t in text:
-            tab.append(getTJstr(t))
-        text = tab
-        # ensure valid 'fontname'
-        if not fontfile:
-            if not fontname:
-                fontname = "Helvetica"
-            else:
-                if fontname.startswith("/"):
-                    fontlist = self.parent.getPageFontList(self.number)
-                    fontrefs = [fontlist[i][4] for i in range(len(fontlist))]
-                    assert fontname[1:] in fontrefs, "invalid font name reference: " + fontname
-                elif fontname not in Base14_fontnames:
-                    fontname = "Helvetica"%}
-        %feature("autodoc", "Starting at 'point', insert 'text', optionally using 'fontsize', 'fontname', 'fontfile', 'color', 'rotate', 'wordspacing', or 'overlay'. ") insertText;
-        int insertText(struct fz_point_s *point, PyObject *text = NULL,
-                       const char *_matrix = NULL,
-                       float fontsize = 11, const char *fontname = NULL,
-                       const char *fontfile = NULL, PyObject *color = NULL,
-                       float wordspacing = 0, int rotate = 0, int overlay = 1)
+        fl = self.getFontList()
+        for f in fl:         # drop out if fontname already there
+            if f[4] == fontname:
+                return f[0]
+        %}
+        int insertFont(const char *fontname = NULL, const char *fontfile = NULL)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_document *pdf;
-            pdf_obj *resources, *contents, *fonts;
-            fz_buffer *res = NULL, *res_compr = NULL, *nres = NULL;
-            char *content_str;              // updated content string
-            const char *templ1 = "\nh q BT %g %g %g rg %s 1 0 0 1 %g %g Tm %s%s %g Tf %g Tw ";
-            const char *templ2 = "TJ 0 -%g TD ";
-            char *cm = "";
-            char *cmp90 = "0 1 -1 0 0 0 cm";    // rotates counter-clockwise
-            char *cmm90 = "0 -1 1 0 0 0 cm";    // rotates clockwise
-            char *cm180 = "-1 0 0 -1 0 0 cm";   // rotates by 180 deg.
-            Py_ssize_t c_len, len;
-            int i, nlines;
-            char *itxt;
-            fz_rect prect = { 0, 0, 0, 0};
-            fz_bound_page(gctx, $self, &prect);
-            int rot = rotate;
-            while (rot < 0) rot += 360;
-            rot = rot % 360;       // text rotate = 0, 90, 270, 180
-            float red = 0, green = 0, blue = 0;
-            float lheight = fontsize * 1.2; // line height
-            float top = prect.y1 - point->y;
-            float left = point->x;
-            float space = top;
-            float headroom = point->y;      // distance to page border
-            if (rot == 90)
-            {
-                left = prect.y1 - point->y;
-                top = -point->x;
-                cm = cmp90;
-                space = prect.x1 - abs(top);
-                headroom = point->x;
-            }
-            else if (rot == 270)
-            {
-                left = -prect.y1 + point->y;
-                top = point->x;
-                cm = cmm90;
-                space = abs(top);
-                headroom = prect.x1 - point->x;
-            }
-            else if (rot == 180)
-            {
-                left = -point->x;
-                top = -prect.y1 + point->y;
-                cm = cm180;
-                space = abs(point->y);
-                headroom = prect.y1 - point->y;
-            }
-            else if (_matrix)
-            {
-                cm = _matrix;
-            }
-            const char *data;
-            int size;
+            pdf_obj *resources, *fonts, *font_obj;
             fz_font *font;
-            pdf_obj *font_obj;
+            const char *data;
+            int size, xref = 0;
             fz_try(gctx)
             {
                 assert_PDF(page);
                 pdf = page->doc;
                 if (!fontname) THROWMSG("need fontname");
-                if (rot % 90 != 0) THROWMSG("rotate not multiple of 90");
-                if (headroom < fontsize) THROWMSG("text outside page");
-                if (PySequence_Check(color))
-                {
-                    if (PySequence_Size(color) != 3) THROWMSG(msg0007);
-                    red   = (float) PyFloat_AsDouble(PySequence_GetItem(color, 0));
-                    green = (float) PyFloat_AsDouble(PySequence_GetItem(color, 1));
-                    blue  = (float) PyFloat_AsDouble(PySequence_GetItem(color, 2));
-                    if (red < 0 || red > 1 || green < 0 || green > 1 || blue < 0 || blue > 1)
-                        THROWMSG(msg0006);
-                }
-
-                len = PySequence_Size(text);
-                
-                // get objects "Resources", "Contents", "Resources/Font"
+                // get objects "Resources", "Resources/Font"
                 resources = pdf_dict_get(gctx, page->obj, PDF_NAME_Resources);
                 fonts = pdf_dict_get(gctx, resources, PDF_NAME_Font);
-                if (!fonts)
+
+                if (!fonts)       // page has no fonts yet
                     fonts = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
-
-                contents = pdf_dict_get(gctx, page->obj, PDF_NAME_Contents);
-
-                if (pdf_is_array(gctx, contents))
-                {   // choose the correct one if multiple: 1st or last
-                    if (overlay == 1) i = pdf_array_len(gctx, contents) - 1;
-                    else              i = 0;
-                    contents = pdf_array_get(gctx, contents, i);
-                }
-
-                // extract decompressed contents string in a buffer
-                res = pdf_load_stream(gctx, contents);
-                if (!res) THROWMSG("bad PDF: Contents not a stream");
-
-                // create buffer for our stuff
-                nres = fz_new_buffer(gctx, 1024);
-                char *font_pref = "/";
-                if (strncmp(fontname, "/", 1) == 0) font_pref = "";
-                fz_append_printf(gctx, nres, templ1, red, green, blue, cm,
-                                 left, top, font_pref, fontname, fontsize, wordspacing);
-                //-------------------------------------------------------------
-                // start text insertion
-                //-------------------------------------------------------------
-                itxt = getPDFstr(gctx, PySequence_GetItem(text, 0), &c_len, "text0");
-                fz_append_string(gctx, nres, itxt);
-                nlines = 1;                 // set output line counter
-                fz_append_printf(gctx, nres, templ2, lheight);   // line 1
-                for (i = 1; i < len; i++)
+                
+                data = fz_lookup_base14_font(gctx, fontname, &size);
+                if (data)              // base 14 font found
+                    font = fz_new_font_from_memory(gctx, fontname, data, size, 0, 0);
+                else
                 {
-                    if (space < lheight) break;    // no space left on page
-                    if (i > 1) fz_append_string(gctx, nres, "\nT* ");
-                    itxt = getPDFstr(gctx, PySequence_GetItem(text, i), &c_len, "texti");
-                    fz_append_string(gctx, nres, itxt); // hex string
-                    fz_append_string(gctx, nres, "TJ ");
-                    space -= lheight;
-                    nlines++;
+                    if (!fontfile) THROWMSG("unknown PDF Base 14 font");
+                    font = fz_new_font_from_file(gctx, NULL, fontfile, 0, 0);
                 }
-                fz_append_string(gctx, nres, "\nET Q ");
-                //-------------------------------------------------------------
-                // end of text insertion
-                //-------------------------------------------------------------
-                // create resulting contents buffer
-                if (overlay == 1)      // append our string
-                {
-                    fz_append_buffer(gctx, res, nres);
-                    fz_drop_buffer(gctx, nres);
-                    nres = NULL;
-                }
-                else                   // prepend our string
-                {
-                    fz_append_buffer(gctx, nres, res);
-                    fz_drop_buffer(gctx, res);
-                    res = nres;
-                }
-                fz_terminate_buffer(gctx, res);
 
-                // indicate we will turn in compressed contents
-                pdf_dict_put(gctx, contents, PDF_NAME_Filter,
-                             PDF_NAME_FlateDecode);
-                c_len = (Py_ssize_t) fz_buffer_storage(gctx, res, &content_str);
-                res_compr = deflatebuf(gctx, content_str, (size_t) c_len);
-                pdf_update_stream(gctx, pdf, contents, res_compr, 1);
-
-                if (strncmp(fontname, "/", 1) != 0)   // new font given
-                {   // insert new font
-                    data = fz_lookup_base14_font(gctx, fontname, &size);
-                    if (data)              // base 14 font found
-                        font = fz_new_font_from_memory(gctx, fontname, data, size, 0, 0);
-                    else
-                    {
-                        if (!fontfile) THROWMSG("unknown PDF Base 14 font");
-                        font = fz_new_font_from_file(gctx, NULL, fontfile, 0, 0);
-                    }
-
-                    font_obj = pdf_add_simple_font(gctx, pdf, font);
-                    fz_drop_font(gctx, font);
-                    // resources obj will contain named reference to font
-                    pdf_dict_puts(gctx, fonts, fontname, font_obj);
-                    pdf_dict_put(gctx, resources, PDF_NAME_Font, fonts);
-                }
-            }
-            fz_always(gctx)
-            {
-                if (res) fz_drop_buffer(gctx, res);
-                if (res_compr) fz_drop_buffer(gctx, res_compr);
+                font_obj = pdf_add_simple_font(gctx, pdf, font);
+                xref = pdf_to_num(gctx, font_obj);
+                fz_drop_font(gctx, font);
+                // resources and fonts objects will contain named reference to font
+                pdf_dict_puts(gctx, fonts, fontname, font_obj);
+                pdf_dict_put(gctx, resources, PDF_NAME_Font, fonts);
             }
             fz_catch(gctx) return -1;
-            return nlines;
+            return xref;
         }
 
         //---------------------------------------------------------------------
@@ -2926,6 +2759,43 @@ struct fz_pixmap_s
         }
 
         //---------------------------------------------------------------------
+        // create a pixmap with alpha channel added
+        //---------------------------------------------------------------------
+        fz_pixmap_s(struct fz_pixmap_s *spix)
+        {
+            struct fz_pixmap_s *pm = NULL;
+            int n, w, h, balen, i, j, l;
+            fz_try(gctx)
+            {
+                if (spix->alpha == 1) THROWMSG("source pixmap already has alpha");
+                n = fz_pixmap_colorants(gctx, spix);
+                w = fz_pixmap_width(gctx, spix);
+                h = fz_pixmap_height(gctx, spix);
+                fz_colorspace *cs = fz_pixmap_colorspace(gctx, spix);
+                pm = fz_new_pixmap(gctx, cs, w, h, 1);
+                // fill pixmap with spix and alpha values
+                balen = w * h * (n+1);
+                i = j = 0;
+                while (i < balen)
+                {
+                    for (l=0; l < n; l++)
+                    {
+                        pm->samples[i+l] = spix->samples[j+l];
+                    }
+                    pm->samples[i+n] = 255;
+                    i += n+1;
+                    j += n;
+                }
+                pm->x = spix->x;
+                pm->y = spix->y;
+                pm->xres = spix->xres;
+                pm->yres = spix->yres;
+            }
+            fz_catch(gctx) return NULL;
+            return pm;
+        }
+
+        //---------------------------------------------------------------------
         // create pixmap from samples data
         //---------------------------------------------------------------------
         fz_pixmap_s(struct fz_colorspace_s *cs, int w, int h, PyObject *samples, int alpha = 0)
@@ -3144,26 +3014,45 @@ struct fz_pixmap_s
         }
 
         //----------------------------------------------------------------------
-        // writePNG
+        // set alpha values
         //----------------------------------------------------------------------
-        FITZEXCEPTION(writePNG, result)
-        %pythonprepend writePNG %{
-            if type(filename) == str:
-                pass
-            elif type(filename) == unicode:
-                filename = filename.encode('utf8')
-            else:
-                raise TypeError("filename must be a string")
-            if not filename.lower().endswith(".png"):
-                raise ValueError("filename must end with '.png'")
-        %}
-        int writePNG(char *filename, int savealpha=-1)
+        FITZEXCEPTION(setAlpha, result<0)
+        int setAlpha(PyObject *alphavalues=NULL)
         {
-            if (savealpha != -1) fz_warn(gctx, "ignoring savealpha");
-            fz_try(gctx) {
-                fz_save_pixmap_as_png(gctx, $self, filename);
+            fz_try(gctx)
+            {
+                if ($self->alpha == 0) THROWMSG("pixmap has no alpha channel");
+                int n = fz_pixmap_colorants(gctx, $self);
+                int w = fz_pixmap_width(gctx, $self);
+                int h = fz_pixmap_height(gctx, $self);
+                int balen = w * h * (n+1);
+                unsigned char *data = NULL;
+                int data_len = 0;
+                if (alphavalues)
+                {
+                    if (PyBytes_Check(alphavalues))
+                    {
+                        data_len = PyBytes_Size(alphavalues);
+                        data     = PyBytes_AsString(alphavalues);
+                    }
+                    if (PyByteArray_Check(alphavalues))
+                    {
+                        data_len = PyByteArray_Size(alphavalues);
+                        data     = PyByteArray_AsString(alphavalues);
+                    }
+                    if (data_len > 0 && data_len < w * h)
+                        THROWMSG("too few alpha values");
+                }
+                int i = 0, k = 0;
+                while (i < balen)
+                {
+                    if (data_len > 0) $self->samples[i+n] = data[k];
+                    else              $self->samples[i+n] = 255;
+                    i += n+1;
+                    k += 1;
+                }
             }
-            fz_catch(gctx) return 1;
+            fz_catch(gctx) return -1;
             return 0;
         }
 
@@ -3231,7 +3120,10 @@ struct fz_pixmap_s
             fz_catch(gctx) return 1;
             return 0;
         }
-
+        %pythoncode %{
+        def writePNG(self, filename, savealpha = -1):
+            return self._writeIMG(filename, 1, savealpha)
+        %}
         //----------------------------------------------------------------------
         // invertIRect
         //----------------------------------------------------------------------

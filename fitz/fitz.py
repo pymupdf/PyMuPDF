@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.1"
-VersionDate = "2017-09-20 09:32:27"
-version = (VersionBind, VersionFitz, "20170920093227")
+VersionDate = "2017-10-02 06:43:49"
+version = (VersionBind, VersionFitz, "20171002064349")
 
 
 #------------------------------------------------------------------------------
@@ -368,13 +368,34 @@ def CheckParent(o):
 
 def CheckColor(color):
     if color is not None:
-        if len(color) != 3 or not (0 <= color[0] <=1) or \
-            not (0 <= color[1] <= 1) or not (0 <= color[2] <= 1):
+        if type(color) not in (list, tuple) or len(color) != 3 or \
+            min(color) < 0 or max(color) > 1:
             raise ValueError("need 3 color components in range 0 to 1")
+
+def CheckMorph(o):
+    if not bool(o): return False
+    if type(o) not in (list, tuple):
+        raise ValueError("morph must be a sequence")
+    if len(o) != 2:
+        raise ValueError("invalid morph parameter")
+    if type(o[0]) != Point or type(o[1]) != Matrix:
+        raise ValueError("invalid morph parameter")
+    if not o[1].e == o[1].f == 0:
+        raise ValueError("invalid morph parameter")
+    return True
+
+def CheckFont(page, font):
+    fl = page.getFontList()
+    have_ref = False
+    for f in fl:
+        if f[4] == font:
+            have_ref = True
+            break
+    return have_ref
 
 class Document(_object):
     """open() - new empty PDF
-open('pdf', stream) - 'stream': bytes/bytearray/string
+open('pdf', stream) - 'stream': bytes/bytearray
 open(filename)"""
 
     __swig_setmethods__ = {}
@@ -446,8 +467,8 @@ open(filename)"""
         return val
 
 
-    def loadPage(self, number):
-        """loadPage(self, number) -> Page"""
+    def loadPage(self, number=0):
+        """loadPage(self, number=0) -> Page"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
@@ -677,24 +698,22 @@ open(filename)"""
 
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
-        # ensure 'text' is a list of strings
-        if text is not None:
-            if type(text) not in (list, tuple):
-                text = text.splitlines()
-            tab = []
-            for t in text:
-                tab.append(getTJstr(t))
-            text = tab
-        else:
-            text = []
-        # ensure 'fontname' is valid
-        if not fontfile:
-            if (not fontname) or fontname not in Base14_fontnames:
-                fontname = "Helvetica"
+        if bool(text):
+            CheckColor(color)
+            if fontname and fontname[0] == "/":
+                raise ValueError("invalid font reference")
 
 
         val = _fitz.Document_insertPage(self, pno, text, fontsize, width, height, fontname, fontfile, color)
-        if val >= 0: self._reset_page_refs()
+
+        if val < 0: return val
+        self._reset_page_refs()
+        if not bool(text): return val
+        page = self.loadPage(pno)
+        val = page.insertText(Point(50, 72), text, fontsize = fontsize,
+                              fontname = fontname, fontfile = fontfile,
+                              color = color)
+
 
         return val
 
@@ -805,6 +824,14 @@ open(filename)"""
             raise RuntimeError("operation illegal for closed doc")
 
         return _fitz.Document__getPageRectText(self, pno, rect)
+
+
+    def _getXmlMetadataXref(self):
+        """_getXmlMetadataXref(self) -> int"""
+        if self.isClosed:
+            raise RuntimeError("operation illegal for closed doc")
+
+        return _fitz.Document__getXmlMetadataXref(self)
 
 
     def _delXmlMetadata(self):
@@ -1049,33 +1076,18 @@ class Page(_object):
         return _fitz.Page_insertImage(self, rect, filename, pixmap, overlay)
 
 
-    def insertText(self, point, text=None, _matrix=None, fontsize=11, fontname=None, fontfile=None, color=None, wordspacing=0, rotate=0, overlay=1):
-        """Starting at 'point', insert 'text', optionally using 'fontsize', 'fontname', 'fontfile', 'color', 'rotate', 'wordspacing', or 'overlay'. """
+    def insertFont(self, fontname=None, fontfile=None):
+        """insertFont(self, fontname=None, fontfile=None) -> int"""
 
         if not self.parent:
             raise RuntimeError("orphaned object: parent is None")
-        # ensure 'text' is a list of strings
-        assert text, "some text is needed"
-        assert len(text) > 0, "some text is needed"
-        tab = []
-        if type(text) not in (list, tuple):
-            text = text.splitlines()
-        for t in text:
-            tab.append(getTJstr(t))
-        text = tab
-        # ensure valid 'fontname'
-        if not fontfile:
-            if not fontname:
-                fontname = "Helvetica"
-            else:
-                if fontname.startswith("/"):
-                    fontlist = self.parent.getPageFontList(self.number)
-                    fontrefs = [fontlist[i][4] for i in range(len(fontlist))]
-                    assert fontname[1:] in fontrefs, "invalid font name reference: " + fontname
-                elif fontname not in Base14_fontnames:
-                    fontname = "Helvetica"
+        fl = self.getFontList()
+        for f in fl:         # drop out if fontname already there
+            if f[4] == fontname:
+                return f[0]
 
-        return _fitz.Page_insertText(self, point, text, _matrix, fontsize, fontname, fontfile, color, wordspacing, rotate, overlay)
+
+        return _fitz.Page_insertFont(self, fontname, fontfile)
 
 
     def _getContents(self):
@@ -1170,8 +1182,8 @@ Rect(x0, y0, x1, y1)
 Rect(top-left, x1, y1)
 Rect(x0, y0, bottom-right)
 Rect(top-left, bottom-right)
-Rect(rect) - copy of 'rect'
-Rect(list) - from 'list'"""
+Rect(Rect) - copy
+Rect(sequence) - from 'sequence'"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Rect, name, value)
@@ -1324,8 +1336,8 @@ Rect_swigregister(Rect)
 class IRect(_object):
     """IRect() - all zeros
 IRect(x0, y0, x1, y1)
-IRect(irect) - copy of 'irect'
-IRect(list) - from 'list'"""
+IRect(IRect) - copy
+IRect(sequence) - from 'sequence'"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, IRect, name, value)
@@ -1453,12 +1465,13 @@ IRect_swigregister = _fitz.IRect_swigregister
 IRect_swigregister(IRect)
 
 class Pixmap(_object):
-    """fitz.Pixmap(colorspace, width, height, samples, alpha)
-fitz.Pixmap(colorspace, fitz.Irect, alpha)
-fitz.Pixmap(colorspace, fitz.Pixmap [, alpha])
-fitz.Pixmap(filename)
-fitz.Pixmap(image buffer) - from a bytearray
-fitz.Pixmap(doc, xref) - use image in a PDF"""
+    """Pixmap(Colorspace, width, height, samples, alpha)
+Pixmap(Colorspace, Irect, alpha)
+Pixmap(Colorspace, Pixmap [, alpha]) - converted copy
+Pixmap(filename)
+Pixmap(Pixmap) - new copy with added alpha
+Pixmap(image-buffer) - from bytearray
+Pixmap(Document, xref) - from PDF image in a PDF"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Pixmap, name, value)
@@ -1502,6 +1515,7 @@ fitz.Pixmap(doc, xref) - use image in a PDF"""
         """
         __init__(self, cs, bbox, alpha=0) -> Pixmap
         __init__(self, cs, spix, alpha=1) -> Pixmap
+        __init__(self, spix) -> Pixmap
         __init__(self, cs, w, h, samples, alpha=0) -> Pixmap
         __init__(self, filename) -> Pixmap
         __init__(self, imagedata) -> Pixmap
@@ -1572,20 +1586,9 @@ fitz.Pixmap(doc, xref) - use image in a PDF"""
         return _fitz.Pixmap_size(self)
 
 
-    def writePNG(self, filename, savealpha=-1):
-        """writePNG(self, filename, savealpha=-1) -> int"""
-
-        if type(filename) == str:
-            pass
-        elif type(filename) == unicode:
-            filename = filename.encode('utf8')
-        else:
-            raise TypeError("filename must be a string")
-        if not filename.lower().endswith(".png"):
-            raise ValueError("filename must end with '.png'")
-
-
-        return _fitz.Pixmap_writePNG(self, filename, savealpha)
+    def setAlpha(self, alphavalues=None):
+        """setAlpha(self, alphavalues=None) -> int"""
+        return _fitz.Pixmap_setAlpha(self, alphavalues)
 
 
     def getPNGData(self, savealpha=-1):
@@ -1605,6 +1608,10 @@ fitz.Pixmap(doc, xref) - use image in a PDF"""
 
 
         return _fitz.Pixmap__writeIMG(self, filename, format, savealpha)
+
+
+    def writePNG(self, filename, savealpha = -1):
+        return self._writeIMG(filename, 1, savealpha)
 
 
     def invertIRect(self, irect=None):
@@ -1716,8 +1723,8 @@ Matrix(a, b, c, d, e, f)
 Matrix(zoom-x, zoom-y) - zoom
 Matrix(shear-x, shear-y, 1) - shear
 Matrix(degree) - rotate
-Matrix(matrix) - copy of 'matrix'
-Matrix(list) - from 'list'"""
+Matrix(Matrix) - new copy
+Matrix(sequence) - from 'sequence'"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Matrix, name, value)
@@ -1901,8 +1908,8 @@ def _fz_transform_point(point, transform):
 class Point(_object):
     """Point() - all zeros
 Point(x, y)
-Point(point) - copy of 'point'
-Point(list) - from 'list'"""
+Point(Point) - new copy
+Point(sequence) - from 'sequence'"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Point, name, value)

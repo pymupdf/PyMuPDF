@@ -1,7 +1,7 @@
 from . import fitz
-import math, sys
+import math
 '''
-The following is a collection of commodity functions to simplify the use of PyMupdf.
+The following is a collection of commodity functions to extend PyMupdf.
 '''
 #==============================================================================
 # A function for searching string occurrences on a page.
@@ -876,7 +876,7 @@ def intersects(me, rect):
 #-------------------------------------------------------------------------------
 # Page.insertTextbox
 #-------------------------------------------------------------------------------
-def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
+def insertTextbox(page, rect, buffer, fontname = "Helvetica", fontfile = None,
                   fontsize = 11, color = (0,0,0), expandtabs = 1,
                   charwidths = None, align = 0, rotate = 0, morph = None,
                   overlay = True):
@@ -892,9 +892,9 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
     charwidths - list of glyph widths
     align - left, center, right, justified
     rotate - 0, 90, 180, or 270 degrees
+    morph - morph box with  a matrix and a pivotal point
     overlay - put text in foreground or background
     Returns: unused or deficit rectangle area (float)
-    
     """
     fitz.CheckParent(page)
     if rect not in page.rect:
@@ -903,37 +903,25 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
         raise ValueError("text box must be finite and not empty")
     fitz.CheckColor(color)
     assert rotate % 90 == 0, "rotate must be multiple of 90"
-    if morph and rotate != 0:
-        raise ValueError("cannot morph and also rotate")
+    rot = rotate
+    while rot < 0: rot += 360
+    rot = rot % 360
+    red, green, blue = color
+    cmp90 = "0 1 -1 0 0 0 cm\n"   # rotates counter-clockwise
+    cmm90 = "0 -1 1 0 0 0 cm\n"   # rotates clockwise
+    cm180 = "-1 0 0 -1 0 0 cm\n"  # rotates by 180 deg.
+    height = page.rect.height
+    fname = fontname
+    if not fname:
+        fname = "Helvetica"
+    if fname[0] == "/":
+        fname = fname[1:]
+        assert fitz.CheckFont(page, fname), "invalid font reference"
+    xref = page.insertFont(fontname = fname, fontfile = fontfile)
     # ensure we have a list of glyph widths for the given font
     widthtab = charwidths              # hopefully we have been given one
     if not widthtab:                   # need to build our own (sigh!)
-        fname = fontname
-        ffile = fontfile
-        xref  = 0
-        if not (fname or ffile):
-            fname = "Helvetica"
-
-        if ffile:                      # filename given
-            fname = None
-        elif fname.startswith("/"):    # existing font ref given - check it out
-            fl = page.getFontList()    # get font list of page
-            for f in fl:               # will return xref>0 or xref=-1
-                if f[4] == fname[1:]:  # reference found
-                    if f[3] in fitz.Base14_fontnames:   # means: Base-14-Font!
-                        xref = -1      # ignore xref
-                        fname = f[3]   # use Base-14 name
-                        break
-                    xref = f[0]        # xref of referenced font
-                    break
-            if xref == 0:              # /fontname not in list
-                raise ValueError("invalid font reference for page")
-            elif xref > 0:             # found font reference
-                fname = None
-            else:                      # Base-14 name given
-                xref = 0
-        widthtab = page.parent._getCharWidths(fontname = fname, xref = xref,
-                   fontfile = ffile)
+        widthtab = page.parent._getCharWidths(xref = xref)
     
     # calculate pixel length of a string
     def pixlen(x):
@@ -947,13 +935,12 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
     blen = widthtab[32] * fontsize          # pixel size of space character
     text = ""                               # output buffer
     lheight = fontsize * 1.2                # line height
-    rot = rotate % 360                      # rot in (0, 90, 270, 180)
-    if morph:
+    if fitz.CheckMorph(morph):
         m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x, page.rect.height - morph[0].y)
         mat = ~m1 * morph[1] * m1
-        mat = "%g %g %g %g %g %g cm\n" % tuple(mat)
+        cm = "%g %g %g %g %g %g cm\n" % tuple(mat)
     else:
-        mat = None
+        cm = ""
         
     #---------------------------------------------------------------------------
     # adjust for text orientation / rotation
@@ -972,6 +959,7 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
         pos = point.x                       # position of first line
         maxwidth = rect.height              # pixels available in one line
         maxpos = rect.x1                    # lines must not be right of this
+        cm += cmp90
         
     elif rot == 180:                        # text upside down
         c_pnt = -fitz.Point(0, fontsize)    # progress upwards in y direction
@@ -980,6 +968,7 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
         maxwidth = rect.width               # pixels available in one line
         progr = -1                          # subtract lheight for next line
         maxpos = rect.y0                    # lines must not be above this
+        cm += cm180
         
     else:                                   # rotate clockwise (270 or -90)
         c_pnt = -fitz.Point(fontsize, 0)    # progress from right to left
@@ -988,8 +977,9 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
         maxwidth = rect.height              # pixels available in one line
         progr = -1                          # subtract lheight for next line
         maxpos = rect.x0                    # lines must not left of this
+        cm += cmm90
     
-    # create a list of buffer, split into its lines
+    # create a list from buffer, split into its lines
     
     if type(buffer) in (list, tuple):
         t0 = "\n".join(buffer)
@@ -1055,11 +1045,8 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
     more = abs(more)
     if more < 1e-5:
         more = 0                            # don't bother with small epsilons
-    if align == 0:                          # left alignment: output full chunk
-        page.insertText(point, text, fontsize = fontsize, rotate = rotate,
-                        fontname = fontname, fontfile = fontfile, _matrix = mat,
-                        color = color, overlay = overlay)
-        return more
+    nres = "\nn q BT\n" + cm                # initialize output buffer
+    templ = "1 0 0 1 %g %g Tm /%s %g Tf %g Tw %g %g %g rg %sTJ\n"
     # center, right, justify: output each line with its own specifics
     spacing = 0
     text_t = text.splitlines()              # split text in lines again
@@ -1076,16 +1063,40 @@ def insertTextbox(page, rect, buffer, fontname = None, fontfile = None,
                 pnt = pnt + fitz.Point(pl, 0) * progr
             else:
                 pnt = pnt - fitz.Point(0, pl) * progr
-        else:                               # justify
+        elif align == 3:                    # justify
             spaces = t.count(" ")           # number of spaces in line
             if spaces > 0 and just_tab[i]:  # if any, and we may justify
-                spacing = pl / spaces       # make every space so  much larger
+                spacing = pl / spaces       # make every space this much larger
             else:
                 spacing = 0                 # keep normal space length
-
-        page.insertText(pnt, t, fontsize = fontsize, fontname = fontname,
-                        fontfile = fontfile, color = color, rotate = rotate,
-                        _matrix = mat, wordspacing = spacing, overlay = overlay)
+        top  = height - pnt.y
+        left = pnt.x
+        if rot == 90:
+            left = height - pnt.y
+            top  = -pnt.x
+        elif rot == 270:
+            left = -height + pnt.y
+            top  = pnt.x
+        elif rot == 180:
+            left = -pnt.x
+            top  = -height + pnt.y
+        nres += templ % (left, top, fname, fontsize,
+                         spacing, red, green, blue, fitz.getTJstr(t))
+    nres += "ET Q\n"
+    if not str is bytes:          # we need bytes if Python 3
+        nres = bytes(nres, "utf-8")
+    # update the /Contents object
+    xref_list = page._getContents()
+    if overlay:                   # append string to last object
+        xref = xref_list[-1]
+        contents = page.parent._getXrefStream(xref)
+        contents += nres
+    else:                         # prepend 1st object with it
+        xref = xref_list[0]
+        contents = page.parent._getXrefStream(xref)
+        contents = nres + contents
+    
+    page.parent._updateStream(xref, contents)
     return more
 
 #-------------------------------------------------------------------------------
@@ -1150,8 +1161,8 @@ def drawRect(page, rect, color = (0, 0, 0), fill = None, dashes = None,
     """Draw a rectangle.
     """
     img = page.newShape()
-    img.drawRect(rect)
-    Q = img.finish(color = color, fill = fill, dashes = dashes, width = width,
+    Q = img.drawRect(rect)
+    img.finish(color = color, fill = fill, dashes = dashes, width = width,
                    roundCap = roundCap, morph = morph)
     img.commit(overlay)
 
@@ -2033,7 +2044,7 @@ class Shape():
     
     @staticmethod
     def horizontal_angle(C, P):
-        """Return the angle to the horizontol for the connection from C to P.
+        """Return the angle to the horizontal for the connection from C to P.
         This uses the arcus sine function and resolves its inherent ambiguity by
         looking up in which quadrant vector S = P - C is located.
         """
@@ -2110,18 +2121,19 @@ class Shape():
         if not (self.lastPoint == ml):
             self.contents += "%g %g m\n" % (ml.x, self.height - ml.y)
             self.lastPoint = ml
-        self.drawCurve(ml, rect.tl, mt)
-        self.drawCurve(mt, rect.tr, mr)
-        self.drawCurve(mr, rect.br, mb)
-        self.drawCurve(mb, rect.bl, ml)
+        self.drawCurve(ml, rect.bl, mb)
+        self.drawCurve(mb, rect.br, mr)
+        self.drawCurve(mr, rect.tr, mt)
+        self.drawCurve(mt, rect.tl, ml)
         self.lastPoint = ml
         return self.lastPoint
     
     def drawCircle(self, center, radius):
         """Draw a circle given its center and radius.
         """
+        assert radius > 1e-7, "radius must be postive"
         p1 = center - (radius, 0)
-        return self.drawSector(center, p1, -360, fullSector = False)
+        return self.drawSector(center, p1, 360, fullSector = False)
 
     def drawCurve(self, p1, p2, p3):
         """Draw a curve between points using one control point.
@@ -2152,6 +2164,7 @@ class Shape():
         P = point
         S = P - C                               # vector 'center' -> 'point'
         rad = abs(S)                            # circle radius
+        assert rad > 1e-7, "radius must be positive"
         alfa = self.horizontal_angle(center, point)
         while abs(betar) > abs(w90):            # draw 90 degree arcs
             q1 = C.x + math.cos(alfa + w90) * rad
@@ -2195,8 +2208,10 @@ class Shape():
     def drawRect(self, rect):
         """Draw a rectangle.
         """
-        points = (rect.tl, rect.tr, rect.br, rect.bl, rect.tl)
-        return self.drawPolyline(points)
+        self.contents += "%g %g %g %g re\n" % (rect.x0, self.height - rect.y1,
+                                               rect.width, rect.height)
+        self.lastPoint = rect.tl
+        return rect.tl
 
     def drawZigzag(self, p1, p2, breadth = 2):
         """Draw a zig-zagged line from p1 to p2.
@@ -2207,15 +2222,15 @@ class Shape():
         if cnt < 4:
             raise ValueError("points too close")
         mb = rad / cnt                          # revised breadth
-        alfa = self.horizontal_angle(p1, p2)
+        alfa = self.horizontal_angle(p1, p2)    # angle with x-axis
         calfa = math.cos(alfa)                  # need these ...
         salfa = math.sin(alfa)                  # ... values later
         points = []                             # stores edges
         for i in range (1, cnt):                
             if i % 4 == 1:                      # point "above" connection
-                p = fitz.Point(i * mb, -mb)
+                p = fitz.Point(i, -1) * mb
             elif i % 4 == 3:                    # point "below" connection
-                p = fitz.Point(i * mb, mb)
+                p = fitz.Point(i, 1) * mb
             else:                               # ignore others
                 continue
             r = abs(p)                          
@@ -2236,17 +2251,18 @@ class Shape():
         if cnt < 4:
             raise ValueError("points too close")
         mb = rad / cnt                          # revised breadth
-        alfa = self.horizontal_angle(p1, p2)
+        alfa = self.horizontal_angle(p1, p2)    # angle with x-axis
+        k = 4./3./0.55228474983                 # y of drawCurve helper point
         calfa = math.cos(alfa)                  # need these ...
         salfa = math.sin(alfa)                  # ... values later
         points = []                             # stores edges
         for i in range (1, cnt):                
             if i % 4 == 1:                      # point "above" connection
-                p = fitz.Point(i * mb, -2.4 * mb)
+                p = fitz.Point(i, -k) * mb
             elif i % 4 == 3:                    # point "below" connection
-                p = fitz.Point(i * mb, 2.4 * mb)
+                p = fitz.Point(i, k) * mb
             else:                               # else on connection
-                p = fitz.Point(i * mb, 0)
+                p = fitz.Point(i, 0) * mb
             r = abs(p)                          
             p /= r                              # now p = (cos, sin)
             # this is the point rotated by alfa
@@ -2269,8 +2285,10 @@ class Shape():
                    even_odd = False,
                    morph = None,
                    closePath = True):
-        """Finish this drawing segment by applying colors, dashes, rotation, etc.
+        """Finish this drawing segment by applying stroke and fill colors, dashes, line style and width, or morphing. Also determines whether any open path should be closed by a connecting line to its start point.
         """
+        if not self.contents:
+            return                # treat empty contents as no-op
         fitz.CheckColor(color)
         fitz.CheckColor(fill)
         self.contents += "%g w\n%i J\n%i j\n" % (width, roundCap,
@@ -2289,39 +2307,152 @@ class Shape():
         else:
             self.contents += "S\n"
         self.totalcont += "\nn q\n"
-        if morph:
-            if type(morph[0]) is fitz.Point and type(morph[1]) is fitz.Matrix:
-                if morph[1].e == morph[1].f == 0:
-                    m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x,
+        if fitz.CheckMorph(morph):
+            m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x,
                                      self.height - morph[0].y)
-                    m2 = morph[1]
-                    mat = ~m1 * m2 * m1
-                    self.totalcont += "%g %g %g %g %g %g cm\n" % tuple(mat)
-                else:
-                    raise ValueError("invalid morph paratemers")
+            m2 = morph[1]
+            mat = ~m1 * m2 * m1
+            self.totalcont += "%g %g %g %g %g %g cm\n" % tuple(mat)
         self.totalcont += self.contents + "Q\n"
         self.contents = ""
         self.lastPoint = None
 
     def commit(self, overlay = True):
-        """Update the page's /Contents object.
+        """Update the page's /Contents object with Shape data. The argument controls, whether data appear in foreground (True, default) or background.
         """
         fitz.CheckParent(self.page)         # doc may have died meanwhile
         if not self.totalcont.endswith("Q\n"):
             raise RuntimeError("finish method missing")
 
-        if sys.version_info[0] > 2:
+        if not str is bytes:                # bytes object needed in Python 3
             self.totalcont = bytes(self.totalcont, "utf-8")
         
-        if overlay:
+        if overlay:                         # last one if foreground
             xref = self.page._getContents()[-1]
             cont = self.doc._getXrefStream(xref)
-            cont += self.totalcont
-        else:
+            cont += self.totalcont          # append our stuff
+        else:                               # first one if background
             xref = self.page._getContents()[0]
             cont = self.doc._getXrefStream(xref)
-            cont = self.totalcont + cont
-        self.doc._updateStream(xref, cont)
-        self.lastPoint = None
-        self.contents  = ""
-        self.totalcont = ""
+            cont = self.totalcont + cont    # prepend our stuff
+        self.doc._updateStream(xref, cont)  # replace the PDF stream
+        self.lastPoint = None               # clean up ...
+        self.contents  = ""                 # for possible ...
+        self.totalcont = ""                 # re-use
+
+#------------------------------------------------------------------------------
+# Page.insertText
+#------------------------------------------------------------------------------
+def insertText(page, point, text, fontsize = 11,
+    fontname = "Helvetica", fontfile = None, color = (0,0,0),
+    wordspacing = 0, rotate = 0, morph = None, overlay = True):
+    
+    fitz.CheckParent(page)
+    assert page.parent.isPDF, "not a PDF"
+    # ensure 'text' is a list of strings
+    assert bool(text), "some text is needed"
+    tab = []
+    if type(text) not in (list, tuple):
+        text = text.splitlines()
+    for t in text:
+        tab.append(fitz.getTJstr(t))
+    text = tab
+    if not len(text) > 0:
+        return 0
+    # ensure valid 'fontname'
+    fname = fontname
+    if not fname:
+        fname = "Helvetica"
+    if fname[0] == "/":
+        fname = fname[1:]
+        assert fitz.CheckFont(page, fname), "invalid font reference"
+
+    fitz.CheckColor(color)
+    morphing = fitz.CheckMorph(morph)
+    rot = rotate;
+    assert rot % 90 == 0, "rotate not multiple of 90"
+    while rot < 0: rot += 360
+    rot = rot % 360               # text rotate = 0, 90, 270, 180
+    red, green, blue = color if color else (0,0,0)
+    templ1 = "\nn q BT\n%s1 0 0 1 %g %g Tm /%s %g Tf %g Tw %g %g %g rg "
+    templ2 = "TJ\n0 -%g TD\n"
+    cmp90 = "0 1 -1 0 0 0 cm\n"   # rotates counter-clockwise
+    cmm90 = "0 -1 1 0 0 0 cm\n"   # rotates clockwise
+    cm180 = "-1 0 0 -1 0 0 cm\n"  # rotates by 180 deg.
+    height = page.rect.height
+    width  = page.rect.width
+    lheight = fontsize * 1.2      # line height
+    # setting up for standard rotation directions
+    # case rotate = 0
+    if morphing:
+        m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x, height - morph[0].y)
+        mat = ~m1 * morph[1] * m1
+        cm = "%g %g %g %g %g %g cm\n" % tuple(mat)
+    else:
+        cm = ""
+    top = height - point.y        # start of 1st char
+    left = point.x                # start of 1. char
+    space = top                   # space available
+    headroom = point.y            # distance to page border
+    if rot == 90:
+        left = height - point.y
+        top = -point.x
+        cm += cmp90
+        space = width - abs(top)
+        headroom = point.x
+
+    elif rot == 270:
+        left = -height + point.y
+        top = point.x
+        cm += cmm90
+        space = abs(top)
+        headroom = width - point.x;
+
+    elif rot == 180:
+        left = -point.x
+        top = -height + point.y
+        cm += cm180
+        space = abs(point.y)
+        headroom = height - point.y
+
+    if headroom < fontsize:       # at least 1 full line space required!
+        raise ValueError("text starts outside page")
+
+    nres = templ1 % (cm, left, top, fname, fontsize,
+                      wordspacing, red, green, blue)
+# =============================================================================
+#   start text insertion
+# =============================================================================
+    nres += text[0]
+    nlines = 1                    # set output line counter
+    nres += templ2 % lheight      # line 1
+    for i in range(1, len(text)):
+        if space < lheight:
+            break                 # no space left on page
+        if i > 1:
+            nres += "\nT* "
+        nres += text[i] + "TJ "
+        space -= lheight
+        nlines += 1
+
+    nres += "\nET Q "
+
+    if not str is bytes:          # we need a bytes object if Python 3
+        nres = bytes(nres, "utf-8")
+# =============================================================================
+#   end of text insertion
+# =============================================================================
+    # update the /Contents object
+    xref_list = page._getContents()
+    if overlay:                   # append string to last object
+        xref = xref_list[-1]
+        contents = page.parent._getXrefStream(xref)
+        contents += nres
+    else:                         # prepend 1st object with it
+        xref = xref_list[0]
+        contents = page.parent._getXrefStream(xref)
+        contents = nres + contents
+
+    page.insertFont(fontname = fname, fontfile = fontfile)
+    page.parent._updateStream(xref, contents)
+    return nlines

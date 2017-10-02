@@ -260,7 +260,28 @@ def CheckParent(o):
 
 def CheckColor(color):
     if color is not None:
-        if len(color) != 3 or not (0 <= color[0] <=1) or \
-            not (0 <= color[1] <= 1) or not (0 <= color[2] <= 1):
+        if type(color) not in (list, tuple) or len(color) != 3 or \
+            min(color) < 0 or max(color) > 1:
             raise ValueError("need 3 color components in range 0 to 1")
+
+def CheckMorph(o):
+    if not bool(o): return False
+    if type(o) not in (list, tuple):
+        raise ValueError("morph must be a sequence")
+    if len(o) != 2:
+        raise ValueError("invalid morph parameter")
+    if type(o[0]) != Point or type(o[1]) != Matrix:
+        raise ValueError("invalid morph parameter")
+    if not o[1].e == o[1].f == 0:
+        raise ValueError("invalid morph parameter")
+    return True
+    
+def CheckFont(page, font):
+    fl = page.getFontList()
+    have_ref = False
+    for f in fl:
+        if f[4] == font:
+            have_ref = True
+            break
+    return have_ref
 %}
