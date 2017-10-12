@@ -2,7 +2,6 @@ from __future__ import print_function
 import math
 import fitz
 from fitz.utils import getColor
-from fitz.utils import Drawing
 """
 @created: 2017-06-18 10:00:00
 
@@ -41,9 +40,9 @@ center = fitz.Point(page.rect.width / 2,         # center of circle on page
 
 radius = page.rect.width / 2 - 20                # leave a border of 20 pixels
 
-img = Drawing(page)
+img = page.newShape()
 img.drawCircle(center, radius)
-img.finish(color = coffee, fill = coffee)        # fill the cup with coffee
+img.finish(color = coffee, fill = coffee)        # fill coffee into the cup
 
 count = 400                                      # how many sun rays we paint
 interval = math.pi / count                       # angle fraction
@@ -57,7 +56,7 @@ img.finish(width = 0.3, color = yellow, closePath = False) # a ray is a fine yel
 
 img.drawCircle(center, radius)
 img.finish(color = blue)                         # cup border is blue
-img.close()
+img.commit()
 doc.save("caustic.pdf", garbage = 4, deflate = True)
 
 # create an image file of the PDF page

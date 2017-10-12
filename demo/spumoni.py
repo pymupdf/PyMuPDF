@@ -14,8 +14,8 @@ PyMuPDF
 License:
  GNU GPL 3+
 
-The only purpose of this ugly picture is to show that creating it with PyMuPDF
-definitely is at least as easy and straightforward ...
+The only purpose of this ugly picture is to show, that creating it with PyMuPDF
+is definitely at least as easy and straightforward ...
 
 """
 

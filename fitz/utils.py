@@ -543,7 +543,8 @@ def setToC(doc, toc):
     '''Create new outline tree (table of contents)\ntoc: a Python list of lists. Each entry must contain level, title, page and optionally top margin on the page.'''
     if doc.isClosed or doc.isEncrypted:
         raise ValueError("operation on closed or encrypted document")
-
+    if not doc.isPDF:
+        raise ValueError("not a PDF")
     toclen = len(toc)
     # check toc validity ------------------------------------------------------
     if type(toc) is not list:
@@ -876,9 +877,16 @@ def intersects(me, rect):
 #-------------------------------------------------------------------------------
 # Page.insertTextbox
 #-------------------------------------------------------------------------------
-def insertTextbox(page, rect, buffer, fontname = "Helvetica", fontfile = None,
-                  fontsize = 11, color = (0,0,0), expandtabs = 1,
-                  charwidths = None, align = 0, rotate = 0, morph = None,
+def insertTextbox(page, rect, buffer,
+                  fontname = "Helvetica",
+                  fontfile = None,
+                  fontsize = 11,
+                  color = (0,0,0),
+                  expandtabs = 1,
+                  charwidths = None,
+                  align = 0,
+                  rotate = 0,
+                  morph = None,
                   overlay = True):
     """Insert text into a given rectangle.
     Parameters:
@@ -896,209 +904,45 @@ def insertTextbox(page, rect, buffer, fontname = "Helvetica", fontfile = None,
     overlay - put text in foreground or background
     Returns: unused or deficit rectangle area (float)
     """
-    fitz.CheckParent(page)
-    if rect not in page.rect:
-        raise ValueError("text box not contained in page")
-    if rect.isEmpty or rect.isInfinite:
-        raise ValueError("text box must be finite and not empty")
-    fitz.CheckColor(color)
-    assert rotate % 90 == 0, "rotate must be multiple of 90"
-    rot = rotate
-    while rot < 0: rot += 360
-    rot = rot % 360
-    red, green, blue = color
-    cmp90 = "0 1 -1 0 0 0 cm\n"   # rotates counter-clockwise
-    cmm90 = "0 -1 1 0 0 0 cm\n"   # rotates clockwise
-    cm180 = "-1 0 0 -1 0 0 cm\n"  # rotates by 180 deg.
-    height = page.rect.height
-    fname = fontname
-    if not fname:
-        fname = "Helvetica"
-    if fname[0] == "/":
-        fname = fname[1:]
-        assert fitz.CheckFont(page, fname), "invalid font reference"
-    xref = page.insertFont(fontname = fname, fontfile = fontfile)
-    # ensure we have a list of glyph widths for the given font
-    widthtab = charwidths              # hopefully we have been given one
-    if not widthtab:                   # need to build our own (sigh!)
-        widthtab = page.parent._getCharWidths(xref = xref)
-    
-    # calculate pixel length of a string
-    def pixlen(x):
-        """Calculate pixel length of x."""
-        try:
-            return sum([widthtab[ord(c)] for c in x]) * fontsize
-        except IndexError:
-            m = max([ord(c) for c in x])
-            raise ValueError("max. code point %i not < 256" % m)
+    img = page.newShape()
+    rc = img.insertTextbox(rect, buffer,
+                           fontsize = fontsize,
+                           fontname = fontname,
+                           fontfile = fontfile,
+                           color = color,
+                           expandtabs = expandtabs,
+                           charwidths = charwidths,
+                           align = align,
+                           rotate = rotate,
+                           morph = morph)
+    if rc >= 0:
+        img.commit(overlay)
+    return rc
 
-    blen = widthtab[32] * fontsize          # pixel size of space character
-    text = ""                               # output buffer
-    lheight = fontsize * 1.2                # line height
-    if fitz.CheckMorph(morph):
-        m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x, page.rect.height - morph[0].y)
-        mat = ~m1 * morph[1] * m1
-        cm = "%g %g %g %g %g %g cm\n" % tuple(mat)
-    else:
-        cm = ""
-        
-    #---------------------------------------------------------------------------
-    # adjust for text orientation / rotation
-    #---------------------------------------------------------------------------
-    progr = 1                               # direction of line progress
-    c_pnt = fitz.Point(0, fontsize)         # used for line progress
-    if rot == 0:                            # normal orientation
-        point = rect.top_left + c_pnt       # line 1 is 'fontsize' below top
-        pos = point.y                       # y of first line
-        maxwidth = rect.width               # pixels available in one line
-        maxpos = rect.y1                    # lines must not be below this
-        
-    elif rot == 90:                         # rotate counter clockwise
-        c_pnt = fitz.Point(fontsize, 0)     # progress in x-direction
-        point = rect.bottom_left + c_pnt    # line 1 'fontsize' away from left
-        pos = point.x                       # position of first line
-        maxwidth = rect.height              # pixels available in one line
-        maxpos = rect.x1                    # lines must not be right of this
-        cm += cmp90
-        
-    elif rot == 180:                        # text upside down
-        c_pnt = -fitz.Point(0, fontsize)    # progress upwards in y direction
-        point = rect.bottom_right + c_pnt   # line 1 'fontsize' above bottom
-        pos = point.y                       # position of first line
-        maxwidth = rect.width               # pixels available in one line
-        progr = -1                          # subtract lheight for next line
-        maxpos = rect.y0                    # lines must not be above this
-        cm += cm180
-        
-    else:                                   # rotate clockwise (270 or -90)
-        c_pnt = -fitz.Point(fontsize, 0)    # progress from right to left
-        point = rect.top_right + c_pnt      # line 1 'fontsize' left of right
-        pos = point.x                       # position of first line
-        maxwidth = rect.height              # pixels available in one line
-        progr = -1                          # subtract lheight for next line
-        maxpos = rect.x0                    # lines must not left of this
-        cm += cmm90
+#------------------------------------------------------------------------------
+# Page.insertText
+#------------------------------------------------------------------------------
+def insertText(page, point, text,
+               fontsize = 11,
+               fontname = "Helvetica",
+               fontfile = None,
+               color = (0,0,0),
+               rotate = 0,
+               morph = None,
+               overlay = True):
     
-    # create a list from buffer, split into its lines
+    img = page.newShape()
+    rc = img.insertText(point, text,
+                        fontsize = fontsize,
+                        fontname = fontname,
+                        fontfile = fontfile,
+                        color = color,
+                        rotate = rotate,
+                        morph = morph)
+    if rc >= 0:
+        img.commit(overlay)
+    return rc
     
-    if type(buffer) in (list, tuple):
-        t0 = "\n".join(buffer)
-    else:
-        t0 = buffer
-    
-    t0 = t0.splitlines()
-
-    #===========================================================================
-    # line loop
-    #===========================================================================
-    just_tab = []                           # 'justify' indicators per line
-    for i, line in enumerate(t0):
-        line_t = line.expandtabs(expandtabs).split(" ")  # split line into words
-        lbuff = ""                          # init line buffer
-        rest = maxwidth                     # available line pixels
-        #=======================================================================
-        # word loop
-        #=======================================================================
-        for word in line_t:
-            pl_w = pixlen(word)             # pixel len of word
-            if rest >= pl_w:                # will it fit on the line?
-                lbuff += word + " "         # yes, and append word
-                rest -= (pl_w + blen)       # update available line space
-                continue
-            # word won't fit in remaining space - output the line
-            lbuff = lbuff.rstrip() + "\n"   # line full, append line break
-            text += lbuff                   # append to total text
-            pos += lheight * progr          # increase line position
-            just_tab.append(True)           # line is justify candidate
-            lbuff = ""                      # re-init line buffer
-            rest = maxwidth                 # re-init avail. space
-            if pl_w <= maxwidth:            # word shorter than 1 line?
-                lbuff = word + " "          # start new line with it
-                rest = maxwidth - pl_w - blen    # update free space
-                continue
-            # long word: split across multiple lines - char by char ...
-            just_tab[-1] = False            # reset justify indicator
-            for c in word:
-                if pixlen(lbuff) <= maxwidth - pixlen(c):
-                    lbuff += c
-                else:                       # line full
-                    lbuff += "\n"           # close line
-                    text += lbuff           # append to text
-                    pos += lheight * progr  # increase line position
-                    just_tab.append(False)  # do not justify line
-                    lbuff = c               # start new line with this char
-            lbuff += " "                    # finish long word
-            rest = maxwidth - pixlen(lbuff) # long word stored
-                
-        if lbuff != "":                     # unprocessed line content?
-            text += lbuff.rstrip()          # append to text
-            just_tab.append(False)          # do not justify line
-        if i < len(t0) - 1:                 # not the last line?
-            text += "\n"                    # insert line break
-            pos += lheight * progr          # increase line position
-    
-    more = (pos - maxpos) * progr           # difference to rect size limit
-    
-    if more > 1e-5:                         # landed too much outside rect
-        return (-1) * more                  # return deficit, don't output
-
-    more = abs(more)
-    if more < 1e-5:
-        more = 0                            # don't bother with small epsilons
-    nres = "\nn q BT\n" + cm                # initialize output buffer
-    templ = "1 0 0 1 %g %g Tm /%s %g Tf %g Tw %g %g %g rg %sTJ\n"
-    # center, right, justify: output each line with its own specifics
-    spacing = 0
-    text_t = text.splitlines()              # split text in lines again
-    for i, t in enumerate(text_t):
-        pl = maxwidth - pixlen(t)           # pixel amount of empty line space
-        pnt = point + c_pnt * (i * 1.2)     # text start of line
-        if align == 1:                      # center: right shift by half width
-            if rot in (0, 180):
-                pnt = pnt + fitz.Point(pl / 2, 0) * progr
-            else:
-                pnt = pnt - fitz.Point(0, pl / 2) * progr
-        elif align == 2:                    # right: right shift by full width
-            if rot in (0, 180):
-                pnt = pnt + fitz.Point(pl, 0) * progr
-            else:
-                pnt = pnt - fitz.Point(0, pl) * progr
-        elif align == 3:                    # justify
-            spaces = t.count(" ")           # number of spaces in line
-            if spaces > 0 and just_tab[i]:  # if any, and we may justify
-                spacing = pl / spaces       # make every space this much larger
-            else:
-                spacing = 0                 # keep normal space length
-        top  = height - pnt.y
-        left = pnt.x
-        if rot == 90:
-            left = height - pnt.y
-            top  = -pnt.x
-        elif rot == 270:
-            left = -height + pnt.y
-            top  = pnt.x
-        elif rot == 180:
-            left = -pnt.x
-            top  = -height + pnt.y
-        nres += templ % (left, top, fname, fontsize,
-                         spacing, red, green, blue, fitz.getTJstr(t))
-    nres += "ET Q\n"
-    if not str is bytes:          # we need bytes if Python 3
-        nres = bytes(nres, "utf-8")
-    # update the /Contents object
-    xref_list = page._getContents()
-    if overlay:                   # append string to last object
-        xref = xref_list[-1]
-        contents = page.parent._getXrefStream(xref)
-        contents += nres
-    else:                         # prepend 1st object with it
-        xref = xref_list[0]
-        contents = page.parent._getXrefStream(xref)
-        contents = nres + contents
-    
-    page.parent._updateStream(xref, contents)
-    return more
-
 #-------------------------------------------------------------------------------
 # Document.newPage
 #-------------------------------------------------------------------------------
@@ -2039,7 +1883,7 @@ def getColorHSV(name):
 # Create connected graphics elements on a PDF page
 #------------------------------------------------------------------------------
 class Shape():
-    """Create a new shape
+    """Create a new shape.
     """
     
     @staticmethod
@@ -2252,7 +2096,7 @@ class Shape():
             raise ValueError("points too close")
         mb = rad / cnt                          # revised breadth
         alfa = self.horizontal_angle(p1, p2)    # angle with x-axis
-        k = 4./3./0.55228474983                 # y of drawCurve helper point
+        k = 2.4142135623765633                  # y of drawCurve helper point
         calfa = math.cos(alfa)                  # need these ...
         salfa = math.sin(alfa)                  # ... values later
         points = []                             # stores edges
@@ -2277,6 +2121,327 @@ class Shape():
             i += 2
         return p2
         
+#==============================================================================
+# Shape.insertText
+#==============================================================================
+    def insertText(self, point, text,
+                   fontsize = 11,
+                   fontname = "Helvetica",
+                   fontfile = None,
+                   color = (0,0,0),
+                   rotate = 0,
+                   morph = None):
+        
+        # ensure 'text' is a list of strings
+        if not bool(text): return 0
+        tab = []
+        if type(text) not in (list, tuple):
+            text = text.splitlines()
+        for t in text:
+            tab.append(fitz.getTJstr(t))
+        text = tab
+        if not len(text) > 0:
+            return 0
+        # ensure valid 'fontname'
+        fname = fontname
+        if not fname:
+            fname = "Helvetica"
+        if fname[0] == "/":
+            fname = fname[1:]
+            assert fitz.CheckFont(self.page, fname), "invalid font reference"
+    
+        fitz.CheckColor(color)
+        morphing = fitz.CheckMorph(morph)
+        rot = rotate
+        assert rot % 90 == 0, "rotate not multiple of 90"
+        while rot < 0: rot += 360
+        rot = rot % 360               # text rotate = 0, 90, 270, 180
+        red, green, blue = color if color else (0,0,0)
+        templ1 = "\nn q BT\n%s1 0 0 1 %g %g Tm /%s %g Tf %g %g %g rg "
+        templ2 = "TJ\n0 -%g TD\n"
+        cmp90 = "0 1 -1 0 0 0 cm\n"   # rotates 90 deg counter-clockwise
+        cmm90 = "0 -1 1 0 0 0 cm\n"   # rotates 90 deg clockwise
+        cm180 = "-1 0 0 -1 0 0 cm\n"  # rotates by 180 deg.
+        height = self.height
+        width  = self.width
+        lheight = fontsize * 1.2      # line height
+        # setting up for standard rotation directions
+        # case rotate = 0
+        if morphing:
+            m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x, height - morph[0].y)
+            mat = ~m1 * morph[1] * m1
+            cm = "%g %g %g %g %g %g cm\n" % tuple(mat)
+        else:
+            cm = ""
+        top = height - point.y        # start of 1st char
+        left = point.x                # start of 1. char
+        space = top                   # space available
+        headroom = point.y            # distance to page border
+        if rot == 90:
+            left = height - point.y
+            top = -point.x
+            cm += cmp90
+            space = width - abs(top)
+            headroom = point.x
+    
+        elif rot == 270:
+            left = -height + point.y
+            top = point.x
+            cm += cmm90
+            space = abs(top)
+            headroom = width - point.x;
+    
+        elif rot == 180:
+            left = -point.x
+            top = -height + point.y
+            cm += cm180
+            space = abs(point.y)
+            headroom = height - point.y
+    
+        if headroom < fontsize:       # at least 1 full line space required!
+            raise ValueError("text starts outside page")
+    
+        nres = templ1 % (cm, left, top, fname, fontsize,
+                         red, green, blue)
+    # =========================================================================
+    #   start text insertion
+    # =========================================================================
+        nres += text[0]
+        nlines = 1                    # set output line counter
+        nres += templ2 % lheight      # line 1
+        for i in range(1, len(text)):
+            if space < lheight:
+                break                 # no space left on page
+            if i > 1:
+                nres += "\nT* "
+            nres += text[i] + "TJ"
+            space -= lheight
+            nlines += 1
+    
+        nres += "\nET Q\n"
+    
+    # =========================================================================
+    #   end of text insertion
+    # =========================================================================
+        # update the /Contents object
+        self.totalcont += nres
+        self.page.insertFont(fontname = fname, fontfile = fontfile)
+        return nlines
+    
+#==============================================================================
+# Shape.insertTextbox
+#==============================================================================
+    def insertTextbox(self, rect, buffer, fontname = "Helvetica", fontfile = None,
+                      fontsize = 11, color = (0,0,0), expandtabs = 1,
+                      charwidths = None, align = 0, rotate = 0, morph = None):
+        """Insert text into a given rectangle. Arguments:
+        rect - the textbox to fill
+        buffer - text to be inserted
+        fontname - a Base-14 font, font name or '/name'
+        fontfile - name of a font file
+        fontsize - font size
+        color - RGB color triple
+        expandtabs - handles tabulators with string function
+        charwidths - list of glyph widths
+        align - left, center, right, justified
+        rotate - 0, 90, 180, or 270 degrees
+        morph - morph box with  a matrix and a pivotal point
+        Returns: unused or deficit rectangle area (float)
+        """
+        if rect not in self.page.rect:
+            raise ValueError("text box not contained in page")
+        if rect.isEmpty or rect.isInfinite:
+            raise ValueError("text box must be finite and not empty")
+        fitz.CheckColor(color)
+        assert rotate % 90 == 0, "rotate must be multiple of 90"
+        rot = rotate
+        while rot < 0: rot += 360
+        rot = rot % 360
+        if not bool(buffer):
+            return rect.height if rot in (0, 180) else rect.width
+        red, green, blue = color if color else (0,0,0)
+        cmp90 = "0 1 -1 0 0 0 cm\n"   # rotates counter-clockwise
+        cmm90 = "0 -1 1 0 0 0 cm\n"   # rotates clockwise
+        cm180 = "-1 0 0 -1 0 0 cm\n"  # rotates by 180 deg.
+        height = self.height
+        fname = fontname
+        if not fname:
+            fname = "Helvetica"
+        if fname[0] == "/":
+            fname = fname[1:]
+            assert fitz.CheckFont(self.page, fname), "invalid font reference"
+        xref = self.page.insertFont(fontname = fname, fontfile = fontfile)
+        # ensure we have a list of glyph widths for the given font
+        widthtab = charwidths              # hopefully we have been given one
+        if not widthtab:                   # need to build our own (sigh!)
+            widthtab = self.doc._getCharWidths(xref = xref)
+
+        #----------------------------------------------------------------------
+        # calculate pixel length of a string
+        #----------------------------------------------------------------------
+        def pixlen(x):
+            """Calculate pixel length of x."""
+            try:
+                return sum([widthtab[ord(c)] for c in x]) * fontsize
+            except IndexError:
+                m = max([ord(c) for c in x])
+                raise ValueError("max. code point %i not < 256" % m)
+        #----------------------------------------------------------------------
+
+        blen = widthtab[32] * fontsize          # pixel size of space character
+        text = ""                               # output buffer
+        lheight = fontsize * 1.2                # line height
+        if fitz.CheckMorph(morph):
+            m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x, self.height - morph[0].y)
+            mat = ~m1 * morph[1] * m1
+            cm = "%g %g %g %g %g %g cm\n" % tuple(mat)
+        else:
+            cm = ""
+            
+        #---------------------------------------------------------------------------
+        # adjust for text orientation / rotation
+        #---------------------------------------------------------------------------
+        progr = 1                               # direction of line progress
+        c_pnt = fitz.Point(0, fontsize)         # used for line progress
+        if rot == 0:                            # normal orientation
+            point = rect.top_left + c_pnt       # line 1 is 'fontsize' below top
+            pos = point.y                       # y of first line
+            maxwidth = rect.width               # pixels available in one line
+            maxpos = rect.y1                    # lines must not be below this
+            
+        elif rot == 90:                         # rotate counter clockwise
+            c_pnt = fitz.Point(fontsize, 0)     # progress in x-direction
+            point = rect.bottom_left + c_pnt    # line 1 'fontsize' away from left
+            pos = point.x                       # position of first line
+            maxwidth = rect.height              # pixels available in one line
+            maxpos = rect.x1                    # lines must not be right of this
+            cm += cmp90
+            
+        elif rot == 180:                        # text upside down
+            c_pnt = -fitz.Point(0, fontsize)    # progress upwards in y direction
+            point = rect.bottom_right + c_pnt   # line 1 'fontsize' above bottom
+            pos = point.y                       # position of first line
+            maxwidth = rect.width               # pixels available in one line
+            progr = -1                          # subtract lheight for next line
+            maxpos = rect.y0                    # lines must not be above this
+            cm += cm180
+            
+        else:                                   # rotate clockwise (270 or -90)
+            c_pnt = -fitz.Point(fontsize, 0)    # progress from right to left
+            point = rect.top_right + c_pnt      # line 1 'fontsize' left of right
+            pos = point.x                       # position of first line
+            maxwidth = rect.height              # pixels available in one line
+            progr = -1                          # subtract lheight for next line
+            maxpos = rect.x0                    # lines must not left of this
+            cm += cmm90
+        
+        # create a list from buffer, split into its lines
+        if type(buffer) in (list, tuple):
+            t0 = "\n".join(buffer)
+        else:
+            t0 = buffer
+        
+        t0 = t0.splitlines()
+    
+        #=======================================================================
+        # line loop
+        #=======================================================================
+        just_tab = []                           # 'justify' indicators per line
+        for i, line in enumerate(t0):
+            line_t = line.expandtabs(expandtabs).split(" ")  # split line into words
+            lbuff = ""                          # init line buffer
+            rest = maxwidth                     # available line pixels
+            #===================================================================
+            # word loop
+            #===================================================================
+            for word in line_t:
+                pl_w = pixlen(word)             # pixel len of word
+                if rest >= pl_w:                # will it fit on the line?
+                    lbuff += word + " "         # yes, and append word
+                    rest -= (pl_w + blen)       # update available line space
+                    continue
+                # word won't fit in remaining space - output the line
+                lbuff = lbuff.rstrip() + "\n"   # line full, append line break
+                text += lbuff                   # append to total text
+                pos += lheight * progr          # increase line position
+                just_tab.append(True)           # line is justify candidate
+                lbuff = ""                      # re-init line buffer
+                rest = maxwidth                 # re-init avail. space
+                if pl_w <= maxwidth:            # word shorter than 1 line?
+                    lbuff = word + " "          # start new line with it
+                    rest = maxwidth - pl_w - blen    # update free space
+                    continue
+                # long word: split across multiple lines - char by char ...
+                just_tab[-1] = False            # reset justify indicator
+                for c in word:
+                    if pixlen(lbuff) <= maxwidth - pixlen(c):
+                        lbuff += c
+                    else:                       # line full
+                        lbuff += "\n"           # close line
+                        text += lbuff           # append to text
+                        pos += lheight * progr  # increase line position
+                        just_tab.append(False)  # do not justify line
+                        lbuff = c               # start new line with this char
+                lbuff += " "                    # finish long word
+                rest = maxwidth - pixlen(lbuff) # long word stored
+                    
+            if lbuff != "":                     # unprocessed line content?
+                text += lbuff.rstrip()          # append to text
+                just_tab.append(False)          # do not justify line
+            if i < len(t0) - 1:                 # not the last line?
+                text += "\n"                    # insert line break
+                pos += lheight * progr          # increase line position
+        
+        more = (pos - maxpos) * progr           # difference to rect size limit
+        
+        if more > 1e-5:                         # landed too much outside rect
+            return (-1) * more                  # return deficit, don't output
+    
+        more = abs(more)
+        if more < 1e-5:
+            more = 0                            # don't bother with epsilons
+        nres = "\nn q BT\n" + cm                # initialize output buffer
+        templ = "1 0 0 1 %g %g Tm /%s %g Tf %g Tw %g %g %g rg %sTJ\n"
+        # center, right, justify: output each line with its own specifics
+        spacing = 0
+        text_t = text.splitlines()              # split text in lines again
+        for i, t in enumerate(text_t):
+            pl = maxwidth - pixlen(t)           # pixel amount of empty line space
+            pnt = point + c_pnt * (i * 1.2)     # text start of line
+            if align == 1:                      # center: right shift by half width
+                if rot in (0, 180):
+                    pnt = pnt + fitz.Point(pl / 2, 0) * progr
+                else:
+                    pnt = pnt - fitz.Point(0, pl / 2) * progr
+            elif align == 2:                    # right: right shift by full width
+                if rot in (0, 180):
+                    pnt = pnt + fitz.Point(pl, 0) * progr
+                else:
+                    pnt = pnt - fitz.Point(0, pl) * progr
+            elif align == 3:                    # justify
+                spaces = t.count(" ")           # number of spaces in line
+                if spaces > 0 and just_tab[i]:  # if any, and we may justify
+                    spacing = pl / spaces       # make every space this much larger
+                else:
+                    spacing = 0                 # keep normal space length
+            top  = height - pnt.y
+            left = pnt.x
+            if rot == 90:
+                left = height - pnt.y
+                top  = -pnt.x
+            elif rot == 270:
+                left = -height + pnt.y
+                top  = pnt.x
+            elif rot == 180:
+                left = -pnt.x
+                top  = -height + pnt.y
+            nres += templ % (left, top, fname, fontsize,
+                             spacing, red, green, blue, fitz.getTJstr(t))
+        nres += "ET Q\n"
+        
+        self.totalcont += nres
+        return more
+    
     def finish(self, width = 1,
                    color = (0, 0, 0),
                    fill = None,
@@ -2287,8 +2452,8 @@ class Shape():
                    closePath = True):
         """Finish this drawing segment by applying stroke and fill colors, dashes, line style and width, or morphing. Also determines whether any open path should be closed by a connecting line to its start point.
         """
-        if not self.contents:
-            return                # treat empty contents as no-op
+        if self.contents == "":             # treat empty contents as no-op
+            return
         fitz.CheckColor(color)
         fitz.CheckColor(fill)
         self.contents += "%g w\n%i J\n%i j\n" % (width, roundCap,
@@ -2316,11 +2481,14 @@ class Shape():
         self.totalcont += self.contents + "Q\n"
         self.contents = ""
         self.lastPoint = None
+        return
 
     def commit(self, overlay = True):
         """Update the page's /Contents object with Shape data. The argument controls, whether data appear in foreground (True, default) or background.
         """
         fitz.CheckParent(self.page)         # doc may have died meanwhile
+        if self.totalcont == "":
+            return
         if not self.totalcont.endswith("Q\n"):
             raise RuntimeError("finish method missing")
 
@@ -2339,120 +2507,4 @@ class Shape():
         self.lastPoint = None               # clean up ...
         self.contents  = ""                 # for possible ...
         self.totalcont = ""                 # re-use
-
-#------------------------------------------------------------------------------
-# Page.insertText
-#------------------------------------------------------------------------------
-def insertText(page, point, text, fontsize = 11,
-    fontname = "Helvetica", fontfile = None, color = (0,0,0),
-    wordspacing = 0, rotate = 0, morph = None, overlay = True):
-    
-    fitz.CheckParent(page)
-    assert page.parent.isPDF, "not a PDF"
-    # ensure 'text' is a list of strings
-    assert bool(text), "some text is needed"
-    tab = []
-    if type(text) not in (list, tuple):
-        text = text.splitlines()
-    for t in text:
-        tab.append(fitz.getTJstr(t))
-    text = tab
-    if not len(text) > 0:
-        return 0
-    # ensure valid 'fontname'
-    fname = fontname
-    if not fname:
-        fname = "Helvetica"
-    if fname[0] == "/":
-        fname = fname[1:]
-        assert fitz.CheckFont(page, fname), "invalid font reference"
-
-    fitz.CheckColor(color)
-    morphing = fitz.CheckMorph(morph)
-    rot = rotate;
-    assert rot % 90 == 0, "rotate not multiple of 90"
-    while rot < 0: rot += 360
-    rot = rot % 360               # text rotate = 0, 90, 270, 180
-    red, green, blue = color if color else (0,0,0)
-    templ1 = "\nn q BT\n%s1 0 0 1 %g %g Tm /%s %g Tf %g Tw %g %g %g rg "
-    templ2 = "TJ\n0 -%g TD\n"
-    cmp90 = "0 1 -1 0 0 0 cm\n"   # rotates counter-clockwise
-    cmm90 = "0 -1 1 0 0 0 cm\n"   # rotates clockwise
-    cm180 = "-1 0 0 -1 0 0 cm\n"  # rotates by 180 deg.
-    height = page.rect.height
-    width  = page.rect.width
-    lheight = fontsize * 1.2      # line height
-    # setting up for standard rotation directions
-    # case rotate = 0
-    if morphing:
-        m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x, height - morph[0].y)
-        mat = ~m1 * morph[1] * m1
-        cm = "%g %g %g %g %g %g cm\n" % tuple(mat)
-    else:
-        cm = ""
-    top = height - point.y        # start of 1st char
-    left = point.x                # start of 1. char
-    space = top                   # space available
-    headroom = point.y            # distance to page border
-    if rot == 90:
-        left = height - point.y
-        top = -point.x
-        cm += cmp90
-        space = width - abs(top)
-        headroom = point.x
-
-    elif rot == 270:
-        left = -height + point.y
-        top = point.x
-        cm += cmm90
-        space = abs(top)
-        headroom = width - point.x;
-
-    elif rot == 180:
-        left = -point.x
-        top = -height + point.y
-        cm += cm180
-        space = abs(point.y)
-        headroom = height - point.y
-
-    if headroom < fontsize:       # at least 1 full line space required!
-        raise ValueError("text starts outside page")
-
-    nres = templ1 % (cm, left, top, fname, fontsize,
-                      wordspacing, red, green, blue)
-# =============================================================================
-#   start text insertion
-# =============================================================================
-    nres += text[0]
-    nlines = 1                    # set output line counter
-    nres += templ2 % lheight      # line 1
-    for i in range(1, len(text)):
-        if space < lheight:
-            break                 # no space left on page
-        if i > 1:
-            nres += "\nT* "
-        nres += text[i] + "TJ "
-        space -= lheight
-        nlines += 1
-
-    nres += "\nET Q "
-
-    if not str is bytes:          # we need a bytes object if Python 3
-        nres = bytes(nres, "utf-8")
-# =============================================================================
-#   end of text insertion
-# =============================================================================
-    # update the /Contents object
-    xref_list = page._getContents()
-    if overlay:                   # append string to last object
-        xref = xref_list[-1]
-        contents = page.parent._getXrefStream(xref)
-        contents += nres
-    else:                         # prepend 1st object with it
-        xref = xref_list[0]
-        contents = page.parent._getXrefStream(xref)
-        contents = nres + contents
-
-    page.insertFont(fontname = fname, fontfile = fontfile)
-    page.parent._updateStream(xref, contents)
-    return nlines
+        return

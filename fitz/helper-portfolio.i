@@ -42,7 +42,7 @@ int FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
                 if (strcmp(tname, name) == 0) break;
             }
         if (strcmp(tname, name) != 0)
-        fz_throw(ctx, FZ_ERROR_GENERIC, msg0008);
+        fz_throw(ctx, FZ_ERROR_GENERIC, "name not found");
     }
     return i;
 }

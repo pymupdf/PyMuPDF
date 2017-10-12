@@ -43,7 +43,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, msg)
 
 // SWIG macro: check whether document type is PDF
 %define assert_PDF(cond)
-if (!cond) THROWMSG(msg0001)
+if (!cond) THROWMSG("not a PDF")
 %enddef
 //=============================================================================
 %feature("autodoc", "0");
@@ -62,18 +62,6 @@ void fz_print_utf8(fz_context *ctx, fz_output *out, int rune);
 void fz_print_span_stext_json(fz_context *ctx, fz_output *out, fz_stext_span *span);
 void fz_send_data_base64(fz_context *ctx, fz_output *out, fz_buffer *buffer);
 
-// frequent error messages
-const char *msg0001 = "not a PDF";
-const char *msg0002 = "no embedded files";
-const char *msg0003 = "page number(s) out of range";
-const char *msg0004 = "xref out of range";
-const char *msg0005 = "expected a sequence";
-const char *msg0006 = "color components must be in [0, 1]";
-const char *msg0007 = "need 3 color components";
-const char *msg0008 = "name not found";
-const char *msg0009 = "source or target not a PDF";
-const char *msg0010 = "len(sequence) invalid";
-const char *msg0011 = "invalid argument type";
 %}
 
 /* global context */
@@ -165,15 +153,15 @@ struct fz_document_s
             fz_stream *data = NULL;
             char *streamdata;
             size_t streamlen = 0;
-            if (PyByteArray_Check(stream))
-            {
-                streamdata = PyByteArray_AsString(stream);
-                streamlen = (size_t) PyByteArray_Size(stream);
-            }
-            else if (PyBytes_Check(stream))
+            if (PyBytes_Check(stream))
             {
                 streamdata = PyBytes_AsString(stream);
                 streamlen = (size_t) PyBytes_Size(stream);
+            }
+            else if (PyByteArray_Check(stream))
+            {
+                streamdata = PyByteArray_AsString(stream);
+                streamlen = (size_t) PyByteArray_Size(stream);
             }
 
             fz_try(gctx)
@@ -294,7 +282,7 @@ struct fz_document_s
                 efiles = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
                                       PDF_NAME_Root, PDF_NAME_Names,
                                       PDF_NAME_EmbeddedFiles, NULL);
-                if (!efiles) THROWMSG(msg0002);
+                if (!efiles) THROWMSG("no embedded files");
                 names = pdf_dict_get(gctx, efiles, PDF_NAME_Names);
                 limits = pdf_dict_get(gctx, efiles, PDF_NAME_Limits);
                 limit1 = NULL;
@@ -310,7 +298,7 @@ struct fz_document_s
                         tname = pdf_to_utf8(gctx, pdf_array_get(gctx, names, i));
                         if (strcmp(tname, name) == 0) break;   // name found
                     }
-                if (strcmp(tname, name) != 0) THROWMSG(msg0008);
+                if (strcmp(tname, name) != 0) THROWMSG("name not found");
             }
             fz_catch(gctx) return -1;
 
@@ -372,7 +360,7 @@ struct fz_document_s
             {
                 assert_PDF(pdf);
                 count = pdf_count_portfolio_entries(gctx, pdf); // file count
-                if (count < 1) THROWMSG(msg0002);
+                if (count < 1) THROWMSG("no embedded files");
                 n = FindEmbedded(gctx, id, pdf);
             }
             fz_catch(gctx) return NULL;
@@ -417,7 +405,7 @@ struct fz_document_s
                 d = getPDFstr(gctx, desc, &desc_len, "desc");
                 if ((!f) && (!d)) THROWMSG("nothing to change");
                 int count = pdf_count_portfolio_entries(gctx, pdf);
-                if (count < 1) THROWMSG(msg0002);
+                if (count < 1) THROWMSG("no embedded files");
                 n = FindEmbedded(gctx, id, pdf);
                 pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, n);
                 
@@ -452,7 +440,7 @@ struct fz_document_s
             {
                 assert_PDF(pdf);
                 int count = pdf_count_portfolio_entries(gctx, pdf);
-                if (count < 1) THROWMSG(msg0002);
+                if (count < 1) THROWMSG("no embedded files");
                 int i = FindEmbedded(gctx, id, pdf);
                 unsigned char *data;
                 buf = pdf_portfolio_entry(gctx, pdf, i);
@@ -478,7 +466,7 @@ struct fz_document_s
             fz_try(gctx)
             {
                 name_len = strlen(name);
-                if (name_len < 1) THROWMSG(msg0008);
+                if (name_len < 1) THROWMSG("name not found");
                 f = getPDFstr(gctx, filename, &file_len, "filename");
                 d = getPDFstr(gctx, desc, &desc_len, "desc");
             }
@@ -685,7 +673,7 @@ struct fz_document_s
                 out = fz_new_output_with_buffer(gctx, res);
                 pdf_write_document(gctx, pdf, out, &opts);
                 len = fz_buffer_storage(gctx, res, &c);
-                r = PyByteArray_FromStringAndSize(c, len);
+                r = PyBytes_FromStringAndSize(c, len);
             }
             fz_always(gctx)
             {
@@ -740,7 +728,7 @@ if sa < 0:
             if (sa > outCount) sa = outCount;
             fz_try(gctx)
             {
-                if (!pdfout || !pdfsrc) THROWMSG(msg0009);
+                if (!pdfout || !pdfsrc) THROWMSG("source or target not a PDF");
                 merge_range(gctx, pdfout, pdfsrc, fp, tp, sa, rotate);
             }
             fz_catch(gctx) return -1;
@@ -761,8 +749,8 @@ if sa < 0:
             {
                 assert_PDF(pdf);
                 int pageCount = fz_count_pages(gctx, $self);
-                if ((pno < 0) | (pno >= pageCount))
-                    THROWMSG(msg0003);
+                if ((pno < 0) || (pno >= pageCount))
+                    THROWMSG("page number(s) out of range");
                 pdf_delete_page(gctx, pdf, pno);
             }
             fz_catch(gctx) return -1;
@@ -788,7 +776,7 @@ if sa < 0:
                 if (f < 0) f = pageCount - 1;
                 if (t < 0) t = pageCount - 1;
                 if ((t >= pageCount) | (f > t))
-                    THROWMSG(msg0003);
+                    THROWMSG("page number(s) out of range");
                 int i = t + 1 - f;
                 while (i > 0)
                 {
@@ -815,7 +803,7 @@ if sa < 0:
                 assert_PDF(pdf);
                 int pageCount = fz_count_pages(gctx, $self);
                 if ((pno < 0) | (pno >= pageCount))
-                    THROWMSG(msg0003);
+                    THROWMSG("page number(s) out of range");
                 pdf_obj *page = pdf_lookup_page_obj(gctx, pdf, pno);
                 pdf_insert_page(gctx, pdf, to, page);
             }
@@ -859,7 +847,7 @@ if sa < 0:
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                if (pno < -1) THROWMSG(msg0003);
+                if (pno < -1) THROWMSG("page number(s) out of range");
                 // create /Resources and /Contents objects
                 resources = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
                 contents = fz_new_buffer(gctx, 10);
@@ -892,7 +880,7 @@ if sa < 0:
                 assert_PDF(pdf);
                 int pageCount = fz_count_pages(gctx, $self);
                 if ((pno < 0) | (pno >= pageCount))
-                    THROWMSG(msg0003);
+                    THROWMSG("page number(s) out of range");
                 int t = to;
                 if (t < 0) t = pageCount;
                 if ((t == pno) || (pno == t - 1))
@@ -931,10 +919,10 @@ if sa < 0:
             {
                 assert_PDF(pdf);
                 if (!PySequence_Check(pyliste))
-                    THROWMSG(msg0005);
+                    THROWMSG("expected a sequence");
                 argc = (int) PySequence_Size(pyliste);
                 if (argc < 1)
-                    THROWMSG(msg0010);
+                    THROWMSG("len(sequence) invalid");
             }
             fz_catch(gctx) return -1;
 
@@ -952,7 +940,7 @@ if sa < 0:
                     {
                         liste[i] = (int) PyInt_AsLong(o);
                         if ((liste[i] < 0) | (liste[i] >= pageCount))
-                            THROWMSG(msg0003);
+                            THROWMSG("page number(s) out of range");
                     }
                     else
                         THROWMSG("page numbers must be integers");
@@ -1096,7 +1084,7 @@ if sa < 0:
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx)
             {
-                if (pno >= pageCount) THROWMSG(msg0003);
+                if (pno >= pageCount) THROWMSG("page number(s) out of range");
                 assert_PDF(pdf);
             }
             fz_catch(gctx) return NULL;
@@ -1111,7 +1099,7 @@ if sa < 0:
         //*********************************************************************
         // Returns the images used on a page as a list of lists.
         // Each image entry contains
-        // [xref#, gen#, width, height, bpc, colorspace, altcs]
+        // [xref, smask, width, height, bpc, colorspace, altcs, name]
         //*********************************************************************
         FITZEXCEPTION(getPageImageList, result==NULL)
         CLOSECHECK(getPageImageList)
@@ -1124,7 +1112,7 @@ if sa < 0:
             while (n < 0) n += pageCount;
             fz_try(gctx)
             {
-                if (n >= pageCount) THROWMSG(msg0003);
+                if (n >= pageCount) THROWMSG("page number(s) out of range");
                 assert_PDF(pdf);
             }
             fz_catch(gctx) return NULL;
@@ -1199,7 +1187,7 @@ if sa < 0:
             while (n < 0) n += pageCount;
             fz_try(gctx)
             {
-                if (n >= pageCount) THROWMSG(msg0003);
+                if (n >= pageCount) THROWMSG("page number(s) out of range");
                 assert_PDF(pdf);
             }
             fz_catch(gctx) return NULL;
@@ -1360,11 +1348,7 @@ if sa < 0:
                 pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root);
                 if (!root) THROWMSG("could not load root object");
                 xml = pdf_dict_gets(gctx, root, "Metadata");
-                if (xml)
-                {
-                    xref = pdf_to_num(gctx, xml);
-                }
-
+                if (xml) xref = pdf_to_num(gctx, xml);
             }
             fz_catch(gctx) return -1;
             return xref;
@@ -1405,7 +1389,7 @@ if sa < 0:
                 assert_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if ((xref < 1) | (xref >= xreflen))
-                    THROWMSG(msg0004);
+                    THROWMSG("xref out of range");
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 obj = pdf_load_object(gctx, pdf, xref);
@@ -1443,7 +1427,7 @@ if sa < 0:
                 assert_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if ((xref < 1) | (xref >= xreflen))
-                    THROWMSG(msg0004);
+                    THROWMSG("xref out of range");
                 res = pdf_load_stream_number(gctx, pdf, xref);
                 len = fz_buffer_storage(gctx, res, &c);
                 r = PyBytes_FromStringAndSize(c, len);
@@ -1467,7 +1451,7 @@ if sa < 0:
                 assert_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if ((xref < 1) | (xref >= xreflen))
-                    THROWMSG(msg0004);
+                    THROWMSG("xref out of range");
                 // create new object based on passed-in string
                 new_obj = pdf_new_obj_from_str(gctx, pdf, text);
                 pdf_update_object(gctx, pdf, xref, new_obj);
@@ -1495,7 +1479,7 @@ if sa < 0:
                 assert_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if ((xref < 1) | (xref >= xreflen))
-                    THROWMSG(msg0004);
+                    THROWMSG("xref out of range");
                 if (PyBytes_Check(stream))
                 {
                     c = PyBytes_AsString(stream);
@@ -2304,8 +2288,8 @@ struct fz_rect_s
             fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
             fz_try(gctx)
             {
-                if (!PySequence_Check(list)) THROWMSG(msg0005);
-                if (PySequence_Size(list) != 4) THROWMSG(msg0010);
+                if (!PySequence_Check(list)) THROWMSG("expected a sequence");
+                if (PySequence_Size(list) != 4) THROWMSG("len(sequence) invalid");
                 r->x0 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
                 r->y0 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 1));
                 r->x1 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 2));
@@ -2554,8 +2538,8 @@ struct fz_irect_s
             fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
             fz_try(gctx)
             {
-                if (!PySequence_Check(list)) THROWMSG(msg0005);
-                if (PySequence_Size(list) != 4) THROWMSG(msg0010);
+                if (!PySequence_Check(list)) THROWMSG("expected a sequence");
+                if (PySequence_Size(list) != 4) THROWMSG("len(sequence) invalid");
                 r->x0 = (int) PyInt_AsLong(PySequence_GetItem(list, 0));
                 r->y0 = (int) PyInt_AsLong(PySequence_GetItem(list, 1));
                 r->x1 = (int) PyInt_AsLong(PySequence_GetItem(list, 2));
@@ -2815,7 +2799,7 @@ struct fz_pixmap_s
             }
             fz_try(gctx)
             {
-                if (size == 0) THROWMSG(msg0011);
+                if (size == 0) THROWMSG("invalid argument type");
                 if (stride * h != size) THROWMSG("len(samples) invalid");
                 pm = fz_new_pixmap_with_data(gctx, cs, w, h, alpha, stride, data);
             }
@@ -2831,7 +2815,7 @@ struct fz_pixmap_s
             struct fz_image_s *img = NULL;
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx) {
-                if (!filename) THROWMSG(msg0011);
+                if (!filename) THROWMSG("invalid argument type");
                 img = fz_new_image_from_file(gctx, filename);
                 pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
             }
@@ -2851,7 +2835,7 @@ struct fz_pixmap_s
             struct fz_pixmap_s *pm = NULL;
             fz_try(gctx)
             {
-                if (!imagedata) THROWMSG(msg0011);
+                if (!imagedata) THROWMSG("invalid argument type");
                 if (PyByteArray_Check(imagedata))
                 {
                     size = (size_t) PyByteArray_Size(imagedata);
@@ -2864,7 +2848,7 @@ struct fz_pixmap_s
                     data = fz_new_buffer_from_shared_data(gctx,
                               PyBytes_AsString(imagedata), size);
                 }
-                if (size == 0) THROWMSG(msg0011);
+                if (size == 0) THROWMSG("invalid argument type");
                 img = fz_new_image_from_buffer(gctx, data);
                 pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
             }
@@ -2892,7 +2876,7 @@ struct fz_pixmap_s
                 assert_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if ((xref < 1) | (xref >= xreflen))
-                    THROWMSG(msg0004);
+                    THROWMSG("xref out of range");
                 ref = pdf_new_indirect(gctx, pdf, xref, 0);
                 type = pdf_dict_get(gctx, ref, PDF_NAME_Subtype);
                 if (!pdf_name_eq(gctx, type, PDF_NAME_Image))
@@ -3363,8 +3347,8 @@ struct fz_matrix_s
             fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
             fz_try(gctx)
             {
-                if (!PySequence_Check(list)) THROWMSG(msg0005);
-                if (PySequence_Size(list) != 6) THROWMSG(msg0010);
+                if (!PySequence_Check(list)) THROWMSG("expected a sequence");
+                if (PySequence_Size(list) != 6) THROWMSG("len(sequence) invalid");
                 m->a = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
                 m->b = (float) PyFloat_AsDouble(PySequence_GetItem(list, 1));
                 m->c = (float) PyFloat_AsDouble(PySequence_GetItem(list, 2));
@@ -3599,8 +3583,8 @@ struct fz_point_s
             fz_point *p = (fz_point *)malloc(sizeof(fz_point));
             fz_try(gctx)
             {
-                if (!PySequence_Check(list)) THROWMSG(msg0005);
-                if (PySequence_Size(list) != 2) THROWMSG(msg0010);
+                if (!PySequence_Check(list)) THROWMSG("expected a sequence");
+                if (PySequence_Size(list) != 2) THROWMSG("len(sequence) invalid");
                 p->x = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
                 p->y = (float) PyFloat_AsDouble(PySequence_GetItem(list, 1));
             }
@@ -3812,7 +3796,7 @@ struct fz_annot_s
             {
                 assert_PDF(annot);
                 if (!annot->ap) THROWMSG("annot has no /AP");
-                if (!c) THROWMSG(msg0011);
+                if (!c) THROWMSG("invalid argument type");
                 pdf_dict_put(gctx, annot->ap->obj, PDF_NAME_Filter,
                                                    PDF_NAME_FlateDecode);
                 res = deflatebuf(gctx, c, (size_t) len);

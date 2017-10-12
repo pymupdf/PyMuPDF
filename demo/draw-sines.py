@@ -158,14 +158,12 @@ if __name__ == "__main__":
 
     img.drawLine(pb, pe)
     img.finish(width = w)         # draw x-axis (default color)
-
-    img.commit()                  # commit with overlay = True
-    
+   
     # insert "sine" / "cosine" legend text
-    # must insert text AFTER shape has been committed (if overlay = True)
     r1 = fitz.Rect(rect.x0 + 2, rect.y1 - 20, rect.br)
-    page.insertTextbox(r1, "sine", color = red, fontsize = 8, morph = morph)
+    img.insertTextbox(r1, "sine", color = red, fontsize = 8, morph = morph)
     r2 = fitz.Rect(rect.x0 + 2, rect.y1 - 10, rect.br)
-    page.insertTextbox(r2, "cosine", color = blue, fontsize = 8, morph = morph)
+    img.insertTextbox(r2, "cosine", color = blue, fontsize = 8, morph = morph)
+    img.commit()                  # commit with overlay = True
     
     doc.save("draw-sines.pdf")

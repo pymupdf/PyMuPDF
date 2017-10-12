@@ -182,13 +182,12 @@ def pencil(img, penciltip, pb_height, left, morph = None):
     img.finish(color=white, width = pb_height*0.08, roundCap = False,
                morph = morph)
 
-    img.commit(True)                   # commit all shapes before text insert
     # indicate a medium lead grade
-    if page.insertTextbox(lblrect, "HB", color = white,
+    if img.insertTextbox(lblrect, "HB", color = white,
                           fontname = "Helvetica", morph = morph,
                           fontsize = pb_height * 0.22, align = 1) < 0:
         raise ValueError("not enough space to store pencil text")
-                       
+    img.commit(True)                   # commit everythinh                       
     return
 
 #==============================================================================

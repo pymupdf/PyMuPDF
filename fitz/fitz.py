@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.1"
-VersionDate = "2017-10-02 06:43:49"
-version = (VersionBind, VersionFitz, "20171002064349")
+VersionDate = "2017-10-12 18:24:52"
+version = (VersionBind, VersionFitz, "20171012182452")
 
 
 #------------------------------------------------------------------------------
@@ -235,16 +235,13 @@ def getPDFnow():
 # UTF-16BE encoding of the original.
 #-------------------------------------------------------------------------------
 def getPDFstr(s, brackets = True):
+    if s is None or s == "":
+        return "()" if brackets else ""
+
     try:
         x = s.decode("utf-8")
     except:
         x = s
-    if x is None:
-        return "()" if brackets else ""
-    if type(x) in (str, bytes) or sys.version_info[0] < 3 and type(x) in (str, unicode):
-        pass
-    else:
-        raise ValueError("non-string passed to getPDFstr")
 
     utf16 = False
 # following returns ascii original string with mixed-in 
@@ -265,9 +262,9 @@ def getPDFstr(s, brackets = True):
     if not utf16:
         return "(" + r + ")" if brackets else r
 
-# require full unicode: make a UTF-16BE hex string prefixed with "feff"
+# require full unicode: make a UTF-16BE hex string with BOM "feff"
     r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
-    t = r.decode("utf-8")                        # make str in Python 3
+    t = r if str is bytes else r.decode()
     return "<" + t + ">"                         # brackets indicate hex
 
 #===============================================================================
@@ -366,19 +363,17 @@ def CheckParent(o):
     if not hasattr(o, "parent") or o.parent is None:
         raise RuntimeError("orphaned object: parent is None") 
 
-def CheckColor(color):
-    if color is not None:
-        if type(color) not in (list, tuple) or len(color) != 3 or \
-            min(color) < 0 or max(color) > 1:
+def CheckColor(c):
+    if c is not None:
+        if type(c) not in (list, tuple) or len(c) != 3 or \
+            min(c) < 0 or max(c) > 1:
             raise ValueError("need 3 color components in range 0 to 1")
 
 def CheckMorph(o):
     if not bool(o): return False
-    if type(o) not in (list, tuple):
-        raise ValueError("morph must be a sequence")
-    if len(o) != 2:
-        raise ValueError("invalid morph parameter")
-    if type(o[0]) != Point or type(o[1]) != Matrix:
+    if not (type(o) in (list, tuple) and len(o) == 2):
+        raise ValueError("morph must be a sequence of length 2")
+    if not (type(o[0]) == Point and issubclass(type(o[1]), Matrix)):
         raise ValueError("invalid morph parameter")
     if not o[1].e == o[1].f == 0:
         raise ValueError("invalid morph parameter")
