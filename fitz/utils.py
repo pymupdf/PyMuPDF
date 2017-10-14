@@ -2214,7 +2214,7 @@ class Shape():
                 break                 # no space left on page
             if i > 1:
                 nres += "\nT* "
-            nres += text[i] + "TJ"
+            nres += text[i] + templ2[:2]
             space -= lheight
             nlines += 1
     
@@ -2492,7 +2492,7 @@ class Shape():
         if not self.totalcont.endswith("Q\n"):
             raise RuntimeError("finish method missing")
 
-        if not str is bytes:                # bytes object needed in Python 3
+        if str != bytes:                    # bytes object needed in Python 3
             self.totalcont = bytes(self.totalcont, "utf-8")
         
         if overlay:                         # last one if foreground
@@ -2503,6 +2503,7 @@ class Shape():
             xref = self.page._getContents()[0]
             cont = self.doc._getXrefStream(xref)
             cont = self.totalcont + cont    # prepend our stuff
+
         self.doc._updateStream(xref, cont)  # replace the PDF stream
         self.lastPoint = None               # clean up ...
         self.contents  = ""                 # for possible ...

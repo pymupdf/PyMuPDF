@@ -5900,7 +5900,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/
 /*@SWIG@*/;
                 int xreflen = pdf_xref_len(gctx, pdf);
-                if ((xref < 1) | (xref >= xreflen))
+                if ((xref < 1) || (xref >= xreflen))
                     /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "xref out of range")
 /*@SWIG@*/;
@@ -5909,21 +5909,27 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "xref out of range")
                     c = PyBytes_AsString(stream);
                     len = (size_t) PyBytes_Size(stream);
                 }
-                if (PyByteArray_Check(stream))
+                else
                 {
-                    c = PyByteArray_AsString(stream);
-                    len = (size_t) PyByteArray_Size(stream);
-                }
-                if (c == NULL) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "invalid stream")
+                    if (PyByteArray_Check(stream))
+                    {
+                        c = PyByteArray_AsString(stream);
+                        len = (size_t) PyByteArray_Size(stream);
+                    }
+                    else
+                    {
+                        /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "stream must be bytes or bytearray")
 /*@SWIG@*/;
+                    }
+                }
                 // get the object
                 obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 if (!obj) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "xref invalid")
 /*@SWIG@*/;
                 if (!pdf_is_stream(gctx, obj)) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "object not a stream")
+fz_throw(gctx, FZ_ERROR_GENERIC, "xref not a stream object")
 /*@SWIG@*/;
                 
                 pdf_dict_put(gctx, obj, PDF_NAME_Filter,
@@ -9874,8 +9880,8 @@ fail:
 SWIGINTERN PyObject *_wrap_Document__updateStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
-  int arg2 ;
-  PyObject *arg3 = (PyObject *) 0 ;
+  int arg2 = (int) 0 ;
+  PyObject *arg3 = (PyObject *) NULL ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
@@ -9885,18 +9891,22 @@ SWIGINTERN PyObject *_wrap_Document__updateStream(PyObject *SWIGUNUSEDPARM(self)
   PyObject * obj2 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO:Document__updateStream",&obj0,&obj1,&obj2)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O|OO:Document__updateStream",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__updateStream" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
   }
   arg1 = (struct fz_document_s *)(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document__updateStream" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = (int)(val2);
-  arg3 = obj2;
+  if (obj1) {
+    ecode2 = SWIG_AsVal_int(obj1, &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document__updateStream" "', argument " "2"" of type '" "int""'");
+    } 
+    arg2 = (int)(val2);
+  }
+  if (obj2) {
+    arg3 = obj2;
+  }
   {
     result = (int)fz_document_s__updateStream(arg1,arg2,arg3);
     if(result!=0)
@@ -16882,7 +16892,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document__getObjectString", _wrap_Document__getObjectString, METH_VARARGS, (char *)"Document__getObjectString(self, xref) -> char const *"},
 	 { (char *)"Document__getXrefStream", _wrap_Document__getXrefStream, METH_VARARGS, (char *)"Document__getXrefStream(self, xref) -> PyObject *"},
 	 { (char *)"Document__updateObject", _wrap_Document__updateObject, METH_VARARGS, (char *)"Document__updateObject(self, xref, text, page=None) -> int"},
-	 { (char *)"Document__updateStream", _wrap_Document__updateStream, METH_VARARGS, (char *)"Document__updateStream(self, xref, stream) -> int"},
+	 { (char *)"Document__updateStream", _wrap_Document__updateStream, METH_VARARGS, (char *)"Document__updateStream(self, xref=0, stream=None) -> int"},
 	 { (char *)"Document__setMetadata", _wrap_Document__setMetadata, METH_VARARGS, (char *)"Document__setMetadata(self, text) -> int"},
 	 { (char *)"Document_swigregister", Document_swigregister, METH_VARARGS, NULL},
 	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, (char *)"delete_Page(self)"},

@@ -1467,7 +1467,7 @@ if sa < 0:
         //---------------------------------------------------------------------
         FITZEXCEPTION(_updateStream, result!=0)
         CLOSECHECK(_updateStream)
-        int _updateStream(int xref, PyObject *stream)
+        int _updateStream(int xref = 0, PyObject *stream = NULL)
         {
             pdf_obj *obj = NULL;
             fz_buffer *res = NULL;
@@ -1478,23 +1478,29 @@ if sa < 0:
             {
                 assert_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
-                if ((xref < 1) | (xref >= xreflen))
+                if ((xref < 1) || (xref >= xreflen))
                     THROWMSG("xref out of range");
                 if (PyBytes_Check(stream))
                 {
                     c = PyBytes_AsString(stream);
                     len = (size_t) PyBytes_Size(stream);
                 }
-                if (PyByteArray_Check(stream))
+                else
                 {
-                    c = PyByteArray_AsString(stream);
-                    len = (size_t) PyByteArray_Size(stream);
+                    if (PyByteArray_Check(stream))
+                    {
+                        c = PyByteArray_AsString(stream);
+                        len = (size_t) PyByteArray_Size(stream);
+                    }
+                    else
+                    {
+                        THROWMSG("stream must be bytes or bytearray");
+                    }
                 }
-                if (c == NULL) THROWMSG("invalid stream");
                 // get the object
                 obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 if (!obj) THROWMSG("xref invalid");
-                if (!pdf_is_stream(gctx, obj)) THROWMSG("object not a stream");
+                if (!pdf_is_stream(gctx, obj)) THROWMSG("xref not a stream object");
                 
                 pdf_dict_put(gctx, obj, PDF_NAME_Filter,
                                                    PDF_NAME_FlateDecode);

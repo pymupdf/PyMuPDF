@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.1"
-VersionDate = "2017-10-12 18:24:52"
-version = (VersionBind, VersionFitz, "20171012182452")
+VersionDate = "2017-10-13 09:57:36"
+version = (VersionBind, VersionFitz, "20171013095736")
 
 
 #------------------------------------------------------------------------------
@@ -862,8 +862,8 @@ open(filename)"""
         return _fitz.Document__updateObject(self, xref, text, page)
 
 
-    def _updateStream(self, xref, stream):
-        """_updateStream(self, xref, stream) -> int"""
+    def _updateStream(self, xref=0, stream=None):
+        """_updateStream(self, xref=0, stream=None) -> int"""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
