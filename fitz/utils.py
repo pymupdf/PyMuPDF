@@ -81,6 +81,7 @@ def getPixmap(page, matrix = fitz.Identity, colorspace = fitz.csRGB, clip = None
                        colorspace = cs,
                        alpha = alpha,
                        clip = scissor)
+    dl = None
     return pix
 
 #==============================================================================
@@ -269,18 +270,18 @@ def writeImage(*arg, **kw):
 # arithmetic methods for fitz.Matrix
 #==============================================================================
 def mat_mult(m1, m2):     # __mul__
-    if type(m2) in (int, float):
+    if len(m2) == 1:
         return fitz.Matrix(m1.a * m2, m1.b * m2, m1.c * m2,
                            m1.d * m2, m1.e * m2, m1.f * m2)
     m = fitz.Matrix()
     try:
         m.concat(m1, fitz.Matrix(m2))
     except:
-        raise NotImplementedError("op2 must be 'Matrix', sequence or number")
+        raise NotImplementedError("op2 must be matrix-like or a number")
     return m
 
 def mat_div(m1, m2):     # __mul__
-    if type(m2) in (int, float):
+    if len(m2) == 1:
         return fitz.Matrix(m1.a * 1./m2, m1.b * 1./m2, m1.c * 1./m2,
                            m1.d * 1./m2, m1.e * 1./m2, m1.f * 1./m2)
     m = fitz.Matrix()
@@ -297,7 +298,7 @@ def mat_invert(me):       # __invert__
     return m
 
 def mat_add(m1, m2):      # __add__
-    if type(m2) in (int, float):
+    if len(m2) == 1:
         me = fitz.Matrix(m2, m2, m2, m2, m2, m2)
     else:
         me = fitz.Matrix(m2)
@@ -306,7 +307,7 @@ def mat_add(m1, m2):      # __add__
 
 
 def mat_sub(m1, m2):      # __sub__
-    if type(m2) in (int, float):
+    if len(m2) == 1:
         me = fitz.Matrix(m2, m2, m2, m2, m2, m2)
     else:
         me = fitz.Matrix(m2)
@@ -324,7 +325,7 @@ def mat_equ(m, m2):       # __equ__
     return len(m) == len(m2) and mat_true(m - m2) == 0
 
 def mat_contains(m, x):
-    if type(x) not in (int, float):
+    if len(x) != 1:
         return False
     else:
         return x in tuple(m)
@@ -333,31 +334,21 @@ def mat_contains(m, x):
 # arithmetic methods for fitz.Rect
 #==============================================================================
 def rect_or(r1, r2):         # __or__: include point, rect or irect
-    if type(r2) not in (fitz.Rect, fitz.IRect, fitz.Point):
-        raise NotImplementedError("op2 must be 'Rect', 'IRect' or 'Point'")
     r = fitz.Rect(r1)
-
-    if type(r2) is fitz.Rect:
-        r.includeRect(r2)
-    elif type(r2) is fitz.IRect:
-        r.includeRect(r2.rect)
+    if len(r2) == 2:
+        r.includePoint(fitz.Point(r2))
     else:
-        r.includePoint(r2)
+        r.includeRect(fitz.Rect(r2))
     return r if type(r1) is fitz.Rect else r.irect
 
 def rect_and(r1, r2):        # __and__: intersection with rect or irect
-    if type(r2) not in (fitz.Rect, fitz.IRect):
-        raise NotImplementedError("op2 must be 'Rect' or 'IRect'")
     r = fitz.Rect(r1)
-    if type(r2) is fitz.Rect:
-        r.intersect(r2)
-    else:
-        r.intersect(r2.rect)
+    r.intersect(fitz.Rect(r2))
     return r if type(r1) is fitz.Rect else r.irect
 
 def rect_add(r1, r2):        # __add__: add number, rect or irect to rect
     r = fitz.Rect(r1)
-    if type(r2) in (int, float):
+    if len(r2) == 1:
         a = fitz.Rect(r2, r2, r2, r2)
     else:
         a = fitz.Rect(r2)
@@ -369,7 +360,7 @@ def rect_add(r1, r2):        # __add__: add number, rect or irect to rect
 
 def rect_sub(r1, r2):        # __sub__: subtract number, rect or irect from rect
     r = fitz.Rect(r1)
-    if type(r2) in (int, float):
+    if len(r2) == 1:
         a = fitz.Rect(r2, r2, r2, r2)
     else:
         a = fitz.Rect(r2)
@@ -381,7 +372,7 @@ def rect_sub(r1, r2):        # __sub__: subtract number, rect or irect from rect
 
 def rect_mul(r, m):          # __mul__: transform with matrix
     r1 = fitz.Rect(r)
-    if type(m) in (int, float):
+    if len(m) == 1:
         r1 = fitz.Rect(r1.x0 * m, r1.y0 * m, r1.x1 * m, r1.y1 * m)
     else:
         r1.transform(fitz.Matrix(m))
@@ -389,7 +380,7 @@ def rect_mul(r, m):          # __mul__: transform with matrix
 
 def rect_div(r, m):          # __div__ / __truediv__
     r1 = fitz.Rect(r)
-    if type(m) in (int, float):
+    if len(m) == 1:
         r1 = fitz.Rect(r1.x0 * 1. / m, r1.y0 * 1. / m, r1.x1 * 1. / m, r1.y1 * 1. / m)
     else:
         m1 = ~fitz.Matrix(m)
@@ -408,27 +399,27 @@ def rect_true(r):
 # arithmetic methods for fitz.Point
 #==============================================================================
 def point_add(p1, p2):
-    if type(p2) in (int, float):
+    if len(p2) == 1:
         p = fitz.Point(p2, p2)
     else:
         p = fitz.Point(p2)
     return fitz.Point(p1.x + p.x, p1.y + p.y)
 
 def point_sub(p1, p2):
-    if type(p2) in (int, float):
+    if len(p2) == 1:
         p = fitz.Point(p2, p2)
     else:
         p = fitz.Point(p2)
     return fitz.Point(p1.x - p.x, p1.y - p.y)
 
 def point_mul(p, m):
-    if type(m) in (int, float):
+    if len(m) == 1:
         return fitz.Point(p.x*m, p.y*m)
     p1 = fitz.Point(p)
     return p1.transform(fitz.Matrix(m))
 
 def point_div(p, m):
-    if type(m) in (int, float):
+    if len(m) == 1:
         return fitz.Point(p.x*1./m, p.y*1./m)
     p1 = fitz.Point(p)
     m1 = ~fitz.Matrix(m)
@@ -446,7 +437,7 @@ def point_equ(p, p2):       # __equ__
     return type(p) == type(p2) and point_true(p - p2) == 0
 
 def point_contains(p, x):
-    if type(x) not in (int, float):
+    if len(x) != 1:
         return False
     else:
         return x in tuple(p)

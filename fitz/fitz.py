@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.1"
-VersionDate = "2017-10-13 09:57:36"
-version = (VersionBind, VersionFitz, "20171013095736")
+VersionDate = "2017-10-18 13:37:26"
+version = (VersionBind, VersionFitz, "20171018133726")
 
 
 #------------------------------------------------------------------------------
@@ -924,6 +924,7 @@ open(filename)"""
         self._reset_page_refs()
         if getattr(self, "thisown", True):
             self.__swig_destroy__(self)
+            self.thisown = False
 
 Document_swigregister = _fitz.Document_swigregister
 Document_swigregister(Document)
@@ -1201,6 +1202,8 @@ Rect(sequence) - from 'sequence'"""
     __swig_getmethods__["y1"] = _fitz.Rect_y1_get
     if _newclass:
         y1 = _swig_property(_fitz.Rect_y1_get, _fitz.Rect_y1_set)
+    __swig_destroy__ = _fitz.delete_Rect
+    __del__ = lambda self: None
 
     def __init__(self, *args):
         """
@@ -1217,8 +1220,6 @@ Rect(sequence) - from 'sequence'"""
             self.this.append(this)
         except __builtin__.Exception:
             self.this = this
-    __swig_destroy__ = _fitz.delete_Rect
-    __del__ = lambda self: None
 
     def round(self):
         """Create enclosing 'IRect'"""
@@ -1324,6 +1325,11 @@ Rect(sequence) - from 'sequence'"""
     br = bottom_right
     bl = bottom_left
 
+
+    def __del__(self):
+        if getattr(self, "thisown", True):
+            self.__swig_destroy__(self)
+            self.thisown = False
 
 Rect_swigregister = _fitz.Rect_swigregister
 Rect_swigregister(Rect)
@@ -1456,6 +1462,11 @@ IRect(sequence) - from 'sequence'"""
     bl = bottom_left
 
 
+    def __del__(self):
+        if getattr(self, "thisown", True):
+            self.__swig_destroy__(self)
+            self.thisown = False
+
 IRect_swigregister = _fitz.IRect_swigregister
 IRect_swigregister(IRect)
 
@@ -1505,6 +1516,8 @@ Pixmap(Document, xref) - from PDF image in a PDF"""
     __swig_getmethods__["yres"] = _fitz.Pixmap_yres_get
     if _newclass:
         yres = _swig_property(_fitz.Pixmap_yres_get, _fitz.Pixmap_yres_set)
+    __swig_destroy__ = _fitz.delete_Pixmap
+    __del__ = lambda self: None
 
     def __init__(self, *args):
         """
@@ -1521,8 +1534,6 @@ Pixmap(Document, xref) - from PDF image in a PDF"""
             self.this.append(this)
         except __builtin__.Exception:
             self.this = this
-    __swig_destroy__ = _fitz.delete_Pixmap
-    __del__ = lambda self: None
 
     def gammaWith(self, gamma):
         """gammaWith(self, gamma)"""
@@ -1631,6 +1642,12 @@ Pixmap(Document, xref) - from PDF image in a PDF"""
             return "fitz.Pixmap(%s, %s, %s)" % (self.colorspace.name, self.irect, self.alpha)
         else:
             return "fitz.Pixmap(%s, %s, %s)" % ('None', self.irect, self.alpha)
+
+    def __del__(self):
+        if getattr(self, "thisown", True):
+            self.__swig_destroy__(self)
+            self.thisown = False
+
 Pixmap_swigregister = _fitz.Pixmap_swigregister
 Pixmap_swigregister(Pixmap)
 
@@ -1645,6 +1662,8 @@ class Colorspace(_object):
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, Colorspace, name)
     __repr__ = _swig_repr
+    __swig_destroy__ = _fitz.delete_Colorspace
+    __del__ = lambda self: None
 
     def __init__(self, type):
         """__init__(self, type) -> Colorspace"""
@@ -1665,8 +1684,6 @@ class Colorspace(_object):
         """name(self) -> char const *"""
         return _fitz.Colorspace_name(self)
 
-    __swig_destroy__ = _fitz.delete_Colorspace
-    __del__ = lambda self: None
 
     def __repr__(self):
         x = ("", "GRAY", "", "RGB", "CMYK")[self.n]
@@ -1814,6 +1831,12 @@ Matrix(sequence) - from 'sequence'"""
         return 6
     def __repr__(self):
         return "fitz.Matrix(%s, %s, %s, %s, %s, %s)" % (self.a, self.b, self.c, self.d, self.e, self.f)
+
+
+    def __del__(self):
+        if getattr(self, "thisown", True):
+            self.__swig_destroy__(self)
+            self.thisown = False
 
 Matrix_swigregister = _fitz.Matrix_swigregister
 Matrix_swigregister(Matrix)
@@ -1987,6 +2010,12 @@ Point(sequence) - from 'sequence'"""
 
     def __repr__(self):
         return "fitz.Point" + str((self.x, self.y))
+
+
+    def __del__(self):
+        if getattr(self, "thisown", True):
+            self.__swig_destroy__(self)
+            self.thisown = False
 
 Point_swigregister = _fitz.Point_swigregister
 Point_swigregister(Point)
@@ -2346,6 +2375,8 @@ class DisplayList(_object):
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, DisplayList, name)
     __repr__ = _swig_repr
+    __swig_destroy__ = _fitz.delete_DisplayList
+    __del__ = lambda self: None
 
     def __init__(self, mediabox):
         """__init__(self, mediabox) -> DisplayList"""
@@ -2354,8 +2385,6 @@ class DisplayList(_object):
             self.this.append(this)
         except __builtin__.Exception:
             self.this = this
-    __swig_destroy__ = _fitz.delete_DisplayList
-    __del__ = lambda self: None
 
     def run(self, dw, m, area):
         """run(self, dw, m, area) -> int"""
@@ -2376,6 +2405,12 @@ class DisplayList(_object):
     def getTextPage(self, textsheet):
         """getTextPage(self, textsheet) -> TextPage"""
         return _fitz.DisplayList_getTextPage(self, textsheet)
+
+
+    def __del__(self):
+        if getattr(self, "thisown", True):
+            self.__swig_destroy__(self)
+            self.thisown = False
 
 DisplayList_swigregister = _fitz.DisplayList_swigregister
 DisplayList_swigregister(DisplayList)

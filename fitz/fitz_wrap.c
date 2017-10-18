@@ -6417,6 +6417,15 @@ SWIG_From_float  (float value)
   return SWIG_From_double  (value);
 }
 
+SWIGINTERN void delete_fz_rect_s(struct fz_rect_s *self){
+
+
+
+            free(self);
+
+
+
+        }
 SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_1(struct fz_rect_s const *s){
             fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
             if (!s)
@@ -6480,15 +6489,6 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "len(sequence) invalid")
             }
             return r;
         }
-SWIGINTERN void delete_fz_rect_s(struct fz_rect_s *self){
-
-
-
-            free(self);
-
-
-
-        }
 SWIGINTERN struct fz_irect_s *fz_rect_s_round(struct fz_rect_s *self){
             fz_irect *irect = (fz_irect *)malloc(sizeof(fz_irect));
             fz_rect *rect = (fz_rect *)malloc(sizeof(fz_rect));
@@ -6538,18 +6538,51 @@ SWIGINTERN struct fz_rect_s *fz_rect_s_normalize(struct fz_rect_s *self){
             }
             return self;
         }
-SWIGINTERN PyObject *fz_rect_s_contains__SWIG_0(struct fz_rect_s *self,struct fz_rect_s *r){
-            return truth_value(fz_contains_rect(self, r));
+SWIGINTERN PyObject *fz_rect_s_contains__SWIG_0(struct fz_rect_s *self,struct fz_rect_s *rect){
+            if (fz_is_empty_rect(rect)) return truth_value(1);
+            if (fz_is_empty_rect(self)) return truth_value(0);
+            float l = self->x0;
+            float r = self->x1;
+            float t = self->y0;
+            float b = self->y1;
+            
+            if (self->x1 < self->x0)
+            {
+                l = self->x1;
+                r = self->x0;
+            }
+            if (self->y1 < self->y0)
+            {
+                t = self->y1;
+                b = self->y0;
+            }
+            return truth_value(rect->x0 >= l && rect->x0 <= r &&
+                               rect->x1 >= l && rect->x1 <= r &&
+                               rect->y0 >= t && rect->y0 <= b &&
+                               rect->y1 >= t && rect->y1 <= b);
         }
-SWIGINTERN PyObject *fz_rect_s_contains__SWIG_1(struct fz_rect_s *self,struct fz_irect_s *ir){
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
-            r->x0 = ir->x0;
-            r->y0 = ir->y0;
-            r->x1 = ir->x1;
-            r->y1 = ir->y1;
-            int rc = fz_contains_rect(self, r);
-            free(r);
-            return truth_value(rc);
+SWIGINTERN PyObject *fz_rect_s_contains__SWIG_1(struct fz_rect_s *self,struct fz_irect_s *rect){
+            if (fz_is_empty_irect(rect)) return truth_value(1);
+            if (fz_is_empty_rect(self)) return truth_value(0);
+            float l = self->x0;
+            float r = self->x1;
+            float t = self->y0;
+            float b = self->y1;
+            
+            if (self->x1 < self->x0)
+            {
+                l = self->x1;
+                r = self->x0;
+            }
+            if (self->y1 < self->y0)
+            {
+                t = self->y1;
+                b = self->y0;
+            }
+            return truth_value(rect->x0 >= l && rect->x0 <= r &&
+                               rect->x1 >= l && rect->x1 <= r &&
+                               rect->y0 >= t && rect->y0 <= b &&
+                               rect->y1 >= t && rect->y1 <= b);
         }
 SWIGINTERN PyObject *fz_rect_s_contains__SWIG_2(struct fz_rect_s *self,struct fz_point_s *p){
             if (fz_is_empty_rect(self)) return truth_value(0);
@@ -6631,21 +6664,28 @@ SWIGINTERN PyObject *fz_irect_s_isEmpty(struct fz_irect_s *self){
 SWIGINTERN PyObject *fz_irect_s_isInfinite(struct fz_irect_s *self){
             return truth_value(fz_is_infinite_irect(self));
         }
-SWIGINTERN PyObject *fz_irect_s_contains__SWIG_0(struct fz_irect_s *self,struct fz_irect_s *ir){
-            fz_rect *s = (fz_rect *)malloc(sizeof(fz_rect));
-            s->x0 = self->x0;
-            s->y0 = self->y0;
-            s->x1 = self->x1;
-            s->y1 = self->y1;
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
-            r->x0 = ir->x0;
-            r->y0 = ir->y0;
-            r->x1 = ir->x1;
-            r->y1 = ir->y1;
-            int rc = fz_contains_rect(s, r);
-            free(s);
-            free(r);
-            return truth_value(rc);
+SWIGINTERN PyObject *fz_irect_s_contains__SWIG_0(struct fz_irect_s *self,struct fz_irect_s *rect){
+            if (fz_is_empty_irect(rect)) return truth_value(1);
+            if (fz_is_empty_irect(self)) return truth_value(0);
+            int l = self->x0;
+            int r = self->x1;
+            int t = self->y0;
+            int b = self->y1;
+            
+            if (self->x1 < self->x0)
+            {
+                l = self->x1;
+                r = self->x0;
+            }
+            if (self->y1 < self->y0)
+            {
+                t = self->y1;
+                b = self->y0;
+            }
+            return truth_value(rect->x0 >= l && rect->x0 <= r &&
+                               rect->x1 >= l && rect->x1 <= r &&
+                               rect->y0 >= t && rect->y0 <= b &&
+                               rect->y1 >= t && rect->y1 <= b);
         }
 SWIGINTERN struct fz_irect_s *fz_irect_s_normalize(struct fz_irect_s *self){
             int f;
@@ -6663,15 +6703,28 @@ SWIGINTERN struct fz_irect_s *fz_irect_s_normalize(struct fz_irect_s *self){
             }
             return self;
         }
-SWIGINTERN PyObject *fz_irect_s_contains__SWIG_1(struct fz_irect_s *self,struct fz_rect_s *r){
-            fz_rect *s = (fz_rect *)malloc(sizeof(fz_rect));
-            s->x0 = self->x0;
-            s->y0 = self->y0;
-            s->x1 = self->x1;
-            s->y1 = self->y1;
-            int rc = fz_contains_rect(s, r);
-            free(s);
-            return truth_value(rc);
+SWIGINTERN PyObject *fz_irect_s_contains__SWIG_1(struct fz_irect_s *self,struct fz_rect_s *rect){
+            if (fz_is_empty_rect(rect)) return truth_value(1);
+            if (fz_is_empty_irect(self)) return truth_value(0);
+            float l = self->x0;
+            float r = self->x1;
+            float t = self->y0;
+            float b = self->y1;
+            
+            if (self->x1 < self->x0)
+            {
+                l = self->x1;
+                r = self->x0;
+            }
+            if (self->y1 < self->y0)
+            {
+                t = self->y1;
+                b = self->y0;
+            }
+            return truth_value(rect->x0 >= l && rect->x0 <= r &&
+                               rect->x1 >= l && rect->x1 <= r &&
+                               rect->y0 >= t && rect->y0 <= b &&
+                               rect->y1 >= t && rect->y1 <= b);
         }
 SWIGINTERN PyObject *fz_irect_s_contains__SWIG_2(struct fz_irect_s *self,struct fz_point_s *p){
             if (fz_is_empty_irect(self)) return truth_value(0);
@@ -6700,6 +6753,15 @@ SWIGINTERN struct fz_irect_s *fz_irect_s_translate(struct fz_irect_s *self,int x
 SWIGINTERN struct fz_irect_s *fz_irect_s_intersect(struct fz_irect_s *self,struct fz_irect_s *ir){
             fz_intersect_irect(self, ir);
             return self;
+        }
+SWIGINTERN void delete_fz_pixmap_s(struct fz_pixmap_s *self){
+
+
+
+            fz_drop_pixmap(gctx, self);
+
+
+
         }
 SWIGINTERN struct fz_pixmap_s *new_fz_pixmap_s__SWIG_0(struct fz_colorspace_s *cs,struct fz_irect_s const *bbox,int alpha){
             struct fz_pixmap_s *pm = NULL;
@@ -6868,15 +6930,6 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "xref not an image")
             }
             return pix;
         }
-SWIGINTERN void delete_fz_pixmap_s(struct fz_pixmap_s *self){
-
-
-
-            fz_drop_pixmap(gctx, self);
-
-
-
-        }
 SWIGINTERN void fz_pixmap_s_gammaWith(struct fz_pixmap_s *self,float gamma){
             fz_gamma_pixmap(gctx, self, gamma);
         }
@@ -7006,6 +7059,15 @@ SWIGINTERN PyObject *fz_pixmap_s_samples(struct fz_pixmap_s *self){
     #define CS_GRAY 2
     #define CS_CMYK 3
 
+SWIGINTERN void delete_fz_colorspace_s(struct fz_colorspace_s *self){
+
+
+
+            fz_drop_colorspace(gctx, self);
+
+
+
+        }
 SWIGINTERN struct fz_colorspace_s *new_fz_colorspace_s(int type){
             switch(type) {
                 case 2:
@@ -7025,15 +7087,6 @@ SWIGINTERN int fz_colorspace_s_n(struct fz_colorspace_s *self){
         }
 SWIGINTERN char const *fz_colorspace_s_name(struct fz_colorspace_s *self){
             return fz_colorspace_name(gctx, self);
-        }
-SWIGINTERN void delete_fz_colorspace_s(struct fz_colorspace_s *self){
-
-
-
-            fz_drop_colorspace(gctx, self);
-
-
-
         }
 SWIGINTERN struct DeviceWrapper *new_DeviceWrapper__SWIG_0(struct fz_pixmap_s *pm,struct fz_irect_s *clip){
             struct DeviceWrapper *dw = NULL;
@@ -7983,18 +8036,18 @@ SWIGINTERN struct fz_link_s *fz_link_s_next(struct fz_link_s *self){
             fz_keep_link(gctx, self->next);
             return self->next;
         }
+SWIGINTERN void delete_fz_display_list_s(struct fz_display_list_s *self){
+
+
+
+            fz_drop_display_list(gctx, self);
+        }
 SWIGINTERN struct fz_display_list_s *new_fz_display_list_s(struct fz_rect_s *mediabox){
             struct fz_display_list_s *dl = NULL;
             fz_try(gctx)
                 dl = fz_new_display_list(gctx, mediabox);
             fz_catch(gctx) return NULL;
             return dl;
-        }
-SWIGINTERN void delete_fz_display_list_s(struct fz_display_list_s *self){
-
-
-
-            fz_drop_display_list(gctx, self);
         }
 SWIGINTERN int fz_display_list_s_run(struct fz_display_list_s *self,struct DeviceWrapper *dw,struct fz_matrix_s const *m,struct fz_rect_s const *area){
             fz_try(gctx) {
@@ -10829,6 +10882,27 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_delete_Rect(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_Rect",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Rect" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg1 = (struct fz_rect_s *)(argp1);
+  delete_fz_rect_s(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_Rect__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
@@ -11196,27 +11270,6 @@ fail:
     "    fz_rect_s::fz_rect_s(float,float,float,float)\n"
     "    fz_rect_s::fz_rect_s(PyObject *)\n");
   return 0;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete_Rect(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_Rect",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_rect_s, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Rect" "', argument " "1"" of type '" "struct fz_rect_s *""'"); 
-  }
-  arg1 = (struct fz_rect_s *)(argp1);
-  delete_fz_rect_s(arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
 }
 
 
@@ -12705,6 +12758,27 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_delete_Pixmap(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_Pixmap",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Pixmap" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  delete_fz_pixmap_s(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_Pixmap__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_colorspace_s *arg1 = (struct fz_colorspace_s *) 0 ;
@@ -13128,27 +13202,6 @@ fail:
     "    fz_pixmap_s::fz_pixmap_s(PyObject *)\n"
     "    fz_pixmap_s::fz_pixmap_s(struct fz_document_s *,int)\n");
   return 0;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete_Pixmap(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_Pixmap",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Pixmap" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
-  }
-  arg1 = (struct fz_pixmap_s *)(argp1);
-  delete_fz_pixmap_s(arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
 }
 
 
@@ -13701,6 +13754,27 @@ SWIGINTERN PyObject *Pixmap_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObjec
   return SWIG_Py_Void();
 }
 
+SWIGINTERN PyObject *_wrap_delete_Colorspace(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_colorspace_s *arg1 = (struct fz_colorspace_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_Colorspace",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_colorspace_s, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Colorspace" "', argument " "1"" of type '" "struct fz_colorspace_s *""'"); 
+  }
+  arg1 = (struct fz_colorspace_s *)(argp1);
+  delete_fz_colorspace_s(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_Colorspace(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   int arg1 ;
@@ -13761,27 +13835,6 @@ SWIGINTERN PyObject *_wrap_Colorspace_name(PyObject *SWIGUNUSEDPARM(self), PyObj
   arg1 = (struct fz_colorspace_s *)(argp1);
   result = (char *)fz_colorspace_s_name(arg1);
   resultobj = SWIG_FromCharPtr((const char *)result);
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete_Colorspace(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_colorspace_s *arg1 = (struct fz_colorspace_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_Colorspace",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_colorspace_s, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Colorspace" "', argument " "1"" of type '" "struct fz_colorspace_s *""'"); 
-  }
-  arg1 = (struct fz_colorspace_s *)(argp1);
-  delete_fz_colorspace_s(arg1);
-  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -16267,6 +16320,27 @@ SWIGINTERN PyObject *Link_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject 
   return SWIG_Py_Void();
 }
 
+SWIGINTERN PyObject *_wrap_delete_DisplayList(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_display_list_s *arg1 = (struct fz_display_list_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_DisplayList",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_display_list_s, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_DisplayList" "', argument " "1"" of type '" "struct fz_display_list_s *""'"); 
+  }
+  arg1 = (struct fz_display_list_s *)(argp1);
+  delete_fz_display_list_s(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_DisplayList(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_rect_s *arg1 = (struct fz_rect_s *) 0 ;
@@ -16290,27 +16364,6 @@ SWIGINTERN PyObject *_wrap_new_DisplayList(PyObject *SWIGUNUSEDPARM(self), PyObj
     }
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_display_list_s, SWIG_POINTER_NEW |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete_DisplayList(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_display_list_s *arg1 = (struct fz_display_list_s *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_DisplayList",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_display_list_s, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_DisplayList" "', argument " "1"" of type '" "struct fz_display_list_s *""'"); 
-  }
-  arg1 = (struct fz_display_list_s *)(argp1);
-  delete_fz_display_list_s(arg1);
-  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -16923,6 +16976,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Rect_x1_get", _wrap_Rect_x1_get, METH_VARARGS, (char *)"Rect_x1_get(self) -> float"},
 	 { (char *)"Rect_y1_set", _wrap_Rect_y1_set, METH_VARARGS, (char *)"Rect_y1_set(self, y1)"},
 	 { (char *)"Rect_y1_get", _wrap_Rect_y1_get, METH_VARARGS, (char *)"Rect_y1_get(self) -> float"},
+	 { (char *)"delete_Rect", _wrap_delete_Rect, METH_VARARGS, (char *)"delete_Rect(self)"},
 	 { (char *)"new_Rect", _wrap_new_Rect, METH_VARARGS, (char *)"\n"
 		"Rect()\n"
 		"Rect(s)\n"
@@ -16932,7 +16986,6 @@ static PyMethodDef SwigMethods[] = {
 		"Rect(x0, y0, x1, y1)\n"
 		"new_Rect(list) -> Rect\n"
 		""},
-	 { (char *)"delete_Rect", _wrap_delete_Rect, METH_VARARGS, (char *)"delete_Rect(self)"},
 	 { (char *)"Rect_round", _wrap_Rect_round, METH_VARARGS, (char *)"Create enclosing 'IRect'"},
 	 { (char *)"Rect_includePoint", _wrap_Rect_includePoint, METH_VARARGS, (char *)"Enlarge to include a 'Point' p"},
 	 { (char *)"Rect_intersect", _wrap_Rect_intersect, METH_VARARGS, (char *)"Shrink to intersection with another 'Rect' r"},
@@ -16988,6 +17041,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Pixmap_xres_get", _wrap_Pixmap_xres_get, METH_VARARGS, (char *)"Pixmap_xres_get(self) -> int"},
 	 { (char *)"Pixmap_yres_set", _wrap_Pixmap_yres_set, METH_VARARGS, (char *)"Pixmap_yres_set(self, yres)"},
 	 { (char *)"Pixmap_yres_get", _wrap_Pixmap_yres_get, METH_VARARGS, (char *)"Pixmap_yres_get(self) -> int"},
+	 { (char *)"delete_Pixmap", _wrap_delete_Pixmap, METH_VARARGS, (char *)"delete_Pixmap(self)"},
 	 { (char *)"new_Pixmap", _wrap_new_Pixmap, METH_VARARGS, (char *)"\n"
 		"Pixmap(cs, bbox, alpha=0)\n"
 		"Pixmap(cs, spix, alpha=1)\n"
@@ -16997,7 +17051,6 @@ static PyMethodDef SwigMethods[] = {
 		"Pixmap(imagedata)\n"
 		"new_Pixmap(doc, xref) -> Pixmap\n"
 		""},
-	 { (char *)"delete_Pixmap", _wrap_delete_Pixmap, METH_VARARGS, (char *)"delete_Pixmap(self)"},
 	 { (char *)"Pixmap_gammaWith", _wrap_Pixmap_gammaWith, METH_VARARGS, (char *)"Pixmap_gammaWith(self, gamma)"},
 	 { (char *)"Pixmap_tintWith", _wrap_Pixmap_tintWith, METH_VARARGS, (char *)"Pixmap_tintWith(self, red, green, blue)"},
 	 { (char *)"Pixmap_clearWith", _wrap_Pixmap_clearWith, METH_VARARGS, (char *)"\n"
@@ -17016,10 +17069,10 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Pixmap_invertIRect", _wrap_Pixmap_invertIRect, METH_VARARGS, (char *)"Pixmap_invertIRect(self, irect=None)"},
 	 { (char *)"Pixmap_samples", _wrap_Pixmap_samples, METH_VARARGS, (char *)"Pixmap_samples(self) -> PyObject *"},
 	 { (char *)"Pixmap_swigregister", Pixmap_swigregister, METH_VARARGS, NULL},
+	 { (char *)"delete_Colorspace", _wrap_delete_Colorspace, METH_VARARGS, (char *)"delete_Colorspace(self)"},
 	 { (char *)"new_Colorspace", _wrap_new_Colorspace, METH_VARARGS, (char *)"new_Colorspace(type) -> Colorspace"},
 	 { (char *)"Colorspace_n", _wrap_Colorspace_n, METH_VARARGS, (char *)"Colorspace_n(self) -> int"},
 	 { (char *)"Colorspace_name", _wrap_Colorspace_name, METH_VARARGS, (char *)"Colorspace_name(self) -> char const *"},
-	 { (char *)"delete_Colorspace", _wrap_delete_Colorspace, METH_VARARGS, (char *)"delete_Colorspace(self)"},
 	 { (char *)"Colorspace_swigregister", Colorspace_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_Device", _wrap_new_Device, METH_VARARGS, (char *)"\n"
 		"Device(pm, clip)\n"
@@ -17114,8 +17167,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Link_rect", _wrap_Link_rect, METH_VARARGS, (char *)"Link_rect(self) -> Rect"},
 	 { (char *)"Link_next", _wrap_Link_next, METH_VARARGS, (char *)"Link_next(self) -> Link"},
 	 { (char *)"Link_swigregister", Link_swigregister, METH_VARARGS, NULL},
-	 { (char *)"new_DisplayList", _wrap_new_DisplayList, METH_VARARGS, (char *)"new_DisplayList(mediabox) -> DisplayList"},
 	 { (char *)"delete_DisplayList", _wrap_delete_DisplayList, METH_VARARGS, (char *)"delete_DisplayList(self)"},
+	 { (char *)"new_DisplayList", _wrap_new_DisplayList, METH_VARARGS, (char *)"new_DisplayList(mediabox) -> DisplayList"},
 	 { (char *)"DisplayList_run", _wrap_DisplayList_run, METH_VARARGS, (char *)"DisplayList_run(self, dw, m, area) -> int"},
 	 { (char *)"DisplayList_rect", _wrap_DisplayList_rect, METH_VARARGS, (char *)"DisplayList_rect(self) -> Rect"},
 	 { (char *)"DisplayList_getPixmap", _wrap_DisplayList_getPixmap, METH_VARARGS, (char *)"DisplayList_getPixmap(self, matrix=None, colorspace=None, alpha=0, clip=None) -> Pixmap"},

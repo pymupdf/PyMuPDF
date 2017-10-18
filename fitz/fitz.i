@@ -1595,6 +1595,7 @@ if sa < 0:
                 self._reset_page_refs()
                 if getattr(self, "thisown", True):
                     self.__swig_destroy__(self)
+                    self.thisown = False
             %}
     }
 };
@@ -2235,10 +2236,18 @@ struct fz_rect_s *fz_transform_rect(struct fz_rect_s *restrict rect, const struc
 
 struct fz_rect_s
 {
-    float x0, y0;
-    float x1, y1;
+    float x0, y0, x1, y1;
     fz_rect_s();
     %extend {
+        ~fz_rect_s() {
+#ifdef MEMDEBUG
+            fprintf(stderr, "[DEBUG]free rect ...");
+#endif
+            free($self);
+#ifdef MEMDEBUG
+            fprintf(stderr, " done!\n");
+#endif
+        }
         FITZEXCEPTION(fz_rect_s, !result)
         fz_rect_s(const struct fz_rect_s *s) {
             fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
@@ -2309,15 +2318,6 @@ struct fz_rect_s
             return r;
         }
 
-        ~fz_rect_s() {
-#ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free rect ...");
-#endif
-            free($self);
-#ifdef MEMDEBUG
-            fprintf(stderr, " done!\n");
-#endif
-        }
         %pythonappend round() %{
             val.thisown = True
         %}
@@ -2385,21 +2385,54 @@ struct fz_rect_s
         }
         
         %feature("autodoc","contains") contains;
-        PyObject *contains(struct fz_rect_s *r)
+        PyObject *contains(struct fz_rect_s *rect)
         {
-            return truth_value(fz_contains_rect($self, r));
+            if (fz_is_empty_rect(rect)) return truth_value(1);
+            if (fz_is_empty_rect($self)) return truth_value(0);
+            float l = $self->x0;
+            float r = $self->x1;
+            float t = $self->y0;
+            float b = $self->y1;
+            
+            if ($self->x1 < $self->x0)
+            {
+                l = $self->x1;
+                r = $self->x0;
+            }
+            if ($self->y1 < $self->y0)
+            {
+                t = $self->y1;
+                b = $self->y0;
+            }
+            return truth_value(rect->x0 >= l && rect->x0 <= r &&
+                               rect->x1 >= l && rect->x1 <= r &&
+                               rect->y0 >= t && rect->y0 <= b &&
+                               rect->y1 >= t && rect->y1 <= b);
         }
 
-        PyObject *contains(struct fz_irect_s *ir)
+        PyObject *contains(struct fz_irect_s *rect)
         {
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
-            r->x0 = ir->x0;
-            r->y0 = ir->y0;
-            r->x1 = ir->x1;
-            r->y1 = ir->y1;
-            int rc = fz_contains_rect($self, r);
-            free(r);
-            return truth_value(rc);
+            if (fz_is_empty_irect(rect)) return truth_value(1);
+            if (fz_is_empty_rect($self)) return truth_value(0);
+            float l = $self->x0;
+            float r = $self->x1;
+            float t = $self->y0;
+            float b = $self->y1;
+            
+            if ($self->x1 < $self->x0)
+            {
+                l = $self->x1;
+                r = $self->x0;
+            }
+            if ($self->y1 < $self->y0)
+            {
+                t = $self->y1;
+                b = $self->y0;
+            }
+            return truth_value(rect->x0 >= l && rect->x0 <= r &&
+                               rect->x1 >= l && rect->x1 <= r &&
+                               rect->y0 >= t && rect->y0 <= b &&
+                               rect->y1 >= t && rect->y1 <= b);
         }
 
         PyObject *contains(struct fz_point_s *p)
@@ -2493,7 +2526,12 @@ struct fz_rect_s
             tr = top_right
             br = bottom_right
             bl = bottom_left
-            
+        %}
+        %pythoncode %{
+        def __del__(self):
+            if getattr(self, "thisown", True):
+                self.__swig_destroy__(self)
+                self.thisown = False
         %}
     }
 };
@@ -2507,7 +2545,6 @@ struct fz_irect_s
     int x1, y1;
     fz_irect_s();
     %extend {
-        FITZEXCEPTION(fz_irect_s, !result)
         ~fz_irect_s() {
 #ifdef MEMDEBUG
             fprintf(stderr, "[DEBUG]free irect ... ");
@@ -2517,6 +2554,7 @@ struct fz_irect_s
             fprintf(stderr, "done!\n");
 #endif
         }
+        FITZEXCEPTION(fz_irect_s, !result)
         fz_irect_s(const struct fz_irect_s *s) {
             fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
             if (!s)
@@ -2572,22 +2610,29 @@ struct fz_irect_s
         }
 
         %feature("autodoc","contains") contains;
-        PyObject *contains(struct fz_irect_s *ir)
+        PyObject *contains(struct fz_irect_s *rect)
         {
-            fz_rect *s = (fz_rect *)malloc(sizeof(fz_rect));
-            s->x0 = $self->x0;
-            s->y0 = $self->y0;
-            s->x1 = $self->x1;
-            s->y1 = $self->y1;
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
-            r->x0 = ir->x0;
-            r->y0 = ir->y0;
-            r->x1 = ir->x1;
-            r->y1 = ir->y1;
-            int rc = fz_contains_rect(s, r);
-            free(s);
-            free(r);
-            return truth_value(rc);
+            if (fz_is_empty_irect(rect)) return truth_value(1);
+            if (fz_is_empty_irect($self)) return truth_value(0);
+            int l = $self->x0;
+            int r = $self->x1;
+            int t = $self->y0;
+            int b = $self->y1;
+            
+            if ($self->x1 < $self->x0)
+            {
+                l = $self->x1;
+                r = $self->x0;
+            }
+            if ($self->y1 < $self->y0)
+            {
+                t = $self->y1;
+                b = $self->y0;
+            }
+            return truth_value(rect->x0 >= l && rect->x0 <= r &&
+                               rect->x1 >= l && rect->x1 <= r &&
+                               rect->y0 >= t && rect->y0 <= b &&
+                               rect->y1 >= t && rect->y1 <= b);
         }
 
         %feature("autodoc","Make rectangle finite") normalize;
@@ -2609,16 +2654,29 @@ struct fz_irect_s
             return $self;
         }
         
-        PyObject *contains(struct fz_rect_s *r)
+        PyObject *contains(struct fz_rect_s *rect)
         {
-            fz_rect *s = (fz_rect *)malloc(sizeof(fz_rect));
-            s->x0 = $self->x0;
-            s->y0 = $self->y0;
-            s->x1 = $self->x1;
-            s->y1 = $self->y1;
-            int rc = fz_contains_rect(s, r);
-            free(s);
-            return truth_value(rc);
+            if (fz_is_empty_rect(rect)) return truth_value(1);
+            if (fz_is_empty_irect($self)) return truth_value(0);
+            float l = $self->x0;
+            float r = $self->x1;
+            float t = $self->y0;
+            float b = $self->y1;
+            
+            if ($self->x1 < $self->x0)
+            {
+                l = $self->x1;
+                r = $self->x0;
+            }
+            if ($self->y1 < $self->y0)
+            {
+                t = $self->y1;
+                b = $self->y0;
+            }
+            return truth_value(rect->x0 >= l && rect->x0 <= r &&
+                               rect->x1 >= l && rect->x1 <= r &&
+                               rect->y0 >= t && rect->y0 <= b &&
+                               rect->y1 >= t && rect->y1 <= b);
         }
 
         PyObject *contains(struct fz_point_s *p)
@@ -2705,7 +2763,12 @@ struct fz_irect_s
             tr = top_right
             br = bottom_right
             bl = bottom_left
-            
+        %}
+        %pythoncode %{
+        def __del__(self):
+            if getattr(self, "thisown", True):
+                self.__swig_destroy__(self)
+                self.thisown = False
         %}
     }
 };
@@ -2720,6 +2783,15 @@ struct fz_pixmap_s
     int interpolate;
     int xres, yres;
     %extend {
+        ~fz_pixmap_s() {
+#ifdef MEMDEBUG
+            fprintf(stderr, "[DEBUG]free pixmap ... ");
+#endif
+            fz_drop_pixmap(gctx, $self);
+#ifdef MEMDEBUG
+            fprintf(stderr, "done!\n");
+#endif
+        }
         FITZEXCEPTION(fz_pixmap_s, !result)
         //---------------------------------------------------------------------
         // create empty pixmap with colorspace and IRect
@@ -2904,15 +2976,6 @@ struct fz_pixmap_s
             return pix;
         }
 
-        ~fz_pixmap_s() {
-#ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free pixmap ... ");
-#endif
-            fz_drop_pixmap(gctx, $self);
-#ifdef MEMDEBUG
-            fprintf(stderr, "done!\n");
-#endif
-        }
         /***************************/
         /* apply gamma correction  */
         /***************************/
@@ -3131,7 +3194,6 @@ struct fz_pixmap_s
         {
             return PyBytes_FromStringAndSize((const char *)$self->samples, (Py_ssize_t) ($self->w)*($self->h)*($self->n));
         }
-
         %pythoncode %{
             width  = w
             height = h
@@ -3144,6 +3206,12 @@ struct fz_pixmap_s
                     return "fitz.Pixmap(%s, %s, %s)" % (self.colorspace.name, self.irect, self.alpha)
                 else:
                     return "fitz.Pixmap(%s, %s, %s)" % ('None', self.irect, self.alpha)%}
+        %pythoncode %{
+        def __del__(self):
+            if getattr(self, "thisown", True):
+                self.__swig_destroy__(self)
+                self.thisown = False
+        %}
     }
 };
 
@@ -3160,6 +3228,17 @@ struct fz_pixmap_s
 struct fz_colorspace_s
 {
     %extend {
+        ~fz_colorspace_s()
+        {
+#ifdef MEMDEBUG
+            fprintf(stderr, "[DEBUG]free colorspace ... ");
+#endif
+            fz_drop_colorspace(gctx, $self);
+#ifdef MEMDEBUG
+            fprintf(stderr, "done!\n");
+#endif
+        }
+
         fz_colorspace_s(int type)
         {
             switch(type) {
@@ -3191,16 +3270,6 @@ struct fz_colorspace_s
         const char *name()
         {
             return fz_colorspace_name(gctx, $self);
-        }
-
-        ~fz_colorspace_s() {
-#ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free colorspace ... ");
-#endif
-            fz_drop_colorspace(gctx, $self);
-#ifdef MEMDEBUG
-            fprintf(stderr, "done!\n");
-#endif
         }
 
         %pythoncode %{
@@ -3425,6 +3494,12 @@ struct fz_matrix_s
                 return 6
             def __repr__(self):
                 return "fitz.Matrix(%s, %s, %s, %s, %s, %s)" % (self.a, self.b, self.c, self.d, self.e, self.f)
+        %}
+        %pythoncode %{
+        def __del__(self):
+            if getattr(self, "thisown", True):
+                self.__swig_destroy__(self)
+                self.thisown = False
         %}
     }
 };
@@ -3655,6 +3730,12 @@ struct fz_point_s
 
             def __repr__(self):
                 return "fitz.Point" + str((self.x, self.y))
+        %}
+        %pythoncode %{
+        def __del__(self):
+            if getattr(self, "thisown", True):
+                self.__swig_destroy__(self)
+                self.thisown = False
         %}
     }
 };
@@ -4698,7 +4779,14 @@ struct fz_link_s
 /*****************************************************************************/
 %rename(DisplayList) fz_display_list_s;
 struct fz_display_list_s {
-    %extend {
+    %extend
+    {
+        ~fz_display_list_s() {
+#ifdef MEMDEBUG
+            fprintf(stderr, "[DEBUG]free display list\n");
+#endif
+            fz_drop_display_list(gctx, $self);
+        }
         FITZEXCEPTION(fz_display_list_s, !result)
         fz_display_list_s(struct fz_rect_s *mediabox)
         {
@@ -4709,12 +4797,6 @@ struct fz_display_list_s {
             return dl;
         }
 
-        ~fz_display_list_s() {
-#ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free display list\n");
-#endif
-            fz_drop_display_list(gctx, $self);
-        }
         FITZEXCEPTION(run, result)
         int run(struct DeviceWrapper *dw, const struct fz_matrix_s *m, const struct fz_rect_s *area) {
             fz_try(gctx) {
@@ -4777,6 +4859,12 @@ struct fz_display_list_s {
             fz_catch(gctx) return NULL;
             return tp;
         }
+        %pythoncode %{
+        def __del__(self):
+            if getattr(self, "thisown", True):
+                self.__swig_destroy__(self)
+                self.thisown = False
+        %}
 
     }
 };
