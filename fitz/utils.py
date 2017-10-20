@@ -270,7 +270,7 @@ def writeImage(*arg, **kw):
 # arithmetic methods for fitz.Matrix
 #==============================================================================
 def mat_mult(m1, m2):     # __mul__
-    if len(m2) == 1:
+    if getattr(m2, "__len__", 1) == 1:
         return fitz.Matrix(m1.a * m2, m1.b * m2, m1.c * m2,
                            m1.d * m2, m1.e * m2, m1.f * m2)
     m = fitz.Matrix()
@@ -281,7 +281,7 @@ def mat_mult(m1, m2):     # __mul__
     return m
 
 def mat_div(m1, m2):     # __mul__
-    if len(m2) == 1:
+    if getattr(m2, "__len__", 1) == 1:
         return fitz.Matrix(m1.a * 1./m2, m1.b * 1./m2, m1.c * 1./m2,
                            m1.d * 1./m2, m1.e * 1./m2, m1.f * 1./m2)
     m = fitz.Matrix()
@@ -298,7 +298,7 @@ def mat_invert(me):       # __invert__
     return m
 
 def mat_add(m1, m2):      # __add__
-    if len(m2) == 1:
+    if getattr(m2, "__len__", 1) == 1:
         me = fitz.Matrix(m2, m2, m2, m2, m2, m2)
     else:
         me = fitz.Matrix(m2)
@@ -307,7 +307,7 @@ def mat_add(m1, m2):      # __add__
 
 
 def mat_sub(m1, m2):      # __sub__
-    if len(m2) == 1:
+    if getattr(m2, "__len__", 1) == 1:
         me = fitz.Matrix(m2, m2, m2, m2, m2, m2)
     else:
         me = fitz.Matrix(m2)
@@ -348,7 +348,7 @@ def rect_and(r1, r2):        # __and__: intersection with rect or irect
 
 def rect_add(r1, r2):        # __add__: add number, rect or irect to rect
     r = fitz.Rect(r1)
-    if len(r2) == 1:
+    if getattr(r2, "__len__", 1) == 1:
         a = fitz.Rect(r2, r2, r2, r2)
     else:
         a = fitz.Rect(r2)
@@ -360,7 +360,7 @@ def rect_add(r1, r2):        # __add__: add number, rect or irect to rect
 
 def rect_sub(r1, r2):        # __sub__: subtract number, rect or irect from rect
     r = fitz.Rect(r1)
-    if len(r2) == 1:
+    if getattr(r2, "__len__", 1) == 1:
         a = fitz.Rect(r2, r2, r2, r2)
     else:
         a = fitz.Rect(r2)
@@ -372,7 +372,7 @@ def rect_sub(r1, r2):        # __sub__: subtract number, rect or irect from rect
 
 def rect_mul(r, m):          # __mul__: transform with matrix
     r1 = fitz.Rect(r)
-    if len(m) == 1:
+    if getattr(m, "__len__", 1) == 1:
         r1 = fitz.Rect(r1.x0 * m, r1.y0 * m, r1.x1 * m, r1.y1 * m)
     else:
         r1.transform(fitz.Matrix(m))
@@ -380,7 +380,7 @@ def rect_mul(r, m):          # __mul__: transform with matrix
 
 def rect_div(r, m):          # __div__ / __truediv__
     r1 = fitz.Rect(r)
-    if len(m) == 1:
+    if getattr(m, "__len__", 1) == 1:
         r1 = fitz.Rect(r1.x0 * 1. / m, r1.y0 * 1. / m, r1.x1 * 1. / m, r1.y1 * 1. / m)
     else:
         m1 = ~fitz.Matrix(m)
@@ -394,32 +394,39 @@ def rect_equ(r, r2):       # __equ__
 
 def rect_true(r):
     return (abs(r.x0) + abs(r.y0) + abs(r.x1) + abs(r.y1)) > 0
-    
+
+def rect_contains(r, x):
+    if getattr(x, "__len__", 1) == 1:
+        return x in tuple(r)
+    if len(x) == 2:
+        return r.contains(fitz.Point(x))
+    return r.contains(fitz.Rect(x))
+
 #==============================================================================
 # arithmetic methods for fitz.Point
 #==============================================================================
 def point_add(p1, p2):
-    if len(p2) == 1:
+    if getattr(p2, "__len__", 1) == 1:
         p = fitz.Point(p2, p2)
     else:
         p = fitz.Point(p2)
     return fitz.Point(p1.x + p.x, p1.y + p.y)
 
 def point_sub(p1, p2):
-    if len(p2) == 1:
+    if getattr(p2, "__len__", 1) == 1:
         p = fitz.Point(p2, p2)
     else:
         p = fitz.Point(p2)
     return fitz.Point(p1.x - p.x, p1.y - p.y)
 
 def point_mul(p, m):
-    if len(m) == 1:
+    if getattr(m, "__len__", 1) == 1:
         return fitz.Point(p.x*m, p.y*m)
     p1 = fitz.Point(p)
     return p1.transform(fitz.Matrix(m))
 
 def point_div(p, m):
-    if len(m) == 1:
+    if getattr(m, "__len__", 1) == 1:
         return fitz.Point(p.x*1./m, p.y*1./m)
     p1 = fitz.Point(p)
     m1 = ~fitz.Matrix(m)

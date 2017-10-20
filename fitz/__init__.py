@@ -123,6 +123,7 @@ fitz.Rect.__div__           = fitz.utils.rect_div
 fitz.Rect.__eq__            = fitz.utils.rect_equ
 fitz.Rect.__nonzero__       = fitz.utils.rect_true
 fitz.Rect.__bool__          = fitz.utils.rect_true
+fitz.Rect.__contains__      = fitz.utils.rect_contains
 
 #------------------------------------------------------------------------------
 # IRect
@@ -144,6 +145,7 @@ fitz.IRect.__div__          = fitz.utils.rect_div
 fitz.IRect.__eq__           = fitz.utils.rect_equ
 fitz.IRect.__nonzero__      = fitz.utils.rect_true
 fitz.IRect.__bool__         = fitz.utils.rect_true
+fitz.IRect.__contains__     = fitz.utils.rect_contains
 
 #------------------------------------------------------------------------------
 # Point algebra

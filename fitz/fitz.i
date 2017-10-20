@@ -1594,7 +1594,10 @@ if sa < 0:
             def __del__(self):
                 self._reset_page_refs()
                 if getattr(self, "thisown", True):
-                    self.__swig_destroy__(self)
+                    try:
+                        self.__swig_destroy__(self)
+                    except:
+                        pass
                     self.thisown = False
             %}
     }
@@ -2306,9 +2309,13 @@ struct fz_rect_s
                 if (!PySequence_Check(list)) THROWMSG("expected a sequence");
                 if (PySequence_Size(list) != 4) THROWMSG("len(sequence) invalid");
                 r->x0 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
                 r->y0 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 1));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
                 r->x1 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 2));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
                 r->y1 = (float) PyFloat_AsDouble(PySequence_GetItem(list, 3));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
             }
             fz_catch(gctx)
             {
@@ -2318,9 +2325,7 @@ struct fz_rect_s
             return r;
         }
 
-        %pythonappend round() %{
-            val.thisown = True
-        %}
+        %pythonappend round() %{val.thisown = True%}
         %feature("autodoc","Create enclosing 'IRect'") round;
         struct fz_irect_s *round()
         {
@@ -2495,11 +2500,6 @@ struct fz_rect_s
                 """Return the rectangle's bottom-right point."""
                 return Point(self.x1, self.y1)
                 
-            def __contains__(self, x):
-                if type(x) in (int, float):
-                    return x in tuple(self)
-                return self.contains(x)
-
             def __getitem__(self, i):
                 a = [self.x0, self.y0, self.x1, self.y1]
                 return a[i]
@@ -2530,7 +2530,10 @@ struct fz_rect_s
         %pythoncode %{
         def __del__(self):
             if getattr(self, "thisown", True):
-                self.__swig_destroy__(self)
+                try:
+                    self.__swig_destroy__(self)
+                except:
+                    pass
                 self.thisown = False
         %}
     }
@@ -2585,9 +2588,13 @@ struct fz_irect_s
                 if (!PySequence_Check(list)) THROWMSG("expected a sequence");
                 if (PySequence_Size(list) != 4) THROWMSG("len(sequence) invalid");
                 r->x0 = (int) PyInt_AsLong(PySequence_GetItem(list, 0));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
                 r->y0 = (int) PyInt_AsLong(PySequence_GetItem(list, 1));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
                 r->x1 = (int) PyInt_AsLong(PySequence_GetItem(list, 2));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
                 r->y1 = (int) PyInt_AsLong(PySequence_GetItem(list, 3));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
             }
             fz_catch(gctx) 
             {
@@ -2733,11 +2740,6 @@ struct fz_irect_s
             def bottom_right(self):
                 return Point(self.x1, self.y1)
                 
-            def __contains__(self, x):
-                if type(x) in (int, float):
-                    return x in tuple(self)
-                return self.contains(x)
-
             def __getitem__(self, i):
                 a = [self.x0, self.y0, self.x1, self.y1]
                 return a[i]
@@ -2767,7 +2769,10 @@ struct fz_irect_s
         %pythoncode %{
         def __del__(self):
             if getattr(self, "thisown", True):
-                self.__swig_destroy__(self)
+                try:
+                    self.__swig_destroy__(self)
+                except:
+                    pass
                 self.thisown = False
         %}
     }
@@ -3209,7 +3214,10 @@ struct fz_pixmap_s
         %pythoncode %{
         def __del__(self):
             if getattr(self, "thisown", True):
-                self.__swig_destroy__(self)
+                try:
+                    self.__swig_destroy__(self)
+                except:
+                    pass
                 self.thisown = False
         %}
     }
@@ -3425,11 +3433,17 @@ struct fz_matrix_s
                 if (!PySequence_Check(list)) THROWMSG("expected a sequence");
                 if (PySequence_Size(list) != 6) THROWMSG("len(sequence) invalid");
                 m->a = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
                 m->b = (float) PyFloat_AsDouble(PySequence_GetItem(list, 1));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
                 m->c = (float) PyFloat_AsDouble(PySequence_GetItem(list, 2));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
                 m->d = (float) PyFloat_AsDouble(PySequence_GetItem(list, 3));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
                 m->e = (float) PyFloat_AsDouble(PySequence_GetItem(list, 4));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
                 m->f = (float) PyFloat_AsDouble(PySequence_GetItem(list, 5));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
             }
             fz_catch(gctx)
             {
@@ -3498,7 +3512,10 @@ struct fz_matrix_s
         %pythoncode %{
         def __del__(self):
             if getattr(self, "thisown", True):
-                self.__swig_destroy__(self)
+                try:
+                    self.__swig_destroy__(self)
+                except:
+                    pass
                 self.thisown = False
         %}
     }
@@ -3667,7 +3684,9 @@ struct fz_point_s
                 if (!PySequence_Check(list)) THROWMSG("expected a sequence");
                 if (PySequence_Size(list) != 2) THROWMSG("len(sequence) invalid");
                 p->x = (float) PyFloat_AsDouble(PySequence_GetItem(list, 0));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
                 p->y = (float) PyFloat_AsDouble(PySequence_GetItem(list, 1));
+                if (PyErr_Occurred()) THROWMSG("invalid sequ. item");
             }
             fz_catch(gctx)
             {
@@ -3734,7 +3753,10 @@ struct fz_point_s
         %pythoncode %{
         def __del__(self):
             if getattr(self, "thisown", True):
-                self.__swig_destroy__(self)
+                try:
+                    self.__swig_destroy__(self)
+                except:
+                    pass
                 self.thisown = False
         %}
     }
@@ -4862,7 +4884,10 @@ struct fz_display_list_s {
         %pythoncode %{
         def __del__(self):
             if getattr(self, "thisown", True):
-                self.__swig_destroy__(self)
+                try:
+                    self.__swig_destroy__(self)
+                except:
+                    pass
                 self.thisown = False
         %}
 
