@@ -55,7 +55,7 @@ Finally, please double check ``setup.py`` before building. Update ``include_dirs
 
 Windows
 -------
-You can download pre-generated binaries or Python wheels from `here <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/binary_setups>`_ that are suitable for your Python / Windows combination, and thereby avoid any compilation hassle. Please refer to this `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
+You can download pre-generated binaries or Python wheels from `here <https://github.com/JorjMcKie/PyMuPDF-Optional-Material>`_ that are suitable for your Python / Windows combination, and thereby avoid any compilation hassle. Please refer to this `document <http://pythonhosted.org/PyMuPDF/installation.html>`_ for details.
 
 If you do want to make your own binary however, have a look at this `Wiki page <https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation>`_. It explains how to use Visual Studio for generating MuPDF in quite some detail. Also do not hesitate to contact us if you need help.
 
