@@ -51,7 +51,7 @@ Please have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/ma
 
 You have a variety of options to access the **documentation**:
 
-* You can view it online at [PyPI](http://pythonhosted.org/PyMuPDF).
+* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/en/latest/).
 * You can download a [Windows CHM](https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm).
 * You can download a [PDF](https://github.com/rk700/PyMuPDF/tree/master/doc/pymupdf.pdf).
 * You can download a [HTML ZIP file](https://github.com/rk700/PyMuPDF/tree/master/doc/html.zip).
