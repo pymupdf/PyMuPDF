@@ -49,13 +49,11 @@ If you do want to make your own binary however, have a look at this [Wiki page](
 # Usage and Documentation
 Please have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) which contain complete, working programs, and the **recipies** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki).
 
-You have a variety of options to access the **documentation**:
+You have a number of options to access the **documentation**:
 
-* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/en/latest/).
+* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/en/latest/), which you can download as [HTML ZIP file](https://github.com/rk700/PyMuPDF/tree/master/doc/html.zip).
 * You can download a [Windows CHM](https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm).
 * You can download a [PDF](https://github.com/rk700/PyMuPDF/tree/master/doc/pymupdf.pdf).
-* You can download a [HTML ZIP file](https://github.com/rk700/PyMuPDF/tree/master/doc/html.zip).
-
 
 Earlier Versions
 ================
@@ -77,7 +75,7 @@ Earlier Versions
 PyMuPDF is distributed under GNU GPL V3. The implied use of MuPDF also implies its license GNU AFFERO GPL V3. A copy of both licenses are included in this repository.
 
 # Contact
-You can also find PyMuPDF on the Python Package Index [PyPI](https://pypi.python.org/pypi/PyMuPDF/1.11.0)
+You can also find PyMuPDF on the Python Package Index [PyPI](https://pypi.python.org/pypi/PyMuPDF)
 
 We invite you to join our efforts by contributing to the the wiki pages.
 
