@@ -75,7 +75,7 @@ Earlier Versions
 PyMuPDF is distributed under GNU GPL V3. The implied use of MuPDF also implies its license GNU AFFERO GPL V3. A copy of both licenses are included in this repository.
 
 # Contact
-You can also find PyMuPDF on the Python Package Index [PyPI](https://pypi.python.org/pypi/PyMuPDF)
+You can also find PyMuPDF on the Python Package Index [PyPI](https://pypi.org/project/PyMuPDF/)
 
 We invite you to join our efforts by contributing to the the wiki pages.
 
