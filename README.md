@@ -42,7 +42,9 @@ Then you might need to ``export ARCHFLAGS='-arch x86_64'`` since ``libmupdf.a`` 
 Finally, please double check ``setup.py`` before building. Update ``include_dirs`` and ``library_dirs`` if necessary.
 
 ## Windows
-You can download pre-generated binaries or Python wheels from [here](https://github.com/JorjMcKie/PyMuPDF-Optional-Material) that are suitable for your Python / Windows combination, and thereby avoid any compilation hassle. Again, make sure to consult our documentation.
+The lucky Windows user can just issue `pip install PyMuPDF [--upgrade]`.
+
+Without the use of ``pip``, you can download pre-generated binaries or Python wheels from [here](https://github.com/JorjMcKie/PyMuPDF-Optional-Material) that are suitable for your Python / Windows combination, and thereby avoid any compilation hassle. Again, make sure to consult our documentation.
 
 If you do want to make your own binary however, have a look at this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation). It explains how to use Visual Studio for generating MuPDF in quite some detail. Also do not hesitate to contact us if you need help.
 
