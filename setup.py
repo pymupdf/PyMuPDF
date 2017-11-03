@@ -56,7 +56,7 @@ else:
                        #library_dirs=['./mupdf/platform/win32/x64/Release'],
                        sources=['./fitz/fitz_wrap.c',])
 
-setup(name = 'fitz',
+setup(name = 'PyMuPDF',
       version = "1.11.1",
       description = 'Python bindings for the PDF rendering library MuPDF',
       classifiers = ['Development Status :: 5 - Production/Stable',
