@@ -5,8 +5,8 @@
 Release date: Sept 1, 2017
 
 # Authors
-* Ruikai Liu
-* Jorj X. McKie
+* [Ruikai Liu](lrk700@gmail.com)
+* [Jorj X. McKie](jorj.x.mckie@outlook.de)
 
 # Introduction
 
@@ -20,19 +20,21 @@ See the [Wiki](https://github.com/rk700/PyMuPDF/wiki) for more information, [new
 
 
 # Installation
-If you had not previously installed MuPDF, you must first do this (however, see the **MS Windows** section further down). This process highly depends on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this. If you decide to generate MuPDF from sources, be sure to download the official release from https://mupdf.com/downloads/. MuPDF also has a GitHub repo, but it contains the current **development source**, which probably is not compatible with this PyMuPDF.
+If you had not previously installed MuPDF, you must first do this (however, see the **MS Windows** section further down). This process very much depends on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this.
+
+If you decide to generate MuPDF from sources (definitely the safest and cleanest way for all platforms except MS Windows), be sure to download the official release from [here](https://mupdf.com/downloads). Although MuPDF also has a GitHub repo, this contains their current **development source**, which usually is incompatible with this PyMuPDF.
 
 Once MuPDF is in place, installing PyMuPDF comes down to running the usual ``python setup.py install``.
 
-Also refer to our documentation for details.
+Refer to our documentation for additional comments.
 
 ## Arch Linux
-AUR: https://aur.archlinux.org/packages/python2-pymupdf/
+AUR: https://aur.archlinux.org/packages/python2-pymupdf/ currently only provides PyMuPDF version 1.9.2 for Python 2.
 
 ## Ubuntu
-The required MuPDF version in the official Ubuntu repositories is often not timely available, so you need to build it from source. Make sure to add ``-fPIC`` to CFLAGS when compiling.
+The required MuPDF version in the official Ubuntu repositories is often not timely available, so you do need to build it from source. Make sure to add ``-fPIC`` to CFLAGS when compiling.
 
-When MuPDF is ready, edit ``setup.py`` in PyMuPDF and comment out the line of ``library_dirs=[]`` to specify the directory which contains ``libmupdf.a`` and other 3rd party libraries. Remove ``crypto`` from ``libraries`` in ``setup.py`` if it complains. For a MuPDF installation experience from sources visit this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Experience-from-an-Ubuntu-installation).
+When MuPDF is ready, edit ``setup.py`` in PyMuPDF and comment out the line of ``library_dirs=[]`` to specify the directory which contains ``libmupdf.a`` and other 3rd party libraries. Remove ``crypto`` from ``libraries`` in ``setup.py`` if it complains. One of our users (thanks to @gileadslostson) has documented his MuPDF installation experience from sources in this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Experience-from-an-Ubuntu-installation).
 
 ## OSX
 First, install the MuPDF headers and libraries, which are provided by mupdf-tools: ``brew install mupdf-tools``.
@@ -42,20 +44,24 @@ Then you might need to ``export ARCHFLAGS='-arch x86_64'`` since ``libmupdf.a`` 
 Finally, please double check ``setup.py`` before building. Update ``include_dirs`` and ``library_dirs`` if necessary.
 
 ## MS Windows
-The lucky Windows user can just issue `pip install PyMuPDF [--upgrade]`. This requires **nothing else** - no MuPDF, no Visual Studio, ... whatsoever.
+The lucky Windows user can now just issue `pip install PyMuPDF [--upgrade]` and is done in no more time than a 3 MB download takes. This requires **nothing else** - no MuPDF, no Visual Studio, ... whatsoever.
 
-Without using ``pip`` and [PyPI](https://pypi.org/project/PyMuPDF/), you can download pre-generated binaries or Python wheels from [here](https://github.com/JorjMcKie/PyMuPDF-Optional-Material) that are suitable for your Python / Windows combination, and thereby avoid any compilation hassle. Again, make sure to consult our documentation.
+If you don't use ``pip`` or [PyPI](https://pypi.org/project/PyMuPDF/), you can still download pre-generated binaries or Python wheels from [here](https://github.com/JorjMcKie/PyMuPDF-Optional-Material) that are suitable for your Python / Windows combination. This, too, avoids any other downloads or compilation hassle. Again, make sure to consult our documentation.
 
 If you do want to make your own binary however, have a look at this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation). It explains how to use Visual Studio for generating MuPDF in quite some detail. Also do not hesitate to contact us if you need help.
 
 # Usage and Documentation
-Please have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) which contain complete, working programs, and the **recipies** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki).
+Please have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) which contain complete, working programs, and the **recipies** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar.
 
 You have a number of options to access the **documentation**:
 
-* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/en/latest/), which you can download as [HTML ZIP file](https://github.com/rk700/PyMuPDF/tree/master/doc/html.zip).
+* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/en/latest/), which you can also download as [HTML ZIP file](https://github.com/rk700/PyMuPDF/tree/master/doc/html.zip).
 * You can download a [Windows CHM](https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm).
 * You can download a [PDF](https://github.com/rk700/PyMuPDF/tree/master/doc/pymupdf.pdf).
+
+> The new **PyPI Warehouse** no longer supports the maintenance of documentation hosted at https://pythonhosted.org. Their plans also include to retire this facility altogether as the PyPI Warehouse matures. They are encouraging the use of https://readthedocs.org instead.
+
+> We have decided to immediately follow their recommendation. Therefore, you will now find PyMuPDF's current online documentation on **Read the Docs** as indicated above. Because we haven't been able to update our documentation on **pythonhosted.org** since June of 2017, we also decided to delete it there to avoid confusion.
 
 Earlier Versions
 ================
@@ -77,8 +83,10 @@ Earlier Versions
 PyMuPDF is distributed under GNU GPL V3. The implied use of MuPDF also implies its license GNU AFFERO GPL V3. A copy of both licenses are included in this repository.
 
 # Contact
-You can also find PyMuPDF on the Python Package Index [PyPI](https://pypi.org/project/PyMuPDF/)
+You can also find us on the Python Package Index [PyPI](https://pypi.org/project/PyMuPDF/).
 
-We invite you to join our efforts by contributing to the the wiki pages.
+> Please note, that the project description on PyPI may be less current than the one you are looking at. This is because information on PyPI cannot be changed once stored there. Previously, this has been true for download files only, but since **PyPI Warehouse**, it obviously applies to everything else that defines a project (verbal description, classifiers, platforms, etc.).
 
-Please submit comments or any issues either to this site or by sending an e-mail to the authors [Ruikai Liu](lrk700@gmail.com) and [Jorj X. McKie](jorj.x.mckie@outlook.de).
+We invite you to join our efforts by contributing to the [Wiki](https://github.com/rk700/PyMuPDF/wiki) pages.
+
+Please submit comments or issues [here](https://github.com/rk700/PyMuPDF/issues), or directly contact the authors.
