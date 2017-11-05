@@ -51,17 +51,20 @@ If you don't use ``pip`` or [PyPI](https://pypi.org/project/PyMuPDF/), you can s
 If you do want to make your own binary however, have a look at this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation). It explains how to use Visual Studio for generating MuPDF in quite some detail. Also do not hesitate to contact us if you need help.
 
 # Usage and Documentation
-Please have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) which contain complete, working programs, and the **recipies** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar.
+Please have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) (which contain complete, working programs), and the **recipies** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar.
 
-You have a number of options to access the **documentation**:
+You have a number of options to access the documentation:
 
-* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/en/latest/), which you can also download as [HTML ZIP file](https://github.com/rk700/PyMuPDF/tree/master/doc/html.zip).
+* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/en/latest/).
+* You can download a zipped [HTML](https://github.com/rk700/PyMuPDF/tree/master/doc/html.zip) version.
 * You can download a [Windows CHM](https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm).
 * You can download a [PDF](https://github.com/rk700/PyMuPDF/tree/master/doc/pymupdf.pdf).
 
-> The new **PyPI Warehouse** no longer supports the maintenance of documentation hosted at https://pythonhosted.org. Their plans also include to retire this facility altogether as the PyPI Warehouse matures. They are encouraging the use of https://readthedocs.org instead.
+> The new [PyPI Warehouse](https://pypi.org/project/PyMuPDF/) no longer supports storing or maintaining documentation at https://pythonhosted.org. Everything there is hence becoming stale since many months. Their plans even include to drop this facility altogether once the new PyPI is fully in production. Projects should instead use https://readthedocs.org.
 
-> We have decided to immediately follow their recommendation. Therefore, you will now find PyMuPDF's current online documentation on **Read the Docs** as indicated above. Because we haven't been able to update our documentation on **pythonhosted.org** since June of 2017, we also decided to delete it there to avoid confusion.
+> Because our latest documentation update on **pythonhosted.org** was from June 2017, we have decided to shift gears immediately: you will now find PyMuPDF's (always current) online documentation on **Read the Docs** <u>only</u>, as indicated above, and <u>no longer</u> on **pythonhosted.org** to avoid confusion.
+
+> **Recommendation:** <u>do not use</u> [Read the Docs](https://pymupdf.readthedocs.io/en/latest/) for downloading documentation - instead, follow the links above.
 
 Earlier Versions
 ================
@@ -85,7 +88,7 @@ PyMuPDF is distributed under GNU GPL V3. The implied use of MuPDF also implies i
 # Contact
 You can also find us on the Python Package Index [PyPI](https://pypi.org/project/PyMuPDF/).
 
-> Please note, that the project description on PyPI may be less current than the one you are looking at. This is because information on PyPI cannot be changed once stored there. Previously, this has been true for download files only, but since **PyPI Warehouse**, it obviously applies to everything else that defines a project (verbal description, classifiers, platforms, etc.).
+> Please note, that the project description there may be less up-to-date than the one you are currently looking at. This is because information on PyPI, once stored, **cannot be changed**. Previously, this has been true only for the downloadable files, but since **PyPI Warehouse**, it obviously applies to all data of a full release.
 
 We invite you to join our efforts by contributing to the [Wiki](https://github.com/rk700/PyMuPDF/wiki) pages.
 
