@@ -64,7 +64,7 @@ You have a number of options to access the documentation:
 
 > Because our latest documentation update on **pythonhosted.org** was from June 2017, we have decided to shift gears immediately: you will now find PyMuPDF's (always current) online documentation on **Read the Docs** <u>only</u>, as indicated above, and <u>no longer</u> on **pythonhosted.org** to avoid confusion.
 
-> **Recommendation:** <u>do not use</u> [Read the Docs](https://pymupdf.readthedocs.io/en/latest/) for downloading documentation - instead, follow the links above.
+> **Recommendation:** do not try to **download** documentation from [Read the Docs](https://pymupdf.readthedocs.io/en/latest/) - instead, follow the links above.
 
 Earlier Versions
 ================
