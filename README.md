@@ -18,13 +18,12 @@ With PyMuPDF you therefore can also access files with extensions ``*.pdf``, ``*.
 
 See the [Wiki](https://github.com/rk700/PyMuPDF/wiki) for more information, [news](https://github.com/rk700/PyMuPDF/wiki/Change-and-News-Log), release notes and usage recipies.
 
-
 # Installation
 If you had not previously installed MuPDF, you must first do this (however, see the **MS Windows** section further down). This process very much depends on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this.
 
 If you decide to generate MuPDF from sources (definitely the safest and cleanest way for all platforms except MS Windows), be sure to download the official release from [here](https://mupdf.com/downloads). Although MuPDF also has a GitHub repo, this contains their current **development source**, which usually is incompatible with this PyMuPDF.
 
-Once MuPDF is in place, installing PyMuPDF comes down to running the usual ``python setup.py install``.
+Once this is done, adjust directories in ``setup.py`` and the rest should be as easy as running ``python setup.py install``.
 
 Refer to our documentation for additional comments.
 
@@ -39,7 +38,7 @@ When MuPDF is ready, edit ``setup.py`` in PyMuPDF and comment out the line of ``
 ## OSX
 First, install the MuPDF headers and libraries, which are provided by mupdf-tools: ``brew install mupdf-tools``.
 
-Then you might need to ``export ARCHFLAGS='-arch x86_64'`` since ``libmupdf.a`` is for x86_64 only.
+Then you might need to ``export ARCHFLAGS='-arch x86_64'``, since ``libmupdf.a`` is for x86_64 only.
 
 Finally, please double check ``setup.py`` before building. Update ``include_dirs`` and ``library_dirs`` if necessary.
 
@@ -51,7 +50,7 @@ If you don't use ``pip`` or [PyPI](https://pypi.org/project/PyMuPDF/), you can s
 If you do want to make your own binary however, have a look at this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation). It explains how to use Visual Studio for generating MuPDF in quite some detail. Also do not hesitate to contact us if you need help.
 
 # Usage and Documentation
-Please have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) (which contain complete, working programs), and the **recipies** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar.
+Have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) (which contain complete, working programs), and the **recipies** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar.
 
 You have a number of options to access the documentation:
 
