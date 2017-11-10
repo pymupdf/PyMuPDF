@@ -1,6 +1,77 @@
 import fitz
 from fitz.utils import getColor
+"""
+-------------------------------------------------------------------------------
+Created on Fri Nov 10 07:00:00 2017
 
+@author: Jorj McKie
+Copyright (c) 2017 Jorj X. McKie
+
+The license of this program is governed by the GNU GENERAL PUBLIC LICENSE
+Version 3, 29 June 2007. See the "COPYING" file of the PyMuPDF repository.
+-------------------------------------------------------------------------------
+Contains signs and symbols created with PyMuPDF's image creation features.
+The intention is to facilitate the use of these features by providing functions
+that create ready-made symbols. We strive to increase the function set from
+time to time.
+
+To include a function in your Python script, import it like so:
+
+from shapes_and_symbols import smiley
+
+Using a function
+----------------
+
+smiley(img, rect, ...)
+
+Allmost all functions have the same first and second parameter:
+
+img    - fitz.Shape object created by page.newShape()
+rect   - fitz.Rect object. This is the area in which the image should appear.
+
+Other parameters are function-specific, but always include a "morph" argument.
+This can be used to change the image's appearance in an almost arbitrary way:
+rotation, shearing, mirroring. For this you must provide a fitz.Point and a
+fitz.Matrix object. See PyMuPDF documentation, chapter "Shape".
+
+Using function "pencil"
+-----------------------
+
+pencil(img, penciltip, thickness, ...)
+
+penciltip - (fitz.Point) location of the pencil's tip
+thickness - (int) pencil's thickness in pixels.
+
+The pencil's rectangle is computed from these two values - fixed proportions are
+100 x 340, if thickness is 100. However, you can use the "morph" argument to
+change appearance.
+The main reasons for this special treatment are the appearance of some text and
+the option of letting pencil point to left or right.
+
+-------------------------------------------------------------------------------
+Available functions
+-------------------
+
+dontenter - traffic sign Do Not Enter
+heart     - heart
+clover    - 4 leaved clover
+diamond   - rhombus
+caro      - one of the 4 card game colors
+arrow     - a triangle
+hand      - a hand symbol similar to internet
+pencil    - a pencil (eye catcher)
+smiley    - emoji
+frowney   - emoji
+-------------------------------------------------------------------------------
+
+Dependencies
+------------
+PyMuPDF
+-------------------------------------------------------------------------------
+"""
+# =============================================================================
+# Do Not Enter
+# =============================================================================
 def dontenter(img, r, morph = None):
     """Draw the "Do Not Enter" traffic symbol.
     """
@@ -18,6 +89,9 @@ def dontenter(img, r, morph = None):
                roundCap = False, morph = morph)
     return
 
+# =============================================================================
+# Heart
+# =============================================================================
 def heart(img, r, col, morph = None):
     """Draw a heart image inside a rectangle.
     """
@@ -34,7 +108,10 @@ def heart(img, r, col, morph = None):
     img.drawBezier(htop, pl1, pl2, hbot)
     img.drawBezier(htop, pr1, pr2, hbot)
     img.finish(color = col, fill = col, closePath = True, morph = morph)
-    
+
+# =============================================================================
+# Clover leaf    
+# =============================================================================
 def clover(img, r, col, morph = None):
     """Draw a 4-leaf clover image inside a rectangle.
     """
@@ -47,6 +124,9 @@ def clover(img, r, col, morph = None):
     img.drawBezier(M, r.br, r.bl, M)
     img.finish(color = col, fill = col, width = 0.3, morph = morph)
 
+# =============================================================================
+# Diamond
+# =============================================================================
 def diamond(img, r, col, morph = None):
     """Draw a rhombus in a rectangle.
     """
@@ -58,6 +138,9 @@ def diamond(img, r, col, morph = None):
     img.drawPolyline((mto, mri, mbo, mle))
     img.finish(color = white, fill = col, closePath = True, morph = morph)
 
+# =============================================================================
+# Caro (card game color)
+# =============================================================================
 def caro(img, r, col, morph = None):
     """Draw a caro symbol in a rectangle.
     """
@@ -73,6 +156,9 @@ def caro(img, r, col, morph = None):
     img.drawCurve(mbo, M, mle)
     img.finish(color = white, fill = col, morph = morph)
 
+# =============================================================================
+# Arrow
+# =============================================================================
 def arrow(img, r, col, morph = None):
     """Draw a triangle symbol in a rectangle. Last parameter indicates direction
     the arrow points to: either as a number or as first letter of east(0), south(1),
@@ -85,6 +171,9 @@ def arrow(img, r, col, morph = None):
     img.drawPolyline((p1, p2, p3))
     img.finish(color = white, fill = col, closePath = True, morph = morph)
 
+# =============================================================================
+# Hand
+# =============================================================================
 def hand(img, rect, color = None, fill = None, morph = None):
     """Put a hand symbol inside a rectangle on a PDF page. Parameters:
     img - an object of the Shape class (contains relevant page information)
@@ -149,6 +238,9 @@ def hand(img, rect, color = None, fill = None, morph = None):
     img.finish(color = line, fill = skin, closePath = False, morph = morph)
     return
 
+# =============================================================================
+# Pencil
+# =============================================================================
 def pencil(img, penciltip, pb_height, left, morph = None):
     """Draw a pencil image. Parameters:
     img       -  Shape object
@@ -307,6 +399,52 @@ def pencil(img, penciltip, pb_height, left, morph = None):
                           fontsize = pb_height * 0.22, align = 1) < 0:
         raise ValueError("not enough space to store 'HB' text")
     return
+
+# =============================================================================
+# Smiley emoji
+# =============================================================================
+def smiley(img, rect, color = (0,0,0), fill = (1,1,0), morph = None):
+    dx = rect.width * 0.2
+    dy = rect.height * 0.25
+    w = rect.width * 0.01
+    img.drawOval(rect)                      # draw face
+    img.finish(fill = fill, width = w, morph = morph)
+    # calculate rectangles containing the eyes
+    rl = fitz.Rect(rect.tl + (dx, dy),
+                   rect.tl + (2 * dx, 2 * dy))
+    rr = fitz.Rect(rect.tr + (-2 * dx, dy),
+                   rect.tr + (-dx, 2 * dy))
+    img.drawOval(rl)                        # draw left eye
+    img.drawOval(rr)                        # draw right eye
+    img.finish(fill = color, morph = morph)
+    p0 = rl.bl + (0, 0.75 * dy)             # left corner of mouth
+    p1 = rr.br + (0, 0.75 * dy)             # right corner of mouth
+    c  = rect.bl + (rect.br - rect.bl)*0.5
+    img.drawCurve(p0, c, p1)                # draw mouth
+    img.finish(width = 4 * w, closePath = False, morph = morph)
+
+# =============================================================================
+# Frowney emoji
+# =============================================================================
+def frowney(img, rect, color = (0,0,0), fill = (1,1,0), morph = None):
+    dx = rect.width * 0.2
+    dy = rect.height * 0.25
+    w = rect.width * 0.01
+    img.drawOval(rect)                      # draw face
+    img.finish(fill = fill, width = w, morph = morph)
+    # calculate rectangles containing the eyes
+    rl = fitz.Rect(rect.tl + (dx, dy),
+                   rect.tl + (2 * dx, 2 * dy))
+    rr = fitz.Rect(rect.tr + (-2 * dx, dy),
+                   rect.tr + (-dx, 2 * dy))
+    img.drawOval(rl)                        # draw left eye
+    img.drawOval(rr)                        # draw right eye
+    img.finish(fill = color, morph = morph)
+    p0 = rl.bl + (0, dy)                    # left corner of mouth
+    p1 = rr.br + (0, dy)                    # right corner of mouth
+    c  = rl.bl + (rr.br - rl.bl)*0.5
+    img.drawCurve(p0, c, p1)                # draw mouth
+    img.finish(width = 4 * w, closePath = False, morph = morph)
 
 #------------------------------------------------------------------------------
 # Main program
