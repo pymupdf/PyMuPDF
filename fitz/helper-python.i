@@ -164,25 +164,23 @@ def getPDFstr(s, brackets = True):
 # The input string is aplit in segments of code points less than
 # or greater-equal 256, where each segment is enclosed in "<>" brackets.
 #===============================================================================
-def getTJstr(text):
+def getTJstr(text, glyphs):
     if text.startswith("[<") and text.endswith(">]"): # already done
         return text
-    otxt = "<"
-    modus = 0
-    for c in text:
-        if ord(c) < 256:
-            if modus == 2:
-                otxt += "><"
-            modus = 1
-            otxt += hex(ord(c))[-2:]
-        else:
-            if modus == 1:
-                otxt += "><"
-            modus = 2
-            otxt += hex(ord(c))[-4:]
-    if not otxt.endswith(">"):
-        otxt += ">"
-    return "[" + otxt + "]"
+    if not bool(text):
+        return "[<>]"
+    otxt = ""
+    if glyphs is None:
+        for c in text:
+            if ord(c) > 255:
+                otxt += "3f"
+            else:
+                otxt += hex(ord(c))[2:].rjust(2, "0")
+        return "[<" + otxt + ">]"
+    for i, c in enumerate(text):
+        glyph = glyphs[ord(c)][0]
+        otxt += hex(glyph)[2:].rjust(4, "0")
+    return "[<" + otxt + ">]"
 
 '''
 www.din-formate.de
@@ -272,11 +270,13 @@ def CheckMorph(o):
     return True
     
 def CheckFont(page, font):
+    """Check whether a font reference is in the page's font list and return its xref.
+    """
     fl = page.getFontList()
-    have_ref = False
+    have_ref = None
     for f in fl:
         if f[4] == font:
-            have_ref = True
+            have_ref = f
             break
     return have_ref
 %}

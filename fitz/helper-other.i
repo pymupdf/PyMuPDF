@@ -607,4 +607,68 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
     buf = pdf_load_stream(ctx, stream);
     return buf;
 }
-%}
+
+//-----------------------------------------------------------------------------
+// Return the file extension of an embedded font file
+//-----------------------------------------------------------------------------
+char *fontextension(fz_context *ctx, pdf_document *doc, int num)
+{
+    pdf_obj *o, *obj = NULL, *desft, *stream = NULL;
+    char *ext = "";
+    o = pdf_load_object(ctx, doc, num);
+    desft = pdf_dict_get(ctx, o, PDF_NAME_DescendantFonts);
+    if (desft)
+    {
+        obj = pdf_resolve_indirect(ctx, pdf_array_get(ctx, desft, 0));
+        obj = pdf_dict_get(ctx, obj, PDF_NAME_FontDescriptor);
+    }
+    else
+    {
+        obj = pdf_dict_get(ctx, o, PDF_NAME_FontDescriptor);
+    }
+
+    if (!obj)
+    {
+        pdf_drop_obj(ctx, o);
+        fz_throw(ctx, FZ_ERROR_GENERIC, "invalid font - FontDescriptor missing");
+    }
+    pdf_drop_obj(ctx, o);
+    o = obj;
+
+    obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile);
+    if (obj)
+    {
+        stream = obj;
+        ext = "pfa";
+    }
+
+    obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile2);
+    if (obj)
+    {
+        stream = obj;
+        ext = "ttf";
+    }
+
+    obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile3);
+    if (obj)
+    {
+        stream = obj;
+
+        obj = pdf_dict_get(ctx, obj, PDF_NAME_Subtype);
+        if (obj && !pdf_is_name(ctx, obj))
+            fz_throw(ctx, FZ_ERROR_GENERIC, "invalid font descriptor subtype");
+
+        if (pdf_name_eq(ctx, obj, PDF_NAME_Type1C))
+            ext = "cff";
+        else if (pdf_name_eq(ctx, obj, PDF_NAME_CIDFontType0C))
+            ext = "cid";
+        else if (pdf_name_eq(ctx, obj, PDF_NAME_OpenType))
+            ext = "otf";
+        else
+            fz_throw(ctx, FZ_ERROR_GENERIC, "unhandled font type '%s'", pdf_to_name(ctx, obj));
+    }
+
+    if (!stream) fz_throw(ctx, FZ_ERROR_GENERIC, "unhandled font type");
+
+    return ext;
+}%}

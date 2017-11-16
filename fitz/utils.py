@@ -878,6 +878,8 @@ def intersects(me, rect):
 def insertTextbox(page, rect, buffer,
                   fontname = "Helvetica",
                   fontfile = None,
+                  idx = 0,
+                  set_simple = 0,
                   fontsize = 11,
                   color = (0,0,0),
                   expandtabs = 1,
@@ -907,6 +909,8 @@ def insertTextbox(page, rect, buffer,
                            fontsize = fontsize,
                            fontname = fontname,
                            fontfile = fontfile,
+                           idx = idx,
+                           set_simple = set_simple,
                            color = color,
                            expandtabs = expandtabs,
                            charwidths = charwidths,
@@ -924,6 +928,8 @@ def insertText(page, point, text,
                fontsize = 11,
                fontname = "Helvetica",
                fontfile = None,
+               idx = 0,
+               set_simple = 0,
                color = (0,0,0),
                rotate = 0,
                morph = None,
@@ -934,6 +940,8 @@ def insertText(page, point, text,
                         fontsize = fontsize,
                         fontname = fontname,
                         fontfile = fontfile,
+                        idx = idx,
+                        set_simple = set_simple,
                         color = color,
                         rotate = rotate,
                         morph = morph)
@@ -2122,32 +2130,56 @@ class Shape():
 #==============================================================================
 # Shape.insertText
 #==============================================================================
-    def insertText(self, point, text,
+    def insertText(self, point, buffer,
                    fontsize = 11,
                    fontname = "Helvetica",
                    fontfile = None,
+                   idx = 0,
+                   set_simple = 0,
                    color = (0,0,0),
                    rotate = 0,
                    morph = None):
         
-        # ensure 'text' is a list of strings
-        if not bool(text): return 0
-        tab = []
-        if type(text) not in (list, tuple):
-            text = text.splitlines()
-        for t in text:
-            tab.append(fitz.getTJstr(t))
-        text = tab
+        # ensure 'text' is a list of strings worth dealing with
+        if not bool(buffer): return 0
+        
+        if type(buffer) not in (list, tuple):
+            maxcode = max([ord(c) for c in buffer])
+            text = buffer.splitlines()
+        else:
+            text = buffer
+            maxcode = max([max([ord(c) for c in x]) for x in text])
         if not len(text) > 0:
             return 0
         # ensure valid 'fontname'
+        xref = 0                            # xref of font object
         fname = fontname
         if not fname:
             fname = "Helvetica"
         if fname[0] == "/":
             fname = fname[1:]
-            assert fitz.CheckFont(self.page, fname), "invalid font reference"
-    
+        f = fitz.CheckFont(self.page, fname)
+        if f is not None:
+            xref = f[0]
+        else:
+            xref = self.page.insertFont(fontname = fname, fontfile = fontfile,
+                                        set_simple = set_simple, idx = idx)
+        assert xref > 0, "invalid fontname"
+        for fi in self.doc.FontInfos:
+            if fi[0] == xref:
+                simple = fi[1]["simple"]
+                break
+        
+        # TODO: support of unicode points > 255
+        if not simple:
+            glyphs = self.doc._getCharWidths(xref, limit = maxcode+1, idx = idx)
+        else:
+            glyphs = None
+        tab = []
+        for t in text:
+            tab.append(fitz.getTJstr(t, glyphs))
+        text = tab
+
         fitz.CheckColor(color)
         morphing = fitz.CheckMorph(morph)
         rot = rotate
@@ -2223,14 +2255,14 @@ class Shape():
     # =========================================================================
         # update the /Contents object
         self.totalcont += nres
-        self.page.insertFont(fontname = fname, fontfile = fontfile)
         return nlines
     
 #==============================================================================
 # Shape.insertTextbox
 #==============================================================================
     def insertTextbox(self, rect, buffer, fontname = "Helvetica", fontfile = None,
-                      fontsize = 11, color = (0,0,0), expandtabs = 1,
+                      fontsize = 11, idx = 0, set_simple = 0,
+                      color = (0,0,0), expandtabs = 1,
                       charwidths = None, align = 0, rotate = 0, morph = None):
         """Insert text into a given rectangle. Arguments:
         rect - the textbox to fill
@@ -2255,24 +2287,46 @@ class Shape():
         rot = rotate
         while rot < 0: rot += 360
         rot = rot % 360
+        
+        # is buffer worth of dealing with?
         if not bool(buffer):
             return rect.height if rot in (0, 180) else rect.width
+        # create a list from buffer, split into its lines
+        if type(buffer) in (list, tuple):
+            t0 = "\n".join(buffer)
+        else:
+            t0 = buffer        
+        t0 = t0.splitlines()
+        maxcode = max([max([ord(c) for c in x]) for x in t0])
+        
         red, green, blue = color if color else (0,0,0)
         cmp90 = "0 1 -1 0 0 0 cm\n"   # rotates counter-clockwise
         cmm90 = "0 -1 1 0 0 0 cm\n"   # rotates clockwise
         cm180 = "-1 0 0 -1 0 0 cm\n"  # rotates by 180 deg.
         height = self.height
         fname = fontname
+        ftype = ""
         if not fname:
             fname = "Helvetica"
         if fname[0] == "/":
             fname = fname[1:]
-            assert fitz.CheckFont(self.page, fname), "invalid font reference"
-        xref = self.page.insertFont(fontname = fname, fontfile = fontfile)
+        f = fitz.CheckFont(self.page, fname)
+        if f is not None:
+            xref = f[0]
+            ftype = f[2]
+        else:
+            xref = self.page.insertFont(fontname = fname, fontfile = fontfile, 
+                                        set_simple = set_simple, idx = idx)
+            f = fitz.CheckFont(self.page, fname)
+            ftype = f[2] if f is not None else ""
+        assert xref > 0, "invalid fontname"
         # ensure we have a list of glyph widths for the given font
         widthtab = charwidths              # hopefully we have been given one
         if not widthtab:                   # need to build our own (sigh!)
-            widthtab = self.doc._getCharWidths(xref = xref)
+            widthtab = self.doc._getCharWidths(xref = xref, limit = maxcode +1)
+        elif len(widthtab) < maxcode:
+            widthtab = self.doc._getCharWidths(xref = xref, limit = maxcode +1,
+                                               cwlist = widthtab)
 
         #----------------------------------------------------------------------
         # calculate pixel length of a string
@@ -2280,13 +2334,13 @@ class Shape():
         def pixlen(x):
             """Calculate pixel length of x."""
             try:
-                return sum([widthtab[ord(c)] for c in x]) * fontsize
+                return sum([widthtab[ord(c)][1] for c in x]) * fontsize
             except IndexError:
                 m = max([ord(c) for c in x])
-                raise ValueError("max. code point %i not < 256" % m)
+                raise ValueError("max. code point %i outside widthtab" % m)
         #----------------------------------------------------------------------
 
-        blen = widthtab[32] * fontsize          # pixel size of space character
+        blen = widthtab[32][1] * fontsize       # pixel size of space character
         text = ""                               # output buffer
         lheight = fontsize * 1.2                # line height
         if fitz.CheckMorph(morph):
@@ -2333,14 +2387,6 @@ class Shape():
             maxpos = rect.x0                    # lines must not left of this
             cm += cmm90
         
-        # create a list from buffer, split into its lines
-        if type(buffer) in (list, tuple):
-            t0 = "\n".join(buffer)
-        else:
-            t0 = buffer
-        
-        t0 = t0.splitlines()
-    
         #=======================================================================
         # line loop
         #=======================================================================

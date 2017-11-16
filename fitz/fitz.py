@@ -102,9 +102,9 @@ import sys
 
 
 VersionFitz = "1.11"
-VersionBind = "1.11.1"
-VersionDate = "2017-10-20 13:53:03"
-version = (VersionBind, VersionFitz, "20171020135303")
+VersionBind = "1.11.2"
+VersionDate = "2017-11-15 18:16:55"
+version = (VersionBind, VersionFitz, "20171115181655")
 
 
 #------------------------------------------------------------------------------
@@ -272,25 +272,23 @@ def getPDFstr(s, brackets = True):
 # The input string is aplit in segments of code points less than
 # or greater-equal 256, where each segment is enclosed in "<>" brackets.
 #===============================================================================
-def getTJstr(text):
+def getTJstr(text, glyphs):
     if text.startswith("[<") and text.endswith(">]"): # already done
         return text
-    otxt = "<"
-    modus = 0
-    for c in text:
-        if ord(c) < 256:
-            if modus == 2:
-                otxt += "><"
-            modus = 1
-            otxt += hex(ord(c))[-2:]
-        else:
-            if modus == 1:
-                otxt += "><"
-            modus = 2
-            otxt += hex(ord(c))[-4:]
-    if not otxt.endswith(">"):
-        otxt += ">"
-    return "[" + otxt + "]"
+    if not bool(text):
+        return "[<>]"
+    otxt = ""
+    if glyphs is None:
+        for c in text:
+            if ord(c) > 255:
+                otxt += "3f"
+            else:
+                otxt += hex(ord(c))[2:].rjust(2, "0")
+        return "[<" + otxt + ">]"
+    for i, c in enumerate(text):
+        glyph = glyphs[ord(c)][0]
+        otxt += hex(glyph)[2:].rjust(4, "0")
+    return "[<" + otxt + ">]"
 
 '''
 www.din-formate.de
@@ -380,11 +378,13 @@ def CheckMorph(o):
     return True
 
 def CheckFont(page, font):
+    """Check whether a font reference is in the page's font list and return its xref.
+    """
     fl = page.getFontList()
-    have_ref = False
+    have_ref = None
     for f in fl:
         if f[4] == font:
-            have_ref = True
+            have_ref = f
             break
     return have_ref
 
@@ -454,6 +454,7 @@ open(filename)"""
         self.isClosed    = 1
         self.openErrCode = 0
         self.openErrMsg  = ''
+        self.FontInfos   = []
 
 
         val = _fitz.Document_close(self)
@@ -688,7 +689,7 @@ open(filename)"""
         return val
 
 
-    def insertPage(self, pno=-1, text=None, fontsize=11, width=595, height=842, fontname=None, fontfile=None, color=None):
+    def insertPage(self, pno=-1, text=None, fontsize=11, width=595, height=842, idx=0, fontname=None, fontfile=None, set_simple=0, color=None):
         """Insert a new page in front of 'pno'. Use arguments 'width', 'height' to specify a non-default page size, and optionally text insertion arguments."""
 
         if self.isClosed:
@@ -699,7 +700,7 @@ open(filename)"""
                 raise ValueError("invalid font reference")
 
 
-        val = _fitz.Document_insertPage(self, pno, text, fontsize, width, height, fontname, fontfile, color)
+        val = _fitz.Document_insertPage(self, pno, text, fontsize, width, height, idx, fontname, fontfile, set_simple, color)
 
         if val < 0: return val
         self._reset_page_refs()
@@ -707,7 +708,7 @@ open(filename)"""
         page = self.loadPage(pno)
         val = page.insertText(Point(50, 72), text, fontsize = fontsize,
                               fontname = fontname, fontfile = fontfile,
-                              color = color)
+                              color = color, idx = idx, set_simple = set_simple)
 
 
         return val
@@ -746,12 +747,12 @@ open(filename)"""
         return _fitz.Document_permissions(self)
 
 
-    def _getCharWidths(self, fontname=None, fontfile=None, xref=0, limit=256):
-        """List the glyph widths of a font."""
+    def _getCharWidths(self, xref=0, idx=0, limit=256, cwlist=None):
+        """Return list of glyphs and glyph widths of a font."""
         if self.isClosed:
             raise RuntimeError("operation illegal for closed doc")
 
-        return _fitz.Document__getCharWidths(self, fontname, fontfile, xref, limit)
+        return _fitz.Document__getCharWidths(self, xref, idx, limit, cwlist)
 
 
     def _getPageObjNumber(self, pno):
@@ -899,7 +900,7 @@ open(filename)"""
             return "fitz.Document('%s')" % (self.name,)
         return "fitz.Document('%s', <memory>)" % (self.name,)
 
-    def __getitem__(self, i):
+    def __getitem__(self, i=0):
         if i >= len(self):
             raise IndexError("page number(s) out of range")
         return self.loadPage(i)
@@ -1075,18 +1076,37 @@ class Page(_object):
         return _fitz.Page_insertImage(self, rect, filename, pixmap, overlay)
 
 
-    def insertFont(self, fontname=None, fontfile=None):
-        """insertFont(self, fontname=None, fontfile=None) -> int"""
+    def insertFont(self, fontname=None, fontfile=None, set_simple=0, idx=0):
+        """insertFont(self, fontname=None, fontfile=None, set_simple=0, idx=0) -> PyObject *"""
 
         if not self.parent:
             raise RuntimeError("orphaned object: parent is None")
-        fl = self.getFontList()
-        for f in fl:         # drop out if fontname already there
-            if f[4] == fontname:
-                return f[0]
+        f = CheckFont(self, fontname)
+        if f is not None:         # drop out if fontname already there
+            return f[0]
+        if not fontname:
+            fontname = "Helvetica"
 
 
-        return _fitz.Page_insertFont(self, fontname, fontfile)
+        val = _fitz.Page_insertFont(self, fontname, fontfile, set_simple, idx)
+
+        if val:
+            xref = val[0]
+            f = CheckFont(self, fontname)
+            if f is not None:
+                val[1]["type"] = f[2]       # put /Subtype in font info
+            doc = self.parent               # now add to document font info
+            if not hasattr(doc, "FontInfos"):
+                doc.FontInfos = [val]       # we are the first font
+            else:
+                for fi in doc.FontInfos:    # look if we are already present
+                    if fi[0] == xref:       # yes: nothing to do
+                        break
+                    doc.FontInfos.append(val)   # no: add me to document object
+            return xref
+
+
+        return val
 
 
     def _getContents(self):
