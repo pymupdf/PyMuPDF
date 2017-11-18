@@ -25,14 +25,24 @@ lenXREF = doc._getXrefLength()         # number of objects - do not use entry 0!
 print("file: %s, pages: %s, objects: %s" % (sys.argv[1], len(doc), lenXREF-1))
 
 for i in range(1, lenXREF):            # scan through all objects
-    text = doc._getObjectString(i)     # string defining the object
+    try:
+        text = doc._getObjectString(i) # string defining the object
+    except:
+        continue                       # skip if error
+        
     isXObject = re.search(checkXO, text)    # tests for XObject
     isImage   = re.search(checkIM, text)    # tests for Image
     if not isXObject or not isImage:   # not an image object if not both True
         continue
-    pix = fitz.Pixmap(doc, i)          # make pixmap from image
+        
+    try:
+        pix = fitz.Pixmap(doc, i)      # make pixmap from image
+    except:
+        continue                       # skip if error
+        
     if pix.colorspace is None:         # this is just a mask!
         continue
+        
     imgcount += 1
     if pix.colorspace.n < 4:           # can be saved as PNG
         pix.writePNG("img-%s.png" % (i,))
