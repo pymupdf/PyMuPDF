@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.11"
 VersionBind = "1.11.2"
-VersionDate = "2017-11-15 18:16:55"
-version = (VersionBind, VersionFitz, "20171115181655")
+VersionDate = "2017-11-18 08:05:47"
+version = (VersionBind, VersionFitz, "20171118080547")
 
 
 #------------------------------------------------------------------------------
@@ -377,16 +377,26 @@ def CheckMorph(o):
         raise ValueError("invalid morph parameter")
     return True
 
-def CheckFont(page, font):
-    """Check whether a font reference is in the page's font list and return its xref.
+def CheckFont(page, fontname):
+    """Return an entry in the page's font list if reference name matches.
     """
     fl = page.getFontList()
-    have_ref = None
+    refname = None
     for f in fl:
-        if f[4] == font:
-            have_ref = f
+        if f[4] == fontname:
+            refname = f
             break
-    return have_ref
+    return refname
+
+def CheckFontInfo(doc, xref):
+    """Return a font info if present in the document.
+    """
+    fi = None
+    for f in doc.FontInfo:
+        if f[0] == xref:
+            fi = f
+            break
+    return fi
 
 class Document(_object):
     """open() - new empty PDF
@@ -419,9 +429,8 @@ open(filename)"""
         self.metadata    = None
         self.openErrCode = 0
         self.openErrMsg  = ''
+        self.FontInfos   = []
         self._page_refs  = weakref.WeakValueDictionary()
-
-
 
         this = _fitz.new_Document(filename, stream)
         try:
@@ -1552,6 +1561,13 @@ Pixmap(Document, xref) - from PDF image in a PDF"""
         except __builtin__.Exception:
             self.this = this
 
+        if this:
+            self.thisown = True
+        else:
+            self.thisown = False
+
+
+
     def gammaWith(self, gamma):
         """gammaWith(self, gamma)"""
         return _fitz.Pixmap_gammaWith(self, gamma)
@@ -1661,12 +1677,9 @@ Pixmap(Document, xref) - from PDF image in a PDF"""
             return "fitz.Pixmap(%s, %s, %s)" % ('None', self.irect, self.alpha)
 
     def __del__(self):
-        if getattr(self, "thisown", True):
-            try:
-                self.__swig_destroy__(self)
-            except:
-                pass
+        if hasattr(self, "this") and self.thisown:
             self.thisown = False
+            self.__swig_destroy__(self)
 
 Pixmap_swigregister = _fitz.Pixmap_swigregister
 Pixmap_swigregister(Pixmap)

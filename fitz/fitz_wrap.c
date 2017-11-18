@@ -3994,7 +3994,8 @@ char *fontextension(fz_context *ctx, pdf_document *doc, int num)
     if (!obj)
     {
         pdf_drop_obj(ctx, o);
-        fz_throw(ctx, FZ_ERROR_GENERIC, "invalid font - FontDescriptor missing");
+        ext = "n/a";
+        return ext;
     }
     pdf_drop_obj(ctx, o);
     o = obj;
@@ -4548,7 +4549,7 @@ SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
 SWIGINTERN struct fz_document_s *new_fz_document_s(char const *filename,PyObject *stream){
             struct fz_document_s *doc = NULL;
             fz_stream *data = NULL;
-            char *streamdata;
+            char *streamdata = NULL;
             size_t streamlen = 0;
             if (PyBytes_Check(stream))
             {
@@ -4577,8 +4578,7 @@ SWIGINTERN struct fz_document_s *new_fz_document_s(char const *filename,PyObject
                         doc = (fz_document *) pdf_create_document(gctx);
                 }
             }
-            fz_catch(gctx)
-                return NULL;
+            fz_catch(gctx) return NULL;
             return doc;
         }
 SWIGINTERN void fz_document_s_close(struct fz_document_s *self){
@@ -5721,7 +5721,8 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
                 fontdict = pdf_dict_get_val(gctx, dict, i);
                 if (!pdf_is_dict(gctx, fontdict))
                     continue;  // not a valid font
-                long xref = (long) pdf_to_num(gctx, fontdict);
+                int xref = pdf_to_num(gctx, fontdict);
+                char *ext = fontextension(gctx, pdf, xref);
                 long gen  = (long) pdf_to_gen(gctx, fontdict);
                 subtype = pdf_dict_get(gctx, fontdict, PDF_NAME_Subtype);
                 basefont = pdf_dict_get(gctx, fontdict, PDF_NAME_BaseFont);
@@ -5730,7 +5731,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
                 else
                     bname = basefont;
                 name = pdf_dict_get_key(gctx, dict, i);
-                PyList_Append(fontlist, Py_BuildValue("(i,i,s,s,s)", xref, gen,
+                PyList_Append(fontlist, Py_BuildValue("(i,s,s,s,s)", xref, ext,
                                                       pdf_to_name(gctx, subtype),
                                                       pdf_to_name(gctx, bname),
                                                       pdf_to_name(gctx, name)));
@@ -6451,7 +6452,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "unknown PDF Base 14 font")
                 pdf_dict_puts(gctx, fonts, fontname, font_obj);
                 pdf_dict_put(gctx, resources, PDF_NAME_Font, fonts);
             }
-            fz_catch(gctx) return -1;
+            fz_catch(gctx) return NULL;
             return Py_BuildValue("(i, O)", xref, info);
         }
 SWIGINTERN PyObject *fz_page_s__getContents(struct fz_page_s *self){
@@ -7030,6 +7031,10 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "xref out of range")
                 if (!pdf_name_eq(gctx, type, PDF_NAME_Image))
                     /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "xref not an image")
+/*@SWIG@*/;
+                if (!pdf_is_stream(gctx, ref))
+                    /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "broken PDF: xref is not a stream")
 /*@SWIG@*/;
                 img = pdf_load_image(gctx, pdf, ref);
                 pdf_drop_obj(gctx, ref);
@@ -8347,7 +8352,7 @@ SWIGINTERN PyObject *_wrap_new_Document(PyObject *SWIGUNUSEDPARM(self), PyObject
   }
   {
     result = (struct fz_document_s *)new_fz_document_s((char const *)arg1,arg2);
-    if(result==NULL)
+    if(!result)
     {
       PyErr_SetString(PyExc_Exception, gctx->error->message);
       return NULL;
@@ -10671,7 +10676,7 @@ SWIGINTERN PyObject *_wrap_Page_insertFont(PyObject *SWIGUNUSEDPARM(self), PyObj
   }
   {
     result = (PyObject *)fz_page_s_insertFont(arg1,(char const *)arg2,(char const *)arg3,arg4,arg5);
-    if(result<0)
+    if(!result)
     {
       PyErr_SetString(PyExc_Exception, gctx->error->message);
       return NULL;

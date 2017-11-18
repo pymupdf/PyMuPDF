@@ -1,7 +1,7 @@
 from . import fitz
 import math
 '''
-The following is a collection of commodity functions to extend PyMupdf.
+The following is a collection of functions to extend PyMupdf.
 '''
 #==============================================================================
 # A function for searching string occurrences on a page.
@@ -2154,23 +2154,28 @@ class Shape():
         # ensure valid 'fontname'
         xref = 0                            # xref of font object
         fname = fontname
+        f = None
         if not fname:
             fname = "Helvetica"
         if fname[0] == "/":
             fname = fname[1:]
-        f = fitz.CheckFont(self.page, fname)
+            f = fitz.CheckFont(self.page, fname)
+        
         if f is not None:
             xref = f[0]
         else:
             xref = self.page.insertFont(fontname = fname, fontfile = fontfile,
                                         set_simple = set_simple, idx = idx)
+            f = fitz.CheckFont(self.page, fname)
+
         assert xref > 0, "invalid fontname"
-        for fi in self.doc.FontInfos:
-            if fi[0] == xref:
-                simple = fi[1]["simple"]
-                break
-        
-        # TODO: support of unicode points > 255
+        if f[2] == "Type1" or f[2] == "TrueType":
+            simple = True
+        else:
+            simple = False
+        fontinfo = fitz.CheckFontInfo(self.doc, xref)
+        if fontinfo:
+            simple = fontinfo[1]["simple"]
         if not simple:
             glyphs = self.doc._getCharWidths(xref, limit = maxcode+1, idx = idx)
         else:
@@ -2304,22 +2309,30 @@ class Shape():
         cmm90 = "0 -1 1 0 0 0 cm\n"   # rotates clockwise
         cm180 = "-1 0 0 -1 0 0 cm\n"  # rotates by 180 deg.
         height = self.height
+        xref = 0                            # xref of font object
         fname = fontname
-        ftype = ""
+        f = None
         if not fname:
             fname = "Helvetica"
         if fname[0] == "/":
             fname = fname[1:]
-        f = fitz.CheckFont(self.page, fname)
+            f = fitz.CheckFont(self.page, fname)
+        
         if f is not None:
             xref = f[0]
-            ftype = f[2]
         else:
-            xref = self.page.insertFont(fontname = fname, fontfile = fontfile, 
+            xref = self.page.insertFont(fontname = fname, fontfile = fontfile,
                                         set_simple = set_simple, idx = idx)
             f = fitz.CheckFont(self.page, fname)
-            ftype = f[2] if f is not None else ""
+
         assert xref > 0, "invalid fontname"
+        if f[2] == "Type1" or f[2] == "TrueType":
+            simple = True
+        else:
+            simple = False
+        fontinfo = fitz.CheckFontInfo(self.doc, xref)
+        if fontinfo:
+            simple = fontinfo[1]["simple"]
         # ensure we have a list of glyph widths for the given font
         widthtab = charwidths              # hopefully we have been given one
         if not widthtab:                   # need to build our own (sigh!)

@@ -630,7 +630,8 @@ char *fontextension(fz_context *ctx, pdf_document *doc, int num)
     if (!obj)
     {
         pdf_drop_obj(ctx, o);
-        fz_throw(ctx, FZ_ERROR_GENERIC, "invalid font - FontDescriptor missing");
+        ext = "n/a";
+        return ext;
     }
     pdf_drop_obj(ctx, o);
     o = obj;

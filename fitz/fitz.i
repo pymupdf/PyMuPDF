@@ -41,7 +41,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, msg)
 %enddef
 //=============================================================================
 
-// SWIG macro: check whether document type is PDF
+// SWIG macro: ensure that document type is PDF
 %define assert_PDF(cond)
 if (!cond) THROWMSG("not a PDF")
 %enddef
@@ -116,7 +116,7 @@ struct fz_document_s
             fprintf(stderr, " done!\n");
 #endif
         }
-        FITZEXCEPTION(fz_document_s, result==NULL)
+        FITZEXCEPTION(fz_document_s, !result)
         %pythonprepend fz_document_s %{
             if not filename or type(filename) == str:
                 pass
@@ -133,9 +133,8 @@ struct fz_document_s
             self.metadata    = None
             self.openErrCode = 0
             self.openErrMsg  = ''
-            self._page_refs  = weakref.WeakValueDictionary()
-
-        %}
+            self.FontInfos   = []
+            self._page_refs  = weakref.WeakValueDictionary()%}
         %pythonappend fz_document_s %{
             if this:
                 self.openErrCode = self._getGCTXerrcode()
@@ -151,7 +150,7 @@ struct fz_document_s
         {
             struct fz_document_s *doc = NULL;
             fz_stream *data = NULL;
-            char *streamdata;
+            char *streamdata = NULL;
             size_t streamlen = 0;
             if (PyBytes_Check(stream))
             {
@@ -180,8 +179,7 @@ struct fz_document_s
                         doc = (fz_document *) pdf_create_document(gctx);
                 }
             }
-            fz_catch(gctx)
-                return NULL;
+            fz_catch(gctx) return NULL;
             return doc;
         }
 
@@ -1198,7 +1196,8 @@ if sa < 0:
                 fontdict = pdf_dict_get_val(gctx, dict, i);
                 if (!pdf_is_dict(gctx, fontdict))
                     continue;  // not a valid font
-                long xref = (long) pdf_to_num(gctx, fontdict);
+                int xref = pdf_to_num(gctx, fontdict);
+                char *ext = fontextension(gctx, pdf, xref);
                 long gen  = (long) pdf_to_gen(gctx, fontdict);
                 subtype = pdf_dict_get(gctx, fontdict, PDF_NAME_Subtype);
                 basefont = pdf_dict_get(gctx, fontdict, PDF_NAME_BaseFont);
@@ -1207,7 +1206,7 @@ if sa < 0:
                 else
                     bname = basefont;
                 name = pdf_dict_get_key(gctx, dict, i);
-                PyList_Append(fontlist, Py_BuildValue("(i,i,s,s,s)", xref, gen,
+                PyList_Append(fontlist, Py_BuildValue("(i,s,s,s,s)", xref, ext,
                                                       pdf_to_name(gctx, subtype),
                                                       pdf_to_name(gctx, bname),
                                                       pdf_to_name(gctx, name)));
@@ -2046,7 +2045,7 @@ fannot._erase()
         //---------------------------------------------------------------------
         // insert font
         //---------------------------------------------------------------------
-        FITZEXCEPTION(insertFont, result<0)
+        FITZEXCEPTION(insertFont, !result)
         %pythonprepend insertFont %{
         if not self.parent:
             raise RuntimeError("orphaned object: parent is None")
@@ -2147,7 +2146,7 @@ fannot._erase()
                 pdf_dict_puts(gctx, fonts, fontname, font_obj);
                 pdf_dict_put(gctx, resources, PDF_NAME_Font, fonts);
             }
-            fz_catch(gctx) return -1;
+            fz_catch(gctx) return NULL;
             return Py_BuildValue("(i, O)", xref, info);
         }
 
@@ -2845,6 +2844,11 @@ struct fz_pixmap_s
 #endif
         }
         FITZEXCEPTION(fz_pixmap_s, !result)
+        %pythonappend fz_pixmap_s %{
+        if this:
+            self.thisown = True
+        else:
+            self.thisown = False%}
         //---------------------------------------------------------------------
         // create empty pixmap with colorspace and IRect
         //---------------------------------------------------------------------
@@ -3011,6 +3015,8 @@ struct fz_pixmap_s
                 type = pdf_dict_get(gctx, ref, PDF_NAME_Subtype);
                 if (!pdf_name_eq(gctx, type, PDF_NAME_Image))
                     THROWMSG("xref not an image");
+                if (!pdf_is_stream(gctx, ref))
+                    THROWMSG("broken PDF: xref is not a stream");
                 img = pdf_load_image(gctx, pdf, ref);
                 pdf_drop_obj(gctx, ref);
                 pix = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
@@ -3260,12 +3266,9 @@ struct fz_pixmap_s
                     return "fitz.Pixmap(%s, %s, %s)" % ('None', self.irect, self.alpha)%}
         %pythoncode %{
         def __del__(self):
-            if getattr(self, "thisown", True):
-                try:
-                    self.__swig_destroy__(self)
-                except:
-                    pass
+            if hasattr(self, "this") and self.thisown:
                 self.thisown = False
+                self.__swig_destroy__(self)
         %}
     }
 };

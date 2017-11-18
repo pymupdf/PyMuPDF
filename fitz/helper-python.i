@@ -269,14 +269,24 @@ def CheckMorph(o):
         raise ValueError("invalid morph parameter")
     return True
     
-def CheckFont(page, font):
-    """Check whether a font reference is in the page's font list and return its xref.
+def CheckFont(page, fontname):
+    """Return an entry in the page's font list if reference name matches.
     """
     fl = page.getFontList()
-    have_ref = None
+    refname = None
     for f in fl:
-        if f[4] == font:
-            have_ref = f
+        if f[4] == fontname:
+            refname = f
             break
-    return have_ref
+    return refname
+
+def CheckFontInfo(doc, xref):
+    """Return a font info if present in the document.
+    """
+    fi = None
+    for f in doc.FontInfo:
+        if f[0] == xref:
+            fi = f
+            break
+    return fi
 %}
