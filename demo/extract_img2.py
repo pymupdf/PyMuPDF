@@ -11,6 +11,36 @@ from __future__ import print_function
 import fitz
 import sys, time, re
 
+def recoverpix(doc, item):
+    x = item[0]  # xref of PDF image
+    s = item[1]  # xref of its /SMask
+    
+    try:
+        pix1 = fitz.Pixmap(doc, x)     # make pixmap from image
+    except:
+        print("xref %i " % x + doc._getGCTXerrmsg())
+        return None                    # skip if error
+
+    if s == 0:                    # has no /SMask
+        return pix1               # no special handling
+    
+    try:
+        pix2 = fitz.Pixmap(doc, s)    # create pixmap of /SMask entry
+    except:
+        print("cannot create mask %i for image xref %i" % (s,x))
+        return pix1
+        
+    # check that we are safe
+    if not (pix1.irect == pix2.irect and \
+            pix1.alpha == pix2.alpha == 0 and \
+            pix2.n == 1):
+        print("unexpected /SMask situation: pix1", pix1, "pix2", pix2)
+        return pix1
+    pix = fitz.Pixmap(pix1)       # copy of pix1, alpha channel added
+    pix.setAlpha(pix2.samples)    # treat pix2.samples as alpha value
+    pix1 = pix2 = None            # free temp pixmaps
+    return pix
+
 checkXO = r"/Type(?= */XObject)"       # finds "/Type/XObject"   
 checkIM = r"/Subtype(?= */Image)"      # finds "/Subtype/Image"
 
@@ -22,12 +52,13 @@ imgcount = 0
 lenXREF = doc._getXrefLength()         # number of objects - do not use entry 0!
 
 # display some file info
-print("file: %s, pages: %s, objects: %s" % (sys.argv[1], len(doc), lenXREF-1))
+print(__file__, "PDF: %s, pages: %s, objects: %s" % (sys.argv[1], len(doc), lenXREF-1))
 
 for i in range(1, lenXREF):            # scan through all objects
     try:
-        text = doc._getObjectString(i) # string defining the object
+        text = doc._getObjectString(i) # PDF object definition string
     except:
+        print("xref %i " % i + doc._getGCTXerrmsg())
         continue                       # skip if error
         
     isXObject = re.search(checkXO, text)    # tests for XObject
@@ -35,14 +66,20 @@ for i in range(1, lenXREF):            # scan through all objects
     if not isXObject or not isImage:   # not an image object if not both True
         continue
         
-    try:
-        pix = fitz.Pixmap(doc, i)      # make pixmap from image
-    except:
-        continue                       # skip if error
+    txt = text.split("/SMask")
+    if len(txt) > 1:
+        y = txt[1].split()
+        mxref = int(y[0])
+    else:
+        mxref = 0
+    
+    pix = recoverpix(doc, (i, mxref))
         
-    if pix.colorspace is None:         # this is just a mask!
+    if not pix:
         continue
-        
+    if not pix.colorspace:             # an error a just a mask!
+        continue
+
     imgcount += 1
     if pix.colorspace.n < 4:           # can be saved as PNG
         pix.writePNG("img-%s.png" % (i,))
