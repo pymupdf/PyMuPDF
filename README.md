@@ -1,8 +1,8 @@
-# PyMuPDF 1.11.1
+# PyMuPDF 1.11.2
 
 ![logo](https://github.com/rk700/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: Sept 1, 2017
+Release date: November 15, 2017
 
 # Authors
 * [Ruikai Liu](lrk700@gmail.com)
@@ -10,7 +10,7 @@ Release date: Sept 1, 2017
 
 # Introduction
 
-This is **version 1.11.1 of PyMuPDF (formerly python-fitz)**, a Python binding which supports [MuPDF 1.11](http://mupdf.com/) - "a lightweight PDF and XPS viewer".
+This is **version 1.11.2 of PyMuPDF (formerly python-fitz)**, a Python binding which supports [MuPDF 1.11](http://mupdf.com/) - "a lightweight PDF and XPS viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 

@@ -164,25 +164,23 @@ def getPDFstr(s, brackets = True):
 # The input string is aplit in segments of code points less than
 # or greater-equal 256, where each segment is enclosed in "<>" brackets.
 #===============================================================================
-def getTJstr(text):
+def getTJstr(text, glyphs):
     if text.startswith("[<") and text.endswith(">]"): # already done
         return text
-    otxt = "<"
-    modus = 0
-    for c in text:
-        if ord(c) < 256:
-            if modus == 2:
-                otxt += "><"
-            modus = 1
-            otxt += hex(ord(c))[-2:]
-        else:
-            if modus == 1:
-                otxt += "><"
-            modus = 2
-            otxt += hex(ord(c))[-4:]
-    if not otxt.endswith(">"):
-        otxt += ">"
-    return "[" + otxt + "]"
+    if not bool(text):
+        return "[<>]"
+    otxt = ""
+    if glyphs is None:
+        for c in text:
+            if ord(c) > 255:
+                otxt += "3f"
+            else:
+                otxt += hex(ord(c))[2:].rjust(2, "0")
+        return "[<" + otxt + ">]"
+    for i, c in enumerate(text):
+        glyph = glyphs[ord(c)][0]
+        otxt += hex(glyph)[2:].rjust(4, "0")
+    return "[<" + otxt + ">]"
 
 '''
 www.din-formate.de
@@ -271,12 +269,24 @@ def CheckMorph(o):
         raise ValueError("invalid morph parameter")
     return True
     
-def CheckFont(page, font):
+def CheckFont(page, fontname):
+    """Return an entry in the page's font list if reference name matches.
+    """
     fl = page.getFontList()
-    have_ref = False
+    refname = None
     for f in fl:
-        if f[4] == font:
-            have_ref = True
+        if f[4] == fontname:
+            refname = f
             break
-    return have_ref
+    return refname
+
+def CheckFontInfo(doc, xref):
+    """Return a font info if present in the document.
+    """
+    fi = None
+    for f in doc.FontInfo:
+        if f[0] == xref:
+            fi = f
+            break
+    return fi
 %}
