@@ -67,6 +67,8 @@ You have a number of options to access the documentation:
 
 Earlier Versions
 ================
+* [PyMuPDF Version 1.11.2](https://github.com/rk700/PyMuPDF/tree/1.11.2)
+
 * [PyMuPDF Version 1.10.0](https://github.com/rk700/PyMuPDF/tree/1.10.0)
 
 * [PyMuPDF Version 1.9.3](https://github.com/rk700/PyMuPDF/tree/1.9.3)
