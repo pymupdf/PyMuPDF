@@ -10,7 +10,8 @@ void refresh_link_table(fz_context *ctx, pdf_page *page)
         fz_rect page_mediabox;
         fz_matrix page_ctm;
         pdf_page_transform(ctx, page, &page_mediabox, &page_ctm);
-        page->links = pdf_load_link_annots(ctx, page->doc, annots_arr, &page_ctm);
+        page->links = pdf_load_link_annots(ctx, page->doc, annots_arr,
+                                           pdf_to_num(gctx, page->obj), &page_ctm);
         pdf_load_annots(ctx, page, annots_arr);
     }
     return;

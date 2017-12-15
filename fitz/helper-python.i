@@ -17,16 +17,22 @@ LINK_FLAG_FIT_V = 32
 LINK_FLAG_R_IS_ZOOM = 64
 
 #------------------------------------------------------------------------------
-# Text alignment and output flags
+# Text handling flags
 #------------------------------------------------------------------------------
 TEXT_ALIGN_LEFT     = 0
 TEXT_ALIGN_CENTER   = 1
 TEXT_ALIGN_RIGHT    = 2
 TEXT_ALIGN_JUSTIFY  = 3
+
 TEXT_OUTPUT_TEXT    = 0
 TEXT_OUTPUT_HTML    = 1
 TEXT_OUTPUT_JSON    = 2
 TEXT_OUTPUT_XML     = 3
+TEXT_OUTPUT_XHTML   = 4
+
+TEXT_PRESERVE_LIGATURES  = 1
+TEXT_PRESERVE_WHITESPACE = 2
+TEXT_PRESERVE_IMAGES     = 4
 
 #------------------------------------------------------------------------------
 # Base 14 font names
@@ -129,12 +135,9 @@ def getPDFnow():
 def getPDFstr(s, brackets = True):
     if s is None or s == "":
         return "()" if brackets else ""
-		
-    try:
-        x = s.decode("utf-8")
-    except:
-        x = s
 
+    x = s
+    
     utf16 = False
     # following returns ascii original string with mixed-in 
     # octal numbers \nnn if <= chr(255)
@@ -156,33 +159,31 @@ def getPDFstr(s, brackets = True):
 
     # require full unicode: make a UTF-16BE hex string with BOM "feff"
     r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
+    # r is 'bytes', so turn to 'str' if Python 3
     t = r if str is bytes else r.decode()
     return "<" + t + ">"                         # brackets indicate hex
 
 #===============================================================================
 # Return a PDF string suitable for the TJ operator enclosed in "[]" brackets.
-# The input string is aplit in segments of code points less than
-# or greater-equal 256, where each segment is enclosed in "<>" brackets.
+# The input string is converted to either 2 or 4 hex digits per character.
+# If no glyphs are supplied, then a simple font is assumed and each character
+# taken directly.
+# Otherwise a char's glyph is taken and 4 hex digits per char are put out.
 #===============================================================================
 def getTJstr(text, glyphs):
     if text.startswith("[<") and text.endswith(">]"): # already done
         return text
     if not bool(text):
         return "[<>]"
-    otxt = ""
-    if glyphs is None:
-        for c in text:
-            if ord(c) > 255:
-                otxt += "3f"
-            else:
-                otxt += hex(ord(c))[2:].rjust(2, "0")
+    if glyphs is None:            # this is a simple font
+        otxt = "".join([hex(ord(c))[2:].rjust(2, "0") if ord(c)<256 else "3f" for c in text])
         return "[<" + otxt + ">]"
-    for i, c in enumerate(text):
-        glyph = glyphs[ord(c)][0]
-        otxt += hex(glyph)[2:].rjust(4, "0")
+    # this is not a simple font -> take the glyphs of a character
+    otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(4, "0") for c in text])
     return "[<" + otxt + ">]"
 
 '''
+Information taken from the following web sites:
 www.din-formate.de
 www.din-formate.info/amerikanische-formate.html
 www.directtools.de/wissen/normen/iso.htm
@@ -251,7 +252,7 @@ def PaperSize(s):
 
 def CheckParent(o):
     if not hasattr(o, "parent") or o.parent is None:
-        raise RuntimeError("orphaned object: parent is None") 
+        raise ValueError("orphaned object: parent is None") 
 
 def CheckColor(c):
     if c is not None:
@@ -284,9 +285,86 @@ def CheckFontInfo(doc, xref):
     """Return a font info if present in the document.
     """
     fi = None
-    for f in doc.FontInfo:
-        if f[0] == xref:
+    for f in doc.FontInfos:
+        if xref == f[0]:
             fi = f
             break
     return fi
+
+def UpdateFontInfo(doc, info):
+    xref = info[0]
+    found = False
+    for i, fi in enumerate(doc.FontInfos):
+        if fi[0] == xref:
+            found = True
+            break
+    if found:
+        doc.FontInfos[i] = info
+    else:
+        doc.FontInfos.append(info)
+
+def ConversionHeader(i, filename = "unknown"):
+    t = i.lower()
+    html = """<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{background-color:gray}
+div{position:relative;background-color:white;margin:1em auto}
+p{position:absolute;margin:0}
+img{position:absolute}
+</style>
+</head>
+<body>\n"""
+    
+    xml = """<?xml version="1.0"?>
+<document name="%s">\n""" % filename
+
+    xhtml = """<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>
+body{background-color:gray}
+div{background-color:white;margin:1em;padding:1em}
+p{white-space:pre-wrap}
+</style>
+</head>
+<body>\n"""
+
+    text = ""
+    json = '{"document": "%s", "pages": [\n' % filename
+    if t == "html":
+        r = html
+    elif t == "json":
+        r = json
+    elif t == "xml":
+        r = xml
+    elif t == "xhtml":
+        r = xhtml
+    else:
+        r = text
+    
+    return r
+
+def ConversionTrailer(i):
+    t = i.lower()
+    text = ""
+    json = "]\n}"
+    html = "</body>\n</html>\n"
+    xml = "</document>\n"
+    xhtml = html
+    if t == "html":
+        r = html
+    elif t == "json":
+        r = json
+    elif t == "xml":
+        r = xml
+    elif t == "xhtml":
+        r = xhtml
+    else:
+        r = text
+    
+    return r
+
 %}

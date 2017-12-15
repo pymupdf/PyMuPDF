@@ -101,10 +101,10 @@ from binascii import hexlify
 import sys
 
 
-VersionFitz = "1.11"
-VersionBind = "1.11.2"
-VersionDate = "2017-11-18 08:05:47"
-version = (VersionBind, VersionFitz, "20171118080547")
+VersionFitz = "1.12.0"
+VersionBind = "1.12.0"
+VersionDate = "2017-12-15 11:47:28"
+version = (VersionBind, VersionFitz, "20171215114728")
 
 
 #------------------------------------------------------------------------------
@@ -125,16 +125,22 @@ LINK_FLAG_FIT_V = 32
 LINK_FLAG_R_IS_ZOOM = 64
 
 #------------------------------------------------------------------------------
-# Text alignment and output flags
+# Text handling flags
 #------------------------------------------------------------------------------
 TEXT_ALIGN_LEFT     = 0
 TEXT_ALIGN_CENTER   = 1
 TEXT_ALIGN_RIGHT    = 2
 TEXT_ALIGN_JUSTIFY  = 3
+
 TEXT_OUTPUT_TEXT    = 0
 TEXT_OUTPUT_HTML    = 1
 TEXT_OUTPUT_JSON    = 2
 TEXT_OUTPUT_XML     = 3
+TEXT_OUTPUT_XHTML   = 4
+
+TEXT_PRESERVE_LIGATURES  = 1
+TEXT_PRESERVE_WHITESPACE = 2
+TEXT_PRESERVE_IMAGES     = 4
 
 #------------------------------------------------------------------------------
 # Base 14 font names
@@ -238,10 +244,7 @@ def getPDFstr(s, brackets = True):
     if s is None or s == "":
         return "()" if brackets else ""
 
-    try:
-        x = s.decode("utf-8")
-    except:
-        x = s
+    x = s
 
     utf16 = False
 # following returns ascii original string with mixed-in 
@@ -264,33 +267,31 @@ def getPDFstr(s, brackets = True):
 
 # require full unicode: make a UTF-16BE hex string with BOM "feff"
     r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
+# r is 'bytes', so turn to 'str' if Python 3
     t = r if str is bytes else r.decode()
     return "<" + t + ">"                         # brackets indicate hex
 
 #===============================================================================
 # Return a PDF string suitable for the TJ operator enclosed in "[]" brackets.
-# The input string is aplit in segments of code points less than
-# or greater-equal 256, where each segment is enclosed in "<>" brackets.
+# The input string is converted to either 2 or 4 hex digits per character.
+# If no glyphs are supplied, then a simple font is assumed and each character
+# taken directly.
+# Otherwise a char's glyph is taken and 4 hex digits per char are put out.
 #===============================================================================
 def getTJstr(text, glyphs):
     if text.startswith("[<") and text.endswith(">]"): # already done
         return text
     if not bool(text):
         return "[<>]"
-    otxt = ""
-    if glyphs is None:
-        for c in text:
-            if ord(c) > 255:
-                otxt += "3f"
-            else:
-                otxt += hex(ord(c))[2:].rjust(2, "0")
+    if glyphs is None:            # this is a simple font
+        otxt = "".join([hex(ord(c))[2:].rjust(2, "0") if ord(c)<256 else "3f" for c in text])
         return "[<" + otxt + ">]"
-    for i, c in enumerate(text):
-        glyph = glyphs[ord(c)][0]
-        otxt += hex(glyph)[2:].rjust(4, "0")
+# this is not a simple font -> take the glyphs of a character
+    otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(4, "0") for c in text])
     return "[<" + otxt + ">]"
 
 '''
+Information taken from the following web sites:
 www.din-formate.de
 www.din-formate.info/amerikanische-formate.html
 www.directtools.de/wissen/normen/iso.htm
@@ -359,7 +360,7 @@ def PaperSize(s):
 
 def CheckParent(o):
     if not hasattr(o, "parent") or o.parent is None:
-        raise RuntimeError("orphaned object: parent is None") 
+        raise ValueError("orphaned object: parent is None") 
 
 def CheckColor(c):
     if c is not None:
@@ -392,11 +393,88 @@ def CheckFontInfo(doc, xref):
     """Return a font info if present in the document.
     """
     fi = None
-    for f in doc.FontInfo:
-        if f[0] == xref:
+    for f in doc.FontInfos:
+        if xref == f[0]:
             fi = f
             break
     return fi
+
+def UpdateFontInfo(doc, info):
+    xref = info[0]
+    found = False
+    for i, fi in enumerate(doc.FontInfos):
+        if fi[0] == xref:
+            found = True
+            break
+    if found:
+        doc.FontInfos[i] = info
+    else:
+        doc.FontInfos.append(info)
+
+def ConversionHeader(i, filename = "unknown"):
+    t = i.lower()
+    html = """<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{background-color:gray}
+div{position:relative;background-color:white;margin:1em auto}
+p{position:absolute;margin:0}
+img{position:absolute}
+</style>
+</head>
+<body>\n"""
+
+    xml = """<?xml version="1.0"?>
+<document name="%s">\n""" % filename
+
+    xhtml = """<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>
+body{background-color:gray}
+div{background-color:white;margin:1em;padding:1em}
+p{white-space:pre-wrap}
+</style>
+</head>
+<body>\n"""
+
+    text = ""
+    json = '{"document": "%s", "pages": [\n' % filename
+    if t == "html":
+        r = html
+    elif t == "json":
+        r = json
+    elif t == "xml":
+        r = xml
+    elif t == "xhtml":
+        r = xhtml
+    else:
+        r = text
+
+    return r
+
+def ConversionTrailer(i):
+    t = i.lower()
+    text = ""
+    json = "]\n}"
+    html = "</body>\n</html>\n"
+    xml = "</document>\n"
+    xhtml = html
+    if t == "html":
+        r = html
+    elif t == "json":
+        r = json
+    elif t == "xml":
+        r = xml
+    elif t == "xhtml":
+        r = xhtml
+    else:
+        r = text
+
+    return r
+
 
 class Document(_object):
     """open() - new empty PDF
@@ -441,11 +519,13 @@ open(filename)"""
         if this:
             self.openErrCode = self._getGCTXerrcode()
             self.openErrMsg  = self._getGCTXerrmsg()
+            self.thisown = True
             if self.needsPass:
                 self.isEncrypted = 1
             else: # we won't init until doc is decrypted
                 self.initData()
-                self.thisown = True
+        else:
+            self.thisown = False
 
 
 
@@ -475,7 +555,7 @@ open(filename)"""
     def loadPage(self, number=0):
         """loadPage(self, number=0) -> Page"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_loadPage(self, number)
 
@@ -496,7 +576,7 @@ open(filename)"""
     def _loadOutline(self):
         """_loadOutline(self) -> Outline"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__loadOutline(self)
 
@@ -510,7 +590,7 @@ open(filename)"""
     def embeddedFileCount(self):
         """Return number of embedded files."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_embeddedFileCount(self)
 
@@ -518,7 +598,7 @@ open(filename)"""
     def embeddedFileDel(self, name):
         """Delete embedded file by name."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_embeddedFileDel(self, name)
 
@@ -526,7 +606,7 @@ open(filename)"""
     def embeddedFileInfo(self, id):
         """Retrieve embedded file information given its entry number or name."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_embeddedFileInfo(self, id)
 
@@ -534,7 +614,7 @@ open(filename)"""
     def embeddedFileSetInfo(self, id, filename=None, desc=None):
         """Change filename or description of embedded file given its entry number or name."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_embeddedFileSetInfo(self, id, filename, desc)
 
@@ -542,7 +622,7 @@ open(filename)"""
     def embeddedFileGet(self, id):
         """Retrieve embedded file content given its entry number or name."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_embeddedFileGet(self, id)
 
@@ -550,7 +630,7 @@ open(filename)"""
     def embeddedFileAdd(self, buffer, name, filename=None, desc=None):
         """Add new file from buffer."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_embeddedFileAdd(self, buffer, name, filename, desc)
 
@@ -559,7 +639,7 @@ open(filename)"""
     def pageCount(self):
         """pageCount(self) -> int"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_pageCount(self)
 
@@ -567,7 +647,7 @@ open(filename)"""
     def _getMetadata(self, key):
         """_getMetadata(self, key) -> char *"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getMetadata(self, key)
 
@@ -576,7 +656,7 @@ open(filename)"""
     def needsPass(self):
         """needsPass(self) -> int"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_needsPass(self)
 
@@ -585,7 +665,7 @@ open(filename)"""
     def isPDF(self):
         """isPDF(self) -> PyObject *"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_isPDF(self)
 
@@ -596,14 +676,14 @@ open(filename)"""
 
 
     def _getGCTXerrmsg(self):
-        """_getGCTXerrmsg(self) -> char *"""
+        """_getGCTXerrmsg(self) -> char const *"""
         return _fitz.Document__getGCTXerrmsg(self)
 
 
     def authenticate(self, arg2):
         """Decrypt document with a password."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_authenticate(self, arg2)
 
@@ -637,7 +717,7 @@ open(filename)"""
 
 
     def write(self, garbage=0, clean=0, deflate=0, ascii=0, expand=0, linear=0):
-        """Write document to bytearray."""
+        """Write document to a bytes object."""
 
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
@@ -648,9 +728,9 @@ open(filename)"""
     def insertPDF(self, docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=1):
         """Copy page range ['from', 'to'] of source PDF, starting as page number 'start_at'."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
         if id(self) == id(docsrc):
-            raise RuntimeError("source must not equal target PDF")
+            raise ValueError("source must not equal target PDF")
         sa = start_at
         if sa < 0:
             sa = self.pageCount
@@ -668,7 +748,7 @@ open(filename)"""
     def deletePage(self, pno):
         """Delete page 'pno'."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_deletePage(self, pno)
         if val == 0: self._reset_page_refs()
@@ -679,7 +759,7 @@ open(filename)"""
     def deletePageRange(self, from_page=-1, to_page=-1):
         """Delete pages 'from' to 'to'."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_deletePageRange(self, from_page, to_page)
         if val == 0: self._reset_page_refs()
@@ -690,7 +770,7 @@ open(filename)"""
     def copyPage(self, pno, to=-1):
         """Copy a page in front of 'to'."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_copyPage(self, pno, to)
         if val == 0: self._reset_page_refs()
@@ -702,7 +782,7 @@ open(filename)"""
         """Insert a new page in front of 'pno'. Use arguments 'width', 'height' to specify a non-default page size, and optionally text insertion arguments."""
 
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
         if bool(text):
             CheckColor(color)
             if fontname and fontname[0] == "/":
@@ -726,7 +806,7 @@ open(filename)"""
     def movePage(self, pno, to=-1):
         """Move page in front of 'to'."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_movePage(self, pno, to)
         if val == 0: self._reset_page_refs()
@@ -737,7 +817,7 @@ open(filename)"""
     def select(self, pyliste):
         """Build sub-pdf with page numbers in 'list'."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_select(self, pyliste)
         if val == 0:
@@ -751,7 +831,7 @@ open(filename)"""
     def permissions(self):
         """Get permissions dictionary."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_permissions(self)
 
@@ -759,7 +839,7 @@ open(filename)"""
     def _getCharWidths(self, xref=0, idx=0, limit=256, cwlist=None):
         """Return list of glyphs and glyph widths of a font."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getCharWidths(self, xref, idx, limit, cwlist)
 
@@ -767,7 +847,7 @@ open(filename)"""
     def _getPageObjNumber(self, pno):
         """_getPageObjNumber(self, pno) -> PyObject *"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getPageObjNumber(self, pno)
 
@@ -775,7 +855,7 @@ open(filename)"""
     def getPageImageList(self, pno):
         """List images used on a page."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_getPageImageList(self, pno)
 
@@ -783,15 +863,23 @@ open(filename)"""
     def getPageFontList(self, pno):
         """List fonts used on a page."""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_getPageFontList(self, pno)
+
+
+    def extractFont(self, xref=0, info_only=0):
+        """extractFont(self, xref=0, info_only=0) -> PyObject *"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document_extractFont(self, xref, info_only)
 
 
     def _delToC(self):
         """_delToC(self) -> PyObject *"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document__delToC(self)
         self.initData()
@@ -802,7 +890,7 @@ open(filename)"""
     def _getOLRootNumber(self):
         """_getOLRootNumber(self) -> int"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getOLRootNumber(self)
 
@@ -810,7 +898,7 @@ open(filename)"""
     def _getNewXref(self):
         """_getNewXref(self) -> int"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getNewXref(self)
 
@@ -818,23 +906,15 @@ open(filename)"""
     def _getXrefLength(self):
         """_getXrefLength(self) -> int"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getXrefLength(self)
-
-
-    def _getPageRectText(self, pno, rect):
-        """_getPageRectText(self, pno, rect) -> char const *"""
-        if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
-
-        return _fitz.Document__getPageRectText(self, pno, rect)
 
 
     def _getXmlMetadataXref(self):
         """_getXmlMetadataXref(self) -> int"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getXmlMetadataXref(self)
 
@@ -842,7 +922,7 @@ open(filename)"""
     def _delXmlMetadata(self):
         """_delXmlMetadata(self) -> int"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__delXmlMetadata(self)
 
@@ -850,7 +930,7 @@ open(filename)"""
     def _getObjectString(self, xref):
         """_getObjectString(self, xref) -> char const *"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getObjectString(self, xref)
 
@@ -859,7 +939,7 @@ open(filename)"""
     def _getXrefStream(self, xref):
         """_getXrefStream(self, xref) -> PyObject *"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getXrefStream(self, xref)
 
@@ -867,7 +947,7 @@ open(filename)"""
     def _updateObject(self, xref, text, page=None):
         """_updateObject(self, xref, text, page=None) -> int"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__updateObject(self, xref, text, page)
 
@@ -875,7 +955,7 @@ open(filename)"""
     def _updateStream(self, xref=0, stream=None):
         """_updateStream(self, xref=0, stream=None) -> int"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__updateStream(self, xref, stream)
 
@@ -883,7 +963,7 @@ open(filename)"""
     def _setMetadata(self, text):
         """_setMetadata(self, text) -> int"""
         if self.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__setMetadata(self, text)
 
@@ -910,6 +990,8 @@ open(filename)"""
         return "fitz.Document('%s', <memory>)" % (self.name,)
 
     def __getitem__(self, i=0):
+        if type(i) is not int:
+            raise ValueError("page number must be integer")
         if i >= len(self):
             raise IndexError("page number(s) out of range")
         return self.loadPage(i)
@@ -932,12 +1014,9 @@ open(filename)"""
 
     def __del__(self):
         self._reset_page_refs()
-        if getattr(self, "thisown", True):
-            try:
-                self.__swig_destroy__(self)
-            except:
-                pass
+        if hasattr(self, "this") and self.thisown:
             self.thisown = False
+            self.__swig_destroy__(self)
 
 Document_swigregister = _fitz.Document_swigregister
 Document_swigregister(Document)
@@ -1085,33 +1164,34 @@ class Page(_object):
         return _fitz.Page_insertImage(self, rect, filename, pixmap, overlay)
 
 
-    def insertFont(self, fontname=None, fontfile=None, set_simple=0, idx=0):
-        """insertFont(self, fontname=None, fontfile=None, set_simple=0, idx=0) -> PyObject *"""
+    def insertFont(self, fontname=None, fontfile=None, fontbuffer=None, xref=0, set_simple=0, idx=0):
+        """insertFont(self, fontname=None, fontfile=None, fontbuffer=None, xref=0, set_simple=0, idx=0) -> PyObject *"""
 
         if not self.parent:
-            raise RuntimeError("orphaned object: parent is None")
+            raise ValueError("orphaned object: parent is None")
         f = CheckFont(self, fontname)
-        if f is not None:         # drop out if fontname already there
+        if f is not None:         # drop out if fontname already in page list
             return f[0]
         if not fontname:
             fontname = "Helvetica"
+        if xref > 0:
+            _, _, _, fontbuffer = self.parent.extractFont(xref)
+            if not fontbuffer:
+                raise ValueError("xref is no valid font")
 
 
-        val = _fitz.Page_insertFont(self, fontname, fontfile, set_simple, idx)
+        val = _fitz.Page_insertFont(self, fontname, fontfile, fontbuffer, xref, set_simple, idx)
 
         if val:
             xref = val[0]
             f = CheckFont(self, fontname)
             if f is not None:
                 val[1]["type"] = f[2]       # put /Subtype in font info
+                val[1]["glyphs"] = None
             doc = self.parent               # now add to document font info
-            if not hasattr(doc, "FontInfos"):
-                doc.FontInfos = [val]       # we are the first font
-            else:
-                for fi in doc.FontInfos:    # look if we are already present
-                    if fi[0] == xref:       # yes: nothing to do
-                        break
-                    doc.FontInfos.append(val)   # no: add me to document object
+            fi = CheckFontInfo(doc, xref)
+            if fi is None:                  # look if we are already present
+                doc.FontInfos.append(val)   # no: add me to document object
             return xref
 
 
@@ -1123,18 +1203,6 @@ class Page(_object):
         CheckParent(self)
 
         return _fitz.Page__getContents(self)
-
-
-    def _getRectText(self, rect):
-        """_getRectText(self, rect) -> char const *"""
-        CheckParent(self)
-
-        return _fitz.Page__getRectText(self, rect)
-
-
-    def _readPageText(self, output=0):
-        """_readPageText(self, output=0) -> char const *"""
-        return _fitz.Page__readPageText(self, output)
 
 
     def __str__(self):
@@ -1530,10 +1598,6 @@ Pixmap(Document, xref) - from PDF image in a PDF"""
     __swig_getmethods__["n"] = _fitz.Pixmap_n_get
     if _newclass:
         n = _swig_property(_fitz.Pixmap_n_get, _fitz.Pixmap_n_set)
-    __swig_setmethods__["interpolate"] = _fitz.Pixmap_interpolate_set
-    __swig_getmethods__["interpolate"] = _fitz.Pixmap_interpolate_get
-    if _newclass:
-        interpolate = _swig_property(_fitz.Pixmap_interpolate_get, _fitz.Pixmap_interpolate_set)
     __swig_setmethods__["xres"] = _fitz.Pixmap_xres_set
     __swig_getmethods__["xres"] = _fitz.Pixmap_xres_get
     if _newclass:
@@ -1549,6 +1613,7 @@ Pixmap(Document, xref) - from PDF image in a PDF"""
         """
         __init__(self, cs, bbox, alpha=0) -> Pixmap
         __init__(self, cs, spix, alpha=1) -> Pixmap
+        __init__(self, spix, w, h, clip=None) -> Pixmap
         __init__(self, spix) -> Pixmap
         __init__(self, cs, w, h, samples, alpha=0) -> Pixmap
         __init__(self, filename) -> Pixmap
@@ -1568,6 +1633,11 @@ Pixmap(Document, xref) - from PDF image in a PDF"""
 
 
 
+    def shrink(self, factor):
+        """shrink(self, factor)"""
+        return _fitz.Pixmap_shrink(self, factor)
+
+
     def gammaWith(self, gamma):
         """gammaWith(self, gamma)"""
         return _fitz.Pixmap_gammaWith(self, gamma)
@@ -1584,6 +1654,7 @@ Pixmap(Document, xref) - from PDF image in a PDF"""
 
     def clearWith(self, *args):
         """
+        clearWith(self)
         clearWith(self, value)
         clearWith(self, value, bbox)
         """
@@ -1738,7 +1809,7 @@ class Device(_object):
         """
         __init__(self, pm, clip) -> Device
         __init__(self, dl) -> Device
-        __init__(self, ts, tp) -> Device
+        __init__(self, tp, flags=0) -> Device
         """
         this = _fitz.new_Device(*args)
         try:
@@ -1903,34 +1974,6 @@ class Outline(_object):
     __swig_getmethods__["is_open"] = _fitz.Outline_is_open_get
     if _newclass:
         is_open = _swig_property(_fitz.Outline_is_open_get)
-
-    def saveXML(self, filename):
-        """saveXML(self, filename) -> int"""
-
-        if type(filename) == str:
-            pass
-        elif type(filename) == unicode:
-            filename = filename.encode('utf8')
-        else:
-            raise TypeError("filename must be a string")
-
-
-        return _fitz.Outline_saveXML(self, filename)
-
-
-    def saveText(self, filename):
-        """saveText(self, filename) -> int"""
-
-        if type(filename) == str:
-            pass
-        elif type(filename) == unicode:
-            filename = filename.encode('utf8')
-        else:
-            raise TypeError("filename must be a string")
-
-
-        return _fitz.Outline_saveText(self, filename)
-
     @property
 
     def uri(self):
@@ -2355,9 +2398,9 @@ class Link(_object):
     def dest(self):
         """Create link destination details."""
         if hasattr(self, "parent") and self.parent is None:
-            raise RuntimeError("orphaned object: parent is None")
+            raise ValueError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
-            raise RuntimeError("operation illegal for closed doc")
+            raise ValueError("operation illegal for closed doc")
         return linkDest(self)        
 
     @property
@@ -2441,9 +2484,9 @@ class DisplayList(_object):
         return _fitz.DisplayList_getPixmap(self, matrix, colorspace, alpha, clip)
 
 
-    def getTextPage(self, textsheet):
-        """getTextPage(self, textsheet) -> TextPage"""
-        return _fitz.DisplayList_getTextPage(self, textsheet)
+    def getTextPage(self, flags=3):
+        """getTextPage(self, flags=3) -> TextPage"""
+        return _fitz.DisplayList_getTextPage(self, flags)
 
 
     def __del__(self):
@@ -2457,27 +2500,6 @@ class DisplayList(_object):
 DisplayList_swigregister = _fitz.DisplayList_swigregister
 DisplayList_swigregister(DisplayList)
 
-class TextSheet(_object):
-    """Proxy of C fz_stext_sheet_s struct."""
-
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, TextSheet, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, TextSheet, name)
-    __repr__ = _swig_repr
-
-    def __init__(self):
-        """__init__(self) -> TextSheet"""
-        this = _fitz.new_TextSheet()
-        try:
-            self.this.append(this)
-        except __builtin__.Exception:
-            self.this = this
-    __swig_destroy__ = _fitz.delete_TextSheet
-    __del__ = lambda self: None
-TextSheet_swigregister = _fitz.TextSheet_swigregister
-TextSheet_swigregister(TextSheet)
-
 class TextPage(_object):
     """Proxy of C fz_stext_page_s struct."""
 
@@ -2486,10 +2508,6 @@ class TextPage(_object):
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, TextPage, name)
     __repr__ = _swig_repr
-    __swig_setmethods__["len"] = _fitz.TextPage_len_set
-    __swig_getmethods__["len"] = _fitz.TextPage_len_get
-    if _newclass:
-        len = _swig_property(_fitz.TextPage_len_get, _fitz.TextPage_len_set)
 
     def __init__(self, mediabox):
         """__init__(self, mediabox) -> TextPage"""
@@ -2506,24 +2524,36 @@ class TextPage(_object):
         return _fitz.TextPage_search(self, needle, hit_max)
 
 
-    def extractText(self):
-        """extractText(self) -> char const *"""
-        return _fitz.TextPage_extractText(self)
+    def _extractTextLines_AsList(self):
+        """_extractTextLines_AsList(self) -> PyObject *"""
+        return _fitz.TextPage__extractTextLines_AsList(self)
 
+
+    def _extractTextLines(self, p1, p2):
+        """_extractTextLines(self, p1, p2) -> char const *"""
+        return _fitz.TextPage__extractTextLines(self, p1, p2)
+
+
+    def _extractText(self, format):
+        """_extractText(self, format) -> PyObject *"""
+        return _fitz.TextPage__extractText(self, format)
+
+
+    def extractText(self):
+        return self._extractText(0)
 
     def extractHTML(self):
-        """extractHTML(self) -> char const *"""
-        return _fitz.TextPage_extractHTML(self)
-
+        return self._extractText(1)
 
     def extractJSON(self):
-        """extractJSON(self) -> char const *"""
-        return _fitz.TextPage_extractJSON(self)
-
+        return self._extractText(2)
 
     def extractXML(self):
-        """extractXML(self) -> char const *"""
-        return _fitz.TextPage_extractXML(self)
+        return self._extractText(3)
+
+    def extractXHTML(self):
+        return self._extractText(4)
+
 
 TextPage_swigregister = _fitz.TextPage_swigregister
 TextPage_swigregister(TextPage)

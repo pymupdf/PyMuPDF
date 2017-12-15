@@ -42,8 +42,7 @@ lheight = fsize *1.2         # line height
 idx = 0                      # index in color database
 doc = fitz.open()            # empty PDF
 while idx < num_colors:
-    doc.insertPage(-1, width = w, height = h)    # new empty page
-    page=doc[-1]                                 # load it
+    page=doc.newPage(-1, width = w, height = h)  # new empty page
     for i in range(10):                          # row index
         if idx >= num_colors:
             break
