@@ -4992,7 +4992,8 @@ struct fz_stext_page_s {
         }
 
         //---------------------------------------------------------------------
-        // Get text lines with their bbox as a Python list
+        // Get text blocks with their bbox and concatenated lines 
+        // as a Python list
         //---------------------------------------------------------------------
         FITZEXCEPTION(_extractTextLines_AsList, !result)
         PyObject *_extractTextLines_AsList()
@@ -5027,6 +5028,7 @@ struct fz_stext_page_s {
                     int line_n = 0;
                     for (line = block->u.t.first_line; line; line = line->next)
                     {
+                        // separate lines by a space if previous did not end with "-"
                         if (line_n > 0 && last_char != 45)
                             fz_write_string(gctx, out, " ");
                         line_n += 1;
@@ -5050,6 +5052,81 @@ struct fz_stext_page_s {
                     Py_DECREF(litem);
                     fz_drop_buffer(gctx, res);
                     fz_drop_output(gctx,out);
+                }
+            }
+            return lines;
+        }
+
+        //---------------------------------------------------------------------
+        // Get text words with their bbox
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(_extractTextWords_AsList, !result)
+        PyObject *_extractTextWords_AsList()
+        {
+            fz_stext_block *block;
+            fz_stext_line *line;
+            fz_stext_char *ch;
+            char word[128];
+            char utf[10];
+            int i, n;
+            Py_ssize_t char_n;
+            PyObject *lines = PyList_New(0);
+            PyObject *litem;
+            float c_x0, c_y0, c_x1, c_y1;
+            for (block = $self->first_block; block; block = block->next)
+            {
+                if (block->type == FZ_STEXT_BLOCK_TEXT)
+                {
+                    for (line = block->u.t.first_line; line; line = line->next)
+                    {
+                        // prepare word rectangle with corr. line values
+                        c_x0 = line->bbox.x0;
+                        c_x1 = c_x0;
+                        c_y0 = line->bbox.y0;
+                        c_y1 = line->bbox.y1;
+                        char_n = 0;
+                        for (ch = line->first_char; ch; ch = ch->next)
+                        {
+                            if ((ch->c == 32 && char_n > 0) || char_n >= 127)
+                            // if space char or word too long, store what we have so far
+                            {
+                                litem = PyList_New(0);
+                                PyList_Append(litem, PyFloat_FromDouble((double) c_x0));
+                                PyList_Append(litem, PyFloat_FromDouble((double) c_y0));
+                                PyList_Append(litem, PyFloat_FromDouble((double) c_x1));
+                                PyList_Append(litem, PyFloat_FromDouble((double) c_y1));
+                                PyList_Append(litem, PyUnicode_FromStringAndSize(word, char_n));
+                                PyList_Append(lines, litem);
+                                Py_DECREF(litem);
+                                c_x0 = ch->bbox.x1;   // start pos. of new word
+                                c_y1 = line->bbox.y1;
+                                char_n = 0;
+                                continue;
+                            }
+                            // append one unicode character to the word
+                            if (ch->bbox.y1 > c_y1) c_y1 = ch->bbox.y1;
+                            c_x1 = ch->bbox.x1;       // new end of word pos.
+                            n = fz_runetochar(utf, ch->c);
+                            for (i = 0; i < n; i++)
+                            {
+                                word[char_n] = utf[i];
+                                char_n += 1;
+                                word[char_n] = 0;     // indicate end-of-string
+                            }
+                        }
+                        if (char_n > 0)
+                        // store any remaining stuff in word
+                        {
+                            litem = PyList_New(0);
+                            PyList_Append(litem, PyFloat_FromDouble((double) c_x0));
+                            PyList_Append(litem, PyFloat_FromDouble((double) c_y0));
+                            PyList_Append(litem, PyFloat_FromDouble((double) c_x1));
+                            PyList_Append(litem, PyFloat_FromDouble((double) c_y1));
+                            PyList_Append(litem, PyUnicode_FromStringAndSize(word, char_n));
+                            PyList_Append(lines, litem);
+                            Py_DECREF(litem);
+                        }
+                    }
                 }
             }
             return lines;

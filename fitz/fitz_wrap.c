@@ -3184,7 +3184,7 @@ char *annot_type_str(int type)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// JSON requirement: floats must have a digit before decimal point
+// JSON requirement: must have a digit before decimal point
 //-----------------------------------------------------------------------------
 void DG_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox)
 {
@@ -3195,7 +3195,7 @@ void DG_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox)
 }
 
 //-----------------------------------------------------------------------------
-// JSON requirement: floats must have a digit before decimal point
+// JSON requirement: must have a digit before decimal point
 //-----------------------------------------------------------------------------
 void DG_print_float_json(fz_context *ctx, fz_output *out, float g)
 {
@@ -3384,8 +3384,9 @@ DG_print_stext_page_as_json(fz_context *ctx, fz_output *out, fz_stext_page *page
 }
 
 //-----------------------------------------------------------------------------
-// Plain text output. Just an identical copy, where lines within a block are
-// concatenated with an interspersed blank
+// Plain text output. An identical copy of fz_print_stext_page_as_text
+// except that lines within a block are concatenated with a space instead
+// a new-line.
 //-----------------------------------------------------------------------------
 void
 JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page)
@@ -3404,11 +3405,12 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
             int line_n = 0;
             for (line = block->u.t.first_line; line; line = line->next)
             {
+                // append next line with a space if prev did not end with "-"
                 if (line_n > 0 && last_char != 45) fz_write_string(ctx, out, " ");
                 line_n += 1;
                 for (ch = line->first_char; ch; ch = ch->next)
                 {
-                    last_char = ch->c;
+                    last_char = ch->c;      // save char value
                     n = fz_runetochar(utf, ch->c);
                     for (i = 0; i < n; i++)
                         fz_write_byte(ctx, out, utf[i]);
@@ -8319,6 +8321,7 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextLines_AsList(struct fz_stext_pa
                     int line_n = 0;
                     for (line = block->u.t.first_line; line; line = line->next)
                     {
+                        // separate lines by a space if previous did not end with "-"
                         if (line_n > 0 && last_char != 45)
                             fz_write_string(gctx, out, " ");
                         line_n += 1;
@@ -8342,6 +8345,75 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextLines_AsList(struct fz_stext_pa
                     Py_DECREF(litem);
                     fz_drop_buffer(gctx, res);
                     fz_drop_output(gctx,out);
+                }
+            }
+            return lines;
+        }
+SWIGINTERN PyObject *fz_stext_page_s__extractTextWords_AsList(struct fz_stext_page_s *self){
+            fz_stext_block *block;
+            fz_stext_line *line;
+            fz_stext_char *ch;
+            char word[128];
+            char utf[10];
+            int i, n;
+            Py_ssize_t char_n;
+            PyObject *lines = PyList_New(0);
+            PyObject *litem;
+            float c_x0, c_y0, c_x1, c_y1;
+            for (block = self->first_block; block; block = block->next)
+            {
+                if (block->type == FZ_STEXT_BLOCK_TEXT)
+                {
+                    for (line = block->u.t.first_line; line; line = line->next)
+                    {
+                        // prepare word rectangle with corr. line values
+                        c_x0 = line->bbox.x0;
+                        c_x1 = c_x0;
+                        c_y0 = line->bbox.y0;
+                        c_y1 = line->bbox.y1;
+                        char_n = 0;
+                        for (ch = line->first_char; ch; ch = ch->next)
+                        {
+                            if ((ch->c == 32 && char_n > 0) || char_n >= 127)
+                            // if space char or word too long, store what we have so far
+                            {
+                                litem = PyList_New(0);
+                                PyList_Append(litem, PyFloat_FromDouble((double) c_x0));
+                                PyList_Append(litem, PyFloat_FromDouble((double) c_y0));
+                                PyList_Append(litem, PyFloat_FromDouble((double) c_x1));
+                                PyList_Append(litem, PyFloat_FromDouble((double) c_y1));
+                                PyList_Append(litem, PyUnicode_FromStringAndSize(word, char_n));
+                                PyList_Append(lines, litem);
+                                Py_DECREF(litem);
+                                c_x0 = ch->bbox.x1;   // start pos. of new word
+                                c_y1 = line->bbox.y1;
+                                char_n = 0;
+                                continue;
+                            }
+                            // append one unicode character to the word
+                            if (ch->bbox.y1 > c_y1) c_y1 = ch->bbox.y1;
+                            c_x1 = ch->bbox.x1;       // new end of word pos.
+                            n = fz_runetochar(utf, ch->c);
+                            for (i = 0; i < n; i++)
+                            {
+                                word[char_n] = utf[i];
+                                char_n += 1;
+                                word[char_n] = 0;     // indicate end-of-string
+                            }
+                        }
+                        if (char_n > 0)
+                        // store any remaining stuff in word
+                        {
+                            litem = PyList_New(0);
+                            PyList_Append(litem, PyFloat_FromDouble((double) c_x0));
+                            PyList_Append(litem, PyFloat_FromDouble((double) c_y0));
+                            PyList_Append(litem, PyFloat_FromDouble((double) c_x1));
+                            PyList_Append(litem, PyFloat_FromDouble((double) c_y1));
+                            PyList_Append(litem, PyUnicode_FromStringAndSize(word, char_n));
+                            PyList_Append(lines, litem);
+                            Py_DECREF(litem);
+                        }
+                    }
                 }
             }
             return lines;
@@ -16936,6 +17008,35 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_TextPage__extractTextWords_AsList(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_stext_page_s *arg1 = (struct fz_stext_page_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:TextPage__extractTextWords_AsList",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_stext_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "TextPage__extractTextWords_AsList" "', argument " "1"" of type '" "struct fz_stext_page_s *""'"); 
+  }
+  arg1 = (struct fz_stext_page_s *)(argp1);
+  {
+    result = (PyObject *)fz_stext_page_s__extractTextWords_AsList(arg1);
+    if(!result)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_TextPage__extractTextLines(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_stext_page_s *arg1 = (struct fz_stext_page_s *) 0 ;
@@ -17303,6 +17404,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"delete_TextPage", _wrap_delete_TextPage, METH_VARARGS, (char *)"delete_TextPage(self)"},
 	 { (char *)"TextPage_search", _wrap_TextPage_search, METH_VARARGS, (char *)"TextPage_search(self, needle, hit_max=16) -> Rect"},
 	 { (char *)"TextPage__extractTextLines_AsList", _wrap_TextPage__extractTextLines_AsList, METH_VARARGS, (char *)"TextPage__extractTextLines_AsList(self) -> PyObject *"},
+	 { (char *)"TextPage__extractTextWords_AsList", _wrap_TextPage__extractTextWords_AsList, METH_VARARGS, (char *)"TextPage__extractTextWords_AsList(self) -> PyObject *"},
 	 { (char *)"TextPage__extractTextLines", _wrap_TextPage__extractTextLines, METH_VARARGS, (char *)"TextPage__extractTextLines(self, p1, p2) -> char const *"},
 	 { (char *)"TextPage__extractText", _wrap_TextPage__extractText, METH_VARARGS, (char *)"TextPage__extractText(self, format) -> PyObject *"},
 	 { (char *)"TextPage_swigregister", TextPage_swigregister, METH_VARARGS, NULL},

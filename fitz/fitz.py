@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.12.0"
 VersionBind = "1.12.0"
-VersionDate = "2017-12-15 11:47:28"
-version = (VersionBind, VersionFitz, "20171215114728")
+VersionDate = "2017-12-21 10:44:53"
+version = (VersionBind, VersionFitz, "20171221104453")
 
 
 #------------------------------------------------------------------------------
@@ -2527,6 +2527,11 @@ class TextPage(_object):
     def _extractTextLines_AsList(self):
         """_extractTextLines_AsList(self) -> PyObject *"""
         return _fitz.TextPage__extractTextLines_AsList(self)
+
+
+    def _extractTextWords_AsList(self):
+        """_extractTextWords_AsList(self) -> PyObject *"""
+        return _fitz.TextPage__extractTextWords_AsList(self)
 
 
     def _extractTextLines(self, p1, p2):

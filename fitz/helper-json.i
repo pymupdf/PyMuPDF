@@ -6,7 +6,7 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// JSON requirement: floats must have a digit before decimal point
+// JSON requirement: must have a digit before decimal point
 //-----------------------------------------------------------------------------
 void DG_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox)
 {
@@ -17,7 +17,7 @@ void DG_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox)
 }
 
 //-----------------------------------------------------------------------------
-// JSON requirement: floats must have a digit before decimal point
+// JSON requirement: must have a digit before decimal point
 //-----------------------------------------------------------------------------
 void DG_print_float_json(fz_context *ctx, fz_output *out, float g)
 {
@@ -206,8 +206,9 @@ DG_print_stext_page_as_json(fz_context *ctx, fz_output *out, fz_stext_page *page
 }
 
 //-----------------------------------------------------------------------------
-// Plain text output. Just an identical copy, where lines within a block are
-// concatenated with an interspersed blank
+// Plain text output. An identical copy of fz_print_stext_page_as_text
+// except that lines within a block are concatenated with a space instead
+// a new-line.
 //-----------------------------------------------------------------------------
 void
 JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page)
@@ -226,11 +227,12 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
             int line_n = 0;
             for (line = block->u.t.first_line; line; line = line->next)
             {
+                // append next line with a space if prev did not end with "-"
                 if (line_n > 0 && last_char != 45) fz_write_string(ctx, out, " ");
                 line_n += 1;
                 for (ch = line->first_char; ch; ch = ch->next)
                 {
-                    last_char = ch->c;
+                    last_char = ch->c;      // save char value
                     n = fz_runetochar(utf, ch->c);
                     for (i = 0; i < n; i++)
                         fz_write_byte(ctx, out, utf[i]);

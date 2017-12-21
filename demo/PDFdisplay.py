@@ -12,7 +12,7 @@ Dependencies:
 PyMuPDF, wxPython 3.x
 
 License:
- GNU GPL 3.x
+GNU GPL 3.x, GNU AFFERO GPL 3
 
 Changes in PyMuPDF 1.9.2
 ------------------------
@@ -28,14 +28,28 @@ Changes in PyMuPDF 1.8.0
 - dynamically resize dialog to reflect each page's image size / orientation
 - minor cosmetic changes
 """
-import fitz
-import wx
+from __future__ import print_function
 import sys
+print("Python:", sys.version)
+
+try:
+    import wx
+    print("wxPython:", wx.version())
+except:
+    raise SystemExit(__file__ + " needs wxPython.")
+
+try:
+    import fitz
+    print(fitz.__doc__)
+except:
+    raise SystemExit(__file__ + " needs PyMuPDF(fitz).")
+
 try:
     from PageFormat import FindFit
 except ImportError:
     def FindFit(*args):
         return "not implemented"
+
 try:
     from icons import ico_pdf            # PDF icon in upper left screen corner
     do_icon = True
@@ -46,17 +60,20 @@ app = None
 app = wx.App()
 assert wx.VERSION[0:3] >= (3,0,2), "need wxPython 3.0.2 or later"
 assert tuple(map(int, fitz.VersionBind.split("."))) >= (1,9,2), "need PyMuPDF 1.9.2 or later"
+
 # make some adjustments for differences between wxPython versions 3.0.2 / 3.0.3
 if wx.VERSION[0:3] >= (3,0,3):
     cursor_hand  = wx.Cursor(wx.CURSOR_HAND)
     cursor_norm  = wx.Cursor(wx.CURSOR_DEFAULT)
     bmp_buffer = wx.Bitmap.FromBuffer
+    phoenix = True
 else:
     cursor_hand  = wx.StockCursor(wx.CURSOR_HAND)
     cursor_norm  = wx.StockCursor(wx.CURSOR_DEFAULT)
     bmp_buffer = wx.BitmapFromBuffer
+    phoenix = False
 
-if sys.version_info[0] > 2:
+if str != bytes:
     stringtypes = (str, bytes)
 else:
     stringtypes = (str, unicode)
@@ -88,9 +105,7 @@ class PDFdisplay(wx.Dialog):
             title = u"Display with PyMuPDF: ",
             pos = defPos, size = defSiz,
             style = wx.CAPTION|wx.CLOSE_BOX|
-                    wx.DEFAULT_DIALOG_STYLE|
-                    wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|
-                    wx.RESIZE_BORDER)
+                    wx.DEFAULT_DIALOG_STYLE)
 
         #======================================================================
         # display an icon top left of dialog, append filename to title
@@ -109,6 +124,7 @@ class PDFdisplay(wx.Dialog):
         if self.doc.isEncrypted:       # quit if we cannot decrpt
             self.Destroy()
             return
+        self.dl_array = [0] * len(self.doc)
         self.last_page = -1            # memorize last page displayed
         self.link_rects = []           # store link rectangles here
         self.link_texts = []           # store link texts here
@@ -187,14 +203,11 @@ class PDFdisplay(wx.Dialog):
         self.PDFimage.Bind(wx.EVT_MOTION, self.move_mouse)
         self.PDFimage.Bind(wx.EVT_LEFT_DOWN, self.OnLeftDown)
 
-    def __del__(self):
-        pass
-
 #==============================================================================
 # Button handlers and other functions
 #==============================================================================
     def OnLeftDown(self, evt):
-        if self.current_idx < 0:
+        if self.current_idx < 0 or not self.links.Value:
             evt.Skip()
             return
         lnk = self.current_lnks[self.current_idx]
@@ -226,13 +239,6 @@ class PDFdisplay(wx.Dialog):
         evt.Skip()
         return
 
-    def cursor_in_rect(self, pos, rect):         # is mouse in a hot area?
-        # check whether cursor is in rectangle
-        if (rect[0] <= pos.x <= (rect[0] + rect[2])) and \
-           (rect[1] <= pos.y <= (rect[1] + rect[3])):
-            return True
-        return False
-
     def move_mouse(self, evt):                   # show hand if in a rectangle
         if not self.links.Value:                 # do not process links
             evt.Skip()
@@ -241,23 +247,18 @@ class PDFdisplay(wx.Dialog):
             evt.Skip()
             return
         pos = evt.GetPosition()
-        in_rect = False
-        for i, rect in enumerate(self.link_rects):
-            if self.cursor_in_rect(pos, rect):
-                in_rect = True
-                self.current_idx = i
-                break
-        if in_rect:
+        self.current_idx = self.cursor_in_link(pos)   # get cursor link rect
+        
+        if self.current_idx >= 0:                     # if in a hot area
             self.PDFimage.SetCursor(cursor_hand)
-            if wx.VERSION[0:3] >= (3,0,3):
-                self.PDFimage.SetToolTip(self.link_texts[i])
+            if phoenix:
+                self.PDFimage.SetToolTip(self.link_texts[self.current_idx])
             else:
-                self.PDFimage.SetToolTipString(self.link_texts[i])
-            self.current_idx = i
+                self.PDFimage.SetToolTipString(self.link_texts[self.current_idx])
         else:
             self.PDFimage.SetCursor(cursor_norm)
             self.PDFimage.UnsetToolTip()
-            self.current_idx = -1
+
         evt.Skip()
         return
 
@@ -298,20 +299,41 @@ class PDFdisplay(wx.Dialog):
     def NeuesImage(self, page):
         if page == self.last_page:
             return
+        self.PDFimage.SetCursor(cursor_norm)
+        self.PDFimage.UnsetToolTip()
         self.last_page = page
         self.link_rects = []
         self.link_texts = []
         bitmap = self.pdf_show(page)        # read page image
-        self.PDFimage.SetSize(bitmap.Size)  # adjust screen to image size
+        if self.links.Value and len(self.current_lnks) > 0:     # show links?
+            self.draw_links(bitmap, page)   # modify the bitmap
         self.PDFimage.SetBitmap(bitmap)     # put it in screen
         self.szr10.Fit(self)
         self.Layout()
-        if self.links.Value:                     # show links?
-            bitmap = self.PDFimage.GetBitmap()
-            self.draw_links(bitmap, page)
-            self.PDFimage.SetBitmap(bitmap)     # put it in screen
+        # image may be truncated, so we need to recalculate hot areas
+        if len(self.current_lnks) > 0:
+            isize = self.PDFimage.Size
+            bsize = self.PDFimage.Bitmap.Size
+            dis_x = (bsize[0] - isize[0]) / 2.
+            dis_y = (bsize[1] - isize[1]) / 2.
+            zoom_w = float(bsize[0]) / float(self.pg_ir.width)
+            zoom_h = float(bsize[1]) / float(self.pg_ir.height)
+            for l in self.current_lnks:
+                r = l["from"]
+                wx_r = wx.Rect(int(r.x0 * zoom_w - dis_x),
+                           int(r.y0 * zoom_h) - dis_y,
+                           int(r.width * zoom_w),
+                           int(r.height * zoom_h))
+                self.link_rects.append(wx_r)
+                
         return
 
+    def cursor_in_link(self, pos):
+        for i, r in enumerate(self.link_rects):
+            if r.Contains(pos):
+                return i
+        return -1
+        
     def draw_links(self, bmp, pno):
         dc = wx.MemoryDC()
         dc.SelectObject(bmp)
@@ -322,13 +344,12 @@ class PDFdisplay(wx.Dialog):
         zoom_w = float(bmp.Size[0]) / float(pg_w)
         zoom_h = float(bmp.Size[1]) / float(pg_h)
         for lnk in self.current_lnks:
-            r = lnk["from"].round()
+            r = lnk["from"].irect
             wx_r = wx.Rect(int(r.x0 * zoom_w),
                            int(r.y0 * zoom_h),
                            int(r.width * zoom_w),
                            int(r.height * zoom_h))
             dc.DrawRectangle(wx_r[0], wx_r[1], wx_r[2]+1, wx_r[3]+1)
-            self.link_rects.append(wx_r)
             if lnk["kind"] == fitz.LINK_GOTO:
                 txt = "page " + str(lnk["page"] + 1)
             elif lnk["kind"] == fitz.LINK_GOTOR:
@@ -343,15 +364,18 @@ class PDFdisplay(wx.Dialog):
         return
 
     def pdf_show(self, pg_nr):
-        page = self.doc.loadPage(int(pg_nr) - 1) # load the page & get Pixmap
-        pix = page.getPixmap(matrix = self.matrix)
+        pno = int(pg_nr) - 1
+        if self.dl_array[pno] == 0:
+            self.dl_array[pno] = self.doc[pno].getDisplayList()
+        dl = self.dl_array[pno]
+        pix = dl.getPixmap(matrix = self.matrix, alpha = False)
         bmp = bmp_buffer(pix.w, pix.h, pix.samples)
-        paper = FindFit(page.bound().x1, page.bound().y1)
+        r = dl.rect
+        paper = FindFit(r.x1, r.y1)
         self.paperform.Label = "Page format: " + paper
         if self.links.Value:
-            self.current_lnks = page.getLinks()
-            self.pg_ir = page.bound().round()
-        page = None
+            self.current_lnks = self.doc[pno].getLinks()
+            self.pg_ir = dl.rect.irect
         pix = None
         return bmp
 
@@ -403,4 +427,5 @@ if filename:
     dlg = PDFdisplay(None, filename)
     # show it - this will only return for final housekeeping
     rc = dlg.ShowModal()
+    
 app = None

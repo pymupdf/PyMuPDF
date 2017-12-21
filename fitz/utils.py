@@ -21,22 +21,36 @@ def searchFor(page, text, hit_max = 16):
 #==============================================================================
 def searchPageFor(doc, pno, text, hit_max=16):
     """Search for a string on a page. Parameters:\npno: integer page number\ntext: string to be searched for\nhit_max: maximum hits.\nReturns a list of rectangles, each of which surrounds a found occurrence."""
-    return searchFor(doc[pno], text, hit_max = hit_max)
+    return doc[pno].searchFor(text, hit_max = hit_max)
     
 #==============================================================================
-# A function for extracting raw text lines
+# A function for extracting a text blocks list
 #==============================================================================
 def getTextBlocks(page):
+    """Return the text blocks as a list of concatenated lines with their bbox
+    per block.
+    """
     fitz.CheckParent(page)
     dl = page.getDisplayList()
     tp = dl.getTextPage()
     return tp._extractTextLines_AsList()
     
 #==============================================================================
+# A function for extracting a text words list
+#==============================================================================
+def getTextWords(page):
+    """Return the text words as a list with the bbox for each word.
+    """
+    fitz.CheckParent(page)
+    dl = page.getDisplayList()
+    tp = dl.getTextPage()
+    return tp._extractTextWords_AsList()
+    
+#==============================================================================
 # A function for extracting a page's text.
 #==============================================================================
 def getText(page, output = "text"):
-    '''Extract a PDF page's text. Parameters:\noutput option: text, html, json or xml.\nReturns strings like the TextPage extraction methods extractText, extractHTML, extractJSON, or etractXML respectively. Default and misspelling choice is "text".'''
+    '''Extract a PDF page's text. Parameters:\noutput option: text, html, json, xhtml or xml.\nReturns the output of TextPage methods extractText, extractHTML, extractJSON, extractXHTML or etractXML respectively. Default and misspelling choice is "text".'''
     fitz.CheckParent(page)
     dl = page.getDisplayList()
     # available output types
@@ -60,7 +74,7 @@ def getText(page, output = "text"):
 def getPageText(doc, pno, output = "text"):
     '''Extract a PDF page's text by page number. Parameters:
     pno: page number
-    output option: text, html, json or xml.
+    output option: text, html, json, xhtml or xml.
     Return output from page.TextPage().
     Default and misspelling choice is "text".'''
     return doc[pno].getText(output)
