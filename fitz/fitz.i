@@ -5004,6 +5004,7 @@ struct fz_stext_page_s {
             int last_char = 0;
             char utf[10];
             int i, n;
+            long block_n = 0;
             PyObject *lines = PyList_New(0);
             PyObject *text = NULL;
             fz_buffer *res = NULL;
@@ -5047,11 +5048,13 @@ struct fz_stext_page_s {
                     PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.y1));
                     res_len = fz_buffer_storage(gctx, res, &data);
                     text = PyUnicode_FromStringAndSize(data, (Py_ssize_t) res_len);
+                    PyList_Append(litem, PyInt_FromLong(block_n));
                     PyList_Append(litem, text);
                     PyList_Append(lines, litem);
                     Py_DECREF(litem);
                     fz_drop_buffer(gctx, res);
                     fz_drop_output(gctx,out);
+                    block_n += 1;
                 }
             }
             return lines;
