@@ -8356,6 +8356,8 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextWords_AsList(struct fz_stext_pa
             char word[128];
             char utf[10];
             int i, n;
+            long block_n, line_n, word_n;
+            block_n = line_n = word_n = 0;
             Py_ssize_t char_n;
             PyObject *lines = PyList_New(0);
             PyObject *litem;
@@ -8364,8 +8366,10 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextWords_AsList(struct fz_stext_pa
             {
                 if (block->type == FZ_STEXT_BLOCK_TEXT)
                 {
+                    line_n = 0;
                     for (line = block->u.t.first_line; line; line = line->next)
                     {
+                        word_n = 0;
                         // prepare word rectangle with corr. line values
                         c_x0 = line->bbox.x0;
                         c_x1 = c_x0;
@@ -8383,8 +8387,12 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextWords_AsList(struct fz_stext_pa
                                 PyList_Append(litem, PyFloat_FromDouble((double) c_x1));
                                 PyList_Append(litem, PyFloat_FromDouble((double) c_y1));
                                 PyList_Append(litem, PyUnicode_FromStringAndSize(word, char_n));
+                                PyList_Append(litem, PyInt_FromLong(block_n));
+                                PyList_Append(litem, PyInt_FromLong(line_n));
+                                PyList_Append(litem, PyInt_FromLong(word_n));
                                 PyList_Append(lines, litem);
                                 Py_DECREF(litem);
+                                word_n += 1;
                                 c_x0 = ch->bbox.x1;   // start pos. of new word
                                 c_y1 = line->bbox.y1;
                                 char_n = 0;
@@ -8410,10 +8418,16 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextWords_AsList(struct fz_stext_pa
                             PyList_Append(litem, PyFloat_FromDouble((double) c_x1));
                             PyList_Append(litem, PyFloat_FromDouble((double) c_y1));
                             PyList_Append(litem, PyUnicode_FromStringAndSize(word, char_n));
+                            PyList_Append(litem, PyInt_FromLong(block_n));
+                            PyList_Append(litem, PyInt_FromLong(line_n));
+                            PyList_Append(litem, PyInt_FromLong(word_n));
                             PyList_Append(lines, litem);
                             Py_DECREF(litem);
+                            word_n += 1;
                         }
+                        line_n += 1;
                     }
+                    block_n += 1;
                 }
             }
             return lines;
