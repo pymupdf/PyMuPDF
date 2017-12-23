@@ -8322,7 +8322,7 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextLines_AsList(struct fz_stext_pa
                     int line_n = 0;
                     for (line = block->u.t.first_line; line; line = line->next)
                     {
-                        // separate lines by a space if previous did not end with "-"
+                        // add new line after a chr(32) or a chr(45)
                         if (line_n > 0 && last_char != 45)
                             fz_write_string(gctx, out, " ");
                         line_n += 1;
@@ -8341,8 +8341,8 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextLines_AsList(struct fz_stext_pa
                     PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.y1));
                     res_len = fz_buffer_storage(gctx, res, &data);
                     text = PyUnicode_FromStringAndSize(data, (Py_ssize_t) res_len);
-                    PyList_Append(litem, PyInt_FromLong(block_n));
                     PyList_Append(litem, text);
+                    PyList_Append(litem, PyInt_FromLong(block_n));
                     PyList_Append(lines, litem);
                     Py_DECREF(litem);
                     fz_drop_buffer(gctx, res);
@@ -8372,13 +8372,12 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextWords_AsList(struct fz_stext_pa
                     line_n = 0;
                     for (line = block->u.t.first_line; line; line = line->next)
                     {
-                        word_n = 0;
-                        // prepare word rectangle with corr. line values
-                        c_x0 = line->bbox.x0;
-                        c_x1 = c_x0;
-                        c_y0 = line->bbox.y0;
-                        c_y1 = line->bbox.y1;
-                        char_n = 0;
+                        word_n = 0;           // word counter per line
+                        c_x0 = line->bbox.x0; // start of 1st word of line
+                        c_x1 = c_x0;          // initialize word end
+                        c_y0 = line->bbox.y0; // line baseline - never changes
+                        c_y1 = c_y0;          // initialize word height
+                        char_n = 0;           // reset char counter
                         for (ch = line->first_char; ch; ch = ch->next)
                         {
                             if ((ch->c == 32 && char_n > 0) || char_n >= 127)
@@ -8395,15 +8394,16 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextWords_AsList(struct fz_stext_pa
                                 PyList_Append(litem, PyInt_FromLong(word_n));
                                 PyList_Append(lines, litem);
                                 Py_DECREF(litem);
-                                word_n += 1;
-                                c_x0 = ch->bbox.x1;   // start pos. of new word
-                                c_y1 = line->bbox.y1;
-                                char_n = 0;
+                                word_n += 1;        // word counter
+                                c_x0 = ch->bbox.x1; // start pos. of next word
+                                c_y1 = c_y0;        // initialize word height
+                                char_n = 0;         // reset char counter
                                 continue;
                             }
                             // append one unicode character to the word
-                            if (ch->bbox.y1 > c_y1) c_y1 = ch->bbox.y1;
-                            c_x1 = ch->bbox.x1;       // new end of word pos.
+                            if (ch->bbox.y1 > c_y1)
+                                c_y1 = ch->bbox.y1; // adjust word height
+                            c_x1 = ch->bbox.x1;     // adjust end of word
                             n = fz_runetochar(utf, ch->c);
                             for (i = 0; i < n; i++)
                             {
@@ -8412,8 +8412,7 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextWords_AsList(struct fz_stext_pa
                                 word[char_n] = 0;     // indicate end-of-string
                             }
                         }
-                        if (char_n > 0)
-                        // store any remaining stuff in word
+                        if (char_n > 0) // store any remaining stuff in word
                         {
                             litem = PyList_New(0);
                             PyList_Append(litem, PyFloat_FromDouble((double) c_x0));
@@ -8426,7 +8425,6 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextWords_AsList(struct fz_stext_pa
                             PyList_Append(litem, PyInt_FromLong(word_n));
                             PyList_Append(lines, litem);
                             Py_DECREF(litem);
-                            word_n += 1;
                         }
                         line_n += 1;
                     }
