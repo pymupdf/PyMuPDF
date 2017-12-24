@@ -127,7 +127,7 @@ DG_print_stext_block_as_json(fz_context *ctx, fz_output *out, fz_stext_block *bl
         if (line_n > 0) fz_write_printf(ctx, out, ",\n");
         fz_write_printf(ctx, out, "    {");        // begin line
         DG_print_rect_json(ctx, out, &(line->bbox));
-        fz_write_printf(ctx, out, " \"wmode\": %g, \"dir\": [", line->wmode);
+        fz_write_printf(ctx, out, " \"wmode\": %d, \"dir\": [", line->wmode);
         DG_print_float_json(ctx, out, line->dir.x);
         fz_write_printf(ctx, out, ", ");
         DG_print_float_json(ctx, out, line->dir.y);
