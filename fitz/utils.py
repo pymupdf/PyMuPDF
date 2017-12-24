@@ -12,9 +12,7 @@ def searchFor(page, text, hit_max = 16):
     fitz.CheckParent(page)
     rect = page.rect
     dl = page.getDisplayList()         # create DisplayList
-    ts = fitz.TextSheet()                    # create TextSheet
-    tp = fitz.TextPage(rect)            # create TextPage
-    dl.run(fitz.Device(ts, tp), fitz.Identity, rect)   # run the page
+    tp = dl.getTextPage()              # create TextPage
     # return list of hitting reactangles
     return tp.search(text, hit_max = hit_max)
 
@@ -23,31 +21,62 @@ def searchFor(page, text, hit_max = 16):
 #==============================================================================
 def searchPageFor(doc, pno, text, hit_max=16):
     """Search for a string on a page. Parameters:\npno: integer page number\ntext: string to be searched for\nhit_max: maximum hits.\nReturns a list of rectangles, each of which surrounds a found occurrence."""
-    return searchFor(doc[pno], text, hit_max = hit_max)
+    return doc[pno].searchFor(text, hit_max = hit_max)
+    
+#==============================================================================
+# A function for extracting a text blocks list
+#==============================================================================
+def getTextBlocks(page):
+    """Return the text blocks as a list of concatenated lines with their bbox
+    per block.
+    """
+    fitz.CheckParent(page)
+    dl = page.getDisplayList()
+    tp = dl.getTextPage()
+    return tp._extractTextLines_AsList()
+    
+#==============================================================================
+# A function for extracting a text words list
+#==============================================================================
+def getTextWords(page):
+    """Return the text words as a list with the bbox for each word.
+    """
+    fitz.CheckParent(page)
+    dl = page.getDisplayList()
+    tp = dl.getTextPage()
+    return tp._extractTextWords_AsList()
     
 #==============================================================================
 # A function for extracting a page's text.
 #==============================================================================
-#def getText(page, output = "text"):
 def getText(page, output = "text"):
-    '''Extract a PDF page's text. Parameters:\noutput option: text, html, json or xml.\nReturns strings like the TextPage extraction methods extractText, extractHTML, extractJSON, or etractXML respectively. Default and misspelling choice is "text".'''
+    '''Extract a PDF page's text. Parameters:\noutput option: text, html, json, xhtml or xml.\nReturns the output of TextPage methods extractText, extractHTML, extractJSON, extractXHTML or etractXML respectively. Default and misspelling choice is "text".'''
     fitz.CheckParent(page)
-
-    # return requested text format
-    if output.lower() == "json":
-        return page._readPageText(2)
-    elif output.lower() == "html":
-        return page._readPageText(1)
-    elif output.lower() == "xml":
-        return page._readPageText(3)
-    return page._readPageText(0)
+    dl = page.getDisplayList()
+    # available output types
+    formats = ("text", "html", "json", "xml", "xhtml")
+    # choose which of them also include images in the TextPage
+    images = (0, 1, 1, 0, 1)      # controls image inclusion in text page
+    try:
+        f = formats.index(output.lower())
+    except:
+        f = 0
+    flags = fitz.TEXT_PRESERVE_LIGATURES | fitz.TEXT_PRESERVE_WHITESPACE
+    if images[f] :
+        flags |= fitz.TEXT_PRESERVE_IMAGES
+    tp = dl.getTextPage(flags)     # TextPage with / without images
+    return tp._extractText(f)
 
 #==============================================================================
-# A function for extracting a page's text.
+# A function for extracting a page number's text.
 #==============================================================================
 #def getPageText(pno, output = "text"):
 def getPageText(doc, pno, output = "text"):
-    '''Extract a PDF page's text by page number. Parameters:\npno: page number\noutput option: text, html, json or xml.\nReturns strings like the TextPage extraction methods extractText, extractHTML, extractJSON, or etractXML respectively. Default and misspelling choice is "text".'''
+    '''Extract a PDF page's text by page number. Parameters:
+    pno: page number
+    output option: text, html, json, xhtml or xml.
+    Return output from page.TextPage().
+    Default and misspelling choice is "text".'''
     return doc[pno].getText(output)
 
 #==============================================================================
@@ -71,7 +100,6 @@ def getPixmap(page, matrix = fitz.Identity, colorspace = fitz.csRGB, clip = None
             cs = fitz.csRGB
     assert cs.n in (1,3,4), "unsupported colorspace"
 
-    r = page.rect                            # get page boundaries
     dl = page.getDisplayList()               # create DisplayList
     if type(clip) is fitz.IRect:
         scissor = clip.rect
@@ -201,7 +229,7 @@ def getToC(doc, simple = True):
 
     # check if document is open and not encrypted
     if doc.isClosed:
-        raise RuntimeError("illegal operation on closed document")
+        raise ValueError("illegal operation on closed document")
 
     olItem = doc.outline
 
@@ -686,8 +714,10 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
     #--------------------------------------------------------------------------
     annot_goto ='''<</Dest[%s 0 R /XYZ %s %s 0]/Rect[%s]/Subtype/Link>>'''
 
-    annot_gotor = '''<</A<</D[%s /XYZ %s %s 0]/F<</F(%s)/UF(%s)/Type/Filespec
+    annot_gotor = '''<</A<</D[%s /XYZ %g %g 0]/F<</F(%s)/UF(%s)/Type/Filespec
     >>/S/GoToR>>/Rect[%s]/Subtype/Link>>'''
+
+    annot_gotor_n = "<</A<</D(%s)/F(%s)/S/GoToR>>/Rect[%s]/Subtype/Link>>"
 
     annot_launch = '''<</A<</F<</F(%s)/UF(%s)/Type/Filespec>>/S/Launch
     >>/Rect[%s]/Subtype/Link>>'''
@@ -701,20 +731,30 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
         '''Create annotation object string for a passed-in link.'''
 
         # "from" rectangle is always there. Note: y-coords are from bottom!
+
         r = lnk["from"]
-        rect = "%s %s %s %s" % (str(r.x0), str(height - r.y0),   # correct y0
-                                str(r.x1), str(height - r.y1))   # correct y1
+        rect = "%g %g %g %g" % (r.x0, height - r.y0,   # correct y0
+                                r.x1, height - r.y1)   # correct y1
         if lnk["kind"] == fitz.LINK_GOTO:
             txt = annot_goto
             idx = list_src.index(lnk["page"])
             annot = txt % (str(xref_dst[idx]), str(lnk["to"].x),
                            str(lnk["to"].y), rect)
         elif lnk["kind"] == fitz.LINK_GOTOR:
-            txt = annot_gotor
-            annot = txt % (str(lnk["page"]), str(lnk["to"].x),
-                           str(lnk["to"].y),
-                           lnk["file"], lnk["file"],
-                           rect)
+            if lnk["page"] >= 0:
+                txt = annot_gotor
+                pnt = lnk.get("to", fitz.Point(0, 0))          # destination point
+                if type(pnt) is not fitz.Point:
+                    pnt = fitz.Point(0, 0)
+                annot = txt % (str(lnk["page"]), pnt.x, pnt.y,
+                           lnk["file"], lnk["file"], rect)
+            else:
+                txt = annot_gotor_n
+                to = fitz.getPDFstr(lnk["to"], brackets = False)
+                to = to.replace("(","").replace(")","")
+                f = lnk["file"].replace("(","").replace(")","")
+                annot = txt % (to, f, rect)
+
         elif lnk["kind"] == fitz.LINK_LAUNCH:
             txt = annot_launch
             annot = txt % (lnk["file"], lnk["file"], rect)
@@ -883,7 +923,6 @@ def insertTextbox(page, rect, buffer,
                   fontsize = 11,
                   color = (0,0,0),
                   expandtabs = 1,
-                  charwidths = None,
                   align = 0,
                   rotate = 0,
                   morph = None,
@@ -897,7 +936,6 @@ def insertTextbox(page, rect, buffer,
     fontsize - font size
     color - RGB color triple
     expandtabs - handles tabulators with string function
-    charwidths - list of glyph widths
     align - left, center, right, justified
     rotate - 0, 90, 180, or 270 degrees
     morph - morph box with  a matrix and a pivotal point
@@ -913,7 +951,6 @@ def insertTextbox(page, rect, buffer,
                            set_simple = set_simple,
                            color = color,
                            expandtabs = expandtabs,
-                           charwidths = charwidths,
                            align = align,
                            rotate = rotate,
                            morph = morph)
@@ -1886,6 +1923,44 @@ def getColorHSV(name):
     return (H, S, V)
 
 #------------------------------------------------------------------------------
+# Document.getCharWidths
+#------------------------------------------------------------------------------
+def getCharWidths(doc, xref, limit = 256, idx = 0):
+    fontinfo = fitz.CheckFontInfo(doc, xref)
+    if not fontinfo:
+        name, ext, stype, _ = doc.extractFont(xref, info_only = True)
+        glyphs = None
+        fontdict = {"name": name, "type": stype, "ext": ext}
+        if ext == "":
+            raise ValueError("xref is no valid font")
+        if stype in ("Type1", "MMType1", "TrueType"):
+            simple = True
+        else:
+            simple = False
+        fontdict["simple"] = simple
+        fontdict["glyphs"] = glyphs
+        fontinfo = [xref, fontdict]
+        doc.FontInfos.append(fontinfo)
+    else:
+        fontdict = fontinfo[1]
+        glyphs = fontdict["glyphs"]
+        simple = fontdict["simple"]
+
+    oldlimit = len(glyphs) if glyphs else 0
+    mylimit = limit
+    if simple or mylimit < 1:
+        mylimit = 256
+    
+    if mylimit <= oldlimit:
+        return glyphs
+    
+    glyphs = doc._getCharWidths(xref, limit = mylimit, cwlist = glyphs)
+    fontdict["glyphs"] = glyphs
+    fontinfo[1] = fontdict
+    fitz.UpdateFontInfo(doc, fontinfo)
+    return glyphs
+
+#------------------------------------------------------------------------------
 # Create connected graphics elements on a PDF page
 #------------------------------------------------------------------------------
 class Shape():
@@ -2144,13 +2219,14 @@ class Shape():
         if not bool(buffer): return 0
         
         if type(buffer) not in (list, tuple):
-            maxcode = max([ord(c) for c in buffer])
             text = buffer.splitlines()
         else:
             text = buffer
-            maxcode = max([max([ord(c) for c in x]) for x in text])
+            
         if not len(text) > 0:
             return 0
+        
+        maxcode = max([ord(c) for c in "\n".join(text)])
         # ensure valid 'fontname'
         xref = 0                            # xref of font object
         fname = fontname
@@ -2169,17 +2245,15 @@ class Shape():
             f = fitz.CheckFont(self.page, fname)
 
         assert xref > 0, "invalid fontname"
-        if f[2] == "Type1" or f[2] == "TrueType":
-            simple = True
-        else:
-            simple = False
-        fontinfo = fitz.CheckFontInfo(self.doc, xref)
-        if fontinfo:
-            simple = fontinfo[1]["simple"]
+        basename, ext, stype, _ = self.doc.extractFont(xref, info_only = True)
+        simple = True if stype in ("Type1", "TrueType", "MMType1") else False
+        # decide how text is presented to PDF:
+        # simple fonts: use the chars directly in PDF text-showing operators
+        # cid fonts: use glyph number of each character
+        glyphs = None
         if not simple:
-            glyphs = self.doc._getCharWidths(xref, limit = maxcode+1, idx = idx)
-        else:
-            glyphs = None
+            glyphs = self.doc.getCharWidths(xref, limit = maxcode+1)
+        
         tab = []
         for t in text:
             tab.append(fitz.getTJstr(t, glyphs))
@@ -2268,7 +2342,7 @@ class Shape():
     def insertTextbox(self, rect, buffer, fontname = "Helvetica", fontfile = None,
                       fontsize = 11, idx = 0, set_simple = 0,
                       color = (0,0,0), expandtabs = 1,
-                      charwidths = None, align = 0, rotate = 0, morph = None):
+                      align = 0, rotate = 0, morph = None):
         """Insert text into a given rectangle. Arguments:
         rect - the textbox to fill
         buffer - text to be inserted
@@ -2277,7 +2351,6 @@ class Shape():
         fontsize - font size
         color - RGB color triple
         expandtabs - handles tabulators with string function
-        charwidths - list of glyph widths
         align - left, center, right, justified
         rotate - 0, 90, 180, or 270 degrees
         morph - morph box with  a matrix and a pivotal point
@@ -2296,13 +2369,6 @@ class Shape():
         # is buffer worth of dealing with?
         if not bool(buffer):
             return rect.height if rot in (0, 180) else rect.width
-        # create a list from buffer, split into its lines
-        if type(buffer) in (list, tuple):
-            t0 = "\n".join(buffer)
-        else:
-            t0 = buffer        
-        t0 = t0.splitlines()
-        maxcode = max([max([ord(c) for c in x]) for x in t0])
         
         red, green, blue = color if color else (0,0,0)
         cmp90 = "0 1 -1 0 0 0 cm\n"   # rotates counter-clockwise
@@ -2326,31 +2392,30 @@ class Shape():
             f = fitz.CheckFont(self.page, fname)
 
         assert xref > 0, "invalid fontname"
-        if f[2] == "Type1" or f[2] == "TrueType":
-            simple = True
+        basename, ext, stype, _ = self.doc.extractFont(xref, info_only = True)
+        simple = True if stype in ("Type1", "TrueType", "MMType1") else False
+
+        # create a list from buffer, split into its lines
+        if type(buffer) in (list, tuple):
+            t0 = "\n".join(buffer)
         else:
-            simple = False
-        fontinfo = fitz.CheckFontInfo(self.doc, xref)
-        if fontinfo:
-            simple = fontinfo[1]["simple"]
-        # ensure we have a list of glyph widths for the given font
-        widthtab = charwidths              # hopefully we have been given one
-        if not widthtab:                   # need to build our own (sigh!)
-            widthtab = self.doc._getCharWidths(xref = xref, limit = maxcode +1)
-        elif len(widthtab) < maxcode:
-            widthtab = self.doc._getCharWidths(xref = xref, limit = maxcode +1,
-                                               cwlist = widthtab)
+            t0 = buffer
+            
+        maxcode = max([ord(c) for c in t0])
+        # replace invalid char codes for simple fonts
+        if simple and maxcode > 255:
+            t0 = "".join([c if ord(c)<256 else "?" for c in t0])
+
+        t0 = t0.splitlines()
+
+        widthtab = self.doc.getCharWidths(xref = xref, limit = maxcode +1)
 
         #----------------------------------------------------------------------
         # calculate pixel length of a string
         #----------------------------------------------------------------------
         def pixlen(x):
             """Calculate pixel length of x."""
-            try:
-                return sum([widthtab[ord(c)][1] for c in x]) * fontsize
-            except IndexError:
-                m = max([ord(c) for c in x])
-                raise ValueError("max. code point %i outside widthtab" % m)
+            return sum([widthtab[ord(c)][1] for c in x]) * fontsize
         #----------------------------------------------------------------------
 
         blen = widthtab[32][1] * fontsize       # pixel size of space character
@@ -2369,14 +2434,14 @@ class Shape():
         progr = 1                               # direction of line progress
         c_pnt = fitz.Point(0, fontsize)         # used for line progress
         if rot == 0:                            # normal orientation
-            point = rect.top_left + c_pnt       # line 1 is 'fontsize' below top
+            point = rect.tl + c_pnt             # line 1 is 'fontsize' below top
             pos = point.y                       # y of first line
             maxwidth = rect.width               # pixels available in one line
             maxpos = rect.y1                    # lines must not be below this
             
         elif rot == 90:                         # rotate counter clockwise
             c_pnt = fitz.Point(fontsize, 0)     # progress in x-direction
-            point = rect.bottom_left + c_pnt    # line 1 'fontsize' away from left
+            point = rect.bl + c_pnt             # line 1 'fontsize' away from left
             pos = point.x                       # position of first line
             maxwidth = rect.height              # pixels available in one line
             maxpos = rect.x1                    # lines must not be right of this
@@ -2384,7 +2449,7 @@ class Shape():
             
         elif rot == 180:                        # text upside down
             c_pnt = -fitz.Point(0, fontsize)    # progress upwards in y direction
-            point = rect.bottom_right + c_pnt   # line 1 'fontsize' above bottom
+            point = rect.br + c_pnt             # line 1 'fontsize' above bottom
             pos = point.y                       # position of first line
             maxwidth = rect.width               # pixels available in one line
             progr = -1                          # subtract lheight for next line
@@ -2393,7 +2458,7 @@ class Shape():
             
         else:                                   # rotate clockwise (270 or -90)
             c_pnt = -fitz.Point(fontsize, 0)    # progress from right to left
-            point = rect.top_right + c_pnt      # line 1 'fontsize' left of right
+            point = rect.tr + c_pnt             # line 1 'fontsize' left of right
             pos = point.x                       # position of first line
             maxwidth = rect.height              # pixels available in one line
             progr = -1                          # subtract lheight for next line
@@ -2404,6 +2469,7 @@ class Shape():
         # line loop
         #=======================================================================
         just_tab = []                           # 'justify' indicators per line
+        glyphs = None if simple else widthtab   # indicator for getTJstr()!
         for i, line in enumerate(t0):
             line_t = line.expandtabs(expandtabs).split(" ")  # split line into words
             lbuff = ""                          # init line buffer
@@ -2493,7 +2559,7 @@ class Shape():
                 left = -pnt.x
                 top  = -height + pnt.y
             nres += templ % (left, top, fname, fontsize,
-                             spacing, red, green, blue, fitz.getTJstr(t))
+                             spacing, red, green, blue, fitz.getTJstr(t, glyphs))
         nres += "ET Q\n"
         
         self.totalcont += nres
@@ -2547,7 +2613,7 @@ class Shape():
         if self.totalcont == "":
             return
         if not self.totalcont.endswith("Q\n"):
-            raise RuntimeError("finish method missing")
+            raise ValueError("finish method missing")
 
         if str != bytes:                    # bytes object needed in Python 3
             self.totalcont = bytes(self.totalcont, "utf-8")

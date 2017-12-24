@@ -7,13 +7,13 @@ JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_mat
     fz_irect irect;
     fz_pixmap *pix;
     fz_device *dev;
-
+    fz_separations *seps = NULL;
     fz_bound_display_list(ctx, list, &rect);
     if (clip) fz_intersect_rect(&rect, clip);
     fz_transform_rect(&rect, ctm);
     fz_round_rect(&irect, &rect);
 
-    pix = fz_new_pixmap_with_bbox(ctx, cs, &irect, alpha);
+    pix = fz_new_pixmap_with_bbox(ctx, cs, &irect, seps, alpha);
     if (alpha)
         fz_clear_pixmap(ctx, pix);
     else
@@ -77,8 +77,8 @@ void
 JM_pdf_preload_image_resources(fz_context *ctx, pdf_document *doc)
 {
     int len, k;
-    pdf_obj *obj;
-    pdf_obj *type;
+    pdf_obj *obj = NULL;
+    pdf_obj *type = NULL;
     pdf_obj *res = NULL;
     fz_image *image = NULL;
     unsigned char digest[16];
@@ -86,6 +86,7 @@ JM_pdf_preload_image_resources(fz_context *ctx, pdf_document *doc)
     fz_var(obj);
     fz_var(image);
     fz_var(res);
+
     fz_try(ctx)
     {
         len = pdf_count_objects(ctx, doc);
@@ -122,13 +123,18 @@ JM_pdf_preload_image_resources(fz_context *ctx, pdf_document *doc)
     }
 }
 
+static void JM_drop_obj_as_void(fz_context *ctx, void *obj)
+{
+	pdf_drop_obj(ctx, obj);
+}
+
 pdf_obj *
 JM_pdf_find_image_resource(fz_context *ctx, pdf_document *doc, fz_image *item, unsigned char digest[16])
 {
     pdf_obj *res;
     if (!doc->resources.images)
     {
-        doc->resources.images = fz_new_hash_table(ctx, 4096, 16, -1, (fz_hash_table_drop_fn)pdf_drop_obj);
+        doc->resources.images = fz_new_hash_table(ctx, 4096, 16, -1, JM_drop_obj_as_void);
         JM_pdf_preload_image_resources(ctx, doc);
     }
 
@@ -342,7 +348,7 @@ char *getPDFstr(fz_context *ctx, PyObject *obj, Py_ssize_t* psize, const char *n
 //----------------------------------------------------------------------------
 // Deep-copies a specified source page to the target location.
 //----------------------------------------------------------------------------
-void page_merge(fz_context *ctx, pdf_document* doc_des, pdf_document* doc_src, int page_from, int page_to, int rotate, pdf_graft_map *graft_map)
+void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int page_from, int page_to, int rotate, pdf_graft_map *graft_map)
 {
     pdf_obj *pageref = NULL;
     pdf_obj *page_dict;
@@ -371,7 +377,7 @@ void page_merge(fz_context *ctx, pdf_document* doc_des, pdf_document* doc_src, i
             {
             obj = pdf_dict_get(ctx, pageref, known_page_objs[i]);
             if (obj != NULL)
-                pdf_dict_put_drop(ctx, page_dict, known_page_objs[i], pdf_graft_object(ctx, doc_des, doc_src, obj, graft_map));
+                pdf_dict_put_drop(ctx, page_dict, known_page_objs[i], pdf_graft_mapped_object(ctx, graft_map, obj));
             }
         // remove any links from annots array
         pdf_obj *annots = pdf_dict_get(ctx, page_dict, PDF_NAME_Annots);
@@ -419,13 +425,13 @@ void page_merge(fz_context *ctx, pdf_document* doc_des, pdf_document* doc_src, i
 // (apage) of the target PDF.
 // If spage > epage, the sequence of source pages is reversed.
 //----------------------------------------------------------------------------
-void merge_range(fz_context *ctx, pdf_document* doc_des, pdf_document* doc_src, int spage, int epage, int apage, int rotate)
+void merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int spage, int epage, int apage, int rotate)
 {
-    int page, afterpage;
+    int page, afterpage, count;
     pdf_graft_map *graft_map;
     afterpage = apage;
-
-    graft_map = pdf_new_graft_map(ctx, doc_src);
+    count = pdf_count_pages(ctx, doc_src);
+    graft_map = pdf_new_graft_map(ctx, doc_des);
 
     fz_try(ctx)
     {
@@ -491,54 +497,6 @@ int countOutlines(fz_context *ctx, pdf_obj *obj, int oc)
         if (!thisobj) thisobj = parent;      /* goto parent if no next exists */
     }
     return oc;
-}
-
-//----------------------------------------------------------------------------
-// Read text from a document page - the short way.
-// Main logic is contained in function fz_new_stext_page_from_page of file
-// utils.c in the fitz directory.
-// In essence, it creates an stext device, runs the stext page through it,
-// deletes the device and returns the text buffer in the requested format.
-// A display list is not used in the process.
-//----------------------------------------------------------------------------
-const char *readTPageText(fz_context *ctx, fz_stext_page *tp, int output)
-{
-    fz_buffer *res = NULL;
-    fz_output *out = NULL;
-    fz_try(ctx) {
-        res = fz_new_buffer(ctx, 1024);
-        out = fz_new_output_with_buffer(ctx, res);
-        if (output<=0) fz_print_stext_page(ctx, out, tp);
-        if (output==1) fz_print_stext_page_html(ctx, out, tp);
-        if (output==2) fz_print_stext_page_json(ctx, out, tp);
-        if (output>=3) fz_print_stext_page_xml(ctx, out, tp);
-    }
-    fz_always(ctx) if (out) fz_drop_output(ctx, out);
-    fz_catch(ctx) {
-        if (res) fz_drop_buffer(ctx, res);
-        fz_rethrow(ctx);
-    }
-    return fz_string_from_buffer(ctx, res);
-}
-const char *readPageText(fz_context *ctx, fz_page *page, int output)
-{
-    fz_stext_sheet *ts = NULL;
-    fz_stext_page *tp = NULL;
-    const char *c;
-    fz_try(ctx) {
-        ts = fz_new_stext_sheet(ctx);
-        tp = fz_new_stext_page_from_page(ctx, page, ts, NULL);
-        c = readTPageText(ctx, tp, output);
-    }
-    fz_always(ctx)
-    {
-        if (ts) fz_drop_stext_sheet(ctx, ts);
-        if (tp) fz_drop_stext_page(ctx, tp);
-    }
-    fz_catch(ctx) {
-        fz_rethrow(ctx);
-    }
-    return c;
 }
 
 //-----------------------------------------------------------------------------
@@ -627,13 +585,12 @@ char *fontextension(fz_context *ctx, pdf_document *doc, int num)
         obj = pdf_dict_get(ctx, o, PDF_NAME_FontDescriptor);
     }
 
+    pdf_drop_obj(ctx, o);
     if (!obj)
     {
-        pdf_drop_obj(ctx, o);
         ext = "n/a";
         return ext;
     }
-    pdf_drop_obj(ctx, o);
     o = obj;
 
     obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile);
@@ -670,6 +627,5 @@ char *fontextension(fz_context *ctx, pdf_document *doc, int num)
     }
 
     if (!stream) fz_throw(ctx, FZ_ERROR_GENERIC, "unhandled font type");
-
     return ext;
 }%}

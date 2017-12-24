@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 from __future__ import print_function
 import fitz
 from ParseTab import ParseTab
@@ -19,7 +18,7 @@ The ParseTab function parses tables contained in a page of a PDF
 that represents the original table in matrix form.
 
 Dependencies:
-PyMuPDF, json, sqlite3
+PyMuPDF
 """
 #==============================================================================
 # Main program

@@ -897,7 +897,7 @@ class PDFdisplay(wx.Dialog):
                       self.fromWidth.Value, self.fromHeight.Value)
         r = self.wxRect_to_Rect(wxr)
         pno = getint(self.TextToPage.Value) - 1
-        return self.doc._getPageRectText(pno, r)
+        return self.doc[pno].extractTextRect(r)
         
         
     def Rect_to_wxRect(self, fr):

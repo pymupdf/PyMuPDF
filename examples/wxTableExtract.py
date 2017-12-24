@@ -4,18 +4,14 @@
 """
 @created: 2016-04-07 07:00:00
 
-@author: Jorj X. McKie
+@author: Jorj X. McKie (c) 2017-2018
 License: GNU GPL V3
 
 Display and parse tables of a document.
 
 Dependencies:
 -------------
-PyMuPDF v1.9.2+, wxPython v3.0.2+, json, sqlite3
-
-Changes:
---------
-Now supporting all versions of PyMuPDF, Python and wxPython.
+PyMuPDF v1.12.0, wxPython phoenix
 
 License:
 --------
@@ -27,8 +23,6 @@ import fitz
 import wx
 import os
 from ParseTab import ParseTab
-assert wx.version() >= "3.0.2", "need at least wxPython v3.0.2"
-assert fitz.VersionBind >= "1.9.2", "need at least PyMuPDF v1.9.2"
 
 try:
     from PageFormat import FindFit
@@ -61,19 +55,11 @@ def getint(v):
 app = None
 app = wx.App()
 
-# do some wxPython version adjustments
-if wx.version() >= "3.0.3":
-    cursor_hand  = wx.Cursor(wx.CURSOR_HAND)
-    cursor_cross = wx.Cursor(wx.CURSOR_CROSS)
-    cursor_vert  = wx.Cursor(wx.CURSOR_SIZENS)
-    cursor_norm  = wx.Cursor(wx.CURSOR_DEFAULT)
-    bmp_from_buffer = wx.Bitmap.FromBuffer
-else:
-    cursor_hand  = wx.StockCursor(wx.CURSOR_CLOSED_HAND)
-    cursor_cross = wx.StockCursor(wx.CURSOR_CROSS)
-    cursor_vert  = wx.StockCursor(wx.CURSOR_SIZENS)
-    cursor_norm  = wx.StockCursor(wx.CURSOR_DEFAULT)
-    bmp_from_buffer = wx.BitmapFromBuffer
+cursor_hand  = wx.Cursor(wx.CURSOR_HAND)
+cursor_cross = wx.Cursor(wx.CURSOR_CROSS)
+cursor_vert  = wx.Cursor(wx.CURSOR_SIZENS)
+cursor_norm  = wx.Cursor(wx.CURSOR_DEFAULT)
+bmp_from_buffer = wx.Bitmap.FromBuffer
 
 # some abbreviations to get rid of those long pesky names ...
 defPos = wx.DefaultPosition
@@ -308,10 +294,10 @@ class PDFdisplay (wx.Dialog):
 #==============================================================================
     def cursor_in_rect(self, pos):
         # check whether cursor is in rectangle
-        if not (self.rect_h > 0 and self.rect_w > 0): # does a rect exist?
+        if self.rect_h <= 0 or self.rect_w <= 0: # does a rect exist?
             return False
-        if pos.x < self.rect_x or pos.x > self.rect_x + self.rect_w or\
-           pos.y < self.rect_y or pos.y > self.rect_y + self.rect_h:
+        if any((pos.x < self.rect_x, pos.x > self.rect_x + self.rect_w,
+                pos.y < self.rect_y, pos.y > self.rect_y + self.rect_h)):
                return False
         return True
 
@@ -491,7 +477,7 @@ class PDFdisplay (wx.Dialog):
         self.dragstart_x = 0
         self.dragstart_y = 0
 
-        if not self.set_rectangle:          # only handle making a rectangle
+        if not self.set_rectangle:          # out if not making a rectangle
             return
         self.PDFimage.SetCursor(cursor_norm)     # cursor default again
         pos = evt.GetPosition()
@@ -599,16 +585,15 @@ class PDFdisplay (wx.Dialog):
         cols = list(self.col_coords.values())
         cols.sort()
         pg = getint(self.TextToPage.Value) - 1
-        self.parsed_table = ParseTab(self.doc, pg, [x0, y0, x1, y1],
+        self.parsed_table = ParseTab(self.doc[pg], [x0, y0, x1, y1],
                                      columns = cols)
         if self.parsed_table:
             r = len(self.parsed_table)
             c = len(self.parsed_table[0])
             t = "\nContents of (%s x %s)-table at [%s,%s] on page %s"
             print(t % (r, c, x0, y0, pg + 1))
-            for t in self.parsed_table:
-                xt = [str(t[i].encode("utf-8", "ignore")) for i in range(len(t))]
-                print("|".join(xt))
+            for l in self.parsed_table:
+                print(l)
         else:
             print("No text found in rectangle")
 
@@ -668,10 +653,9 @@ class PDFdisplay (wx.Dialog):
 
     def pdf_show(self, pg_nr):
         # get Pixmap of a page
-        p = self.doc.loadPage(pg_nr - 1)
-        pix = p.getPixmap()
-        a = pix.samplesRGB()
-        bitmap = bmp_from_buffer(pix.width, pix.height, a)
+        p = self.doc[pg_nr - 1]
+        pix = p.getPixmap(alpha = 0)
+        bitmap = bmp_from_buffer(pix.width, pix.height, pix.samples)
         self.paperform.Label = "Format: " + FindFit(pix.w, pix.h)
         return bitmap
 

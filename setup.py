@@ -46,7 +46,7 @@ else:
                                      './mupdf/thirdparty/zlib', 
                                     ],
                        libraries=[ # these are needed in Windows
-                                  'libmupdf', 'libfonts',
+                                  'libmupdf', 'libresources',
                                   'libthirdparty',
                                  ],
                        extra_link_args=['/NODEFAULTLIB:MSVCRT'],

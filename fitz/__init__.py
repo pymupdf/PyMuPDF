@@ -50,30 +50,32 @@ fitz.Document.setMetadata   = fitz.utils.setMetadata
 fitz.Document.setToC        = fitz.utils.setToC
 fitz.Document.searchPageFor = fitz.utils.searchPageFor
 fitz.Document.newPage       = fitz.utils.newPage
+fitz.Document.getCharWidths = fitz.utils.getCharWidths
 
 #------------------------------------------------------------------------------
 # Page
 #------------------------------------------------------------------------------
-fitz.Page.drawBezier        = fitz.utils.drawBezier
-fitz.Page.drawCircle        = fitz.utils.drawCircle
-fitz.Page.drawCurve         = fitz.utils.drawCurve
-fitz.Page.drawLine          = fitz.utils.drawLine
-fitz.Page.drawOval          = fitz.utils.drawOval
-fitz.Page.drawPolyline      = fitz.utils.drawPolyline
-fitz.Page.drawRect          = fitz.utils.drawRect
-fitz.Page.drawSector        = fitz.utils.drawSector
-fitz.Page.drawSquiggle      = fitz.utils.drawSquiggle
-fitz.Page.drawZigzag        = fitz.utils.drawZigzag
-fitz.Page.getLinks          = fitz.utils.getLinks
-fitz.Page.getPixmap         = fitz.utils.getPixmap
-fitz.Page.getText           = fitz.utils.getText
-fitz.Page.insertLink        = fitz.utils.insertLink
-fitz.Page.insertTextbox     = fitz.utils.insertTextbox
-fitz.Page.insertTextBox     = fitz.utils.insertTextbox
-fitz.Page.insertText        = fitz.utils.insertText
-fitz.Page.searchFor         = fitz.utils.searchFor
-fitz.Page.updateLink        = fitz.utils.updateLink
-fitz.Page.newShape          = lambda x: fitz.utils.Shape(x)
+fitz.Page.drawBezier         = fitz.utils.drawBezier
+fitz.Page.drawCircle         = fitz.utils.drawCircle
+fitz.Page.drawCurve          = fitz.utils.drawCurve
+fitz.Page.drawLine           = fitz.utils.drawLine
+fitz.Page.drawOval           = fitz.utils.drawOval
+fitz.Page.drawPolyline       = fitz.utils.drawPolyline
+fitz.Page.drawRect           = fitz.utils.drawRect
+fitz.Page.drawSector         = fitz.utils.drawSector
+fitz.Page.drawSquiggle       = fitz.utils.drawSquiggle
+fitz.Page.drawZigzag         = fitz.utils.drawZigzag
+fitz.Page.getTextBlocks      = fitz.utils.getTextBlocks
+fitz.Page.getTextWords       = fitz.utils.getTextWords
+fitz.Page.getLinks           = fitz.utils.getLinks
+fitz.Page.getPixmap          = fitz.utils.getPixmap
+fitz.Page.getText            = fitz.utils.getText
+fitz.Page.insertLink         = fitz.utils.insertLink
+fitz.Page.insertTextbox      = fitz.utils.insertTextbox
+fitz.Page.insertText         = fitz.utils.insertText
+fitz.Page.searchFor          = fitz.utils.searchFor
+fitz.Page.updateLink         = fitz.utils.updateLink
+fitz.Page.newShape           = lambda x: fitz.utils.Shape(x)
 
 #------------------------------------------------------------------------------
 # Pixmap

@@ -49,14 +49,14 @@ if __name__ == "__main__":
     
     pentip.x += 10                          # insert a little distance
     text = """Like the ReportLab User Guide does,\nyou may want to use this image, to\nemphasize content, e.g. cautionary\nremarks, notes, examples, etc."""
-    img.insertText(pentip, text)            # insert explanatory text
+    page.insertText(pentip, text)           # insert explanatory text
 # =============================================================================
 #   pencil 3    
 # =============================================================================
     # yet another pencil, which we will morph around its tip
     mat = fitz.Matrix(-150)*fitz.Matrix(0.5,0.5,1)    # morphing: rotate & shear
-    pentip = fitz.Point(300, 300)
+    pentip = fitz.Point(300, 400)
     # instead of another thickness (40) we could have used a scale matrix
     pencil(img, pentip, 40, True, morph=(pentip, mat))
     img.commit()
-    doc.save("pencil.pdf", expand = True)
+    doc.save("pencil.pdf")
