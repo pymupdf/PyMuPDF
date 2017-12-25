@@ -2356,8 +2356,6 @@ class Shape():
         morph - morph box with  a matrix and a pivotal point
         Returns: unused or deficit rectangle area (float)
         """
-        if rect not in self.page.rect:
-            raise ValueError("text box not contained in page")
         if rect.isEmpty or rect.isInfinite:
             raise ValueError("text box must be finite and not empty")
         fitz.CheckColor(color)
