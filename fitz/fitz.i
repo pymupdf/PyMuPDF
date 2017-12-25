@@ -87,7 +87,7 @@ import sys
 %}
 %include version.i
 %include helper-annot.i
-%include helper-json.i
+%include helper-stext.i
 %include helper-python.i
 %include helper-other.i
 %include helper-portfolio.i
@@ -1194,7 +1194,6 @@ if sa < 0:
                     continue;  // not a valid font
                 int xref = pdf_to_num(gctx, fontdict);
                 char *ext = fontextension(gctx, pdf, xref);
-                long gen  = (long) pdf_to_gen(gctx, fontdict);
                 subtype = pdf_dict_get(gctx, fontdict, PDF_NAME_Subtype);
                 basefont = pdf_dict_get(gctx, fontdict, PDF_NAME_BaseFont);
                 if (!basefont || pdf_is_null(gctx, basefont))
@@ -2164,7 +2163,10 @@ fannot._erase()
                 ixref = pdf_to_num(gctx, font_obj);
                 PyObject *name = PyString_FromString(fz_font_name(gctx, font));
                 PyObject *exto;
-                exto = PyString_FromString(fontextension(gctx, pdf, ixref));
+                if (simple != 1)
+                    exto = PyString_FromString(fontextension(gctx, pdf, ixref));
+                else
+                    exto = PyString_FromString("n/a");
                 PyObject *simpleo = truth_value(simple);
                 PyObject *idxo = PyInt_FromLong((long) idx);
                 info = PyDict_New();

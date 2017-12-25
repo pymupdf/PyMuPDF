@@ -522,7 +522,8 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
     if (!obj)
     {
         pdf_drop_obj(ctx, o);
-        fz_throw(ctx, FZ_ERROR_GENERIC, "invalid font - FontDescriptor missing");
+        fz_warn(ctx, "invalid font - FontDescriptor missing");
+        return NULL;
     }
     pdf_drop_obj(ctx, o);
     o = obj;
@@ -548,7 +549,10 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
 
         obj = pdf_dict_get(ctx, obj, PDF_NAME_Subtype);
         if (obj && !pdf_is_name(ctx, obj))
-            fz_throw(ctx, FZ_ERROR_GENERIC, "invalid font descriptor subtype");
+        {
+            fz_warn(ctx, "invalid font descriptor subtype");
+            return NULL;
+        }
 
         if (pdf_name_eq(ctx, obj, PDF_NAME_Type1C))
             ext = "cff";
@@ -557,10 +561,14 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
         else if (pdf_name_eq(ctx, obj, PDF_NAME_OpenType))
             ext = "otf";
         else
-            fz_throw(ctx, FZ_ERROR_GENERIC, "unhandled font type '%s'", pdf_to_name(ctx, obj));
+            fz_warn(ctx, "unhandled font type '%s'", pdf_to_name(ctx, obj));
     }
 
-    if (!stream) fz_throw(ctx, FZ_ERROR_GENERIC, "unhandled font type");
+    if (!stream)
+    {
+        fz_warn(ctx, "unhandled font type");
+        return NULL;
+    }
 
     buf = pdf_load_stream(ctx, stream);
     return buf;
@@ -572,7 +580,7 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
 char *fontextension(fz_context *ctx, pdf_document *doc, int num)
 {
     pdf_obj *o, *obj = NULL, *desft, *stream = NULL;
-    char *ext = "";
+    char *ext = "n/a";
     o = pdf_load_object(ctx, doc, num);
     desft = pdf_dict_get(ctx, o, PDF_NAME_DescendantFonts);
     if (desft)
@@ -588,7 +596,6 @@ char *fontextension(fz_context *ctx, pdf_document *doc, int num)
     pdf_drop_obj(ctx, o);
     if (!obj)
     {
-        ext = "n/a";
         return ext;
     }
     o = obj;
@@ -611,11 +618,12 @@ char *fontextension(fz_context *ctx, pdf_document *doc, int num)
     if (obj)
     {
         stream = obj;
-
         obj = pdf_dict_get(ctx, obj, PDF_NAME_Subtype);
         if (obj && !pdf_is_name(ctx, obj))
-            fz_throw(ctx, FZ_ERROR_GENERIC, "invalid font descriptor subtype");
-
+        {
+            fz_warn(ctx, "invalid font descriptor subtype");
+            return ext;
+        }
         if (pdf_name_eq(ctx, obj, PDF_NAME_Type1C))
             ext = "cff";
         else if (pdf_name_eq(ctx, obj, PDF_NAME_CIDFontType0C))
@@ -623,9 +631,9 @@ char *fontextension(fz_context *ctx, pdf_document *doc, int num)
         else if (pdf_name_eq(ctx, obj, PDF_NAME_OpenType))
             ext = "otf";
         else
-            fz_throw(ctx, FZ_ERROR_GENERIC, "unhandled font type '%s'", pdf_to_name(ctx, obj));
+            fz_warn(ctx, "unhandled font type '%s'", pdf_to_name(ctx, obj));
     }
 
-    if (!stream) fz_throw(ctx, FZ_ERROR_GENERIC, "unhandled font type");
+    if (!stream) fz_warn(ctx, "unhandled font type");
     return ext;
 }%}
