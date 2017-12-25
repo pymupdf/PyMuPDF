@@ -45,7 +45,7 @@ Finally, please double check ``setup.py`` before building. Update ``include_dirs
 ## MS Windows
 The lucky Windows user can now just issue `pip install PyMuPDF [--upgrade]` and is done in no more time than a 3 MB download takes. This requires **nothing else** - no MuPDF, no Visual Studio, ... whatsoever.
 
-If you don't use ``pip`` or [PyPI](https://pypi.org/project/PyMuPDF/), you can still download pre-generated binaries or Python wheels from [here](https://github.com/JorjMcKie/PyMuPDF-Optional-Material) that are suitable for your Python / Windows combination. This, too, avoids any other downloads or compilation hassle. Again, make sure to consult our documentation.
+If you don't use ``pip`` or [PyPI](https://pypi.org/project/PyMuPDF/), you can still download [pre-generated binaries](https://github.com/JorjMcKie/PyMuPDF-Optional-Material) or [Python wheels](https://github.com/JorjMcKie/PyMuPDF-wheels) that are suitable for your Python / Windows combination. This, too, avoids any other downloads or compilation hassle. Again, make sure to consult our documentation.
 
 If you do want to make your own binary however, have a look at this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation). It explains how to use Visual Studio for generating MuPDF in quite some detail. Also do not hesitate to contact us if you need help.
 
