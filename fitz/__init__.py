@@ -165,8 +165,6 @@ fitz.Point.__bool__         = fitz.utils.point_true
 fitz.Point.__eq__           = fitz.utils.point_equ
 fitz.Point.__contains__     = fitz.utils.point_contains
 
-# ... and delete them from here
-#del utils
 
 fitz.__doc__ = "PyMuPDF %s: Python bindings for the MuPDF %s library,\nbuilt on %s" \
                % (fitz.VersionBind, fitz.VersionFitz, fitz.VersionDate)

@@ -3178,13 +3178,15 @@ char *annot_type_str(int type)
 
 
 //-----------------------------------------------------------------------------
-// C helper functions for extractJSON, and other text output functions
+// C helper functions for extractJSON, and other structured text output
+// functions.
 // Renamed JSON functions to prefix them with "DG", to indicate they were
-// contributed by our GitHub user @deepgully
+// contributed by our GitHub user @deepgully.
+// Functions contributed by Jorj McKie are prefixed by "JM"
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// JSON requirement: must have a digit before decimal point
+// JSON requirement: must have a digit before the decimal point
 //-----------------------------------------------------------------------------
 void DG_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox)
 {
@@ -3195,7 +3197,7 @@ void DG_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox)
 }
 
 //-----------------------------------------------------------------------------
-// JSON requirement: must have a digit before decimal point
+// JSON requirement: must have a digit before the decimal point
 //-----------------------------------------------------------------------------
 void DG_print_float_json(fz_context *ctx, fz_output *out, float g)
 {
@@ -3406,7 +3408,7 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
             for (line = block->u.t.first_line; line; line = line->next)
             {
                 // append next line with a space if prev did not end with "-"
-                if (line_n > 0 && last_char != 45) fz_write_string(ctx, out, " ");
+                if (line_n > 0) fz_write_string(ctx, out, " ");
                 line_n += 1;
                 for (ch = line->first_char; ch; ch = ch->next)
                 {
@@ -4779,14 +4781,8 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "document has no pages")
         }
 SWIGINTERN struct fz_outline_s *fz_document_s__loadOutline(struct fz_document_s *self){
             fz_outline *ol;
-            fz_try(gctx)
-            {
-                ol = fz_load_outline(gctx, self);
-            }
-            fz_catch(gctx)
-            {
-                return NULL;
-            }
+            fz_try(gctx) ol = fz_load_outline(gctx, self);
+            fz_catch(gctx) return NULL;
             return ol;
         }
 SWIGINTERN void fz_document_s__dropOutline(struct fz_document_s *self,struct fz_outline_s *ol){
@@ -5299,6 +5295,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "page number(s) out of range")
                     pdf_delete_page(gctx, pdf, f);
                     i -= 1;
                 }
+                pdf_finish_edit(gctx, pdf);
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -5319,6 +5316,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "page number(s) out of range")
 /*@SWIG@*/;
                 pdf_obj *page = pdf_lookup_page_obj(gctx, pdf, pno);
                 pdf_insert_page(gctx, pdf, to, page);
+                pdf_finish_edit(gctx, pdf);
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -5401,6 +5399,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "page number(s) out of range")
                 fz_terminate_buffer(gctx, contents);
                 page_obj = pdf_add_page(gctx, pdf, &mediabox, 0, resources, contents);
                 pdf_insert_page(gctx, pdf, pno , page_obj);
+                //pdf_finish_edit(gctx, pdf);
             }
             fz_always(gctx)
             {
@@ -5436,6 +5435,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "source and target too close")
                     pdf_delete_page(gctx, pdf, pno);
                 else
                     pdf_delete_page(gctx, pdf, pno+1);
+                pdf_finish_edit(gctx, pdf);
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -5499,7 +5499,11 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "page numbers must be integers")
             globals glo = { 0 };
             glo.ctx = gctx;
             glo.doc = pdf;
-            fz_try(gctx) retainpages(gctx, &glo, argc, liste);
+            fz_try(gctx)
+            {
+                retainpages(gctx, &glo, argc, liste);
+                pdf_finish_edit(gctx, pdf);
+            }
             fz_always(gctx) free (liste);
             fz_catch(gctx) return -5;
             return 0;
@@ -5516,22 +5520,13 @@ SWIGINTERN PyObject *fz_document_s_permissions(struct fz_document_s *self){
             PyDict_SetItemString(res, "note", n);
             return res;
         }
-SWIGINTERN PyObject *fz_document_s__getCharWidths(struct fz_document_s *self,int xref,int idx,int limit,PyObject *cwlist){
+SWIGINTERN PyObject *fz_document_s__getCharWidths(struct fz_document_s *self,int xref,int limit,int idx){
             pdf_document *pdf = pdf_specifics(gctx, self);
             PyObject *wlist = NULL;
-            int i, glyph;
-            Py_ssize_t cwlen = 0;
-            if (cwlist && PySequence_Check(cwlist))
-            {
-                cwlen = PySequence_Size(cwlist);
-                wlist = cwlist;
-            }
-            else
-            {
-                wlist = PyList_New(0);
-                cwlen = 0;
-            }
-            if (cwlen > 0 && limit <= cwlen) return cwlist;
+            int i, glyph, mylimit;
+            mylimit = limit;
+            if (mylimit < 256) mylimit = 256;
+            int cwlen = 0;
             const char *data;
             int size;
             fz_font *font = NULL;
@@ -5578,7 +5573,8 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "xref is not a supported font")
 /*@SWIG@*/;
                     font = fz_new_font_from_buffer(gctx, NULL, buf, idx, 0);
                 }
-                for (i = cwlen; i < limit; i++)
+                wlist = PyList_New(0);
+                for (i = 0; i < mylimit; i++)
                 {
                     glyph = fz_encode_character(gctx, font, i);
                     if (glyph > 0)
@@ -5598,7 +5594,6 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "xref is not a supported font")
             }
             fz_catch(gctx)
             {
-                if (wlist != cwlist) Py_DECREF(wlist);
                 return NULL;
             }
             return wlist;
@@ -6112,10 +6107,15 @@ SWIGINTERN struct fz_display_list_s *fz_page_s_getDisplayList(struct fz_page_s *
             return dl;
         }
 SWIGINTERN struct fz_link_s *fz_page_s_loadLinks(struct fz_page_s *self){
-            return fz_load_links(gctx, self);
+            fz_link *l = NULL;
+            fz_try(gctx) l = fz_load_links(gctx, self);
+            fz_catch(gctx) return NULL;
+            return l;
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_firstAnnot(struct fz_page_s *self){
-            fz_annot *annot = fz_first_annot(gctx, self);
+            fz_annot *annot;
+            fz_try(gctx) annot = fz_first_annot(gctx, self);
+            fz_catch(gctx) annot = NULL;
             if (annot) fz_keep_annot(gctx, annot);
             return annot;
         }
@@ -6155,6 +6155,32 @@ SWIGINTERN struct fz_annot_s *fz_page_s_deleteAnnot(struct fz_page_s *self,struc
             pdf_delete_annot(gctx, page, pannot);
             if (nextannot) fz_keep_annot(gctx, nextannot);
             return nextannot;
+        }
+SWIGINTERN struct fz_point_s *fz_page_s_MediaBoxSize(struct fz_page_s *self){
+            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            p->x = p->y = 0.0;
+            pdf_page *page = pdf_page_from_fz_page(gctx, self);
+            if (!page) return p;
+            fz_rect r = {0,0,0,0};
+            pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME_MediaBox);
+            if (!o) return p;
+            pdf_to_rect(gctx, o, &r);
+            p->x = r.x1 - r.x0;
+            p->y = r.y1 - r.y0;
+            return p;
+        }
+SWIGINTERN struct fz_point_s *fz_page_s_CropBoxPosition(struct fz_page_s *self){
+            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            p->x = p->y = 0.0;
+            pdf_page *page = pdf_page_from_fz_page(gctx, self);
+            if (!page) return p;
+            fz_rect r = {0,0,0,0};
+            pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME_CropBox);
+            if (!o) return p;
+            pdf_to_rect(gctx, o, &r);
+            p->x = r.x0;
+            p->y = r.y0;
+            return p;
         }
 SWIGINTERN int fz_page_s_rotation(struct fz_page_s *self){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -8316,6 +8342,11 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextLines_AsList(struct fz_stext_pa
             unsigned char *data;
             for (block = self->first_block; block; block = block->next)
             {
+                PyObject *litem = PyList_New(0);
+                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.x0));
+                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.y0));
+                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.x1));
+                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.y1));
                 if (block->type == FZ_STEXT_BLOCK_TEXT)
                 {
                     fz_try(gctx)
@@ -8332,8 +8363,8 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextLines_AsList(struct fz_stext_pa
                     int line_n = 0;
                     for (line = block->u.t.first_line; line; line = line->next)
                     {
-                        // add new line after a chr(32) or a chr(45)
-                        if (line_n > 0 && last_char != 45)
+                        // add new line after a chr(32)
+                        if (line_n > 0)
                             fz_write_string(gctx, out, " ");
                         line_n += 1;
                         for (ch = line->first_char; ch; ch = ch->next)
@@ -8344,21 +8375,24 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextLines_AsList(struct fz_stext_pa
                                 fz_write_byte(gctx, out, utf[i]);
                         }
                     }
-                    PyObject *litem = PyList_New(0);
-                    PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.x0));
-                    PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.y0));
-                    PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.x1));
-                    PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.y1));
                     res_len = fz_buffer_storage(gctx, res, &data);
                     text = PyUnicode_FromStringAndSize(data, (Py_ssize_t) res_len);
                     PyList_Append(litem, text);
-                    PyList_Append(litem, PyInt_FromLong(block_n));
-                    PyList_Append(lines, litem);
-                    Py_DECREF(litem);
                     fz_drop_buffer(gctx, res);
                     fz_drop_output(gctx,out);
-                    block_n += 1;
                 }
+                else
+                {
+                    fz_image *img = block->u.i.image;
+                    fz_colorspace *cs = img->colorspace;
+                    PyList_Append(litem, PyUnicode_FromFormat("<image: %s, width %d, height %d, bpc %d>",
+                                         fz_colorspace_name(gctx, cs), img->w, img->h, img->bpc));
+                }
+                PyList_Append(litem, PyInt_FromLong(block_n));
+                PyList_Append(litem, PyInt_FromLong((long) block->type));
+                PyList_Append(lines, litem);
+                Py_DECREF(litem);
+                block_n += 1;
             }
             return lines;
         }
@@ -9753,10 +9787,9 @@ fail:
 SWIGINTERN PyObject *_wrap_Document__getCharWidths(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
-  int arg2 = (int) 0 ;
-  int arg3 = (int) 0 ;
-  int arg4 = (int) 256 ;
-  PyObject *arg5 = (PyObject *) NULL ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 = (int) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
@@ -9769,29 +9802,24 @@ SWIGINTERN PyObject *_wrap_Document__getCharWidths(PyObject *SWIGUNUSEDPARM(self
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
   PyObject *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O|OOOO:Document__getCharWidths",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO|O:Document__getCharWidths",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__getCharWidths" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
   }
   arg1 = (struct fz_document_s *)(argp1);
-  if (obj1) {
-    ecode2 = SWIG_AsVal_int(obj1, &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document__getCharWidths" "', argument " "2"" of type '" "int""'");
-    } 
-    arg2 = (int)(val2);
-  }
-  if (obj2) {
-    ecode3 = SWIG_AsVal_int(obj2, &val3);
-    if (!SWIG_IsOK(ecode3)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Document__getCharWidths" "', argument " "3"" of type '" "int""'");
-    } 
-    arg3 = (int)(val3);
-  }
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document__getCharWidths" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Document__getCharWidths" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = (int)(val3);
   if (obj3) {
     ecode4 = SWIG_AsVal_int(obj3, &val4);
     if (!SWIG_IsOK(ecode4)) {
@@ -9799,11 +9827,8 @@ SWIGINTERN PyObject *_wrap_Document__getCharWidths(PyObject *SWIGUNUSEDPARM(self
     } 
     arg4 = (int)(val4);
   }
-  if (obj4) {
-    arg5 = obj4;
-  }
   {
-    result = (PyObject *)fz_document_s__getCharWidths(arg1,arg2,arg3,arg4,arg5);
+    result = (PyObject *)fz_document_s__getCharWidths(arg1,arg2,arg3,arg4);
     if(!result)
     {
       PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
@@ -10584,6 +10609,50 @@ SWIGINTERN PyObject *_wrap_Page_deleteAnnot(PyObject *SWIGUNUSEDPARM(self), PyOb
   arg2 = (struct fz_annot_s *)(argp2);
   result = (struct fz_annot_s *)fz_page_s_deleteAnnot(arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_annot_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Page_MediaBoxSize(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  struct fz_point_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Page_MediaBoxSize",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_MediaBoxSize" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
+  }
+  arg1 = (struct fz_page_s *)(argp1);
+  result = (struct fz_point_s *)fz_page_s_MediaBoxSize(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_point_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Page_CropBoxPosition(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  struct fz_point_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Page_CropBoxPosition",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_CropBoxPosition" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
+  }
+  arg1 = (struct fz_page_s *)(argp1);
+  result = (struct fz_point_s *)fz_page_s_CropBoxPosition(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_point_s, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -17210,6 +17279,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Page_firstAnnot", _wrap_Page_firstAnnot, METH_VARARGS, (char *)"firstAnnot points to first annot on page"},
 	 { (char *)"Page_deleteLink", _wrap_Page_deleteLink, METH_VARARGS, (char *)"Delete link if PDF"},
 	 { (char *)"Page_deleteAnnot", _wrap_Page_deleteAnnot, METH_VARARGS, (char *)"Delete annot if PDF and return next one"},
+	 { (char *)"Page_MediaBoxSize", _wrap_Page_MediaBoxSize, METH_VARARGS, (char *)"Retrieve width, height of /MediaBox."},
+	 { (char *)"Page_CropBoxPosition", _wrap_Page_CropBoxPosition, METH_VARARGS, (char *)"Retrieve position of /CropBox."},
 	 { (char *)"Page_rotation", _wrap_Page_rotation, METH_VARARGS, (char *)"Retrieve page rotation."},
 	 { (char *)"Page_setRotation", _wrap_Page_setRotation, METH_VARARGS, (char *)"Set page rotation to 'rot' degrees."},
 	 { (char *)"Page__addAnnot_FromString", _wrap_Page__addAnnot_FromString, METH_VARARGS, (char *)"Page__addAnnot_FromString(self, linklist) -> int"},

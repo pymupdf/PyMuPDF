@@ -1,4 +1,4 @@
-# PyMuPDF 1.12.0
+# PyMuPDF 1.12.1
 
 ![logo](https://github.com/rk700/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
