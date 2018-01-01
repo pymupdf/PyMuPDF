@@ -102,9 +102,9 @@ import sys
 
 
 VersionFitz = "1.12.0"
-VersionBind = "1.12.0"
-VersionDate = "2017-12-25 11:05:13"
-version = (VersionBind, VersionFitz, "20171225110513")
+VersionBind = "1.12.1"
+VersionDate = "2018-01-01 12:14:44"
+version = (VersionBind, VersionFitz, "20180101121444")
 
 
 #------------------------------------------------------------------------------
@@ -296,7 +296,7 @@ www.din-formate.de
 www.din-formate.info/amerikanische-formate.html
 www.directtools.de/wissen/normen/iso.htm
 '''
-paperSizes = {                     # known paper formats @ 72 dpi
+paperSizes = { # known paper formats @ 72 dpi
         'a0': (2384, 3370),
         'a1': (1684, 2384),
         'a10': (74, 105),
@@ -836,12 +836,12 @@ open(filename)"""
         return _fitz.Document_permissions(self)
 
 
-    def _getCharWidths(self, xref=0, idx=0, limit=256, cwlist=None):
+    def _getCharWidths(self, xref, limit, idx=0):
         """Return list of glyphs and glyph widths of a font."""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
-        return _fitz.Document__getCharWidths(self, xref, idx, limit, cwlist)
+        return _fitz.Document__getCharWidths(self, xref, limit, idx)
 
 
     def _getPageObjNumber(self, pno):
@@ -1047,7 +1047,7 @@ class Page(_object):
 
         return val
 
-    rect = property(bound, doc="Rect (mediabox) of the page")
+    rect = property(bound, doc="page rectangle")
 
     def run(self, dw, m):
         """run(self, dw, m) -> int"""
@@ -1121,6 +1121,29 @@ class Page(_object):
 
 
         return val
+
+    @property
+
+    def MediaBoxSize(self):
+        """Retrieve width, height of /MediaBox."""
+        CheckParent(self)
+
+        val = _fitz.Page_MediaBoxSize(self)
+
+        if val == Point(0,0):
+            r = self.rect
+            val = Point(r.width, r.height)
+
+
+        return val
+
+    @property
+
+    def CropBoxPosition(self):
+        """Retrieve position of /CropBox."""
+        CheckParent(self)
+
+        return _fitz.Page_CropBoxPosition(self)
 
     @property
 
@@ -1278,7 +1301,7 @@ Rect(x0, y0, x1, y1)
 Rect(top-left, x1, y1)
 Rect(x0, y0, bottom-right)
 Rect(top-left, bottom-right)
-Rect(Rect) - copy
+Rect(Rect / IRect) - new copy
 Rect(sequence) - from 'sequence'"""
 
     __swig_setmethods__ = {}
@@ -1433,7 +1456,7 @@ Rect_swigregister(Rect)
 class IRect(_object):
     """IRect() - all zeros
 IRect(x0, y0, x1, y1)
-IRect(IRect) - copy
+IRect(Rect / IRect) - new copy
 IRect(sequence) - from 'sequence'"""
 
     __swig_setmethods__ = {}

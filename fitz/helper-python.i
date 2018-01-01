@@ -188,7 +188,7 @@ www.din-formate.de
 www.din-formate.info/amerikanische-formate.html
 www.directtools.de/wissen/normen/iso.htm
 '''
-paperSizes = {                     # known paper formats @ 72 dpi
+paperSizes = { # known paper formats @ 72 dpi
         'a0': (2384, 3370),
         'a1': (1684, 2384),
         'a10': (74, 105),

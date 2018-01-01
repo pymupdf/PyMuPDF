@@ -26,13 +26,16 @@ def searchPageFor(doc, pno, text, hit_max=16):
 #==============================================================================
 # A function for extracting a text blocks list
 #==============================================================================
-def getTextBlocks(page):
+def getTextBlocks(page, images = False):
     """Return the text blocks as a list of concatenated lines with their bbox
     per block.
     """
     fitz.CheckParent(page)
     dl = page.getDisplayList()
-    tp = dl.getTextPage()
+    flags = fitz.TEXT_PRESERVE_LIGATURES | fitz.TEXT_PRESERVE_WHITESPACE
+    if images:
+        flags |= fitz.TEXT_PRESERVE_IMAGES
+    tp = dl.getTextPage(flags)
     return tp._extractTextLines_AsList()
     
 #==============================================================================
@@ -1927,7 +1930,7 @@ def getColorHSV(name):
 #------------------------------------------------------------------------------
 def getCharWidths(doc, xref, limit = 256, idx = 0):
     fontinfo = fitz.CheckFontInfo(doc, xref)
-    if not fontinfo:
+    if fontinfo is None:
         name, ext, stype, _ = doc.extractFont(xref, info_only = True)
         glyphs = None
         fontdict = {"name": name, "type": stype, "ext": ext}
@@ -1938,7 +1941,7 @@ def getCharWidths(doc, xref, limit = 256, idx = 0):
         else:
             simple = False
         fontdict["simple"] = simple
-        fontdict["glyphs"] = glyphs
+        fontdict["glyphs"] = None
         fontinfo = [xref, fontdict]
         doc.FontInfos.append(fontinfo)
     else:
@@ -1946,15 +1949,18 @@ def getCharWidths(doc, xref, limit = 256, idx = 0):
         glyphs = fontdict["glyphs"]
         simple = fontdict["simple"]
 
-    oldlimit = len(glyphs) if glyphs else 0
-    mylimit = limit
-    if simple or mylimit < 1:
-        mylimit = 256
+    if glyphs is None:
+        oldlimit = 0
+    else:
+        oldlimit = len(glyphs)
+    
+    mylimit = max(256, limit)
     
     if mylimit <= oldlimit:
         return glyphs
     
-    glyphs = doc._getCharWidths(xref, limit = mylimit, cwlist = glyphs)
+    new_glyphs = doc._getCharWidths(xref, mylimit, idx)
+    glyphs = new_glyphs
     fontdict["glyphs"] = glyphs
     fontinfo[1] = fontdict
     fitz.UpdateFontInfo(doc, fontinfo)
@@ -1994,8 +2000,10 @@ class Shape():
         self.doc       = page.parent
         if not self.doc.isPDF:
             raise ValueError("not a PDF")
-        self.height    = page.rect.height
-        self.width     = page.rect.width
+        self.height    = page.MediaBoxSize.y
+        self.width     = page.MediaBoxSize.x
+        self.x         = page.CropBoxPosition.x
+        self.y         = page.CropBoxPosition.y
         self.contents  = ""
         self.totalcont = ""
         self.lastPoint = None
@@ -2004,9 +2012,11 @@ class Shape():
         """Draw a line between two points.
         """
         if not (self.lastPoint == p1):
-            self.contents += "%g %g m\n" % (p1.x, self.height - p1.y)
+            self.contents += "%g %g m\n" % (p1.x + self.x,
+                                            self.height - p1.y - self.y)
             self.lastPoint = p1
-        self.contents += "%g %g l\n" % (p2.x, self.height - p2.y)
+        self.contents += "%g %g l\n" % (p2.x + self.x,
+                                        self.height - p2.y - self.y)
         self.lastPoint = p2
         return self.lastPoint
     
@@ -2016,10 +2026,12 @@ class Shape():
         for i, p in enumerate(points):
             if i == 0:
                 if not (self.lastPoint == p):
-                    self.contents += "%g %g m\n" % (p.x, self.height - p.y)
+                    self.contents += "%g %g m\n" % (p.x + self.x,
+                                                    self.height - p.y - self.y)
                     self.lastPoint = p
             else:
-                self.contents += "%g %g l\n" % (p.x, self.height - p.y)
+                self.contents += "%g %g l\n" % (p.x + self.x,
+                                                self.height - p.y - self.y)
         self.lastPoint = points[-1]
         return self.lastPoint
 
@@ -2027,10 +2039,14 @@ class Shape():
         """Draw a standard cubic Bezier curve.
         """
         if not (self.lastPoint == p1):
-            self.contents += "%g %g m\n" % (p1.x, self.height - p1.y)
-        self.contents += "%g %g %g %g %g %g c\n" % (p2.x, self.height - p2.y,
-                                                    p3.x, self.height - p3.y,
-                                                    p4.x, self.height - p4.y)
+            self.contents += "%g %g m\n" % (p1.x + self.x,
+                                            self.height - p1.y - self.y)
+        self.contents += "%g %g %g %g %g %g c\n" % (p2.x + self.x,
+                                                    self.height - p2.y - self.y,
+                                                    p3.x + self.x,
+                                                    self.height - p3.y - self.y,
+                                                    p4.x + self.x,
+                                                    self.height - p4.y - self.y)
         self.lastPoint = p4
         return self.lastPoint
 
@@ -2044,7 +2060,7 @@ class Shape():
         mb = rect.bl + (rect.br - rect.bl)*0.5
         ml = rect.tl + (rect.bl - rect.tl)*0.5
         if not (self.lastPoint == ml):
-            self.contents += "%g %g m\n" % (ml.x, self.height - ml.y)
+            self.contents += "%g %g m\n" % (ml.x + self.x, self.height - ml.y - self.y)
             self.lastPoint = ml
         self.drawCurve(ml, rect.bl, mb)
         self.drawCurve(mb, rect.br, mr)
@@ -2082,7 +2098,7 @@ class Shape():
         while abs(betar) > 2 * math.pi:
             betar += w360                       # bring angle below 360 degrees
         if not (self.lastPoint == point):
-            self.contents += l3 % (point.x, h - point.y)
+            self.contents += l3 % (point.x + self.x, h - point.y - self.y)
             self.lastPoint = point
         Q = fitz.Point(0, 0)                    # just make sure it exists
         C = center
@@ -2102,8 +2118,9 @@ class Shape():
             kappa = kappah * abs(P - Q)
             cp1 = P + (R - P) * kappa           # control point 1
             cp2 = Q + (R - Q) * kappa           # control point 2
-            self.contents += l4 % (cp1.x, h - cp1.y, cp2.x, h - cp2.y,
-                                   Q.x, h - Q.y) # draw
+            self.contents += l4 % (cp1.x + self.x, h - cp1.y - self.y,
+                                   cp2.x + self.x, h - cp2.y - self.y,
+                                   Q.x + self.x, h - Q.y - self.y) # draw
             betar -= w90                        # reduce parm angle by 90 deg
             alfa  += w90                        # advance start angle by 90 deg
             P = Q                               # advance to arc end point
@@ -2121,19 +2138,21 @@ class Shape():
             kappa = kappah * abs(P - Q) / (1 - math.cos(betar))
             cp1 = P + (R - P) * kappa           # control point 1
             cp2 = Q + (R - Q) * kappa           # control point 2
-            self.contents += l4 % (cp1.x, h - cp1.y, cp2.x, h - cp2.y,
-                                   Q.x, h - Q.y) # draw
+            self.contents += l4 % (cp1.x + self.x, h - cp1.y - self.y,
+                                   cp2.x + self.x, h - cp2.y - self.y,
+                                   Q.x + self.x, h - Q.y -self.y) # draw
         if fullSector:
-            self.contents += l3 % (point.x, h - point.y)
-            self.contents += l5 % (center.x, h - center.y)
-            self.contents += l5 % (Q.x, h - Q.y)
+            self.contents += l3 % (point.x + self.x, h - point.y - self.y)
+            self.contents += l5 % (center.x + self.x, h - center.y - self.y)
+            self.contents += l5 % (Q.x + self.x, h - Q.y - self.y)
         self.lastPoint = Q
         return self.lastPoint
     
     def drawRect(self, rect):
         """Draw a rectangle.
         """
-        self.contents += "%g %g %g %g re\n" % (rect.x0, self.height - rect.y1,
+        self.contents += "%g %g %g %g re\n" % (rect.x0 + self.x,
+                                               self.height - rect.y1 - self.y,
                                                rect.width, rect.height)
         self.lastPoint = rect.tl
         return rect.tl
@@ -2161,8 +2180,8 @@ class Shape():
             r = abs(p)                          
             p /= r                              # now p = (cos, sin)
             # this is the point rotated by alfa
-            np = fitz.Point(p.x * calfa - p.y * salfa,
-                            p.y * calfa + p.x * salfa) * r
+            np = fitz.Point((p.x + self.x) * calfa - (p.y + self.y) * salfa,
+                            (p.y + self.y) * calfa + (p.x + self.x) * salfa) * r
             points.append(p1 + np)
         self.drawPolyline([p1] + points + [p2])  # add start and end points
         return p2
@@ -2191,8 +2210,8 @@ class Shape():
             r = abs(p)                          
             p /= r                              # now p = (cos, sin)
             # this is the point rotated by alfa
-            np = fitz.Point(p.x * calfa - p.y * salfa,
-                            p.y * calfa + p.x * salfa) * r
+            np = fitz.Point((p.x + self.x) * calfa - (p.y + self.y) * salfa,
+                            (p.y + self.y) * calfa + (p.x + self.x) * salfa) * r
             points.append(p1 + np)
         points = [p1] + points + [p2]
         cnt = len(points)
@@ -2277,35 +2296,36 @@ class Shape():
         # setting up for standard rotation directions
         # case rotate = 0
         if morphing:
-            m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x, height - morph[0].y)
+            m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x + self.x,
+                             height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
             cm = "%g %g %g %g %g %g cm\n" % tuple(mat)
         else:
             cm = ""
-        top = height - point.y        # start of 1st char
-        left = point.x                # start of 1. char
+        top = height - point.y - self.y # start of 1st char
+        left = point.x + self.x       # start of 1. char
         space = top                   # space available
-        headroom = point.y            # distance to page border
+        headroom = point.y + self.y   # distance to page border
         if rot == 90:
-            left = height - point.y
-            top = -point.x
+            left = height - point.y - self.y
+            top = -point.x - self.x
             cm += cmp90
             space = width - abs(top)
-            headroom = point.x
+            headroom = point.x + self.x
     
         elif rot == 270:
-            left = -height + point.y
-            top = point.x
+            left = -height + point.y + self.y
+            top = point.x + self.x
             cm += cmm90
             space = abs(top)
-            headroom = width - point.x;
+            headroom = width - point.x - self.x
     
         elif rot == 180:
-            left = -point.x
-            top = -height + point.y
+            left = -point.x - self.x
+            top = -height + point.y + self.y
             cm += cm180
-            space = abs(point.y)
-            headroom = height - point.y
+            space = abs(point.y + self.y)
+            headroom = height - point.y - self.y
     
         if headroom < fontsize:       # at least 1 full line space required!
             raise ValueError("text starts outside page")
@@ -2381,6 +2401,8 @@ class Shape():
         if fname[0] == "/":
             fname = fname[1:]
             f = fitz.CheckFont(self.page, fname)
+            if f is None:
+                raise ValueError("invalid font reference " + fname)
         
         if f is not None:
             xref = f[0]
@@ -2405,9 +2427,9 @@ class Shape():
             t0 = "".join([c if ord(c)<256 else "?" for c in t0])
 
         t0 = t0.splitlines()
-
-        widthtab = self.doc.getCharWidths(xref = xref, limit = maxcode +1)
-
+        
+        widthtab = self.doc.getCharWidths(xref, maxcode + 1)
+        
         #----------------------------------------------------------------------
         # calculate pixel length of a string
         #----------------------------------------------------------------------
@@ -2420,12 +2442,13 @@ class Shape():
         text = ""                               # output buffer
         lheight = fontsize * 1.2                # line height
         if fitz.CheckMorph(morph):
-            m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x, self.height - morph[0].y)
+            m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x + self.x,
+                             self.height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
             cm = "%g %g %g %g %g %g cm\n" % tuple(mat)
         else:
             cm = ""
-            
+        
         #---------------------------------------------------------------------------
         # adjust for text orientation / rotation
         #---------------------------------------------------------------------------
@@ -2433,43 +2456,47 @@ class Shape():
         c_pnt = fitz.Point(0, fontsize)         # used for line progress
         if rot == 0:                            # normal orientation
             point = rect.tl + c_pnt             # line 1 is 'fontsize' below top
-            pos = point.y                       # y of first line
+            pos = point.y + self.y              # y of first line
             maxwidth = rect.width               # pixels available in one line
-            maxpos = rect.y1                    # lines must not be below this
+            maxpos = rect.y1 + self.y           # lines must not be below this
             
         elif rot == 90:                         # rotate counter clockwise
             c_pnt = fitz.Point(fontsize, 0)     # progress in x-direction
             point = rect.bl + c_pnt             # line 1 'fontsize' away from left
-            pos = point.x                       # position of first line
+            pos = point.x + self.x              # position of first line
             maxwidth = rect.height              # pixels available in one line
-            maxpos = rect.x1                    # lines must not be right of this
+            maxpos = rect.x1 + self.x           # lines must not be right of this
             cm += cmp90
             
         elif rot == 180:                        # text upside down
             c_pnt = -fitz.Point(0, fontsize)    # progress upwards in y direction
             point = rect.br + c_pnt             # line 1 'fontsize' above bottom
-            pos = point.y                       # position of first line
+            pos = point.y + self.y              # position of first line
             maxwidth = rect.width               # pixels available in one line
             progr = -1                          # subtract lheight for next line
-            maxpos = rect.y0                    # lines must not be above this
+            maxpos = rect.y0 + self.y           # lines must not be above this
             cm += cm180
             
         else:                                   # rotate clockwise (270 or -90)
             c_pnt = -fitz.Point(fontsize, 0)    # progress from right to left
             point = rect.tr + c_pnt             # line 1 'fontsize' left of right
-            pos = point.x                       # position of first line
+            pos = point.x + self.x              # position of first line
             maxwidth = rect.height              # pixels available in one line
             progr = -1                          # subtract lheight for next line
-            maxpos = rect.x0                    # lines must not left of this
+            maxpos = rect.x0 + self.x           # lines must not left of this
             cm += cmm90
         
         #=======================================================================
         # line loop
         #=======================================================================
         just_tab = []                           # 'justify' indicators per line
-        glyphs = None if simple else widthtab   # indicator for getTJstr()!
+        if simple:
+            glyphs = None
+        else:
+            glyphs = widthtab                   # indicator for getTJstr()!
+        
         for i, line in enumerate(t0):
-            line_t = line.expandtabs(expandtabs).split(" ")  # split line into words
+            line_t = line.expandtabs(expandtabs).split(" ")  # split into words
             lbuff = ""                          # init line buffer
             rest = maxwidth                     # available line pixels
             #===================================================================
@@ -2527,7 +2554,7 @@ class Shape():
         spacing = 0
         text_t = text.splitlines()              # split text in lines again
         for i, t in enumerate(text_t):
-            pl = maxwidth - pixlen(t)           # pixel amount of empty line space
+            pl = maxwidth - pixlen(t)           # length of empty line part
             pnt = point + c_pnt * (i * 1.2)     # text start of line
             if align == 1:                      # center: right shift by half width
                 if rot in (0, 180):
@@ -2545,17 +2572,17 @@ class Shape():
                     spacing = pl / spaces       # make every space this much larger
                 else:
                     spacing = 0                 # keep normal space length
-            top  = height - pnt.y
-            left = pnt.x
+            top  = height - pnt.y - self.y
+            left = pnt.x + self.x
             if rot == 90:
-                left = height - pnt.y
-                top  = -pnt.x
+                left = height - pnt.y - self.y
+                top  = -pnt.x - self.x
             elif rot == 270:
-                left = -height + pnt.y
-                top  = pnt.x
+                left = -height + pnt.y + self.y
+                top  = pnt.x + self.x
             elif rot == 180:
-                left = -pnt.x
-                top  = -height + pnt.y
+                left = -pnt.x - self.x
+                top  = -height + pnt.y + self.y
             nres += templ % (left, top, fname, fontsize,
                              spacing, red, green, blue, fitz.getTJstr(t, glyphs))
         nres += "ET Q\n"
@@ -2594,8 +2621,8 @@ class Shape():
             self.contents += "S\n"
         self.totalcont += "\nn q\n"
         if fitz.CheckMorph(morph):
-            m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x,
-                                     self.height - morph[0].y)
+            m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x + self.x,
+                             self.height - morph[0].y - self.y)
             m2 = morph[1]
             mat = ~m1 * m2 * m1
             self.totalcont += "%g %g %g %g %g %g cm\n" % tuple(mat)
@@ -2613,7 +2640,7 @@ class Shape():
         if not self.totalcont.endswith("Q\n"):
             raise ValueError("finish method missing")
 
-        if str != bytes:                    # bytes object needed in Python 3
+        if str is not bytes:                # bytes object needed in Python 3
             self.totalcont = bytes(self.totalcont, "utf-8")
         
         if overlay:                         # last one if foreground

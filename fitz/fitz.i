@@ -238,14 +238,8 @@ struct fz_document_s
         struct fz_outline_s *_loadOutline()
         {
             fz_outline *ol;
-            fz_try(gctx)
-            {
-                ol = fz_load_outline(gctx, $self);
-            }
-            fz_catch(gctx)
-            {
-                return NULL;
-            }
+            fz_try(gctx) ol = fz_load_outline(gctx, $self);
+            fz_catch(gctx) return NULL;
             return ol;
         }
 
@@ -780,6 +774,7 @@ if sa < 0:
                     pdf_delete_page(gctx, pdf, f);
                     i -= 1;
                 }
+                pdf_finish_edit(gctx, pdf);
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -803,6 +798,7 @@ if sa < 0:
                     THROWMSG("page number(s) out of range");
                 pdf_obj *page = pdf_lookup_page_obj(gctx, pdf, pno);
                 pdf_insert_page(gctx, pdf, to, page);
+                pdf_finish_edit(gctx, pdf);
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -852,6 +848,7 @@ if sa < 0:
                 fz_terminate_buffer(gctx, contents);
                 page_obj = pdf_add_page(gctx, pdf, &mediabox, 0, resources, contents);
                 pdf_insert_page(gctx, pdf, pno , page_obj);
+                //pdf_finish_edit(gctx, pdf);
             }
             fz_always(gctx)
             {
@@ -888,6 +885,7 @@ if sa < 0:
                     pdf_delete_page(gctx, pdf, pno);
                 else
                     pdf_delete_page(gctx, pdf, pno+1);
+                pdf_finish_edit(gctx, pdf);
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -952,7 +950,11 @@ if sa < 0:
             globals glo = { 0 };
             glo.ctx = gctx;
             glo.doc = pdf;
-            fz_try(gctx) retainpages(gctx, &glo, argc, liste);
+            fz_try(gctx)
+            {
+                retainpages(gctx, &glo, argc, liste);
+                pdf_finish_edit(gctx, pdf);
+            }
             fz_always(gctx) free (liste);
             fz_catch(gctx) return -5;
             return 0;
@@ -981,24 +983,14 @@ if sa < 0:
         FITZEXCEPTION(_getCharWidths, !result)
         CLOSECHECK(_getCharWidths)
         %feature("autodoc","Return list of glyphs and glyph widths of a font.") _getCharWidths;
-        PyObject *_getCharWidths(int xref = 0, int idx = 0, int limit = 256,
-                                 PyObject *cwlist = NULL)
+        PyObject *_getCharWidths(int xref, int limit, int idx = 0)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
             PyObject *wlist = NULL;
-            int i, glyph;
-            Py_ssize_t cwlen = 0;
-            if (cwlist && PySequence_Check(cwlist))
-            {
-                cwlen = PySequence_Size(cwlist);
-                wlist = cwlist;
-            }
-            else
-            {
-                wlist = PyList_New(0);
-                cwlen = 0;
-            }
-            if (cwlen > 0 && limit <= cwlen) return cwlist;
+            int i, glyph, mylimit;
+            mylimit = limit;
+            if (mylimit < 256) mylimit = 256;
+            int cwlen = 0;
             const char *data;
             int size;
             fz_font *font = NULL;
@@ -1035,7 +1027,8 @@ if sa < 0:
                     if (!buf) THROWMSG("xref is not a supported font");
                     font = fz_new_font_from_buffer(gctx, NULL, buf, idx, 0);
                 }
-                for (i = cwlen; i < limit; i++)
+                wlist = PyList_New(0);
+                for (i = 0; i < mylimit; i++)
                 {
                     glyph = fz_encode_character(gctx, font, i);
                     if (glyph > 0)
@@ -1055,7 +1048,6 @@ if sa < 0:
             }
             fz_catch(gctx)
             {
-                if (wlist != cwlist) Py_DECREF(wlist);
                 return NULL;
             }
             return wlist;
@@ -1657,7 +1649,7 @@ struct fz_page_s {
             fz_bound_page(gctx, $self, rect);
             return rect;
         }
-        %pythoncode %{rect = property(bound, doc="Rect (mediabox) of the page")%}
+        %pythoncode %{rect = property(bound, doc="page rectangle")%}
 
         //---------------------------------------------------------------------
         // run()
@@ -1698,7 +1690,10 @@ struct fz_page_s {
     self._annot_refs[id(val)] = val%}
         struct fz_link_s *loadLinks()
         {
-            return fz_load_links(gctx, $self);
+            fz_link *l = NULL;
+            fz_try(gctx) l = fz_load_links(gctx, $self);
+            fz_catch(gctx) return NULL;
+            return l;
         }
         %pythoncode %{firstLink = property(loadLinks)%}
 
@@ -1715,7 +1710,9 @@ struct fz_page_s {
         %pythoncode %{@property%}
         struct fz_annot_s *firstAnnot()
         {
-            fz_annot *annot = fz_first_annot(gctx, $self);
+            fz_annot *annot;
+            fz_try(gctx) annot = fz_first_annot(gctx, $self);
+            fz_catch(gctx) annot = NULL;
             if (annot) fz_keep_annot(gctx, annot);
             return annot;
         }
@@ -1787,9 +1784,56 @@ fannot._erase()
             return nextannot;
         }
 
-        /*********************************************************************/
+        //---------------------------------------------------------------------
+        // MediaBox size: width, height of /MediaBox (PDF only)
+        //---------------------------------------------------------------------
+        PARENTCHECK(MediaBoxSize)
+        %pythoncode %{@property%}
+        %feature("autodoc","Retrieve width, height of /MediaBox.") MediaBoxSize;
+        %pythonappend MediaBoxSize %{
+        if val == Point(0,0):
+            r = self.rect
+            val = Point(r.width, r.height)
+        %}
+        struct fz_point_s *MediaBoxSize()
+        {
+            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            p->x = p->y = 0.0;
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            if (!page) return p;
+            fz_rect r = {0,0,0,0};
+            pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME_MediaBox);
+            if (!o) return p;
+            pdf_to_rect(gctx, o, &r);
+            p->x = r.x1 - r.x0;
+            p->y = r.y1 - r.y0;
+            return p;
+        }
+
+        //---------------------------------------------------------------------
+        // CropBox position: top-left of /CropBox (PDF only)
+        //---------------------------------------------------------------------
+        PARENTCHECK(CropBoxPosition)
+        %pythoncode %{@property%}
+        %feature("autodoc","Retrieve position of /CropBox.") CropBoxPosition;
+        struct fz_point_s *CropBoxPosition()
+        {
+            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            p->x = p->y = 0.0;
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            if (!page) return p;
+            fz_rect r = {0,0,0,0};
+            pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME_CropBox);
+            if (!o) return p;
+            pdf_to_rect(gctx, o, &r);
+            p->x = r.x0;
+            p->y = r.y0;
+            return p;
+        }
+
+        //---------------------------------------------------------------------
         // rotation - return page rotation
-        /*********************************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(rotation)
         %pythoncode %{@property%}
         %feature("autodoc","Retrieve page rotation.") rotation;
@@ -1952,36 +1996,50 @@ fannot._erase()
             char *content_str;
             const char *template = "\nh q %g 0 0 %g %g %g cm /%s Do Q\n";
             Py_ssize_t c_len = 0;
-            fz_rect prect = { 0, 0, 0, 0};
-            fz_bound_page(gctx, $self, &prect);  // get page mediabox
             char name[50], md5hex[33];           // for image reference
             unsigned char md5[16];               // md5 of the image
             char *cont = NULL;
-            const char *name_templ = "FITZ%s";   // template for image ref
+            const char *name_templ = "fz%s";   // template for image ref
             Py_ssize_t name_len = 0;
-            // calculate coordinates of image matrix
-            float X = rect->x0;
-            float Y = prect.y1 - rect->y1;
-            float W = rect->x1 - rect->x0;
-            float H = rect->y1 - rect->y0;
-
             fz_image *zimg, *image = NULL;
             fz_try(gctx)
             {
                 assert_PDF(page);
-                pdf = page->doc;
                 if ((pixmap) && (filename) || (!pixmap) && (!filename))
-                    THROWMSG("need exactly one of filename, pixmap");
-                if (!fz_contains_rect(&prect, rect))
-                    THROWMSG("rect not contained in page rect");
+                    THROWMSG("need exactly one of filename or pixmap");
                 if (fz_is_empty_rect(rect) || fz_is_infinite_rect(rect))
                     THROWMSG("rect must be finite and not empty");
+                // calculate coordinates for image matrix
+                fz_rect prect = {0, 0, 0, 0};        // normal page rectangle
+                fz_bound_page(gctx, $self, &prect);  // get page mediabox
+                fz_rect r = {0, 0, 0, 0};            // modify where necessary
+                pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME_CropBox);
+                if (o)
+                {   // set top-left of page rect to new values
+                    pdf_to_rect(gctx, o, &r);
+                    prect.x0 = r.x0;
+                    prect.y0 = r.y0;
+                }
+                o = pdf_dict_get(gctx, page->obj, PDF_NAME_MediaBox);
+                if (o)
+                {   // set bottom-right to new values
+                    pdf_to_rect(gctx, o, &r);
+                    prect.x1 = r.x1;
+                    prect.y1 = r.y1;
+                }
+                // adjust rect.x0, rect.y0 by CropBox start
+                float X = rect->x0 + prect.x0;
+                float Y = prect.y1 - (rect->y1 + prect.y0);
+                float W = rect->x1 - rect->x0;
+                float H = rect->y1 - rect->y0;
+
+                pdf = page->doc;
 
                 // get objects "Resources" and "XObject"
                 contents = pdf_dict_get(gctx, page->obj, PDF_NAME_Contents);
                 resources = pdf_dict_get(gctx, page->obj, PDF_NAME_Resources);
                 subres = pdf_dict_get(gctx, resources, PDF_NAME_XObject);
-                if (!subres)           // has no XObject (yet)
+                if (!subres)           // has no XObject yet, create one
                 {
                     subres = pdf_new_dict(gctx, pdf, 10);
                     pdf_dict_put_drop(gctx, resources, PDF_NAME_XObject, subres);
@@ -5015,6 +5073,11 @@ struct fz_stext_page_s {
             unsigned char *data;
             for (block = $self->first_block; block; block = block->next)
             {
+                PyObject *litem = PyList_New(0);
+                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.x0));
+                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.y0));
+                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.x1));
+                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.y1));
                 if (block->type == FZ_STEXT_BLOCK_TEXT)
                 {
                     fz_try(gctx)
@@ -5031,8 +5094,8 @@ struct fz_stext_page_s {
                     int line_n = 0;
                     for (line = block->u.t.first_line; line; line = line->next)
                     {
-                        // add new line after a chr(32) or a chr(45)
-                        if (line_n > 0 && last_char != 45)
+                        // add new line after a chr(32)
+                        if (line_n > 0)
                             fz_write_string(gctx, out, " ");
                         line_n += 1;
                         for (ch = line->first_char; ch; ch = ch->next)
@@ -5043,21 +5106,24 @@ struct fz_stext_page_s {
                                 fz_write_byte(gctx, out, utf[i]);
                         }
                     }
-                    PyObject *litem = PyList_New(0);
-                    PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.x0));
-                    PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.y0));
-                    PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.x1));
-                    PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.y1));
                     res_len = fz_buffer_storage(gctx, res, &data);
                     text = PyUnicode_FromStringAndSize(data, (Py_ssize_t) res_len);
                     PyList_Append(litem, text);
-                    PyList_Append(litem, PyInt_FromLong(block_n));
-                    PyList_Append(lines, litem);
-                    Py_DECREF(litem);
                     fz_drop_buffer(gctx, res);
                     fz_drop_output(gctx,out);
-                    block_n += 1;
                 }
+                else
+                {
+                    fz_image *img = block->u.i.image;
+                    fz_colorspace *cs = img->colorspace;
+                    PyList_Append(litem, PyUnicode_FromFormat("<image: %s, width %d, height %d, bpc %d>",
+                                         fz_colorspace_name(gctx, cs), img->w, img->h, img->bpc));
+                }
+                PyList_Append(litem, PyInt_FromLong(block_n));
+                PyList_Append(litem, PyInt_FromLong((long) block->type));
+                PyList_Append(lines, litem);
+                Py_DECREF(litem);
+                block_n += 1;
             }
             return lines;
         }

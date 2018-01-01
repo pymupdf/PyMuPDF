@@ -1,12 +1,14 @@
 %{
 //-----------------------------------------------------------------------------
-// C helper functions for extractJSON, and other text output functions
+// C helper functions for extractJSON, and other structured text output
+// functions.
 // Renamed JSON functions to prefix them with "DG", to indicate they were
-// contributed by our GitHub user @deepgully
+// contributed by our GitHub user @deepgully.
+// Functions contributed by Jorj McKie are prefixed by "JM"
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// JSON requirement: must have a digit before decimal point
+// JSON requirement: must have a digit before the decimal point
 //-----------------------------------------------------------------------------
 void DG_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox)
 {
@@ -17,7 +19,7 @@ void DG_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox)
 }
 
 //-----------------------------------------------------------------------------
-// JSON requirement: must have a digit before decimal point
+// JSON requirement: must have a digit before the decimal point
 //-----------------------------------------------------------------------------
 void DG_print_float_json(fz_context *ctx, fz_output *out, float g)
 {
@@ -228,7 +230,7 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
             for (line = block->u.t.first_line; line; line = line->next)
             {
                 // append next line with a space if prev did not end with "-"
-                if (line_n > 0 && last_char != 45) fz_write_string(ctx, out, " ");
+                if (line_n > 0) fz_write_string(ctx, out, " ");
                 line_n += 1;
                 for (ch = line->first_char; ch; ch = ch->next)
                 {

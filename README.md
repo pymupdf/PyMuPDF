@@ -1,8 +1,8 @@
-# PyMuPDF 1.12.0
+# PyMuPDF 1.12.1
 
 ![logo](https://github.com/rk700/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: December 15, 2017
+Release date: December 31, 2017
 
 # Authors
 * [Ruikai Liu](lrk700@gmail.com)
@@ -10,7 +10,7 @@ Release date: December 15, 2017
 
 # Introduction
 
-This is **version 1.12.0 of PyMuPDF (formerly python-fitz)**, a Python binding which supports [MuPDF 1.12](http://mupdf.com/) - "a lightweight PDF and XPS viewer".
+This is **version 1.12.1 of PyMuPDF (formerly python-fitz)**, a Python binding which supports [MuPDF 1.12](http://mupdf.com/) - "a lightweight PDF and XPS viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -59,14 +59,16 @@ You have a number of options to access the documentation:
 * You can download a [Windows CHM](https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm).
 * You can download a [PDF](https://github.com/rk700/PyMuPDF/tree/master/doc/pymupdf.pdf).
 
-> The new [PyPI Warehouse](https://pypi.org/project/PyMuPDF/) no longer supports storing or maintaining documentation at https://pythonhosted.org. Everything there is hence becoming stale since many months. Their plans even include to drop this facility altogether once the new PyPI is fully in production. Projects should instead use https://readthedocs.org.
+> The new [PyPI Warehouse](https://pypi.org/project/PyMuPDF/) no longer supports storing or maintaining documentation at https://pythonhosted.org. Everything there is hence becoming stale since many months. Their plans even include to drop this facility entirely once the new PyPI is fully in production. Projects should instead use https://readthedocs.org.
 
-> Because our latest documentation update on **pythonhosted.org** was from June 2017, we have decided to shift gears immediately: you will now find PyMuPDF's (always current) online documentation on **Read the Docs** <u>only</u>, as indicated above, and <u>no longer</u> on **pythonhosted.org** to avoid confusion.
+> Because our latest documentation update on **pythonhosted.org** was from June 2017, we have decided to shift gears immediately: you will now find PyMuPDF's (always current) online documentation on **Read the Docs** as indicated above. Please ignore the old site **pythonhosted.org** to avoid confusion.
 
-> **Recommendation:** do not try to **download** documentation from [Read the Docs](https://pymupdf.readthedocs.io/en/latest/) - instead, follow the links above.
+> **Recommendation:** do not try to **download** documentation from **Read the Docs** - instead, follow the links above.
 
 Earlier Versions
 ================
+* [PyMuPDF Version 1.12.0](https://github.com/rk700/PyMuPDF/tree/1.12.0)
+
 * [PyMuPDF Version 1.11.2](https://github.com/rk700/PyMuPDF/tree/1.11.2)
 
 * [PyMuPDF Version 1.10.0](https://github.com/rk700/PyMuPDF/tree/1.10.0)
@@ -81,7 +83,7 @@ Earlier Versions
 
 * [Code compatible with MuPDF v1.7a](https://github.com/rk700/PyMuPDF/releases/tag/v1.7)
 
-* [Code compatible with MuPDF v1.2](https://github.com/rk700/PyMuPDF/releases/tag/v1.2)_
+* [Code compatible with MuPDF v1.2](https://github.com/rk700/PyMuPDF/releases/tag/v1.2)
 
 # License
 PyMuPDF is distributed under GNU GPL V3. The implied use of MuPDF also implies its license GNU AFFERO GPL V3. A copy of both licenses are included in this repository.
