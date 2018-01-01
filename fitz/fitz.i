@@ -1996,36 +1996,50 @@ fannot._erase()
             char *content_str;
             const char *template = "\nh q %g 0 0 %g %g %g cm /%s Do Q\n";
             Py_ssize_t c_len = 0;
-            fz_rect prect = { 0, 0, 0, 0};
-            fz_bound_page(gctx, $self, &prect);  // get page mediabox
             char name[50], md5hex[33];           // for image reference
             unsigned char md5[16];               // md5 of the image
             char *cont = NULL;
-            const char *name_templ = "FITZ%s";   // template for image ref
+            const char *name_templ = "fz%s";   // template for image ref
             Py_ssize_t name_len = 0;
-            // calculate coordinates of image matrix
-            float X = rect->x0;
-            float Y = prect.y1 - rect->y1;
-            float W = rect->x1 - rect->x0;
-            float H = rect->y1 - rect->y0;
-
             fz_image *zimg, *image = NULL;
             fz_try(gctx)
             {
                 assert_PDF(page);
-                pdf = page->doc;
                 if ((pixmap) && (filename) || (!pixmap) && (!filename))
-                    THROWMSG("need exactly one of filename, pixmap");
-                if (!fz_contains_rect(&prect, rect))
-                    THROWMSG("rect not contained in page rect");
+                    THROWMSG("need exactly one of filename or pixmap");
                 if (fz_is_empty_rect(rect) || fz_is_infinite_rect(rect))
                     THROWMSG("rect must be finite and not empty");
+                // calculate coordinates for image matrix
+                fz_rect prect = {0, 0, 0, 0};        // normal page rectangle
+                fz_bound_page(gctx, $self, &prect);  // get page mediabox
+                fz_rect r = {0, 0, 0, 0};            // modify where necessary
+                pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME_CropBox);
+                if (o)
+                {   // set top-left of page rect to new values
+                    pdf_to_rect(gctx, o, &r);
+                    prect.x0 = r.x0;
+                    prect.y0 = r.y0;
+                }
+                o = pdf_dict_get(gctx, page->obj, PDF_NAME_MediaBox);
+                if (o)
+                {   // set bottom-right to new values
+                    pdf_to_rect(gctx, o, &r);
+                    prect.x1 = r.x1;
+                    prect.y1 = r.y1;
+                }
+                // adjust rect.x0, rect.y0 by CropBox start
+                float X = rect->x0 + prect.x0;
+                float Y = prect.y1 - (rect->y1 + prect.y0);
+                float W = rect->x1 - rect->x0;
+                float H = rect->y1 - rect->y0;
+
+                pdf = page->doc;
 
                 // get objects "Resources" and "XObject"
                 contents = pdf_dict_get(gctx, page->obj, PDF_NAME_Contents);
                 resources = pdf_dict_get(gctx, page->obj, PDF_NAME_Resources);
                 subres = pdf_dict_get(gctx, resources, PDF_NAME_XObject);
-                if (!subres)           // has no XObject (yet)
+                if (!subres)           // has no XObject yet, create one
                 {
                     subres = pdf_new_dict(gctx, pdf, 10);
                     pdf_dict_put_drop(gctx, resources, PDF_NAME_XObject, subres);
