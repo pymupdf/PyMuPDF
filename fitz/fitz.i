@@ -1664,6 +1664,54 @@ struct fz_page_s {
         }
 
         //---------------------------------------------------------------------
+        // Page.getSVGimage
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(getSVGimage, !result)
+        PARENTCHECK(getSVGimage)
+        PyObject *getSVGimage(struct fz_matrix_s *matrix = NULL)
+        {
+            fz_rect mediabox;
+            fz_bound_page(gctx, $self, &mediabox);
+            fz_device *dev = NULL;
+            fz_buffer *res = NULL;
+            size_t res_len = 0;
+            PyObject *text = NULL;
+            fz_matrix *ctm = matrix;
+            if (!matrix) ctm = &fz_identity;
+            fz_rect tbounds;
+            fz_cookie *cookie = NULL;
+            fz_output *out = NULL;
+            fz_separations *seps = NULL;
+            fz_var(out);
+            tbounds = mediabox;
+            fz_transform_rect(&tbounds, ctm);
+
+            fz_try(gctx)
+            {
+                res = fz_new_buffer(gctx, 1024);
+                out = fz_new_output_with_buffer(gctx, res);
+                unsigned char *data;
+                dev = fz_new_svg_device(gctx, out, tbounds.x1-tbounds.x0, tbounds.y1-tbounds.y0, FZ_SVG_TEXT_AS_PATH, 1);
+                fz_run_page(gctx, $self, dev, ctm, cookie);
+                fz_close_device(gctx, dev);
+                res_len = fz_buffer_storage(gctx, res, &data);
+                text = PyUnicode_FromStringAndSize(data, (Py_ssize_t) res_len);
+            }
+            fz_always(gctx)
+            {
+                if (dev) fz_drop_device(gctx, dev);
+                if (out) fz_drop_output(gctx, out);
+                if (res) fz_drop_buffer(gctx, res);
+            }
+            fz_catch(gctx)
+            {
+                if (res) fz_drop_buffer(gctx, res);
+                return NULL;
+            }
+            return text;
+        }
+
+        //---------------------------------------------------------------------
         // getDisplayList()
         //---------------------------------------------------------------------
         FITZEXCEPTION(getDisplayList, !result)
@@ -1972,6 +2020,163 @@ fannot._erase()
                 }
             }
             fz_catch(gctx) return -1;
+            return 0;
+        }
+
+        //---------------------------------------------------------------------
+        // Show a PDF page
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(showPDFpage, result<0)
+        %feature("autodoc", "Display a PDF page in a rectangle.") showPDFpage;
+        %pythonprepend showPDFpage %{
+            CheckParent(self)
+            if id(self.parent) == id(docsrc):
+                raise ValueError("source document must not equal target")%}
+        int showPDFpage(struct fz_rect_s *rect, struct fz_document_s *docsrc, int pno=0, int overlay=1, int keep_proportions = 1)
+        {
+            fz_try(gctx)
+            {
+                pdf_document *pdfsrc = pdf_specifics(gctx, docsrc);
+                pdf_page *tpage = pdf_page_from_fz_page(gctx, $self);
+                if (!pdfsrc || !tpage) THROWMSG("source or target not a PDF");
+
+                pdf_obj *tpageref = tpage->obj;
+                pdf_document *pdfout = tpage->doc; // PDF version of fz document
+                pdf_obj *spageref = pdf_lookup_page_obj(gctx, pdfsrc, pno);
+                fz_rect mediabox = {0,0,0,0};
+                fz_rect cropbox = {0,0,0,0};
+                pdf_to_rect(gctx, pdf_dict_get(gctx, spageref, PDF_NAME_MediaBox), &mediabox);
+
+                pdf_obj *o = pdf_dict_get(gctx, spageref, PDF_NAME_CropBox);
+                pdf_to_rect(gctx, o, &cropbox);
+                if (!o) cropbox = mediabox;
+
+                // Deep-copy resources object of source page
+                o = pdf_dict_get(gctx, spageref, PDF_NAME_Resources);
+                pdf_obj *resources = pdf_graft_object(gctx, pdfout, o);
+
+                //-------------------------------------------------------------
+                // TODO: adjust for multiple contents objects
+                //-------------------------------------------------------------
+                pdf_obj *contents = pdf_dict_get(gctx, spageref, PDF_NAME_Contents);
+                fz_buffer *res = pdf_load_stream(gctx, contents);
+
+                //-------------------------------------------------------------
+                // create XObject representing the source page
+                //-------------------------------------------------------------
+                pdf_obj *xobj1 = pdf_new_xobject(gctx, pdfout, &mediabox, &fz_identity);
+                pdf_xobject *xobj1x = pdf_load_xobject(gctx, pdfout, xobj1);
+                // store source contents
+                pdf_update_xobject_contents(gctx, pdfout, xobj1x, res);
+                fz_drop_buffer(gctx, res);
+                // store resources reference
+                pdf_dict_put_drop(gctx, xobj1, PDF_NAME_Resources, resources);
+
+                //-------------------------------------------------------------
+                // Calculate Matrix and BBox of referencing XObject
+                //-------------------------------------------------------------
+                fz_matrix mat = {1,0,0,1,0,0};
+                fz_rect prect = {0, 0, 0, 0};
+                fz_rect r = {0, 0, 0, 0};
+                fz_bound_page(gctx, $self, &prect);
+                o = pdf_dict_get(gctx, tpageref, PDF_NAME_CropBox);
+                pdf_to_rect(gctx, o, &r);
+                if (o)
+                {
+                    prect.x0 = r.x0;
+                    prect.y0 = r.y0;
+                }
+                o = pdf_dict_get(gctx, tpageref, PDF_NAME_MediaBox);
+                pdf_to_rect(gctx, o, &r);
+                if (o)
+                {
+                    prect.x1 = r.x1;
+                    prect.y1 = r.y1;
+                }
+                float W = rect->x1 - rect->x0;
+                float H = rect->y1 - rect->y0;
+                float fw = W / (cropbox.x1 - cropbox.x0);
+                float fh = H / (cropbox.y1 - cropbox.y0);
+                if ((fw < fh) && keep_proportions)    // zoom factors in matrix
+                    fh = fw;
+                float X = rect->x0 + prect.x0 - fw*cropbox.x0;
+                float Y = prect.y1 - (rect->y1 + prect.y0 + fh*cropbox.y0);
+                mat.a = fw;
+                mat.d = fh;
+                mat.e = X;
+                mat.f = Y;
+
+                //-------------------------------------------------------------
+                // create referencing XObject (representing display of page)
+                //-------------------------------------------------------------
+                pdf_obj *xobj2 = pdf_new_xobject(gctx, pdfout, &cropbox, &mat);
+                pdf_xobject *xobj2x = pdf_load_xobject(gctx, pdfout, xobj2);
+
+                // fill the resources with the XObject reference to xobj1
+                o = pdf_xobject_resources(gctx, xobj2x);
+                pdf_obj *subres = pdf_new_dict(gctx, pdfout, 10);
+                pdf_dict_put(gctx, o, PDF_NAME_XObject, subres);
+                pdf_dict_puts(gctx, subres, "fullpage", xobj1);
+                char data[50];
+                snprintf(data, 50, "%s", "/fullpage Do");
+                res = fz_new_buffer(gctx, 50);
+                fz_append_string(gctx, res, data);
+
+                // contents of xobj2 only invokes xobj1, nothing else
+                pdf_update_xobject_contents(gctx, pdfout, xobj2x, res);
+                fz_drop_buffer(gctx, res);
+
+                // update target page:
+                // 1. resources object
+                resources = pdf_dict_get(gctx, tpageref, PDF_NAME_Resources);
+                subres = pdf_dict_get(gctx, resources, PDF_NAME_XObject);
+                if (!subres)           // has no XObject yet: create one
+                {
+                    subres = pdf_new_dict(gctx, pdfout, 10);
+                    pdf_dict_put_drop(gctx, resources, PDF_NAME_XObject, subres);
+                }
+
+                // store *unique* reference name: addresses of spage & rect
+                snprintf(data, 50, "%u-%u", spageref, rect);
+                pdf_dict_puts(gctx, subres, data, xobj2);
+
+                // 2. contents object
+                int i;
+                contents = pdf_dict_get(gctx, tpageref, PDF_NAME_Contents);
+                if (pdf_is_array(gctx, contents))     // multiple contents obj
+                {   // choose the correct one (1st or last)
+                    if (overlay == 1) i = pdf_array_len(gctx, contents) - 1;
+                    else              i = 0;
+                    contents = pdf_array_get(gctx, contents, i);
+                }
+                res = pdf_load_stream(gctx, contents);
+
+                fz_buffer *nres = fz_new_buffer(gctx, 1024);
+                fz_append_string(gctx, nres, " /");
+                fz_append_string(gctx, nres, data);
+                fz_append_string(gctx, nres, " Do ");
+
+                if (overlay == 1)      // append our string
+                {
+                    fz_append_buffer(gctx, res, nres);
+                    fz_drop_buffer(gctx, nres);
+                    nres = NULL;
+                }
+                else                   // prepend our string
+                {
+                    fz_append_buffer(gctx, nres, res);
+                    fz_drop_buffer(gctx, res);
+                    res = nres;
+                }
+                fz_terminate_buffer(gctx, res);
+                
+                pdf_update_stream(gctx, pdfout, contents, res, 0);
+                fz_drop_buffer(gctx, res);
+            }
+            fz_catch(gctx)
+            {
+                return -1;
+            }
             return 0;
         }
 
@@ -4945,6 +5150,7 @@ struct fz_display_list_s {
             fz_bound_display_list(gctx, $self, mediabox);
             return mediabox;
         }
+
         //---------------------------------------------------------------------
         // DisplayList.getPixmap
         //---------------------------------------------------------------------
