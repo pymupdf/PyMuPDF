@@ -4115,7 +4115,7 @@ int FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
 
 //----------------------------------------------------------------------------
 // Helpers for document page selection - main logic was imported
-// from pdf_clean_file.c. But instead of analyzing a string-based spefication of
+// from pdf_clean_file.c. But instead of analyzing a string-based spec of
 // selected pages, we accept an integer array.
 //----------------------------------------------------------------------------
 typedef struct globals_s
@@ -4141,7 +4141,6 @@ int string_in_names_list(fz_context *ctx, pdf_obj *p, pdf_obj *names_list)
 //----------------------------------------------------------------------------
 // Recreate page tree to only retain specified pages.
 //----------------------------------------------------------------------------
-
 void retainpage(fz_context *ctx, pdf_document *doc, pdf_obj *parent, pdf_obj *kids, int page)
 {
     pdf_obj *pageref = pdf_lookup_page_obj(ctx, doc, page);
@@ -6097,6 +6096,47 @@ SWIGINTERN int fz_page_s_run(struct fz_page_s *self,struct DeviceWrapper *dw,str
             fz_catch(gctx) return 1;
             return 0;
         }
+SWIGINTERN PyObject *fz_page_s_getSVGimage(struct fz_page_s *self,struct fz_matrix_s *matrix){
+            fz_rect mediabox;
+            fz_bound_page(gctx, self, &mediabox);
+            fz_device *dev = NULL;
+            fz_buffer *res = NULL;
+            size_t res_len = 0;
+            PyObject *text = NULL;
+            fz_matrix *ctm = matrix;
+            if (!matrix) ctm = &fz_identity;
+            fz_rect tbounds;
+            fz_cookie *cookie = NULL;
+            fz_output *out = NULL;
+            fz_separations *seps = NULL;
+            fz_var(out);
+            tbounds = mediabox;
+            fz_transform_rect(&tbounds, ctm);
+
+            fz_try(gctx)
+            {
+                res = fz_new_buffer(gctx, 1024);
+                out = fz_new_output_with_buffer(gctx, res);
+                unsigned char *data;
+                dev = fz_new_svg_device(gctx, out, tbounds.x1-tbounds.x0, tbounds.y1-tbounds.y0, FZ_SVG_TEXT_AS_PATH, 1);
+                fz_run_page(gctx, self, dev, ctm, cookie);
+                fz_close_device(gctx, dev);
+                res_len = fz_buffer_storage(gctx, res, &data);
+                text = PyUnicode_FromStringAndSize(data, (Py_ssize_t) res_len);
+            }
+            fz_always(gctx)
+            {
+                if (dev) fz_drop_device(gctx, dev);
+                if (out) fz_drop_output(gctx, out);
+                if (res) fz_drop_buffer(gctx, res);
+            }
+            fz_catch(gctx)
+            {
+                if (res) fz_drop_buffer(gctx, res);
+                return NULL;
+            }
+            return text;
+        }
 SWIGINTERN struct fz_display_list_s *fz_page_s_getDisplayList(struct fz_page_s *self){
             fz_display_list *dl = NULL;
             fz_try(gctx)
@@ -6301,6 +6341,154 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
                 }
             }
             fz_catch(gctx) return -1;
+            return 0;
+        }
+SWIGINTERN int fz_page_s_showPDFpage(struct fz_page_s *self,struct fz_rect_s *rect,struct fz_document_s *docsrc,int pno,int overlay,int keep_proportions){
+            fz_try(gctx)
+            {
+                pdf_document *pdfsrc = pdf_specifics(gctx, docsrc);
+                pdf_page *tpage = pdf_page_from_fz_page(gctx, self);
+                if (!pdfsrc || !tpage) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "source or target not a PDF")
+/*@SWIG@*/;
+
+                pdf_obj *tpageref = tpage->obj;
+                pdf_document *pdfout = tpage->doc; // PDF version of fz document
+                pdf_obj *spageref = pdf_lookup_page_obj(gctx, pdfsrc, pno);
+                fz_rect mediabox = {0,0,0,0};
+                fz_rect cropbox = {0,0,0,0};
+                pdf_to_rect(gctx, pdf_dict_get(gctx, spageref, PDF_NAME_MediaBox), &mediabox);
+
+                pdf_obj *o = pdf_dict_get(gctx, spageref, PDF_NAME_CropBox);
+                pdf_to_rect(gctx, o, &cropbox);
+                if (!o) cropbox = mediabox;
+
+                // Deep-copy resources object of source page
+                o = pdf_dict_get(gctx, spageref, PDF_NAME_Resources);
+                pdf_obj *resources = pdf_graft_object(gctx, pdfout, o);
+
+                //-------------------------------------------------------------
+                // TODO: adjust for multiple contents objects
+                //-------------------------------------------------------------
+                pdf_obj *contents = pdf_dict_get(gctx, spageref, PDF_NAME_Contents);
+                fz_buffer *res = pdf_load_stream(gctx, contents);
+
+                //-------------------------------------------------------------
+                // create XObject representing the source page
+                //-------------------------------------------------------------
+                pdf_obj *xobj1 = pdf_new_xobject(gctx, pdfout, &mediabox, &fz_identity);
+                pdf_xobject *xobj1x = pdf_load_xobject(gctx, pdfout, xobj1);
+                // store source contents
+                pdf_update_xobject_contents(gctx, pdfout, xobj1x, res);
+                fz_drop_buffer(gctx, res);
+                // store resources reference
+                pdf_dict_put_drop(gctx, xobj1, PDF_NAME_Resources, resources);
+
+                //-------------------------------------------------------------
+                // Calculate Matrix and BBox of referencing XObject
+                //-------------------------------------------------------------
+                fz_matrix mat = {1,0,0,1,0,0};
+                fz_rect prect = {0, 0, 0, 0};
+                fz_rect r = {0, 0, 0, 0};
+                fz_bound_page(gctx, self, &prect);
+                o = pdf_dict_get(gctx, tpageref, PDF_NAME_CropBox);
+                pdf_to_rect(gctx, o, &r);
+                if (o)
+                {
+                    prect.x0 = r.x0;
+                    prect.y0 = r.y0;
+                }
+                o = pdf_dict_get(gctx, tpageref, PDF_NAME_MediaBox);
+                pdf_to_rect(gctx, o, &r);
+                if (o)
+                {
+                    prect.x1 = r.x1;
+                    prect.y1 = r.y1;
+                }
+                float W = rect->x1 - rect->x0;
+                float H = rect->y1 - rect->y0;
+                float fw = W / (cropbox.x1 - cropbox.x0);
+                float fh = H / (cropbox.y1 - cropbox.y0);
+                if ((fw < fh) && keep_proportions)    // zoom factors in matrix
+                    fh = fw;
+                float X = rect->x0 + prect.x0 - fw*cropbox.x0;
+                float Y = prect.y1 - (rect->y1 + prect.y0 + fh*cropbox.y0);
+                mat.a = fw;
+                mat.d = fh;
+                mat.e = X;
+                mat.f = Y;
+
+                //-------------------------------------------------------------
+                // create referencing XObject (representing display of page)
+                //-------------------------------------------------------------
+                pdf_obj *xobj2 = pdf_new_xobject(gctx, pdfout, &cropbox, &mat);
+                pdf_xobject *xobj2x = pdf_load_xobject(gctx, pdfout, xobj2);
+
+                // fill the resources with the XObject reference to xobj1
+                o = pdf_xobject_resources(gctx, xobj2x);
+                pdf_obj *subres = pdf_new_dict(gctx, pdfout, 10);
+                pdf_dict_put(gctx, o, PDF_NAME_XObject, subres);
+                pdf_dict_puts(gctx, subres, "fullpage", xobj1);
+                char data[50];
+                snprintf(data, 50, "%s", "/fullpage Do");
+                res = fz_new_buffer(gctx, 50);
+                fz_append_string(gctx, res, data);
+
+                // contents of xobj2 only invokes xobj1, nothing else
+                pdf_update_xobject_contents(gctx, pdfout, xobj2x, res);
+                fz_drop_buffer(gctx, res);
+
+                // update target page:
+                // 1. resources object
+                resources = pdf_dict_get(gctx, tpageref, PDF_NAME_Resources);
+                subres = pdf_dict_get(gctx, resources, PDF_NAME_XObject);
+                if (!subres)           // has no XObject yet: create one
+                {
+                    subres = pdf_new_dict(gctx, pdfout, 10);
+                    pdf_dict_put_drop(gctx, resources, PDF_NAME_XObject, subres);
+                }
+
+                // store *unique* reference name: addresses of spage & rect
+                snprintf(data, 50, "%u-%u", spageref, rect);
+                pdf_dict_puts(gctx, subres, data, xobj2);
+
+                // 2. contents object
+                int i;
+                contents = pdf_dict_get(gctx, tpageref, PDF_NAME_Contents);
+                if (pdf_is_array(gctx, contents))     // multiple contents obj
+                {   // choose the correct one (1st or last)
+                    if (overlay == 1) i = pdf_array_len(gctx, contents) - 1;
+                    else              i = 0;
+                    contents = pdf_array_get(gctx, contents, i);
+                }
+                res = pdf_load_stream(gctx, contents);
+
+                fz_buffer *nres = fz_new_buffer(gctx, 1024);
+                fz_append_string(gctx, nres, " /");
+                fz_append_string(gctx, nres, data);
+                fz_append_string(gctx, nres, " Do ");
+
+                if (overlay == 1)      // append our string
+                {
+                    fz_append_buffer(gctx, res, nres);
+                    fz_drop_buffer(gctx, nres);
+                    nres = NULL;
+                }
+                else                   // prepend our string
+                {
+                    fz_append_buffer(gctx, nres, res);
+                    fz_drop_buffer(gctx, res);
+                    res = nres;
+                }
+                fz_terminate_buffer(gctx, res);
+                
+                pdf_update_stream(gctx, pdfout, contents, res, 0);
+                fz_drop_buffer(gctx, res);
+            }
+            fz_catch(gctx)
+            {
+                return -1;
+            }
             return 0;
         }
 SWIGINTERN int fz_page_s_insertImage(struct fz_page_s *self,struct fz_rect_s *rect,char const *filename,struct fz_pixmap_s *pixmap,int overlay){
@@ -10499,6 +10687,46 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Page_getSVGimage(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
+  struct fz_matrix_s *arg2 = (struct fz_matrix_s *) NULL ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O|O:Page_getSVGimage",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_getSVGimage" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
+  }
+  arg1 = (struct fz_page_s *)(argp1);
+  if (obj1) {
+    res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_matrix_s, 0 |  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Page_getSVGimage" "', argument " "2"" of type '" "struct fz_matrix_s *""'"); 
+    }
+    arg2 = (struct fz_matrix_s *)(argp2);
+  }
+  {
+    result = (PyObject *)fz_page_s_getSVGimage(arg1,arg2);
+    if(!result)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Page_getDisplayList(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
@@ -10802,6 +11030,86 @@ SWIGINTERN PyObject *_wrap_Page__cleanContents(PyObject *SWIGUNUSEDPARM(self), P
   {
     result = (int)fz_page_s__cleanContents(arg1);
     if(result!=0)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Page_showPDFpage(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
+  struct fz_rect_s *arg2 = (struct fz_rect_s *) 0 ;
+  struct fz_document_s *arg3 = (struct fz_document_s *) 0 ;
+  int arg4 = (int) 0 ;
+  int arg5 = (int) 1 ;
+  int arg6 = (int) 1 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
+  int val6 ;
+  int ecode6 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO|OOO:Page_showPDFpage",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_showPDFpage" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
+  }
+  arg1 = (struct fz_page_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Page_showPDFpage" "', argument " "2"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg2 = (struct fz_rect_s *)(argp2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Page_showPDFpage" "', argument " "3"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg3 = (struct fz_document_s *)(argp3);
+  if (obj3) {
+    ecode4 = SWIG_AsVal_int(obj3, &val4);
+    if (!SWIG_IsOK(ecode4)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "Page_showPDFpage" "', argument " "4"" of type '" "int""'");
+    } 
+    arg4 = (int)(val4);
+  }
+  if (obj4) {
+    ecode5 = SWIG_AsVal_int(obj4, &val5);
+    if (!SWIG_IsOK(ecode5)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "Page_showPDFpage" "', argument " "5"" of type '" "int""'");
+    } 
+    arg5 = (int)(val5);
+  }
+  if (obj5) {
+    ecode6 = SWIG_AsVal_int(obj5, &val6);
+    if (!SWIG_IsOK(ecode6)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "Page_showPDFpage" "', argument " "6"" of type '" "int""'");
+    } 
+    arg6 = (int)(val6);
+  }
+  {
+    result = (int)fz_page_s_showPDFpage(arg1,arg2,arg3,arg4,arg5,arg6);
+    if(result<0)
     {
       PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
       return NULL;
@@ -17286,6 +17594,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"delete_Page", _wrap_delete_Page, METH_VARARGS, (char *)"delete_Page(self)"},
 	 { (char *)"Page_bound", _wrap_Page_bound, METH_VARARGS, (char *)"Page_bound(self) -> Rect"},
 	 { (char *)"Page_run", _wrap_Page_run, METH_VARARGS, (char *)"Page_run(self, dw, m) -> int"},
+	 { (char *)"Page_getSVGimage", _wrap_Page_getSVGimage, METH_VARARGS, (char *)"Page_getSVGimage(self, matrix=None) -> PyObject *"},
 	 { (char *)"Page_getDisplayList", _wrap_Page_getDisplayList, METH_VARARGS, (char *)"Page_getDisplayList(self) -> DisplayList"},
 	 { (char *)"Page_loadLinks", _wrap_Page_loadLinks, METH_VARARGS, (char *)"Page_loadLinks(self) -> Link"},
 	 { (char *)"Page_firstAnnot", _wrap_Page_firstAnnot, METH_VARARGS, (char *)"firstAnnot points to first annot on page"},
@@ -17298,6 +17607,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Page__addAnnot_FromString", _wrap_Page__addAnnot_FromString, METH_VARARGS, (char *)"Page__addAnnot_FromString(self, linklist) -> int"},
 	 { (char *)"Page__getLinkXrefs", _wrap_Page__getLinkXrefs, METH_VARARGS, (char *)"Page__getLinkXrefs(self) -> PyObject *"},
 	 { (char *)"Page__cleanContents", _wrap_Page__cleanContents, METH_VARARGS, (char *)"Page__cleanContents(self) -> int"},
+	 { (char *)"Page_showPDFpage", _wrap_Page_showPDFpage, METH_VARARGS, (char *)"Display a PDF page in a rectangle."},
 	 { (char *)"Page_insertImage", _wrap_Page_insertImage, METH_VARARGS, (char *)"Insert a new image in a rectangle."},
 	 { (char *)"Page_insertFont", _wrap_Page_insertFont, METH_VARARGS, (char *)"Page_insertFont(self, fontname=None, fontfile=None, fontbuffer=None, xref=0, set_simple=0, idx=0) -> PyObject *"},
 	 { (char *)"Page__getContents", _wrap_Page__getContents, METH_VARARGS, (char *)"Page__getContents(self) -> PyObject *"},

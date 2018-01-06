@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.12.0"
 VersionBind = "1.12.1"
-VersionDate = "2018-01-01 12:14:44"
-version = (VersionBind, VersionFitz, "20180101121444")
+VersionDate = "2018-01-06 09:15:19"
+version = (VersionBind, VersionFitz, "20180106091519")
 
 
 #------------------------------------------------------------------------------
@@ -1056,6 +1056,13 @@ class Page(_object):
         return _fitz.Page_run(self, dw, m)
 
 
+    def getSVGimage(self, matrix=None):
+        """getSVGimage(self, matrix=None) -> PyObject *"""
+        CheckParent(self)
+
+        return _fitz.Page_getSVGimage(self, matrix)
+
+
     def getDisplayList(self):
         """getDisplayList(self) -> DisplayList"""
         CheckParent(self)
@@ -1178,6 +1185,16 @@ class Page(_object):
         CheckParent(self)
 
         return _fitz.Page__cleanContents(self)
+
+
+    def showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportions=1):
+        """Display a PDF page in a rectangle."""
+
+        CheckParent(self)
+        if id(self.parent) == id(docsrc):
+            raise ValueError("source document must not equal target")
+
+        return _fitz.Page_showPDFpage(self, rect, docsrc, pno, overlay, keep_proportions)
 
 
     def insertImage(self, rect, filename=None, pixmap=None, overlay=1):

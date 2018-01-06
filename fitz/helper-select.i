@@ -1,7 +1,7 @@
 %{
 //----------------------------------------------------------------------------
 // Helpers for document page selection - main logic was imported
-// from pdf_clean_file.c. But instead of analyzing a string-based spefication of
+// from pdf_clean_file.c. But instead of analyzing a string-based spec of
 // selected pages, we accept an integer array.
 //----------------------------------------------------------------------------
 typedef struct globals_s
@@ -27,7 +27,6 @@ int string_in_names_list(fz_context *ctx, pdf_obj *p, pdf_obj *names_list)
 //----------------------------------------------------------------------------
 // Recreate page tree to only retain specified pages.
 //----------------------------------------------------------------------------
-
 void retainpage(fz_context *ctx, pdf_document *doc, pdf_obj *parent, pdf_obj *kids, int page)
 {
     pdf_obj *pageref = pdf_lookup_page_obj(ctx, doc, page);
