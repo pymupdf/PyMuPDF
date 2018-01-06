@@ -16,7 +16,6 @@ Files in this Directory
 ======================= ===========================================================================================
 File                    Purpose
 ======================= ===========================================================================================
-4-up.py                 Combines 4 input pages to 1 output page
 cal-maker.py            creates a PDF with 3-year calendars
 csv2meta.py             load a PDF metadata dictionary from a CSV file's contents
 csv2toc.py              load a PDF TOC (table of contents) from a CSV file's contents
