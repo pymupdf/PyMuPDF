@@ -92,6 +92,7 @@ import sys
 %include helper-other.i
 %include helper-portfolio.i
 %include helper-select.i
+%include helper-xobject.i
 
 /*****************************************************************************/
 // fz_document
@@ -2032,45 +2033,42 @@ fannot._erase()
             CheckParent(self)
             if id(self.parent) == id(docsrc):
                 raise ValueError("source document must not equal target")%}
-        int showPDFpage(struct fz_rect_s *rect, struct fz_document_s *docsrc, int pno=0, int overlay=1, int keep_proportions = 1)
+        int showPDFpage(struct fz_rect_s *rect, struct fz_document_s *docsrc = NULL, int pno=0, int overlay=1, int keep_proportions = 1, int reuse_xref = 0)
         {
+            int xref, i;
+            xref = reuse_xref;
+            pdf_obj *xobj1, *xobj2, *contents, *resources, *o;
+            fz_buffer *res, *nres;
+            fz_rect mediabox = {0,0,0,0};
+            fz_rect cropbox = {0,0,0,0};
+            char data[50];
             fz_try(gctx)
             {
-                pdf_document *pdfsrc = pdf_specifics(gctx, docsrc);
                 pdf_page *tpage = pdf_page_from_fz_page(gctx, $self);
-                if (!pdfsrc || !tpage) THROWMSG("source or target not a PDF");
-
+                assert_PDF(tpage);
                 pdf_obj *tpageref = tpage->obj;
-                pdf_document *pdfout = tpage->doc; // PDF version of fz document
-                pdf_obj *spageref = pdf_lookup_page_obj(gctx, pdfsrc, pno);
-                fz_rect mediabox = {0,0,0,0};
-                fz_rect cropbox = {0,0,0,0};
-                pdf_to_rect(gctx, pdf_dict_get(gctx, spageref, PDF_NAME_MediaBox), &mediabox);
+                pdf_document *pdfout = tpage->doc;    // target PDF
+                if (xref < 1 && !docsrc) THROWMSG("one of xref, docsrc must be given");
+                if (xref < 1)
+                {
+                    //-------------------------------------------------------------
+                    // PDF source provided
+                    //-------------------------------------------------------------
+                    pdf_document *pdfsrc = pdf_specifics(gctx, docsrc);
+                    assert_PDF(pdfsrc);
+                    int inCount = fz_count_pages(gctx, docsrc);
+                    if (pno < 0 || pno >= inCount) THROWMSG("page number(s) out of range");
+                    pdf_obj *spageref = pdf_lookup_page_obj(gctx, pdfsrc, pno);
+                    xobj1 = xobject_from_page(gctx, spageref, pdfout, &mediabox, &cropbox);
 
-                pdf_obj *o = pdf_dict_get(gctx, spageref, PDF_NAME_CropBox);
-                pdf_to_rect(gctx, o, &cropbox);
-                if (!o) cropbox = mediabox;
-
-                // Deep-copy resources object of source page
-                o = pdf_dict_get(gctx, spageref, PDF_NAME_Resources);
-                pdf_obj *resources = pdf_graft_object(gctx, pdfout, o);
-
-                //-------------------------------------------------------------
-                // TODO: adjust for multiple contents objects
-                //-------------------------------------------------------------
-                pdf_obj *contents = pdf_dict_get(gctx, spageref, PDF_NAME_Contents);
-                fz_buffer *res = pdf_load_stream(gctx, contents);
-
-                //-------------------------------------------------------------
-                // create XObject representing the source page
-                //-------------------------------------------------------------
-                pdf_obj *xobj1 = pdf_new_xobject(gctx, pdfout, &mediabox, &fz_identity);
-                pdf_xobject *xobj1x = pdf_load_xobject(gctx, pdfout, xobj1);
-                // store source contents
-                pdf_update_xobject_contents(gctx, pdfout, xobj1x, res);
-                fz_drop_buffer(gctx, res);
-                // store resources reference
-                pdf_dict_put_drop(gctx, xobj1, PDF_NAME_Resources, resources);
+                    // this is xref of spage as XObject
+                    xref = pdf_to_num(gctx, xobj1);
+                }
+                else
+                {
+                    if (xref >= pdf_xref_len(gctx, pdfout)) THROWMSG("xref out of range");
+                    xobj1 = xobject_from_xref(gctx, xref, pdfout, &mediabox, &cropbox);
+                }
 
                 //-------------------------------------------------------------
                 // Calculate Matrix and BBox of referencing XObject
@@ -2107,9 +2105,9 @@ fannot._erase()
                 mat.f = Y;
 
                 //-------------------------------------------------------------
-                // create referencing XObject (representing display of page)
+                // create referencing XObject (actual display of page)
                 //-------------------------------------------------------------
-                pdf_obj *xobj2 = pdf_new_xobject(gctx, pdfout, &cropbox, &mat);
+                xobj2 = pdf_new_xobject(gctx, pdfout, &cropbox, &mat);
                 pdf_xobject *xobj2x = pdf_load_xobject(gctx, pdfout, xobj2);
 
                 // fill the resources with the XObject reference to xobj1
@@ -2117,15 +2115,13 @@ fannot._erase()
                 pdf_obj *subres = pdf_new_dict(gctx, pdfout, 10);
                 pdf_dict_put(gctx, o, PDF_NAME_XObject, subres);
                 pdf_dict_puts(gctx, subres, "fullpage", xobj1);
-                char data[50];
-                snprintf(data, 50, "%s", "/fullpage Do");
-                res = fz_new_buffer(gctx, 50);
-                fz_append_string(gctx, res, data);
+                pdf_drop_obj(gctx, subres);
 
-                // contents of xobj2 only invokes xobj1, nothing else
+                // contents of xobj2 just invokes xobj1
+                res = fz_new_buffer(gctx, 50);
+                fz_append_string(gctx, res, "/fullpage Do");
                 pdf_update_xobject_contents(gctx, pdfout, xobj2x, res);
                 fz_drop_buffer(gctx, res);
-
                 // update target page:
                 // 1. resources object
                 resources = pdf_dict_get(gctx, tpageref, PDF_NAME_Resources);
@@ -2133,15 +2129,14 @@ fannot._erase()
                 if (!subres)           // has no XObject yet: create one
                 {
                     subres = pdf_new_dict(gctx, pdfout, 10);
-                    pdf_dict_put_drop(gctx, resources, PDF_NAME_XObject, subres);
+                    pdf_dict_put(gctx, resources, PDF_NAME_XObject, subres);
                 }
 
-                // store *unique* reference name: addresses of spage & rect
-                snprintf(data, 50, "%u-%u", spageref, rect);
+                // store *unique* reference name: addresses of xref & rect
+                snprintf(data, 50, "%d-%u", xref, rect);
                 pdf_dict_puts(gctx, subres, data, xobj2);
 
                 // 2. contents object
-                int i;
                 contents = pdf_dict_get(gctx, tpageref, PDF_NAME_Contents);
                 if (pdf_is_array(gctx, contents))     // multiple contents obj
                 {   // choose the correct one (1st or last)
@@ -2150,9 +2145,8 @@ fannot._erase()
                     contents = pdf_array_get(gctx, contents, i);
                 }
                 res = pdf_load_stream(gctx, contents);
-
-                fz_buffer *nres = fz_new_buffer(gctx, 1024);
-                fz_append_string(gctx, nres, " /");
+                nres = fz_new_buffer(gctx, 1024);
+                fz_append_string(gctx, nres, "/");
                 fz_append_string(gctx, nres, data);
                 fz_append_string(gctx, nres, " Do ");
 
@@ -2160,7 +2154,6 @@ fannot._erase()
                 {
                     fz_append_buffer(gctx, res, nres);
                     fz_drop_buffer(gctx, nres);
-                    nres = NULL;
                 }
                 else                   // prepend our string
                 {
@@ -2177,7 +2170,7 @@ fannot._erase()
             {
                 return -1;
             }
-            return 0;
+            return xref;
         }
 
         //---------------------------------------------------------------------
