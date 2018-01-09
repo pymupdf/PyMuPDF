@@ -1678,7 +1678,7 @@ struct fz_page_s {
             size_t res_len = 0;
             PyObject *text = NULL;
             fz_matrix *ctm = matrix;
-            if (!matrix) ctm = &fz_identity;
+            if (!matrix) ctm = (fz_matrix *) &fz_identity;
             fz_rect tbounds;
             fz_cookie *cookie = NULL;
             fz_output *out = NULL;
@@ -2033,11 +2033,11 @@ fannot._erase()
             CheckParent(self)
             if id(self.parent) == id(docsrc):
                 raise ValueError("source document must not equal target")%}
-        int showPDFpage(struct fz_rect_s *rect, struct fz_document_s *docsrc = NULL, int pno=0, int overlay=1, int keep_proportions = 1, int reuse_xref = 0)
+        int showPDFpage(struct fz_rect_s *rect, struct fz_document_s *docsrc = NULL, int pno=0, int overlay=1, int keep_proportion=1, int reuse_xref=0, struct fz_rect_s *clip = NULL)
         {
-            int xref, i;
+            int xref;
             xref = reuse_xref;
-            pdf_obj *xobj1, *xobj2, *contents, *resources, *o;
+            pdf_obj *xobj1, *xobj2, *resources, *o;
             fz_buffer *res, *nres;
             fz_rect mediabox = {0,0,0,0};
             fz_rect cropbox = {0,0,0,0};
@@ -2048,31 +2048,43 @@ fannot._erase()
                 assert_PDF(tpage);
                 pdf_obj *tpageref = tpage->obj;
                 pdf_document *pdfout = tpage->doc;    // target PDF
+
                 if (xref < 1 && !docsrc) THROWMSG("one of xref, docsrc must be given");
+
                 if (xref < 1)
                 {
                     //-------------------------------------------------------------
-                    // PDF source provided
+                    // PDF source specified
                     //-------------------------------------------------------------
                     pdf_document *pdfsrc = pdf_specifics(gctx, docsrc);
                     assert_PDF(pdfsrc);
                     int inCount = fz_count_pages(gctx, docsrc);
                     if (pno < 0 || pno >= inCount) THROWMSG("page number(s) out of range");
                     pdf_obj *spageref = pdf_lookup_page_obj(gctx, pdfsrc, pno);
-                    xobj1 = xobject_from_page(gctx, spageref, pdfout, &mediabox, &cropbox);
+                    xobj1 = JM_xobject_from_page(gctx, spageref, pdfout, &mediabox, &cropbox);
 
                     // this is xref of spage as XObject
                     xref = pdf_to_num(gctx, xobj1);
                 }
                 else
                 {
+                    //-------------------------------------------------------------
+                    // XREF specified
+                    //-------------------------------------------------------------
                     if (xref >= pdf_xref_len(gctx, pdfout)) THROWMSG("xref out of range");
-                    xobj1 = xobject_from_xref(gctx, xref, pdfout, &mediabox, &cropbox);
+                    xobj1 = JM_xobject_from_xref(gctx, xref, pdfout, &mediabox, &cropbox);
                 }
 
                 //-------------------------------------------------------------
-                // Calculate Matrix and BBox of referencing XObject
+                // Calculate Matrix and BBox of the referencing XObject
                 //-------------------------------------------------------------
+                if (clip)
+                {   // set cropbox if clip given
+                    cropbox.x0 = clip->x0;
+                    cropbox.y0 = mediabox.y1 - clip->y1;
+                    cropbox.x1 = clip->x1;
+                    cropbox.y1 = mediabox.y1 - clip->y0;
+                }
                 fz_matrix mat = {1,0,0,1,0,0};
                 fz_rect prect = {0, 0, 0, 0};
                 fz_rect r = {0, 0, 0, 0};
@@ -2095,7 +2107,7 @@ fannot._erase()
                 float H = rect->y1 - rect->y0;
                 float fw = W / (cropbox.x1 - cropbox.x0);
                 float fh = H / (cropbox.y1 - cropbox.y0);
-                if ((fw < fh) && keep_proportions)    // zoom factors in matrix
+                if ((fw < fh) && keep_proportion)     // zoom factors in matrix
                     fh = fw;
                 float X = rect->x0 + prect.x0 - fw*cropbox.x0;
                 float Y = prect.y1 - (rect->y1 + prect.y0 + fh*cropbox.y0);
@@ -2122,8 +2134,12 @@ fannot._erase()
                 fz_append_string(gctx, res, "/fullpage Do");
                 pdf_update_xobject_contents(gctx, pdfout, xobj2x, res);
                 fz_drop_buffer(gctx, res);
+
+                //-------------------------------------------------------------
                 // update target page:
+                //-------------------------------------------------------------
                 // 1. resources object
+                //-------------------------------------------------------------
                 resources = pdf_dict_get(gctx, tpageref, PDF_NAME_Resources);
                 subres = pdf_dict_get(gctx, resources, PDF_NAME_XObject);
                 if (!subres)           // has no XObject yet: create one
@@ -2132,39 +2148,19 @@ fannot._erase()
                     pdf_dict_put(gctx, resources, PDF_NAME_XObject, subres);
                 }
 
-                // store *unique* reference name: addresses of xref & rect
-                snprintf(data, 50, "%d-%u", xref, rect);
+                // store *unique* reference name: xref & address of rect
+                snprintf(data, 50, "fz-%d-%u", xref, rect);
                 pdf_dict_puts(gctx, subres, data, xobj2);
 
+                //-------------------------------------------------------------
                 // 2. contents object
-                contents = pdf_dict_get(gctx, tpageref, PDF_NAME_Contents);
-                if (pdf_is_array(gctx, contents))     // multiple contents obj
-                {   // choose the correct one (1st or last)
-                    if (overlay == 1) i = pdf_array_len(gctx, contents) - 1;
-                    else              i = 0;
-                    contents = pdf_array_get(gctx, contents, i);
-                }
-                res = pdf_load_stream(gctx, contents);
-                nres = fz_new_buffer(gctx, 1024);
-                fz_append_string(gctx, nres, "/");
+                //-------------------------------------------------------------
+                nres = fz_new_buffer(gctx, 50);       // buffer for Do-command
+                fz_append_string(gctx, nres, "/");    // Do-command
                 fz_append_string(gctx, nres, data);
                 fz_append_string(gctx, nres, " Do ");
 
-                if (overlay == 1)      // append our string
-                {
-                    fz_append_buffer(gctx, res, nres);
-                    fz_drop_buffer(gctx, nres);
-                }
-                else                   // prepend our string
-                {
-                    fz_append_buffer(gctx, nres, res);
-                    fz_drop_buffer(gctx, res);
-                    res = nres;
-                }
-                fz_terminate_buffer(gctx, res);
-                
-                pdf_update_stream(gctx, pdfout, contents, res, 0);
-                fz_drop_buffer(gctx, res);
+                JM_extend_contents(gctx, pdfout, tpageref, nres, overlay);
             }
             fz_catch(gctx)
             {
@@ -2187,11 +2183,10 @@ fannot._erase()
             fz_pixmap *pix = NULL;
             fz_image *mask = NULL;
             fz_separations *seps = NULL;
-            pdf_obj *resources, *subres, *contents, *ref;
+            pdf_obj *resources, *subres, *ref;
             fz_buffer *res = NULL, *nres = NULL;
             int i, j;
             unsigned char *s, *t;
-            char *content_str;
             const char *template = "\nh q %g 0 0 %g %g %g cm /%s Do Q\n";
             Py_ssize_t c_len = 0;
             char name[50], md5hex[33];           // for image reference
@@ -2234,7 +2229,6 @@ fannot._erase()
                 pdf = page->doc;
 
                 // get objects "Resources" and "XObject"
-                contents = pdf_dict_get(gctx, page->obj, PDF_NAME_Contents);
                 resources = pdf_dict_get(gctx, page->obj, PDF_NAME_Resources);
                 subres = pdf_dict_get(gctx, resources, PDF_NAME_XObject);
                 if (!subres)           // has no XObject yet, create one
@@ -2290,42 +2284,13 @@ fannot._erase()
                 pdf_dict_puts(gctx, subres, name, ref);    // put in resources
 
                 // retrieve and update contents stream
-                if (pdf_is_array(gctx, contents))     // multiple contents obj
-                {   // choose the correct one (1st or last)
-                    if (overlay == 1) i = pdf_array_len(gctx, contents) - 1;
-                    else              i = 0;
-                    contents = pdf_array_get(gctx, contents, i);
-                }
-                res = pdf_load_stream(gctx, contents); // decompressed stream
-                if (!res) THROWMSG("bad PDF: Contents is no stream object");
                 nres = fz_new_buffer(gctx, 1024);
-                // insert our string into contents buffer
                 fz_append_printf(gctx, nres, template, W, H, X, Y, name);
-                if (overlay == 1)      // append our string
-                {
-                    fz_append_buffer(gctx, res, nres);
-                    fz_drop_buffer(gctx, nres);
-                    nres = NULL;
-                }
-                else                   // prepend our string
-                {
-                    fz_append_buffer(gctx, nres, res);
-                    fz_drop_buffer(gctx, res);
-                    res = nres;
-                }
-                fz_terminate_buffer(gctx, res);
-                // now compress and put back contents stream
-                pdf_dict_put(gctx, contents, PDF_NAME_Filter,
-                             PDF_NAME_FlateDecode);
-                c_len = (Py_ssize_t) fz_buffer_storage(gctx, res, &content_str);
-                nres = deflatebuf(gctx, content_str, (size_t) c_len);
-                pdf_update_stream(gctx, pdf, contents, nres, 1);
+                JM_extend_contents(gctx, pdf, page->obj, nres, overlay);
             }
             fz_always(gctx)
             {
                 if (image) fz_drop_image(gctx, image);
-                if (res) fz_drop_buffer(gctx, res);
-                if (nres) fz_drop_buffer(gctx, nres);
                 if (mask) fz_drop_image(gctx, mask);
                 if (pix) fz_drop_pixmap(gctx, pix);
                 if (pm) fz_drop_pixmap(gctx, pm);

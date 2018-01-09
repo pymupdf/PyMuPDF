@@ -10,7 +10,6 @@ The following is a collection of functions to extend PyMupdf.
 def searchFor(page, text, hit_max = 16):
     '''Search for a string on a page. Parameters:\ntext: string to be searched for\nhit_max: maximum hits.\nReturns a list of rectangles, each of which surrounds a found occurrence.'''
     fitz.CheckParent(page)
-    rect = page.rect
     dl = page.getDisplayList()         # create DisplayList
     tp = dl.getTextPage()              # create TextPage
     # return list of hitting reactangles

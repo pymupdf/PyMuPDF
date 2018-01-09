@@ -4429,7 +4429,20 @@ void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
 }
 
 
-pdf_obj *xobject_from_page(fz_context *ctx, pdf_obj *spageref, pdf_document *pdfout, fz_rect *mediabox, fz_rect *cropbox)
+void JM_update_xobject_contents(fz_context *ctx, pdf_document *doc, pdf_xobject *form, fz_buffer *buffer)
+{   // version of "pdf_update_xobject_contents" with compression
+	size_t c_len;
+    char *content_str;
+    fz_buffer *nres;
+    c_len = (size_t) fz_buffer_storage(ctx, buffer, &content_str);
+    pdf_dict_put(ctx, form->obj, PDF_NAME_Filter, PDF_NAME_FlateDecode);
+    nres = deflatebuf(ctx, content_str, c_len);
+    pdf_update_stream(ctx, doc, form->obj, nres, 1);
+    fz_drop_buffer(ctx, nres);
+	form->iteration ++;
+}
+
+pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_obj *spageref, pdf_document *pdfout, fz_rect *mediabox, fz_rect *cropbox)
 {
     fz_buffer *nres, *res;
     pdf_obj *xobj1, *contents, *resources, *o;
@@ -4469,20 +4482,17 @@ pdf_obj *xobject_from_page(fz_context *ctx, pdf_obj *spageref, pdf_document *pdf
         xobj1 = pdf_new_xobject(ctx, pdfout, mediabox, &fz_identity);
         pdf_xobject *xobj1x = pdf_load_xobject(ctx, pdfout, xobj1);
         // store spage contents
-        pdf_update_xobject_contents(ctx, pdfout, xobj1x, res);
+        JM_update_xobject_contents(ctx, pdfout, xobj1x, res);
         fz_drop_buffer(ctx, res);
 
         // store spage resources
         pdf_dict_put_drop(ctx, xobj1, PDF_NAME_Resources, resources);
     }
-    fz_catch(ctx)
-    {
-        fz_rethrow(ctx);
-    }
+    fz_catch(ctx) fz_rethrow(ctx);
     return xobj1;
 }
 
-pdf_obj *xobject_from_xref(fz_context *ctx, int xref, pdf_document *pdfout, fz_rect *mediabox, fz_rect *cropbox)
+pdf_obj *JM_xobject_from_xref(fz_context *ctx, int xref, pdf_document *pdfout, fz_rect *mediabox, fz_rect *cropbox)
 {
     pdf_obj *x;
     pdf_xobject *xobj1x;
@@ -4493,11 +4503,50 @@ pdf_obj *xobject_from_xref(fz_context *ctx, int xref, pdf_document *pdfout, fz_r
         pdf_xobject_bbox(ctx, xobj1x, mediabox);
         pdf_xobject_bbox(ctx, xobj1x, cropbox);
     }
-    fz_catch(ctx)
-    {
-        fz_rethrow(ctx);
-    }
+    fz_catch(ctx) fz_rethrow(ctx);
     return x;
+}
+
+void JM_extend_contents(fz_context *ctx, pdf_document *pdfout, pdf_obj *pageref, fz_buffer *nres, int overlay)
+{
+    int i;
+    fz_buffer *res;
+    char *content_str;
+    size_t c_len = 0;
+    pdf_obj *contents = pdf_dict_get(ctx, pageref, PDF_NAME_Contents);
+    fz_try(ctx)
+    {
+        if (pdf_is_array(ctx, contents))     // multiple contents obj
+        {   // choose the correct one (1st or last)
+            if (overlay == 1) i = pdf_array_len(ctx, contents) - 1;
+            else  i = 0;
+            contents = pdf_array_get(ctx, contents, i);
+        }
+        res = pdf_load_stream(ctx, contents); // old contents buffer
+
+        if (overlay == 1)         // append our command
+        {
+            fz_append_buffer(ctx, res, nres);
+            fz_drop_buffer(ctx, nres);
+        }
+        else                      // prepend our command
+        {
+            fz_append_buffer(ctx, nres, res);
+            fz_drop_buffer(ctx, res);
+            res = nres;
+        }
+        fz_terminate_buffer(ctx, res);
+    
+        // now compress and put back contents stream
+        pdf_dict_put(ctx, contents, PDF_NAME_Filter, PDF_NAME_FlateDecode);
+        c_len = (size_t) fz_buffer_storage(ctx, res, &content_str);
+        nres = deflatebuf(ctx, content_str, c_len);
+        pdf_update_stream(ctx, pdfout, contents, nres, 1);
+        fz_drop_buffer(ctx, res);
+        fz_drop_buffer(ctx, nres);
+    }
+    fz_catch(ctx) fz_rethrow(ctx);
+    return;
 }
 
 SWIGINTERN void delete_fz_document_s(struct fz_document_s *self){
@@ -6176,7 +6225,7 @@ SWIGINTERN PyObject *fz_page_s_getSVGimage(struct fz_page_s *self,struct fz_matr
             size_t res_len = 0;
             PyObject *text = NULL;
             fz_matrix *ctm = matrix;
-            if (!matrix) ctm = &fz_identity;
+            if (!matrix) ctm = (fz_matrix *) &fz_identity;
             fz_rect tbounds;
             fz_cookie *cookie = NULL;
             fz_output *out = NULL;
@@ -6415,10 +6464,10 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
             fz_catch(gctx) return -1;
             return 0;
         }
-SWIGINTERN int fz_page_s_showPDFpage(struct fz_page_s *self,struct fz_rect_s *rect,struct fz_document_s *docsrc,int pno,int overlay,int keep_proportions,int reuse_xref){
-            int xref, i;
+SWIGINTERN int fz_page_s_showPDFpage(struct fz_page_s *self,struct fz_rect_s *rect,struct fz_document_s *docsrc,int pno,int overlay,int keep_proportion,int reuse_xref,struct fz_rect_s *clip){
+            int xref;
             xref = reuse_xref;
-            pdf_obj *xobj1, *xobj2, *contents, *resources, *o;
+            pdf_obj *xobj1, *xobj2, *resources, *o;
             fz_buffer *res, *nres;
             fz_rect mediabox = {0,0,0,0};
             fz_rect cropbox = {0,0,0,0};
@@ -6433,13 +6482,15 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 /*@SWIG@*/;
                 pdf_obj *tpageref = tpage->obj;
                 pdf_document *pdfout = tpage->doc;    // target PDF
+
                 if (xref < 1 && !docsrc) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "one of xref, docsrc must be given")
 /*@SWIG@*/;
+
                 if (xref < 1)
                 {
                     //-------------------------------------------------------------
-                    // PDF source provided
+                    // PDF source specified
                     //-------------------------------------------------------------
                     pdf_document *pdfsrc = pdf_specifics(gctx, docsrc);
                     /*@SWIG:fitz\fitz.i,45,assert_PDF@*/
@@ -6452,22 +6503,32 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
 fz_throw(gctx, FZ_ERROR_GENERIC, "page number(s) out of range")
 /*@SWIG@*/;
                     pdf_obj *spageref = pdf_lookup_page_obj(gctx, pdfsrc, pno);
-                    xobj1 = xobject_from_page(gctx, spageref, pdfout, &mediabox, &cropbox);
+                    xobj1 = JM_xobject_from_page(gctx, spageref, pdfout, &mediabox, &cropbox);
 
                     // this is xref of spage as XObject
                     xref = pdf_to_num(gctx, xobj1);
                 }
                 else
                 {
+                    //-------------------------------------------------------------
+                    // XREF specified
+                    //-------------------------------------------------------------
                     if (xref >= pdf_xref_len(gctx, pdfout)) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
 fz_throw(gctx, FZ_ERROR_GENERIC, "xref out of range")
 /*@SWIG@*/;
-                    xobj1 = xobject_from_xref(gctx, xref, pdfout, &mediabox, &cropbox);
+                    xobj1 = JM_xobject_from_xref(gctx, xref, pdfout, &mediabox, &cropbox);
                 }
 
                 //-------------------------------------------------------------
-                // Calculate Matrix and BBox of referencing XObject
+                // Calculate Matrix and BBox of the referencing XObject
                 //-------------------------------------------------------------
+                if (clip)
+                {   // set cropbox if clip given
+                    cropbox.x0 = clip->x0;
+                    cropbox.y0 = mediabox.y1 - clip->y1;
+                    cropbox.x1 = clip->x1;
+                    cropbox.y1 = mediabox.y1 - clip->y0;
+                }
                 fz_matrix mat = {1,0,0,1,0,0};
                 fz_rect prect = {0, 0, 0, 0};
                 fz_rect r = {0, 0, 0, 0};
@@ -6490,7 +6551,7 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "xref out of range")
                 float H = rect->y1 - rect->y0;
                 float fw = W / (cropbox.x1 - cropbox.x0);
                 float fh = H / (cropbox.y1 - cropbox.y0);
-                if ((fw < fh) && keep_proportions)    // zoom factors in matrix
+                if ((fw < fh) && keep_proportion)     // zoom factors in matrix
                     fh = fw;
                 float X = rect->x0 + prect.x0 - fw*cropbox.x0;
                 float Y = prect.y1 - (rect->y1 + prect.y0 + fh*cropbox.y0);
@@ -6517,8 +6578,12 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "xref out of range")
                 fz_append_string(gctx, res, "/fullpage Do");
                 pdf_update_xobject_contents(gctx, pdfout, xobj2x, res);
                 fz_drop_buffer(gctx, res);
+
+                //-------------------------------------------------------------
                 // update target page:
+                //-------------------------------------------------------------
                 // 1. resources object
+                //-------------------------------------------------------------
                 resources = pdf_dict_get(gctx, tpageref, PDF_NAME_Resources);
                 subres = pdf_dict_get(gctx, resources, PDF_NAME_XObject);
                 if (!subres)           // has no XObject yet: create one
@@ -6527,39 +6592,19 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "xref out of range")
                     pdf_dict_put(gctx, resources, PDF_NAME_XObject, subres);
                 }
 
-                // store *unique* reference name: addresses of xref & rect
-                snprintf(data, 50, "%d-%u", xref, rect);
+                // store *unique* reference name: xref & address of rect
+                snprintf(data, 50, "fz-%d-%u", xref, rect);
                 pdf_dict_puts(gctx, subres, data, xobj2);
 
+                //-------------------------------------------------------------
                 // 2. contents object
-                contents = pdf_dict_get(gctx, tpageref, PDF_NAME_Contents);
-                if (pdf_is_array(gctx, contents))     // multiple contents obj
-                {   // choose the correct one (1st or last)
-                    if (overlay == 1) i = pdf_array_len(gctx, contents) - 1;
-                    else              i = 0;
-                    contents = pdf_array_get(gctx, contents, i);
-                }
-                res = pdf_load_stream(gctx, contents);
-                nres = fz_new_buffer(gctx, 1024);
-                fz_append_string(gctx, nres, "/");
+                //-------------------------------------------------------------
+                nres = fz_new_buffer(gctx, 50);       // buffer for Do-command
+                fz_append_string(gctx, nres, "/");    // Do-command
                 fz_append_string(gctx, nres, data);
                 fz_append_string(gctx, nres, " Do ");
 
-                if (overlay == 1)      // append our string
-                {
-                    fz_append_buffer(gctx, res, nres);
-                    fz_drop_buffer(gctx, nres);
-                }
-                else                   // prepend our string
-                {
-                    fz_append_buffer(gctx, nres, res);
-                    fz_drop_buffer(gctx, res);
-                    res = nres;
-                }
-                fz_terminate_buffer(gctx, res);
-                
-                pdf_update_stream(gctx, pdfout, contents, res, 0);
-                fz_drop_buffer(gctx, res);
+                JM_extend_contents(gctx, pdfout, tpageref, nres, overlay);
             }
             fz_catch(gctx)
             {
@@ -6574,11 +6619,10 @@ SWIGINTERN int fz_page_s_insertImage(struct fz_page_s *self,struct fz_rect_s *re
             fz_pixmap *pix = NULL;
             fz_image *mask = NULL;
             fz_separations *seps = NULL;
-            pdf_obj *resources, *subres, *contents, *ref;
+            pdf_obj *resources, *subres, *ref;
             fz_buffer *res = NULL, *nres = NULL;
             int i, j;
             unsigned char *s, *t;
-            char *content_str;
             const char *template = "\nh q %g 0 0 %g %g %g cm /%s Do Q\n";
             Py_ssize_t c_len = 0;
             char name[50], md5hex[33];           // for image reference
@@ -6629,7 +6673,6 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "rect must be finite and not empty")
                 pdf = page->doc;
 
                 // get objects "Resources" and "XObject"
-                contents = pdf_dict_get(gctx, page->obj, PDF_NAME_Contents);
                 resources = pdf_dict_get(gctx, page->obj, PDF_NAME_Resources);
                 subres = pdf_dict_get(gctx, resources, PDF_NAME_XObject);
                 if (!subres)           // has no XObject yet, create one
@@ -6685,44 +6728,13 @@ fz_throw(gctx, FZ_ERROR_GENERIC, "rect must be finite and not empty")
                 pdf_dict_puts(gctx, subres, name, ref);    // put in resources
 
                 // retrieve and update contents stream
-                if (pdf_is_array(gctx, contents))     // multiple contents obj
-                {   // choose the correct one (1st or last)
-                    if (overlay == 1) i = pdf_array_len(gctx, contents) - 1;
-                    else              i = 0;
-                    contents = pdf_array_get(gctx, contents, i);
-                }
-                res = pdf_load_stream(gctx, contents); // decompressed stream
-                if (!res) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
-fz_throw(gctx, FZ_ERROR_GENERIC, "bad PDF: Contents is no stream object")
-/*@SWIG@*/;
                 nres = fz_new_buffer(gctx, 1024);
-                // insert our string into contents buffer
                 fz_append_printf(gctx, nres, template, W, H, X, Y, name);
-                if (overlay == 1)      // append our string
-                {
-                    fz_append_buffer(gctx, res, nres);
-                    fz_drop_buffer(gctx, nres);
-                    nres = NULL;
-                }
-                else                   // prepend our string
-                {
-                    fz_append_buffer(gctx, nres, res);
-                    fz_drop_buffer(gctx, res);
-                    res = nres;
-                }
-                fz_terminate_buffer(gctx, res);
-                // now compress and put back contents stream
-                pdf_dict_put(gctx, contents, PDF_NAME_Filter,
-                             PDF_NAME_FlateDecode);
-                c_len = (Py_ssize_t) fz_buffer_storage(gctx, res, &content_str);
-                nres = deflatebuf(gctx, content_str, (size_t) c_len);
-                pdf_update_stream(gctx, pdf, contents, nres, 1);
+                JM_extend_contents(gctx, pdf, page->obj, nres, overlay);
             }
             fz_always(gctx)
             {
                 if (image) fz_drop_image(gctx, image);
-                if (res) fz_drop_buffer(gctx, res);
-                if (nres) fz_drop_buffer(gctx, nres);
                 if (mask) fz_drop_image(gctx, mask);
                 if (pix) fz_drop_pixmap(gctx, pix);
                 if (pm) fz_drop_pixmap(gctx, pm);
@@ -11127,6 +11139,7 @@ SWIGINTERN PyObject *_wrap_Page_showPDFpage(PyObject *SWIGUNUSEDPARM(self), PyOb
   int arg5 = (int) 1 ;
   int arg6 = (int) 1 ;
   int arg7 = (int) 0 ;
+  struct fz_rect_s *arg8 = (struct fz_rect_s *) NULL ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -11141,6 +11154,8 @@ SWIGINTERN PyObject *_wrap_Page_showPDFpage(PyObject *SWIGUNUSEDPARM(self), PyOb
   int ecode6 = 0 ;
   int val7 ;
   int ecode7 = 0 ;
+  void *argp8 = 0 ;
+  int res8 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -11148,9 +11163,10 @@ SWIGINTERN PyObject *_wrap_Page_showPDFpage(PyObject *SWIGUNUSEDPARM(self), PyOb
   PyObject * obj4 = 0 ;
   PyObject * obj5 = 0 ;
   PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO|OOOOO:Page_showPDFpage",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO|OOOOOO:Page_showPDFpage",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_showPDFpage" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
@@ -11196,8 +11212,15 @@ SWIGINTERN PyObject *_wrap_Page_showPDFpage(PyObject *SWIGUNUSEDPARM(self), PyOb
     } 
     arg7 = (int)(val7);
   }
+  if (obj7) {
+    res8 = SWIG_ConvertPtr(obj7, &argp8,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+    if (!SWIG_IsOK(res8)) {
+      SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "Page_showPDFpage" "', argument " "8"" of type '" "struct fz_rect_s *""'"); 
+    }
+    arg8 = (struct fz_rect_s *)(argp8);
+  }
   {
-    result = (int)fz_page_s_showPDFpage(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
+    result = (int)fz_page_s_showPDFpage(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8);
     if(result<0)
     {
       PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));

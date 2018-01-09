@@ -102,9 +102,9 @@ import sys
 
 
 VersionFitz = "1.12.0"
-VersionBind = "1.12.1"
-VersionDate = "2018-01-08 07:34:49"
-version = (VersionBind, VersionFitz, "20180108073449")
+VersionBind = "1.12.2"
+VersionDate = "2018-01-09 09:41:34"
+version = (VersionBind, VersionFitz, "20180109094134")
 
 
 #------------------------------------------------------------------------------
@@ -1187,14 +1187,14 @@ class Page(_object):
         return _fitz.Page__cleanContents(self)
 
 
-    def showPDFpage(self, rect, docsrc=None, pno=0, overlay=1, keep_proportions=1, reuse_xref=0):
+    def showPDFpage(self, rect, docsrc=None, pno=0, overlay=1, keep_proportion=1, reuse_xref=0, clip=None):
         """Display a PDF page in a rectangle."""
 
         CheckParent(self)
         if id(self.parent) == id(docsrc):
             raise ValueError("source document must not equal target")
 
-        return _fitz.Page_showPDFpage(self, rect, docsrc, pno, overlay, keep_proportions, reuse_xref)
+        return _fitz.Page_showPDFpage(self, rect, docsrc, pno, overlay, keep_proportion, reuse_xref, clip)
 
 
     def insertImage(self, rect, filename=None, pixmap=None, overlay=1):
