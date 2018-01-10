@@ -1,5 +1,18 @@
 %{
-pdf_obj *xobject_from_page(fz_context *ctx, pdf_obj *spageref, pdf_document *pdfout, fz_rect *mediabox, fz_rect *cropbox)
+void JM_update_xobject_contents(fz_context *ctx, pdf_document *doc, pdf_xobject *form, fz_buffer *buffer)
+{   // version of "pdf_update_xobject_contents" with compression
+	size_t c_len;
+    char *content_str;
+    fz_buffer *nres;
+    c_len = (size_t) fz_buffer_storage(ctx, buffer, &content_str);
+    pdf_dict_put(ctx, form->obj, PDF_NAME_Filter, PDF_NAME_FlateDecode);
+    nres = deflatebuf(ctx, content_str, c_len);
+    pdf_update_stream(ctx, doc, form->obj, nres, 1);
+    fz_drop_buffer(ctx, nres);
+	form->iteration ++;
+}
+
+pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_obj *spageref, pdf_document *pdfout, fz_rect *mediabox, fz_rect *cropbox)
 {
     fz_buffer *nres, *res;
     pdf_obj *xobj1, *contents, *resources, *o;
@@ -39,20 +52,17 @@ pdf_obj *xobject_from_page(fz_context *ctx, pdf_obj *spageref, pdf_document *pdf
         xobj1 = pdf_new_xobject(ctx, pdfout, mediabox, &fz_identity);
         pdf_xobject *xobj1x = pdf_load_xobject(ctx, pdfout, xobj1);
         // store spage contents
-        pdf_update_xobject_contents(ctx, pdfout, xobj1x, res);
+        JM_update_xobject_contents(ctx, pdfout, xobj1x, res);
         fz_drop_buffer(ctx, res);
 
         // store spage resources
         pdf_dict_put_drop(ctx, xobj1, PDF_NAME_Resources, resources);
     }
-    fz_catch(ctx)
-    {
-        fz_rethrow(ctx);
-    }
+    fz_catch(ctx) fz_rethrow(ctx);
     return xobj1;
 }
 
-pdf_obj *xobject_from_xref(fz_context *ctx, int xref, pdf_document *pdfout, fz_rect *mediabox, fz_rect *cropbox)
+pdf_obj *JM_xobject_from_xref(fz_context *ctx, int xref, pdf_document *pdfout, fz_rect *mediabox, fz_rect *cropbox)
 {
     pdf_obj *x;
     pdf_xobject *xobj1x;
@@ -63,10 +73,49 @@ pdf_obj *xobject_from_xref(fz_context *ctx, int xref, pdf_document *pdfout, fz_r
         pdf_xobject_bbox(ctx, xobj1x, mediabox);
         pdf_xobject_bbox(ctx, xobj1x, cropbox);
     }
-    fz_catch(ctx)
-    {
-        fz_rethrow(ctx);
-    }
+    fz_catch(ctx) fz_rethrow(ctx);
     return x;
+}
+
+void JM_extend_contents(fz_context *ctx, pdf_document *pdfout, pdf_obj *pageref, fz_buffer *nres, int overlay)
+{
+    int i;
+    fz_buffer *res;
+    char *content_str;
+    size_t c_len = 0;
+    pdf_obj *contents = pdf_dict_get(ctx, pageref, PDF_NAME_Contents);
+    fz_try(ctx)
+    {
+        if (pdf_is_array(ctx, contents))     // multiple contents obj
+        {   // choose the correct one (1st or last)
+            if (overlay == 1) i = pdf_array_len(ctx, contents) - 1;
+            else  i = 0;
+            contents = pdf_array_get(ctx, contents, i);
+        }
+        res = pdf_load_stream(ctx, contents); // old contents buffer
+
+        if (overlay == 1)         // append our command
+        {
+            fz_append_buffer(ctx, res, nres);
+            fz_drop_buffer(ctx, nres);
+        }
+        else                      // prepend our command
+        {
+            fz_append_buffer(ctx, nres, res);
+            fz_drop_buffer(ctx, res);
+            res = nres;
+        }
+        fz_terminate_buffer(ctx, res);
+    
+        // now compress and put back contents stream
+        pdf_dict_put(ctx, contents, PDF_NAME_Filter, PDF_NAME_FlateDecode);
+        c_len = (size_t) fz_buffer_storage(ctx, res, &content_str);
+        nres = deflatebuf(ctx, content_str, c_len);
+        pdf_update_stream(ctx, pdfout, contents, nres, 1);
+        fz_drop_buffer(ctx, res);
+        fz_drop_buffer(ctx, nres);
+    }
+    fz_catch(ctx) fz_rethrow(ctx);
+    return;
 }
 %}
