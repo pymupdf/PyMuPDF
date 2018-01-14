@@ -74,6 +74,7 @@ fitz.Page.insertLink         = fitz.utils.insertLink
 fitz.Page.insertTextbox      = fitz.utils.insertTextbox
 fitz.Page.insertText         = fitz.utils.insertText
 fitz.Page.searchFor          = fitz.utils.searchFor
+fitz.Page.showPDFpage        = fitz.utils.showPDFpage
 fitz.Page.updateLink         = fitz.utils.updateLink
 fitz.Page.newShape           = lambda x: fitz.utils.Shape(x)
 

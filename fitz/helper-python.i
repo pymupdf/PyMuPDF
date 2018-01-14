@@ -303,6 +303,9 @@ def UpdateFontInfo(doc, info):
     else:
         doc.FontInfos.append(info)
 
+def DUMMY(*args, **kw):
+    return
+    
 def ConversionHeader(i, filename = "unknown"):
     t = i.lower()
     html = """<!DOCTYPE html>
