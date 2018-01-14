@@ -4,11 +4,36 @@ import math
 The following is a collection of functions to extend PyMupdf.
 '''
 #==============================================================================
+# A function for displaying other PDF pages
+#==============================================================================
+def showPDFpage(page, rect, src, pno, overlay = True, keep_proportion = True,
+    reuse_xref=0, clip = None):
+    """Show page number 'pno' of PDF 'src' in rectangle 'rect'.
+    """
+    fitz.CheckParent(page)
+    doc = page.parent
+    isrc = id(src)
+    if id(doc) == isrc:
+        raise ValueError("source document must not equal target")
+    if isrc in doc.Graftmaps:
+        gmap = doc.Graftmaps[isrc]
+    else:
+        gmap = fitz.Graftmap(doc)
+        doc.Graftmaps[isrc] = gmap
+    return page._showPDFpage(rect, src, pno, overlay = overlay,
+                             keep_proportion = keep_proportion,
+                             reuse_xref = reuse_xref, clip = clip,
+                             graftmap = gmap)
+
+#==============================================================================
 # A function for searching string occurrences on a page.
 #==============================================================================
-#def searchFor(page, text, hit_max = 16):
 def searchFor(page, text, hit_max = 16):
-    '''Search for a string on a page. Parameters:\ntext: string to be searched for\nhit_max: maximum hits.\nReturns a list of rectangles, each of which surrounds a found occurrence.'''
+    '''Search for a string on a page. Parameters:
+    text: string to be searched for
+    hit_max: maximum hits
+    Returns a list of rectangles, each containing an occurrence.
+    '''
     fitz.CheckParent(page)
     dl = page.getDisplayList()         # create DisplayList
     tp = dl.getTextPage()              # create TextPage

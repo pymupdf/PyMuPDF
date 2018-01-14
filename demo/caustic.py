@@ -44,7 +44,7 @@ img = page.newShape()
 img.drawCircle(center, radius)
 img.finish(color = coffee, fill = coffee)        # fill coffee into the cup
 
-count = 400                                      # how many sun rays we paint
+count = 200                                      # how many sun rays we paint
 interval = math.pi / count                       # angle fraction
 for i in range(1, count):
     a = -math.pi / 2 + i * interval              # go from -90 to +90 degrees
@@ -52,13 +52,19 @@ for i in range(1, count):
     bis = fitz.Point(pbis(a)) * radius + center  # end point adjusted
     img.drawLine(von, bis)
     
-img.finish(width = 0.3, color = yellow, closePath = False) # a ray is a fine yellow line
+img.finish(width = 1, color = yellow, closePath = False) # a ray is a fine yellow line
 
 img.drawCircle(center, radius)
 img.finish(color = blue)                         # cup border is blue
 img.commit()
-doc.save("caustic.pdf", garbage = 4, deflate = True)
+doc.save("catacaustic.pdf", garbage = 4)
 
-# create an image file of the PDF page
+# create a PNG image
 pix = doc.getPagePixmap(0)
-pix.writePNG("caustic.png")
+pix.writePNG("catacaustic.png")
+
+# create an SVG image
+t = page.getSVGimage()
+fout = open("catacaustic.svg", "w")
+fout.write(t)
+fout.close()

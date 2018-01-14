@@ -183,15 +183,17 @@ int strip_outlines(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int pa
 //   argc  = length of "liste"
 //   liste = (list of int) page numbers to retain
 //----------------------------------------------------------------------------
-void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
+void retainpages(fz_context *ctx, globals *glo, PyObject *liste)
 {
     pdf_obj *oldroot, *root, *pages, *kids, *countobj, *olddests;
+    Py_ssize_t argc = PySequence_Size(liste);
     pdf_document *doc = glo->doc;
     int argidx = 0;
     pdf_obj *names_list = NULL;
     pdf_obj *outlines;
     pdf_obj *ocproperties;
-    int pagecount;
+    int pagecount = pdf_count_pages(ctx, doc);
+
     int i;
     int *page_object_nums;
 
@@ -219,11 +221,18 @@ void retainpages(fz_context *ctx, globals *glo, int argc, int *liste)
     kids = pdf_new_array(ctx, doc, 1);
 
     // Retain pages specified
-    int page;
-    for (page = 0; page < argc; page++)
-        {
-            retainpage(ctx, doc, pages, kids, liste[page]);
-        }
+    Py_ssize_t page;
+    fz_try(ctx)
+    {
+        for (page = 0; page < argc; page++)
+            {
+                i = (int) PyInt_AsLong(PySequence_GetItem(liste, page));
+                if (i < 0 || i >= pagecount)
+                    fz_throw(ctx, FZ_ERROR_GENERIC, "invalid page number(s)");
+                retainpage(ctx, doc, pages, kids, i);
+            }
+    }
+    fz_catch(ctx) fz_rethrow(ctx);
 
     // Update page count and kids array
     countobj = pdf_new_int(ctx, doc, pdf_array_len(ctx, kids));

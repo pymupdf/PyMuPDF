@@ -25,6 +25,10 @@ Notes
     Windows 10, AMD 4.0 GHz for the 1'310 pages of the Adobe manual.
     Without save-options "garbage" and "deflate" this goes below 4 seconds, but
     results in a bigger file.
+    
+Dependencies
+-------------
+PyMuPDF 1.12.1 or later
 '''
 from __future__ import print_function
 import fitz, sys

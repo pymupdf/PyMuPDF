@@ -123,18 +123,22 @@ struct fz_document_s
             self.streamlen = len(stream) if stream else 0
             if stream and not filename:
                 raise ValueError("filetype missing with stream specified")
-            self.isClosed    = 0
+            if filename and stream and type(stream) not in (bytes, bytearray):
+                raise ValueError("stream must be bytes or bytearray")
+            self.isClosed    = False
             self.isEncrypted = 0
             self.metadata    = None
             self.openErrCode = 0
             self.openErrMsg  = ''
             self.FontInfos   = []
+            self.Graftmaps   = {}
             self._page_refs  = weakref.WeakValueDictionary()%}
         %pythonappend fz_document_s %{
             if this:
                 self.openErrCode = self._getGCTXerrcode()
                 self.openErrMsg  = self._getGCTXerrmsg()
                 self.thisown = True
+                self.isClosed    = False
                 if self.needsPass:
                     self.isEncrypted = 1
                 else: # we won't init until doc is decrypted
@@ -187,10 +191,13 @@ struct fz_document_s
                 self._outline = None
             self._reset_page_refs()
             self.metadata    = None
-            self.isClosed    = 1
+            self.isClosed    = True
             self.openErrCode = 0
             self.openErrMsg  = ''
             self.FontInfos   = []
+            for gmap in self.Graftmaps:
+                self.Graftmaps[gmap] = None
+            self.Graftmaps = {}
         %}
         %pythonappend close %{self.thisown = False%}
         void close()
@@ -616,9 +623,11 @@ struct fz_document_s
             fz_try(gctx)
                 {
                 assert_PDF(pdf);
-                if (fz_count_pages(gctx, $self) < 1) THROWMSG("document has no pages");
+                if (fz_count_pages(gctx, $self) < 1)
+                    THROWMSG("document has no pages");
                 if ((incremental) && (fz_needs_password(gctx, $self)))
                     THROWMSG("decrypted file - save to new");
+                pdf_finish_edit(gctx, pdf);
                 pdf_save_document(gctx, pdf, filename, &opts);
                 }
             fz_catch(gctx) return -1;
@@ -660,7 +669,8 @@ struct fz_document_s
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                if (fz_count_pages(gctx, $self) < 1) THROWMSG("document has zero pages");
+                if (fz_count_pages(gctx, $self) < 1)
+                    THROWMSG("document has zero pages");
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 pdf_write_document(gctx, pdf, out, &opts);
@@ -742,8 +752,9 @@ if sa < 0:
                 assert_PDF(pdf);
                 int pageCount = fz_count_pages(gctx, $self);
                 if ((pno < 0) || (pno >= pageCount))
-                    THROWMSG("page number(s) out of range");
+                    THROWMSG("invalid page number(s)");
                 pdf_delete_page(gctx, pdf, pno);
+                pdf_finish_edit(gctx, pdf);
             }
             fz_catch(gctx) return -1;
             return 0;
@@ -768,7 +779,7 @@ if sa < 0:
                 if (f < 0) f = pageCount - 1;
                 if (t < 0) t = pageCount - 1;
                 if ((t >= pageCount) | (f > t))
-                    THROWMSG("page number(s) out of range");
+                    THROWMSG("invalid page number(s)");
                 int i = t + 1 - f;
                 while (i > 0)
                 {
@@ -796,7 +807,7 @@ if sa < 0:
                 assert_PDF(pdf);
                 int pageCount = fz_count_pages(gctx, $self);
                 if ((pno < 0) | (pno >= pageCount))
-                    THROWMSG("page number(s) out of range");
+                    THROWMSG("invalid page number(s)");
                 pdf_obj *page = pdf_lookup_page_obj(gctx, pdf, pno);
                 pdf_insert_page(gctx, pdf, to, page);
                 pdf_finish_edit(gctx, pdf);
@@ -841,7 +852,7 @@ if sa < 0:
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                if (pno < -1) THROWMSG("page number(s) out of range");
+                if (pno < -1) THROWMSG("invalid page number(s)");
                 // create /Resources and /Contents objects
                 resources = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
                 contents = fz_new_buffer(gctx, 10);
@@ -849,7 +860,7 @@ if sa < 0:
                 fz_terminate_buffer(gctx, contents);
                 page_obj = pdf_add_page(gctx, pdf, &mediabox, 0, resources, contents);
                 pdf_insert_page(gctx, pdf, pno , page_obj);
-                //pdf_finish_edit(gctx, pdf);
+                pdf_finish_edit(gctx, pdf);
             }
             fz_always(gctx)
             {
@@ -875,7 +886,7 @@ if sa < 0:
                 assert_PDF(pdf);
                 int pageCount = fz_count_pages(gctx, $self);
                 if ((pno < 0) | (pno >= pageCount))
-                    THROWMSG("page number(s) out of range");
+                    THROWMSG("invalid page number(s)");
                 int t = to;
                 if (t < 0) t = pageCount;
                 if ((t == pno) || (pno == t - 1))
@@ -910,54 +921,21 @@ if sa < 0:
             // (2) transform Python list into integer array
             
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            int argc;
             fz_try(gctx)
             {
                 assert_PDF(pdf);
                 if (!PySequence_Check(pyliste))
                     THROWMSG("expected a sequence");
-                argc = (int) PySequence_Size(pyliste);
-                if (argc < 1)
-                    THROWMSG("len(sequence) invalid");
-            }
-            fz_catch(gctx) return -1;
-
-            // transform Python list into int array
-            int pageCount = fz_count_pages(gctx, $self);
-            int i;
-            int *liste;
-            liste = malloc(argc * sizeof(int));
-            fz_try(gctx)
-            {
-                for (i = 0; i < argc; i++)
-                {
-                    PyObject *o = PySequence_GetItem(pyliste, i);
-                    if (PyInt_Check(o))
-                    {
-                        liste[i] = (int) PyInt_AsLong(o);
-                        if ((liste[i] < 0) | (liste[i] >= pageCount))
-                            THROWMSG("page number(s) out of range");
-                    }
-                    else
-                        THROWMSG("page numbers must be integers");
-                }
-            }
-            fz_catch(gctx)
-            {
-                if (liste) free (liste);
-                return -1;
-            }
-            // now call retainpages (code copy of fz_clean_file.c)
-            globals glo = { 0 };
-            glo.ctx = gctx;
-            glo.doc = pdf;
-            fz_try(gctx)
-            {
-                retainpages(gctx, &glo, argc, liste);
+                if (PySequence_Size(pyliste) < 1)
+                    THROWMSG("len(sequence) invalid");        
+                // now call retainpages (code copy of fz_clean_file.c)
+                globals glo = {0};
+                glo.ctx = gctx;
+                glo.doc = pdf;
+                retainpages(gctx, &glo, pyliste);
                 pdf_finish_edit(gctx, pdf);
             }
-            fz_always(gctx) free (liste);
-            fz_catch(gctx) return -5;
+            fz_catch(gctx) return -1;
             return 0;
         }
 
@@ -1062,7 +1040,7 @@ if sa < 0:
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx)
             {
-                if (pno >= pageCount) THROWMSG("page number(s) out of range");
+                if (pno >= pageCount) THROWMSG("invalid page number(s)");
                 assert_PDF(pdf);
             }
             fz_catch(gctx) return NULL;
@@ -1090,7 +1068,7 @@ if sa < 0:
             while (n < 0) n += pageCount;
             fz_try(gctx)
             {
-                if (n >= pageCount) THROWMSG("page number(s) out of range");
+                if (n >= pageCount) THROWMSG("invalid page number(s)");
                 assert_PDF(pdf);
             }
             fz_catch(gctx) return NULL;
@@ -1165,7 +1143,7 @@ if sa < 0:
             while (n < 0) n += pageCount;
             fz_try(gctx)
             {
-                if (n >= pageCount) THROWMSG("page number(s) out of range");
+                if (n >= pageCount) THROWMSG("invalid page number(s)");
                 assert_PDF(pdf);
             }
             fz_catch(gctx) return NULL;
@@ -1583,17 +1561,18 @@ if sa < 0:
                 return self.save(self.name, incremental = True)
 
             def __repr__(self):
+                m = "closed " if self.isClosed else ""
                 if self.streamlen == 0:
                     if self.name == "":
-                        return "fitz.Document(<new PDF>)"
-                    return "fitz.Document('%s')" % (self.name,)
-                return "fitz.Document('%s', <memory>)" % (self.name,)
+                        return m + "fitz.Document(<new PDF>)"
+                    return m + "fitz.Document('%s')" % (self.name,)
+                return m + "fitz.Document('%s', <memory>)" % (self.name,)
 
             def __getitem__(self, i=0):
                 if type(i) is not int:
-                    raise ValueError("page number must be integer")
+                    raise ValueError("invalid page number(s)")
                 if i >= len(self):
-                    raise IndexError("page number(s) out of range")
+                    raise IndexError("invalid page number(s)")
                 return self.loadPage(i)
 
             def __len__(self):
@@ -1607,16 +1586,26 @@ if sa < 0:
 
             def _reset_page_refs(self):
                 """Invalidate all pages in document dictionary."""
+                if self.isClosed:
+                    return
                 for page in self._page_refs.values():
                     if page:
                         page._erase()
                 self._page_refs.clear()
             
             def __del__(self):
-                self._reset_page_refs()
+                self.isClosed = True
+                if hasattr(self, "_reset_page_refs"):
+                    self._reset_page_refs()
+                if hasattr(self, "Graftmaps"):
+                    for gmap in self.Graftmaps:
+                        self.Graftmaps[gmap] = None
                 if hasattr(self, "this") and self.thisown:
                     self.thisown = False
                     self.__swig_destroy__(self)
+                self.Graftmaps = {}
+                self._reset_page_refs = DUMMY
+                self.__swig_destroy__ = DUMMY
             %}
     }
 };
@@ -2029,11 +2018,7 @@ fannot._erase()
         //---------------------------------------------------------------------
         FITZEXCEPTION(showPDFpage, result<0)
         %feature("autodoc", "Display a PDF page in a rectangle.") showPDFpage;
-        %pythonprepend showPDFpage %{
-            CheckParent(self)
-            if id(self.parent) == id(docsrc):
-                raise ValueError("source document must not equal target")%}
-        int showPDFpage(struct fz_rect_s *rect, struct fz_document_s *docsrc = NULL, int pno=0, int overlay=1, int keep_proportion=1, int reuse_xref=0, struct fz_rect_s *clip = NULL)
+        int _showPDFpage(struct fz_rect_s *rect, struct fz_document_s *docsrc, int pno=0, int overlay=1, int keep_proportion=1, int reuse_xref=0, struct fz_rect_s *clip = NULL, struct pdf_graft_map_s *graftmap = NULL)
         {
             int xref;
             xref = reuse_xref;
@@ -2048,32 +2033,12 @@ fannot._erase()
                 assert_PDF(tpage);
                 pdf_obj *tpageref = tpage->obj;
                 pdf_document *pdfout = tpage->doc;    // target PDF
-
-                if (xref < 1 && !docsrc) THROWMSG("one of xref, docsrc must be given");
-
-                if (xref < 1)
-                {
-                    //-------------------------------------------------------------
-                    // PDF source specified
-                    //-------------------------------------------------------------
-                    pdf_document *pdfsrc = pdf_specifics(gctx, docsrc);
-                    assert_PDF(pdfsrc);
-                    int inCount = fz_count_pages(gctx, docsrc);
-                    if (pno < 0 || pno >= inCount) THROWMSG("page number(s) out of range");
-                    pdf_obj *spageref = pdf_lookup_page_obj(gctx, pdfsrc, pno);
-                    xobj1 = JM_xobject_from_page(gctx, spageref, pdfout, &mediabox, &cropbox);
-
-                    // this is xref of spage as XObject
-                    xref = pdf_to_num(gctx, xobj1);
-                }
-                else
-                {
-                    //-------------------------------------------------------------
-                    // XREF specified
-                    //-------------------------------------------------------------
-                    if (xref >= pdf_xref_len(gctx, pdfout)) THROWMSG("xref out of range");
-                    xobj1 = JM_xobject_from_xref(gctx, xref, pdfout, &mediabox, &cropbox);
-                }
+                pdf_document *pdfsrc = pdf_specifics(gctx, docsrc);
+                assert_PDF(pdfsrc);
+                // make the XObject for source page
+                xobj1 = JM_xobject_from_page(gctx, pdfout, pdfsrc, pno, &mediabox, &cropbox, xref, graftmap);
+                // this is xref of spage as XObject
+                xref = pdf_to_num(gctx, xobj1);
 
                 //-------------------------------------------------------------
                 // Calculate Matrix and BBox of the referencing XObject
@@ -2497,6 +2462,14 @@ fannot._erase()
             CheckParent(self)
             return self.parent.getPageImageList(self.number)
 
+        @property
+        def CropBox(self):
+            return self.rect + Rect(self.CropBoxPosition, self.CropBoxPosition)
+        
+        @property
+        def MediaBox(self):
+            return Rect(0, 0, self.MediaBoxSize)
+        
         %}
     }
 };
@@ -2601,23 +2574,18 @@ struct fz_rect_s
         struct fz_irect_s *round()
         {
             fz_irect *irect = (fz_irect *)malloc(sizeof(fz_irect));
-            fz_rect *rect = (fz_rect *)malloc(sizeof(fz_rect));
-            rect->x0 = $self->x0;
-            rect->y0 = $self->y0;
-            rect->x1 = $self->x1;
-            rect->y1 = $self->y1;
+            fz_rect rect = {$self->x0, $self->y0,  $self->x1, $self->y1};
             if ($self->x1 < $self->x0)
             {
-                rect->x0 = $self->x1;
-                rect->x1 = $self->x0;
+                rect.x0 = $self->x1;
+                rect.x1 = $self->x0;
             }
             if ($self->y1 < $self->y0)
             {
-                rect->y0 = $self->y1;
-                rect->y1 = $self->y0;
+                rect.y0 = $self->y1;
+                rect.y1 = $self->y0;
             }
-            fz_round_rect(irect, rect);
-            free(rect);
+            fz_round_rect(irect, &rect);
             return irect;
         }
 
@@ -5458,5 +5426,35 @@ struct fz_stext_page_s {
                 return self._extractText(4)
                 
         %}
+    }
+};
+
+%rename("Graftmap") pdf_graft_map_s;
+struct pdf_graft_map_s {
+    %extend {
+        ~pdf_graft_map_s()
+        {
+#ifdef MEMDEBUG
+            fprintf(stderr, "[DEBUG]free graftmap ...");
+#endif
+            pdf_drop_graft_map(gctx, $self);
+#ifdef MEMDEBUG
+            fprintf(stderr, " done!\n");
+#endif
+        }
+
+        FITZEXCEPTION(pdf_graft_map_s, !result)
+        pdf_graft_map_s(struct fz_document_s *doc)
+        {
+            pdf_graft_map *map = NULL;
+            fz_try(gctx)
+            {
+                pdf_document *dst = pdf_specifics(gctx, doc);
+                assert_PDF(dst);
+                map = pdf_new_graft_map(gctx, dst);
+            }
+            fz_catch(gctx) return NULL;
+            return map;
+        }
     }
 };

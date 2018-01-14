@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.12.0"
 VersionBind = "1.12.2"
-VersionDate = "2018-01-09 09:41:34"
-version = (VersionBind, VersionFitz, "20180109094134")
+VersionDate = "2018-01-14 15:20:51"
+version = (VersionBind, VersionFitz, "20180114152051")
 
 
 #------------------------------------------------------------------------------
@@ -411,6 +411,9 @@ def UpdateFontInfo(doc, info):
     else:
         doc.FontInfos.append(info)
 
+def DUMMY(*args, **kw):
+    return
+
 def ConversionHeader(i, filename = "unknown"):
     t = i.lower()
     html = """<!DOCTYPE html>
@@ -502,12 +505,15 @@ open(filename)"""
         self.streamlen = len(stream) if stream else 0
         if stream and not filename:
             raise ValueError("filetype missing with stream specified")
-        self.isClosed    = 0
+        if filename and stream and type(stream) not in (bytes, bytearray):
+            raise ValueError("stream must be bytes or bytearray")
+        self.isClosed    = False
         self.isEncrypted = 0
         self.metadata    = None
         self.openErrCode = 0
         self.openErrMsg  = ''
         self.FontInfos   = []
+        self.Graftmaps   = {}
         self._page_refs  = weakref.WeakValueDictionary()
 
         this = _fitz.new_Document(filename, stream)
@@ -520,6 +526,7 @@ open(filename)"""
             self.openErrCode = self._getGCTXerrcode()
             self.openErrMsg  = self._getGCTXerrmsg()
             self.thisown = True
+            self.isClosed    = False
             if self.needsPass:
                 self.isEncrypted = 1
             else: # we won't init until doc is decrypted
@@ -540,10 +547,13 @@ open(filename)"""
             self._outline = None
         self._reset_page_refs()
         self.metadata    = None
-        self.isClosed    = 1
+        self.isClosed    = True
         self.openErrCode = 0
         self.openErrMsg  = ''
         self.FontInfos   = []
+        for gmap in self.Graftmaps:
+            self.Graftmaps[gmap] = None
+        self.Graftmaps = {}
 
 
         val = _fitz.Document_close(self)
@@ -983,17 +993,18 @@ open(filename)"""
         return self.save(self.name, incremental = True)
 
     def __repr__(self):
+        m = "closed " if self.isClosed else ""
         if self.streamlen == 0:
             if self.name == "":
-                return "fitz.Document(<new PDF>)"
-            return "fitz.Document('%s')" % (self.name,)
-        return "fitz.Document('%s', <memory>)" % (self.name,)
+                return m + "fitz.Document(<new PDF>)"
+            return m + "fitz.Document('%s')" % (self.name,)
+        return m + "fitz.Document('%s', <memory>)" % (self.name,)
 
     def __getitem__(self, i=0):
         if type(i) is not int:
-            raise ValueError("page number must be integer")
+            raise ValueError("invalid page number(s)")
         if i >= len(self):
-            raise IndexError("page number(s) out of range")
+            raise IndexError("invalid page number(s)")
         return self.loadPage(i)
 
     def __len__(self):
@@ -1007,16 +1018,26 @@ open(filename)"""
 
     def _reset_page_refs(self):
         """Invalidate all pages in document dictionary."""
+        if self.isClosed:
+            return
         for page in self._page_refs.values():
             if page:
                 page._erase()
         self._page_refs.clear()
 
     def __del__(self):
-        self._reset_page_refs()
+        self.isClosed = True
+        if hasattr(self, "_reset_page_refs"):
+            self._reset_page_refs()
+        if hasattr(self, "Graftmaps"):
+            for gmap in self.Graftmaps:
+                self.Graftmaps[gmap] = None
         if hasattr(self, "this") and self.thisown:
             self.thisown = False
             self.__swig_destroy__(self)
+        self.Graftmaps = {}
+        self._reset_page_refs = DUMMY
+        self.__swig_destroy__ = DUMMY
 
 Document_swigregister = _fitz.Document_swigregister
 Document_swigregister(Document)
@@ -1187,14 +1208,9 @@ class Page(_object):
         return _fitz.Page__cleanContents(self)
 
 
-    def showPDFpage(self, rect, docsrc=None, pno=0, overlay=1, keep_proportion=1, reuse_xref=0, clip=None):
-        """Display a PDF page in a rectangle."""
-
-        CheckParent(self)
-        if id(self.parent) == id(docsrc):
-            raise ValueError("source document must not equal target")
-
-        return _fitz.Page_showPDFpage(self, rect, docsrc, pno, overlay, keep_proportion, reuse_xref, clip)
+    def _showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportion=1, reuse_xref=0, clip=None, graftmap=None):
+        """_showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportion=1, reuse_xref=0, clip=None, graftmap=None) -> int"""
+        return _fitz.Page__showPDFpage(self, rect, docsrc, pno, overlay, keep_proportion, reuse_xref, clip, graftmap)
 
 
     def insertImage(self, rect, filename=None, pixmap=None, overlay=1):
@@ -1304,6 +1320,14 @@ class Page(_object):
         CheckParent(self)
         return self.parent.getPageImageList(self.number)
 
+    @property
+    def CropBox(self):
+        return self.rect + Rect(self.CropBoxPosition, self.CropBoxPosition)
+
+    @property
+    def MediaBox(self):
+        return Rect(0, 0, self.MediaBoxSize)
+
 
 Page_swigregister = _fitz.Page_swigregister
 Page_swigregister(Page)
@@ -1390,7 +1414,7 @@ Rect(sequence) - from 'sequence'"""
 
 
     def contains(self, *args):
-        """Check for containing some 'Point' or other rectangle."""
+        """Check if containing a 'Point' or other rect"""
         return _fitz.Rect_contains(self, *args)
 
     @property
@@ -1531,7 +1555,7 @@ IRect(sequence) - from 'sequence'"""
 
 
     def contains(self, *args):
-        """Check for containing some 'Point' or other rectangle."""
+        """Check if containing a 'Point' or other rect"""
         return _fitz.IRect_contains(self, *args)
 
 
@@ -1611,7 +1635,7 @@ Pixmap(Colorspace, Pixmap [, alpha]) - converted copy
 Pixmap(filename)
 Pixmap(Pixmap) - new copy with added alpha
 Pixmap(image-buffer) - from bytearray
-Pixmap(Document, xref) - from PDF image in a PDF"""
+Pixmap(Document, xref) - from image in PDF"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Pixmap, name, value)
@@ -2602,6 +2626,27 @@ class TextPage(_object):
 
 TextPage_swigregister = _fitz.TextPage_swigregister
 TextPage_swigregister(TextPage)
+
+class Graftmap(_object):
+    """Proxy of C pdf_graft_map_s struct."""
+
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Graftmap, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Graftmap, name)
+    __repr__ = _swig_repr
+    __swig_destroy__ = _fitz.delete_Graftmap
+    __del__ = lambda self: None
+
+    def __init__(self, doc):
+        """__init__(self, doc) -> Graftmap"""
+        this = _fitz.new_Graftmap(doc)
+        try:
+            self.this.append(this)
+        except __builtin__.Exception:
+            self.this = this
+Graftmap_swigregister = _fitz.Graftmap_swigregister
+Graftmap_swigregister(Graftmap)
 
 # This file is compatible with both classic and new-style classes.
 

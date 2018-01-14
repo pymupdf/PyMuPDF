@@ -12,13 +12,17 @@ void JM_update_xobject_contents(fz_context *ctx, pdf_document *doc, pdf_xobject 
 	form->iteration ++;
 }
 
-pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_obj *spageref, pdf_document *pdfout, fz_rect *mediabox, fz_rect *cropbox)
+pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_document *pdfsrc, int pno, fz_rect *mediabox, fz_rect *cropbox, int xref, pdf_graft_map *gmap)
 {
     fz_buffer *nres, *res;
-    pdf_obj *xobj1, *contents, *resources, *o;
+    pdf_obj *xobj1, *contents, *resources, *o, *spageref;
+    pdf_xobject *xobj1x;
     int i;
     fz_try(ctx)
     {
+        if (pno < 0 || pno >= pdf_count_pages(ctx, pdfsrc))
+            fz_throw(ctx, FZ_ERROR_GENERIC, "invalid page number(s)");
+        spageref = pdf_lookup_page_obj(ctx, pdfsrc, pno);
         pdf_to_rect(ctx, pdf_dict_get(ctx, spageref, PDF_NAME_MediaBox), mediabox);
         o = pdf_dict_get(ctx, spageref, PDF_NAME_CropBox);
         if (!o)
@@ -26,55 +30,58 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_obj *spageref, pdf_document *
         else
             pdf_to_rect(ctx, o, cropbox);
 
-        // Deep-copy resources object of source page
-        o = pdf_dict_get(ctx, spageref, PDF_NAME_Resources);
-        resources = pdf_graft_object(ctx, pdfout, o);
-        // get spgage contents source; maybe several objects
-        contents = pdf_dict_get(ctx, spageref, PDF_NAME_Contents);
-        if (pdf_is_array(ctx, contents))     // more than one!
+        if (xref > 0)
         {
-            res = fz_new_buffer(ctx, 1024);
-            for (i=0; i < pdf_array_len(ctx, contents); i++)
-            {
-                nres = pdf_load_stream(ctx, pdf_array_get(ctx, contents, i));
-                fz_append_buffer(ctx, res, nres);
-                fz_drop_buffer(ctx, nres);
-            }
+            if (xref >= pdf_xref_len(ctx, pdfout))
+                fz_throw(ctx, FZ_ERROR_GENERIC, "xref out of range");
+            xobj1 = pdf_new_indirect(ctx, pdfout, xref, 0);
+            xobj1x = pdf_load_xobject(ctx, pdfout, xobj1);
         }
         else
         {
-            res = pdf_load_stream(ctx, contents);
+            // Deep-copy resources object of source page
+            o = pdf_dict_get(ctx, spageref, PDF_NAME_Resources);
+            if (gmap)
+            {
+                resources = pdf_graft_mapped_object(ctx, gmap, o);
+            }
+            else
+            {
+                resources = pdf_graft_object(ctx, pdfout, o);
+            }
+            
+            // get spgage contents source; maybe several objects
+            contents = pdf_dict_get(ctx, spageref, PDF_NAME_Contents);
+            if (pdf_is_array(ctx, contents))     // more than one!
+            {
+                res = fz_new_buffer(ctx, 1024);
+                for (i=0; i < pdf_array_len(ctx, contents); i++)
+                {
+                    nres = pdf_load_stream(ctx, pdf_array_get(ctx, contents, i));
+                    fz_append_buffer(ctx, res, nres);
+                    fz_drop_buffer(ctx, nres);
+                }
+            }
+            else
+            {
+                res = pdf_load_stream(ctx, contents);
+            }
+
+            //-------------------------------------------------------------
+            // create XObject representing the source page
+            //-------------------------------------------------------------
+            xobj1 = pdf_new_xobject(ctx, pdfout, mediabox, &fz_identity);
+            xobj1x = pdf_load_xobject(ctx, pdfout, xobj1);
+            // store spage contents
+            JM_update_xobject_contents(ctx, pdfout, xobj1x, res);
+            fz_drop_buffer(ctx, res);
+
+            // store spage resources
+            pdf_dict_put_drop(ctx, xobj1, PDF_NAME_Resources, resources);
         }
-
-        //-------------------------------------------------------------
-        // create XObject representing the source page
-        //-------------------------------------------------------------
-        xobj1 = pdf_new_xobject(ctx, pdfout, mediabox, &fz_identity);
-        pdf_xobject *xobj1x = pdf_load_xobject(ctx, pdfout, xobj1);
-        // store spage contents
-        JM_update_xobject_contents(ctx, pdfout, xobj1x, res);
-        fz_drop_buffer(ctx, res);
-
-        // store spage resources
-        pdf_dict_put_drop(ctx, xobj1, PDF_NAME_Resources, resources);
     }
     fz_catch(ctx) fz_rethrow(ctx);
     return xobj1;
-}
-
-pdf_obj *JM_xobject_from_xref(fz_context *ctx, int xref, pdf_document *pdfout, fz_rect *mediabox, fz_rect *cropbox)
-{
-    pdf_obj *x;
-    pdf_xobject *xobj1x;
-    fz_try(ctx)
-    {
-        x = pdf_new_indirect(ctx, pdfout, xref, 0);
-        xobj1x = pdf_load_xobject(ctx, pdfout, x);
-        pdf_xobject_bbox(ctx, xobj1x, mediabox);
-        pdf_xobject_bbox(ctx, xobj1x, cropbox);
-    }
-    fz_catch(ctx) fz_rethrow(ctx);
-    return x;
 }
 
 void JM_extend_contents(fz_context *ctx, pdf_document *pdfout, pdf_obj *pageref, fz_buffer *nres, int overlay)
