@@ -149,6 +149,8 @@ struct fz_document_s
 
         fz_document_s(const char *filename = NULL, PyObject *stream = NULL)
         {
+            gctx->error->errcode = 0;
+            gctx->error->message[0] = 0;
             struct fz_document_s *doc = NULL;
             fz_stream *data = NULL;
             char *streamdata = NULL;
@@ -1717,9 +1719,35 @@ struct fz_page_s {
             return dl;
         }
 
-        /***********************************************************/
+        //---------------------------------------------------------------------
+        // Page.setCropBox
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(setCropBox, result<0)
+        PARENTCHECK(setCropBox)
+        int setCropBox(struct fz_rect_s *rect)
+        {
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            pdf_obj *o;
+            fz_try(gctx)
+            {
+                assert_PDF(page);
+                fz_rect mediabox = {0,0,0,0};
+                fz_rect cropbox = {0,0,0,0};
+                pdf_to_rect(gctx, pdf_dict_get(gctx, page->obj, PDF_NAME_MediaBox), &mediabox);
+                cropbox.x0 = rect->x0;
+                cropbox.y0 = mediabox.y1 - rect->y1;
+                cropbox.x1 = rect->x1;
+                cropbox.y1 = mediabox.y1 - rect->y0;
+                pdf_dict_put_drop(gctx, page->obj, PDF_NAME_CropBox,
+                                  pdf_new_rect(gctx, page->doc, &cropbox));                
+            }
+            fz_catch(gctx) return -1;
+            return 0;
+        }
+
+        //---------------------------------------------------------------------
         // loadLinks()
-        /***********************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(loadLinks)
         %pythonappend loadLinks
 %{if val:
@@ -1853,19 +1881,19 @@ fannot._erase()
         //---------------------------------------------------------------------
         PARENTCHECK(CropBoxPosition)
         %pythoncode %{@property%}
-        %feature("autodoc","Retrieve position of /CropBox.") CropBoxPosition;
+        %feature("autodoc","Retrieve position of /CropBox. Return (0,0) for non-PDF, or no /CropBox.") CropBoxPosition;
         struct fz_point_s *CropBoxPosition()
         {
             fz_point *p = (fz_point *)malloc(sizeof(fz_point));
             p->x = p->y = 0.0;
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            if (!page) return p;
-            fz_rect r = {0,0,0,0};
+            if (!page) return p;                 // not a PDF
+            fz_rect cbox = {0,0,0,0};
             pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME_CropBox);
-            if (!o) return p;
-            pdf_to_rect(gctx, o, &r);
-            p->x = r.x0;
-            p->y = r.y0;
+            if (!o) return p;                    // no CropBox specified
+            pdf_to_rect(gctx, o, &cbox);
+            p->x = cbox.x0;
+            p->y = cbox.y0;
             return p;
         }
 
