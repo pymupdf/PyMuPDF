@@ -42,4 +42,4 @@ for i in range(nedge):
 
 img.finish(color = (0,0,1), fill = (1,1,0), closePath = False)
 img.commit()
-doc.save("wavy-polygon.pdf")
+doc.save("wavy-polygon.pdf", garbage = 4)

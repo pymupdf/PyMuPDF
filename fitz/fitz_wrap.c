@@ -4705,6 +4705,8 @@ SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
 
 
 SWIGINTERN struct fz_document_s *new_fz_document_s(char const *filename,PyObject *stream){
+            gctx->error->errcode = 0;
+            gctx->error->message[0] = 0;
             struct fz_document_s *doc = NULL;
             fz_stream *data = NULL;
             char *streamdata = NULL;
@@ -6251,6 +6253,29 @@ SWIGINTERN struct fz_display_list_s *fz_page_s_getDisplayList(struct fz_page_s *
             fz_catch(gctx) return NULL;
             return dl;
         }
+SWIGINTERN int fz_page_s_setCropBox(struct fz_page_s *self,struct fz_rect_s *rect){
+            pdf_page *page = pdf_page_from_fz_page(gctx, self);
+            pdf_obj *o;
+            fz_try(gctx)
+            {
+                /*@SWIG:fitz\fitz.i,45,assert_PDF@*/
+if (!page) /*@SWIG:fitz\fitz.i,39,THROWMSG@*/
+fz_throw(gctx, FZ_ERROR_GENERIC, "not a PDF")
+/*@SWIG@*/
+/*@SWIG@*/;
+                fz_rect mediabox = {0,0,0,0};
+                fz_rect cropbox = {0,0,0,0};
+                pdf_to_rect(gctx, pdf_dict_get(gctx, page->obj, PDF_NAME_MediaBox), &mediabox);
+                cropbox.x0 = rect->x0;
+                cropbox.y0 = mediabox.y1 - rect->y1;
+                cropbox.x1 = rect->x1;
+                cropbox.y1 = mediabox.y1 - rect->y0;
+                pdf_dict_put_drop(gctx, page->obj, PDF_NAME_CropBox,
+                                  pdf_new_rect(gctx, page->doc, &cropbox));                
+            }
+            fz_catch(gctx) return -1;
+            return 0;
+        }
 SWIGINTERN struct fz_link_s *fz_page_s_loadLinks(struct fz_page_s *self){
             fz_link *l = NULL;
             fz_try(gctx) l = fz_load_links(gctx, self);
@@ -6318,13 +6343,13 @@ SWIGINTERN struct fz_point_s *fz_page_s_CropBoxPosition(struct fz_page_s *self){
             fz_point *p = (fz_point *)malloc(sizeof(fz_point));
             p->x = p->y = 0.0;
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
-            if (!page) return p;
-            fz_rect r = {0,0,0,0};
+            if (!page) return p;                 // not a PDF
+            fz_rect cbox = {0,0,0,0};
             pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME_CropBox);
-            if (!o) return p;
-            pdf_to_rect(gctx, o, &r);
-            p->x = r.x0;
-            p->y = r.y0;
+            if (!o) return p;                    // no CropBox specified
+            pdf_to_rect(gctx, o, &cbox);
+            p->x = cbox.x0;
+            p->y = cbox.y0;
             return p;
         }
 SWIGINTERN int fz_page_s_rotation(struct fz_page_s *self){
@@ -10815,6 +10840,44 @@ SWIGINTERN PyObject *_wrap_Page_getDisplayList(PyObject *SWIGUNUSEDPARM(self), P
     }
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_display_list_s, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Page_setCropBox(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
+  struct fz_rect_s *arg2 = (struct fz_rect_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Page_setCropBox",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_setCropBox" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
+  }
+  arg1 = (struct fz_page_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_rect_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Page_setCropBox" "', argument " "2"" of type '" "struct fz_rect_s *""'"); 
+  }
+  arg2 = (struct fz_rect_s *)(argp2);
+  {
+    result = (int)fz_page_s_setCropBox(arg1,arg2);
+    if(result<0)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
   return NULL;
@@ -17744,12 +17807,13 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Page_run", _wrap_Page_run, METH_VARARGS, (char *)"Page_run(self, dw, m) -> int"},
 	 { (char *)"Page_getSVGimage", _wrap_Page_getSVGimage, METH_VARARGS, (char *)"Page_getSVGimage(self, matrix=None) -> PyObject *"},
 	 { (char *)"Page_getDisplayList", _wrap_Page_getDisplayList, METH_VARARGS, (char *)"Page_getDisplayList(self) -> DisplayList"},
+	 { (char *)"Page_setCropBox", _wrap_Page_setCropBox, METH_VARARGS, (char *)"Page_setCropBox(self, rect) -> int"},
 	 { (char *)"Page_loadLinks", _wrap_Page_loadLinks, METH_VARARGS, (char *)"Page_loadLinks(self) -> Link"},
 	 { (char *)"Page_firstAnnot", _wrap_Page_firstAnnot, METH_VARARGS, (char *)"firstAnnot points to first annot on page"},
 	 { (char *)"Page_deleteLink", _wrap_Page_deleteLink, METH_VARARGS, (char *)"Delete link if PDF"},
 	 { (char *)"Page_deleteAnnot", _wrap_Page_deleteAnnot, METH_VARARGS, (char *)"Delete annot if PDF and return next one"},
 	 { (char *)"Page_MediaBoxSize", _wrap_Page_MediaBoxSize, METH_VARARGS, (char *)"Retrieve width, height of /MediaBox."},
-	 { (char *)"Page_CropBoxPosition", _wrap_Page_CropBoxPosition, METH_VARARGS, (char *)"Retrieve position of /CropBox."},
+	 { (char *)"Page_CropBoxPosition", _wrap_Page_CropBoxPosition, METH_VARARGS, (char *)"Retrieve position of /CropBox. Return (0,0) for non-PDF, or no /CropBox."},
 	 { (char *)"Page_rotation", _wrap_Page_rotation, METH_VARARGS, (char *)"Retrieve page rotation."},
 	 { (char *)"Page_setRotation", _wrap_Page_setRotation, METH_VARARGS, (char *)"Set page rotation to 'rot' degrees."},
 	 { (char *)"Page__addAnnot_FromString", _wrap_Page__addAnnot_FromString, METH_VARARGS, (char *)"Page__addAnnot_FromString(self, linklist) -> int"},

@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.12.0"
 VersionBind = "1.12.2"
-VersionDate = "2018-01-14 15:20:51"
-version = (VersionBind, VersionFitz, "20180114152051")
+VersionDate = "2018-01-17 23:05:51"
+version = (VersionBind, VersionFitz, "20180117230551")
 
 
 #------------------------------------------------------------------------------
@@ -1091,6 +1091,13 @@ class Page(_object):
         return _fitz.Page_getDisplayList(self)
 
 
+    def setCropBox(self, rect):
+        """setCropBox(self, rect) -> int"""
+        CheckParent(self)
+
+        return _fitz.Page_setCropBox(self, rect)
+
+
     def loadLinks(self):
         """loadLinks(self) -> Link"""
         CheckParent(self)
@@ -1168,7 +1175,7 @@ class Page(_object):
     @property
 
     def CropBoxPosition(self):
-        """Retrieve position of /CropBox."""
+        """Retrieve position of /CropBox. Return (0,0) for non-PDF, or no /CropBox."""
         CheckParent(self)
 
         return _fitz.Page_CropBoxPosition(self)
