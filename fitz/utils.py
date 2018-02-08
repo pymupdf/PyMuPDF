@@ -380,10 +380,7 @@ def mat_equ(m, m2):       # __equ__
     return len(m) == len(m2) and mat_true(m - m2) == 0
 
 def mat_contains(m, x):
-    if len(x) != 1:
-        return False
-    else:
-        return x in tuple(m)
+    return x in tuple(m)
 
 #==============================================================================
 # arithmetic methods for fitz.Rect
@@ -929,9 +926,8 @@ def insertLink(page, lnk, mark = True):
     return
 
 def intersects(me, rect):
-    """ Checks whether this rectangle and 'rect' have a rectangle with a positive area in common."""
-    if type(rect) not in (fitz.Rect, fitz.IRect):
-        return False
+    """ Check whether this rectangle and 'rect' have a non-empty intersection."""
+
     if me.isEmpty or me.isInfinite or rect.isEmpty or rect.isInfinite:
         return False
     r = me & rect
@@ -2031,7 +2027,28 @@ class Shape():
         self.contents  = ""
         self.totalcont = ""
         self.lastPoint = None
+        self.rect      = None
     
+    def updateRect(self, x):
+        if self.rect is None:
+            if type(x) is fitz.Point:
+                self.rect = fitz.Rect(x, x)
+            else:
+                self.rect = x
+
+        else:
+            if type(x) is fitz.Point:
+                self.rect.x0 = min(self.rect.x0, x.x)
+                self.rect.y0 = min(self.rect.y0, x.y)
+                self.rect.x1 = max(self.rect.x1, x.x)
+                self.rect.y1 = max(self.rect.y1, x.y)
+            else:
+                self.rect.x0 = min(self.rect.x0, x.x0)
+                self.rect.y0 = min(self.rect.y0, x.y0)
+                self.rect.x1 = max(self.rect.x1, x.x1)
+                self.rect.y1 = max(self.rect.y1, x.y1)
+            
+
     def drawLine(self, p1, p2):
         """Draw a line between two points.
         """
@@ -2041,6 +2058,8 @@ class Shape():
             self.lastPoint = p1
         self.contents += "%g %g l\n" % (p2.x + self.x,
                                         self.height - p2.y - self.y)
+        self.updateRect(p1)
+        self.updateRect(p2)
         self.lastPoint = p2
         return self.lastPoint
     
@@ -2056,6 +2075,7 @@ class Shape():
             else:
                 self.contents += "%g %g l\n" % (p.x + self.x,
                                                 self.height - p.y - self.y)
+            self.updateRect(p)
         self.lastPoint = points[-1]
         return self.lastPoint
 
@@ -2071,6 +2091,10 @@ class Shape():
                                                     self.height - p3.y - self.y,
                                                     p4.x + self.x,
                                                     self.height - p4.y - self.y)
+        self.updateRect(p1)
+        self.updateRect(p2)
+        self.updateRect(p3)
+        self.updateRect(p4)
         self.lastPoint = p4
         return self.lastPoint
 
@@ -2090,6 +2114,7 @@ class Shape():
         self.drawCurve(mb, rect.br, mr)
         self.drawCurve(mr, rect.tr, mt)
         self.drawCurve(mt, rect.tl, ml)
+        self.updateRect(rect)
         self.lastPoint = ml
         return self.lastPoint
     
@@ -2178,6 +2203,7 @@ class Shape():
         self.contents += "%g %g %g %g re\n" % (rect.x0 + self.x,
                                                self.height - rect.y1 - self.y,
                                                rect.width, rect.height)
+        self.updateRect(rect)
         self.lastPoint = rect.tl
         return rect.tl
 
@@ -2612,6 +2638,7 @@ class Shape():
         nres += "ET Q\n"
         
         self.totalcont += nres
+        self.updateRect(rect)
         return more
     
     def finish(self, width = 1,

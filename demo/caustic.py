@@ -57,6 +57,7 @@ img.finish(width = 1, color = yellow, closePath = False) # a ray is a fine yello
 img.drawCircle(center, radius)
 img.finish(color = blue)                         # cup border is blue
 img.commit()
+page.setCropBox(img.rect)
 doc.save("catacaustic.pdf", garbage = 4)
 
 # create a PNG image

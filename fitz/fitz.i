@@ -1,7 +1,7 @@
 %module fitz
-//=============================================================================
+//-----------------------------------------------------------------------------
 // SWIG macro: generate fitz exceptions
-//=============================================================================
+//-----------------------------------------------------------------------------
 %define FITZEXCEPTION(meth, cond)
         %exception meth
         {
@@ -13,39 +13,58 @@
             }
         }
 %enddef
-//=============================================================================
 
-//=============================================================================
+//-----------------------------------------------------------------------------
 // SWIG macro: check that a document is not closed
-//=============================================================================
+//-----------------------------------------------------------------------------
 %define CLOSECHECK(meth)
 %pythonprepend meth
 %{if self.isClosed:
     raise ValueError("operation illegal for closed doc")%}
 %enddef
-//=============================================================================
 
-//=============================================================================
-// SWIG macro: check if object has valid parent
-//=============================================================================
+//-----------------------------------------------------------------------------
+// SWIG macro: return the greater value
+//-----------------------------------------------------------------------------
+%define MAX(a, b)
+(a < b) ? b : a
+%enddef
+
+//-----------------------------------------------------------------------------
+// SWIG macro: return the smaller value
+//-----------------------------------------------------------------------------
+%define MIN(a, b)
+(a < b) ? a : b
+%enddef
+
+//-----------------------------------------------------------------------------
+// SWIG macro: test whether a value is between two others
+//-----------------------------------------------------------------------------
+%define BETWEEN(v, low, high)
+((low <= v && v <= high) ? 1 : 0)
+%enddef
+
+//-----------------------------------------------------------------------------
+// SWIG macro: check if object has a valid parent
+//-----------------------------------------------------------------------------
 %define PARENTCHECK(meth)
 %pythonprepend meth %{CheckParent(self)%}
 %enddef
-//=============================================================================
 
-//=============================================================================
+//-----------------------------------------------------------------------------
 // SWIG macro: throw exceptions.
-//=============================================================================
+//-----------------------------------------------------------------------------
 %define THROWMSG(msg)
 fz_throw(gctx, FZ_ERROR_GENERIC, msg)
 %enddef
-//=============================================================================
 
+//-----------------------------------------------------------------------------
 // SWIG macro: ensure that document type is PDF
+//-----------------------------------------------------------------------------
 %define assert_PDF(cond)
 if (!cond) THROWMSG("not a PDF")
 %enddef
-//=============================================================================
+
 %feature("autodoc", "0");
 // #define MEMDEBUG
 
@@ -58,7 +77,9 @@ if (!cond) THROWMSG("not a PDF")
 #include <time.h>
 %}
 
-/* global context */
+//-----------------------------------------------------------------------------
+// global context
+//-----------------------------------------------------------------------------
 %init %{
     gctx = fz_new_context(NULL, NULL, FZ_STORE_DEFAULT);
     if(!gctx) {
@@ -77,9 +98,9 @@ struct DeviceWrapper {
 };
 %}
 
-/*****************************************************************************/
+//-----------------------------------------------------------------------------
 // include version information and several other helpers
-/*****************************************************************************/
+//-----------------------------------------------------------------------------
 %pythoncode %{
 import weakref
 from binascii import hexlify
@@ -94,9 +115,9 @@ import sys
 %include helper-select.i
 %include helper-xobject.i
 
-/*****************************************************************************/
+//-----------------------------------------------------------------------------
 // fz_document
-/*****************************************************************************/
+//-----------------------------------------------------------------------------
 %rename(Document) fz_document_s;
 struct fz_document_s
 {
@@ -104,14 +125,15 @@ struct fz_document_s
     {
         ~fz_document_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free document ...");
+            fprintf(stderr, "[DEBUG]free document: ");
 #endif
             fz_drop_document(gctx, $self);
 #ifdef MEMDEBUG
-            fprintf(stderr, " done!\n");
+            fprintf(stderr, "done!\n");
 #endif
         }
         FITZEXCEPTION(fz_document_s, !result)
+
         %pythonprepend fz_document_s %{
             if not filename or type(filename) == str:
                 pass
@@ -133,6 +155,7 @@ struct fz_document_s
             self.FontInfos   = []
             self.Graftmaps   = {}
             self._page_refs  = weakref.WeakValueDictionary()%}
+
         %pythonappend fz_document_s %{
             if this:
                 self.openErrCode = self._getGCTXerrcode()
@@ -205,14 +228,14 @@ struct fz_document_s
         void close()
         {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free doc ...");
+            fprintf(stderr, "[DEBUG]free doc: ");
 #endif
             while($self->refs > 1) {
                 fz_drop_document(gctx, $self);
             }
             fz_drop_document(gctx, $self);
 #ifdef MEMDEBUG
-            fprintf(stderr, " done!\n");
+            fprintf(stderr, "done!\n");
 #endif
         }
 
@@ -255,11 +278,11 @@ struct fz_document_s
 
         void _dropOutline(struct fz_outline_s *ol) {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free outline ...");
+            fprintf(stderr, "[DEBUG]free outline: ");
 #endif
             fz_drop_outline(gctx, ol);
 #ifdef MEMDEBUG
-            fprintf(stderr, " done!\n");
+            fprintf(stderr, "done!\n");
 #endif
         }
 
@@ -1621,11 +1644,11 @@ struct fz_page_s {
     %extend {
         ~fz_page_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free page ...");
+            fprintf(stderr, "[DEBUG]free page: ");
 #endif
             fz_drop_page(gctx, $self);
 #ifdef MEMDEBUG
-            fprintf(stderr, " done!\n");
+            fprintf(stderr, "done!\n");
 #endif
         }
         PARENTCHECK(bound)
@@ -1727,7 +1750,6 @@ struct fz_page_s {
         int setCropBox(struct fz_rect_s *rect)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            pdf_obj *o;
             fz_try(gctx)
             {
                 assert_PDF(page);
@@ -2492,7 +2514,11 @@ fannot._erase()
 
         @property
         def CropBox(self):
-            return self.rect + Rect(self.CropBoxPosition, self.CropBoxPosition)
+            x0 = self.CropBoxPosition.x
+            y0 = self.MediaBoxSize.y - self.CropBoxPosition.y - self.rect.height
+            x1 = x0 + self.rect.width
+            y1 = y0 + self.rect.height
+            return Rect(x0, y0, x1, y1)
         
         @property
         def MediaBox(self):
@@ -2516,11 +2542,11 @@ struct fz_rect_s
     %extend {
         ~fz_rect_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free rect ...");
+            fprintf(stderr, "[DEBUG]free rect: ");
 #endif
             free($self);
 #ifdef MEMDEBUG
-            fprintf(stderr, " done!\n");
+            fprintf(stderr, "done!\n");
 #endif
         }
         FITZEXCEPTION(fz_rect_s, !result)
@@ -2641,13 +2667,13 @@ struct fz_rect_s
         struct fz_rect_s *normalize()
         {
             float f;
-            if ($self->x1 <= $self->x0)
+            if ($self->x1 < $self->x0)
             {
                 f = $self->x1;
                 $self->x1 = $self->x0;
                 $self->x0 = f;
             }
-            if ($self->y1 <= $self->y0)
+            if ($self->y1 < $self->y0)
             {
                 f = $self->y1;
                 $self->y1 = $self->y0;
@@ -2656,77 +2682,50 @@ struct fz_rect_s
             return $self;
         }
         
+        // check if Rect contains another Rect
         %feature("autodoc","contains") contains;
         PyObject *contains(struct fz_rect_s *rect)
         {
             if (fz_is_empty_rect(rect)) return truth_value(1);
             if (fz_is_empty_rect($self)) return truth_value(0);
-            float l = $self->x0;
-            float r = $self->x1;
-            float t = $self->y0;
-            float b = $self->y1;
-            
-            if ($self->x1 < $self->x0)
-            {
-                l = $self->x1;
-                r = $self->x0;
-            }
-            if ($self->y1 < $self->y0)
-            {
-                t = $self->y1;
-                b = $self->y0;
-            }
-            return truth_value(rect->x0 >= l && rect->x0 <= r &&
-                               rect->x1 >= l && rect->x1 <= r &&
-                               rect->y0 >= t && rect->y0 <= b &&
-                               rect->y1 >= t && rect->y1 <= b);
+            float l = MIN($self->x0, $self->x1);
+            float r = MAX($self->x0, $self->x1);
+            float t = MIN($self->y0, $self->y1);
+            float b = MAX($self->y0, $self->y1);
+                               
+            return truth_value(BETWEEN(rect->x0, l, r) &&
+                               BETWEEN(rect->x1, l, r) &&
+                               BETWEEN(rect->y0, t, b) &&
+                               BETWEEN(rect->y1, t, b));
         }
 
+        // check if Rect contains another IRect
         PyObject *contains(struct fz_irect_s *rect)
         {
             if (fz_is_empty_irect(rect)) return truth_value(1);
             if (fz_is_empty_rect($self)) return truth_value(0);
-            float l = $self->x0;
-            float r = $self->x1;
-            float t = $self->y0;
-            float b = $self->y1;
-            
-            if ($self->x1 < $self->x0)
-            {
-                l = $self->x1;
-                r = $self->x0;
-            }
-            if ($self->y1 < $self->y0)
-            {
-                t = $self->y1;
-                b = $self->y0;
-            }
-            return truth_value(rect->x0 >= l && rect->x0 <= r &&
-                               rect->x1 >= l && rect->x1 <= r &&
-                               rect->y0 >= t && rect->y0 <= b &&
-                               rect->y1 >= t && rect->y1 <= b);
+            float l = MIN($self->x0, $self->x1);
+            float r = MAX($self->x0, $self->x1);
+            float t = MIN($self->y0, $self->y1);
+            float b = MAX($self->y0, $self->y1);
+
+            return truth_value(BETWEEN(rect->x0, l, r) &&
+                               BETWEEN(rect->x1, l, r) &&
+                               BETWEEN(rect->y0, t, b) &&
+                               BETWEEN(rect->y1, t, b));
         }
 
+        // check if Rect contains a Point
         PyObject *contains(struct fz_point_s *p)
         {
             if (fz_is_empty_rect($self)) return truth_value(0);
-            float l = $self->x0;
-            float t = $self->y0;
-            float r = $self->x1;
-            float b = $self->y1;
-            if ($self->x1 <= $self->x0)
-            {
-                l = $self->x1;
-                r = $self->x0;
-            }
-            if ($self->y1 <= $self->y0)
-            {
-                t = $self->y1;
-                b = $self->y0;
-            }
-            if ((p->x < l) || (p->x > r) || (p->y < t) || (p->y > b))
-                return truth_value(0);
-            return truth_value(1);
+            float l = MIN($self->x0, $self->x1);
+            float r = MAX($self->x0, $self->x1);
+            float t = MIN($self->y0, $self->y1);
+            float b = MAX($self->y0, $self->y1);
+
+            return truth_value(BETWEEN(p->x, l, r) &&
+                               BETWEEN(p->y, t, b));
         }
 
         %pythoncode %{@property%}
@@ -2817,7 +2816,7 @@ struct fz_irect_s
     %extend {
         ~fz_irect_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free irect ... ");
+            fprintf(stderr, "[DEBUG]free irect: ");
 #endif
             free($self);
 #ifdef MEMDEBUG
@@ -2883,43 +2882,17 @@ struct fz_irect_s
             return truth_value(fz_is_infinite_irect($self));
         }
 
-        %feature("autodoc","contains") contains;
-        PyObject *contains(struct fz_irect_s *rect)
-        {
-            if (fz_is_empty_irect(rect)) return truth_value(1);
-            if (fz_is_empty_irect($self)) return truth_value(0);
-            int l = $self->x0;
-            int r = $self->x1;
-            int t = $self->y0;
-            int b = $self->y1;
-            
-            if ($self->x1 < $self->x0)
-            {
-                l = $self->x1;
-                r = $self->x0;
-            }
-            if ($self->y1 < $self->y0)
-            {
-                t = $self->y1;
-                b = $self->y0;
-            }
-            return truth_value(rect->x0 >= l && rect->x0 <= r &&
-                               rect->x1 >= l && rect->x1 <= r &&
-                               rect->y0 >= t && rect->y0 <= b &&
-                               rect->y1 >= t && rect->y1 <= b);
-        }
-
         %feature("autodoc","Make rectangle finite") normalize;
         struct fz_irect_s *normalize()
         {
             int f;
-            if ($self->x1 <= $self->x0)
+            if ($self->x1 < $self->x0)
             {
                 f = $self->x1;
                 $self->x1 = $self->x0;
                 $self->x0 = f;
             }
-            if ($self->y1 <= $self->y0)
+            if ($self->y1 < $self->y0)
             {
                 f = $self->y1;
                 $self->y1 = $self->y0;
@@ -2928,51 +2901,47 @@ struct fz_irect_s
             return $self;
         }
         
+        %feature("autodoc","contains") contains;
+        PyObject *contains(struct fz_irect_s *rect)
+        {
+            if (fz_is_empty_irect(rect)) return truth_value(1);
+            if (fz_is_empty_irect($self)) return truth_value(0);
+            int l = MIN($self->x0, $self->x1);
+            int r = MAX($self->x0, $self->x1);
+            int t = MIN($self->y0, $self->y1);
+            int b = MAX($self->y0, $self->y1);
+            
+            return truth_value(BETWEEN(rect->x0, l, r) &&
+                               BETWEEN(rect->x1, l, r) &&
+                               BETWEEN(rect->y0, t, b) &&
+                               BETWEEN(rect->y1, t, b));
+        }
+
         PyObject *contains(struct fz_rect_s *rect)
         {
             if (fz_is_empty_rect(rect)) return truth_value(1);
             if (fz_is_empty_irect($self)) return truth_value(0);
-            float l = $self->x0;
-            float r = $self->x1;
-            float t = $self->y0;
-            float b = $self->y1;
-            
-            if ($self->x1 < $self->x0)
-            {
-                l = $self->x1;
-                r = $self->x0;
-            }
-            if ($self->y1 < $self->y0)
-            {
-                t = $self->y1;
-                b = $self->y0;
-            }
-            return truth_value(rect->x0 >= l && rect->x0 <= r &&
-                               rect->x1 >= l && rect->x1 <= r &&
-                               rect->y0 >= t && rect->y0 <= b &&
-                               rect->y1 >= t && rect->y1 <= b);
+            float l = MIN($self->x0, $self->x1);
+            float r = MAX($self->x0, $self->x1);
+            float t = MIN($self->y0, $self->y1);
+            float b = MAX($self->y0, $self->y1);
+
+            return truth_value(BETWEEN(rect->x0, l, r) &&
+                               BETWEEN(rect->x1, l, r) &&
+                               BETWEEN(rect->y0, t, b) &&
+                               BETWEEN(rect->y1, t, b));
         }
 
         PyObject *contains(struct fz_point_s *p)
         {
             if (fz_is_empty_irect($self)) return truth_value(0);
-            float l = $self->x0;
-            float t = $self->y0;
-            float r = $self->x1;
-            float b = $self->y1;
-            if ($self->x1 <= $self->x0)
-            {
-                l = $self->x1;
-                r = $self->x0;
-            }
-            if ($self->y1 <= $self->y0)
-            {
-                t = $self->y1;
-                b = $self->y0;
-            }
-            if ((p->x < l) || (p->x > r) || (p->y < t) || (p->y > b))
-                return truth_value(0);
-            return truth_value(1);
+            float l = MIN($self->x0, $self->x1);
+            float r = MAX($self->x0, $self->x1);
+            float t = MIN($self->y0, $self->y1);
+            float b = MAX($self->y0, $self->y1);
+
+            return truth_value(BETWEEN(p->x, l, r) &&
+                               BETWEEN(p->y, t, b));
         }
 
         struct fz_irect_s *translate(int xoff, int yoff) {
@@ -3056,7 +3025,7 @@ struct fz_pixmap_s
     %extend {
         ~fz_pixmap_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free pixmap ... ");
+            fprintf(stderr, "[DEBUG]free pixmap: ");
 #endif
             fz_drop_pixmap(gctx, $self);
 #ifdef MEMDEBUG
@@ -3064,11 +3033,6 @@ struct fz_pixmap_s
 #endif
         }
         FITZEXCEPTION(fz_pixmap_s, !result)
-        %pythonappend fz_pixmap_s %{
-        if this:
-            self.thisown = True
-        else:
-            self.thisown = False%}
         //---------------------------------------------------------------------
         // create empty pixmap with colorspace and IRect
         //---------------------------------------------------------------------
@@ -3456,7 +3420,7 @@ struct fz_pixmap_s
         //----------------------------------------------------------------------
         // _writeIMG
         //----------------------------------------------------------------------
-        FITZEXCEPTION(_writeIMG, result)
+        FITZEXCEPTION(_writeIMG, result=NULL)
         %pythonprepend _writeIMG
         %{
             if type(filename) == str:
@@ -3466,7 +3430,7 @@ struct fz_pixmap_s
             else:
                 raise TypeError("filename must be a string")
         %}
-        int _writeIMG(char *filename, int format, int savealpha=-1)
+        PyObject *_writeIMG(char *filename, int format, int savealpha=-1)
         {
             if (savealpha != -1) fz_warn(gctx, "ignoring savealpha");
             fz_try(gctx) {
@@ -3486,8 +3450,8 @@ struct fz_pixmap_s
                         break;
                 }
             }
-            fz_catch(gctx) return 1;
-            return 0;
+            fz_catch(gctx) return NULL;
+            Py_RETURN_NONE;
         }
         %pythoncode %{
         def writePNG(self, filename, savealpha = -1):
@@ -3524,9 +3488,7 @@ struct fz_pixmap_s
                     return "fitz.Pixmap(%s, %s, %s)" % ('None', self.irect, self.alpha)%}
         %pythoncode %{
         def __del__(self):
-            if hasattr(self, "this") and self.thisown:
-                self.thisown = False
-                self.__swig_destroy__(self)
+            self.__swig_destroy__(self)
         %}
     }
 };
@@ -3547,7 +3509,7 @@ struct fz_colorspace_s
         ~fz_colorspace_s()
         {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free colorspace ... ");
+            fprintf(stderr, "[DEBUG]free colorspace: ");
 #endif
             fz_drop_colorspace(gctx, $self);
 #ifdef MEMDEBUG
@@ -3673,7 +3635,7 @@ struct fz_matrix_s
         ~fz_matrix_s()
         {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free matrix ... ");
+            fprintf(stderr, "[DEBUG]free matrix: ");
 #endif
             free($self);
 #ifdef MEMDEBUG
@@ -3873,7 +3835,7 @@ struct fz_outline_s {
     %extend {
         ~fz_outline_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free outline ... ");
+            fprintf(stderr, "[DEBUG]free outline: ");
 #endif
             fz_drop_outline(gctx, $self);
 #ifdef MEMDEBUG
@@ -3919,7 +3881,7 @@ struct fz_point_s
         FITZEXCEPTION(fz_point_s, !result)
         ~fz_point_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free point ... ");
+            fprintf(stderr, "[DEBUG]free point: ");
 #endif
             free($self);
 #ifdef MEMDEBUG
@@ -4093,7 +4055,7 @@ struct fz_annot_s
         ~fz_annot_s()
         {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free annot ... ");
+            fprintf(stderr, "[DEBUG]free annot: ");
 #endif
             fz_drop_annot(gctx, $self);
 #ifdef MEMDEBUG
@@ -4970,11 +4932,11 @@ struct fz_link_s
     %extend {
         ~fz_link_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free link ...");
+            fprintf(stderr, "[DEBUG]free link: ");
 #endif
             fz_drop_link(gctx, $self);
 #ifdef MEMDEBUG
-            fprintf(stderr, " done!\n");
+            fprintf(stderr, "done!\n");
 #endif
         }
 
@@ -5071,9 +5033,12 @@ struct fz_display_list_s {
     {
         ~fz_display_list_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free display list\n");
+            fprintf(stderr, "[DEBUG]free display list: ");
 #endif
             fz_drop_display_list(gctx, $self);
+#ifdef MEMDEBUG
+            fprintf(stderr, "done!\n");
+#endif
         }
         FITZEXCEPTION(fz_display_list_s, !result)
         fz_display_list_s(struct fz_rect_s *mediabox)
@@ -5146,12 +5111,7 @@ struct fz_display_list_s {
         }
         %pythoncode %{
         def __del__(self):
-            if getattr(self, "thisown", True):
-                try:
-                    self.__swig_destroy__(self)
-                except:
-                    pass
-                self.thisown = False
+            self.__swig_destroy__(self)
         %}
 
     }
@@ -5188,9 +5148,12 @@ struct fz_stext_page_s {
 
         ~fz_stext_page_s() {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free text page\n");
+            fprintf(stderr, "[DEBUG]free text page: ");
 #endif
             fz_drop_stext_page(gctx, $self);
+#ifdef MEMDEBUG
+            fprintf(stderr, "done!\n");
+#endif
         }
         //---------------------------------------------------------------------
         // method search()
@@ -5256,7 +5219,7 @@ struct fz_stext_page_s {
                     {
                         // add new line after a chr(32)
                         if (line_n > 0)
-                            fz_write_string(gctx, out, " ");
+                            fz_write_string(gctx, out, "\n");
                         line_n += 1;
                         for (ch = line->first_char; ch; ch = ch->next)
                         {
@@ -5452,22 +5415,27 @@ struct fz_stext_page_s {
 
             def extractXHTML(self):
                 return self._extractText(4)
-                
+
+            def __del__(self):
+                self.__swig_destroy__(self)
         %}
     }
 };
 
+//-----------------------------------------------------------------------------
+// Graftmap - internally used for optimizing PDF object copy operations
+//-----------------------------------------------------------------------------
 %rename("Graftmap") pdf_graft_map_s;
 struct pdf_graft_map_s {
     %extend {
         ~pdf_graft_map_s()
         {
 #ifdef MEMDEBUG
-            fprintf(stderr, "[DEBUG]free graftmap ...");
+            fprintf(stderr, "[DEBUG]free graftmap: ");
 #endif
             pdf_drop_graft_map(gctx, $self);
 #ifdef MEMDEBUG
-            fprintf(stderr, " done!\n");
+            fprintf(stderr, "done!\n");
 #endif
         }
 
@@ -5484,5 +5452,9 @@ struct pdf_graft_map_s {
             fz_catch(gctx) return NULL;
             return map;
         }
+        %pythoncode %{
+            def __del__(self):
+                self.__swig_destroy__(self)
+        %}
     }
 };
