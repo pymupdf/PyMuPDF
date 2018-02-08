@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.12.0"
 VersionBind = "1.12.2"
-VersionDate = "2018-01-17 23:05:51"
-version = (VersionBind, VersionFitz, "20180117230551")
+VersionDate = "2018-02-08 09:31:53"
+version = (VersionBind, VersionFitz, "20180208093153")
 
 
 #------------------------------------------------------------------------------
@@ -1329,7 +1329,11 @@ class Page(_object):
 
     @property
     def CropBox(self):
-        return self.rect + Rect(self.CropBoxPosition, self.CropBoxPosition)
+        x0 = self.CropBoxPosition.x
+        y0 = self.MediaBoxSize.y - self.CropBoxPosition.y - self.rect.height
+        x1 = x0 + self.rect.width
+        y1 = y0 + self.rect.height
+        return Rect(x0, y0, x1, y1)
 
     @property
     def MediaBox(self):
@@ -1697,13 +1701,6 @@ Pixmap(Document, xref) - from image in PDF"""
         except __builtin__.Exception:
             self.this = this
 
-        if this:
-            self.thisown = True
-        else:
-            self.thisown = False
-
-
-
     def shrink(self, factor):
         """shrink(self, factor)"""
         return _fitz.Pixmap_shrink(self, factor)
@@ -1778,7 +1775,7 @@ Pixmap(Document, xref) - from image in PDF"""
 
 
     def _writeIMG(self, filename, format, savealpha=-1):
-        """_writeIMG(self, filename, format, savealpha=-1) -> int"""
+        """_writeIMG(self, filename, format, savealpha=-1) -> PyObject *"""
 
         if type(filename) == str:
             pass
@@ -1819,9 +1816,7 @@ Pixmap(Document, xref) - from image in PDF"""
             return "fitz.Pixmap(%s, %s, %s)" % ('None', self.irect, self.alpha)
 
     def __del__(self):
-        if hasattr(self, "this") and self.thisown:
-            self.thisown = False
-            self.__swig_destroy__(self)
+        self.__swig_destroy__(self)
 
 Pixmap_swigregister = _fitz.Pixmap_swigregister
 Pixmap_swigregister(Pixmap)
@@ -2561,12 +2556,7 @@ class DisplayList(_object):
 
 
     def __del__(self):
-        if getattr(self, "thisown", True):
-            try:
-                self.__swig_destroy__(self)
-            except:
-                pass
-            self.thisown = False
+        self.__swig_destroy__(self)
 
 DisplayList_swigregister = _fitz.DisplayList_swigregister
 DisplayList_swigregister(DisplayList)
@@ -2630,6 +2620,8 @@ class TextPage(_object):
     def extractXHTML(self):
         return self._extractText(4)
 
+    def __del__(self):
+        self.__swig_destroy__(self)
 
 TextPage_swigregister = _fitz.TextPage_swigregister
 TextPage_swigregister(TextPage)
@@ -2652,6 +2644,10 @@ class Graftmap(_object):
             self.this.append(this)
         except __builtin__.Exception:
             self.this = this
+
+    def __del__(self):
+        self.__swig_destroy__(self)
+
 Graftmap_swigregister = _fitz.Graftmap_swigregister
 Graftmap_swigregister(Graftmap)
 
