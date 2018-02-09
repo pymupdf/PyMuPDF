@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.12.0"
 VersionBind = "1.12.2"
-VersionDate = "2018-02-08 09:31:53"
-version = (VersionBind, VersionFitz, "20180208093153")
+VersionDate = "2018-02-08 20:58:16"
+version = (VersionBind, VersionFitz, "20180208205816")
 
 
 #------------------------------------------------------------------------------
@@ -1775,7 +1775,7 @@ Pixmap(Document, xref) - from image in PDF"""
 
 
     def _writeIMG(self, filename, format, savealpha=-1):
-        """_writeIMG(self, filename, format, savealpha=-1) -> PyObject *"""
+        """_writeIMG(self, filename, format, savealpha=-1) -> int"""
 
         if type(filename) == str:
             pass

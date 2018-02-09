@@ -3420,7 +3420,7 @@ struct fz_pixmap_s
         //----------------------------------------------------------------------
         // _writeIMG
         //----------------------------------------------------------------------
-        FITZEXCEPTION(_writeIMG, result=NULL)
+        FITZEXCEPTION(_writeIMG, result<0)
         %pythonprepend _writeIMG
         %{
             if type(filename) == str:
@@ -3430,7 +3430,7 @@ struct fz_pixmap_s
             else:
                 raise TypeError("filename must be a string")
         %}
-        PyObject *_writeIMG(char *filename, int format, int savealpha=-1)
+        int _writeIMG(char *filename, int format, int savealpha=-1)
         {
             if (savealpha != -1) fz_warn(gctx, "ignoring savealpha");
             fz_try(gctx) {
@@ -3450,8 +3450,8 @@ struct fz_pixmap_s
                         break;
                 }
             }
-            fz_catch(gctx) return NULL;
-            Py_RETURN_NONE;
+            fz_catch(gctx) return -1;
+            return 0;
         }
         %pythoncode %{
         def writePNG(self, filename, savealpha = -1):
