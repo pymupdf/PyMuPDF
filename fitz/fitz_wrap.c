@@ -7527,7 +7527,7 @@ SWIGINTERN PyObject *fz_pixmap_s_getPNGData(struct fz_pixmap_s *self,int savealp
             fz_catch(gctx) return NULL;
             return r;
         }
-SWIGINTERN PyObject *fz_pixmap_s__writeIMG(struct fz_pixmap_s *self,char *filename,int format,int savealpha){
+SWIGINTERN int fz_pixmap_s__writeIMG(struct fz_pixmap_s *self,char *filename,int format,int savealpha){
             if (savealpha != -1) fz_warn(gctx, "ignoring savealpha");
             fz_try(gctx) {
                 switch(format)
@@ -7546,8 +7546,8 @@ SWIGINTERN PyObject *fz_pixmap_s__writeIMG(struct fz_pixmap_s *self,char *filena
                         break;
                 }
             }
-            fz_catch(gctx) return NULL;
-            Py_RETURN_NONE;
+            fz_catch(gctx) return -1;
+            return 0;
         }
 SWIGINTERN void fz_pixmap_s_invertIRect(struct fz_pixmap_s *self,struct fz_irect_s const *irect){
             if (irect) fz_invert_pixmap_rect(gctx, self, irect);
@@ -14632,7 +14632,7 @@ SWIGINTERN PyObject *_wrap_Pixmap__writeIMG(PyObject *SWIGUNUSEDPARM(self), PyOb
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  PyObject *result = 0 ;
+  int result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO|O:Pixmap__writeIMG",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
@@ -14658,14 +14658,14 @@ SWIGINTERN PyObject *_wrap_Pixmap__writeIMG(PyObject *SWIGUNUSEDPARM(self), PyOb
     arg4 = (int)(val4);
   }
   {
-    result = (PyObject *)fz_pixmap_s__writeIMG(arg1,arg2,arg3,arg4);
-    if(result=NULL)
+    result = (int)fz_pixmap_s__writeIMG(arg1,arg2,arg3,arg4);
+    if(result<0)
     {
       PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
       return NULL;
     }
   }
-  resultobj = result;
+  resultobj = SWIG_From_int((int)(result));
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
 fail:
@@ -17956,7 +17956,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Pixmap_size", _wrap_Pixmap_size, METH_VARARGS, (char *)"Pixmap_size(self) -> int"},
 	 { (char *)"Pixmap_setAlpha", _wrap_Pixmap_setAlpha, METH_VARARGS, (char *)"Pixmap_setAlpha(self, alphavalues=None) -> int"},
 	 { (char *)"Pixmap_getPNGData", _wrap_Pixmap_getPNGData, METH_VARARGS, (char *)"Pixmap_getPNGData(self, savealpha=-1) -> PyObject *"},
-	 { (char *)"Pixmap__writeIMG", _wrap_Pixmap__writeIMG, METH_VARARGS, (char *)"Pixmap__writeIMG(self, filename, format, savealpha=-1) -> PyObject *"},
+	 { (char *)"Pixmap__writeIMG", _wrap_Pixmap__writeIMG, METH_VARARGS, (char *)"Pixmap__writeIMG(self, filename, format, savealpha=-1) -> int"},
 	 { (char *)"Pixmap_invertIRect", _wrap_Pixmap_invertIRect, METH_VARARGS, (char *)"Pixmap_invertIRect(self, irect=None)"},
 	 { (char *)"Pixmap_samples", _wrap_Pixmap_samples, METH_VARARGS, (char *)"Pixmap_samples(self) -> PyObject *"},
 	 { (char *)"Pixmap_swigregister", Pixmap_swigregister, METH_VARARGS, NULL},
