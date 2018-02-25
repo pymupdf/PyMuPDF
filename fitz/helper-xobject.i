@@ -6,7 +6,7 @@ void JM_update_xobject_contents(fz_context *ctx, pdf_document *doc, pdf_xobject 
     fz_buffer *nres;
     c_len = (size_t) fz_buffer_storage(ctx, buffer, &content_str);
     pdf_dict_put(ctx, form->obj, PDF_NAME_Filter, PDF_NAME_FlateDecode);
-    nres = deflatebuf(ctx, content_str, c_len);
+    nres = JM_deflatebuf(ctx, content_str, c_len);
     pdf_update_stream(ctx, doc, form->obj, nres, 1);
     fz_drop_buffer(ctx, nres);
 	form->iteration ++;
@@ -21,7 +21,7 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
     fz_try(ctx)
     {
         if (pno < 0 || pno >= pdf_count_pages(ctx, pdfsrc))
-            fz_throw(ctx, FZ_ERROR_GENERIC, "invalid page number(s)");
+            THROWMSG("invalid page number(s)");
         spageref = pdf_lookup_page_obj(ctx, pdfsrc, pno);
         pdf_to_rect(ctx, pdf_dict_get(ctx, spageref, PDF_NAME_MediaBox), mediabox);
         o = pdf_dict_get(ctx, spageref, PDF_NAME_CropBox);
@@ -33,7 +33,7 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
         if (xref > 0)
         {
             if (xref >= pdf_xref_len(ctx, pdfout))
-                fz_throw(ctx, FZ_ERROR_GENERIC, "xref out of range");
+                THROWMSG("xref out of range");
             xobj1 = pdf_new_indirect(ctx, pdfout, xref, 0);
             xobj1x = pdf_load_xobject(ctx, pdfout, xobj1);
         }
@@ -117,7 +117,7 @@ void JM_extend_contents(fz_context *ctx, pdf_document *pdfout, pdf_obj *pageref,
         // now compress and put back contents stream
         pdf_dict_put(ctx, contents, PDF_NAME_Filter, PDF_NAME_FlateDecode);
         c_len = (size_t) fz_buffer_storage(ctx, res, &content_str);
-        nres = deflatebuf(ctx, content_str, c_len);
+        nres = JM_deflatebuf(ctx, content_str, c_len);
         pdf_update_stream(ctx, pdfout, contents, nres, 1);
         fz_drop_buffer(ctx, res);
         fz_drop_buffer(ctx, nres);

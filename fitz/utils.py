@@ -60,7 +60,10 @@ def getTextBlocks(page, images = False):
     if images:
         flags |= fitz.TEXT_PRESERVE_IMAGES
     tp = dl.getTextPage(flags)
-    return tp._extractTextLines_AsList()
+    l = tp._extractTextLines_AsList()
+    del tp
+    del dl
+    return l
     
 #==============================================================================
 # A function for extracting a text words list
@@ -71,7 +74,10 @@ def getTextWords(page):
     fitz.CheckParent(page)
     dl = page.getDisplayList()
     tp = dl.getTextPage()
-    return tp._extractTextWords_AsList()
+    l = tp._extractTextWords_AsList()
+    del dl
+    del tp
+    return l
     
 #==============================================================================
 # A function for extracting a page's text.
@@ -92,7 +98,10 @@ def getText(page, output = "text"):
     if images[f] :
         flags |= fitz.TEXT_PRESERVE_IMAGES
     tp = dl.getTextPage(flags)     # TextPage with / without images
-    return tp._extractText(f)
+    t = tp._extractText(f)
+    del dl
+    del tp
+    return t
 
 #==============================================================================
 # A function for extracting a page number's text.
@@ -113,7 +122,12 @@ def getPageText(doc, pno, output = "text"):
 
 def getPixmap(page, matrix = fitz.Identity, colorspace = fitz.csRGB, clip = None,
               alpha = True):
-    '''Create pixmap of page.\nmatrix: fitz.Matrix for transformation (default: fitz.Identity).\ncolorspace: text string / fitz.Colorspace (rgb, rgb, gray - case ignored), default fitz.csRGB.\nclip: a fitz.IRect to restrict rendering to this area.'''
+    """Create pixmap of page.
+    
+    matrix: fitz.Matrix for transformation (default: fitz.Identity).
+    colorspace: text string / fitz.Colorspace (rgb, rgb, gray - case ignored), default fitz.csRGB.
+    clip: a fitz.IRect to restrict rendering to this area.
+    """
     fitz.CheckParent(page)
 
     # determine required colorspace
@@ -136,7 +150,7 @@ def getPixmap(page, matrix = fitz.Identity, colorspace = fitz.csRGB, clip = None
                        colorspace = cs,
                        alpha = alpha,
                        clip = scissor)
-    dl = None
+    del dl
     return pix
 
 #==============================================================================
@@ -448,6 +462,8 @@ def rect_true(r):
     return (abs(r.x0) + abs(r.y0) + abs(r.x1) + abs(r.y1)) > 0
 
 def rect_contains(r, x):
+    if type(x) in (fitz.Point, fitz.IRect, fitz.Rect):
+        return r.contains(x)
     if getattr(x, "__len__", 1) == 1:
         return x in tuple(r)
     if len(x) == 2:
@@ -723,9 +739,7 @@ def setToC(doc, toc):
         if i == 0:           # special: this is the outline root
             txt += "/Type/Outlines"
         txt += ">>"
-        rc = doc._updateObject(xref[i], txt)     # insert the PDF object
-        if rc != 0:
-            raise ValueError("outline insert error:\n" + txt)
+        doc._updateObject(xref[i], txt)     # insert the PDF object
 
     doc.initData()
     return toclen
@@ -2705,6 +2719,7 @@ class Shape():
 
         self.doc._updateStream(xref, cont)  # replace the PDF stream
         self.lastPoint = None               # clean up ...
+        self.rect      = None               #
         self.contents  = ""                 # for possible ...
         self.totalcont = ""                 # re-use
         return
