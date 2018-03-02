@@ -54,7 +54,7 @@
 #define THROWMSG(msg) fz_throw(gctx, FZ_ERROR_GENERIC, msg)
 #define assert_PDF(cond) if (cond == NULL) THROWMSG("not a PDF")
 #define INRANGE(v, low, high) ((low) <= v && v <= (high))
-#define JM_UNICODE(data, len) PyUnicode_DecodeUTF8(data, (Py_ssize_t) len, "replace")
+#define JM_UNICODE(data, len) PyUnicode_DecodeUTF8(data, (Py_ssize_t) len, "surrogateescape")
 #define JM_FORCEASCII(x, b) PyString_FromString(JM_get_ascii(sizeof(b), x, b))
 #include <fitz.h>
 #include <pdf.h>
@@ -1242,44 +1242,43 @@ if sa < 0:
             return tuple;
         }
 
-        //---------------------------------------------------------------------
+        //*********************************************************************
         // Delete all bookmarks (table of contents)
-        // returns the list of deleted (now available) xref numbers
-        //---------------------------------------------------------------------
+        // returns the list of deleted (freed = now available) xref numbers
+        //*********************************************************************
         CLOSECHECK(_delToC)
         %pythonappend _delToC %{self.initData()%}
         PyObject *_delToC()
         {
-            PyObject *xrefs = PyList_New(0);          // create Python list
+            PyObject *xrefs = PyList_New(0);         // create Python list
 
             pdf_document *pdf = pdf_specifics(gctx, $self); // conv doc to pdf
-            if (!pdf) return xrefs;                   // not a pdf
+            if (!pdf) return NULL;                          // not a pdf
             pdf_obj *root, *olroot, *first;
-            // get the main root
+            /* get main root */
             root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root);
-            // get the outline root
+            /* get outline root */
             olroot = pdf_dict_get(gctx, root, PDF_NAME_Outlines);
-            if (!olroot) return xrefs;                // no outlines or some problem
+            if (!olroot) return xrefs;                      // no outlines
             int objcount, argc, i;
             int *res;
             objcount = 0;
             argc = 0;
             first = pdf_dict_get(gctx, olroot, PDF_NAME_First); // first outline
             if (!first) return xrefs;
-            argc = countOutlines(gctx, first, argc);  // get number of outlines
+            argc = countOutlines(gctx, first, argc);         // get number outlines
             if (argc < 1) return xrefs;
-            res = malloc(argc * sizeof(int));         // object number table
+            res = malloc(argc * sizeof(int));          // object number table
             objcount = fillOLNumbers(gctx, res, first, objcount, argc); // fill table
             pdf_dict_del(gctx, olroot, PDF_NAME_First);
             pdf_dict_del(gctx, olroot, PDF_NAME_Last);
             pdf_dict_del(gctx, olroot, PDF_NAME_Count);
 
             for (i = 0; i < objcount; i++)
-            {
-                pdf_delete_object(gctx, pdf, res[i]);      // delete outline item
+                pdf_delete_object(gctx, pdf, res[i]);      // del all OL items
+
+            for (i = 0; i < argc; i++)
                 PyList_Append(xrefs, PyInt_FromLong((long) res[i]));
-            }
-            free(res);
             return xrefs;
         }
 
@@ -1724,7 +1723,6 @@ struct fz_page_s {
 
         //---------------------------------------------------------------------
         // Page.setCropBox
-        // ATTENTION: This will alse change the value returned by Page.bound()
         //---------------------------------------------------------------------
         FITZEXCEPTION(setCropBox, !result)
         PARENTCHECK(setCropBox)
@@ -2748,7 +2746,7 @@ struct fz_rect_s
                 return Point(self.x1, self.y1)
                 
             def __getitem__(self, i):
-                return (self.x0, self.y0, self.x1, self.y1)[i]
+                return tuple(self)[i]
 
             def __setitem__(self, i, v):
                 if   i == 0: self.x0 = v
@@ -2957,7 +2955,7 @@ struct fz_irect_s
                 return Point(self.x1, self.y1)
                 
             def __getitem__(self, i):
-                return (self.x0, self.y0, self.x1, self.y1)[i]
+                return tuple(self)[i]
 
             def __setitem__(self, i, v):
                 if   i == 0: self.x0 = v
@@ -3732,7 +3730,7 @@ struct fz_matrix_s
                 _fitz._fz_pre_rotate(self, degree)
                 return self
             def __getitem__(self, i):
-                return (self.a, self.b, self.c, self.d, self.e, self.f)[i]
+                return tuple(self)[i]
 
             def __setitem__(self, i, v):
                 if   i == 0: self.a = v
@@ -3951,7 +3949,7 @@ struct fz_point_s
                 return
 
             def __getitem__(self, i):
-                return (self.x, self.y)[i]
+                return tuple(self)[i]
 
             def __len__(self):
                 return 2

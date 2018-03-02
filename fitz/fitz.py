@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.12.0"
 VersionBind = "1.12.3"
-VersionDate = "2018-03-01 02:35:55"
-version = (VersionBind, VersionFitz, "20180301023555")
+VersionDate = "2018-02-25 06:19:57"
+version = (VersionBind, VersionFitz, "20180225061957")
 
 
 #------------------------------------------------------------------------------
@@ -1463,7 +1463,7 @@ class Rect(_object):
         return Point(self.x1, self.y1)
 
     def __getitem__(self, i):
-        return (self.x0, self.y0, self.x1, self.y1)[i]
+        return tuple(self)[i]
 
     def __setitem__(self, i, v):
         if   i == 0: self.x0 = v
@@ -1598,7 +1598,7 @@ class IRect(_object):
         return Point(self.x1, self.y1)
 
     def __getitem__(self, i):
-        return (self.x0, self.y0, self.x1, self.y1)[i]
+        return tuple(self)[i]
 
     def __setitem__(self, i, v):
         if   i == 0: self.x0 = v
@@ -1957,7 +1957,7 @@ class Matrix(_object):
         _fitz._fz_pre_rotate(self, degree)
         return self
     def __getitem__(self, i):
-        return (self.a, self.b, self.c, self.d, self.e, self.f)[i]
+        return tuple(self)[i]
 
     def __setitem__(self, i, v):
         if   i == 0: self.a = v
@@ -2126,7 +2126,7 @@ class Point(_object):
         return
 
     def __getitem__(self, i):
-        return (self.x, self.y)[i]
+        return tuple(self)[i]
 
     def __len__(self):
         return 2

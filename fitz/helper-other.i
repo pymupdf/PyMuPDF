@@ -1,8 +1,5 @@
 %{
-//-----------------------------------------------------------------------------
-// Version of fz_pixmap_from_display_list to support rendering of only
-// the 'clip' part of the displaylist rectangle
-//-----------------------------------------------------------------------------
+
 fz_pixmap *
 JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_matrix *ctm, fz_colorspace *cs, int alpha, const fz_rect *clip)
 {
@@ -40,6 +37,7 @@ JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_mat
         fz_drop_pixmap(ctx, pix);
         fz_rethrow(ctx);
     }
+
     return pix;
 }
 
@@ -152,7 +150,7 @@ JM_pdf_find_image_resource(fz_context *ctx, pdf_document *doc, fz_image *item, u
 // The following is invoked to add new images to a PDF in PyMuPDF.
 // Its approach is to preload existing images with the routines present here,
 // and then invoke the original pdf_add_image.
-// We use the md5 of the image also for other purposes, so it is handed in here
+// In order to use an image's md5 code for other purposes, it is handed in here
 // from the PyMuPDF level.
 //-----------------------------------------------------------------------------
 pdf_obj *
@@ -169,9 +167,7 @@ JM_add_image(fz_context *ctx, pdf_document *doc, fz_image *image,
 // Circumvention of MuPDF bug in pdf_preload_image_resources
 //=============================================================================
 
-//-----------------------------------------------------------------------------
-// return hex characters for n characters in input 'in'
-//-----------------------------------------------------------------------------
+// return hex characters for input 'in'
 void hexlify(int n, unsigned char *in, unsigned char *out)
 {
     const unsigned char hdigit[17] = "0123456789abcedf";
@@ -302,8 +298,6 @@ char *JM_get_ascii(int len, unsigned char *in, unsigned char *out)
 
 //----------------------------------------------------------------------------
 // Modified copy of SWIG_Python_str_AsChar
-// If Py3, the original does *not* deliver NULL for a non-string input as
-// does PyString_AsString in Py2
 //----------------------------------------------------------------------------
 char *JM_Python_str_AsChar(PyObject *str)
 {
@@ -404,11 +398,11 @@ void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, i
     }
 }
 
-//-----------------------------------------------------------------------------
-// Copy a range of pages (spage, epage) from a source PDF to a specified
-// location (apage) of the target PDF.
+//----------------------------------------------------------------------------
+// Copy a range of pages (spage, epage) from a source PDF to a specified location
+// (apage) of the target PDF.
 // If spage > epage, the sequence of source pages is reversed.
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 void merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int spage, int epage, int apage, int rotate)
 {
     int page, afterpage, count;
@@ -484,7 +478,7 @@ int countOutlines(fz_context *ctx, pdf_obj *obj, int oc)
 }
 
 //-----------------------------------------------------------------------------
-// Return the contents of a font file
+// Return the contents of an embedded font file
 //-----------------------------------------------------------------------------
 fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
 {
