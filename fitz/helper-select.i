@@ -180,8 +180,7 @@ int strip_outlines(fz_context *ctx, pdf_document *doc, pdf_obj *outlines, int pa
 
 //----------------------------------------------------------------------------
 //   This is called by PyMuPDF:
-//   argc  = length of "liste"
-//   liste = (list of int) page numbers to retain
+//   liste = page numbers to retain
 //----------------------------------------------------------------------------
 void retainpages(fz_context *ctx, globals *glo, PyObject *liste)
 {
@@ -228,7 +227,7 @@ void retainpages(fz_context *ctx, globals *glo, PyObject *liste)
             {
                 i = (int) PyInt_AsLong(PySequence_GetItem(liste, page));
                 if (i < 0 || i >= pagecount)
-                    fz_throw(ctx, FZ_ERROR_GENERIC, "invalid page number(s)");
+                    THROWMSG("invalid page number(s)");
                 retainpage(ctx, doc, pages, kids, i);
             }
     }

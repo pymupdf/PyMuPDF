@@ -24,26 +24,22 @@ int FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
     char *tname= NULL;
     int i = -1;
     int count = pdf_count_portfolio_entries(ctx, pdf);
-    name = getPDFstr(ctx, id, &name_len, "id");
-    if (name == NULL)           // entry number provided
+    if (count < 1) return -1;
+    if (PyInt_Check(id))
     {
-        if (!PyInt_Check(id))
-            fz_throw(ctx, FZ_ERROR_GENERIC, "id must be string or number");
-
         i = (int) PyInt_AsLong(id);
-        if ((i < 0) || (i >= count))
-            fz_throw(ctx, FZ_ERROR_GENERIC, "index out of range");
+        if ((i < 0) || (i >= count)) return -1;
+        return i;
     }
-    else                        // entry name provided
+    name = JM_Python_str_AsChar(id);
+    if (!name || strlen(name) == 0) return -1;
+    for (i = 0; i < count; i++)
     {
-        for (i = 0; i < count; i++)
-            {
-                tname = pdf_to_utf8(ctx, pdf_portfolio_entry_name(ctx, pdf, i));
-                if (strcmp(tname, name) == 0) break;
-            }
-        if (strcmp(tname, name) != 0)
-        fz_throw(ctx, FZ_ERROR_GENERIC, "name not found");
+        tname = pdf_to_utf8(ctx, pdf_portfolio_entry_name(ctx, pdf, i));
+        if (strcmp(tname, name) == 0) break;
     }
+    if (strcmp(tname, name) != 0) i = -1;
+    JM_Python_str_DelForPy3(name);
     return i;
 }
 %}

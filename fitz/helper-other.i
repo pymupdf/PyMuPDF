@@ -1,5 +1,8 @@
 %{
-
+//-----------------------------------------------------------------------------
+// Version of fz_pixmap_from_display_list to support rendering of only
+// the 'clip' part of the displaylist rectangle
+//-----------------------------------------------------------------------------
 fz_pixmap *
 JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_matrix *ctm, fz_colorspace *cs, int alpha, const fz_rect *clip)
 {
@@ -37,7 +40,6 @@ JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_mat
         fz_drop_pixmap(ctx, pix);
         fz_rethrow(ctx);
     }
-
     return pix;
 }
 
@@ -150,7 +152,7 @@ JM_pdf_find_image_resource(fz_context *ctx, pdf_document *doc, fz_image *item, u
 // The following is invoked to add new images to a PDF in PyMuPDF.
 // Its approach is to preload existing images with the routines present here,
 // and then invoke the original pdf_add_image.
-// In order to use an image's md5 code for other purposes, it is handed in here
+// We use the md5 of the image also for other purposes, so it is handed in here
 // from the PyMuPDF level.
 //-----------------------------------------------------------------------------
 pdf_obj *
@@ -167,10 +169,12 @@ JM_add_image(fz_context *ctx, pdf_document *doc, fz_image *image,
 // Circumvention of MuPDF bug in pdf_preload_image_resources
 //=============================================================================
 
-// return hex characters for input 'in'
+//-----------------------------------------------------------------------------
+// return hex characters for n characters in input 'in'
+//-----------------------------------------------------------------------------
 void hexlify(int n, unsigned char *in, unsigned char *out)
 {
-    const unsigned char hdigit[16] = "0123456789abcedf";
+    const unsigned char hdigit[17] = "0123456789abcedf";
     int i, i1, i2;
     for (i = 0; i < n; i++)
     {
@@ -235,115 +239,95 @@ PyObject *truth_value(int v)
 //----------------------------------------------------------------------------
 // deflate data in a buffer
 //----------------------------------------------------------------------------
-fz_buffer *deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
+fz_buffer *JM_deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 {
-    fz_buffer *buf;
+    fz_buffer *buf = NULL;
     uLongf csize;
     int t;
-    uLong longN = (uLong)n;
-    unsigned char *data;
+    uLong longN = (uLong) n;
+    unsigned char *data = NULL;
     size_t cap;
-
-    if (n != (size_t)longN)
-        fz_throw(ctx, FZ_ERROR_GENERIC, "buffer too large to deflate");
-
-    cap = compressBound(longN);
-    data = fz_malloc(ctx, cap);
-    buf = fz_new_buffer_from_data(ctx, data, cap);
-    csize = (uLongf)cap;
-    t = compress(data, &csize, p, longN);
-    if (t != Z_OK)
+    fz_try(ctx)
     {
-        fz_drop_buffer(ctx, buf);
-        fz_throw(ctx, FZ_ERROR_GENERIC, "cannot deflate buffer");
+        if (n != (size_t)longN) THROWMSG("buffer too large to deflate");
+        cap = compressBound(longN);
+        data = fz_malloc(ctx, cap);
+        buf = fz_new_buffer_from_data(ctx, data, cap);
+        csize = (uLongf)cap;
+        t = compress(data, &csize, p, longN);
+        if (t != Z_OK)
+        {
+            fz_drop_buffer(ctx, buf);
+            buf = NULL;
+            THROWMSG("cannot deflate buffer");
+        }
+    }
+    fz_catch(ctx)
+    {
+        if (buf)
+            fz_drop_buffer(ctx, buf);
+        else
+            if (data)
+                fz_free(ctx, data);
+        fz_rethrow(ctx);
     }
     fz_resize_buffer(ctx, buf, csize);
     return buf;
 }
 
 //----------------------------------------------------------------------------
-// Return (char *) for PyBytes, PyString (Python 2) or PyUnicode objects.
-// For PyBytes, a conversion to PyUnicode is first performed, if Python 3.
-// In Python 2, this is an alias for PyString and its (char *) is returned.
-// PyUnicode objects are converted to UTF16BE bytes objects (all Python
-// versions). Its (char *) version is returned.
-// If only 1-byte code points are present, BOM and high-order 0-bytes are
-// deleted and the (compressed) rest is returned.
-// Parameters:
-// obj = PyBytes / PyString / PyUnicode object
-// psize = pointer to a Py_ssize_t number for storing the returned length
-// name = name of object to use in error messages
+// create an ASCII-only copy of a string
 //----------------------------------------------------------------------------
-char *getPDFstr(fz_context *ctx, PyObject *obj, Py_ssize_t* psize, const char *name)
+char *JM_get_ascii(int len, unsigned char *in, unsigned char *out)
 {
-    if (obj == NULL) return NULL;
-    if (!PyBytes_Check(obj) && !PyUnicode_Check(obj)) return NULL;
-    int ok;
-    Py_ssize_t j, k;
-    PyObject *me;
-    unsigned char *nc;
-    int have_uc = 0;    // indicates unicode points > 255
-    me = obj;
-    if (PyBytes_Check(me))
+    int i = 0;
+    out[len] = 0;
+    for (i = 0; i < len; i++)
         {
-        ok = PyBytes_AsStringAndSize(me, &nc, psize);
-        if (ok != 0)
+            if (in[i] >= 32 && in[i] <= 127)
+                out[i] = in[i];
+            else
             {
-            fz_throw(ctx, FZ_ERROR_GENERIC, "could not get string of '%s'", name);
-            return NULL;
-            }
-#if PY_MAJOR_VERSION < 3
-        return nc;                     // we are done when Python 2
-#endif
-        me = PyUnicode_FromStringAndSize(nc, *psize);      // assumes nc is UTF8
+                if (in[i] == 0)
+                {
+                    out[i] = 0;
+                    break;
+                }
+                out[i] = 63;
+            } 
         }
-    PyObject *uc = PyUnicode_AsUTF16String(me);
-    if (!uc)
-        {
-        fz_throw(ctx, FZ_ERROR_GENERIC, "could not create UTF16 for '%s'", name);
-        return NULL;
-        }
-    ok = PyBytes_AsStringAndSize(uc, &nc, psize);
-    if (ok != 0)
-        {
-        fz_throw(ctx, FZ_ERROR_GENERIC, "could not get UTF16 string of '%s'", name);
-        return NULL;
-        }
-    // UTF16-BE (big endian) is required for PDF if code points > 0xff
-    if (nc[0] == 255)                  // non-BE UTF16, so swap bytes
-    {
-        j = 2;
-        nc[0] = 254;                   // set BOM to "BE"
-        nc[1] = 255;
-        while ((j+1) < *psize)
-        {
-            k = nc[j];                      // save 1st byte
-            nc[j] = nc[j+1];                // copy 2nd byte
-            nc[j+1] = k;                    // copy 1st byte
-            if (nc[j] > 0) have_uc = 1;     // code point outside latin-1
-            j = j + 2;
-        }
-    }
-    else                               // have UTF16BE, just check code points
-    {
-        j = 2;
-        while (j < *psize)
-        {
-            if (nc[j] > 0) have_uc = 1;     // code point outside latin-1
-            j = j + 2;
-        }
-    }
-    if (have_uc == 1) return nc;            // have large code points: done
-    *psize = (*psize - 2)/2;                // reduced size
-    j=3;
-    for (k = 0; k < *psize; k++)            // kick out BOM & high order zeros
-    {
-        nc[k] = nc[j];
-        j += 2;
-    }
-    nc[*psize] = 0;                         // end of string delimiter
-    return nc;
+    return out;
 }
+
+
+//----------------------------------------------------------------------------
+// Modified copy of SWIG_Python_str_AsChar
+// If Py3, the original does *not* deliver NULL for a non-string input as
+// does PyString_AsString in Py2
+//----------------------------------------------------------------------------
+char *JM_Python_str_AsChar(PyObject *str)
+{
+#if PY_VERSION_HEX >= 0x03000000
+  char *cstr;
+  char *newstr;
+  Py_ssize_t len;
+  str = PyUnicode_AsUTF8String(str);
+  if (!str) return NULL;
+  PyBytes_AsStringAndSize(str, &cstr, &len);
+  newstr = (char *) malloc(len+1);
+  memcpy(newstr, cstr, len+1);
+  Py_XDECREF(str);
+  return newstr;
+#else
+  return PyString_AsString(str);
+#endif
+}
+
+#if PY_VERSION_HEX >= 0x03000000
+#  define JM_Python_str_DelForPy3(x) if(x) free( (void*) (x) )
+#else
+#  define JM_Python_str_DelForPy3(x) 
+#endif
 
 //----------------------------------------------------------------------------
 // Deep-copies a specified source page to the target location.
@@ -420,11 +404,11 @@ void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, i
     }
 }
 
-//----------------------------------------------------------------------------
-// Copy a range of pages (spage, epage) from a source PDF to a specified location
-// (apage) of the target PDF.
+//-----------------------------------------------------------------------------
+// Copy a range of pages (spage, epage) from a source PDF to a specified
+// location (apage) of the target PDF.
 // If spage > epage, the sequence of source pages is reversed.
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int spage, int epage, int apage, int rotate)
 {
     int page, afterpage, count;
@@ -500,7 +484,7 @@ int countOutlines(fz_context *ctx, pdf_obj *obj, int oc)
 }
 
 //-----------------------------------------------------------------------------
-// Return the contents of an embedded font file
+// Return the contents of a font file
 //-----------------------------------------------------------------------------
 fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
 {
@@ -636,4 +620,45 @@ char *fontextension(fz_context *ctx, pdf_document *doc, int num)
 
     if (!stream) fz_warn(ctx, "unhandled font type");
     return ext;
-}%}
+}
+
+//-----------------------------------------------------------------------------
+// dummy structure for various tools and utilities
+//-----------------------------------------------------------------------------
+struct Tools {int index;};
+
+typedef struct fz_item_s fz_item;
+
+struct fz_item_s
+{
+	void *key;
+	fz_storable *val;
+	size_t size;
+	fz_item *next;
+	fz_item *prev;
+	fz_store *store;
+	const fz_store_type *type;
+};
+
+struct fz_store_s
+{
+	int refs;
+
+	/* Every item in the store is kept in a doubly linked list, ordered
+	 * by usage (so LRU entries are at the end). */
+	fz_item *head;
+	fz_item *tail;
+
+	/* We have a hash table that allows to quickly find a subset of the
+	 * entries (those whose keys are indirect objects). */
+	fz_hash_table *hash;
+
+	/* We keep track of the size of the store, and keep it below max. */
+	size_t max;
+	size_t size;
+
+	int defer_reap_count;
+	int needs_reaping;
+};
+
+%}
