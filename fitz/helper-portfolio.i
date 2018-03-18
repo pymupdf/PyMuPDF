@@ -13,9 +13,9 @@
 #define PDF_SCHEMA_UNKNOWN 8
 
 //-----------------------------------------------------------------------------
-// finds index of an embedded file
-// Object "id" contains either entry name (str) or supposed index
-// pdf is the document in question
+// finds index of an embedded file in a pdf
+// Object "id" contains either entry name (str) or supposed index.
+// Int "id" is returned as result if in valid range.
 //-----------------------------------------------------------------------------
 int FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
 {
@@ -28,7 +28,7 @@ int FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
     if (PyInt_Check(id))
     {
         i = (int) PyInt_AsLong(id);
-        if ((i < 0) || (i >= count)) return -1;
+        if (!INRANGE(i, 0, (count-1))) return -1;
         return i;
     }
     name = JM_Python_str_AsChar(id);
@@ -38,7 +38,11 @@ int FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
         tname = pdf_to_utf8(ctx, pdf_portfolio_entry_name(ctx, pdf, i));
         if (strcmp(tname, name) == 0) break;
     }
-    if (strcmp(tname, name) != 0) i = -1;
+    if (strcmp(tname, name) != 0)
+    {
+        JM_Python_str_DelForPy3(name);
+        i = -1;
+    }
     JM_Python_str_DelForPy3(name);
     return i;
 }

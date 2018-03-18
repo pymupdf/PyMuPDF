@@ -43,7 +43,7 @@ JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_mat
     return pix;
 }
 
-//=============================================================================
+//-----------------------------------------------------------------------------
 // Circumvention of MuPDF bug in 'pdf_preload_image_resources'
 // This bug affects 'pdf_add_image' calls when images already exist, i.e.
 // almost always!
@@ -52,7 +52,7 @@ JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_mat
 // 'pdf_preload_image_resources' and 'pdf_find_image_resource' had to
 // special-versioned as well ...
 // Start
-//=============================================================================
+//-----------------------------------------------------------------------------
 
 void
 JM_fz_md5_image(fz_context *ctx, fz_image *image, unsigned char digest[16])
@@ -164,10 +164,10 @@ JM_add_image(fz_context *ctx, pdf_document *doc, fz_image *image,
     if (imref) return imref;
     return pdf_add_image(ctx, doc, image, mask);
 }
-//=============================================================================
+//-----------------------------------------------------------------------------
 // End
 // Circumvention of MuPDF bug in pdf_preload_image_resources
-//=============================================================================
+//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 // return hex characters for n characters in input 'in'
@@ -185,7 +185,6 @@ void hexlify(int n, unsigned char *in, unsigned char *out)
     }
     out[2*n] = 0;
 }
-
 
 //----------------------------------------------------------------------------
 // Return set(dict.keys()) <= set([vkeys, ...])
@@ -237,7 +236,7 @@ PyObject *truth_value(int v)
 }
 
 //----------------------------------------------------------------------------
-// deflate data in a buffer
+// deflate char * into a buffer
 //----------------------------------------------------------------------------
 fz_buffer *JM_deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 {
@@ -275,30 +274,20 @@ fz_buffer *JM_deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
     return buf;
 }
 
-//----------------------------------------------------------------------------
-// create an ASCII-only copy of a string
-//----------------------------------------------------------------------------
-char *JM_get_ascii(int len, unsigned char *in, unsigned char *out)
+size_t JM_CharFromBytesOrArray(PyObject *stream, char **data)
 {
-    int i = 0;
-    out[len] = 0;
-    for (i = 0; i < len; i++)
-        {
-            if (in[i] >= 32 && in[i] <= 127)
-                out[i] = in[i];
-            else
-            {
-                if (in[i] == 0)
-                {
-                    out[i] = 0;
-                    break;
-                }
-                out[i] = 63;
-            } 
-        }
-    return out;
+    if (PyBytes_Check(stream))
+    {
+        *data = PyBytes_AsString(stream);
+        return (size_t) PyBytes_Size(stream);
+    }
+    if (PyByteArray_Check(stream))
+    {
+        *data = PyByteArray_AsString(stream);
+        return (size_t) PyByteArray_Size(stream);
+    }
+    return 0;
 }
-
 
 //----------------------------------------------------------------------------
 // Modified copy of SWIG_Python_str_AsChar
@@ -312,7 +301,7 @@ char *JM_Python_str_AsChar(PyObject *str)
   char *newstr;
   Py_ssize_t len;
   str = PyUnicode_AsUTF8String(str);
-  if (!str) return NULL;
+  if (!str) return NULL;                         // this is the difference!
   PyBytes_AsStringAndSize(str, &cstr, &len);
   newstr = (char *) malloc(len+1);
   memcpy(newstr, cstr, len+1);
@@ -489,7 +478,6 @@ int countOutlines(fz_context *ctx, pdf_obj *obj, int oc)
 fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
 {
     pdf_obj *o, *obj = NULL, *desft, *stream = NULL;
-    fz_buffer *buf = NULL;
     char *ext = "";
     o = pdf_load_object(ctx, doc, num);
     desft = pdf_dict_get(ctx, o, PDF_NAME_DescendantFonts);
@@ -506,7 +494,7 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
     if (!obj)
     {
         pdf_drop_obj(ctx, o);
-        fz_warn(ctx, "invalid font - FontDescriptor missing");
+        PySys_WriteStdout("invalid font - FontDescriptor missing");
         return NULL;
     }
     pdf_drop_obj(ctx, o);
@@ -534,7 +522,7 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
         obj = pdf_dict_get(ctx, obj, PDF_NAME_Subtype);
         if (obj && !pdf_is_name(ctx, obj))
         {
-            fz_warn(ctx, "invalid font descriptor subtype");
+            PySys_WriteStdout("invalid font descriptor subtype");
             return NULL;
         }
 
@@ -545,17 +533,16 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
         else if (pdf_name_eq(ctx, obj, PDF_NAME_OpenType))
             ext = "otf";
         else
-            fz_warn(ctx, "unhandled font type '%s'", pdf_to_name(ctx, obj));
+            PySys_WriteStdout("warning: unhandled font type '%s'", pdf_to_name(ctx, obj));
     }
 
     if (!stream)
     {
-        fz_warn(ctx, "unhandled font type");
+        PySys_WriteStdout("warning: unhandled font type");
         return NULL;
     }
 
-    buf = pdf_load_stream(ctx, stream);
-    return buf;
+    return pdf_load_stream(ctx, stream);
 }
 
 //-----------------------------------------------------------------------------
@@ -605,7 +592,7 @@ char *fontextension(fz_context *ctx, pdf_document *doc, int num)
         obj = pdf_dict_get(ctx, obj, PDF_NAME_Subtype);
         if (obj && !pdf_is_name(ctx, obj))
         {
-            fz_warn(ctx, "invalid font descriptor subtype");
+            PySys_WriteStdout("invalid font descriptor subtype");
             return ext;
         }
         if (pdf_name_eq(ctx, obj, PDF_NAME_Type1C))
@@ -615,10 +602,9 @@ char *fontextension(fz_context *ctx, pdf_document *doc, int num)
         else if (pdf_name_eq(ctx, obj, PDF_NAME_OpenType))
             ext = "otf";
         else
-            fz_warn(ctx, "unhandled font type '%s'", pdf_to_name(ctx, obj));
+            PySys_WriteStdout("unhandled font type '%s'", pdf_to_name(ctx, obj));
     }
 
-    if (!stream) fz_warn(ctx, "unhandled font type");
     return ext;
 }
 
@@ -660,5 +646,4 @@ struct fz_store_s
 	int defer_reap_count;
 	int needs_reaping;
 };
-
 %}

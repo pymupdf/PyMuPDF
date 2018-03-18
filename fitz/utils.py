@@ -12,14 +12,17 @@ def showPDFpage(page, rect, src, pno, overlay = True, keep_proportion = True,
     """
     fitz.CheckParent(page)
     doc = page.parent
-    isrc = id(src)
+    isrc = id(src)                # used as key for graftmaps
     if id(doc) == isrc:
         raise ValueError("source document must not equal target")
-    if isrc in doc.Graftmaps:
+
+    # check if we have already copied objects from this source doc
+    if isrc in doc.Graftmaps:     # yes: use the old graftmap
         gmap = doc.Graftmaps[isrc]
-    else:
+    else:                         # no: make a new graftmap
         gmap = fitz.Graftmap(doc)
         doc.Graftmaps[isrc] = gmap
+
     return page._showPDFpage(rect, src, pno, overlay = overlay,
                              keep_proportion = keep_proportion,
                              reuse_xref = reuse_xref, clip = clip,

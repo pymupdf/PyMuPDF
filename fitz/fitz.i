@@ -24,20 +24,6 @@
 %enddef
 
 //-----------------------------------------------------------------------------
-// SWIG macro: return the larger value
-//-----------------------------------------------------------------------------
-%define MAX(a, b)
-(a < b) ? b : a
-%enddef
-
-//-----------------------------------------------------------------------------
-// SWIG macro: return the smaller value
-//-----------------------------------------------------------------------------
-%define MIN(a, b)
-(a < b) ? a : b
-%enddef
-
-//-----------------------------------------------------------------------------
 // SWIG macro: check if object has a valid parent
 //-----------------------------------------------------------------------------
 %define PARENTCHECK(meth)
@@ -54,8 +40,9 @@
 #define THROWMSG(msg) fz_throw(gctx, FZ_ERROR_GENERIC, msg)
 #define assert_PDF(cond) if (cond == NULL) THROWMSG("not a PDF")
 #define INRANGE(v, low, high) ((low) <= v && v <= (high))
+#define MAX(a, b) ((a) < (b)) ? (b) : (a)
+#define MIN(a, b) ((a) < (b)) ? (a) : (b)
 #define JM_UNICODE(data, len) PyUnicode_DecodeUTF8(data, (Py_ssize_t) len, "replace")
-#define JM_FORCEASCII(x, b) PyString_FromString(JM_get_ascii(sizeof(b), x, b))
 #include <fitz.h>
 #include <pdf.h>
 #include <zlib.h>
@@ -99,6 +86,7 @@ import sys
 %include helper-portfolio.i
 %include helper-select.i
 %include helper-xobject.i
+%include helper-pdfinfo.i
 
 //-----------------------------------------------------------------------------
 // fz_document
@@ -161,19 +149,8 @@ struct fz_document_s
             gctx->error->message[0] = 0;
             struct fz_document_s *doc = NULL;
             fz_stream *data = NULL;
-            char *streamdata = NULL;
-            size_t streamlen = 0;
-            if (PyBytes_Check(stream))
-            {
-                streamdata = PyBytes_AsString(stream);
-                streamlen = (size_t) PyBytes_Size(stream);
-            }
-            else if (PyByteArray_Check(stream))
-            {
-                streamdata = PyByteArray_AsString(stream);
-                streamlen = (size_t) PyByteArray_Size(stream);
-            }
-
+            char *streamdata;
+            size_t streamlen = JM_CharFromBytesOrArray(stream, &streamdata);
             fz_try(gctx)
             {
                 if (streamlen > 0)
@@ -466,12 +443,13 @@ struct fz_document_s
         {
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
             fz_buffer *data, *buf = NULL;
+            char *buffdata;
             int entry = 0;
             size_t size = 0;
-            size_t name_len = 0, file_len = 0, desc_len = 0;
-            name_len = strlen(name);
-            if (filename) file_len = strlen(filename);
-            if (desc)     desc_len = strlen(desc);
+            int name_len, file_len = 0, desc_len = 0;
+            name_len = (int) strlen(name);
+            if (filename) file_len = (int) strlen(filename);
+            if (desc)     desc_len = (int) strlen(desc);
             char *f = filename;
             char *d = desc;
             fz_try(gctx)
@@ -490,22 +468,13 @@ struct fz_document_s
                     d = name;               // take the name
                     desc_len = name_len;
                 }
-                
-            if (PyByteArray_Check(buffer))
-            {
-                size = (size_t) PyByteArray_Size(buffer);
-                data = fz_new_buffer_from_shared_data(gctx,
-                                PyByteArray_AsString(buffer), size);
-            }
-            else if (PyBytes_Check(buffer))
-            {
-                size = (size_t) PyBytes_Size(buffer);
-                data = fz_new_buffer_from_shared_data(gctx,
-                                PyBytes_AsString(buffer), size);
-            }
+            
+            size = JM_CharFromBytesOrArray(buffer, &buffdata);
+
             fz_try(gctx)
             {
-                if (size == 0) THROWMSG("arg 1 not bytes or bytearray");
+                if (size < 1) THROWMSG("arg 1 not bytes or bytearray");
+                data = fz_new_buffer_from_shared_data(gctx, buffdata, size);
                 int count = pdf_count_portfolio_entries(gctx, pdf);
                 int i;
                 char *tname;
@@ -606,7 +575,7 @@ struct fz_document_s
                 raise ValueError("incremental save needs original file")
         %}
 
-        PyObject *save(char *filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0)
+        PyObject *save(char *filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0, int pretty = 0)
         {
             int errors = 0;
             pdf_write_options opts;
@@ -619,7 +588,7 @@ struct fz_document_s
             opts.do_garbage = garbage;
             opts.do_linear = linear;
             opts.do_clean = clean;
-            opts.do_pretty = 0;
+            opts.do_pretty = pretty;
             opts.continue_on_error = 1;
             opts.errors = &errors;
             pdf_document *pdf = pdf_specifics(gctx, $self);
@@ -630,6 +599,7 @@ struct fz_document_s
                     THROWMSG("document has no pages");
                 if ((incremental) && (fz_needs_password(gctx, $self)))
                     THROWMSG("decrypted file - save to new");
+                if (!incremental && garbage < 2) opts.do_garbage = 2;
                 pdf_finish_edit(gctx, pdf);
                 pdf_save_document(gctx, pdf, filename, &opts);
                 }
@@ -647,7 +617,7 @@ struct fz_document_s
                 raise ValueError("operation illegal for closed doc")%}
 
         PyObject *write(int garbage=0, int clean=0, int deflate=0,
-                        int ascii=0, int expand=0, int linear=0)
+                        int ascii=0, int expand=0, int linear=0, int pretty = 0)
         {
             unsigned char *c;
             PyObject *r;
@@ -665,7 +635,7 @@ struct fz_document_s
             opts.do_garbage = garbage;
             opts.do_linear = linear;
             opts.do_clean = clean;
-            opts.do_pretty = 0;
+            opts.do_pretty = pretty;
             opts.continue_on_error = 1;
             opts.errors = &errors;
             pdf_document *pdf = pdf_specifics(gctx, $self);
@@ -674,6 +644,8 @@ struct fz_document_s
                 assert_PDF(pdf);
                 if (fz_count_pages(gctx, $self) < 1)
                     THROWMSG("document has zero pages");
+                if (garbage < 2) opts.do_garbage = 2;
+                pdf_finish_edit(gctx, pdf);
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 pdf_write_document(gctx, pdf, out, &opts);
@@ -705,10 +677,9 @@ if sa < 0:
     sa = self.pageCount%}
 
         %pythonappend insertPDF
-%{if val == 0:
-    self._reset_page_refs()
-    if links:
-        self._do_links(docsrc, from_page = from_page, to_page = to_page,
+%{self._reset_page_refs()
+if links:
+    self._do_links(docsrc, from_page = from_page, to_page = to_page,
                    start_at = sa)%}
 
         %feature("autodoc","Copy page range ['from', 'to'] of source PDF, starting as page number 'start_at'.") insertPDF;
@@ -746,7 +717,7 @@ if sa < 0:
         FITZEXCEPTION(deletePage, !result)
         CLOSECHECK(deletePage)
         %feature("autodoc","Delete page 'pno'.") deletePage;
-        %pythonappend deletePage %{if val == 0: self._reset_page_refs()%}
+        %pythonappend deletePage %{self._reset_page_refs()%}
         PyObject *deletePage(int pno)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
@@ -768,7 +739,7 @@ if sa < 0:
         FITZEXCEPTION(deletePageRange, !result)
         CLOSECHECK(deletePageRange)
         %feature("autodoc","Delete pages 'from' to 'to'.") deletePageRange;
-        %pythonappend deletePageRange %{if val == 0: self._reset_page_refs()%}
+        %pythonappend deletePageRange %{self._reset_page_refs()%}
         PyObject *deletePageRange(int from_page = -1, int to_page = -1)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
@@ -800,7 +771,7 @@ if sa < 0:
         FITZEXCEPTION(copyPage, !result)
         CLOSECHECK(copyPage)
         %feature("autodoc","Copy a page in front of 'to'.") copyPage;
-        %pythonappend copyPage %{if val == 0: self._reset_page_refs()%}
+        %pythonappend copyPage %{self._reset_page_refs()%}
         PyObject *copyPage(int pno, int to = -1)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
@@ -878,7 +849,7 @@ if sa < 0:
         FITZEXCEPTION(movePage, !result)
         CLOSECHECK(movePage)
         %feature("autodoc","Move page in front of 'to'.") movePage;
-        %pythonappend movePage %{if val == 0: self._reset_page_refs()%}
+        %pythonappend movePage %{self._reset_page_refs()%}
         PyObject *movePage(int pno, int to = -1)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
@@ -911,10 +882,7 @@ if sa < 0:
         FITZEXCEPTION(select, !result)
         %feature("autodoc","Build sub-pdf with page numbers in 'list'.") select;
         CLOSECHECK(select)
-        %pythonappend select
-%{if val == 0:
-    self._reset_page_refs()
-    self.initData()%}
+        %pythonappend select %{self._reset_page_refs()%}
         PyObject *select(PyObject *pyliste)
         {
             // preparatory stuff:
@@ -1053,135 +1021,82 @@ if sa < 0:
             return Py_BuildValue("(l, l)", objnum, objgen);
         }
 
-        //*********************************************************************
-        // Returns the images used on a page as a list of lists.
+        //---------------------------------------------------------------------
+        // Returns the list of images used on a page.
         // Each image entry contains
         // [xref, smask, width, height, bpc, colorspace, altcs, name]
-        //*********************************************************************
-        FITZEXCEPTION(getPageImageList, result==NULL)
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(getPageImageList, !result)
         CLOSECHECK(getPageImageList)
-        %feature("autodoc","List images used on a page.") getPageImageList;
+        %feature("autodoc","Show the images used on a page.") getPageImageList;
+        %pythonappend getPageImageList %{
+        x = []
+        for v in val:
+            if v not in x:
+                x.append(v)
+        val = x%}
         PyObject *getPageImageList(int pno)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
             int pageCount = fz_count_pages(gctx, $self);
-            int n = pno;
-            while (n < 0) n += pageCount;
-            fz_try(gctx)
-            {
-                if (n >= pageCount) THROWMSG("invalid page number(s)");
-                assert_PDF(pdf);
-            }
-            fz_catch(gctx) return NULL;
-            PyObject *imglist = PyList_New(0);   // we will return this
-            pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, n);
-            pdf_obj *pageobj = pdf_resolve_indirect(gctx, pageref);
-            pdf_obj *rsrc = pdf_dict_get(gctx, pageobj, PDF_NAME_Resources);
-            // XObject dictionary of page
-            pdf_obj *dict = pdf_dict_get(gctx, rsrc, PDF_NAME_XObject);
-            n = pdf_dict_len(gctx, dict);        // number of entries
-            int i;
-            for (i = 0; i < n; i++)       // do this for each img of the page
-            {
-                pdf_obj *imagedict, *imagename, *type, *altcs, *cs, *smask;
-                int xref, gen;
-                imagedict = pdf_dict_get_val(gctx, dict, i);
-                imagename = pdf_dict_get_key(gctx, dict, i);
-                if (!pdf_is_dict(gctx, imagedict)) continue;
-
-                type = pdf_dict_get(gctx, imagedict, PDF_NAME_Subtype);
-                if (!pdf_name_eq(gctx, type, PDF_NAME_Image)) continue;
-
-                xref = pdf_to_num(gctx, imagedict);
-                gen  = pdf_to_gen(gctx, imagedict);
-                smask = pdf_dict_get(gctx, imagedict, PDF_NAME_SMask);
-                if (smask)
-                    gen = pdf_to_num(gctx, smask);
-                int width = pdf_to_int(gctx, pdf_dict_get(gctx, imagedict,
-                                       PDF_NAME_Width));
-
-                int height = pdf_to_int(gctx, pdf_dict_get(gctx, imagedict,
-                                        PDF_NAME_Height));
-
-                int bpc = pdf_to_int(gctx, pdf_dict_get(gctx, imagedict,
-                                     PDF_NAME_BitsPerComponent));
-
-                cs = pdf_dict_get(gctx, imagedict, PDF_NAME_ColorSpace);
-                altcs = NULL;
-                if (pdf_is_array(gctx, cs))
-                {
-                    pdf_obj *cses = cs;
-                    cs = pdf_array_get(gctx, cses, 0);
-                    if (pdf_name_eq(gctx, cs, PDF_NAME_DeviceN) || pdf_name_eq(gctx, cs, PDF_NAME_Separation))
-                    {
-                        altcs = pdf_array_get(gctx, cses, 2);
-                        if (pdf_is_array(gctx, altcs))
-                            altcs = pdf_array_get(gctx, altcs, 0);
-                    }
-                }
-
-                PyList_Append(imglist, Py_BuildValue("(i,i,i,i,i,s,s,s)",
-                                       xref, gen, width, height, bpc,
-                                       pdf_to_name(gctx, cs),
-                                       pdf_to_name(gctx, altcs),
-                                       pdf_to_name(gctx, imagename)));
-            }
-            return imglist;
-        }
-
-        //*********************************************************************
-        // Returns the fonts used on a page as a nested list of lists.
-        // Each font entry contains [xref#, gen#, type, basename, name]
-        //*********************************************************************
-        FITZEXCEPTION(getPageFontList, !result)
-        CLOSECHECK(getPageFontList)
-        %feature("autodoc","List the fonts used on a page.") getPageFontList;
-        PyObject *getPageFontList(int pno)
-        {
-            pdf_document *pdf = pdf_specifics(gctx, $self);
-            int pageCount = fz_count_pages(gctx, $self);
-            pdf_obj *fontdict, *subtype, *basefont, *name, *bname;
-            pdf_obj *pageref, *pageobj, *rsrc, *dict;
-            PyObject *fontlist = PyList_New(0);  // returned object
-            int i, n;
-            char buf[127];
-            n = pno;              // pno < 0 is allowed
+            pdf_obj *pageref, *rsrc;
+            PyObject *imagelist;            // returned object
+            int n = pno;                    // pno < 0 is allowed
             while (n < 0) n += pageCount;
             fz_try(gctx)
             {
                 if (n >= pageCount) THROWMSG("invalid page number(s)");
                 assert_PDF(pdf);
                 pageref = pdf_lookup_page_obj(gctx, pdf, n);
-                pageobj = pdf_resolve_indirect(gctx, pageref);
-                rsrc = pdf_dict_get(gctx, pageobj, PDF_NAME_Resources);
-                dict = pdf_dict_get(gctx, rsrc, PDF_NAME_Font);
-                n = pdf_dict_len(gctx, dict);
-                for (i = 0; i < n; i++)          // loop through the fonts
-                {
-                    basefont = name = bname = NULL;
-                    fontdict = pdf_dict_get_val(gctx, dict, i);
-                    if (!pdf_is_dict(gctx, fontdict))
-                        continue;                // not a valid font
-                    name = pdf_dict_get_key(gctx, dict, i);
-                    int xref = pdf_to_num(gctx, fontdict);
-                    char *ext = fontextension(gctx, pdf, xref);
-                    subtype = pdf_dict_get(gctx, fontdict, PDF_NAME_Subtype);
-                    basefont = pdf_dict_get(gctx, fontdict, PDF_NAME_BaseFont);
-                    if (!basefont || pdf_is_null(gctx, basefont))
-                        bname = pdf_dict_get(gctx, fontdict, PDF_NAME_Name);
-                    else
-                        bname = basefont;
-                    PyObject *entry = PyList_New(0);
-                    PyList_Append(entry, PyInt_FromLong((long) xref));
-                    PyList_Append(entry, PyString_FromString(ext));
-                    PyList_Append(entry, JM_FORCEASCII(pdf_to_name(gctx, subtype), buf));
-                    PyList_Append(entry, JM_FORCEASCII(pdf_to_name(gctx, bname), buf));
-                    PyList_Append(entry, JM_FORCEASCII(pdf_to_name(gctx, name), buf));
-                    PyList_Append(fontlist, entry);
-                    Py_DECREF(entry);
-                }
+                rsrc = pdf_dict_get(gctx, pageref, PDF_NAME_Resources);
+                if (!pageref || !rsrc) THROWMSG("cannot retrieve page info");
+                imagelist = PyList_New(0);
+                JM_imagelist(gctx, pdf, rsrc, imagelist);
             }
-            fz_catch(gctx) return NULL;
+            fz_catch(gctx)
+            {
+                Py_DECREF(imagelist);
+                return NULL;
+            }
+            return imagelist;
+        }
+
+        //---------------------------------------------------------------------
+        // Returns the list of fonts used on a page.
+        // Each font entry contains [xref, extension, type, basename, name]
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(getPageFontList, !result)
+        CLOSECHECK(getPageFontList)
+        %feature("autodoc","Show the fonts used on a page.") getPageFontList;
+        %pythonappend getPageFontList %{
+        x = []
+        for v in val:
+            if v not in x:
+                x.append(v)
+        val = x%}
+        PyObject *getPageFontList(int pno)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            int pageCount = fz_count_pages(gctx, $self);
+            pdf_obj *pageref, *rsrc;
+            PyObject *fontlist;             // returned object
+            int n = pno;                    // pno < 0 is allowed
+            while (n < 0) n += pageCount;
+            fz_try(gctx)
+            {
+                if (n >= pageCount) THROWMSG("invalid page number(s)");
+                assert_PDF(pdf);
+                pageref = pdf_lookup_page_obj(gctx, pdf, n);
+                rsrc = pdf_dict_get(gctx, pageref, PDF_NAME_Resources);
+                if (!pageref || !rsrc) THROWMSG("cannot retrieve page info");
+                fontlist = PyList_New(0);
+                JM_fontlist(gctx, pdf, rsrc, fontlist);
+            }
+            fz_catch(gctx)
+            {
+                Py_DECREF(fontlist);
+                return NULL;
+            }
             return fontlist;
         }
 
@@ -1469,7 +1384,7 @@ if sa < 0:
         //---------------------------------------------------------------------
         FITZEXCEPTION(_updateStream, !result)
         CLOSECHECK(_updateStream)
-        PyObject *_updateStream(int xref = 0, PyObject *stream = NULL)
+        PyObject *_updateStream(int xref = 0, PyObject *stream = NULL, int new = 0)
         {
             pdf_obj *obj = NULL;
             fz_buffer *res = NULL;
@@ -1482,31 +1397,16 @@ if sa < 0:
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
                     THROWMSG("xref out of range");
-                if (PyBytes_Check(stream))
-                {
-                    c = PyBytes_AsString(stream);
-                    len = (size_t) PyBytes_Size(stream);
-                }
-                else
-                {
-                    if (PyByteArray_Check(stream))
-                    {
-                        c = PyByteArray_AsString(stream);
-                        len = (size_t) PyByteArray_Size(stream);
-                    }
-                    else
-                    {
-                        THROWMSG("stream must be bytes or bytearray");
-                    }
-                }
+                len = JM_CharFromBytesOrArray(stream, &c);
+                if (len < 1) THROWMSG("stream must be bytes or bytearray");
                 // get the object
                 obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 if (!obj) THROWMSG("xref invalid");
-                if (!pdf_is_stream(gctx, obj)) THROWMSG("xref not a stream object");
+                if (new == 0 && !pdf_is_stream(gctx, obj)) THROWMSG("xref not a stream object");
                 
                 pdf_dict_put(gctx, obj, PDF_NAME_Filter,
-                                                   PDF_NAME_FlateDecode);
-                res = JM_deflatebuf(gctx, c, (size_t) len);
+                             PDF_NAME_FlateDecode);
+                res = JM_deflatebuf(gctx, c, len);
                 pdf_update_stream(gctx, pdf, obj, res, 1);
                 pdf_drop_obj(gctx, obj);
             }
@@ -1514,9 +1414,9 @@ if sa < 0:
             return NONE;
         }
 
-        //*********************************************************************
+        //---------------------------------------------------------------------
         // Add or update metadata based on provided raw string
-        //*********************************************************************
+        //---------------------------------------------------------------------
         FITZEXCEPTION(_setMetadata, !result)
         CLOSECHECK(_setMetadata)
         PyObject *_setMetadata(char *text)
@@ -2047,8 +1947,7 @@ fannot._erase()
         //---------------------------------------------------------------------
         // Show a PDF page
         //---------------------------------------------------------------------
-        FITZEXCEPTION(showPDFpage, result<0)
-        %feature("autodoc", "Display a PDF page in a rectangle.") showPDFpage;
+        FITZEXCEPTION(_showPDFpage, result<0)
         int _showPDFpage(struct fz_rect_s *rect, struct fz_document_s *docsrc, int pno=0, int overlay=1, int keep_proportion=1, int reuse_xref=0, struct fz_rect_s *clip = NULL, struct pdf_graft_map_s *graftmap = NULL)
         {
             int xref;
@@ -2066,13 +1965,16 @@ fannot._erase()
                 pdf_document *pdfout = tpage->doc;    // target PDF
                 pdf_document *pdfsrc = pdf_specifics(gctx, docsrc);
                 assert_PDF(pdfsrc);
-                // make the XObject for source page
-                xobj1 = JM_xobject_from_page(gctx, pdfout, pdfsrc, pno, &mediabox, &cropbox, xref, graftmap);
-                // this is xref of spage as XObject
+
+                //-------------------------------------------------------------
+                // make XObject of source page and get its xref
+                //-------------------------------------------------------------
+                xobj1 = JM_xobject_from_page(gctx, pdfout, pdfsrc, pno,
+                                             &mediabox, &cropbox, xref, graftmap);
                 xref = pdf_to_num(gctx, xobj1);
 
                 //-------------------------------------------------------------
-                // Calculate Matrix and BBox of the referencing XObject
+                // Calculate /Matrix and /BBox of the referencing XObject
                 //-------------------------------------------------------------
                 if (clip)
                 {   // set cropbox if clip given
@@ -2113,19 +2015,19 @@ fannot._erase()
                 mat.f = Y;
 
                 //-------------------------------------------------------------
-                // create referencing XObject (actual display of page)
+                // create referencing XObject (controls actual display)
                 //-------------------------------------------------------------
                 xobj2 = pdf_new_xobject(gctx, pdfout, &cropbox, &mat);
                 pdf_xobject *xobj2x = pdf_load_xobject(gctx, pdfout, xobj2);
 
-                // fill the resources with the XObject reference to xobj1
+                // fill reference to xobj1 into its /Resources
                 o = pdf_xobject_resources(gctx, xobj2x);
                 pdf_obj *subres = pdf_new_dict(gctx, pdfout, 10);
                 pdf_dict_put(gctx, o, PDF_NAME_XObject, subres);
                 pdf_dict_puts(gctx, subres, "fullpage", xobj1);
                 pdf_drop_obj(gctx, subres);
 
-                // contents of xobj2 just invokes xobj1
+                // xobj2 invokes xobj1 via one statement
                 res = fz_new_buffer(gctx, 50);
                 fz_append_string(gctx, res, "/fullpage Do");
                 pdf_update_xobject_contents(gctx, pdfout, xobj2x, res);
@@ -2138,7 +2040,7 @@ fannot._erase()
                 //-------------------------------------------------------------
                 resources = pdf_dict_get(gctx, tpageref, PDF_NAME_Resources);
                 subres = pdf_dict_get(gctx, resources, PDF_NAME_XObject);
-                if (!subres)           // has no XObject yet: create one
+                if (!subres)           // has no XObject dict yet: create one
                 {
                     subres = pdf_new_dict(gctx, pdfout, 10);
                     pdf_dict_put(gctx, resources, PDF_NAME_XObject, subres);
@@ -2158,10 +2060,7 @@ fannot._erase()
 
                 JM_extend_contents(gctx, pdfout, tpageref, nres, overlay);
             }
-            fz_catch(gctx)
-            {
-                return -1;
-            }
+            fz_catch(gctx) return -1;
             return xref;
         }
 
@@ -3098,23 +2997,15 @@ struct fz_pixmap_s
         fz_pixmap_s(struct fz_colorspace_s *cs, int w, int h, PyObject *samples, int alpha = 0)
         {
             char *data = NULL;
-            size_t size = 0;
             int n = fz_colorspace_n(gctx, cs);
             int stride = (n + alpha)*w;
             fz_separations *seps = NULL;
             fz_pixmap *pm = NULL;
-            if (PyByteArray_Check(samples)){
-                data = PyByteArray_AsString(samples);
-                size = (size_t) PyByteArray_Size(samples);
-            }
-            else if (PyBytes_Check(samples)){
-                data = PyBytes_AsString(samples);
-                size = (size_t) PyBytes_Size(samples);
-            }
+            size_t size = JM_CharFromBytesOrArray(samples, &data);
             fz_try(gctx)
             {
-                if (size == 0) THROWMSG("invalid argument type");
-                if (stride * h != size) THROWMSG("len(samples) invalid");
+                if (size < 1) THROWMSG("invalid arg type samples");
+                if (stride * h != size) THROWMSG("invalid arg len samples");
                 pm = fz_new_pixmap_with_data(gctx, cs, w, h, seps, alpha, stride, data);
             }
             fz_catch(gctx) return NULL;
@@ -3144,25 +3035,16 @@ struct fz_pixmap_s
         fz_pixmap_s(PyObject *imagedata)
         {
             size_t size = 0;
+            char *streamdata;
             fz_buffer *data = NULL;
             fz_image *img = NULL;
             fz_pixmap *pm = NULL;
             fz_try(gctx)
             {
-                if (!imagedata) THROWMSG("invalid argument type");
-                if (PyByteArray_Check(imagedata))
-                {
-                    size = (size_t) PyByteArray_Size(imagedata);
-                    data = fz_new_buffer_from_shared_data(gctx,
-                              PyByteArray_AsString(imagedata), size);
-                }
-                else if (PyBytes_Check(imagedata))
-                {
-                    size = (size_t) PyBytes_Size(imagedata);
-                    data = fz_new_buffer_from_shared_data(gctx,
-                              PyBytes_AsString(imagedata), size);
-                }
-                if (size == 0) THROWMSG("invalid argument type");
+                size = JM_CharFromBytesOrArray(imagedata, &streamdata);
+                if (size < 1) THROWMSG("invalid argument type");
+                data = fz_new_buffer_from_shared_data(gctx,
+                              streamdata, size);
                 img = fz_new_image_from_buffer(gctx, data);
                 pm = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
             }
@@ -3339,19 +3221,10 @@ struct fz_pixmap_s
                 int h = fz_pixmap_height(gctx, $self);
                 int balen = w * h * (n+1);
                 unsigned char *data = NULL;
-                int data_len = 0;
+                size_t data_len = 0;
                 if (alphavalues)
                 {
-                    if (PyBytes_Check(alphavalues))
-                    {
-                        data_len = PyBytes_Size(alphavalues);
-                        data     = PyBytes_AsString(alphavalues);
-                    }
-                    if (PyByteArray_Check(alphavalues))
-                    {
-                        data_len = PyByteArray_Size(alphavalues);
-                        data     = PyByteArray_AsString(alphavalues);
-                    }
+                    data_len = JM_CharFromBytesOrArray(alphavalues, &data);
                     if (data_len > 0 && data_len < w * h)
                         THROWMSG("too few alpha values");
                 }
@@ -3379,7 +3252,7 @@ struct fz_pixmap_s
             unsigned char *c;
             PyObject *r;
             size_t len;
-            if (savealpha != -1) fz_warn(gctx, "ignoring savealpha");
+            if (savealpha != -1) PySys_WriteStdout("warning: ignoring savealpha");
             fz_try(gctx) {
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
@@ -3402,7 +3275,7 @@ struct fz_pixmap_s
         FITZEXCEPTION(_writeIMG, !result)
         PyObject *_writeIMG(char *filename, int format, int savealpha=-1)
         {
-            if (savealpha != -1) fz_warn(gctx, "ignoring savealpha");
+            if (savealpha != -1) PySys_WriteStdout("warning: ignoring savealpha");
             fz_try(gctx) {
                 switch(format)
                 {
@@ -4097,28 +3970,18 @@ struct fz_annot_s
         %feature("autodoc","_setAP: updates operator source of the /AP") _setAP;
         int _setAP(PyObject *ap)
         {
-            Py_ssize_t len = 0;
             char *c = NULL;
-            if (PyByteArray_Check(ap))
-            {
-                c = PyByteArray_AsString(ap);
-                len = PyByteArray_Size(ap);
-            }
-            else if (PyBytes_Check(ap))
-            {
-                c = PyBytes_AsString(ap);
-                len = PyBytes_Size(ap);
-            }
+            size_t len = JM_CharFromBytesOrArray(ap, &c);
             struct fz_buffer_s *res;
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
             fz_try(gctx)
             {
                 assert_PDF(annot);
                 if (!annot->ap) THROWMSG("annot has no /AP");
-                if (!c) THROWMSG("invalid argument type");
+                if (len < 1) THROWMSG("invalid argument type");
                 pdf_dict_put(gctx, annot->ap->obj, PDF_NAME_Filter,
                                                    PDF_NAME_FlateDecode);
-                res = JM_deflatebuf(gctx, c, (size_t) len);
+                res = JM_deflatebuf(gctx, c, len);
                 pdf_update_stream(gctx, annot->page->doc, annot->ap->obj, res, 1);
             }
             fz_catch(gctx) return -1;
@@ -4465,18 +4328,10 @@ struct fz_annot_s
                                    PDF_NAME_EF, PDF_NAME_F, NULL);
                 // the object for file content
                 if (!stream) THROWMSG("bad PDF: file has no stream");
+
                 // new file content must by bytes / bytearray
-                if (PyByteArray_Check(buffer))
-                {
-                    size = (size_t) PyByteArray_Size(buffer);
-                    data = PyByteArray_AsString(buffer);
-                }
-                else if (PyBytes_Check(buffer))
-                {
-                    size = (size_t) PyBytes_Size(buffer);
-                    data = PyBytes_AsString(buffer);
-                }
-                if (size == 0) THROWMSG("arg 1 not bytes or bytearray");
+                size = JM_CharFromBytesOrArray(buffer, &data);
+                if (size < 1) THROWMSG("arg 1 not bytes or bytearray");
                 if (file_len > 0)              // new filename given
                 {
                     pdf_dict_put_drop(gctx, stream, PDF_NAME_F,

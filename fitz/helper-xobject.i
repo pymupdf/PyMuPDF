@@ -1,7 +1,7 @@
 %{
 void JM_update_xobject_contents(fz_context *ctx, pdf_document *doc, pdf_xobject *form, fz_buffer *buffer)
 {   // version of "pdf_update_xobject_contents" with compression
-	size_t c_len;
+    size_t c_len;
     char *content_str;
     fz_buffer *nres;
     c_len = (size_t) fz_buffer_storage(ctx, buffer, &content_str);
@@ -9,9 +9,13 @@ void JM_update_xobject_contents(fz_context *ctx, pdf_document *doc, pdf_xobject 
     nres = JM_deflatebuf(ctx, content_str, c_len);
     pdf_update_stream(ctx, doc, form->obj, nres, 1);
     fz_drop_buffer(ctx, nres);
-	form->iteration ++;
+    form->iteration ++;
 }
 
+//-----------------------------------------------------------------------------
+// Make an XObject from a PDF page
+// If positive xref, assume this object can be used instead
+//-----------------------------------------------------------------------------
 pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_document *pdfsrc, int pno, fz_rect *mediabox, fz_rect *cropbox, int xref, pdf_graft_map *gmap)
 {
     fz_buffer *nres, *res;
@@ -30,14 +34,14 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
         else
             pdf_to_rect(ctx, o, cropbox);
 
-        if (xref > 0)
+        if (xref > 0)        // we can reuse an XObject!
         {
             if (xref >= pdf_xref_len(ctx, pdfout))
                 THROWMSG("xref out of range");
             xobj1 = pdf_new_indirect(ctx, pdfout, xref, 0);
             xobj1x = pdf_load_xobject(ctx, pdfout, xobj1);
         }
-        else
+        else                 // need to create new XObject
         {
             // Deep-copy resources object of source page
             o = pdf_dict_get(ctx, spageref, PDF_NAME_Resources);
@@ -84,7 +88,11 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
     return xobj1;
 }
 
-void JM_extend_contents(fz_context *ctx, pdf_document *pdfout, pdf_obj *pageref, fz_buffer *nres, int overlay)
+//-----------------------------------------------------------------------------
+// append / prepend given buffer to /Contents
+//-----------------------------------------------------------------------------
+void JM_extend_contents(fz_context *ctx, pdf_document *pdfout,
+                        pdf_obj *pageref, fz_buffer *nres, int overlay)
 {
     int i;
     fz_buffer *res;

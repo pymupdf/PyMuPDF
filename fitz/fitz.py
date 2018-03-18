@@ -102,9 +102,9 @@ import sys
 
 
 VersionFitz = "1.12.0"
-VersionBind = "1.12.3"
-VersionDate = "2018-03-01 02:35:55"
-version = (VersionBind, VersionFitz, "20180301023555")
+VersionBind = "1.12.4"
+VersionDate = "2018-03-18 10:18:03"
+version = (VersionBind, VersionFitz, "20180318101803")
 
 
 #------------------------------------------------------------------------------
@@ -704,8 +704,8 @@ class Document(_object):
         return val
 
 
-    def save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0):
-        """save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0) -> PyObject *"""
+    def save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0, pretty=0):
+        """save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0, pretty=0) -> PyObject *"""
 
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
@@ -721,16 +721,16 @@ class Document(_object):
             raise ValueError("incremental save needs original file")
 
 
-        return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear)
+        return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear, pretty)
 
 
-    def write(self, garbage=0, clean=0, deflate=0, ascii=0, expand=0, linear=0):
+    def write(self, garbage=0, clean=0, deflate=0, ascii=0, expand=0, linear=0, pretty=0):
         """Write document to a bytes object."""
 
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
-        return _fitz.Document_write(self, garbage, clean, deflate, ascii, expand, linear)
+        return _fitz.Document_write(self, garbage, clean, deflate, ascii, expand, linear, pretty)
 
 
     def insertPDF(self, docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=1):
@@ -744,10 +744,9 @@ class Document(_object):
             sa = self.pageCount
 
         val = _fitz.Document_insertPDF(self, docsrc, from_page, to_page, start_at, rotate, links)
-        if val == 0:
-            self._reset_page_refs()
-            if links:
-                self._do_links(docsrc, from_page = from_page, to_page = to_page,
+        self._reset_page_refs()
+        if links:
+            self._do_links(docsrc, from_page = from_page, to_page = to_page,
                            start_at = sa)
 
         return val
@@ -759,7 +758,7 @@ class Document(_object):
             raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_deletePage(self, pno)
-        if val == 0: self._reset_page_refs()
+        self._reset_page_refs()
 
         return val
 
@@ -770,7 +769,7 @@ class Document(_object):
             raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_deletePageRange(self, from_page, to_page)
-        if val == 0: self._reset_page_refs()
+        self._reset_page_refs()
 
         return val
 
@@ -781,7 +780,7 @@ class Document(_object):
             raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_copyPage(self, pno, to)
-        if val == 0: self._reset_page_refs()
+        self._reset_page_refs()
 
         return val
 
@@ -817,7 +816,7 @@ class Document(_object):
             raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_movePage(self, pno, to)
-        if val == 0: self._reset_page_refs()
+        self._reset_page_refs()
 
         return val
 
@@ -828,9 +827,7 @@ class Document(_object):
             raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_select(self, pyliste)
-        if val == 0:
-            self._reset_page_refs()
-            self.initData()
+        self._reset_page_refs()
 
         return val
 
@@ -861,19 +858,35 @@ class Document(_object):
 
 
     def getPageImageList(self, pno):
-        """List images used on a page."""
+        """Show the images used on a page."""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
-        return _fitz.Document_getPageImageList(self, pno)
+        val = _fitz.Document_getPageImageList(self, pno)
+
+        x = []
+        for v in val:
+            if v not in x:
+                x.append(v)
+        val = x
+
+        return val
 
 
     def getPageFontList(self, pno):
-        """List the fonts used on a page."""
+        """Show the fonts used on a page."""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
-        return _fitz.Document_getPageFontList(self, pno)
+        val = _fitz.Document_getPageFontList(self, pno)
+
+        x = []
+        for v in val:
+            if v not in x:
+                x.append(v)
+        val = x
+
+        return val
 
 
     def extractFont(self, xref=0, info_only=0):
@@ -960,12 +973,12 @@ class Document(_object):
         return _fitz.Document__updateObject(self, xref, text, page)
 
 
-    def _updateStream(self, xref=0, stream=None):
-        """_updateStream(self, xref=0, stream=None) -> PyObject *"""
+    def _updateStream(self, xref=0, stream=None, new=0):
+        """_updateStream(self, xref=0, stream=None, new=0) -> PyObject *"""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
-        return _fitz.Document__updateStream(self, xref, stream)
+        return _fitz.Document__updateStream(self, xref, stream, new)
 
 
     def _setMetadata(self, text):
