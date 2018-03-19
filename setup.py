@@ -13,9 +13,9 @@ if sys.platform.startswith('linux'):
                        #library_dirs=['<mupdf_and_3rd_party_libraries_dir>'],
                        libraries=[
                            'mupdf',
-                           'crypto', #openssl is required by mupdf on archlinux
-                           'jbig2dec', 'openjp2', 'jpeg', 'freetype',
                            'mupdfthird',
+                           # 'jbig2dec', 'openjp2', 'jpeg', 'freetype',
+                           # 'crypto', #openssl is required by mupdf on archlinux
                            ], # the libraries to link with
                       )
 elif sys.platform.startswith('darwin'):

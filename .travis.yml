@@ -1,0 +1,50 @@
+language: python
+dist: trusty
+sudo: false
+cache:
+  directories:
+  - $HOME/Library/Caches/Homebrew
+env:
+  global:
+    - MUPDF='https://mupdf.com/downloads/mupdf-1.12.0-source.tar.gz'
+    - COPYFILE_DISABLE=1  # for macos tar errors
+    - TWINE_USERNAME=pymupdf
+
+matrix:
+  include:
+    - os: linux
+      sudo: required
+      python: "3.6"
+      services:
+        - docker
+      env: PIP=pip
+      before_script:
+        - export CIBW_BEFORE_BUILD="yum install -y zlib-devel && cd mupdf && make HAVE_X11=no HAVE_GLFW=no HAVE_GLUT=no prefix=/usr/local install && cd .."
+        - export CIBW_ENVIRONMENT='CFLAGS="-fPIC -std=gnu99"'
+
+    - os: osx
+      osx_image: xcode8.3
+      language: generic   # osx + "language: python" is broken; use generic
+      services: 
+        - docker
+      env: PIP=pip3
+      before_install:
+        - brew update -q
+        - brew outdated python || brew upgrade python  # get py3
+        - sudo mkdir -p /usr/local/man && sudo chmod a+rw /usr/local/man  # make pip install error go away
+      before_script:
+        - export CIBW_BEFORE_BUILD="cd mupdf && make HAVE_X11=no HAVE_GLFW=no HAVE_GLUT=no prefix=/usr/local install && cd .."
+        - export CIBW_ENVIRONMENT='CFLAGS=-fPIC'
+
+install:
+  - $PIP install cibuildwheel==0.7.0 twine
+  - mkdir mupdf && wget -q $MUPDF -O - | tar zx -C mupdf --strip-components=1
+
+script:
+  - export CIBW_ENVIRONMENT='CFLAGS="-fPIC -std=gnu99"'
+  - export CIBW_SKIP="cp33-* *i686"  # Skip Python 3.3 and i686 (<1% of users now)
+  - cibuildwheel --output-dir wheelhouse
+  - |
+    if [[ "$TRAVIS_TAG" != "" ]]; then
+      python3 -m twine upload wheelhouse/*.whl
+    fi
