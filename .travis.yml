@@ -43,6 +43,7 @@ install:
 script:
   - export CIBW_ENVIRONMENT='CFLAGS="-fPIC -std=gnu99"'
   - export CIBW_SKIP="cp33-* *i686"  # Skip Python 3.3 and i686 (<1% of users now)
+  - export CIBW_TEST_COMMAND="python -c 'import fitz'"
   - cibuildwheel --output-dir wheelhouse
   - |
     if [[ "$TRAVIS_TAG" != "" ]]; then
