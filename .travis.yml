@@ -48,4 +48,6 @@ script:
   - |
     if [[ "$TRAVIS_TAG" != "" ]]; then
       python3 -m twine upload wheelhouse/*.whl
+    else
+      python3 -m twine upload twine upload --repository-url https://testpypi.pypi.org/legacy/ wheelhouse/*.whl
     fi
