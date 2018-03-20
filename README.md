@@ -1,4 +1,4 @@
-# PyMuPDF 1.12.4
+# PyMuPDF 1.12.4 [![Build Status](https://travis-ci.org/rk700/PyMuPDF.svg?branch=master)](https://travis-ci.org/rk700/PyMuPDF)
 
 ![logo](https://github.com/rk700/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
