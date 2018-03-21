@@ -39,7 +39,7 @@ matrix:
 install:
   - $PIP install cibuildwheel==0.7.0 twine
   - mkdir mupdf && wget -q $MUPDF -O - | tar zx -C mupdf --strip-components=1
-  - cp rk700/PyMuPDF/fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
+  - cp fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
 
 script:
   - export CIBW_ENVIRONMENT='CFLAGS="-fPIC -std=gnu99"'
