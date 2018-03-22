@@ -20,11 +20,11 @@ See the [Wiki](https://github.com/rk700/PyMuPDF/wiki) for more information, [new
 
 # Installation
 
-For all Windows versions and the major Mac OS and Linux versions we now offer wheel-based installation options. Please check the download section of PyPI or [this repository](https://github.com/JorjMcKie/PyMuPDF-wheels).
+For all [Windows versions](https://github.com/JorjMcKie/PyMuPDF-wheels) and the major [Mac OS and Linux versions](https://github.com/rk700/PyMuPDF/releases) we offer wheel-based installation options. The files can also be found in the download section of PyPI.
 
-If you - for whatever reason - need to generate PyMuPDF, you must download and generate MuPDF. This process very much depends on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this.
+If you - for whatever reason - need to generate PyMuPDF, you must first download and generate MuPDF. This process very much depends on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this.
 
-Be sure to download the official release from [here](https://mupdf.com/downloads). Although MuPDF also has a GitHub repo, this contains their current **development source**, which more often than not is incompatible with this PyMuPDF.
+Be sure to download the official MuPDF release from [here](https://mupdf.com/downloads). Although MuPDF also has a GitHub repo, this contains their current **development source**, which more often than not is incompatible with this PyMuPDF.
 
 Once this is done, adjust directories in ``setup.py`` and the rest should be as easy as running ``python setup.py install``.
 
