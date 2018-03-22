@@ -2,7 +2,7 @@
 
 ![logo](https://github.com/rk700/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: December 31, 2017
+Release date: January 15, 2018
 
 # Authors
 * [Ruikai Liu](lrk700@gmail.com)
@@ -19,9 +19,12 @@ With PyMuPDF you therefore can also access files with extensions ``*.pdf``, ``*.
 See the [Wiki](https://github.com/rk700/PyMuPDF/wiki) for more information, [news](https://github.com/rk700/PyMuPDF/wiki/Change-and-News-Log), release notes and usage recipies.
 
 # Installation
-If you had not previously installed MuPDF, you must first do this (however, see the **MS Windows** section further down). This process very much depends on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this.
 
-If you decide to generate MuPDF from sources (definitely the safest and cleanest way for all platforms except MS Windows), be sure to download the official release from [here](https://mupdf.com/downloads). Although MuPDF also has a GitHub repo, this contains their current **development source**, which usually is incompatible with this PyMuPDF.
+For all Windows versions and the major Mac OS and Linux versions we now offer wheel-based installation options. Please check the download section of PyPI or [this repository](https://github.com/JorjMcKie/PyMuPDF-wheels).
+
+If you - for whatever reason - need to generate PyMuPDF, you must download and generate MuPDF. This process very much depends on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this.
+
+Be sure to download the official release from [here](https://mupdf.com/downloads). Although MuPDF also has a GitHub repo, this contains their current **development source**, which more often than not is incompatible with this PyMuPDF.
 
 Once this is done, adjust directories in ``setup.py`` and the rest should be as easy as running ``python setup.py install``.
 
@@ -43,9 +46,8 @@ Then you might need to ``export ARCHFLAGS='-arch x86_64'``, since ``libmupdf.a``
 Finally, please double check ``setup.py`` before building. Update ``include_dirs`` and ``library_dirs`` if necessary.
 
 ## MS Windows
-The lucky Windows user can now just issue `pip install PyMuPDF [--upgrade]` and is done in no more time than a 3 MB download takes. This requires **nothing else** - no MuPDF, no Visual Studio, ... whatsoever.
 
-If you don't use ``pip`` or [PyPI](https://pypi.org/project/PyMuPDF/), you can still download [pre-generated binaries](https://github.com/JorjMcKie/PyMuPDF-Optional-Material) or [Python wheels](https://github.com/JorjMcKie/PyMuPDF-wheels) that are suitable for your Python / Windows combination. This, too, avoids any other downloads or compilation hassle. Again, make sure to consult our documentation.
+If you don't use ``pip`` or [PyPI](https://pypi.org/project/PyMuPDF/), you can still download [pre-generated binaries](https://github.com/JorjMcKie/PyMuPDF-Optional-Material) that are suitable for your Python / Windows combination. This, too, avoids any other downloads or compilation hassle. Again, make sure to consult our documentation.
 
 If you do want to make your own binary however, have a look at this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation). It explains how to use Visual Studio for generating MuPDF in quite some detail. Also do not hesitate to contact us if you need help.
 
