@@ -51,6 +51,7 @@ deploy:
   provider: pages
   skip-cleanup: true
   local-dir: wheelhouse
+  github_token: $GITHUB_TOKEN
   target-branch: wheels
   on:
     branch: master
