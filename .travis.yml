@@ -44,6 +44,8 @@ script:
 - export CIBW_SKIP="cp33-* *i686"
 - export CIBW_TEST_COMMAND="python -c 'import fitz'"
 - cibuildwheel --output-dir wheelhouse
+before_deploy:
+  - git tag "v1.12.4"
 deploy:
   provider: releases
   api_key:
