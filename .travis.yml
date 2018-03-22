@@ -46,6 +46,12 @@ script:
   - export CIBW_SKIP="cp33-* *i686"  # Skip Python 3.3 and i686 (<1% of users now)
   - export CIBW_TEST_COMMAND="python -c 'import fitz'"
   - cibuildwheel --output-dir wheelhouse
-  - |
-    python3 -m pip install twine
-    python3 -m twine upload wheelhouse/*.whl
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  local-dir: wheelhouse
+  target-branch: wheels
+  on:
+    branch: master

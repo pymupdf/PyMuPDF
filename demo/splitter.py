@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 PyMuPDF Example Script:
+------------------------
 
-    
 Split a given PDF into separate files with one page each.
+For "input.pdf" the generated files are named "input-%i.pdf".
 
-
+PyMuPDF license
 """
 
 import fitz
