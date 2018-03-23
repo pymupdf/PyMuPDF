@@ -53,6 +53,6 @@ deploy:
   skip_cleanup: true
   local-dir: wheelhouse
   repo: JorjMcKie/PyMuPDF-wheels
-  target-branch: master
+  target-branch: $TRAVIS_OS_NAME
   on:
     repo: rk700/PyMuPDF
