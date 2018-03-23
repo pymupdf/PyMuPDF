@@ -44,15 +44,15 @@ script:
 - export CIBW_SKIP="cp33-* *i686"
 - export CIBW_TEST_COMMAND="python -c 'import fitz'"
 - cibuildwheel --output-dir wheelhouse
-before_deploy:
-  - git tag "v1.12.4"
+
 deploy:
-  provider: releases
+  provider: pages
   api_key:
     secure: aZCfaInTGLFs2Ik60w61g/wK7IR4sxK035H+YiKvIrwyufUVuafFlRlG9FLsxrhgYlh7KalNJciD9kdYCgQ3qt21lud9CviBgwNdFGF8LoUhzflr+MzOP51ESnHMgN3t51lN7Ui2RrFlsbST34O28tq8vyPitDS3AMXeuUSZzx8GpsFr/5wRvikd0q1QxF+KkeTp0iVRu4woV0LUNnDylEHRmHdvObuIXkQJunvsXW/Zpxzk8rREdW1/4mBqWV2H8ywk5nptgHfwcjmrpoPHrJOkgXYkXkONzXdC0OuL5SSHLFF4NPNNVdf6Rz4RoGsozI5rDvJ1lEEijz+1sEIQAvghprv9LgiSKs4ECnGtk6J65NCf1KT+3Sj7zcl9C7MmOdJFgnIeWGj5a34i+lGIph30ji3MiBwTnApMyaWHxF6+qshkmN5E+m4Y8XHVAS8gR3EEvLwPR15wmfRATHE2uc1y7p6yNeR95wS5xFqsrXjyZY0/9Ht29JQh/R1NZdLVNJD0/1hcaEhwMSTa1YGmDrUh+wGNjRlPgzS/y3nKG9vwFyPcO8sWaFVMBz1VyqT2ZYQq8Qg2Wtg3r0TvqntwN2ois9KRsr+j8yKGEXkTwZoi/6uL7sjl/NHUL5ps37s1h8GRMdhtQ4dz1s2x+E8kj5cZFGopFybAp44jmdz80wo=
   overwrite: true
-  file_glob: true
   skip_cleanup: true
-  file: wheelhouse/*
+  local-dir: wheelhouse
+  repo: JorjMcKie/PyMuPDF-wheels
+  target-branch: master
   on:
     repo: rk700/PyMuPDF
