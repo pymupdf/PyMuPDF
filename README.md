@@ -20,7 +20,7 @@ See the [Wiki](https://github.com/rk700/PyMuPDF/wiki) for more information, [new
 
 # Installation
 
-For all [Windows versions](https://github.com/JorjMcKie/PyMuPDF-wheels) and the major [Mac OS and Linux versions](https://github.com/rk700/PyMuPDF/releases) we offer wheel-based installation options. The files can also be found in the download section of PyPI.
+For all [Windows](https://github.com/JorjMcKie/PyMuPDF-wheels/tree/windows) and the major [Mac OS](https://github.com/JorjMcKie/PyMuPDF-wheels/tree/osx) and [Linux](https://github.com/JorjMcKie/PyMuPDF-wheels/tree/linux) versions we offer wheel-based installation options. The files can also be found in the download section of PyPI.
 
 If you - for whatever reason - need to generate PyMuPDF, you must first download and generate MuPDF. This process very much depends on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this.
 
