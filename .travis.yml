@@ -36,7 +36,7 @@ matrix:
       prefix=/usr/local install && cd .."
     - export CIBW_ENVIRONMENT='CFLAGS=-fPIC'
 install:
-- "$PIP install cibuildwheel==0.7.0"
+- "$PIP install cibuildwheel==0.7.0 twine"
 - mkdir mupdf && wget -q $MUPDF -O - | tar zx -C mupdf --strip-components=1
 - cp fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
 script:
@@ -52,6 +52,7 @@ deploy:
   keep-history: false
   skip_cleanup: true
   local-dir: wheelhouse
-  repo: JorjMcKie/New-wheels
+  repo: JorjMcKie/PyMuPDF-wheels
   target-branch: $TRAVIS_OS_NAME
-  
+  on:
+    repo: rk700/PyMuPDF
