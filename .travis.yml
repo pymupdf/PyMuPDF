@@ -52,7 +52,6 @@ deploy:
   keep-history: true
   skip_cleanup: true
   local-dir: wheelhouse
-  repo: JorjMcKie/PyMuPDF-wheels
+  repo: JorjMcKie/New-wheels
   target-branch: $TRAVIS_OS_NAME
-  on:
-    repo: rk700/PyMuPDF
+  
