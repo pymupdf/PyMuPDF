@@ -1021,26 +1021,21 @@ if links:
             return Py_BuildValue("(l, l)", objnum, objgen);
         }
 
-        //---------------------------------------------------------------------
-        // Returns the list of images used on a page.
-        // Each image entry contains
-        // [xref, smask, width, height, bpc, colorspace, altcs, name]
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(getPageImageList, !result)
-        CLOSECHECK(getPageImageList)
-        %feature("autodoc","Show the images used on a page.") getPageImageList;
-        %pythonappend getPageImageList %{
+        FITZEXCEPTION(_getPageInfo, !result)
+        CLOSECHECK(_getPageInfo)
+        %feature("autodoc","Show fonts or images used on a page.") _getPageInfo;
+        %pythonappend _getPageInfo %{
         x = []
         for v in val:
             if v not in x:
                 x.append(v)
         val = x%}
-        PyObject *getPageImageList(int pno)
+        PyObject *_getPageInfo(int pno, int what)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
             int pageCount = fz_count_pages(gctx, $self);
             pdf_obj *pageref, *rsrc;
-            PyObject *imagelist;            // returned object
+            PyObject *liste;                // returned object
             int n = pno;                    // pno < 0 is allowed
             while (n < 0) n += pageCount;
             fz_try(gctx)
@@ -1050,54 +1045,15 @@ if links:
                 pageref = pdf_lookup_page_obj(gctx, pdf, n);
                 rsrc = pdf_dict_get(gctx, pageref, PDF_NAME_Resources);
                 if (!pageref || !rsrc) THROWMSG("cannot retrieve page info");
-                imagelist = PyList_New(0);
-                JM_imagelist(gctx, pdf, rsrc, imagelist);
+                liste = PyList_New(0);
+                JM_ScanResources(gctx, pdf, rsrc, liste, what);
             }
             fz_catch(gctx)
             {
-                Py_DECREF(imagelist);
+                Py_DECREF(liste);
                 return NULL;
             }
-            return imagelist;
-        }
-
-        //---------------------------------------------------------------------
-        // Returns the list of fonts used on a page.
-        // Each font entry contains [xref, extension, type, basename, name]
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(getPageFontList, !result)
-        CLOSECHECK(getPageFontList)
-        %feature("autodoc","Show the fonts used on a page.") getPageFontList;
-        %pythonappend getPageFontList %{
-        x = []
-        for v in val:
-            if v not in x:
-                x.append(v)
-        val = x%}
-        PyObject *getPageFontList(int pno)
-        {
-            pdf_document *pdf = pdf_specifics(gctx, $self);
-            int pageCount = fz_count_pages(gctx, $self);
-            pdf_obj *pageref, *rsrc;
-            PyObject *fontlist;             // returned object
-            int n = pno;                    // pno < 0 is allowed
-            while (n < 0) n += pageCount;
-            fz_try(gctx)
-            {
-                if (n >= pageCount) THROWMSG("invalid page number(s)");
-                assert_PDF(pdf);
-                pageref = pdf_lookup_page_obj(gctx, pdf, n);
-                rsrc = pdf_dict_get(gctx, pageref, PDF_NAME_Resources);
-                if (!pageref || !rsrc) THROWMSG("cannot retrieve page info");
-                fontlist = PyList_New(0);
-                JM_fontlist(gctx, pdf, rsrc, fontlist);
-            }
-            fz_catch(gctx)
-            {
-                Py_DECREF(fontlist);
-                return NULL;
-            }
-            return fontlist;
+            return liste;
         }
 
         FITZEXCEPTION(extractFont, !result)
@@ -1460,6 +1416,16 @@ if links:
 
             outline = property(lambda self: self._outline)
             _getPageXref = _getPageObjNumber
+
+            def getPageFontList(self, pno):
+                """Retrieve a list of fonts used on a page.
+                """
+                return self._getPageInfo(pno, 1)
+
+            def getPageImageList(self, pno):
+                """Retrieve a list of images used on a page.
+                """
+                return self._getPageInfo(pno, 2)
 
             def saveIncr(self):
                 """ Save PDF incrementally"""
@@ -2933,6 +2899,8 @@ struct fz_pixmap_s
             fz_pixmap *pm = NULL;
             fz_try(gctx)
             {
+                if (!fz_pixmap_colorspace(gctx, spix))
+                    THROWMSG("cannot copy pixmap with NULL colorspace");
                 pm = fz_convert_pixmap(gctx, spix, cs, NULL, NULL, NULL, alpha);
             }
             fz_catch(gctx) return NULL;
@@ -2942,7 +2910,7 @@ struct fz_pixmap_s
         //---------------------------------------------------------------------
         // create pixmap as scaled copy of another one
         //---------------------------------------------------------------------
-        fz_pixmap_s(fz_pixmap *spix, float w, float h, struct fz_irect_s *clip = NULL)
+        fz_pixmap_s(struct fz_pixmap_s *spix, float w, float h, struct fz_irect_s *clip = NULL)
         {
             fz_pixmap *pm = NULL;
             fz_try(gctx)
@@ -3101,12 +3069,12 @@ struct fz_pixmap_s
         //---------------------------------------------------------------------
         void shrink(int factor)
         {
-            if (factor < 0) return;
-            fz_try(gctx)
+            if (factor < 1)
             {
-                fz_subsample_pixmap(gctx, $self, factor);
+                PySys_WriteStdout("warning: ignoring shrink factor < 1\n");
+                return;
             }
-            fz_catch(gctx) return;
+            fz_subsample_pixmap(gctx, $self, factor);
         }
 
         /***************************/
@@ -3114,6 +3082,11 @@ struct fz_pixmap_s
         /***************************/
         void gammaWith(float gamma)
         {
+            if (!fz_pixmap_colorspace(gctx, $self))
+            {
+                PySys_WriteStdout("warning: colorspace invalid for function\n");
+                return;
+            }
             fz_gamma_pixmap(gctx, $self, gamma);
         }
 
@@ -3121,11 +3094,21 @@ struct fz_pixmap_s
         /* tint pixmap with color  */
         /***************************/
         %pythonprepend tintWith%{
-            if self.colorspace.n > 3:
-                raise TypeError("CMYK colorspace cannot be tinted")%}
+            if not self.colorspace or self.colorspace.n > 3:
+                print("warning: colorspace invalid for function")
+                return%}
         void tintWith(int red, int green, int blue)
         {
             fz_tint_pixmap(gctx, $self, red, green, blue);
+        }
+
+        //----------------------------------------------------------------------
+        // Pixmap.setResolution
+        //----------------------------------------------------------------------
+        void setResolution(int xres, int yres)
+        {
+            $self->xres = xres;
+            $self->yres = yres;
         }
 
         //----------------------------------------------------------------------
@@ -3155,9 +3138,17 @@ struct fz_pixmap_s
         //----------------------------------------------------------------------
         // copy pixmaps 
         //----------------------------------------------------------------------
-        void copyPixmap(struct fz_pixmap_s *src, const struct fz_irect_s *bbox)
+        FITZEXCEPTION(copyPixmap, !result)
+        PyObject *copyPixmap(struct fz_pixmap_s *src, const struct fz_irect_s *bbox)
         {
-            fz_copy_pixmap_rect(gctx, $self, src, bbox, NULL);
+            fz_try(gctx)
+            {
+                if (!fz_pixmap_colorspace(gctx, src))
+                    THROWMSG("cannot copy pixmap with NULL colorspace");
+                fz_copy_pixmap_rect(gctx, $self, src, bbox, NULL);
+            }
+            fz_catch(gctx) return NULL;
+            return NONE;
         }
 
         //----------------------------------------------------------------------

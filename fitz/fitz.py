@@ -102,9 +102,9 @@ import sys
 
 
 VersionFitz = "1.12.0"
-VersionBind = "1.12.4"
-VersionDate = "2018-03-18 10:18:03"
-version = (VersionBind, VersionFitz, "20180318101803")
+VersionBind = "1.12.5"
+VersionDate = "2018-03-29 10:50:05"
+version = (VersionBind, VersionFitz, "20180329105005")
 
 
 #------------------------------------------------------------------------------
@@ -240,36 +240,36 @@ def getPDFnow():
 # else a string "<FEFF[hexstring]>" is returned, where [hexstring] is the
 # UTF-16BE encoding of the original.
 #-------------------------------------------------------------------------------
-def getPDFstr(s, brackets = True):
-    if s is None or s == "":
-        return "()" if brackets else ""
+def getPDFstr(x):
+    if x is None or x == "":
+        return "()"
 
-    x = s
+    utf16 = max(ord(c) for c in x) > 255
+    if utf16:
+# require full unicode: make a UTF-16BE hex string with BOM "feff"
+        r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
+# r is 'bytes', so convert to 'str' if Python 3
+        t = r if str is bytes else r.decode()
+        return "<" + t + ">"                         # brackets indicate hex
 
-    utf16 = False
+    s = x.replace("\x00", " ")
+    if str is bytes:
+        if type(s) is str:
+            s = unicode(s, "utf-8", "replace")
+
 # following returns ascii original string with mixed-in 
 # octal numbers \nnn if <= chr(255)
     r = ""
-    for i in range(len(x)):
-        if ord(x[i]) > 255:
-            utf16 = True
-            break
-        if not brackets:
-            r += x[i]
-            continue
-        if ord(x[i]) > 127:
-            r += "\\" + oct(ord(x[i]))[-3:]
+    for c in s:
+        oc = ord(c)
+        if oc > 127:
+            r += "\\" + oct(oc)[-3:]
         else:
-            r += x[i]
+            if c in ("(", ")", "\\"):
+                r += "\\"
+            r += c
 
-    if not utf16:
-        return "(" + r + ")" if brackets else r
-
-# require full unicode: make a UTF-16BE hex string with BOM "feff"
-    r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
-# r is 'bytes', so turn to 'str' if Python 3
-    t = r if str is bytes else r.decode()
-    return "<" + t + ">"                         # brackets indicate hex
+    return "(" + r + ")"
 
 #===============================================================================
 # Return a PDF string suitable for the TJ operator enclosed in "[]" brackets.
@@ -480,7 +480,9 @@ def ConversionTrailer(i):
 
 
 class Document(_object):
-    """Proxy of C fz_document_s struct."""
+    """open() - new empty PDF
+open('pdf', stream) - 'stream': bytes/bytearray
+open(filename)"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Document, name, value)
@@ -857,28 +859,12 @@ class Document(_object):
         return _fitz.Document__getPageObjNumber(self, pno)
 
 
-    def getPageImageList(self, pno):
-        """Show the images used on a page."""
+    def _getPageInfo(self, pno, what):
+        """Show fonts or images used on a page."""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
-        val = _fitz.Document_getPageImageList(self, pno)
-
-        x = []
-        for v in val:
-            if v not in x:
-                x.append(v)
-        val = x
-
-        return val
-
-
-    def getPageFontList(self, pno):
-        """Show the fonts used on a page."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
-
-        val = _fitz.Document_getPageFontList(self, pno)
+        val = _fitz.Document__getPageInfo(self, pno, what)
 
         x = []
         for v in val:
@@ -998,6 +984,16 @@ class Document(_object):
 
     outline = property(lambda self: self._outline)
     _getPageXref = _getPageObjNumber
+
+    def getPageFontList(self, pno):
+        """Retrieve a list of fonts used on a page.
+        """
+        return self._getPageInfo(pno, 1)
+
+    def getPageImageList(self, pno):
+        """Retrieve a list of images used on a page.
+        """
+        return self._getPageInfo(pno, 2)
 
     def saveIncr(self):
         """ Save PDF incrementally"""
@@ -1359,7 +1355,13 @@ def _fz_transform_rect(rect, transform):
     """_fz_transform_rect(rect, transform) -> Rect"""
     return _fitz._fz_transform_rect(rect, transform)
 class Rect(_object):
-    """Proxy of C fz_rect_s struct."""
+    """Rect() - all zeros
+Rect(x0, y0, x1, y1)
+Rect(top-left, x1, y1)
+Rect(x0, y0, bottom-right)
+Rect(top-left, bottom-right)
+Rect(Rect / IRect) - new copy
+Rect(sequence) - from 'sequence'"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Rect, name, value)
@@ -1430,11 +1432,7 @@ class Rect(_object):
 
 
     def contains(self, *args):
-        """
-        contains
-        contains
-        contains
-        """
+        """Check if containing a 'Point' or other rect"""
         return _fitz.Rect_contains(self, *args)
 
     @property
@@ -1514,7 +1512,10 @@ Rect_swigregister = _fitz.Rect_swigregister
 Rect_swigregister(Rect)
 
 class IRect(_object):
-    """Proxy of C fz_irect_s struct."""
+    """IRect() - all zeros
+IRect(x0, y0, x1, y1)
+IRect(Rect / IRect) - new copy
+IRect(sequence) - from 'sequence'"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, IRect, name, value)
@@ -1571,11 +1572,7 @@ class IRect(_object):
 
 
     def contains(self, *args):
-        """
-        contains
-        contains
-        contains
-        """
+        """Check if containing a 'Point' or other rect"""
         return _fitz.IRect_contains(self, *args)
 
 
@@ -1648,7 +1645,13 @@ IRect_swigregister = _fitz.IRect_swigregister
 IRect_swigregister(IRect)
 
 class Pixmap(_object):
-    """Proxy of C fz_pixmap_s struct."""
+    """Pixmap(Colorspace, width, height, samples, alpha)
+Pixmap(Colorspace, Irect, alpha)
+Pixmap(Colorspace, Pixmap [, alpha]) - converted copy
+Pixmap(filename)
+Pixmap(Pixmap) - new copy with added alpha
+Pixmap(image-buffer) - from bytearray
+Pixmap(Document, xref) - from image in PDF"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Pixmap, name, value)
@@ -1716,10 +1719,16 @@ class Pixmap(_object):
     def tintWith(self, red, green, blue):
         """tintWith(self, red, green, blue)"""
 
-        if self.colorspace.n > 3:
-            raise TypeError("CMYK colorspace cannot be tinted")
+        if not self.colorspace or self.colorspace.n > 3:
+            print("warning: colorspace invalid for function")
+            return
 
         return _fitz.Pixmap_tintWith(self, red, green, blue)
+
+
+    def setResolution(self, xres, yres):
+        """setResolution(self, xres, yres)"""
+        return _fitz.Pixmap_setResolution(self, xres, yres)
 
 
     def clearWith(self, *args):
@@ -1732,7 +1741,7 @@ class Pixmap(_object):
 
 
     def copyPixmap(self, src, bbox):
-        """copyPixmap(self, src, bbox)"""
+        """copyPixmap(self, src, bbox) -> PyObject *"""
         return _fitz.Pixmap_copyPixmap(self, src, bbox)
 
     @property
@@ -1893,7 +1902,13 @@ def _fz_pre_rotate(m, degree):
     """_fz_pre_rotate(m, degree) -> Matrix"""
     return _fitz._fz_pre_rotate(m, degree)
 class Matrix(_object):
-    """Proxy of C fz_matrix_s struct."""
+    """Matrix() - all zeros
+Matrix(a, b, c, d, e, f)
+Matrix(zoom-x, zoom-y) - zoom
+Matrix(shear-x, shear-y, 1) - shear
+Matrix(degree) - rotate
+Matrix(Matrix) - new copy
+Matrix(sequence) - from 'sequence'"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Matrix, name, value)
@@ -2055,7 +2070,10 @@ def _fz_transform_point(point, transform):
     """_fz_transform_point(point, transform) -> Point"""
     return _fitz._fz_transform_point(point, transform)
 class Point(_object):
-    """Proxy of C fz_point_s struct."""
+    """Point() - all zeros
+Point(x, y)
+Point(Point) - new copy
+Point(sequence) - from 'sequence'"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Point, name, value)

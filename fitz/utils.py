@@ -791,9 +791,9 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
                            lnk["file"], lnk["file"], rect)
             else:
                 txt = annot_gotor_n
-                to = fitz.getPDFstr(lnk["to"], brackets = False)
-                to = to.replace("(","").replace(")","")
-                f = lnk["file"].replace("(","").replace(")","")
+                to = fitz.getPDFstr(lnk["to"])
+                to = to[1:-1]
+                f = lnk["file"]
                 annot = txt % (to, f, rect)
 
         elif lnk["kind"] == fitz.LINK_LAUNCH:

@@ -132,36 +132,36 @@ def getPDFnow():
 # else a string "<FEFF[hexstring]>" is returned, where [hexstring] is the
 # UTF-16BE encoding of the original.
 #-------------------------------------------------------------------------------
-def getPDFstr(s, brackets = True):
-    if s is None or s == "":
-        return "()" if brackets else ""
+def getPDFstr(x):
+    if x is None or x == "":
+        return "()"
 
-    x = s
+    utf16 = max(ord(c) for c in x) > 255
+    if utf16:
+        # require full unicode: make a UTF-16BE hex string with BOM "feff"
+        r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
+        # r is 'bytes', so convert to 'str' if Python 3
+        t = r if str is bytes else r.decode()
+        return "<" + t + ">"                         # brackets indicate hex
     
-    utf16 = False
+    s = x.replace("\x00", " ")
+    if str is bytes:
+        if type(s) is str:
+            s = unicode(s, "utf-8", "replace")
+
     # following returns ascii original string with mixed-in 
     # octal numbers \nnn if <= chr(255)
     r = ""
-    for i in range(len(x)):
-        if ord(x[i]) > 255:
-            utf16 = True
-            break
-        if not brackets:
-            r += x[i]
-            continue
-        if ord(x[i]) > 127:
-            r += "\\" + oct(ord(x[i]))[-3:]
+    for c in s:
+        oc = ord(c)
+        if oc > 127:
+            r += "\\" + oct(oc)[-3:]
         else:
-            r += x[i]
+            if c in ("(", ")", "\\"):
+                r += "\\"
+            r += c
 
-    if not utf16:
-        return "(" + r + ")" if brackets else r
-
-    # require full unicode: make a UTF-16BE hex string with BOM "feff"
-    r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
-    # r is 'bytes', so turn to 'str' if Python 3
-    t = r if str is bytes else r.decode()
-    return "<" + t + ">"                         # brackets indicate hex
+    return "(" + r + ")"
 
 #===============================================================================
 # Return a PDF string suitable for the TJ operator enclosed in "[]" brackets.
