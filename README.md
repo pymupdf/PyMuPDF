@@ -20,15 +20,15 @@ See the [Wiki](https://github.com/rk700/PyMuPDF/wiki) for more information, [new
 
 # Installation
 
-For all [Windows](https://github.com/JorjMcKie/PyMuPDF-wheels/tree/windows) and the major [Mac OS](https://github.com/JorjMcKie/PyMuPDF-wheels/tree/osx) and [Linux](https://github.com/JorjMcKie/PyMuPDF-wheels/tree/linux) versions we offer wheel-based installation options. The files can also be found in the download section of PyPI.
+For all Windows and the major Mac OS and Linux versions we offer wheel-based installation options. Look [here](https://github.com/rk700/PyMuPDF/releases/latest) to download the latest version for your OS. The files can also be found in the download section of PyPI.
 
-If you - for whatever reason - need to generate PyMuPDF, you must first download and generate MuPDF. This process very much depends on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this.
+If - for whatever reason - you need to generate PyMuPDF yourself, you must first download and generate MuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this.
 
 Be sure to download the official MuPDF release from [here](https://mupdf.com/downloads). Although MuPDF also has a GitHub repo, this contains their current **development source**, which more often than not is incompatible with this PyMuPDF.
 
 Once this is done, adjust directories in ``setup.py`` and the rest should be as easy as running ``python setup.py install``.
 
-Refer to our documentation for additional comments.
+In the following you find some comments for various operating systems and please do refer to our documentation for more.
 
 ## Arch Linux
 AUR: https://aur.archlinux.org/packages/python2-pymupdf/ currently only provides PyMuPDF version 1.9.2 for Python 2.
@@ -56,16 +56,10 @@ Have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/de
 
 You have a number of options to access the documentation:
 
-* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/).
+* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/). Do not **download** from here, instead use the following links.
 * You can download a zipped [HTML](https://github.com/rk700/PyMuPDF/tree/master/doc/html.zip) version.
 * You can download a [Windows CHM](https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm).
 * You can download a [PDF](https://github.com/rk700/PyMuPDF/tree/master/doc/pymupdf.pdf).
-
-> The new [PyPI Warehouse](https://pypi.org/project/PyMuPDF/) no longer supports storing or maintaining documentation at https://pythonhosted.org. Everything there is hence becoming stale since many months. Their plans even include to drop this facility entirely once the new PyPI is fully in production. Projects should instead use https://readthedocs.org.
-
-> Because our latest documentation update on **pythonhosted.org** was from June 2017, we have decided to shift gears immediately: you will now find PyMuPDF's (always current) online documentation on **Read the Docs** as indicated above. Please ignore the old site **pythonhosted.org** to avoid confusion.
-
-> **Recommendation:** do not try to **download** documentation from **Read the Docs** - instead, follow the links above.
 
 Earlier Versions
 ================
