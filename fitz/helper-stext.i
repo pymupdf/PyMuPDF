@@ -55,36 +55,35 @@ DG_print_stext_image_as_json(fz_context *ctx, fz_output *out, fz_stext_block *bl
     DG_print_rect_json(ctx, out, &(block->bbox));
     fz_image *image = block->u.i.image;
     fz_buffer *buf = NULL;
+    fz_compressed_buffer *buffer = NULL;
+    int n = fz_colorspace_n(ctx, image->colorspace);
     int w = image->w;
     int h = image->h;
     int bparams = 0;
-    fz_compressed_buffer *buffer = fz_compressed_image_buffer(ctx, image);
+    buffer = fz_compressed_image_buffer(ctx, image);
     if (buffer) bparams = buffer->params.type;
     fz_write_printf(ctx, out, "\n   \"imgtype\": %d, \"width\": %d, \"height\": %d, ",
                                     bparams, w, h);
     fz_write_printf(ctx, out, "\"image\":\n");
 
-    if (!buffer)
-    {
-        fz_try(ctx)
-        {
-            buf = fz_new_buffer_from_image_as_png(ctx, image, NULL);
-            fz_write_printf(ctx, out, "\"");
-            fz_write_base64_buffer(ctx, out, buf, 0);
-            fz_write_printf(ctx, out, "\"");
-        }
-        fz_always(ctx) fz_drop_buffer(ctx, buf);
-        fz_catch(ctx)
-        {
-            fz_write_printf(ctx, out, "null");
-        }
-    }
-    if (buffer)
+    if (bparams == FZ_IMAGE_JPEG && (n == 1 || n == 3) ||
+        bparams == FZ_IMAGE_PNG)
     {
         fz_write_printf(ctx, out, "\"");
         fz_write_base64_buffer(ctx, out, buffer->buffer, 0);
         fz_write_printf(ctx, out, "\"");
+        fz_write_printf(ctx, out, "\n  }");
+        return;
     }
+    fz_try(ctx)
+    {
+        buf = fz_new_buffer_from_image_as_png(ctx, image, NULL);
+        fz_write_printf(ctx, out, "\"");
+        fz_write_base64_buffer(ctx, out, buf, 0);
+        fz_write_printf(ctx, out, "\"");
+    }
+    fz_always(ctx) fz_drop_buffer(ctx, buf);
+    fz_catch(ctx)  fz_write_printf(ctx, out, "null");
     fz_write_printf(ctx, out, "\n  }");
 }
 
