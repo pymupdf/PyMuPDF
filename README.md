@@ -20,7 +20,7 @@ See the [Wiki](https://github.com/rk700/PyMuPDF/wiki) for more information, [new
 
 # Installation
 
-For all Windows and the major Mac OS and Linux versions we offer wheel-based installation options. Look [here](https://github.com/rk700/PyMuPDF/releases/latest) to download the latest version for your OS. The files can also be found in the download section of PyPI.
+For all Windows and the major Mac OS and Linux versions we offer wheel-based installation options. Look [here](https://github.com/rk700/PyMuPDF/releases/latest) to download the latest version for your OS. These files can also be found in the [download section of PyPI](https://pypi.org/project/PyMuPDF/#files).
 
 If - for whatever reason - you need to generate PyMuPDF yourself, you must first download and generate MuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this.
 
@@ -28,7 +28,7 @@ Be sure to download the official MuPDF release from [here](https://mupdf.com/dow
 
 Once this is done, adjust directories in ``setup.py`` and the rest should be as easy as running ``python setup.py install``.
 
-In the following you find some comments for various operating systems and please do refer to our documentation for more.
+The following sections contain some platform-specific comments, but please do refer to our documentation for more.
 
 ## Arch Linux
 AUR: https://aur.archlinux.org/packages/python2-pymupdf/ currently only provides PyMuPDF version 1.9.2 for Python 2.
