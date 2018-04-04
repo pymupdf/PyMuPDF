@@ -6,7 +6,7 @@ Release date: January 15, 2018
 
 # Authors
 * [Ruikai Liu](lrk700@gmail.com)
-* [Jorj X. McKie](jorj.x.mckie@outlook.de)
+* [Jorj X. McKie](mailto:jorj.x.mckie@outlook.de)
 
 # Introduction
 
