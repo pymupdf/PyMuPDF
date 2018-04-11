@@ -6,7 +6,7 @@
 
 @author: Jorj X. McKie
 
-Let the user select a Python file and then scroll through it.
+Let the user select a PyMuPDF-supported file and then scroll through it.
 
 Dependencies:
 PyMuPDF, wxPython 3.x
