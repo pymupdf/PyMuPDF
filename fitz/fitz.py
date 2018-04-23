@@ -103,8 +103,8 @@ import sys
 
 VersionFitz = "1.13.0"
 VersionBind = "1.13.0"
-VersionDate = "2018-04-23 02:44:34"
-version = (VersionBind, VersionFitz, "20180423024434")
+VersionDate = "2018-04-23 10:03:00"
+version = (VersionBind, VersionFitz, "20180423100300")
 
 
 #------------------------------------------------------------------------------
@@ -878,6 +878,14 @@ open(filename, filetype=None) - from file"""
             raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_extractFont(self, xref, info_only)
+
+
+    def extractImage(self, xref=0):
+        """extractImage(self, xref=0) -> PyObject *"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document_extractImage(self, xref)
 
 
     def _delToC(self):

@@ -1125,6 +1125,40 @@ if links:
             return tuple;
         }
 
+        FITZEXCEPTION(extractImage, !result)
+        CLOSECHECK(extractImage)
+        PyObject *extractImage(int xref = 0)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                if (!INRANGE(xref, 1, pdf_xref_len(gctx, pdf)-1))
+                    THROWMSG("xref out of range");
+            }
+            fz_catch(gctx) return NULL;
+
+            fz_buffer *buffer = NULL;
+            pdf_obj *obj = NULL;
+            PyObject *bytes = PyBytes_FromString("");
+            unsigned char *c = NULL;
+            Py_ssize_t len = 0;
+            fz_try(gctx)
+            {
+                obj = pdf_load_object(gctx, pdf, xref);
+                pdf_obj *subtype = pdf_dict_get(gctx, obj, PDF_NAME_Subtype);
+                if (pdf_name_eq(gctx, subtype, PDF_NAME_Image))
+                {
+                    buffer = pdf_load_raw_stream_number(gctx, pdf, xref);
+                    len = (Py_ssize_t) fz_buffer_storage(gctx, buffer, &c);
+                    bytes = PyBytes_FromStringAndSize(c, len);
+                }
+            }
+            fz_always(gctx) fz_drop_buffer(gctx, buffer);
+            fz_catch(gctx) return bytes;
+            return bytes;
+        }
+
         //---------------------------------------------------------------------
         // Delete all bookmarks (table of contents)
         // returns the list of deleted (now available) xref numbers
@@ -3323,6 +3357,12 @@ struct fz_pixmap_s
         //----------------------------------------------------------------------
         void invertIRect(const struct fz_irect_s *irect = NULL)
         {
+            if (!fz_pixmap_colorspace(gctx, $self))
+                {
+                    PySys_WriteStdout("warning: ignored for stencil pixmap");
+                    return;
+                }
+                    
             if (irect) fz_invert_pixmap_rect(gctx, $self, irect);
             else       fz_invert_pixmap(gctx, $self);
         }
