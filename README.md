@@ -20,7 +20,7 @@ See the [Wiki](https://github.com/rk700/PyMuPDF/wiki) for more information, [new
 
 # Installation
 
-For all **Windows** and the major **Mac OSX** and **Linux** versions we offer wheel-based installation options. Look [here](https://github.com/rk700/PyMuPDF/releases/latest) to download the latest version for your OS. These files can also be found in the [download section of PyPI](https://pypi.org/project/PyMuPDF/#files).
+For all **Windows** and - thanks to our user @jbarlow83 - the major **Mac OSX** and **Linux** versions we offer wheel-based installation options. Look [here](https://github.com/rk700/PyMuPDF/releases/latest) to find the version for your OS. These files can also be found in the [download section of PyPI](https://pypi.org/project/PyMuPDF/#files).
 
 If - for whatever reason - you need to generate PyMuPDF yourself, you must download and generate MuPDF before you can generate PyMuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures to achieve this.
 
@@ -52,7 +52,7 @@ If you don't use ``pip`` or [PyPI](https://pypi.org/project/PyMuPDF/), you can s
 If you do want to make your own binary however, have a look at this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation). It explains how to use Visual Studio for generating MuPDF in quite some detail. Also do not hesitate to contact us if you need help.
 
 # Usage and Documentation
-Have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) (which contain complete, working programs), and the **recipies** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar.
+Have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) (which contain complete, working programs), and the **recipies** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar, which contains more than a dozen of guides in How-To-style.
 
 You have a number of options to access the documentation:
 
