@@ -60,7 +60,7 @@ for i, c in enumerate(table):
     img.insertText(pos, text, color = blue)     # legend text
     tl = fitz.Point(pos.x - 30, ts_v - 10 + i*lineheight)
     br = fitz.Point(pos.x - 10, ts_v + i*lineheight)
-    rect = fitz.Rect(tl, br)                     # legend color bar
+    rect = fitz.Rect(tl, br)                    # legend color bar
     img.drawRect(rect)
     img.finish(fill = color, color = color)
 

@@ -1,7 +1,7 @@
 %{
 //-----------------------------------------------------------------------------
-// Version of fz_pixmap_from_display_list to support rendering of only
-// the 'clip' part of the displaylist rectangle
+// Version of fz_pixmap_from_display_list (utils.c) to support rendering
+// of only the 'clip' part of the displaylist rectangle
 //-----------------------------------------------------------------------------
 fz_pixmap *
 JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_matrix *ctm, fz_colorspace *cs, int alpha, const fz_rect *clip)
@@ -50,7 +50,7 @@ JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_mat
 // This fix uses a modified version of 'pdf_preload_image_resources'.
 // Because of 'static' declarations, 'fz_md5_image',
 // 'pdf_preload_image_resources' and 'pdf_find_image_resource' had to
-// special-versioned as well ...
+// be special-versioned as well although they are not changed ...
 // Start
 //-----------------------------------------------------------------------------
 
@@ -236,7 +236,8 @@ PyObject *truth_value(int v)
 }
 
 //----------------------------------------------------------------------------
-// deflate char * into a buffer
+// deflate char* into a buffer
+// this is a copy of function "deflatebuf" of pdf_write.c
 //----------------------------------------------------------------------------
 fz_buffer *JM_deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 {
@@ -254,26 +255,21 @@ fz_buffer *JM_deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
         buf = fz_new_buffer_from_data(ctx, data, cap);
         csize = (uLongf)cap;
         t = compress(data, &csize, p, longN);
-        if (t != Z_OK)
-        {
-            fz_drop_buffer(ctx, buf);
-            buf = NULL;
-            THROWMSG("cannot deflate buffer");
-        }
+        if (t != Z_OK) THROWMSG("cannot deflate buffer");
     }
     fz_catch(ctx)
     {
-        if (buf)
-            fz_drop_buffer(ctx, buf);
-        else
-            if (data)
-                fz_free(ctx, data);
+        fz_drop_buffer(ctx, buf);
         fz_rethrow(ctx);
     }
     fz_resize_buffer(ctx, buf, csize);
     return buf;
 }
 
+//----------------------------------------------------------------------------
+// Turn Python a bytes or bytearray object into char* string
+// using the "_AsString" functions. Returns string size or 0 on error.
+//----------------------------------------------------------------------------
 size_t JM_CharFromBytesOrArray(PyObject *stream, char **data)
 {
     if (PyBytes_Check(stream))
@@ -291,21 +287,23 @@ size_t JM_CharFromBytesOrArray(PyObject *stream, char **data)
 
 //----------------------------------------------------------------------------
 // Modified copy of SWIG_Python_str_AsChar
-// If Py3, the original does *not* deliver NULL for a non-string input as
-// does PyString_AsString in Py2
+// If Py3, the SWIG original v3.0.12does *not* deliver NULL for a
+// non-string input, as does PyString_AsString in Py2.
 //----------------------------------------------------------------------------
 char *JM_Python_str_AsChar(PyObject *str)
 {
 #if PY_VERSION_HEX >= 0x03000000
-  char *cstr;
-  char *newstr;
-  Py_ssize_t len;
+  char *newstr = NULL;
   str = PyUnicode_AsUTF8String(str);
-  if (!str) return NULL;                         // this is the difference!
-  PyBytes_AsStringAndSize(str, &cstr, &len);
-  newstr = (char *) malloc(len+1);
-  memcpy(newstr, cstr, len+1);
-  Py_XDECREF(str);
+  if (str)
+  {
+    char *cstr;
+    Py_ssize_t len;
+    PyBytes_AsStringAndSize(str, &cstr, &len);
+    newstr = (char *) malloc(len+1);
+    memcpy(newstr, cstr, len+1);
+    Py_XDECREF(str);
+  }
   return newstr;
 #else
   return PyString_AsString(str);
@@ -313,13 +311,15 @@ char *JM_Python_str_AsChar(PyObject *str)
 }
 
 #if PY_VERSION_HEX >= 0x03000000
-#  define JM_Python_str_DelForPy3(x) if(x) free( (void*) (x) )
+#  define JM_Python_str_DelForPy3(x) free((void*) (x))
 #else
 #  define JM_Python_str_DelForPy3(x) 
 #endif
 
 //----------------------------------------------------------------------------
 // Deep-copies a specified source page to the target location.
+// Modified copy of function of pdfmerge.c: we also copy annotations, but
+// we skip **link** annotations. In addition we rotate output.
 //----------------------------------------------------------------------------
 void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int page_from, int page_to, int rotate, pdf_graft_map *graft_map)
 {

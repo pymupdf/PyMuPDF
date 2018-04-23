@@ -35,10 +35,10 @@ def bsinPoints(pb, pe):
     """Return Bezier control points, when pb and pe stand for a full period
     from (0,0) to (2*pi, 0), respectively, in the user's coordinate system.
     The returned points can be used to draw up to four Bezier curves for
-    the complete phase of the sine function graph from 0 to 2*pi.
+    the complete phase of the sine function graph (0 to 360 degrees).
     """
     v = pe - pb
-    assert v.y == 0, "begin and end points must have same height"
+    assert v.y == 0, "begin and end points must have same y coordinate"
     f = abs(v) * 0.5 / math.pi              # represents the unit
     cp1 = 5.34295228e-01
     cp2 = 1.01474288e+00
@@ -65,10 +65,10 @@ def bcosPoints(pb, pe):
     """Return Bezier control points, when pb and pe stand for a full period
     from (0,0) to (2*pi, 0), respectively, in the user's coordinate system.
     The returned points can be used to draw up to four Bezier curves for
-    the complete phase of the cosine function graph from 0 to 2*pi.
+    the complete phase of the cosine function graph (0 to 360 degrees).
     """
     v = pe - pb
-    assert v.y == 0, "begin and end points must have same height"
+    assert v.y == 0, "begin and end points must have same y coordinate"
     f = abs(v) * 0.5 / math.pi              # represents the unit
     cp1 = 5.34295228e-01
     cp2 = 1.01474288e+00
@@ -92,10 +92,10 @@ def bcosPoints(pb, pe):
     return p0, k1, k2, p1, k3, k4, p2, k5, k6, p3, k7, k8, p4
 
 def rot_points(pnts, pb, alfa):
-    """Rotate a list of points by an angle alfa around pivotal point pb.
+    """Rotate a list of points by an angle alfa (radians) around pivotal point pb.
     Intended for modifying the control points of trigonometric functions.
     """
-    points = []
+    points = []                   # rotated points
     calfa = math.cos(alfa)
     salfa = math.sin(alfa)
     for p in pnts:
@@ -117,11 +117,12 @@ if __name__ == "__main__":
     w = 0.3                       # line width
     #--------------------------------------------------------------------------
     # Define start / end points of x axis that we want to use as 0 and 2*pi.
-    # They may be oriented in any way.
+    # They may be positioned in any way.
     #--------------------------------------------------------------------------
     pb = fitz.Point(200, 200)               # begin, treated as (0, 0)
     pe = fitz.Point(400, 100)               # end, treated as (2*pi, 0)
-        
+    
+    # compute auxiliary end point pe1 with same y coord. as pb
     alfa = img.horizontal_angle(pb, pe)     # connection angle towards x-axis
     rad = abs(pe - pb)                      # distance of these points
     pe1 = pb + (rad, 0)                     # make corresp. horizontal end point
@@ -131,17 +132,23 @@ if __name__ == "__main__":
     f = abs(pe - pb) * 0.5 / math.pi        # represents 1 unit
     rect = fitz.Rect(pb.x - 5, pb.y - f - 5, pe1.x + 5, pb.y + f + 5)
     img.drawRect(rect)                      # draw it
+    
+    # compute morph parameter for image adjustments
     morph = (pb, fitz.Matrix(math.degrees(-alfa)))
-    img.finish(fill = yellow, morph = morph)  # rotate it around begin point
+    
+    # finish the envelopping rectangle
+    img.finish(fill = yellow, morph = morph) # rotate it around begin point
     
 # =============================================================================
 #   get all points for the sine function
 # =============================================================================
-    pntsin = bsinPoints(pb, pe1)            # only horizontal axis supported
-    # therefore need rotate result points by angle alfa afterwards
+    pntsin = bsinPoints(pb, pe1)
+    
+    # only horizontal axis supported, therefore need to rotate
+    # result points by angle alfa. But this saves morphing the function graph.
     points = rot_points(pntsin, pb, alfa)
  
-    for i in (0, 3, 6, 9):        # draw all 4 function segments
+    for i in (0, 3, 6, 9):                  # draw all 4 function segments
         img.drawBezier(points[i], points[i+1], points[i+2], points[i+3])
     
     img.finish(color = red, width = w, closePath = False)
@@ -160,9 +167,9 @@ if __name__ == "__main__":
     img.finish(width = w)         # draw x-axis (default color)
    
     # insert "sine" / "cosine" legend text
-    r1 = fitz.Rect(rect.x0 + 2, rect.y1 - 20, rect.br)
+    r1 = fitz.Rect(rect.x0 + 15, rect.y1 - 20, rect.br)
     img.insertTextbox(r1, "sine", color = red, fontsize = 8, morph = morph)
-    r2 = fitz.Rect(rect.x0 + 2, rect.y1 - 10, rect.br)
+    r2 = fitz.Rect(rect.x0 + 15, rect.y1 - 10, rect.br)
     img.insertTextbox(r2, "cosine", color = blue, fontsize = 8, morph = morph)
     img.commit()                  # commit with overlay = True
     

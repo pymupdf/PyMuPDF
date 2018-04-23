@@ -170,7 +170,7 @@ def getPagePixmap(doc, pno, matrix = fitz.Identity, colorspace = fitz.csRGB,
 # An internal function to create a link info dictionary for getToC and getLinks
 #==============================================================================
 def getLinkDict(ln):
-    nl = {"kind": ln.dest.kind, "xref": 0, "id": id(ln)}
+    nl = {"kind": ln.dest.kind, "xref": 0}
     try:
         nl["from"] = ln.rect
     except:
@@ -551,10 +551,9 @@ def setMetadata(doc, m):
     d += "/Title"
     d += fitz.getPDFstr(m.get("title", "none"))
     d += ">>"
-    r = doc._setMetadata(d)
-    if r == 0:
-        doc.initData()
-    return r
+    doc._setMetadata(d)
+    doc.initData()
+    return
 
 def getDestStr(xref, ddict):
     if not ddict:
@@ -856,8 +855,9 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
                 continue          # target not in copied pages
             annot_text = cre_annot(l, xref_dst, list_src, height)
             if not annot_text:
-                raise ValueError("cannot create /Annot for kind: " + str(l["kind"]))
-            link_tab.append(annot_text)
+                print("cannot create /Annot for kind: " + str(l["kind"]))
+            else:
+                link_tab.append(annot_text)
         if len(link_tab) > 0:
             page_dst._addAnnot_FromString(link_tab)
         page_dst = None
@@ -1742,6 +1742,7 @@ def getColorInfoList():
         ("MISTYROSE3", 205, 183, 181),
         ("MISTYROSE4", 139, 125, 123),
         ("MOCCASIN", 255, 228, 181),
+        ("MUPDFBLUE", 37, 114, 172),
         ("NAVAJOWHITE", 255, 222, 173),
         ("NAVAJOWHITE1", 255, 222, 173),
         ("NAVAJOWHITE2", 238, 207, 161),
@@ -2691,8 +2692,7 @@ class Shape():
         if fitz.CheckMorph(morph):
             m1 = fitz.Matrix(1, 0, 0, 1, morph[0].x + self.x,
                              self.height - morph[0].y - self.y)
-            m2 = morph[1]
-            mat = ~m1 * m2 * m1
+            mat = ~m1 * morph[1] * m1
             self.totalcont += "%g %g %g %g %g %g cm\n" % tuple(mat)
         self.totalcont += self.contents + "Q\n"
         self.contents = ""

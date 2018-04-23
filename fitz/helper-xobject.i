@@ -1,15 +1,14 @@
 %{
-void JM_update_xobject_contents(fz_context *ctx, pdf_document *doc, pdf_xobject *form, fz_buffer *buffer)
+void JM_update_xobject_contents(fz_context *ctx, pdf_document *doc, pdf_obj *form, fz_buffer *buffer)
 {   // version of "pdf_update_xobject_contents" with compression
     size_t c_len;
     char *content_str;
     fz_buffer *nres;
     c_len = (size_t) fz_buffer_storage(ctx, buffer, &content_str);
-    pdf_dict_put(ctx, form->obj, PDF_NAME_Filter, PDF_NAME_FlateDecode);
+    pdf_dict_put(ctx, form, PDF_NAME_Filter, PDF_NAME_FlateDecode);
     nres = JM_deflatebuf(ctx, content_str, c_len);
-    pdf_update_stream(ctx, doc, form->obj, nres, 1);
+    pdf_update_stream(ctx, doc, form, nres, 1);
     fz_drop_buffer(ctx, nres);
-    form->iteration ++;
 }
 
 //-----------------------------------------------------------------------------
@@ -20,7 +19,6 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
 {
     fz_buffer *nres, *res;
     pdf_obj *xobj1, *contents, *resources, *o, *spageref;
-    pdf_xobject *xobj1x;
     int i;
     fz_try(ctx)
     {
@@ -39,7 +37,6 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
             if (xref >= pdf_xref_len(ctx, pdfout))
                 THROWMSG("xref out of range");
             xobj1 = pdf_new_indirect(ctx, pdfout, xref, 0);
-            xobj1x = pdf_load_xobject(ctx, pdfout, xobj1);
         }
         else                 // need to create new XObject
         {
@@ -75,9 +72,8 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
             // create XObject representing the source page
             //-------------------------------------------------------------
             xobj1 = pdf_new_xobject(ctx, pdfout, mediabox, &fz_identity);
-            xobj1x = pdf_load_xobject(ctx, pdfout, xobj1);
             // store spage contents
-            JM_update_xobject_contents(ctx, pdfout, xobj1x, res);
+            JM_update_xobject_contents(ctx, pdfout, xobj1, res);
             fz_drop_buffer(ctx, res);
 
             // store spage resources
