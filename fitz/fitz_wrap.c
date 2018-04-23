@@ -5877,6 +5877,36 @@ SWIGINTERN PyObject *fz_document_s_extractFont(struct fz_document_s *self,int xr
             }
             return tuple;
         }
+SWIGINTERN PyObject *fz_document_s_extractImage(struct fz_document_s *self,int xref){
+            pdf_document *pdf = pdf_specifics(gctx, self);
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                if (!INRANGE(xref, 1, pdf_xref_len(gctx, pdf)-1))
+                    THROWMSG("xref out of range");
+            }
+            fz_catch(gctx) return NULL;
+
+            fz_buffer *buffer = NULL;
+            pdf_obj *obj = NULL;
+            PyObject *bytes = PyBytes_FromString("");
+            unsigned char *c = NULL;
+            Py_ssize_t len = 0;
+            fz_try(gctx)
+            {
+                obj = pdf_load_object(gctx, pdf, xref);
+                pdf_obj *subtype = pdf_dict_get(gctx, obj, PDF_NAME_Subtype);
+                if (pdf_name_eq(gctx, subtype, PDF_NAME_Image))
+                {
+                    buffer = pdf_load_raw_stream_number(gctx, pdf, xref);
+                    len = (Py_ssize_t) fz_buffer_storage(gctx, buffer, &c);
+                    bytes = PyBytes_FromStringAndSize(c, len);
+                }
+            }
+            fz_always(gctx) fz_drop_buffer(gctx, buffer);
+            fz_catch(gctx) return bytes;
+            return bytes;
+        }
 SWIGINTERN PyObject *fz_document_s__delToC(struct fz_document_s *self){
             PyObject *xrefs = PyList_New(0);          // create Python list
 
@@ -7283,6 +7313,12 @@ SWIGINTERN PyObject *fz_pixmap_s__writeIMG(struct fz_pixmap_s *self,char *filena
             return NONE;
         }
 SWIGINTERN void fz_pixmap_s_invertIRect(struct fz_pixmap_s *self,struct fz_irect_s const *irect){
+            if (!fz_pixmap_colorspace(gctx, self))
+                {
+                    PySys_WriteStdout("warning: ignored for stencil pixmap");
+                    return;
+                }
+                    
             if (irect) fz_invert_pixmap_rect(gctx, self, irect);
             else       fz_invert_pixmap(gctx, self);
         }
@@ -10087,6 +10123,46 @@ SWIGINTERN PyObject *_wrap_Document_extractFont(PyObject *SWIGUNUSEDPARM(self), 
   }
   {
     result = (PyObject *)fz_document_s_extractFont(arg1,arg2,arg3);
+    if(!result)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document_extractImage(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  int arg2 = (int) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O|O:Document_extractImage",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_extractImage" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  if (obj1) {
+    ecode2 = SWIG_AsVal_int(obj1, &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document_extractImage" "', argument " "2"" of type '" "int""'");
+    } 
+    arg2 = (int)(val2);
+  }
+  {
+    result = (PyObject *)fz_document_s_extractImage(arg1,arg2);
     if(!result)
     {
       PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
@@ -17853,6 +17929,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document__getPageObjNumber", _wrap_Document__getPageObjNumber, METH_VARARGS, (char *)"Document__getPageObjNumber(self, pno) -> PyObject *"},
 	 { (char *)"Document__getPageInfo", _wrap_Document__getPageInfo, METH_VARARGS, (char *)"Show fonts or images used on a page."},
 	 { (char *)"Document_extractFont", _wrap_Document_extractFont, METH_VARARGS, (char *)"Document_extractFont(self, xref=0, info_only=0) -> PyObject *"},
+	 { (char *)"Document_extractImage", _wrap_Document_extractImage, METH_VARARGS, (char *)"Document_extractImage(self, xref=0) -> PyObject *"},
 	 { (char *)"Document__delToC", _wrap_Document__delToC, METH_VARARGS, (char *)"Document__delToC(self) -> PyObject *"},
 	 { (char *)"Document__getOLRootNumber", _wrap_Document__getOLRootNumber, METH_VARARGS, (char *)"Document__getOLRootNumber(self) -> int"},
 	 { (char *)"Document__getNewXref", _wrap_Document__getNewXref, METH_VARARGS, (char *)"Document__getNewXref(self) -> int"},
