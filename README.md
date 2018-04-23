@@ -1,8 +1,8 @@
-# PyMuPDF 1.12.6 [![Build Status](https://travis-ci.org/rk700/PyMuPDF.svg?branch=master)](https://travis-ci.org/rk700/PyMuPDF)
+# PyMuPDF 1.13.0 [![Build Status](https://travis-ci.org/rk700/PyMuPDF.svg?branch=master)](https://travis-ci.org/rk700/PyMuPDF)
 
 ![logo](https://github.com/rk700/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: January 15, 2018
+Release date: April 30, 2018
 
 # Authors
 * [Ruikai Liu](mailto:lrk700@gmail.com)
@@ -10,7 +10,7 @@ Release date: January 15, 2018
 
 # Introduction
 
-This is **version 1.12.6 of PyMuPDF (formerly python-fitz)**, a Python binding which supports [MuPDF 1.12](http://mupdf.com/) - "a lightweight PDF and XPS viewer".
+This is **version 1.13.0 of PyMuPDF (formerly python-fitz)**, a Python binding which supports [MuPDF 1.13](http://mupdf.com/) - "a lightweight PDF and XPS viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -20,11 +20,11 @@ See the [Wiki](https://github.com/rk700/PyMuPDF/wiki) for more information, [new
 
 # Installation
 
-For all Windows and the major Mac OS and Linux versions we offer wheel-based installation options. Look [here](https://github.com/rk700/PyMuPDF/releases/latest) to download the latest version for your OS. These files can also be found in the [download section of PyPI](https://pypi.org/project/PyMuPDF/#files).
+For all **Windows** and the major **Mac OSX** and **Linux** versions we offer wheel-based installation options. Look [here](https://github.com/rk700/PyMuPDF/releases/latest) to download the latest version for your OS. These files can also be found in the [download section of PyPI](https://pypi.org/project/PyMuPDF/#files).
 
-If - for whatever reason - you need to generate PyMuPDF yourself, you must first download and generate MuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures on how to achieve this.
+If - for whatever reason - you need to generate PyMuPDF yourself, you must download and generate MuPDF before you can generate PyMuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures to achieve this.
 
-Be sure to download the official MuPDF release from [here](https://mupdf.com/downloads). Although MuPDF also has a GitHub repo, this contains their current **development source**, which more often than not is incompatible with this PyMuPDF.
+Be sure to download the official MuPDF release from [here](https://mupdf.com/downloads). MuPDF also has a GitHub repo, but this contains their current **development source**, which more often than not is incompatible with this PyMuPDF.
 
 Once this is done, adjust directories in ``setup.py`` and the rest should be as easy as running ``python setup.py install``.
 
@@ -63,7 +63,7 @@ You have a number of options to access the documentation:
 
 Earlier Versions
 ================
-* [PyMuPDF Version 1.12.0](https://github.com/rk700/PyMuPDF/tree/1.12.0)
+* [PyMuPDF Version 1.12.6](https://github.com/rk700/PyMuPDF/tree/1.12.6)
 
 * [PyMuPDF Version 1.11.2](https://github.com/rk700/PyMuPDF/tree/1.11.2)
 
@@ -87,7 +87,7 @@ PyMuPDF is distributed under GNU GPL V3. The implied use of MuPDF also implies i
 # Contact
 You can also find us on the Python Package Index [PyPI](https://pypi.org/project/PyMuPDF/).
 
-> Please note, that the project description there may be less up-to-date than the one you are currently looking at. This is because information on PyPI, once stored, **cannot be changed**. Previously, this has been true only for the downloadable files, but since **PyPI Warehouse**, it obviously applies to all data of a full release.
+> Please note, that the project description there may be less up-to-date than the one you are currently looking at.
 
 We invite you to join our efforts by contributing to the [Wiki](https://github.com/rk700/PyMuPDF/wiki) pages.
 

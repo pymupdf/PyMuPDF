@@ -58,7 +58,7 @@ clover    - 4 leaved clover
 diamond   - rhombus
 caro      - one of the 4 card game colors
 arrow     - a triangle
-hand      - a hand symbol similar to internet
+hand      - a hand symbol, similar to internet
 pencil    - a pencil (eye catcher)
 smiley    - emoji
 frowney   - emoji
@@ -191,7 +191,10 @@ def hand(img, rect, color = None, fill = None, morph = None):
         skin = getColor("burlywood1")
     else:
         skin = fill
-    # define control points for the symbol, relative to a rect height of 3.
+    #--------------------------------------------------------------------------
+    # Define control points for the symbol, relative to a rect height of 3.
+    # This is the actual brainware of the whole thing ...
+    #--------------------------------------------------------------------------
     points = ((0.0, 1.4), (1.4, 0.2), (1.4, 1.4), (2.2, 0.0), (1.4, 1.4),
               (3.4, 1.4), (3.4, 1.8), (2.8, 1.8), (2.8, 2.2), (2.6, 2.2),
               (2.6, 2.6), (2.5, 2.6), (2.5, 3.0),
@@ -199,19 +202,22 @@ def hand(img, rect, color = None, fill = None, morph = None):
     # rescale points to the argument rectangle.
     f = rect.height / 3
     tl = rect.tl                           # need this as displacement
-    p1 =  fitz.Point(points[0]) * f + tl
-    p2 =  fitz.Point(points[1]) * f + tl
-    p3 =  fitz.Point(points[2]) * f + tl
-    p4 =  fitz.Point(points[3]) * f + tl
-    p5 =  fitz.Point(points[4]) * f + tl
-    p6 =  fitz.Point(points[5]) * f + tl
-    p7 =  fitz.Point(points[6]) * f + tl
-    p8 =  fitz.Point(points[7]) * f + tl
-    p9 =  fitz.Point(points[8]) * f + tl
-    p10 = fitz.Point(points[9]) * f + tl
-    p11 = fitz.Point(points[10]) * f + tl
-    p12 = fitz.Point(points[11]) * f + tl
-    p13 = fitz.Point(points[12]) * f + tl
+    # function for rescaling the points in the list
+    rescale = lambda x: fitz.Point(points[x])*f + tl
+    p1  = rescale(0)
+    p2  = rescale(1)
+    p3  = rescale(2)
+    p4  = rescale(3)
+    p5  = rescale(4)
+    p6  = rescale(5)
+    p7  = rescale(6)
+    p8  = rescale(7)
+    p9  = rescale(8)
+    p10 = rescale(9)
+    p11 = rescale(10)
+    p12 = rescale(11)
+    p13 = rescale(12)
+
     # some additional helper points for Bezier curves of the finger tips.
     d1 = fitz.Point(0.4, 0) *f
     d7 = p7 - fitz.Point(1.2, 0) * f
@@ -220,7 +226,7 @@ def hand(img, rect, color = None, fill = None, morph = None):
     # now draw everything
     # IMPORTANT: the end point of each draw method must equal the start point
     # of the next one in order to create one connected path. Only then the
-    # "finish" parameters will apply to all draws.
+    # "finish" parameters will apply to all individual draws.
     img.drawCurve(p1, p3, p2)
     img.drawCurve(p2, p4, p5)
     img.drawLine(p5, p6)
@@ -252,6 +258,7 @@ def pencil(img, penciltip, pb_height, left, morph = None):
     morph     - a tuple (point, matrix) to achieve image torsion.
     """
     from fitz.utils import getColor
+    from functools import partial
     # define some colors
     yellow  = getColor("darkgoldenrod")
     black   = getColor("black")
@@ -265,17 +272,13 @@ def pencil(img, penciltip, pb_height, left, morph = None):
     # we specify oneof(lp, rp), delivering either lp or rp. Likewise,
     # variable 's' is used as a sign and is either +1 or -1.
     #---------------------------------------------------------------------------
-    if left: s = +1                              # pencil tip is left
-    else:    s = -1                              # pencil tip is right
-    
-    def oneof(l, r):
-        if left: return l
-        else: return r
-    
     w = pb_height * 0.01                         # standard line thickness
     pb_width  = 2 * pb_height                    # pencil body width
-    tipendtop = penciltip + fitz.Point(1, -0.5) * pb_height * s
-    tipendbot = penciltip + fitz.Point(1, 0.5) * pb_height * s
+    myfinish = partial(img.finish, width = w, morph = morph, closePath = False)
+    oneof = lambda l, r: l if left else r        # choose an alternative
+    s = oneof(1,-1)
+    tipendtop = penciltip + fitz.Point(s, -0.5) * pb_height
+    tipendbot = penciltip + fitz.Point(s, 0.5) * pb_height
     r = fitz.Rect(tipendtop,
                   tipendbot + (pb_width * s, 0)) # pencil body
     r.normalize()                                # force r to be finite
@@ -295,53 +298,49 @@ def pencil(img, penciltip, pb_height, left, morph = None):
     hp2 = oneof(r.br, r.bl) + (pb_height*0.6*s, 0)
     # pencil body is some type of yellow
     img.drawRect(r)
-    img.finish(fill = yellow, color = wood, width = w, morph = morph)
+    myfinish(fill = yellow, color = wood)
     img.drawPolyline((r.tl, topline0, botline0, r.bl))
     img.drawPolyline((r.tr, topline1, botline1, r.br))
-    img.finish(fill = wood, color = wood, width = w, closePath = False,
-               morph = morph)
+    myfinish(fill = wood, color = wood)
     # draw pencil edge lines
     img.drawLine(topline0, topline1)
     img.drawLine(botline0, botline1)
-    img.finish(width = w, color = wood2, closePath = False, morph = morph)
-    
-    #===========================================================================
-    # draw the pencil rubber
-    #===========================================================================
-    img.drawBezier(oneof(r.tr, r.tl), hp1, hp2, oneof(r.br, r.bl))
-    img.finish(fill = red, width = w, closePath = False, morph = morph)
+    myfinish(color = wood2)
+
     #===========================================================================
     # black rectangle near pencil rubber
     #===========================================================================
     blackrect = fitz.Rect(oneof((r.tr - (pb_height/2., 0)), r.tl),
                           oneof(r.br, (r.bl + (pb_height/2., 0))))
     img.drawRect(blackrect)
-    img.finish(fill = black, width = w, morph = morph)
-    
+    myfinish(fill = black)
+
+    #===========================================================================
+    # draw the pencil rubber
+    #===========================================================================
+    img.drawBezier(oneof(r.tr, r.tl), hp1, hp2, oneof(r.br, r.bl))
+    myfinish(fill = red)
+
     #===========================================================================
     # draw pencil tip and curves indicating pencil sharpening traces
     #===========================================================================
     img.drawPolyline((tipendtop, penciltip, tipendbot))
-    img.finish(width = w, fill = wood, closePath = False,
-               morph = morph)               # pencil tip
-    p1 = oneof(r.tl, r.tr)                  # either left or right
+    myfinish(fill = wood)                   # pencil tip
+    p1 = tipendtop                          # either left or right
     p2 = oneof(topline0, topline1)
     p3 = oneof(botline0, botline1)
-    p4 = oneof(r.bl, r.br)
+    p4 = tipendbot
     p0 = -fitz.Point(pb_height/5., 0)*s     # horiz. displacment of ctrl points
     cp1 = p1 + (p2-p1)*0.5 + p0             # ctrl point upper rounding
     cp2 = p2 + (p3-p2)*0.5 + p0*2.9         # ctrl point middle rounding
     cp3 = p3 + (p4-p3)*0.5 + p0             # ctrl point lower rounding
     img.drawCurve(p1, cp1, p2)
-    img.finish(fill = yellow, width = w, color=yellow, morph = morph,
-               closePath = True)
+    myfinish(fill = yellow, color=yellow, closePath = True)
     img.drawCurve(p2, cp2, p3)
-    img.finish(fill = yellow, width = w, color=yellow, morph = morph,
-               closePath = True)
+    myfinish(fill = yellow, color=yellow, closePath = True)
     img.drawCurve(p3, cp3, p4)
-    img.finish(fill = yellow, width = w, color=yellow, morph = morph,
-               closePath = True)
-    
+    myfinish(fill = yellow, color=yellow, closePath = True)
+
     #===========================================================================
     # draw the pencil tip lead
     #===========================================================================
@@ -354,17 +353,17 @@ def pencil(img, penciltip, pb_height, left, morph = None):
     img.drawCurve(penciltip + (tipendtop - penciltip)*0.4,
                   penciltip + (pb_height * 0.6 * s, 0),
                   penciltip + (tipendbot - penciltip)*0.4)
-    img.finish(width = w, fill = black, morph = morph)
+    myfinish(fill = black)
                     
     #===========================================================================
     # re-border pencil body to get rid of some pesky pixels
     #===========================================================================
     img.drawPolyline((p1, p2, p3, p4))
-    img.finish(color = yellow, closePath = False, width = w, morph = morph)
-    img.drawLine(r.tl, r.tr)
-    img.drawLine(r.bl, r.br)
-    img.drawPolyline((tipendtop, penciltip, tipendbot))
-    img.finish(width = w, closePath = False, morph = morph)
+    myfinish(color = yellow)
+    br_tl = oneof(blackrect.tl, blackrect.tr)
+    br_bl = oneof(blackrect.bl, blackrect.br)
+    img.drawPolyline((br_tl, tipendtop, penciltip, tipendbot, br_bl))
+    myfinish()
     #===========================================================================
     # draw pencil label - first a rounded rectangle
     #===========================================================================
@@ -379,7 +378,7 @@ def pencil(img, penciltip, pb_height, left, morph = None):
     img.drawCurve(lblrect.tl,
                    fitz.Point(lblrect.x0-pb_height/4., penciltip.y),
                    lblrect.bl)
-    img.finish(width = w, fill = black, morph = morph)
+    myfinish(fill = black)
     
     #===========================================================================
     # finally the white vertical stripes - whatever they are good for
@@ -447,7 +446,8 @@ def frowney(img, rect, color = (0,0,0), fill = (1,1,0), morph = None):
     img.finish(width = 4 * w, closePath = False, morph = morph)
 
 #------------------------------------------------------------------------------
-# Main program
+# Main program:
+# Create PDF with one symbol per page which can be used by showPDFpage
 #------------------------------------------------------------------------------
 if __name__ == "__main__":
     green = getColor("limegreen")
@@ -457,26 +457,87 @@ if __name__ == "__main__":
     img = p.newShape()
     r = fitz.Rect(100, 100, 200, 200)
     heart(img, r, red)
-    
-    r1 = r + (100, 0, 100, 0)
-    p = r1.tl + (r1.br - r1.tl)*0.5
-    clover(img, r1, green, morph = (p, fitz.Matrix(45)))
-    
-    r2 = r1 + (100, 0, 100, 0)
-    diamond(img, r2, red)
-    
-    r3 = r2 + (100, 0, 100, 0)
-    p = r3.tl + (r3.br - r3.tl)*0.5
-    caro(img, r3, red, morph = (p, fitz.Matrix(45)))
-    
-    r4 = r + (0, 150, 0, 150)
-    p = r4.tl + (r4.br - r4.tl)*0.5
-    arrow(img, r4, red, morph = (p, fitz.Matrix(0)))
-    
-    r5 = r4 + (r4.width, 0, r4.width, 0)
-    dontenter(img, r5, morph = None)
-    
-    r8 = r4 + (0, 120, 30, 120)
-    hand(img, r8, morph = None)
     img.commit()
-    doc.save("symbols.pdf")
+    p.setCropBox(r + (10, 10, -10, -15))
+
+    p = doc.newPage()
+    img = p.newShape()
+    pnt = r.tl + (r.br - r.tl)*0.5
+    clover(img, r, green, morph = (pnt, fitz.Matrix(45)))
+    img.commit()
+    p.setCropBox(r + (5, 5, -5, -5))
+
+    p = doc.newPage()
+    img = p.newShape()
+    diamond(img, r, red)
+    img.commit()
+    p.setCropBox(r)
+    
+    p = doc.newPage()
+    img = p.newShape()
+    pnt = r.tl + (r.br - r.tl)*0.5
+    caro(img, r, red, morph = (pnt, fitz.Matrix(45)))
+    img.commit()
+    p.setCropBox(r + (10, 10, -10, -10))
+    
+    p = doc.newPage()
+    img = p.newShape()
+    pnt = r.tl + (r.br - r.tl)*0.5
+    arrow(img, r, red, morph = (pnt, fitz.Matrix(0)))
+    img.commit()
+    p.setCropBox(r)
+    
+    p = doc.newPage()
+    img = p.newShape()
+    dontenter(img, r, morph = None)
+    img.commit()
+    p.setCropBox(r + (-5, -5, 5, 5))
+    
+    p = doc.newPage()
+    img = p.newShape()
+    rh = r + (0, 120, 30, 120)
+    hand(img, rh, morph = None)
+    cropbox = +img.rect + (0, 0, 0, 5)
+    img.commit()
+    p.setCropBox(cropbox)
+
+    p = doc.newPage()
+    img = p.newShape()
+    smiley(img, r, morph = None)
+    cropbox = +img.rect + (-5, -5, 5, 5)
+    img.commit()
+    p.setCropBox(cropbox)
+
+    p = doc.newPage()
+    img = p.newShape()
+    frowney(img, r, morph = None)
+    cropbox = +img.rect + (-5, -5, 5, 5)
+    img.commit()
+    p.setCropBox(cropbox)
+
+    # create first pencil page (tip left)
+    page = doc.newPage()
+    img = page.newShape()
+    pencil(img, fitz.Point(100,150), 100, True)
+    cropbox = +img.rect + (-5, -5, -5, +5)
+    img.commit()
+    page.setCropBox(cropbox)
+
+    # create second pencil page (tip right)
+    page = doc.newPage()
+    img = page.newShape()
+    pencil(img, fitz.Point(440,150), 100, False)
+    cropbox = +img.rect + (5, -5, 5, +5)
+    img.commit()
+    page.setCropBox(cropbox)
+
+    m = {'title': "Signs and Symbols",
+         'author': "Jorj X. McKie",
+         'subject': "Create various symbols for use with showPDFpage()",
+         'keywords': "symbols, shapes, signs",
+         'creator': "shapes_and_symbols.py",
+         'producer': "PyMuPDF",
+         'creationDate': fitz.getPDFnow(),
+         'modDate': fitz.getPDFnow()}
+    doc.setMetadata(m)
+    doc.save("symbols.pdf", garbage = 4, deflate= True)

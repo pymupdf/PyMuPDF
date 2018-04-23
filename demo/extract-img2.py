@@ -6,14 +6,21 @@ This demo extracts all images of a PDF as PNG files, whether they are
 referenced by pages or not.
 It scans through all objects and selects /Type/XObject with /Subtype/Image.
 So runtime is determined by number of objects and image volume.
+
+Technically, images with a specified /SMask are correctly recovered and
+should appear as originally stored.
+
 Usage:
+-------
 python extract_img.py input.pdf img-prefix
 
-This is meant to be a fairly fault-tolerant image extractor:
+The focus of this script is to be as fault-tolerant as possible:
+-----------------------------------------------------------------
 * It can cope with invalid PDF page trees, invalid PDF objects and more
-* It ignores images with small dimensions (< 100 pixels side length)
-* It ignores verry small image file sizes (< 2 KB)
-* It ignores well-compressible images - assuming they then contain nothing
+* It ignores images with very small dimensions (< 100 pixels side length)
+* It ignores very small image file sizes (< 2 KB)
+* It ignores well-compressible images - assuming these are insignificant,
+  like unicolor images
 
 Adjust / omit these limits as required.
 

@@ -7,7 +7,7 @@ import sys
 Create a Pixmap from any PIL / Pillow supported filetype
 Changes in v1.10.0
 -------------------
-- omit alpha to save image memor<
+- omit alpha to save image memory
 '''
 if len(sys.argv) == 2:
     pic_fn = sys.argv[1]
