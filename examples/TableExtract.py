@@ -61,7 +61,7 @@ if not ymin < ymax:     # something was wrong with the search strings
 #==============================================================================
 # now get the table
 #==============================================================================
-tab = ParseTab(doc, page, [0, ymin, 9999, ymax])
+tab = ParseTab(page, [0, ymin, 9999, ymax])
 
 #print(table_title)
 #for t in tab:
