@@ -6,7 +6,7 @@ cache:
   - "$HOME/Library/Caches/Homebrew"
 env:
   global:
-  - MUPDF='https://mupdf.com/downloads/mupdf-1.13.1-source.tar.gz'
+  - MUPDF='https://mupdf.com/downloads/mupdf-1.13.0-source.tar.gz'
   - COPYFILE_DISABLE=1
   - TWINE_USERNAME=rk700
 matrix:
