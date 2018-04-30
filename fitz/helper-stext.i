@@ -1,32 +1,4 @@
 %{
-//-----------------------------------------------------------------------------
-// C helper functions for extractJSON, and other structured text output
-// functions.
-// Renamed JSON functions to prefix them with "DG", to indicate they were
-// contributed by our GitHub user @deepgully.
-// Functions contributed by Jorj McKie are prefixed by "JM"
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-// JSON requirement: must have a digit before the decimal point
-//-----------------------------------------------------------------------------
-void DG_print_rect_json(fz_context *ctx, fz_output *out, fz_rect *bbox)
-{
-    char buf[128];
-    snprintf(buf, sizeof(buf), "\"bbox\": [%g, %g, %g, %g],",
-                        bbox->x0, bbox->y0, bbox->x1, bbox->y1);
-    fz_write_printf(ctx, out, "%s", buf);
-}
-
-//-----------------------------------------------------------------------------
-// JSON requirement: must have a digit before the decimal point
-//-----------------------------------------------------------------------------
-void DG_print_float_json(fz_context *ctx, fz_output *out, float g)
-{
-    char buf[15];
-    snprintf(buf, sizeof(buf), "%g", g);
-    fz_write_printf(ctx, out, "%s", buf);
-}
 
 static int detect_super_script(fz_stext_line *line, fz_stext_char *ch)
 {
@@ -48,168 +20,10 @@ static void font_family_name(fz_context *ctx, fz_font *font, char *buf, int size
     fz_strlcpy(buf, name, size);
 }
 
-void
-DG_print_stext_image_as_json(fz_context *ctx, fz_output *out, fz_stext_block *block)
-{
-    fz_write_printf(ctx, out, "\n  {\"type\": 1, ");
-    DG_print_rect_json(ctx, out, &(block->bbox));
-    fz_image *image = block->u.i.image;
-    fz_buffer *buf = NULL;
-    fz_compressed_buffer *buffer = NULL;
-    int n = fz_colorspace_n(ctx, image->colorspace);
-    int w = image->w;
-    int h = image->h;
-    int bparams = 0;
-    buffer = fz_compressed_image_buffer(ctx, image);
-    if (buffer) bparams = buffer->params.type;
-    fz_write_printf(ctx, out, "\n   \"imgtype\": %d, \"width\": %d, \"height\": %d, ",
-                                    bparams, w, h);
-    fz_write_printf(ctx, out, "\"image\":\n");
-
-    if (bparams == FZ_IMAGE_JPEG && (n == 1 || n == 3) ||
-        bparams == FZ_IMAGE_PNG)
-    {
-        fz_write_printf(ctx, out, "\"");
-        fz_write_base64_buffer(ctx, out, buffer->buffer, 0);
-        fz_write_printf(ctx, out, "\"");
-        fz_write_printf(ctx, out, "\n  }");
-        return;
-    }
-    fz_try(ctx)
-    {
-        buf = fz_new_buffer_from_image_as_png(ctx, image, NULL);
-        fz_write_printf(ctx, out, "\"");
-        fz_write_base64_buffer(ctx, out, buf, 0);
-        fz_write_printf(ctx, out, "\"");
-    }
-    fz_always(ctx) fz_drop_buffer(ctx, buf);
-    fz_catch(ctx)  fz_write_printf(ctx, out, "null");
-    fz_write_printf(ctx, out, "\n  }");
-}
-
-static void
-DG_print_style_begin_json(fz_context *ctx, fz_output *out, fz_font *font, float size, int sup)
-{
-    char family[80];
-    int flags = sup;
-    flags += fz_font_is_italic(ctx, font) * 2;
-    flags += fz_font_is_serif(ctx, font) * 4;
-    flags += fz_font_is_monospaced(ctx, font) * 8;
-    flags += fz_font_is_bold(ctx, font) * 16;
-    font_family_name(ctx, font, family, sizeof family);
-
-    fz_write_printf(ctx, out, "\n      {\"font\": \"%s\", \"size\": ", family);
-    DG_print_float_json(ctx, out, size);
-    fz_write_printf(ctx, out, ", \"flags\": %d", flags);
-    fz_write_string(ctx, out, ", \"text\": \"");
-}
-
-static void
-DG_print_style_end_json(fz_context *ctx, fz_output *out, fz_font *font, float size, int sup)
-{
-    fz_write_string(ctx, out, "\"}");
-}
-
-void
-DG_print_stext_block_as_json(fz_context *ctx, fz_output *out, fz_stext_block *block)
-{
-    fz_stext_line *line;
-    fz_stext_char *ch;
-    fz_font *font = NULL;
-    float size = 0;
-    int sup = 0;
-    fz_write_printf(ctx, out, "\n  {\"type\": 0, ");
-    DG_print_rect_json(ctx, out, &(block->bbox));
-    fz_write_printf(ctx, out, "\n   \"lines\": [\n");
-    int line_n = 0;
-    int span_n = 0;
-    for (line = block->u.t.first_line; line; line = line->next)
-    {
-        if (line_n > 0) fz_write_printf(ctx, out, ",\n");
-        fz_write_printf(ctx, out, "    {");        // begin line
-        DG_print_rect_json(ctx, out, &(line->bbox));
-        fz_write_printf(ctx, out, " \"wmode\": %d, \"dir\": [", line->wmode);
-        DG_print_float_json(ctx, out, line->dir.x);
-        fz_write_printf(ctx, out, ", ");
-        DG_print_float_json(ctx, out, line->dir.y);
-        fz_write_printf(ctx, out, "],\n     \"spans\": [");
-        font = NULL;
-
-        for (ch = line->first_char; ch; ch = ch->next)
-        {
-            int ch_sup = detect_super_script(line, ch);
-            if (ch->font != font || ch->size != size)
-            {
-                if (font)
-                {
-                    DG_print_style_end_json(ctx, out, font, size, sup);
-                    fz_write_printf(ctx, out, ",");
-                }
-                font = ch->font;
-                size = ch->size;
-                sup = ch_sup;
-                DG_print_style_begin_json(ctx, out, font, size, sup);
-            }
-
-            switch (ch->c)
-            {
-                case '\\': fz_write_printf(ctx, out, "\\\\"); break;
-                case '\'': fz_write_printf(ctx, out, "\\u0027"); break;
-                case '"': fz_write_printf(ctx, out, "\\\""); break;
-                case '\b': fz_write_printf(ctx, out, "\\b"); break;
-                case '\f': fz_write_printf(ctx, out, "\\f"); break;
-                case '\n': fz_write_printf(ctx, out, "\\n"); break;
-                case '\r': fz_write_printf(ctx, out, "\\r"); break;
-                case '\t': fz_write_printf(ctx, out, "\\t"); break;
-                default:
-                    if (ch->c >= 32 && ch->c <= 127) {
-                        fz_write_printf(ctx, out, "%c", ch->c);
-                    } else {
-                        fz_write_printf(ctx, out, "\\u%04x", ch->c);
-                    }
-                    break;
-            }
-            line_n += 1;
-        }
-        if (font)
-            DG_print_style_end_json(ctx, out, font, size, sup);
-        fz_write_printf(ctx, out, " \n     ]\n"); // end of spans
-        fz_write_printf(ctx, out, "    }"); // end line
-    }
-    fz_write_printf(ctx, out, "\n   ]"); // end of lines
-    fz_write_printf(ctx, out, "\n  }"); // end a block
-}
-
-void
-DG_print_stext_page_as_json(fz_context *ctx, fz_output *out, fz_stext_page *page)
-{
-    int block_n = 0;
-    fz_stext_block *block;
-    float w = page->mediabox.x1 - page->mediabox.x0;
-    float h = page->mediabox.y1 - page->mediabox.y0;
-
-    fz_write_printf(ctx, out, "{\"width\": %g, \"height\": %g,\n \"blocks\": [", w, h);
-
-    for (block = page->first_block; block; block = block->next)
-    {
-        if (block_n > 0)
-            fz_write_printf(ctx, out, ",");
-        if (block->type == FZ_STEXT_BLOCK_IMAGE)
-            DG_print_stext_image_as_json(ctx, out, block);
-        else if (block->type == FZ_STEXT_BLOCK_TEXT)
-        {
-            DG_print_stext_block_as_json(ctx, out, block);
-        }
-        block_n += 1;
-    }
-    fz_write_printf(ctx, out, "\n ]");  /* blocks end */
-    fz_write_printf(ctx, out, "\n}");  /* page end */
-}
-
 //-----------------------------------------------------------------------------
-// Plain text output. An identical copy of fz_print_stext_page_as_text
-// except that lines within a block are concatenated with a space instead
-// a new-line.
+// Plain text output. An identical copy of fz_print_stext_page_as_text,
+// but lines within a block are concatenated by a space instead a new-line
+// character (which else leads to 2 new-lines).
 //-----------------------------------------------------------------------------
 void
 JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page)
@@ -218,7 +32,6 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
     fz_stext_line *line;
     fz_stext_char *ch;
     char utf[10];
-    int last_char = 0;
     int i, n;
 
     for (block = page->first_block; block; block = block->next)
@@ -228,12 +41,10 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
             int line_n = 0;
             for (line = block->u.t.first_line; line; line = line->next)
             {
-                // append next line with a space if prev did not end with "-"
                 if (line_n > 0) fz_write_string(ctx, out, " ");
-                line_n += 1;
+                line_n++;
                 for (ch = line->first_char; ch; ch = ch->next)
                 {
-                    last_char = ch->c;      // save char value
                     n = fz_runetochar(utf, ch->c);
                     for (i = 0; i < n; i++)
                         fz_write_byte(ctx, out, utf[i]);
@@ -244,4 +55,189 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
     }
 }
 
+void
+JM_style_begin_dict(fz_context *ctx, PyObject *span, fz_font *font, float size, int sup)
+{
+    char family[80];
+    font_family_name(ctx, font, family, sizeof family);
+    int flags = sup;
+    flags += fz_font_is_italic(ctx, font) * 2;
+    flags += fz_font_is_serif(ctx, font) * 4;
+    flags += fz_font_is_monospaced(ctx, font) * 8;
+    flags += fz_font_is_bold(ctx, font) * 16;
+    PyDict_SetItemString(span, "font", Py_BuildValue("s", family));
+    PyDict_SetItemString(span, "size", Py_BuildValue("f", size));
+    PyDict_SetItemString(span, "flags", Py_BuildValue("i", flags));
+}
+
+void
+JM_style_end_dict(fz_context *ctx, fz_buffer *buff, PyObject *span, PyObject *spanlist)
+{
+    char *text;
+    size_t len = fz_buffer_storage(ctx, buff, &text);
+    PyDict_SetItemString(span, "text",  JM_UNICODE(text, len));
+    PyList_Append(spanlist, span);
+}
+
+PyObject *
+JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block)
+{
+    fz_stext_line *line;
+    fz_stext_char *ch;
+    fz_font *font = NULL;
+    fz_buffer *buff = NULL;
+    char *text = NULL;
+    float size = 0;
+    int sup = 0, n = 0, i = 0;
+    size_t len = 0;
+    char utf[10];
+    PyObject *span = NULL, *spanlist = NULL, *linelist = NULL, *linedict;
+    linelist = PyList_New(0);
+    PyObject *dict = PyDict_New();
+    PyDict_SetItemString(dict, "type",  PyInt_FromLong(FZ_STEXT_BLOCK_TEXT));
+    PyDict_SetItemString(dict, "bbox",   Py_BuildValue("[ffff]",
+                                         block->bbox.x0, block->bbox.y0,
+                                         block->bbox.x1, block->bbox.y1));
+
+    for (line = block->u.t.first_line; line; line = line->next)
+    {
+        linedict = PyDict_New();
+        PyDict_SetItemString(linedict, "bbox",   Py_BuildValue("[ffff]",
+                                         line->bbox.x0, line->bbox.y0,
+                                         line->bbox.x1, line->bbox.y1));
+        PyDict_SetItemString(linedict, "wmode",  Py_BuildValue("i", line->wmode));
+        PyDict_SetItemString(linedict, "dir",  Py_BuildValue("[f,f]", line->dir.x, line->dir.y));
+        spanlist = PyList_New(0);
+        font = NULL;
+        size = 0;
+
+        for (ch = line->first_char; ch; ch = ch->next)
+        {
+            int ch_sup = detect_super_script(line, ch);
+            if (ch->font != font || ch->size != size)
+            {   // start new span
+                if (font)    // must finish old span first
+                {
+                    JM_style_end_dict(ctx, buff, span, spanlist);
+                    Py_DECREF(span);
+                    span = NULL;
+                    fz_drop_buffer(ctx, buff);
+                    buff = NULL;
+                    font = NULL;
+                }
+                font = ch->font;
+                size = ch->size;
+                sup = ch_sup;
+                span = PyDict_New();
+                buff = fz_new_buffer(ctx, 64);
+                JM_style_begin_dict(ctx, span, font, size, sup);
+            }
+
+            n = fz_runetochar(utf, ch->c);
+            for (i = 0; i < n; i++)
+                fz_append_byte(ctx, buff, utf[i]);
+        }
+        if (font)
+        {
+            JM_style_end_dict(ctx, buff, span, spanlist);
+            Py_DECREF(span);
+            font = NULL;
+        }
+
+        PyDict_SetItemString(linedict, "spans",  spanlist);
+        Py_DECREF(spanlist);
+        PyList_Append(linelist, linedict);
+        Py_DECREF(linedict);
+    }
+    PyDict_SetItemString(dict, "lines",  linelist);
+    Py_DECREF(linelist);
+    return dict;
+}
+
+PyObject *
+JM_extract_stext_imageblock_as_dict(fz_context *ctx, fz_stext_block *block)
+{
+    fz_image *image = block->u.i.image;
+    fz_buffer *buf = NULL;
+    fz_compressed_buffer *buffer = NULL;
+    int n = fz_colorspace_n(ctx, image->colorspace);
+    int w = image->w;
+    int h = image->h;
+    int type = 0;
+    size_t len = 0;
+    unsigned char ext[5];
+    char *c = NULL;
+    PyObject *bytes = JM_BinFromChar("");
+    buffer = fz_compressed_image_buffer(ctx, image);
+    if (buffer) type = buffer->params.type;
+    PyObject *dict = PyDict_New();
+    PyDict_SetItemString(dict, "type",  PyInt_FromLong(FZ_STEXT_BLOCK_IMAGE));
+    PyDict_SetItemString(dict, "bbox",   Py_BuildValue("[ffff]",
+                                         block->bbox.x0, block->bbox.y0,
+                                         block->bbox.x1, block->bbox.y1));
+    PyDict_SetItemString(dict, "width",  PyInt_FromLong((long) w));
+    PyDict_SetItemString(dict, "height", PyInt_FromLong((long) h));
+    fz_try(ctx)
+    {
+        if (image->use_colorkey) type = FZ_IMAGE_UNKNOWN;
+        if (image->use_decode)   type = FZ_IMAGE_UNKNOWN;
+        if (image->mask)         type = FZ_IMAGE_UNKNOWN;
+        if (type < FZ_IMAGE_BMP) type = FZ_IMAGE_UNKNOWN;
+        if (n != 1 && n != 3 && type == FZ_IMAGE_JPEG)
+            type = FZ_IMAGE_UNKNOWN;
+        if (type != FZ_IMAGE_UNKNOWN)
+        {
+            len = fz_buffer_storage(ctx, buffer->buffer, &c);
+            switch(type)
+            {
+                case(FZ_IMAGE_BMP):  strcpy(ext, "bmp");  break;
+                case(FZ_IMAGE_GIF):  strcpy(ext, "gif");  break;
+                case(FZ_IMAGE_JPEG): strcpy(ext, "jpeg"); break;
+                case(FZ_IMAGE_JPX):  strcpy(ext, "jpx");  break;
+                case(FZ_IMAGE_JXR):  strcpy(ext, "jxr");  break;
+                case(FZ_IMAGE_PNM):  strcpy(ext, "pnm");  break;
+                case(FZ_IMAGE_TIFF): strcpy(ext, "tiff"); break;
+                default:             strcpy(ext, "png");  break;
+            }
+        }
+        else
+        {
+            buf = fz_new_buffer_from_image_as_png(ctx, image, NULL);
+            len = fz_buffer_storage(ctx, buf, &c);
+            strcpy(ext, "png");
+        }
+        bytes = JM_BinFromCharSize(c, len);
+    }
+    fz_always(ctx)
+    {
+        fz_drop_buffer(ctx, buf);
+        PyDict_SetItemString(dict, "ext",  PyString_FromString(ext));
+        PyDict_SetItemString(dict, "image",  bytes);
+        Py_DECREF(bytes);
+    }
+    fz_catch(ctx) {;}
+    return dict;
+}
+
+PyObject *
+JM_stext_page_as_dict(fz_context *ctx, fz_stext_page *page)
+{
+    PyObject *dict = PyDict_New();
+    PyObject *blocklist = PyList_New(0);
+    fz_stext_block *block;
+    float w = page->mediabox.x1 - page->mediabox.x0;
+    float h = page->mediabox.y1 - page->mediabox.y0;
+    PyDict_SetItemString(dict, "width", Py_BuildValue("f", w));
+    PyDict_SetItemString(dict, "height", Py_BuildValue("f", h));
+    for (block = page->first_block; block; block = block->next)
+    {
+        if (block->type == FZ_STEXT_BLOCK_IMAGE)
+            PyList_Append(blocklist, JM_extract_stext_imageblock_as_dict(ctx, block));
+        else
+            PyList_Append(blocklist, JM_extract_stext_textblock_as_dict(ctx, block));
+    }
+    PyDict_SetItemString(dict, "blocks", blocklist);
+    Py_DECREF(blocklist);
+    return dict;
+}
 %}

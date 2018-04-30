@@ -6,14 +6,20 @@ Runtime is determined by number of pages and volume of stored images.
 Usage:
 ------
 extract_img1.py input.pdf
+
 Changes:
 --------
+(1)
 Do not use pix.colorspace when checking for CMYK images, because it may be None
 if the image is a stencil mask. Instead, we now check pix.n - pix.alpha < 4
 to confirm that an image is not CMYK.
 IAW: the repr() of a stencil mask pixmap looks like
 "Pixmap(None, fitz.IRect(0, 0, width, height), 1)", and we have
 width * height == len(pix.samples).
+
+(2)
+Pages may reference the same image multiple times. To avoid to also extracting
+duplicate images, we maintain a list of xref numbers.
 '''
 from __future__ import print_function
 import fitz
@@ -41,9 +47,10 @@ def recoverpix(doc, item):
 assert len(sys.argv) == 2, 'Usage: %s <input file>' % sys.argv[0]
     
 t0 = time.clock()
-doc = fitz.open(sys.argv[1])
-imgcount = 0
-lenXREF = doc._getXrefLength()
+doc = fitz.open(sys.argv[1])           # the PDF
+imgcount = 0                           # counts extracted images
+xreflist = []                          # records images already extracted
+lenXREF = doc._getXrefLength()         # only used for information
 
 # display some file info
 print("file: %s, pages: %s, objects: %s" % (sys.argv[1], len(doc), lenXREF-1))
@@ -51,14 +58,17 @@ print("file: %s, pages: %s, objects: %s" % (sys.argv[1], len(doc), lenXREF-1))
 for i in range(len(doc)):
     imglist = doc.getPageImageList(i)
     for img in imglist:
-        pix = recoverpix(doc, img)     # make pixmap from image
-        imgcount += 1
+        if img[0] in xreflist:         # this image has been processed
+            continue 
+        xreflist.append(img[0])        # take note of the xref
+        pix = recoverpix(doc, img[:2]) # make pixmap from image
         if pix.n - pix.alpha < 4:      # can be saved as PNG
             pass
         else:                          # must convert CMYK first
             pix0 = fitz.Pixmap(fitz.csRGB, pix)
             pix = pix0
         pix.writePNG("p%i-%s.png" % (i, img[7]))
+        imgcount += 1
         pix = None                     # free Pixmap resources
 
 t1 = time.clock()

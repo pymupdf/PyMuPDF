@@ -1,4 +1,4 @@
-# PyMuPDF 1.13.0 [![Build Status](https://travis-ci.org/rk700/PyMuPDF.svg?branch=master)](https://travis-ci.org/rk700/PyMuPDF)
+# PyMuPDF 1.13.1 [![Build Status](https://travis-ci.org/rk700/PyMuPDF.svg?branch=master)](https://travis-ci.org/rk700/PyMuPDF)
 
 ![logo](https://github.com/rk700/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
@@ -10,7 +10,7 @@ Release date: April 23, 2018
 
 # Introduction
 
-This is **version 1.13.0 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.13.0](http://mupdf.com/) - "a lightweight PDF and XPS viewer".
+This is **version 1.13.1 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.13.1](http://mupdf.com/) - "a lightweight PDF and XPS viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -47,42 +47,26 @@ Finally, please double check ``setup.py`` before building. Update ``include_dirs
 
 ## MS Windows
 
-If you don't use ``pip`` or [PyPI](https://pypi.org/project/PyMuPDF/), you can still download [pre-generated binaries](https://github.com/JorjMcKie/PyMuPDF-Optional-Material) that are suitable for your Python / Windows combination. This, too, avoids any other downloads or compilation hassle. Again, make sure to consult our documentation.
+If you don't use ``pip`` or [PyPI](https://pypi.org/project/PyMuPDF/), you can still download [pre-generated binaries](https://github.com/JorjMcKie/PyMuPDF-Optional-Material) that are suitable for your Python / Windows combination. This, too, avoids any other download or compilation hassle. Again, make sure to consult our documentation.
 
 If you do want to make your own binary however, have a look at this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation). It explains how to use Visual Studio for generating MuPDF in quite some detail. Also do not hesitate to contact us if you need help.
 
 # Usage and Documentation
 Have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) (which contain complete, working programs), and the **recipies** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar, which contains more than a dozen of guides in How-To-style.
 
-You have a number of options to access the documentation:
+Our documentation, written using Sphinx, is available in various formats from the following sources.
 
-* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/). Do not **download** from here, instead use the following links.
-* You can download a zipped [HTML](https://github.com/rk700/PyMuPDF/tree/master/doc/html.zip) version.
-* You can download a [Windows CHM](https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm).
-* You can download a [PDF](https://github.com/rk700/PyMuPDF/tree/master/doc/pymupdf.pdf).
+* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/). For **download**, only use the following links.
+* [HTML](https://github.com/rk700/PyMuPDF/tree/master/doc/html.zip)
+* [Windows CHM](https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm)
+* [PDF](https://github.com/rk700/PyMuPDF/tree/master/doc/pymupdf.pdf)
 
 Earlier Versions
 ================
-* [PyMuPDF Version 1.12.6](https://github.com/rk700/PyMuPDF/tree/1.12.6)
-
-* [PyMuPDF Version 1.11.2](https://github.com/rk700/PyMuPDF/tree/1.11.2)
-
-* [PyMuPDF Version 1.10.0](https://github.com/rk700/PyMuPDF/tree/1.10.0)
-
-* [PyMuPDF Version 1.9.3](https://github.com/rk700/PyMuPDF/tree/1.9.3)
-
-* [PyMuPDF Version 1.9.2](https://github.com/rk700/PyMuPDF/releases/tag/v1.9.2)
-
-* [PyMuPDF Version 1.9.1](https://github.com/rk700/PyMuPDF/releases/tag/v1.9.1)
-
-* [Code compatible with MuPDF v1.8](https://github.com/rk700/PyMuPDF/releases/tag/v1.8)
-
-* [Code compatible with MuPDF v1.7a](https://github.com/rk700/PyMuPDF/releases/tag/v1.7)
-
-* [Code compatible with MuPDF v1.2](https://github.com/rk700/PyMuPDF/releases/tag/v1.2)
+Earlier versions are available in the [releases](https://github.com/rk700/PyMuPDF/releases) directory.
 
 # License
-PyMuPDF is distributed under GNU GPL V3. The implied use of MuPDF also implies its license GNU AFFERO GPL V3. A copy of both licenses are included in this repository.
+PyMuPDF is distributed under GNU GPL V3. Because you will also be using MuPDF, its license GNU AFFERO GPL V3 applies as well. Copies of both licenses are included in this repository.
 
 # Contact
 You can also find us on the Python Package Index [PyPI](https://pypi.org/project/PyMuPDF/).

@@ -102,9 +102,9 @@ import sys
 
 
 VersionFitz = "1.13.0"
-VersionBind = "1.13.0"
-VersionDate = "2018-04-23 10:03:00"
-version = (VersionBind, VersionFitz, "20180423100300")
+VersionBind = "1.13.1"
+VersionDate = "2018-04-30 13:14:15"
+version = (VersionBind, VersionFitz, "20180430131415")
 
 
 #------------------------------------------------------------------------------
@@ -2587,9 +2587,9 @@ class TextPage(_object):
         return _fitz.TextPage_search(self, needle, hit_max)
 
 
-    def _extractTextLines_AsList(self):
-        """_extractTextLines_AsList(self) -> PyObject *"""
-        return _fitz.TextPage__extractTextLines_AsList(self)
+    def _extractTextBlocks_AsList(self):
+        """_extractTextBlocks_AsList(self) -> PyObject *"""
+        return _fitz.TextPage__extractTextBlocks_AsList(self)
 
 
     def _extractTextWords_AsList(self):
@@ -2597,14 +2597,23 @@ class TextPage(_object):
         return _fitz.TextPage__extractTextWords_AsList(self)
 
 
-    def _extractTextLines(self, p1, p2):
-        """_extractTextLines(self, p1, p2) -> char const *"""
-        return _fitz.TextPage__extractTextLines(self, p1, p2)
-
-
     def _extractText(self, format):
         """_extractText(self, format) -> PyObject *"""
-        return _fitz.TextPage__extractText(self, format)
+        val = _fitz.TextPage__extractText(self, format)
+
+        if format != 2:
+            return val
+        import base64, json
+
+        def convertb64(s):
+            if str is bytes:
+                return base64.b64encode(s)
+            return base64.b64encode(s).decode()
+
+        val = json.dumps(val, separators=(",", ":"), default=convertb64)
+
+
+        return val
 
 
     def extractText(self):
@@ -2621,6 +2630,9 @@ class TextPage(_object):
 
     def extractXHTML(self):
         return self._extractText(4)
+
+    def extractDICT(self):
+        return self._extractText(5)
 
     def __del__(self):
         if not type(self) is TextPage: return

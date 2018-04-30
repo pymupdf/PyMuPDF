@@ -63,7 +63,7 @@ def getTextBlocks(page, images = False):
     if images:
         flags |= fitz.TEXT_PRESERVE_IMAGES
     tp = dl.getTextPage(flags)
-    l = tp._extractTextLines_AsList()
+    l = tp._extractTextBlocks_AsList()
     del tp
     del dl
     return l
@@ -90,9 +90,9 @@ def getText(page, output = "text"):
     fitz.CheckParent(page)
     dl = page.getDisplayList()
     # available output types
-    formats = ("text", "html", "json", "xml", "xhtml")
+    formats = ("text", "html", "json", "xml", "xhtml", "dict")
     # choose which of them also include images in the TextPage
-    images = (0, 1, 1, 0, 1)      # controls image inclusion in text page
+    images = (0, 1, 1, 0, 1, 1)      # controls image inclusion in text page
     try:
         f = formats.index(output.lower())
     except:
