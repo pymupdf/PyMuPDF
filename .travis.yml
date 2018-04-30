@@ -6,7 +6,7 @@ cache:
   - "$HOME/Library/Caches/Homebrew"
 env:
   global:
-  - MUPDF='https://mupdf.com/downloads/mupdf-1.13.0-source.tar.gz'
+  - MUPDF='https://mupdf.com/downloads/mupdf-1.13.1-source.tar.gz'
   - COPYFILE_DISABLE=1
   - TWINE_USERNAME=rk700
 matrix:
@@ -46,7 +46,7 @@ script:
 - cibuildwheel --output-dir wheelhouse
 
 before_deploy:
-  - git tag "v1.13.0"
+  - git tag "v1.13.1"
 deploy:
   provider: releases
   api_key:

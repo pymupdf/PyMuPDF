@@ -50,6 +50,15 @@
 #define MAX(a, b) ((a) < (b)) ? (b) : (a)
 #define MIN(a, b) ((a) < (b)) ? (a) : (b)
 #define JM_UNICODE(data, len) PyUnicode_DecodeUTF8(data, (Py_ssize_t) len, "replace")
+
+// binary output depending on Python major
+# if PY_VERSION_HEX >= 0x03000000
+#define JM_BinFromChar(x) PyBytes_FromString(x)
+#define JM_BinFromCharSize(x, y) PyBytes_FromStringAndSize(x, (Py_ssize_t) y)
+# else
+#define JM_BinFromChar(x) PyByteArray_FromStringAndSize(x, (Py_ssize_t) strlen(x))
+#define JM_BinFromCharSize(x, y) PyByteArray_FromStringAndSize(x, (Py_ssize_t) y)
+# endif
 #define NONE SWIG_Py_Void()
 #include <fitz.h>
 #include <pdf.h>
@@ -1140,23 +1149,70 @@ if links:
 
             fz_buffer *buffer = NULL;
             pdf_obj *obj = NULL;
-            PyObject *bytes = PyBytes_FromString("");
+            PyObject *bytes = NULL;
+            PyObject *empty = PyDict_New();
+            PyObject *rc = NULL;
+            unsigned char ext[5];
             unsigned char *c = NULL;
             Py_ssize_t len = 0;
+            fz_image *image = NULL;
+            fz_compressed_buffer *cbuf = NULL;
+            int type = 0;
+            int n = 0;
             fz_try(gctx)
             {
-                obj = pdf_load_object(gctx, pdf, xref);
+                obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 pdf_obj *subtype = pdf_dict_get(gctx, obj, PDF_NAME_Subtype);
                 if (pdf_name_eq(gctx, subtype, PDF_NAME_Image))
                 {
-                    buffer = pdf_load_raw_stream_number(gctx, pdf, xref);
-                    len = (Py_ssize_t) fz_buffer_storage(gctx, buffer, &c);
-                    bytes = PyBytes_FromStringAndSize(c, len);
+                    image = pdf_load_image(gctx, pdf, obj);
+                    cbuf = fz_compressed_image_buffer(gctx, image);
+                    type = cbuf == NULL ? FZ_IMAGE_UNKNOWN : cbuf->params.type;
+
+                    // ensure returning PNG for unsupported images ------------
+                    if (image->use_colorkey) type = FZ_IMAGE_UNKNOWN;
+                    if (image->use_decode)   type = FZ_IMAGE_UNKNOWN;
+                    if (image->mask)         type = FZ_IMAGE_UNKNOWN;
+                    if (type < FZ_IMAGE_BMP) type = FZ_IMAGE_UNKNOWN;
+                    n = fz_colorspace_n(gctx, image->colorspace);
+                    if (n != 1 && n != 3 && type == FZ_IMAGE_JPEG)
+                        type = FZ_IMAGE_UNKNOWN;
+
+                    if (type != FZ_IMAGE_UNKNOWN)
+                    {
+                        len = (Py_ssize_t) fz_buffer_storage(gctx, cbuf->buffer, &c);
+                        switch(type)
+                        {
+                            case(FZ_IMAGE_BMP):  strcpy(ext, "bmp");  break;
+                            case(FZ_IMAGE_GIF):  strcpy(ext, "gif");  break;
+                            case(FZ_IMAGE_JPEG): strcpy(ext, "jpeg"); break;
+                            case(FZ_IMAGE_JPX):  strcpy(ext, "jpx");  break;
+                            case(FZ_IMAGE_JXR):  strcpy(ext, "jxr");  break;
+                            case(FZ_IMAGE_PNM):  strcpy(ext, "pnm");  break;
+                            case(FZ_IMAGE_TIFF): strcpy(ext, "tiff"); break;
+                            default:             strcpy(ext, "png");  break;
+                        }
+                    }
+                    else
+                    {
+                        buffer = fz_new_buffer_from_image_as_png(gctx, image, NULL);
+                        len = (Py_ssize_t) fz_buffer_storage(gctx, buffer, &c);
+                        strcpy(ext, "png");
+                    }
+                    bytes = JM_BinFromCharSize(c, len);
+                    rc = Py_BuildValue("{s:s,s:O}", "ext", ext, "image", bytes);
                 }
+                else
+                    rc = empty;
             }
-            fz_always(gctx) fz_drop_buffer(gctx, buffer);
-            fz_catch(gctx) return bytes;
-            return bytes;
+            fz_always(gctx)
+            {
+                fz_drop_image(gctx, image);
+                fz_drop_buffer(gctx, buffer);
+                pdf_drop_obj(gctx, obj);
+            }
+            fz_catch(gctx) return empty;
+            return rc;
         }
 
         //---------------------------------------------------------------------
@@ -1200,16 +1256,16 @@ if links:
             return xrefs;
         }
 
-        //*********************************************************************
+        //---------------------------------------------------------------------
         // Get Xref Number of Outline Root, create it if missing
-        //*********************************************************************
+        //---------------------------------------------------------------------
         FITZEXCEPTION(_getOLRootNumber, result<0)
         CLOSECHECK(_getOLRootNumber)
         int _getOLRootNumber()
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx) assert_PDF(pdf);
-            fz_catch(gctx) return -2;
+            fz_catch(gctx) return -1;
             
             pdf_obj *root, *olroot, *ind_obj;
             // get main root
@@ -1228,26 +1284,26 @@ if links:
             return pdf_to_num(gctx, olroot);
         }
 
-        //*********************************************************************
-        // Get a New Xref Number
-        //*********************************************************************
+        //---------------------------------------------------------------------
+        // Get a new Xref number
+        //---------------------------------------------------------------------
         FITZEXCEPTION(_getNewXref, result<0)
         CLOSECHECK(_getNewXref)
         int _getNewXref()
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); /* conv doc to pdf*/
             fz_try(gctx) assert_PDF(pdf);
-            fz_catch(gctx) return -2;
+            fz_catch(gctx) return -1;
             return pdf_create_object(gctx, pdf);
         }
 
-        //*********************************************************************
+        //---------------------------------------------------------------------
         // Get Length of Xref
-        //*********************************************************************
+        //---------------------------------------------------------------------
         CLOSECHECK(_getXrefLength)
         int _getXrefLength()
         {
-            pdf_document *pdf = pdf_specifics(gctx, $self); // get pdf doc
+            pdf_document *pdf = pdf_specifics(gctx, $self);
             if (!pdf) return 0;
             return pdf_xref_len(gctx, pdf);
         }
@@ -1292,9 +1348,9 @@ if links:
             return NONE;
         }
 
-        //*********************************************************************
+        //---------------------------------------------------------------------
         // Get Object String of xref
-        //*********************************************************************
+        //---------------------------------------------------------------------
         FITZEXCEPTION(_getObjectString, !result)
         CLOSECHECK(_getObjectString)
         const char *_getObjectString(int xref)
@@ -1328,10 +1384,10 @@ if links:
         }
         %pythoncode %{_getXrefString = _getObjectString%}
         
-        /*********************************************************************/
+        //---------------------------------------------------------------------
         // Get decompressed stream of an object by xref
         // Throws exception if not a stream.
-        /*********************************************************************/
+        //---------------------------------------------------------------------
         FITZEXCEPTION(_getXrefStream, !result)
         CLOSECHECK(_getXrefStream)
         PyObject *_getXrefStream(int xref)
@@ -1356,9 +1412,9 @@ if links:
             return r;
         }
 
-        /*********************************************************************/
-        // Update an Xref Number with a new Object given as a string
-        /*********************************************************************/
+        //---------------------------------------------------------------------
+        // Update an Xref number with a new object given as a string
+        //---------------------------------------------------------------------
         FITZEXCEPTION(_updateObject, !result)
         CLOSECHECK(_updateObject)
         PyObject *_updateObject(int xref, char *text, struct fz_page_s *page = NULL)
@@ -1449,9 +1505,9 @@ if links:
             return NONE;
         }
 
-        /*********************************************************************/
+        //---------------------------------------------------------------------
         // Initialize document: set outline and metadata properties
-        /*********************************************************************/
+        //---------------------------------------------------------------------
         %pythoncode %{
             def initData(self):
                 if self.isEncrypted:
@@ -2982,37 +3038,41 @@ struct fz_pixmap_s
         fz_pixmap_s(struct fz_pixmap_s *spix, int alpha = 1)
         {
             fz_pixmap *pm = NULL;
-            int n, w, h, balen, i, j, l;
+            int n, w, h, i;
             fz_separations *seps = NULL;
             fz_try(gctx)
             {
-                if (alpha < 0 || alpha > 1) THROWMSG("illegal alpha value");
+                if (alpha < 0 || alpha > 1)
+                    THROWMSG("illegal alpha value");
+                fz_colorspace *cs = fz_pixmap_colorspace(gctx, spix);
+                if (!cs && !alpha)
+                    THROWMSG("cannot drop alpha for 'NULL' colorspace");
                 n = fz_pixmap_colorants(gctx, spix);
                 w = fz_pixmap_width(gctx, spix);
                 h = fz_pixmap_height(gctx, spix);
-                fz_colorspace *cs = fz_pixmap_colorspace(gctx, spix);
                 pm = fz_new_pixmap(gctx, cs, w, h, seps, alpha);
                 pm->x = spix->x;
                 pm->y = spix->y;
                 pm->xres = spix->xres;
                 pm->yres = spix->yres;
-                balen = w * h * (n + alpha);
-                // copy samples data
-                if (spix->alpha == pm->alpha)
-                    memcpy(pm->samples, spix->samples, (size_t) balen);
+
+                // copy samples data ------------------------------------------
+                unsigned char *sptr = spix->samples;
+                unsigned char *tptr = pm->samples;
+                if (spix->alpha == pm->alpha)    // identical samples ---------
+                    memcpy(tptr, sptr, w * h * (n + alpha));
                 else
                 {
-                    i = j = 0;
-                    while (i < balen)
+                    for (i = 0; i < w * h; i++)
                     {
-                        for (l=0; l < n; l++)
-                            pm->samples[i+l] = spix->samples[j+l];
-
-                        if (pm->alpha == 1)
-                            pm->samples[i+n] = 255;
-
-                        i += n + pm->alpha;
-                        j += n + spix->alpha;
+                        memcpy(tptr, sptr, n);
+                        tptr += n;
+                        if (pm->alpha)
+                        {
+                            tptr[0] = 255;
+                            tptr++;
+                        }
+                        sptr += n + spix->alpha;
                     }
                 }
             }
@@ -3138,9 +3198,9 @@ struct fz_pixmap_s
             fz_subsample_pixmap(gctx, $self, factor);
         }
 
-        /***************************/
-        /* apply gamma correction  */
-        /***************************/
+        //---------------------------------------------------------------------
+        // apply gamma correction
+        //---------------------------------------------------------------------
         void gammaWith(float gamma)
         {
             if (!fz_pixmap_colorspace(gctx, $self))
@@ -3151,9 +3211,9 @@ struct fz_pixmap_s
             fz_gamma_pixmap(gctx, $self, gamma);
         }
 
-        /***************************/
-        /* tint pixmap with color  */
-        /***************************/
+        //---------------------------------------------------------------------
+        // tint pixmap with color
+        //---------------------------------------------------------------------
         %pythonprepend tintWith%{
             if not self.colorspace or self.colorspace.n > 3:
                 print("warning: colorspace invalid for function")
@@ -3310,7 +3370,7 @@ struct fz_pixmap_s
                 out = fz_new_output_with_buffer(gctx, res);
                 fz_write_pixmap_as_png(gctx, out, $self);
                 len = fz_buffer_storage(gctx, res, &c);
-                r = PyByteArray_FromStringAndSize(c, len);
+                r = JM_BinFromCharSize(c, len);
             }
             fz_always(gctx)
             {
@@ -5029,8 +5089,8 @@ struct fz_stext_page_s {
         // Get text blocks with their bbox and concatenated lines 
         // as a Python list
         //---------------------------------------------------------------------
-        FITZEXCEPTION(_extractTextLines_AsList, !result)
-        PyObject *_extractTextLines_AsList()
+        FITZEXCEPTION(_extractTextBlocks_AsList, !result)
+        PyObject *_extractTextBlocks_AsList()
         {
             fz_stext_block *block;
             fz_stext_line *line;
@@ -5111,99 +5171,76 @@ struct fz_stext_page_s {
             fz_stext_block *block;
             fz_stext_line *line;
             fz_stext_char *ch;
-            char word[128];
+            fz_buffer *buff = NULL;
+            size_t buflen = 0;
+            char *word;
             char utf[10];
-            int i, n;
-            long block_n, line_n, word_n;
-            block_n = line_n = word_n = 0;
-            Py_ssize_t char_n;
+            int i, n, block_n = 0, line_n, word_n;
             PyObject *lines = PyList_New(0);
             PyObject *litem;
             float c_x0, c_y0, c_x1, c_y1;
             for (block = $self->first_block; block; block = block->next)
             {
-                if (block->type == FZ_STEXT_BLOCK_TEXT)
+                if (block->type != FZ_STEXT_BLOCK_TEXT)
                 {
-                    line_n = 0;
-                    for (line = block->u.t.first_line; line; line = line->next)
+                    block_n++;
+                    continue;
+                }
+                line_n = 0;
+                for (line = block->u.t.first_line; line; line = line->next)
+                {
+                    word_n = 0;           // word counter per line
+                    buff = NULL;          // reset word buffer
+                    buflen = 0;           // reset char counter
+                    c_x0 = line->bbox.x0; // start of 1st word of line
+                    c_x1 = c_x0;          // initialize word end
+                    c_y0 = line->bbox.y0; // line baseline - never changes
+                    c_y1 = c_y0;          // initialize word height
+                    for (ch = line->first_char; ch; ch = ch->next)
                     {
-                        word_n = 0;           // word counter per line
-                        c_x0 = line->bbox.x0; // start of 1st word of line
-                        c_x1 = c_x0;          // initialize word end
-                        c_y0 = line->bbox.y0; // line baseline - never changes
-                        c_y1 = c_y0;          // initialize word height
-                        char_n = 0;           // reset char counter
-                        for (ch = line->first_char; ch; ch = ch->next)
-                        {
-                            if ((ch->c == 32 && char_n > 0) || char_n >= 127)
-                            // if space char or word too long, store what we have so far
-                            {
-                                litem = PyList_New(0);
-                                PyList_Append(litem, PyFloat_FromDouble((double) c_x0));
-                                PyList_Append(litem, PyFloat_FromDouble((double) c_y0));
-                                PyList_Append(litem, PyFloat_FromDouble((double) c_x1));
-                                PyList_Append(litem, PyFloat_FromDouble((double) c_y1));
-                                PyList_Append(litem, JM_UNICODE(word, char_n));
-                                PyList_Append(litem, PyInt_FromLong(block_n));
-                                PyList_Append(litem, PyInt_FromLong(line_n));
-                                PyList_Append(litem, PyInt_FromLong(word_n));
-                                PyList_Append(lines, litem);
-                                Py_DECREF(litem);
-                                word_n += 1;        // word counter
-                                c_x0 = ch->bbox.x1; // start pos. of next word
-                                c_y1 = c_y0;        // initialize word height
-                                char_n = 0;         // reset char counter
-                                continue;
-                            }
-                            // append one unicode character to the word
-                            if (ch->bbox.y1 > c_y1)
-                                c_y1 = ch->bbox.y1; // adjust word height
-                            c_x1 = ch->bbox.x1;     // adjust end of word
-                            n = fz_runetochar(utf, ch->c);
-                            for (i = 0; i < n; i++)
-                            {
-                                word[char_n] = utf[i];
-                                char_n += 1;
-                                word[char_n] = 0;     // indicate end-of-string
-                            }
-                        }
-                        if (char_n > 0) // store any remaining stuff in word
-                        {
-                            litem = PyList_New(0);
-                            PyList_Append(litem, PyFloat_FromDouble((double) c_x0));
-                            PyList_Append(litem, PyFloat_FromDouble((double) c_y0));
-                            PyList_Append(litem, PyFloat_FromDouble((double) c_x1));
-                            PyList_Append(litem, PyFloat_FromDouble((double) c_y1));
-                            PyList_Append(litem, JM_UNICODE(word, char_n));
-                            PyList_Append(litem, PyInt_FromLong(block_n));
-                            PyList_Append(litem, PyInt_FromLong(line_n));
-                            PyList_Append(litem, PyInt_FromLong(word_n));
+                        if (ch->c == 32 && buflen == 0) continue;
+                        if (ch->c == 32)
+                        { // if space char: finish the word
+                            buflen = fz_buffer_storage(gctx, buff, &word);
+                            litem = Py_BuildValue("[ffffOiii]", c_x0, c_y0, c_x1, c_y1,
+                                                                JM_UNICODE(word, buflen),
+                                                                block_n, line_n, word_n);
                             PyList_Append(lines, litem);
                             Py_DECREF(litem);
+                            word_n++;            // word counter
+                            c_x0 = ch->bbox.x1;  // start pos. of next word
+                            c_y1 = c_y0;         // initialize word height
+                            fz_drop_buffer(gctx, buff);
+                            buff = NULL;
+                            buflen = 0;          // reset char counter
+                            continue;
                         }
-                        line_n += 1;
+                        // append one unicode character to the word
+                        if (!buff) buff = fz_new_buffer(gctx, 64);
+                        c_y1 = MAX(ch->bbox.y1, c_y1);     // adjust word height
+                        c_x1 = ch->bbox.x1;                // adjust end of word
+                        n = fz_runetochar(utf, ch->c);
+                        buflen += n;
+                        for (i = 0; i < n; i++)
+                            fz_append_byte(gctx, buff, utf[i]);
                     }
-                    block_n += 1;
+                    if (buff)                    // store any remaining word
+                    {
+                        buflen = fz_buffer_storage(gctx, buff, &word);
+                        litem = Py_BuildValue("[ffffOiii]", c_x0, c_y0, c_x1, c_y1,
+                                                            JM_UNICODE(word, buflen),
+                                                            block_n, line_n, word_n);
+                        PyList_Append(lines, litem);
+                        Py_DECREF(litem);
+                        fz_drop_buffer(gctx, buff);
+                        buff = NULL;
+                        buflen = 0;
+                    }
+                    line_n++;
                 }
+                block_n++;
             }
             return lines;
-        }
-
-        //---------------------------------------------------------------------
-        // Get raw text between two points on a text page
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(_extractTextLines, !result)
-        const char *_extractTextLines(struct fz_point_s *p1, struct fz_point_s *p2)
-        {
-            char *c = NULL;
-            fz_point a = {p1->x, p1->y};
-            fz_point b = {p2->x, p2->y};
-            fz_try(gctx)
-            {
-                c = fz_copy_selection(gctx, $self, a, b, 0);
-            }
-            fz_catch(gctx) return NULL;
-            return c;
         }
 
         //---------------------------------------------------------------------
@@ -5211,6 +5248,18 @@ struct fz_stext_page_s {
         //---------------------------------------------------------------------
         FITZEXCEPTION(_extractText, !result)
         %newobject _extractText;
+        %pythonappend _extractText %{
+            if format != 2:
+                return val
+            import base64, json
+            
+            def convertb64(s):
+                if str is bytes:
+                    return base64.b64encode(s)
+                return base64.b64encode(s).decode()
+            
+            val = json.dumps(val, separators=(",", ":"), default=convertb64)
+        %}
         PyObject *_extractText(int format)
         {
             fz_buffer *res = NULL;
@@ -5228,7 +5277,7 @@ struct fz_stext_page_s {
                         fz_print_stext_page_as_html(gctx, out, $self);
                         break;
                     case(2):
-                        DG_print_stext_page_as_json(gctx, out, $self);
+                        text = JM_stext_page_as_dict(gctx, $self);
                         break;
                     case(3):
                         fz_print_stext_page_as_xml(gctx, out, $self);
@@ -5236,19 +5285,27 @@ struct fz_stext_page_s {
                     case(4):
                         fz_print_stext_page_as_xhtml(gctx, out, $self);
                         break;
+                    case(5):
+                        text = JM_stext_page_as_dict(gctx, $self);
+                        break;
                     default:
                         JM_print_stext_page_as_text(gctx, out, $self);
+                        break;
                 }
-                res_len = fz_buffer_storage(gctx, res, &data);
-                text = JM_UNICODE(data, res_len);
-                fz_drop_buffer(gctx, res);
+                if (!text)
+                {
+                    res_len = fz_buffer_storage(gctx, res, &data);
+                    text = JM_UNICODE(data, res_len);
+                }
+                
             }
-            fz_always(gctx) fz_drop_output(gctx, out);
-            fz_catch(gctx)
+            fz_always(gctx)
             {
                 fz_drop_buffer(gctx, res);
-                return NULL;
+                fz_drop_output(gctx, out);
             }
+            fz_catch(gctx) return NULL;
+
             return text;
         }
         %pythoncode %{
@@ -5266,6 +5323,9 @@ struct fz_stext_page_s {
 
             def extractXHTML(self):
                 return self._extractText(4)
+
+            def extractDICT(self):
+                return self._extractText(5)
 
             def __del__(self):
                 if not type(self) is TextPage: return
