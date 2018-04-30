@@ -46,7 +46,7 @@ script:
 - cibuildwheel --output-dir wheelhouse
 
 before_deploy:
- - git tag "v1.13.1"
+ - git tag "1.13.1"
 deploy:
   provider: releases
   api_key:
