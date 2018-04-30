@@ -10,6 +10,7 @@ Program | Purpose
 [extract-img1.py](https://github.com/rk700/pymupdf/demo/extract_img1.py) | PDF only: extracts all **page-referenced** images as PNG files
 [extract-img2.py](https://github.com/rk700/pymupdf/demo/extract_img2.py) | PDF only: extracts **all** (valid) images as PNG files
 [extract-img3.py](https://github.com/rk700/pymupdf/demo/extract_img3.py) | PDF only: extracts page images using raw image buffers (variable extensions)
+[extract-img4.py](https://github.com/rk700/pymupdf/demo/extract_img4.py) | Any Document type: extracts page images (with variable extensions) using the v1.13.1 getText("dict") method
 [fitz2PIL.py](https://github.com/rk700/pymupdf/demo/fitz2PIL.py) | save a pixmap as a PIL / Pillow supported file
 [PIL2fitz.py](https://github.com/rk700/pymupdf/demo/PIL2fitz.py) | create a pixmap from any PIL / Pillow supported file
 [numpy2fitz.py](https://github.com/rk700/pymupdf/demo/numpy2fitz.py) | how to create pixmaps from NumPy arrays
