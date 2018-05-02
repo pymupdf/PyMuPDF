@@ -4,6 +4,7 @@
 Program | Purpose
 ------- | -------
 [caustic.py](https://github.com/rk700/pymupdf/demo/caustic.py) | demo producing a PDF with a caustic image
+[check-fields.py](https://github.com/rk700/pymupdf/demo/check-fields.py) | prints field information for a Form PDF
 [demo.py](https://github.com/rk700/pymupdf/demo/demo.py) | demonstrates a broad range of PyMuPDF high-level functions
 [demo-lowlevel.py](https://github.com/rk700/pymupdf/demo/demo-lowlevel.py) | demonstrates PyMuPDF low-level functions
 [draw-sines.py](https://github.com/rk700/pymupdf/demo/draw-sines.py) | draw sine / cosine functions

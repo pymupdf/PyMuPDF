@@ -102,9 +102,9 @@ import sys
 
 
 VersionFitz = "1.13.0"
-VersionBind = "1.13.1"
-VersionDate = "2018-04-30 13:14:15"
-version = (VersionBind, VersionFitz, "20180430131415")
+VersionBind = "1.13.2"
+VersionDate = "2018-05-02 09:39:09"
+version = (VersionBind, VersionFitz, "20180502093909")
 
 
 #------------------------------------------------------------------------------
@@ -897,6 +897,15 @@ open(filename, filetype=None) - from file"""
         self.initData()
 
         return val
+
+    @property
+
+    def isFormPDF(self):
+        """isFormPDF(self) -> PyObject *"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document_isFormPDF(self)
 
 
     def _getOLRootNumber(self):
@@ -2311,6 +2320,30 @@ class Annot(_object):
         CheckParent(self)
 
         return _fitz.Annot_type(self)
+
+    @property
+
+    def widget_type(self):
+        """widget_type(self) -> PyObject *"""
+        CheckParent(self)
+
+        return _fitz.Annot_widget_type(self)
+
+    @property
+
+    def widget_text(self):
+        """widget_text(self) -> PyObject *"""
+        CheckParent(self)
+
+        return _fitz.Annot_widget_text(self)
+
+    @property
+
+    def widget_name(self):
+        """widget_name(self) -> PyObject *"""
+        CheckParent(self)
+
+        return _fitz.Annot_widget_name(self)
 
 
     def fileInfo(self):
