@@ -3294,7 +3294,6 @@ JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block)
     float size = 0;
     int sup = 0, n = 0, i = 0;
     size_t len = 0;
-    char utf[10];
     PyObject *span = NULL, *spanlist = NULL, *linelist = NULL, *linedict;
     linelist = PyList_New(0);
     PyObject *dict = PyDict_New();
@@ -3336,10 +3335,7 @@ JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block)
                 buff = fz_new_buffer(ctx, 64);
                 JM_style_begin_dict(ctx, span, font, size, sup);
             }
-
-            n = fz_runetochar(utf, ch->c);
-            for (i = 0; i < n; i++)
-                fz_append_byte(ctx, buff, utf[i]);
+            fz_append_rune(ctx, buff, ch->c);
         }
         if (font)
         {
@@ -5992,6 +5988,18 @@ SWIGINTERN PyObject *fz_document_s__delToC(struct fz_document_s *self){
             free(res);
             return xrefs;
         }
+SWIGINTERN PyObject *fz_document_s_isFormPDF(struct fz_document_s *self){
+            pdf_document *pdf = pdf_specifics(gctx, self);
+            if (!pdf) Py_RETURN_FALSE;
+            pdf_obj *form = NULL;
+            fz_try(gctx)
+            {
+                form = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root, PDF_NAME_AcroForm, NULL);
+            }
+            fz_catch(gctx) Py_RETURN_FALSE;
+            if (!form) Py_RETURN_FALSE;
+            Py_RETURN_TRUE;
+        }
 SWIGINTERN int fz_document_s__getOLRootNumber(struct fz_document_s *self){
             pdf_document *pdf = pdf_specifics(gctx, self);
             fz_try(gctx) assert_PDF(pdf);
@@ -7807,9 +7815,42 @@ SWIGINTERN PyObject *fz_annot_s_type(struct fz_annot_s *self){
             char *c = annot_type_str(type);
             pdf_obj *o = pdf_dict_gets(gctx, annot->obj, "IT");
             if (!o || !pdf_is_name(gctx, o))
-                return Py_BuildValue("(is)", type, c);         // no IT entry
+                return Py_BuildValue("is", type, c);         // no IT entry
             const char *it = pdf_to_name(gctx, o);
-            return Py_BuildValue("(iss)", type, c, it);
+            return Py_BuildValue("iss", type, c, it);
+        }
+SWIGINTERN PyObject *fz_annot_s_widget_type(struct fz_annot_s *self){
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
+            int wtype = PDF_WIDGET_TYPE_NOT_WIDGET;
+            if (!annot) return Py_BuildValue("is", wtype, "");
+
+            wtype = pdf_field_type(gctx, pdf_get_bound_document(gctx, annot->obj), annot->obj);
+
+            return Py_BuildValue("is", wtype, pdf_to_name(gctx, pdf_get_inheritable(gctx, pdf_get_bound_document(gctx, annot->obj), annot->obj, PDF_NAME_FT)));
+        }
+SWIGINTERN PyObject *fz_annot_s_widget_text(struct fz_annot_s *self){
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
+            if (!annot) return Py_BuildValue("s", "");             // not a PDF
+            if (pdf_annot_type(gctx, annot) != PDF_ANNOT_WIDGET)
+                return Py_BuildValue("s", "");
+            int wtype = pdf_field_type(gctx, pdf_get_bound_document(gctx, annot->obj), annot->obj);
+            char *text = NULL;
+            fz_var(text);
+            fz_try(gctx)
+                text = pdf_field_value(gctx,
+                                       pdf_get_bound_document(gctx, annot->obj),
+                                       annot->obj);
+            fz_catch(gctx) return Py_BuildValue("s", "");
+            return Py_BuildValue("s", text);
+        }
+SWIGINTERN PyObject *fz_annot_s_widget_name(struct fz_annot_s *self){
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
+            if (!annot) return Py_BuildValue("s", "");
+            if (pdf_annot_type(gctx, annot) != PDF_ANNOT_WIDGET)
+                return Py_BuildValue("s", "");
+            return Py_BuildValue("s", pdf_field_name(gctx,
+                                      pdf_get_bound_document(gctx, annot->obj),
+                                      annot->obj));
         }
 SWIGINTERN PyObject *fz_annot_s_fileInfo(struct fz_annot_s *self){
             PyObject *res = PyDict_New();             // create Python dict
@@ -8326,69 +8367,52 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextBlocks_AsList(struct fz_stext_p
             fz_stext_block *block;
             fz_stext_line *line;
             fz_stext_char *ch;
-            int last_char = 0;
-            char utf[10];
-            int i, n;
-            long block_n = 0;
+            int block_n = 0;
             PyObject *lines = PyList_New(0);
-            PyObject *text = NULL;
+            PyObject *text = NULL, *litem;
             fz_buffer *res = NULL;
-            fz_output *out = NULL;
             size_t res_len = 0;
             unsigned char *data;
             for (block = self->first_block; block; block = block->next)
             {
-                PyObject *litem = PyList_New(0);
-                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.x0));
-                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.y0));
-                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.x1));
-                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.y1));
                 if (block->type == FZ_STEXT_BLOCK_TEXT)
                 {
                     fz_try(gctx)
                     {
                         res = fz_new_buffer(gctx, 1024);
-                        out = fz_new_output_with_buffer(gctx, res);
+                        int line_n = 0;
+                        for (line = block->u.t.first_line; line; line = line->next)
+                        {
+                            // append line no. 2+ with new-line 
+                            if (line_n > 0)
+                                fz_append_string(gctx, res, "\n");
+                            line_n++;
+                            for (ch = line->first_char; ch; ch = ch->next)
+                                fz_append_rune(gctx, res, ch->c);
+                        }
+                        res_len = fz_buffer_storage(gctx, res, &data);
+                        text = JM_UNICODE(data, res_len);
                     }
-                    fz_catch(gctx)
+                    fz_always(gctx)
                     {
                         fz_drop_buffer(gctx, res);
-                        fz_drop_output(gctx, out);
-                        return NULL;
+                        res = NULL;
                     }
-                    int line_n = 0;
-                    for (line = block->u.t.first_line; line; line = line->next)
-                    {
-                        // append subsequent lines
-                        if (line_n > 0)
-                            fz_write_string(gctx, out, "\n");
-                        line_n += 1;
-                        for (ch = line->first_char; ch; ch = ch->next)
-                        {
-                            last_char = ch->c;
-                            n = fz_runetochar(utf, ch->c);
-                            for (i = 0; i < n; i++)
-                                fz_write_byte(gctx, out, utf[i]);
-                        }
-                    }
-                    res_len = fz_buffer_storage(gctx, res, &data);
-                    text = JM_UNICODE(data, res_len);
-                    PyList_Append(litem, text);
-                    fz_drop_buffer(gctx, res);
-                    fz_drop_output(gctx,out);
+                    fz_catch(gctx) return NULL;
                 }
                 else
                 {
                     fz_image *img = block->u.i.image;
                     fz_colorspace *cs = img->colorspace;
-                    PyList_Append(litem, PyUnicode_FromFormat("<image: %s, width %d, height %d, bpc %d>",
-                                         fz_colorspace_name(gctx, cs), img->w, img->h, img->bpc));
+                    text = PyUnicode_FromFormat("<image: %s, width %d, height %d, bpc %d>", fz_colorspace_name(gctx, cs), img->w, img->h, img->bpc);
                 }
-                PyList_Append(litem, PyInt_FromLong(block_n));
-                PyList_Append(litem, PyInt_FromLong((long) block->type));
+                litem = Py_BuildValue("ffffOii", block->bbox.x0, block->bbox.y0,
+                                      block->bbox.x1, block->bbox.y1,
+                                      text, block_n, block->type);
                 PyList_Append(lines, litem);
                 Py_DECREF(litem);
-                block_n += 1;
+                Py_DECREF(text);
+                block_n++;
             }
             return lines;
         }
@@ -8399,7 +8423,6 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextWords_AsList(struct fz_stext_pa
             fz_buffer *buff = NULL;
             size_t buflen = 0;
             char *word;
-            char utf[10];
             int i, n, block_n = 0, line_n, word_n;
             PyObject *lines = PyList_New(0);
             PyObject *litem;
@@ -8425,7 +8448,7 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextWords_AsList(struct fz_stext_pa
                     {
                         if (ch->c == 32 && buflen == 0) continue;
                         if (ch->c == 32)
-                        { // if space char: finish the word
+                        { // --> finish the word
                             buflen = fz_buffer_storage(gctx, buff, &word);
                             litem = Py_BuildValue("[ffffOiii]", c_x0, c_y0, c_x1, c_y1,
                                                                 JM_UNICODE(word, buflen),
@@ -8444,10 +8467,9 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextWords_AsList(struct fz_stext_pa
                         if (!buff) buff = fz_new_buffer(gctx, 64);
                         c_y1 = MAX(ch->bbox.y1, c_y1);     // adjust word height
                         c_x1 = ch->bbox.x1;                // adjust end of word
-                        n = fz_runetochar(utf, ch->c);
-                        buflen += n;
-                        for (i = 0; i < n; i++)
-                            fz_append_byte(gctx, buff, utf[i]);
+
+                        fz_append_rune(gctx, buff, ch->c);
+                        buflen++;
                     }
                     if (buff)                    // store any remaining word
                     {
@@ -10238,6 +10260,28 @@ SWIGINTERN PyObject *_wrap_Document__delToC(PyObject *SWIGUNUSEDPARM(self), PyOb
   }
   arg1 = (struct fz_document_s *)(argp1);
   result = (PyObject *)fz_document_s__delToC(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document_isFormPDF(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Document_isFormPDF",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_isFormPDF" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  result = (PyObject *)fz_document_s_isFormPDF(arg1);
   resultobj = result;
   return resultobj;
 fail:
@@ -16706,6 +16750,72 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Annot_widget_type(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Annot_widget_type",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_annot_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot_widget_type" "', argument " "1"" of type '" "struct fz_annot_s *""'"); 
+  }
+  arg1 = (struct fz_annot_s *)(argp1);
+  result = (PyObject *)fz_annot_s_widget_type(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Annot_widget_text(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Annot_widget_text",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_annot_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot_widget_text" "', argument " "1"" of type '" "struct fz_annot_s *""'"); 
+  }
+  arg1 = (struct fz_annot_s *)(argp1);
+  result = (PyObject *)fz_annot_s_widget_text(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Annot_widget_name(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Annot_widget_name",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_annot_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot_widget_name" "', argument " "1"" of type '" "struct fz_annot_s *""'"); 
+  }
+  arg1 = (struct fz_annot_s *)(argp1);
+  result = (PyObject *)fz_annot_s_widget_name(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Annot_fileInfo(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
@@ -17931,6 +18041,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document_extractFont", _wrap_Document_extractFont, METH_VARARGS, (char *)"Document_extractFont(self, xref=0, info_only=0) -> PyObject *"},
 	 { (char *)"Document_extractImage", _wrap_Document_extractImage, METH_VARARGS, (char *)"Document_extractImage(self, xref=0) -> PyObject *"},
 	 { (char *)"Document__delToC", _wrap_Document__delToC, METH_VARARGS, (char *)"Document__delToC(self) -> PyObject *"},
+	 { (char *)"Document_isFormPDF", _wrap_Document_isFormPDF, METH_VARARGS, (char *)"Document_isFormPDF(self) -> PyObject *"},
 	 { (char *)"Document__getOLRootNumber", _wrap_Document__getOLRootNumber, METH_VARARGS, (char *)"Document__getOLRootNumber(self) -> int"},
 	 { (char *)"Document__getNewXref", _wrap_Document__getNewXref, METH_VARARGS, (char *)"Document__getNewXref(self) -> int"},
 	 { (char *)"Document__getXrefLength", _wrap_Document__getXrefLength, METH_VARARGS, (char *)"Document__getXrefLength(self) -> int"},
@@ -18145,6 +18256,9 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Annot_lineEnds", _wrap_Annot_lineEnds, METH_VARARGS, (char *)"Annot_lineEnds(self) -> PyObject *"},
 	 { (char *)"Annot_setLineEnds", _wrap_Annot_setLineEnds, METH_VARARGS, (char *)"Annot_setLineEnds(self, start, end)"},
 	 { (char *)"Annot_type", _wrap_Annot_type, METH_VARARGS, (char *)"Annot_type(self) -> PyObject *"},
+	 { (char *)"Annot_widget_type", _wrap_Annot_widget_type, METH_VARARGS, (char *)"Annot_widget_type(self) -> PyObject *"},
+	 { (char *)"Annot_widget_text", _wrap_Annot_widget_text, METH_VARARGS, (char *)"Annot_widget_text(self) -> PyObject *"},
+	 { (char *)"Annot_widget_name", _wrap_Annot_widget_name, METH_VARARGS, (char *)"Annot_widget_name(self) -> PyObject *"},
 	 { (char *)"Annot_fileInfo", _wrap_Annot_fileInfo, METH_VARARGS, (char *)"Retrieve attached file information."},
 	 { (char *)"Annot_fileGet", _wrap_Annot_fileGet, METH_VARARGS, (char *)"Retrieve annotation attached file content."},
 	 { (char *)"Annot_fileUpd", _wrap_Annot_fileUpd, METH_VARARGS, (char *)"Update annotation attached file content."},

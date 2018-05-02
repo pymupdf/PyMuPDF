@@ -90,7 +90,6 @@ JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block)
     float size = 0;
     int sup = 0, n = 0, i = 0;
     size_t len = 0;
-    char utf[10];
     PyObject *span = NULL, *spanlist = NULL, *linelist = NULL, *linedict;
     linelist = PyList_New(0);
     PyObject *dict = PyDict_New();
@@ -132,10 +131,7 @@ JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block)
                 buff = fz_new_buffer(ctx, 64);
                 JM_style_begin_dict(ctx, span, font, size, sup);
             }
-
-            n = fz_runetochar(utf, ch->c);
-            for (i = 0; i < n; i++)
-                fz_append_byte(ctx, buff, utf[i]);
+            fz_append_rune(ctx, buff, ch->c);
         }
         if (font)
         {

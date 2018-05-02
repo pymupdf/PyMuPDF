@@ -1257,6 +1257,25 @@ if links:
         }
 
         //---------------------------------------------------------------------
+        // Check AcroForm
+        //---------------------------------------------------------------------
+        CLOSECHECK(isFormPDF)
+        %pythoncode%{@property%}
+        PyObject *isFormPDF()
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            if (!pdf) Py_RETURN_FALSE;
+            pdf_obj *form = NULL;
+            fz_try(gctx)
+            {
+                form = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root, PDF_NAME_AcroForm, NULL);
+            }
+            fz_catch(gctx) Py_RETURN_FALSE;
+            if (!form) Py_RETURN_FALSE;
+            Py_RETURN_TRUE;
+        }
+
+        //---------------------------------------------------------------------
         // Get Xref Number of Outline Root, create it if missing
         //---------------------------------------------------------------------
         FITZEXCEPTION(_getOLRootNumber, result<0)
@@ -4006,9 +4025,9 @@ struct fz_annot_s
             fz_drop_annot(gctx, $self);
             DEBUGMSG2;
         }
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // annotation rectangle
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(rect)
         %feature("autodoc","rect: rectangle containing the annot") rect;
         %pythoncode %{@property%}
@@ -4018,9 +4037,9 @@ struct fz_annot_s
             return fz_bound_annot(gctx, $self, r);
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // annotation get xref number
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(_getXref)
         %feature("autodoc","return xref number of annotation") _getXref;
         int _getXref()
@@ -4030,9 +4049,9 @@ struct fz_annot_s
             return pdf_to_num(gctx, annot->obj);
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // annotation get decompressed appearance stream source
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         FITZEXCEPTION(_getAP, !result)
         PARENTCHECK(_getAP)
         %feature("autodoc","Get contents source of a PDF annot") _getAP;
@@ -4055,9 +4074,9 @@ struct fz_annot_s
             return r;
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // annotation update appearance stream source
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         FITZEXCEPTION(_setAP, !result)
         PARENTCHECK(_setAP)
         %feature("autodoc","Update contents source of a PDF annot") _setAP;
@@ -4081,9 +4100,9 @@ struct fz_annot_s
             return NONE;
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // annotation set rectangle
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(setRect)
         %feature("autodoc","setRect: changes the annot's rectangle") setRect;
         void setRect(struct fz_rect_s *r)
@@ -4092,9 +4111,9 @@ struct fz_annot_s
             if (annot) pdf_set_annot_rect(gctx, annot, r);
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // annotation vertices (for "Line", "Polgon", "Ink", etc.
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(vertices)
         %feature("autodoc","vertices: point coordinates for various annot types") vertices;
         %pythoncode %{@property%}
@@ -4155,9 +4174,9 @@ struct fz_annot_s
             return res;
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // annotation colors
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(colors)
         %feature("autodoc","dictionary of the annot's colors") colors;
         %pythoncode %{@property%}
@@ -4210,9 +4229,9 @@ struct fz_annot_s
             return res;
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // annotation set colors
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(setColors)
         %feature("autodoc","setColors(dict)\nChanges the 'common' and 'fill' colors of an annotation. If provided, values must be lists of up to 4 floats.") setColors;
         void setColors(PyObject *colors)
@@ -4248,9 +4267,9 @@ struct fz_annot_s
             return;
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // annotation lineEnds
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(lineEnds)
         %pythoncode %{@property%}
         PyObject *lineEnds()
@@ -4278,9 +4297,9 @@ struct fz_annot_s
             return res;
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // annotation set line ends
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(setLineEnds)
         void setLineEnds(int start, int end)
         {
@@ -4298,9 +4317,9 @@ struct fz_annot_s
             }
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // annotation type
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(type)
         %pythoncode %{@property%}
         PyObject *type()
@@ -4311,14 +4330,68 @@ struct fz_annot_s
             char *c = annot_type_str(type);
             pdf_obj *o = pdf_dict_gets(gctx, annot->obj, "IT");
             if (!o || !pdf_is_name(gctx, o))
-                return Py_BuildValue("(is)", type, c);         // no IT entry
+                return Py_BuildValue("is", type, c);         // no IT entry
             const char *it = pdf_to_name(gctx, o);
-            return Py_BuildValue("(iss)", type, c, it);
+            return Py_BuildValue("iss", type, c, it);
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
+        // widget type
+        //---------------------------------------------------------------------
+        PARENTCHECK(widget_type)
+        %pythoncode %{@property%}
+        PyObject *widget_type()
+        {
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
+            int wtype = PDF_WIDGET_TYPE_NOT_WIDGET;
+            if (!annot) return Py_BuildValue("is", wtype, "");
+
+            wtype = pdf_field_type(gctx, pdf_get_bound_document(gctx, annot->obj), annot->obj);
+
+            return Py_BuildValue("is", wtype, pdf_to_name(gctx, pdf_get_inheritable(gctx, pdf_get_bound_document(gctx, annot->obj), annot->obj, PDF_NAME_FT)));
+        }
+
+        //---------------------------------------------------------------------
+        // widget text
+        //---------------------------------------------------------------------
+        PARENTCHECK(widget_text)
+        %pythoncode %{@property%}
+        PyObject *widget_text()
+        {
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
+            if (!annot) return Py_BuildValue("s", "");             // not a PDF
+            if (pdf_annot_type(gctx, annot) != PDF_ANNOT_WIDGET)
+                return Py_BuildValue("s", "");
+            int wtype = pdf_field_type(gctx, pdf_get_bound_document(gctx, annot->obj), annot->obj);
+            char *text = NULL;
+            fz_var(text);
+            fz_try(gctx)
+                text = pdf_field_value(gctx,
+                                       pdf_get_bound_document(gctx, annot->obj),
+                                       annot->obj);
+            fz_catch(gctx) return Py_BuildValue("s", "");
+            return Py_BuildValue("s", text);
+        }
+
+        //---------------------------------------------------------------------
+        // widget name
+        //---------------------------------------------------------------------
+        PARENTCHECK(widget_name)
+        %pythoncode %{@property%}
+        PyObject *widget_name()
+        {
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
+            if (!annot) return Py_BuildValue("s", "");
+            if (pdf_annot_type(gctx, annot) != PDF_ANNOT_WIDGET)
+                return Py_BuildValue("s", "");
+            return Py_BuildValue("s", pdf_field_name(gctx,
+                                      pdf_get_bound_document(gctx, annot->obj),
+                                      annot->obj));
+        }
+
+        //---------------------------------------------------------------------
         // annotation get attached file info
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         FITZEXCEPTION(fileInfo, !result)
         PARENTCHECK(fileInfo)
         %feature("autodoc","Retrieve attached file information.") fileInfo;
@@ -4363,9 +4436,9 @@ struct fz_annot_s
             return res;
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // annotation get attached file content
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         FITZEXCEPTION(fileGet, !result)
         PARENTCHECK(fileGet)
         %feature("autodoc","Retrieve annotation attached file content.") fileGet;
@@ -4445,9 +4518,9 @@ struct fz_annot_s
             return NONE;
         }
 
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         // annotation info
-        /**********************************************************************/
+        //---------------------------------------------------------------------
         PARENTCHECK(info)
         %pythoncode %{@property%}
         PyObject *info()
@@ -5095,69 +5168,52 @@ struct fz_stext_page_s {
             fz_stext_block *block;
             fz_stext_line *line;
             fz_stext_char *ch;
-            int last_char = 0;
-            char utf[10];
-            int i, n;
-            long block_n = 0;
+            int block_n = 0;
             PyObject *lines = PyList_New(0);
-            PyObject *text = NULL;
+            PyObject *text = NULL, *litem;
             fz_buffer *res = NULL;
-            fz_output *out = NULL;
             size_t res_len = 0;
             unsigned char *data;
             for (block = $self->first_block; block; block = block->next)
             {
-                PyObject *litem = PyList_New(0);
-                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.x0));
-                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.y0));
-                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.x1));
-                PyList_Append(litem, PyFloat_FromDouble((double) block->bbox.y1));
                 if (block->type == FZ_STEXT_BLOCK_TEXT)
                 {
                     fz_try(gctx)
                     {
                         res = fz_new_buffer(gctx, 1024);
-                        out = fz_new_output_with_buffer(gctx, res);
+                        int line_n = 0;
+                        for (line = block->u.t.first_line; line; line = line->next)
+                        {
+                            // append line no. 2+ with new-line 
+                            if (line_n > 0)
+                                fz_append_string(gctx, res, "\n");
+                            line_n++;
+                            for (ch = line->first_char; ch; ch = ch->next)
+                                fz_append_rune(gctx, res, ch->c);
+                        }
+                        res_len = fz_buffer_storage(gctx, res, &data);
+                        text = JM_UNICODE(data, res_len);
                     }
-                    fz_catch(gctx)
+                    fz_always(gctx)
                     {
                         fz_drop_buffer(gctx, res);
-                        fz_drop_output(gctx, out);
-                        return NULL;
+                        res = NULL;
                     }
-                    int line_n = 0;
-                    for (line = block->u.t.first_line; line; line = line->next)
-                    {
-                        // append subsequent lines
-                        if (line_n > 0)
-                            fz_write_string(gctx, out, "\n");
-                        line_n += 1;
-                        for (ch = line->first_char; ch; ch = ch->next)
-                        {
-                            last_char = ch->c;
-                            n = fz_runetochar(utf, ch->c);
-                            for (i = 0; i < n; i++)
-                                fz_write_byte(gctx, out, utf[i]);
-                        }
-                    }
-                    res_len = fz_buffer_storage(gctx, res, &data);
-                    text = JM_UNICODE(data, res_len);
-                    PyList_Append(litem, text);
-                    fz_drop_buffer(gctx, res);
-                    fz_drop_output(gctx,out);
+                    fz_catch(gctx) return NULL;
                 }
                 else
                 {
                     fz_image *img = block->u.i.image;
                     fz_colorspace *cs = img->colorspace;
-                    PyList_Append(litem, PyUnicode_FromFormat("<image: %s, width %d, height %d, bpc %d>",
-                                         fz_colorspace_name(gctx, cs), img->w, img->h, img->bpc));
+                    text = PyUnicode_FromFormat("<image: %s, width %d, height %d, bpc %d>", fz_colorspace_name(gctx, cs), img->w, img->h, img->bpc);
                 }
-                PyList_Append(litem, PyInt_FromLong(block_n));
-                PyList_Append(litem, PyInt_FromLong((long) block->type));
+                litem = Py_BuildValue("ffffOii", block->bbox.x0, block->bbox.y0,
+                                      block->bbox.x1, block->bbox.y1,
+                                      text, block_n, block->type);
                 PyList_Append(lines, litem);
                 Py_DECREF(litem);
-                block_n += 1;
+                Py_DECREF(text);
+                block_n++;
             }
             return lines;
         }
@@ -5174,7 +5230,6 @@ struct fz_stext_page_s {
             fz_buffer *buff = NULL;
             size_t buflen = 0;
             char *word;
-            char utf[10];
             int i, n, block_n = 0, line_n, word_n;
             PyObject *lines = PyList_New(0);
             PyObject *litem;
@@ -5200,7 +5255,7 @@ struct fz_stext_page_s {
                     {
                         if (ch->c == 32 && buflen == 0) continue;
                         if (ch->c == 32)
-                        { // if space char: finish the word
+                        { // --> finish the word
                             buflen = fz_buffer_storage(gctx, buff, &word);
                             litem = Py_BuildValue("[ffffOiii]", c_x0, c_y0, c_x1, c_y1,
                                                                 JM_UNICODE(word, buflen),
@@ -5219,10 +5274,9 @@ struct fz_stext_page_s {
                         if (!buff) buff = fz_new_buffer(gctx, 64);
                         c_y1 = MAX(ch->bbox.y1, c_y1);     // adjust word height
                         c_x1 = ch->bbox.x1;                // adjust end of word
-                        n = fz_runetochar(utf, ch->c);
-                        buflen += n;
-                        for (i = 0; i < n; i++)
-                            fz_append_byte(gctx, buff, utf[i]);
+
+                        fz_append_rune(gctx, buff, ch->c);
+                        buflen++;
                     }
                     if (buff)                    // store any remaining word
                     {
