@@ -36,18 +36,17 @@ matrix:
       prefix=/usr/local install && cd .."
     - export CIBW_ENVIRONMENT='CFLAGS=-fPIC'
 install:
-- "$PIP install wheel"
-- "$PIP install cibuildwheel==0.7.0"
+- "$PIP install cibuildwheel==0.7.2"
 - mkdir mupdf && wget -q $MUPDF -O - | tar zx -C mupdf --strip-components=1
 - cp fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
 script:
 - export CIBW_ENVIRONMENT='CFLAGS="-fPIC -std=gnu99"'
-- export CIBW_SKIP="cp27-macosx* cp33-* *i686"
+- export CIBW_SKIP="cp33-* *i686"
 - export CIBW_TEST_COMMAND="python -c 'import fitz'"
 - cibuildwheel --output-dir wheelhouse
 
 before_deploy:
- - git tag "1.13.2"
+ - git tag "1.13.3"
 deploy:
   provider: releases
   api_key:
