@@ -4781,6 +4781,83 @@ void JM_ScanResources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
 }
 
 
+
+//-----------------------------------------------------------------------------
+// convert a document to a PDF
+//-----------------------------------------------------------------------------
+PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc)
+{
+    pdf_document *pdfout = pdf_create_document(ctx);
+    int pageCount = fz_count_pages(ctx, doc);
+    fz_rect mediabox;
+    fz_device *dev = NULL;
+    fz_buffer *contents = NULL;
+    pdf_obj *resources = NULL;
+    fz_page *page;
+    int i;
+    for (i = 0; i < pageCount; i++)
+    {
+        fz_try(ctx)
+        {
+            page = fz_load_page(ctx, doc, i);
+            fz_bound_page(ctx, page, &mediabox);
+            dev = pdf_page_write(ctx, pdfout, &mediabox, &resources, &contents);
+            fz_run_page(ctx, page, dev, &fz_identity, NULL);
+            fz_close_device(ctx, dev);
+            fz_drop_device(ctx, dev);
+            dev = NULL;
+            pdf_obj *page_obj = pdf_add_page(ctx, pdfout, &mediabox, 0, resources, contents);
+            pdf_insert_page(ctx, pdfout, -1, page_obj);
+            pdf_drop_obj(ctx, page_obj);
+        }
+        fz_always(ctx)
+        {
+            pdf_drop_obj(ctx, resources);
+            fz_drop_buffer(ctx, contents);
+            fz_drop_device(ctx, dev);
+        }
+        fz_catch(ctx)
+        {
+            fz_drop_page(ctx, page);
+            fz_rethrow(ctx);
+        }
+    }
+    unsigned char *c;
+    PyObject *r;
+    size_t len;
+    fz_buffer *res = NULL;
+    fz_output *out = NULL;
+    int errors = 0;
+    pdf_write_options opts;
+    opts.do_incremental = 0;
+    opts.do_ascii = 0;
+    opts.do_compress = 1;
+    opts.do_compress_images = 1;
+    opts.do_compress_fonts = 1;
+    opts.do_decompress = 0;
+    opts.do_garbage = 4;
+    opts.do_linear = 0;
+    opts.do_clean = 0;
+    opts.do_pretty = 0;
+    opts.continue_on_error = 1;
+    opts.errors = &errors;
+    fz_try(ctx)
+    {
+        res = fz_new_buffer(ctx, 1024);
+        out = fz_new_output_with_buffer(ctx, res);
+        pdf_write_document(ctx, pdfout, out, &opts);
+        len = fz_buffer_storage(ctx, res, &c);
+        r = PyBytes_FromStringAndSize(c, len);
+    }
+    fz_always(ctx)
+    {
+        fz_drop_output(ctx, out);
+        fz_drop_buffer(ctx, res);
+    }
+    fz_catch(ctx) fz_rethrow(ctx);
+    return r;
+}
+
 SWIGINTERN void delete_fz_document_s(struct fz_document_s *self){
             DEBUGMSG1("document w/o close");
             fz_drop_document(gctx, self);
@@ -5365,6 +5442,15 @@ SWIGINTERN int fz_document_s_embeddedFileAdd(struct fz_document_s *self,PyObject
             }
             fz_catch(gctx) return -1;
             return entry;
+        }
+SWIGINTERN PyObject *fz_document_s_convertToPDF(struct fz_document_s *self){
+            PyObject *doc;
+            fz_try(gctx)
+            {
+                doc = JM_convert_to_pdf(gctx, self);
+            }
+            fz_catch(gctx) return NULL;
+            return doc;
         }
 SWIGINTERN int fz_document_s_pageCount(struct fz_document_s *self){
             return fz_count_pages(gctx, self);
@@ -5992,12 +6078,19 @@ SWIGINTERN PyObject *fz_document_s_isFormPDF(struct fz_document_s *self){
             pdf_document *pdf = pdf_specifics(gctx, self);
             if (!pdf) Py_RETURN_FALSE;
             pdf_obj *form = NULL;
+            pdf_obj *fields = NULL;
+            int have_form = 0;
             fz_try(gctx)
             {
                 form = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root, PDF_NAME_AcroForm, NULL);
+                if (form)
+                {
+                    fields = pdf_dict_get(gctx, form, PDF_NAME_Fields);
+                    if (fields && pdf_array_len(gctx, fields) > 0) have_form = 1;
+                }
             }
             fz_catch(gctx) Py_RETURN_FALSE;
-            if (!form) Py_RETURN_FALSE;
+            if (!have_form) Py_RETURN_FALSE;
             Py_RETURN_TRUE;
         }
 SWIGINTERN int fz_document_s__getOLRootNumber(struct fz_document_s *self){
@@ -9127,6 +9220,35 @@ fail:
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
   if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document_convertToPDF(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Document_convertToPDF",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_convertToPDF" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  {
+    result = (PyObject *)fz_document_s_convertToPDF(arg1);
+    if(!result)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = result;
+  return resultobj;
+fail:
   return NULL;
 }
 
@@ -18018,6 +18140,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document_embeddedFileSetInfo", _wrap_Document_embeddedFileSetInfo, METH_VARARGS, (char *)"Change filename or description of embedded file given its entry number or name."},
 	 { (char *)"Document_embeddedFileGet", _wrap_Document_embeddedFileGet, METH_VARARGS, (char *)"Retrieve embedded file content given its entry number or name."},
 	 { (char *)"Document_embeddedFileAdd", _wrap_Document_embeddedFileAdd, METH_VARARGS, (char *)"Add new file from buffer."},
+	 { (char *)"Document_convertToPDF", _wrap_Document_convertToPDF, METH_VARARGS, (char *)"Document_convertToPDF(self) -> PyObject *"},
 	 { (char *)"Document_pageCount", _wrap_Document_pageCount, METH_VARARGS, (char *)"Document_pageCount(self) -> int"},
 	 { (char *)"Document__getMetadata", _wrap_Document__getMetadata, METH_VARARGS, (char *)"Document__getMetadata(self, key) -> char *"},
 	 { (char *)"Document_needsPass", _wrap_Document_needsPass, METH_VARARGS, (char *)"Document_needsPass(self) -> int"},

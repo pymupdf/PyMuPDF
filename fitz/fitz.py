@@ -102,9 +102,9 @@ import sys
 
 
 VersionFitz = "1.13.0"
-VersionBind = "1.13.2"
-VersionDate = "2018-05-02 09:39:09"
-version = (VersionBind, VersionFitz, "20180502093909")
+VersionBind = "1.13.3"
+VersionDate = "2018-05-03 15:12:04"
+version = (VersionBind, VersionFitz, "20180503151204")
 
 
 #------------------------------------------------------------------------------
@@ -640,6 +640,14 @@ open(filename, filetype=None) - from file"""
             raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_embeddedFileAdd(self, buffer, name, filename, desc)
+
+
+    def convertToPDF(self):
+        """convertToPDF(self) -> PyObject *"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document_convertToPDF(self)
 
     @property
 

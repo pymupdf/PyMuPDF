@@ -109,6 +109,7 @@ import sys
 %include helper-select.i
 %include helper-xobject.i
 %include helper-pdfinfo.i
+%include helper-convert.i
 
 //-----------------------------------------------------------------------------
 // fz_document
@@ -524,6 +525,20 @@ struct fz_document_s
             }
             fz_catch(gctx) return -1;
             return entry;
+        }
+
+
+        FITZEXCEPTION(convertToPDF, !result)
+        CLOSECHECK(convertToPDF)
+        PyObject *convertToPDF()
+        {
+            PyObject *doc;
+            fz_try(gctx)
+            {
+                doc = JM_convert_to_pdf(gctx, $self);
+            }
+            fz_catch(gctx) return NULL;
+            return doc;
         }
 
         CLOSECHECK(pageCount)
@@ -1266,12 +1281,19 @@ if links:
             pdf_document *pdf = pdf_specifics(gctx, $self);
             if (!pdf) Py_RETURN_FALSE;
             pdf_obj *form = NULL;
+            pdf_obj *fields = NULL;
+            int have_form = 0;
             fz_try(gctx)
             {
                 form = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root, PDF_NAME_AcroForm, NULL);
+                if (form)
+                {
+                    fields = pdf_dict_get(gctx, form, PDF_NAME_Fields);
+                    if (fields && pdf_array_len(gctx, fields) > 0) have_form = 1;
+                }
             }
             fz_catch(gctx) Py_RETURN_FALSE;
-            if (!form) Py_RETURN_FALSE;
+            if (!have_form) Py_RETURN_FALSE;
             Py_RETURN_TRUE;
         }
 
