@@ -27,3 +27,4 @@ Program | Purpose
 [spumoni.py](https://github.com/rk700/pymupdf/demo/spumoni.py) | create the ReportLab drawing on page 26 with PyMuPDF
 [text2pdf.py](https://github.com/rk700/pymupdf/demo/text2pdf.py) | convert a text file to PDF
 [wavy-polygon.py](https://github.com/rk700/pymupdf/demo/wavy-polygon.py) | draw a regular polygon with curly borders
+[xps-converter.py](https://github.com/rk700/pymupdf/demo/xps-converter.py) | convert arbitrary documents to PDF (XPS, EPUB, etc.)
