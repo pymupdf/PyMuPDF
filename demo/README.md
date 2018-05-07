@@ -24,6 +24,8 @@ Program | Purpose
 [decrypt.py](https://github.com/rk700/pymupdf/demo/removePass.py) | create a decrypted copy of a PDF file
 [sierpinski.py](https://github.com/rk700/pymupdf/demo/sierpinski.py) | create a Sierpinski carpet (fractal) fast with pixmaps
 [splitter.py](https://github.com/rk700/pymupdf/demo/splitter.py) | split a PDF into its pages (1 PDF per page)
+[fitz-logo.py](https://github.com/rk700/pymupdf/demo/svg-logo.py) | put any document as logo an each PDF page.
+[svg-logo.py](https://github.com/rk700/pymupdf/demo/svg-logo.py) | put an SVG as logo an each PDF page.
 [spumoni.py](https://github.com/rk700/pymupdf/demo/spumoni.py) | create the ReportLab drawing on page 26 with PyMuPDF
 [text2pdf.py](https://github.com/rk700/pymupdf/demo/text2pdf.py) | convert a text file to PDF
 [wavy-polygon.py](https://github.com/rk700/pymupdf/demo/wavy-polygon.py) | draw a regular polygon with curly borders

@@ -26,12 +26,22 @@ if not (list(map(int, fitz.VersionBind.split("."))) >= [1,13,3]):
     raise SystemExit("insufficient PyMuPDF version")
 fn = sys.argv[1]
 doc = fitz.open(fn)
+if doc.isPDF:
+    raise SystemExit("document is PDF already")
 print("Converting '%s' to '%s.pdf'" % (fn, fn))
 b = doc.convertToPDF()            # convert to pdf
 pdf = fitz.open("pdf", b)         # open as pdf
 
 toc= doc.getToC()                 # table of contents of input
 pdf.setToC(toc)                   # simply set it for output
+meta = doc.metadata               # read and set metadata
+if not meta["producer"]:
+    meta["producer"] = "PyMuPDF v" + fitz.VersionBind
+
+if not meta["creator"]:
+    meta["creator"] = "PyMuPDF PDF converter"
+
+pdf.setMetadata(meta)
 
 # now process the links
 link_cnti = 0
