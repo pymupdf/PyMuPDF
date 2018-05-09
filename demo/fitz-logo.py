@@ -10,15 +10,25 @@ python fitz-logo.py input.pdf logo.file
 
 Result
 -------
-A file "fitzlogo-input.pdf" with the logo on each page.
+A file "fitzlogo-input.pdf" with the logo on each page. If the output page
+rectangle is taken as page.rect, then a watermark effect will occur.
 
 Notes
 -----
-(1) Any PyMuPDF-supported document can be used as the logo.
+(1) Any PyMuPDF-supported document can be used as the logo / watermark.
     This includes PDF, XPS, EPUB, CBZ, FB2 and any image type.
 
 (2) SVG-based logos are not always shown correctly. Use a different
     PDF converter like svglib if that occurs.
+
+(3) Logos / watermarks are transparent for non-image document types.
+    If you need transparency for images, you must convert it to a PDF
+    "manually" like so:
+
+    pix = fitz.Pixmap(logo_fn)
+    src = fitz.open()
+    src_page = src.newPage(-1, width = pix.width, height = pix.height)
+    src_page.insertImage(src_page.rect, pixmap = pix)
 
 Dependencies
 -------------
