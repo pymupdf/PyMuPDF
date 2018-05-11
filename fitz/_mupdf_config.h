@@ -81,7 +81,7 @@
 #define TOFU_SIL // <=== PyMuPDF
 
 /* To skip the ICC profiles, enable: */
-// #define NO_ICC
+#define NO_ICC // <=== PyMuPDF
 
 /* To skip the Base14 fonts, enable: */
 /* #define TOFU_BASE14 */

@@ -86,7 +86,7 @@ def getTextWords(page):
 # A function for extracting a page's text.
 #==============================================================================
 def getText(page, output = "text"):
-    '''Extract a PDF page's text. Parameters:\noutput option: text, html, json, xhtml or xml.\nReturns the output of TextPage methods extractText, extractHTML, extractJSON, extractXHTML or etractXML respectively. Default and misspelling choice is "text".'''
+    '''Extract a PDF page's text. Parameters:\noutput option: text, html, dict, json, xhtml or xml.\nReturns the output of TextPage methods extractText, extractHTML, extractDICT, extractJSON, extractXHTML or etractXML respectively. Default and misspelling choice is "text".'''
     fitz.CheckParent(page)
     dl = page.getDisplayList()
     # available output types

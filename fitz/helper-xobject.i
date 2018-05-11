@@ -17,7 +17,7 @@ void JM_update_xobject_contents(fz_context *ctx, pdf_document *doc, pdf_obj *for
 //-----------------------------------------------------------------------------
 pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_document *pdfsrc, int pno, fz_rect *mediabox, fz_rect *cropbox, int xref, pdf_graft_map *gmap)
 {
-    fz_buffer *nres, *res;
+    fz_buffer *nres = NULL, *res = NULL;
     pdf_obj *xobj1, *contents, *resources, *o, *spageref;
     int i;
     fz_try(ctx)
@@ -42,16 +42,12 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
         {
             // Deep-copy resources object of source page
             o = pdf_dict_get(ctx, spageref, PDF_NAME_Resources);
-            if (gmap)
-            {
+            if (gmap)        // use graftmap when possible
                 resources = pdf_graft_mapped_object(ctx, gmap, o);
-            }
             else
-            {
                 resources = pdf_graft_object(ctx, pdfout, o);
-            }
             
-            // get spgage contents source; maybe several objects
+            // get spgage contents source; combine when several objects
             contents = pdf_dict_get(ctx, spageref, PDF_NAME_Contents);
             if (pdf_is_array(ctx, contents))     // more than one!
             {
@@ -85,20 +81,20 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
 }
 
 //-----------------------------------------------------------------------------
-// append / prepend given buffer to /Contents
+// append / prepend given buffer to the correct /Contents object
 //-----------------------------------------------------------------------------
 void JM_extend_contents(fz_context *ctx, pdf_document *pdfout,
                         pdf_obj *pageref, fz_buffer *nres, int overlay)
 {
     int i;
-    fz_buffer *res;
+    fz_buffer *res = NULL;
     char *content_str;
     size_t c_len = 0;
     pdf_obj *contents = pdf_dict_get(ctx, pageref, PDF_NAME_Contents);
     fz_try(ctx)
     {
         if (pdf_is_array(ctx, contents))     // multiple contents obj
-        {   // choose the correct one (1st or last)
+        {   // choose the correct one (first / last)
             if (overlay == 1) i = pdf_array_len(ctx, contents) - 1;
             else  i = 0;
             contents = pdf_array_get(ctx, contents, i);

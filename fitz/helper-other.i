@@ -44,18 +44,10 @@ JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_mat
 }
 
 //-----------------------------------------------------------------------------
-// Circumvention of MuPDF bug in 'pdf_preload_image_resources'
-// This bug affects 'pdf_add_image' calls when images already exist, i.e.
-// almost always!
-// This fix uses a modified version of 'pdf_preload_image_resources'.
-// Because of 'static' declarations, 'fz_md5_image',
-// 'pdf_preload_image_resources' and 'pdf_find_image_resource' had to
-// be special-versioned as well although they are not changed ...
-// Start
+// md5 of an image
 //-----------------------------------------------------------------------------
-
 void
-JM_fz_md5_image(fz_context *ctx, fz_image *image, unsigned char digest[16])
+JM_md5_image(fz_context *ctx, fz_image *image, unsigned char digest[16])
 {
     fz_pixmap *pixmap;
     fz_md5 state;
@@ -74,100 +66,6 @@ JM_fz_md5_image(fz_context *ctx, fz_image *image, unsigned char digest[16])
     fz_md5_final(&state, digest);
     fz_drop_pixmap(ctx, pixmap);
 }
-
-void
-JM_pdf_preload_image_resources(fz_context *ctx, pdf_document *doc)
-{
-    int len, k;
-    pdf_obj *obj = NULL;
-    pdf_obj *type = NULL;
-    pdf_obj *res = NULL;
-    fz_image *image = NULL;
-    unsigned char digest[16];
-
-    fz_var(obj);
-    fz_var(image);
-    fz_var(res);
-
-    fz_try(ctx)
-    {
-        len = pdf_count_objects(ctx, doc);
-        for (k = 1; k < len; k++)
-        {
-            // this is the buggy statement: -----------------------------------
-            // obj = pdf_load_object(ctx, doc, k);
-            // replaced with the following: -----------------------------------
-            obj = pdf_new_indirect(ctx, doc, k, 0);
-            type = pdf_dict_get(ctx, obj, PDF_NAME_Subtype);
-            if (pdf_name_eq(ctx, type, PDF_NAME_Image))
-            {
-                image = pdf_load_image(ctx, doc, obj);
-                JM_fz_md5_image(ctx, image, digest);
-                fz_drop_image(ctx, image);
-                image = NULL;
-
-                /* Do not allow overwrites. */
-                if (!fz_hash_find(ctx, doc->resources.images, digest))
-                    fz_hash_insert(ctx, doc->resources.images, digest, pdf_keep_obj(ctx, obj));
-            }
-            pdf_drop_obj(ctx, obj);
-            obj = NULL;
-        }
-    }
-    fz_always(ctx)
-    {
-        fz_drop_image(ctx, image);
-        pdf_drop_obj(ctx, obj);
-    }
-    fz_catch(ctx)
-    {
-        fz_rethrow(ctx);
-    }
-}
-
-static void JM_drop_obj_as_void(fz_context *ctx, void *obj)
-{
-	pdf_drop_obj(ctx, obj);
-}
-
-pdf_obj *
-JM_pdf_find_image_resource(fz_context *ctx, pdf_document *doc, fz_image *item, unsigned char digest[16])
-{
-    pdf_obj *res;
-    if (!doc->resources.images)
-    {
-        doc->resources.images = fz_new_hash_table(ctx, 4096, 16, -1, JM_drop_obj_as_void);
-        JM_pdf_preload_image_resources(ctx, doc);
-    }
-
-    /* Create md5 and see if we have the item in our table */
-    JM_fz_md5_image(ctx, item, digest);
-    res = fz_hash_find(ctx, doc->resources.images, digest);
-    if (res)
-        pdf_keep_obj(ctx, res);
-    return res;
-}
-
-//-----------------------------------------------------------------------------
-// The following is invoked to add new images to a PDF in PyMuPDF.
-// Its approach is to preload existing images with the routines present here,
-// and then invoke the original pdf_add_image.
-// We use the md5 of the image also for other purposes, so it is handed in here
-// from the PyMuPDF level.
-//-----------------------------------------------------------------------------
-pdf_obj *
-JM_add_image(fz_context *ctx, pdf_document *doc, fz_image *image,
-             int mask, unsigned char *digest)
-{
-    pdf_obj *imref = NULL;
-    imref = JM_pdf_find_image_resource(ctx, doc, image, digest);
-    if (imref) return imref;
-    return pdf_add_image(ctx, doc, image, mask);
-}
-//-----------------------------------------------------------------------------
-// End
-// Circumvention of MuPDF bug in pdf_preload_image_resources
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 // return hex characters for n characters in input 'in'
@@ -646,4 +544,5 @@ struct fz_store_s
 	int defer_reap_count;
 	int needs_reaping;
 };
+
 %}

@@ -55,9 +55,11 @@
 # if PY_VERSION_HEX >= 0x03000000
 #define JM_BinFromChar(x) PyBytes_FromString(x)
 #define JM_BinFromCharSize(x, y) PyBytes_FromStringAndSize(x, (Py_ssize_t) y)
+#define JM_BinFromBuffer(ctx, x) PyBytes_FromStringAndSize(fz_string_from_buffer(ctx, x), (Py_ssize_t) fz_buffer_storage(ctx, x, NULL))
 # else
 #define JM_BinFromChar(x) PyByteArray_FromStringAndSize(x, (Py_ssize_t) strlen(x))
 #define JM_BinFromCharSize(x, y) PyByteArray_FromStringAndSize(x, (Py_ssize_t) y)
+#define JM_BinFromBuffer(ctx, x) PyByteArray_FromStringAndSize(fz_string_from_buffer(ctx, x), (Py_ssize_t) fz_buffer_storage(ctx, x, NULL))
 # endif
 #define NONE SWIG_Py_Void()
 #include <fitz.h>
@@ -515,7 +517,7 @@ struct fz_document_s
                             name, name_len, /* name */
                             d, desc_len, /* desc */
                             f, file_len, /* filename */
-                            f, file_len, /* unifile */
+                            f, file_len, /* unicode filename */
                             buf);
                 
             }
@@ -530,12 +532,20 @@ struct fz_document_s
 
         FITZEXCEPTION(convertToPDF, !result)
         CLOSECHECK(convertToPDF)
-        PyObject *convertToPDF()
+        %feature("autodoc","Convert document to PDF selecting copy range and optional rotation. Output bytes object.") convertToPDF;
+        PyObject *convertToPDF(int from_page=0, int to_page=-1, int rotate=0)
         {
             PyObject *doc;
             fz_try(gctx)
             {
-                doc = JM_convert_to_pdf(gctx, $self);
+                int fp = from_page, tp = to_page, srcCount = fz_count_pages(gctx, $self);
+                if (pdf_specifics(gctx, $self))
+                    THROWMSG("document is PDF already");
+                if (fp < 0) fp = 0;
+                if (fp > srcCount - 1) fp = srcCount - 1;
+                if (tp < 0) tp = srcCount - 1;
+                if (tp > srcCount - 1) tp = srcCount - 1;
+                doc = JM_convert_to_pdf(gctx, $self, fp, tp, rotate);
             }
             fz_catch(gctx) return NULL;
             return doc;
@@ -617,18 +627,19 @@ struct fz_document_s
         PyObject *save(char *filename, int garbage=0, int clean=0, int deflate=0, int incremental=0, int ascii=0, int expand=0, int linear=0, int pretty = 0)
         {
             int errors = 0;
-            pdf_write_options opts;
-            opts.do_incremental = incremental;
-            opts.do_ascii = ascii;
-            opts.do_compress = deflate;
+            pdf_write_options opts = { 0 };
+            opts.do_incremental     = incremental;
+            opts.do_ascii           = ascii;
+            opts.do_compress        = deflate;
             opts.do_compress_images = deflate;
-            opts.do_compress_fonts = deflate;
-            opts.do_decompress = expand;
-            opts.do_garbage = garbage;
-            opts.do_linear = linear;
-            opts.do_clean = clean;
-            opts.do_pretty = pretty;
-            opts.continue_on_error = 1;
+            opts.do_compress_fonts  = deflate;
+            opts.do_decompress      = expand;
+            opts.do_garbage         = garbage;
+            opts.do_linear          = linear;
+            opts.do_clean           = clean;
+            opts.do_pretty          = pretty;
+            opts.do_sanitize        = clean;
+            opts.continue_on_error  = 1;
             opts.errors = &errors;
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx)
@@ -663,18 +674,19 @@ struct fz_document_s
             struct fz_buffer_s *res = NULL;
             fz_output *out = NULL;
             int errors = 0;
-            pdf_write_options opts;
-            opts.do_incremental = 0;
-            opts.do_ascii = ascii;
-            opts.do_compress = deflate;
+            pdf_write_options opts = { 0 };
+            opts.do_incremental     = 0;
+            opts.do_ascii           = ascii;
+            opts.do_compress        = deflate;
             opts.do_compress_images = deflate;
-            opts.do_compress_fonts = deflate;
-            opts.do_decompress = expand;
-            opts.do_garbage = garbage;
-            opts.do_linear = linear;
-            opts.do_clean = clean;
-            opts.do_pretty = pretty;
-            opts.continue_on_error = 1;
+            opts.do_compress_fonts  = deflate;
+            opts.do_decompress      = expand;
+            opts.do_garbage         = garbage;
+            opts.do_linear          = linear;
+            opts.do_clean           = clean;
+            opts.do_pretty          = pretty;
+            opts.do_sanitize        = clean;
+            opts.continue_on_error  = 1;
             opts.errors = &errors;
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx)
@@ -1144,13 +1156,14 @@ if links:
             }
             fz_catch(gctx)
             {
-                tuple = Py_BuildValue("(s,s,s,O)", fontname, ext, stype, bytes);
+                tuple = Py_BuildValue("sssO", fontname, ext, stype, bytes);
             }
             return tuple;
         }
 
         FITZEXCEPTION(extractImage, !result)
         CLOSECHECK(extractImage)
+        %feature("autodoc","Extract image an xref points to. Return dict of extension and image content") extractImage;
         PyObject *extractImage(int xref = 0)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
@@ -1162,14 +1175,12 @@ if links:
             }
             fz_catch(gctx) return NULL;
 
-            fz_buffer *buffer = NULL;
+            fz_buffer *buffer = NULL, *freebuf = NULL;
             pdf_obj *obj = NULL;
             PyObject *bytes = NULL;
             PyObject *empty = PyDict_New();
             PyObject *rc = NULL;
             unsigned char ext[5];
-            unsigned char *c = NULL;
-            Py_ssize_t len = 0;
             fz_image *image = NULL;
             fz_compressed_buffer *cbuf = NULL;
             int type = 0;
@@ -1184,7 +1195,7 @@ if links:
                     cbuf = fz_compressed_image_buffer(gctx, image);
                     type = cbuf == NULL ? FZ_IMAGE_UNKNOWN : cbuf->params.type;
 
-                    // ensure returning PNG for unsupported images ------------
+                    // ensure returning a PNG for unsupported images ----------
                     if (image->use_colorkey) type = FZ_IMAGE_UNKNOWN;
                     if (image->use_decode)   type = FZ_IMAGE_UNKNOWN;
                     if (image->mask)         type = FZ_IMAGE_UNKNOWN;
@@ -1195,7 +1206,7 @@ if links:
 
                     if (type != FZ_IMAGE_UNKNOWN)
                     {
-                        len = (Py_ssize_t) fz_buffer_storage(gctx, cbuf->buffer, &c);
+                        buffer = cbuf->buffer;
                         switch(type)
                         {
                             case(FZ_IMAGE_BMP):  strcpy(ext, "bmp");  break;
@@ -1210,11 +1221,10 @@ if links:
                     }
                     else
                     {
-                        buffer = fz_new_buffer_from_image_as_png(gctx, image, NULL);
-                        len = (Py_ssize_t) fz_buffer_storage(gctx, buffer, &c);
+                        buffer = freebuf = fz_new_buffer_from_image_as_png(gctx, image, NULL);
                         strcpy(ext, "png");
                     }
-                    bytes = JM_BinFromCharSize(c, len);
+                    bytes = JM_BinFromBuffer(gctx, buffer);
                     rc = Py_BuildValue("{s:s,s:O}", "ext", ext, "image", bytes);
                 }
                 else
@@ -1223,7 +1233,7 @@ if links:
             fz_always(gctx)
             {
                 fz_drop_image(gctx, image);
-                fz_drop_buffer(gctx, buffer);
+                fz_drop_buffer(gctx, freebuf);
                 pdf_drop_obj(gctx, obj);
             }
             fz_catch(gctx) return empty;
@@ -1784,7 +1794,7 @@ struct fz_page_s {
         // firstAnnot
         /***********************************************************/
         PARENTCHECK(firstAnnot)
-        %feature("autodoc","firstAnnot points to first annot on page") firstAnnot;
+        %feature("autodoc","Points to first annotation on page") firstAnnot;
         %pythonappend firstAnnot
 %{if val:
     val.thisown = True
@@ -2200,7 +2210,7 @@ fannot._erase()
         //---------------------------------------------------------------------
         FITZEXCEPTION(insertImage, !result)
         PARENTCHECK(insertImage)
-        %feature("autodoc", "Insert a new image in a rectangle.") insertImage;
+        %feature("autodoc", "Insert a new image into a rectangle.") insertImage;
         PyObject *insertImage(struct fz_rect_s *rect, const char *filename=NULL, struct fz_pixmap_s *pixmap = NULL, PyObject *stream = NULL, int overlay = 1)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
@@ -2211,24 +2221,22 @@ fannot._erase()
             fz_separations *seps = NULL;
             pdf_obj *resources, *subres, *ref;
             fz_buffer *res = NULL, *nres = NULL,  *imgbuf = NULL;
-            int i, j;
-            unsigned char *s, *t;
 
             unsigned char *streamdata = NULL;
             size_t streamlen = JM_CharFromBytesOrArray(stream, &streamdata);
 
             const char *template = "\nh q %g 0 0 %g %g %g cm /%s Do Q\n";
             Py_ssize_t c_len = 0;
-            char name[50], md5hex[33];           // for image reference
+            char name[50], md5hex[33];           // referencing the image
             unsigned char md5[16];               // md5 of the image
             char *cont = NULL;
-            const char *name_templ = "fz%s";     // template for image ref
+            const char *name_templ = "fz%s";     // image ref template
             Py_ssize_t name_len = 0;
-            fz_image *zimg, *image = NULL;
+            fz_image *zimg = NULL, *image = NULL;
             int parm_count = 0;
-            if (filename) parm_count += 1;
-            if (pixmap) parm_count += 1;
-            if (streamlen > 0) parm_count += 1;
+            if (filename)      parm_count++;
+            if (pixmap)        parm_count++;
+            if (streamlen > 0) parm_count++;
             fz_try(gctx)
             {
                 assert_PDF(page);
@@ -2262,7 +2270,7 @@ fannot._erase()
 
                 pdf = page->doc;
 
-                // get objects "Resources" and "XObject"
+                // get objects "Resources" & "XObject"
                 resources = pdf_dict_get(gctx, page->obj, PDF_NAME_Resources);
                 subres = pdf_dict_get(gctx, resources, PDF_NAME_XObject);
                 if (!subres)           // has no XObject yet, create one
@@ -2272,10 +2280,10 @@ fannot._erase()
                 }
 
                 // create the image
-                // we always create a mask if the image contains an alpha
                 if (filename || streamlen > 0)
                 {
-                    if (filename) image = fz_new_image_from_file(gctx, filename);
+                    if (filename)
+                        image = fz_new_image_from_file(gctx, filename);
                     else
                     {
                         imgbuf = fz_new_buffer_from_shared_data(gctx,
@@ -2284,13 +2292,10 @@ fannot._erase()
                     }
                     pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
                     if (pix->alpha == 1)
-                    {
-                        j = pix->n - 1;
-                        pm = fz_new_pixmap(gctx, NULL, pix->w, pix->h, seps, 0);
-                        s = pix->samples;
-                        t = pm->samples;
-                        for (i = 0; i < pix->w * pix->h; i++)
-                            t[i] = s[j + i * pix->n];
+                    {   // have alpha, therefore create a mask
+                        pm = fz_convert_pixmap(gctx, pix, NULL, NULL, NULL, NULL, 1);
+                        pm->alpha = 0;
+                        pm->colorspace = fz_keep_colorspace(gctx, fz_device_gray(gctx));
                         mask = fz_new_image_from_pixmap(gctx, pm, NULL);
                         zimg = fz_new_image_from_pixmap(gctx, pix, mask);
                         fz_drop_image(gctx, image);
@@ -2304,22 +2309,18 @@ fannot._erase()
                         image = fz_new_image_from_pixmap(gctx, pixmap, NULL);
                     else
                     {   // pixmap has alpha, therefore create a mask
-                        j = pixmap->n - 1;       // j = # of pix bytes
-                        // pm will consist of pixmap's alpha as 'samples'
-                        pm = fz_new_pixmap(gctx, NULL, pixmap->w, pixmap->h, seps, 0);
-                        s = pixmap->samples;
-                        t = pm->samples;
-                        for (i = 0; i < pixmap->w * pixmap->h; i++)
-                            t[i] = s[j + i * pixmap->n];
+                        pm = fz_convert_pixmap(gctx, pixmap, NULL, NULL, NULL, NULL, 1);
+                        pm->alpha = 0;
+                        pm->colorspace = fz_keep_colorspace(gctx, fz_device_gray(gctx));
                         mask = fz_new_image_from_pixmap(gctx, pm, NULL);
                         image = fz_new_image_from_pixmap(gctx, pixmap, mask);
                     }
                 }
-                // put image in the PDF and get its md5
-                ref = JM_add_image(gctx, pdf, image, 0, md5);
-                // we need a unique image name:
-                // take md5 code of image
+                // put image into the PDF & get its md5
+                ref = pdf_add_image(gctx, pdf, image, 0);
+                JM_md5_image(gctx, image, md5);
                 hexlify(16, md5, md5hex);                  // md5 as 32 hex bytes
+                
                 snprintf(name, 50, name_templ, md5hex);    // our img ref
                 pdf_dict_puts(gctx, subres, name, ref);    // put in resources
 
@@ -3074,7 +3075,7 @@ struct fz_pixmap_s
         }
 
         //---------------------------------------------------------------------
-        // copy pixmap, add or drop alpha channel
+        // copy pixmap & add / drop the alpha channel
         //---------------------------------------------------------------------
         fz_pixmap_s(struct fz_pixmap_s *spix, int alpha = 1)
         {
@@ -3083,7 +3084,7 @@ struct fz_pixmap_s
             fz_separations *seps = NULL;
             fz_try(gctx)
             {
-                if (alpha < 0 || alpha > 1)
+                if (!INRANGE(alpha, 0, 1))
                     THROWMSG("illegal alpha value");
                 fz_colorspace *cs = fz_pixmap_colorspace(gctx, spix);
                 if (!cs && !alpha)
@@ -3402,16 +3403,13 @@ struct fz_pixmap_s
         {
             struct fz_buffer_s *res = NULL;
             fz_output *out = NULL;
-            unsigned char *c;
             PyObject *r;
-            size_t len;
             if (savealpha != -1) PySys_WriteStdout("warning: ignoring savealpha");
             fz_try(gctx) {
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 fz_write_pixmap_as_png(gctx, out, $self);
-                len = fz_buffer_storage(gctx, res, &c);
-                r = JM_BinFromCharSize(c, len);
+                r = JM_BinFromBuffer(gctx, res);
             }
             fz_always(gctx)
             {
@@ -5204,11 +5202,16 @@ struct fz_stext_page_s {
                     {
                         res = fz_new_buffer(gctx, 1024);
                         int line_n = 0;
+                        float last_y0 = 0.0;
                         for (line = block->u.t.first_line; line; line = line->next)
                         {
-                            // append line no. 2+ with new-line 
+                            // append line no. 2 with new-line 
                             if (line_n > 0)
-                                fz_append_string(gctx, res, "\n");
+                            {
+                                if (line->bbox.y0 != last_y0) fz_append_string(gctx, res, "\n");
+                                else                          fz_append_string(gctx, res, " ");
+                            }
+                            last_y0 = line->bbox.y0;
                             line_n++;
                             for (ch = line->first_char; ch; ch = ch->next)
                                 fz_append_rune(gctx, res, ch->c);
@@ -5252,7 +5255,7 @@ struct fz_stext_page_s {
             fz_buffer *buff = NULL;
             size_t buflen = 0;
             char *word;
-            int i, n, block_n = 0, line_n, word_n;
+            int block_n = 0, line_n, word_n;
             PyObject *lines = PyList_New(0);
             PyObject *litem;
             float c_x0, c_y0, c_x1, c_y1;

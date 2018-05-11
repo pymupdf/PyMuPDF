@@ -1,28 +1,7 @@
 %{
-
-static int detect_super_script(fz_stext_line *line, fz_stext_char *ch)
-{
-    if (line->wmode == 0 && line->dir.x == 1 && line->dir.y == 0)
-        return ch->origin.y < line->first_char->origin.y - ch->size * 0.1f;
-    return 0;
-}
-
-static const char *font_full_name(fz_context *ctx, fz_font *font)
-{
-    const char *name = fz_font_name(ctx, font);
-    const char *s = strchr(name, '+');
-    return s ? s + 1 : name;
-}
-
-static void font_family_name(fz_context *ctx, fz_font *font, char *buf, int size)
-{
-    const char *name = font_full_name(ctx, font);
-    fz_strlcpy(buf, name, size);
-}
-
 //-----------------------------------------------------------------------------
 // Plain text output. An identical copy of fz_print_stext_page_as_text,
-// but lines within a block are concatenated by a space instead a new-line
+// but lines within a block are concatenated by space instead a new-line
 // character (which else leads to 2 new-lines).
 //-----------------------------------------------------------------------------
 void
@@ -53,6 +32,29 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
             fz_write_string(ctx, out, "\n");
         }
     }
+}
+
+//-----------------------------------------------------------------------------
+// Functions for dictionary output
+//-----------------------------------------------------------------------------
+static int detect_super_script(fz_stext_line *line, fz_stext_char *ch)
+{
+    if (line->wmode == 0 && line->dir.x == 1 && line->dir.y == 0)
+        return ch->origin.y < line->first_char->origin.y - ch->size * 0.1f;
+    return 0;
+}
+
+static const char *font_full_name(fz_context *ctx, fz_font *font)
+{
+    const char *name = fz_font_name(ctx, font);
+    const char *s = strchr(name, '+');
+    return s ? s + 1 : name;
+}
+
+static void font_family_name(fz_context *ctx, fz_font *font, char *buf, int size)
+{
+    const char *name = font_full_name(ctx, font);
+    fz_strlcpy(buf, name, size);
 }
 
 void
@@ -101,11 +103,11 @@ JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block)
     for (line = block->u.t.first_line; line; line = line->next)
     {
         linedict = PyDict_New();
-        PyDict_SetItemString(linedict, "bbox",   Py_BuildValue("[ffff]",
+        PyDict_SetItemString(linedict, "bbox",   Py_BuildValue("ffff",
                                          line->bbox.x0, line->bbox.y0,
                                          line->bbox.x1, line->bbox.y1));
         PyDict_SetItemString(linedict, "wmode",  Py_BuildValue("i", line->wmode));
-        PyDict_SetItemString(linedict, "dir",  Py_BuildValue("[f,f]", line->dir.x, line->dir.y));
+        PyDict_SetItemString(linedict, "dir",  Py_BuildValue("ff", line->dir.x, line->dir.y));
         spanlist = PyList_New(0);
         font = NULL;
         size = 0;
@@ -154,15 +156,13 @@ PyObject *
 JM_extract_stext_imageblock_as_dict(fz_context *ctx, fz_stext_block *block)
 {
     fz_image *image = block->u.i.image;
-    fz_buffer *buf = NULL;
+    fz_buffer *buf = NULL, *freebuf = NULL;
     fz_compressed_buffer *buffer = NULL;
     int n = fz_colorspace_n(ctx, image->colorspace);
     int w = image->w;
     int h = image->h;
     int type = 0;
-    size_t len = 0;
     unsigned char ext[5];
-    char *c = NULL;
     PyObject *bytes = JM_BinFromChar("");
     buffer = fz_compressed_image_buffer(ctx, image);
     if (buffer) type = buffer->params.type;
@@ -183,7 +183,7 @@ JM_extract_stext_imageblock_as_dict(fz_context *ctx, fz_stext_block *block)
             type = FZ_IMAGE_UNKNOWN;
         if (type != FZ_IMAGE_UNKNOWN)
         {
-            len = fz_buffer_storage(ctx, buffer->buffer, &c);
+            buf = buffer->buffer;
             switch(type)
             {
                 case(FZ_IMAGE_BMP):  strcpy(ext, "bmp");  break;
@@ -198,15 +198,14 @@ JM_extract_stext_imageblock_as_dict(fz_context *ctx, fz_stext_block *block)
         }
         else
         {
-            buf = fz_new_buffer_from_image_as_png(ctx, image, NULL);
-            len = fz_buffer_storage(ctx, buf, &c);
+            buf = freebuf = fz_new_buffer_from_image_as_png(ctx, image, NULL);
             strcpy(ext, "png");
         }
-        bytes = JM_BinFromCharSize(c, len);
+        bytes = JM_BinFromBuffer(ctx, buf);
     }
     fz_always(ctx)
     {
-        fz_drop_buffer(ctx, buf);
+        fz_drop_buffer(ctx, freebuf);
         PyDict_SetItemString(dict, "ext",  PyString_FromString(ext));
         PyDict_SetItemString(dict, "image",  bytes);
         Py_DECREF(bytes);

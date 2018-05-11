@@ -102,9 +102,9 @@ import sys
 
 
 VersionFitz = "1.13.0"
-VersionBind = "1.13.3"
-VersionDate = "2018-05-03 15:12:04"
-version = (VersionBind, VersionFitz, "20180503151204")
+VersionBind = "1.13.4"
+VersionDate = "2018-05-11 12:57:42"
+version = (VersionBind, VersionFitz, "20180511125742")
 
 
 #------------------------------------------------------------------------------
@@ -642,12 +642,12 @@ open(filename, filetype=None) - from file"""
         return _fitz.Document_embeddedFileAdd(self, buffer, name, filename, desc)
 
 
-    def convertToPDF(self):
-        """convertToPDF(self) -> PyObject *"""
+    def convertToPDF(self, from_page=0, to_page=-1, rotate=0):
+        """Convert document to PDF selecting copy range and optional rotation. Output bytes object."""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
-        return _fitz.Document_convertToPDF(self)
+        return _fitz.Document_convertToPDF(self, from_page, to_page, rotate)
 
     @property
 
@@ -889,7 +889,7 @@ open(filename, filetype=None) - from file"""
 
 
     def extractImage(self, xref=0):
-        """extractImage(self, xref=0) -> PyObject *"""
+        """Extract image an xref points to. Return dict of extension and image content"""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
@@ -1152,7 +1152,7 @@ class Page(_object):
     @property
 
     def firstAnnot(self):
-        """firstAnnot points to first annot on page"""
+        """Points to first annotation on page"""
         CheckParent(self)
 
         val = _fitz.Page_firstAnnot(self)
@@ -1259,7 +1259,7 @@ class Page(_object):
 
 
     def insertImage(self, rect, filename=None, pixmap=None, stream=None, overlay=1):
-        """Insert a new image in a rectangle."""
+        """Insert a new image into a rectangle."""
         CheckParent(self)
 
         return _fitz.Page_insertImage(self, rect, filename, pixmap, stream, overlay)
