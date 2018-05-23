@@ -102,9 +102,9 @@ import sys
 
 
 VersionFitz = "1.13.0"
-VersionBind = "1.13.4"
-VersionDate = "2018-05-11 12:57:42"
-version = (VersionBind, VersionFitz, "20180511125742")
+VersionBind = "1.13.5"
+VersionDate = "2018-05-23 12:56:02"
+version = (VersionBind, VersionFitz, "20180523125602")
 
 
 #------------------------------------------------------------------------------
@@ -684,6 +684,15 @@ open(filename, filetype=None) - from file"""
 
         return _fitz.Document_isPDF(self)
 
+    @property
+
+    def isDirty(self):
+        """isDirty(self) -> PyObject *"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document_isDirty(self)
+
 
     def _getGCTXerrcode(self):
         """_getGCTXerrcode(self) -> int"""
@@ -759,39 +768,6 @@ open(filename, filetype=None) - from file"""
         return val
 
 
-    def deletePage(self, pno):
-        """Delete page 'pno'."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
-
-        val = _fitz.Document_deletePage(self, pno)
-        self._reset_page_refs()
-
-        return val
-
-
-    def deletePageRange(self, from_page=-1, to_page=-1):
-        """Delete pages 'from' to 'to'."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
-
-        val = _fitz.Document_deletePageRange(self, from_page, to_page)
-        self._reset_page_refs()
-
-        return val
-
-
-    def copyPage(self, pno, to=-1):
-        """Copy a page in front of 'to'."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
-
-        val = _fitz.Document_copyPage(self, pno, to)
-        self._reset_page_refs()
-
-        return val
-
-
     def insertPage(self, pno=-1, text=None, fontsize=11, width=595, height=842, idx=0, fontname=None, fontfile=None, set_simple=0, color=None):
         """Insert a new page in front of 'pno'. Use arguments 'width', 'height' to specify a non-default page size, and optionally text insertion arguments."""
 
@@ -817,24 +793,15 @@ open(filename, filetype=None) - from file"""
         return val
 
 
-    def movePage(self, pno, to=-1):
-        """Move page in front of 'to'."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
-
-        val = _fitz.Document_movePage(self, pno, to)
-        self._reset_page_refs()
-
-        return val
-
-
     def select(self, pyliste):
         """Build sub-pdf with page numbers in 'list'."""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
         val = _fitz.Document_select(self, pyliste)
+
         self._reset_page_refs()
+        self.initData()
 
         return val
 
@@ -1024,6 +991,63 @@ open(filename, filetype=None) - from file"""
         if self.isPDF:
             return self._getPageInfo(pno, 2)
         return []
+
+    def copyPage(self, pno, to=-1):
+        """Copy a page to before some other page of the document. Specify 'to = -1' to copy after last page.
+        """
+        pl = list(range(len(self)))
+        if pno < 0 or pno > pl[-1]:
+            raise ValueError("'from' page number out of range")
+        if to < -1 or to > pl[-1]:
+            raise ValueError("'to' page number out of range")
+        if to == -1:
+            pl.append(pno)
+        else:
+            pl.insert(to, pno)
+        return self.select(pl)
+
+    def movePage(self, pno, to = -1):
+        """Move a page to before some other page of the document. Specify 'to = -1' to move after last page.
+        """
+        pl = list(range(len(self)))
+        if pno < 0 or pno > pl[-1]:
+            raise ValueError("'from' page number out of range")
+        if to < -1 or to > pl[-1]:
+            raise ValueError("'to' page number out of range")
+        pl.remove(pno)
+        if to == -1:
+            pl.append(pno)
+        else:
+            pl.insert(to-1, pno)
+        return self.select(pl)
+
+    def deletePage(self, pno = -1):
+        """Delete a page from the document. First page is '0', last page is '-1'.
+        """
+        pl = list(range(len(self)))
+        if pno < -1 or pno > pl[-1]:
+            raise ValueError("page number out of range")
+        if pno >= 0:
+            pl.remove(pno)
+        else:
+            pl.remove(pl[-1])
+        return self.select(pl)
+
+    def deletePageRange(self, from_page = -1, to_page = -1):
+        """Delete pages from the document. First page is '0', last page is '-1'.
+        """
+        pl = list(range(len(self)))
+        f = from_page
+        t = to_page
+        if f == -1:
+            f = pl[-1]
+        if t == -1:
+            t = pl[-1]
+        if not 0 <= f <= t <= pl[-1]:
+            raise ValueError("page number(s) out of range")
+        for i in range(f, t+1):
+            pl.remove(i)
+        return self.select(pl)
 
     def saveIncr(self):
         """ Save PDF incrementally"""
@@ -1304,6 +1328,13 @@ class Page(_object):
         CheckParent(self)
 
         return _fitz.Page__getContents(self)
+
+
+    def _setContents(self, xref=0):
+        """Set the /Contents object in page definition"""
+        CheckParent(self)
+
+        return _fitz.Page__setContents(self, xref)
 
 
     def __str__(self):
@@ -2339,11 +2370,11 @@ class Annot(_object):
 
     @property
 
-    def widget_text(self):
-        """widget_text(self) -> PyObject *"""
+    def widget_value(self):
+        """widget_value(self) -> PyObject *"""
         CheckParent(self)
 
-        return _fitz.Annot_widget_text(self)
+        return _fitz.Annot_widget_value(self)
 
     @property
 
@@ -2352,6 +2383,14 @@ class Annot(_object):
         CheckParent(self)
 
         return _fitz.Annot_widget_name(self)
+
+    @property
+
+    def widget_choices(self):
+        """widget_choices(self) -> PyObject *"""
+        CheckParent(self)
+
+        return _fitz.Annot_widget_choices(self)
 
 
     def fileInfo(self):

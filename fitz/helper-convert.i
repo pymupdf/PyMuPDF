@@ -61,7 +61,7 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
     opts.do_ascii           = 0;
     opts.do_decompress      = 0;
     opts.do_linear          = 0;
-    opts.do_clean           = 0;
+    opts.do_clean           = 1;
     opts.do_pretty          = 0;
     opts.continue_on_error  = 1;
     opts.errors = &errors;

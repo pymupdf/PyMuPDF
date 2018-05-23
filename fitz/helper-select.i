@@ -2,7 +2,7 @@
 //----------------------------------------------------------------------------
 // Helpers for document page selection - main logic was imported
 // from pdf_clean_file.c. But instead of analyzing a string-based spec of
-// selected pages, we accept an integer array.
+// selected pages, we accept a Python sequence.
 //----------------------------------------------------------------------------
 typedef struct globals_s
 {

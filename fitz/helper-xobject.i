@@ -5,8 +5,8 @@ void JM_update_xobject_contents(fz_context *ctx, pdf_document *doc, pdf_obj *for
     char *content_str;
     fz_buffer *nres;
     c_len = (size_t) fz_buffer_storage(ctx, buffer, &content_str);
-    pdf_dict_put(ctx, form, PDF_NAME_Filter, PDF_NAME_FlateDecode);
     nres = JM_deflatebuf(ctx, content_str, c_len);
+    pdf_dict_put(ctx, form, PDF_NAME_Filter, PDF_NAME_FlateDecode);
     pdf_update_stream(ctx, doc, form, nres, 1);
     fz_drop_buffer(ctx, nres);
 }
@@ -115,9 +115,9 @@ void JM_extend_contents(fz_context *ctx, pdf_document *pdfout,
         fz_terminate_buffer(ctx, res);
     
         // now compress and put back contents stream
-        pdf_dict_put(ctx, contents, PDF_NAME_Filter, PDF_NAME_FlateDecode);
         c_len = (size_t) fz_buffer_storage(ctx, res, &content_str);
         nres = JM_deflatebuf(ctx, content_str, c_len);
+        pdf_dict_put(ctx, contents, PDF_NAME_Filter, PDF_NAME_FlateDecode);
         pdf_update_stream(ctx, pdfout, contents, nres, 1);
         fz_drop_buffer(ctx, res);
         fz_drop_buffer(ctx, nres);
