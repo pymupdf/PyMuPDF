@@ -18,9 +18,9 @@ PyMuPDF 1.12.2 or later
 svglib, reportlab
 '''
 from __future__ import print_function
+import sys
 import fitz
 from svglib.svglib import svg2rlg
-import sys
 doc_fn = sys.argv[1]                        # name of PDF file
 svg_fn = sys.argv[2]                        # name of SVG image file
 

@@ -21,8 +21,8 @@ Notes
 (2) SVG-based logos are not always shown correctly. Use a different
     PDF converter like svglib if that occurs.
 
-(3) Logos / watermarks are transparent for non-image document types.
-    If you need transparency for images, you must convert it to a PDF
+(3) Logos / watermarks are transparent for all document types except images.
+    If you need transparency here, you must convert it to a PDF
     "manually" like so:
 
     pix = fitz.Pixmap(logo_fn)

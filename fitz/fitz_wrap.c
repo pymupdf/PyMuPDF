@@ -4111,7 +4111,7 @@ struct fz_store_s
 // Object "id" contains either entry name (str) or supposed index.
 // Int "id" is returned as result if in valid range.
 //-----------------------------------------------------------------------------
-int FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
+int JM_FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
 {
     char *name = NULL;
     Py_ssize_t name_len = 0;
@@ -5249,7 +5249,7 @@ SWIGINTERN PyObject *fz_document_s_embeddedFileDel(struct fz_document_s *self,ch
                 limits = pdf_dict_get(gctx, efiles, PDF_NAME_Limits);
                 limit1 = NULL;
                 limit2 = NULL;
-                if (limits)                     // have name limits?
+                if (limits)                      // have name limits?
                     {
                         limit1 = pdf_to_utf8(gctx, pdf_array_get(gctx, limits, 0));
                         limit2 = pdf_to_utf8(gctx, pdf_array_get(gctx, limits, 1));
@@ -5306,7 +5306,6 @@ SWIGINTERN PyObject *fz_document_s_embeddedFileDel(struct fz_document_s *self,ch
             return NONE;
         }
 SWIGINTERN PyObject *fz_document_s_embeddedFileInfo(struct fz_document_s *self,PyObject *id){
-            PyObject *infodict = PyDict_New();
             pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
             Py_ssize_t name_len = 0;
             int n = -1;
@@ -5315,22 +5314,23 @@ SWIGINTERN PyObject *fz_document_s_embeddedFileInfo(struct fz_document_s *self,P
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                n = FindEmbedded(gctx, id, pdf);
+                n = JM_FindEmbedded(gctx, id, pdf);
                 if (n < 0) THROWMSG("entry not found");
             }
             fz_catch(gctx) return NULL;
 
+            PyObject *infodict = PyDict_New();
             // name of file entry
             name = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, n));
             PyDict_SetItemString(infodict, "name", 
-                   JM_UNICODE(name, strlen(name)));
+                                 JM_UNICODE(name, strlen(name)));
             pdf_obj *o = pdf_portfolio_entry_obj(gctx, pdf, n);
             name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_F));
             PyDict_SetItemString(infodict, "file", 
-                   JM_UNICODE(name, strlen(name)));
+                                 JM_UNICODE(name, strlen(name)));
             name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_Desc));
             PyDict_SetItemString(infodict, "desc", 
-                   JM_UNICODE(name, strlen(name)));
+                                 JM_UNICODE(name, strlen(name)));
             pdf_obj *olen = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F,
                                           PDF_NAME_Length, NULL);
             int len = -1;
@@ -5350,8 +5350,8 @@ SWIGINTERN PyObject *fz_document_s_embeddedFileSetInfo(struct fz_document_s *sel
                 int flen = 0, dlen = 0;
                 if (filename) flen = (int) strlen(filename);
                 if (desc)     dlen = (int) strlen(desc);
-                if ((flen == 0) && (dlen == 0)) THROWMSG("nothing to change");
-                int n = FindEmbedded(gctx, id, pdf);
+                if ((flen < 1) && (dlen < 1)) THROWMSG("nothing to change");
+                int n = JM_FindEmbedded(gctx, id, pdf);
                 if (n < 0) THROWMSG("entry not found");
                 pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, n);
                 
@@ -5374,13 +5374,13 @@ SWIGINTERN PyObject *fz_document_s_embeddedFileSetInfo(struct fz_document_s *sel
             return NONE;
         }
 SWIGINTERN PyObject *fz_document_s_embeddedFileGet(struct fz_document_s *self,PyObject *id){
-            PyObject *cont = PyBytes_FromString("");
+            PyObject *cont = NULL;
             pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
             fz_buffer *buf = NULL;
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                int i = FindEmbedded(gctx, id, pdf);
+                int i = JM_FindEmbedded(gctx, id, pdf);
                 if (i < 0) THROWMSG("entry not found");
                 unsigned char *data;
                 buf = pdf_portfolio_entry(gctx, pdf, i);
@@ -5409,12 +5409,12 @@ SWIGINTERN int fz_document_s_embeddedFileAdd(struct fz_document_s *self,PyObject
                 assert_PDF(pdf);
             }
             fz_catch(gctx) return -1;
-            if (file_len == 0)                  // no filename given
+            if (file_len == 0)              // no filename given
                 {
                    f = name;                // take the name
                    file_len = name_len;
                 }
-            if (desc_len == 0)                  // no description given
+            if (desc_len == 0)              // no description given
                 {
                     d = name;               // take the name
                     desc_len = name_len;
@@ -5567,6 +5567,7 @@ SWIGINTERN PyObject *fz_document_s_save(struct fz_document_s *self,char *filenam
                     THROWMSG("decrypted file - save to new");
                 pdf_finish_edit(gctx, pdf);
                 pdf_save_document(gctx, pdf, filename, &opts);
+                pdf->dirty = 0;
                 }
             fz_catch(gctx) return NULL;
             return NONE;
@@ -5602,6 +5603,7 @@ SWIGINTERN PyObject *fz_document_s_write(struct fz_document_s *self,int garbage,
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 pdf_write_document(gctx, pdf, out, &opts);
+                pdf->dirty = 0;
                 len = fz_buffer_storage(gctx, res, &c);
                 r = PyBytes_FromStringAndSize(c, len);
             }

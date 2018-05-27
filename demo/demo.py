@@ -16,7 +16,7 @@ demo.py <filename> <page> <zoom> <degree> <output filename> <needle>
 Remarks
 --------
 This demo version uses the normal user interface of PyMuPDF. If you are
-interested in more low level information, have a look at "demo_lowlevel.py" in
+interested in more low level information, have a look at "demo-lowlevel.py" in
 the same directory.
 
 """
@@ -45,11 +45,11 @@ for key in doc.metadata:
     if doc.metadata[key]:
         print(' %s: %s' % (key.title(), doc.metadata[key]))
 print("")
+
 # here we print out the outline of the document(if any)
-# first, we define a function for traversal
 toc = doc.getToC()
 if len(toc) == 0:
-    print('No outline available')
+    print('No Table of Contents available')
 else:
     print("Table of Contents:")
     print("------------------")
@@ -57,11 +57,11 @@ else:
         print("  " * (t[0] - 1), t[0], t[1], "page", t[2])
 
 print("")
+
 # get the page number, which should start from 0
 pn = int(sys.argv[2])-1
 if pn > doc.pageCount:
-    print('%s has %d pages only' % (sys.argv[1], doc.pageCount))
-    raise SystemExit
+    raise SystemExit('%s has %d pages only' % (sys.argv[1], doc.pageCount))
 
 # get the page
 page = doc[pn]
@@ -69,7 +69,7 @@ page = doc[pn]
 # we can also get all the links in the current page
 links = page.getLinks()
 if len(links) == 0:
-    print("Page has no links")
+    print("No links on page", (pn + 1))
 else:
     print("Links on page %i:" % (pn + 1))
     print("------------------")
@@ -95,6 +95,7 @@ pm.writePNG(sys.argv[5])
 # now we are ready for search, with max hit count limited to 16
 # the return result is a list of hit box rectangles
 res = page.searchFor(sys.argv[6], hit_max = 16)
+print("search text '%s' found %i on the page" % (sys.argv[6], len(res)))
 for r in res:
     # we invert the pixmap at the hit irect to highlight the search result
     pm.invertIRect(r.round())

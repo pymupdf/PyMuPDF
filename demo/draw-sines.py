@@ -171,6 +171,7 @@ if __name__ == "__main__":
     img.insertTextbox(r1, "sine", color = red, fontsize = 8, morph = morph)
     r2 = fitz.Rect(rect.x0 + 15, rect.y1 - 10, rect.br)
     img.insertTextbox(r2, "cosine", color = blue, fontsize = 8, morph = morph)
+    
     img.commit()                  # commit with overlay = True
     
     doc.save("draw-sines.pdf")

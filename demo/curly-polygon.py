@@ -49,6 +49,7 @@ for i in range(nedge):
     img.drawSquiggle(points[i], points[i+1], breadth = breadth)
 
 img.finish(color = (0,0,1), fill = (1,1,0), closePath = False)
+
 # adjust visible page to dimensions of the drawing
 page.setCropBox(img.rect)
 img.commit()

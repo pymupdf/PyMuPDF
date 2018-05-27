@@ -17,7 +17,7 @@
 // Object "id" contains either entry name (str) or supposed index.
 // Int "id" is returned as result if in valid range.
 //-----------------------------------------------------------------------------
-int FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
+int JM_FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
 {
     char *name = NULL;
     Py_ssize_t name_len = 0;

@@ -44,17 +44,10 @@ if ol:
     print('Outline of the document')
     olTraversal(ol)
 
-# we can also save a table of contents as a XML or TXT file
-    ol.saveXML(sys.argv[1]+'.xml')
-    ol.saveText(sys.argv[1]+'.txt')
-else:
-    print('No outline available')
-
 # get the page number, which should start from 0
 pn = int(sys.argv[2])-1
 if pn > doc.pageCount:
-    print '%s has %d pages only' % (sys.argv[1], doc.pageCount)
-    exit(1)
+    raise SystemExit('%s has %d pages only' % (sys.argv[1], doc.pageCount))
 
 # get the page
 page = doc.loadPage(pn)

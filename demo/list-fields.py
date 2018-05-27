@@ -25,7 +25,7 @@ for page in doc:
         a = a.next
 
 """
-Above script may produce the following output:
+Example output of above script:
 
 Showing the form fields of page 0
 --------------------------------------------------------------------------------

@@ -147,6 +147,7 @@ struct fz_document_s
             self.isClosed    = False
             self.isEncrypted = 0
             self.metadata    = None
+            self.stream      = stream       # prevent garbage collection of it
             self.openErrCode = 0
             self.openErrMsg  = ''
             self.FontInfos   = []
@@ -158,7 +159,6 @@ struct fz_document_s
                 self.openErrCode = self._getGCTXerrcode()
                 self.openErrMsg  = self._getGCTXerrmsg()
                 self.thisown = True
-                self.isClosed    = False
                 if self.needsPass:
                     self.isEncrypted = 1
                 else: # we won't init until doc is decrypted
@@ -219,6 +219,7 @@ struct fz_document_s
                 self._outline = None
             self._reset_page_refs()
             self.metadata    = None
+            self.stream      = None
             self.isClosed    = True
             self.openErrCode = 0
             self.openErrMsg  = ''
@@ -312,7 +313,7 @@ struct fz_document_s
                 limits = pdf_dict_get(gctx, efiles, PDF_NAME_Limits);
                 limit1 = NULL;
                 limit2 = NULL;
-                if (limits)                     // have name limits?
+                if (limits)                      // have name limits?
                     {
                         limit1 = pdf_to_utf8(gctx, pdf_array_get(gctx, limits, 0));
                         limit2 = pdf_to_utf8(gctx, pdf_array_get(gctx, limits, 1));
@@ -374,7 +375,6 @@ struct fz_document_s
         %feature("autodoc","Retrieve embedded file information given its entry number or name.") embeddedFileInfo;
         PyObject *embeddedFileInfo(PyObject *id)
         {
-            PyObject *infodict = PyDict_New();
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
             Py_ssize_t name_len = 0;
             int n = -1;
@@ -383,22 +383,23 @@ struct fz_document_s
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                n = FindEmbedded(gctx, id, pdf);
+                n = JM_FindEmbedded(gctx, id, pdf);
                 if (n < 0) THROWMSG("entry not found");
             }
             fz_catch(gctx) return NULL;
 
+            PyObject *infodict = PyDict_New();
             // name of file entry
             name = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, n));
             PyDict_SetItemString(infodict, "name", 
-                   JM_UNICODE(name, strlen(name)));
+                                 JM_UNICODE(name, strlen(name)));
             pdf_obj *o = pdf_portfolio_entry_obj(gctx, pdf, n);
             name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_F));
             PyDict_SetItemString(infodict, "file", 
-                   JM_UNICODE(name, strlen(name)));
+                                 JM_UNICODE(name, strlen(name)));
             name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_Desc));
             PyDict_SetItemString(infodict, "desc", 
-                   JM_UNICODE(name, strlen(name)));
+                                 JM_UNICODE(name, strlen(name)));
             pdf_obj *olen = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F,
                                           PDF_NAME_Length, NULL);
             int len = -1;
@@ -423,8 +424,8 @@ struct fz_document_s
                 int flen = 0, dlen = 0;
                 if (filename) flen = (int) strlen(filename);
                 if (desc)     dlen = (int) strlen(desc);
-                if ((flen == 0) && (dlen == 0)) THROWMSG("nothing to change");
-                int n = FindEmbedded(gctx, id, pdf);
+                if ((flen < 1) && (dlen < 1)) THROWMSG("nothing to change");
+                int n = JM_FindEmbedded(gctx, id, pdf);
                 if (n < 0) THROWMSG("entry not found");
                 pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, n);
                 
@@ -452,13 +453,13 @@ struct fz_document_s
         %feature("autodoc","Retrieve embedded file content given its entry number or name.") embeddedFileGet;
         PyObject *embeddedFileGet(PyObject *id)
         {
-            PyObject *cont = PyBytes_FromString("");
+            PyObject *cont = NULL;
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
             fz_buffer *buf = NULL;
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                int i = FindEmbedded(gctx, id, pdf);
+                int i = JM_FindEmbedded(gctx, id, pdf);
                 if (i < 0) THROWMSG("entry not found");
                 unsigned char *data;
                 buf = pdf_portfolio_entry(gctx, pdf, i);
@@ -492,12 +493,12 @@ struct fz_document_s
                 assert_PDF(pdf);
             }
             fz_catch(gctx) return -1;
-            if (file_len == 0)                  // no filename given
+            if (file_len == 0)              // no filename given
                 {
                    f = name;                // take the name
                    file_len = name_len;
                 }
-            if (desc_len == 0)                  // no description given
+            if (desc_len == 0)              // no description given
                 {
                     d = name;               // take the name
                     desc_len = name_len;
@@ -668,6 +669,7 @@ struct fz_document_s
                     THROWMSG("decrypted file - save to new");
                 pdf_finish_edit(gctx, pdf);
                 pdf_save_document(gctx, pdf, filename, &opts);
+                pdf->dirty = 0;
                 }
             fz_catch(gctx) return NULL;
             return NONE;
@@ -715,6 +717,7 @@ struct fz_document_s
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 pdf_write_document(gctx, pdf, out, &opts);
+                pdf->dirty = 0;
                 len = fz_buffer_storage(gctx, res, &c);
                 r = PyBytes_FromStringAndSize(c, len);
             }
@@ -1612,6 +1615,7 @@ if links:
                     self.thisown = False
                     self.__swig_destroy__(self)
                 self.Graftmaps = {}
+                self.stream    = None
                 self._reset_page_refs = DUMMY
                 self.__swig_destroy__ = DUMMY
                 self.isClosed = True
