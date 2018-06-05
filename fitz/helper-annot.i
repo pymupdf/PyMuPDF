@@ -11,7 +11,7 @@ void refresh_link_table(fz_context *ctx, pdf_page *page)
         fz_matrix page_ctm;
         pdf_page_transform(ctx, page, &page_mediabox, &page_ctm);
         page->links = pdf_load_link_annots(ctx, page->doc, annots_arr,
-                                           pdf_to_num(gctx, page->obj), &page_ctm);
+                                           pdf_to_num(ctx, page->obj), &page_ctm);
         pdf_load_annots(ctx, page, annots_arr);
     }
     return;
@@ -130,4 +130,131 @@ char *annot_type_str(int type)
     default: return "";
     }
 }
+
+//-----------------------------------------------------------------------------
+// create a strike-out / underline / highlight annotation
+//-----------------------------------------------------------------------------
+struct fz_annot_s *JM_AnnotTextmaker(fz_context *ctx, pdf_page *page, fz_rect *rect, int type)
+{
+    pdf_annot *annot;
+    float line_thickness;
+    float line_height;
+    float alpha;
+    float h  = rect->y1 - rect->y0;
+    fz_rect bbox = {rect->x0, rect->y0, rect->x1, rect->y1};
+    float color[3];
+	switch (type)
+	{
+		case PDF_ANNOT_HIGHLIGHT:
+			color[0] = 0.933333f;
+			color[1] = 0.788235f;
+			color[2] = 0.0f;
+			alpha = 0.3f;
+			line_thickness = 1.0f;
+			line_height = 0.5f;
+			break;
+		case PDF_ANNOT_UNDERLINE:
+			color[0] = 0.0f;
+			color[1] = 0.0f;
+			color[2] = 1.0f;
+			alpha = 1.0f;
+			line_thickness = 0.07f;
+			line_height = 0.075f;
+            bbox.y0 += 0.8f * h;
+            bbox.y1 += 0.8f * h;
+			break;
+		case PDF_ANNOT_STRIKE_OUT:
+			color[0] = 1.0f;
+			color[1] = 0.0f;
+			color[2] = 0.0f;
+			alpha = 1.0f;
+			line_thickness = 0.07f;
+			line_height = 0.375f;
+            bbox.y0 += 0.17f * h;
+            bbox.y1 += 0.17f * h;
+			break;
+	}
+    fz_try(ctx)
+    {
+        pdf_document *pdf = page->doc;
+        annot = pdf_create_annot(ctx, page, type);
+        pdf_set_annot_color(ctx, annot, 3, color);
+        pdf_set_annot_border(ctx, annot, line_thickness);
+        pdf_add_annot_quad_point(ctx, annot, bbox);
+        pdf_set_annot_rect(ctx, annot, &bbox);
+        pdf_set_markup_appearance(ctx, pdf, annot, color, alpha, line_thickness, line_height);
+    }
+    fz_catch(ctx) fz_rethrow(ctx);
+    return (fz_annot *) annot;
+}
+
+//-----------------------------------------------------------------------------
+// create a circle or rectangle annotation
+//-----------------------------------------------------------------------------
+struct fz_annot_s *JM_AnnotCircleOrRect(fz_context *ctx, pdf_page *page, fz_rect *rect, int type)
+{
+    pdf_annot *annot;
+    float col[3] = {0,0,0};
+    float width  = 1;
+    fz_try(ctx)
+    {
+        pdf_document *pdf = page->doc;
+        annot = pdf_create_annot(ctx, page, type);
+        pdf_set_annot_border(ctx, annot, width);
+        pdf_set_annot_color(ctx, annot, 3, col);
+        pdf_set_annot_rect(ctx, annot, rect);
+        pdf_obj *rd = pdf_new_array(ctx, pdf, 4);
+        pdf_dict_puts_drop(ctx, annot->obj, "RD", rd);
+        for (int i = 0; i < 4; i++)
+            pdf_array_push_real(ctx, rd, width);
+    }
+    fz_catch(ctx) fz_rethrow(ctx);
+    return (fz_annot *) annot;
+}
+
+//-----------------------------------------------------------------------------
+// create a polyline or polygon annotation
+//-----------------------------------------------------------------------------
+struct fz_annot_s *JM_AnnotMultiline(fz_context *ctx, pdf_page *page, PyObject *points, int type)
+{
+    pdf_annot *annot;
+    fz_try(ctx)
+    {
+        float col[3] = {0,0,0};
+        float width  = 1;
+        fz_point point = {0,0};
+        fz_rect rect;
+        
+        int n = 0, i;
+        if (PySequence_Check(points)) n = PySequence_Size(points);
+        if (n < 2) THROWMSG("invalid points list");
+        annot = pdf_create_annot(ctx, page, type);
+        for (i = 0; i < n; i++)
+        {
+            PyObject *p = PySequence_ITEM(points, i);
+            if (!PySequence_Check(p) || PySequence_Size(p) != 2)
+                THROWMSG("invalid points list");
+            // ===> treating a fitz.Point as a 2-tuple seems to work!
+            point.x = (float) PyFloat_AsDouble(PySequence_GetItem(p, 0));
+            point.y = (float) PyFloat_AsDouble(PySequence_GetItem(p, 1));
+            Py_DECREF(p);
+            pdf_add_annot_vertex(ctx, annot, point);
+            if (i == 0)
+            {
+                rect.x0 = point.x;
+                rect.y0 = point.y;
+                rect.x1 = point.x;
+                rect.y1 = point.y;
+            }
+            else
+                fz_include_point_in_rect(&rect, &point);
+        }
+        pdf_set_annot_border(ctx, annot, width); // standard: width = 1
+        pdf_set_annot_color(ctx, annot, 3, col); // standard: black
+        pdf_set_annot_rect(ctx, annot, &rect);
+    }
+    fz_catch(ctx) fz_rethrow(ctx);
+    return (fz_annot *) annot;
+}
+
 %}

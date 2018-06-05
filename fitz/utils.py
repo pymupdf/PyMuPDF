@@ -1208,8 +1208,6 @@ def updateImage(annot):
         ntab = []
         in_text_block = False          # if True do nothing
         for i in range(len(tab)):
-            if tab[i] == b"Do":        # another XObject invoked
-                raise ValueError("nested XObject calls not supported")
             ntab.append(tab[i])        # store in output
             if tab[i] == b"BT":        # begin of text block
                 in_text_block = True   # switch on
@@ -1217,12 +1215,15 @@ def updateImage(annot):
             if tab[i] == b"ET":        # end of text block
                 in_text_block = False  # switch off
                 continue
-            if in_text_block:          # skip if in text block
+            if in_text_block:          # next token if in text block
                 continue
-            if ftab[4] and (tab[i] == b"s"):     # fill color provided
+            if tab[i] == b"Do":        # another XObject invoked
+                print("warning: skipping nested XObject call")
+                continue
+            if ftab and (tab[i] == b"s"):     # fill color provided
                 ntab[-1] = b"b"        # make sure it is used
                 continue
-            if ctab[4]:                # stroke color provided
+            if ctab:                   # stroke color provided
                 if tab[i] == b"G":     # it is a gray
                     del ntab[-2:]
                     ntab.extend(ctab)
@@ -1235,7 +1236,7 @@ def updateImage(annot):
                     del ntab[len(ntab)-5:]
                     ntab.extend(ctab)
                     continue
-            if ftab[4]:                # fill color provided
+            if ftab:                # fill color provided
                 if tab[i] == b"g":     # it is a gray
                     del ntab[-2:]
                     ntab.extend(ftab)
@@ -1248,11 +1249,11 @@ def updateImage(annot):
                     del ntab[len(ntab)-5:]
                     ntab.extend(ftab)
                     continue
-            if wtab[1]:                # width value provided
+            if wtab:                # width value provided
                 if tab[i] == b"w":
                     ntab[-2] = wtab[0]
                     continue
-            if dtab[1]:                # dashes provided
+            if dtab:                # dashes provided
                 if tab[i] == b"d":
                     j = len(ntab) - 1
                     x = b"d"
@@ -1263,72 +1264,54 @@ def updateImage(annot):
                     ntab.extend(dtab)
         return ntab
         
-    ap = annot._getAP() # get appearance text
+    ap = annot._getAP() # get appearance text if present
+    if not ap:
+        return
     aptab = ap.split() # decompose into a list
         
     # prepare width, colors and dashes lists
     # fill color
-    c = annot.colors.get("fill")
-    ftab = [b""]*5
-    if c and len(c) > 0:
-        l = len(c)
-        if l == 4:
-            ftab[4] = b"k"
-            for i in range(4):
-                ftab[i] = str(round(c[i],4)).encode("utf-8")
-        elif l == 3:
-            ftab[4] = b"rg"
-            for i in range(1, 4):
-                ftab[i] = str(round(c[i-1],4)).encode("utf-8")
-        elif l == 1:
-            ftab[4] = b"g"
-            ftab[3] = str(round(c[0],4)).encode("utf-8")
+    cols = annot.colors.get("fill", [])
+    ftab = []
+    for c in cols:
+        ftab.append(b"%g" % c)
+    l = len(cols)
+    if   l == 4: ftab.append(b"k")
+    elif l == 3: ftab.append(b"rg")
+    elif l == 1: ftab.append(b"g")
 
     # stroke color
-    c = annot.colors.get("common")
-    ctab = [b""]*5
-    if c and len(c) > 0:
-        l = len(c)
-        if l == 4:
-            ctab[4] = b"K"
-            for i in range(4):
-                ctab[i] = str(round(c[i], 4)).encode("utf-8")
-        elif l == 3:
-            ctab[4] = b"RG"
-            for i in range(1, 4):
-                ctab[i] = str(round(c[i-1], 4)).encode("utf-8")
-        elif l == 1:
-            ctab[4] = b"G"
-            ctab[3] = str(round(c[0], 4)).encode("utf-8")
+    cols = annot.colors.get("stroke", [])
+    ctab = []
+    for c in cols:
+        ctab.append(b"%g" % c)
+    l = len(cols)
+    if   l == 4: ctab.append(b"K")
+    elif l == 3: ctab.append(b"RG")
+    elif l == 1: ctab.append(b"G")
 
     # border width
     c = annot.border.get("width")
-    wtab = [b"", b""]
+    wtab = []
     if c:
-        wtab[0] = str(round(c, 4)).encode("utf-8")
-        wtab[1] = b"w"
+        wtab = [b"%g" % c, b"w"]
 
     # dash pattern
     c = annot.border.get("dashes")
-    dtab = [b""]*2
-    if not c is None:
-        dtab[1] = b"0 d"
-        dtab[0] = b"["
+    dtab = []
+    if c:
+        dtab = [b"[", b"]0 d"]
         for n in c:
-            if n > 0:
-                dtab[0] += str(n).encode("utf-8") + b" "
-        dtab[0] += b"]"
+            if n == 0:
+                break
+            dtab[0] += b"%i " % n
 
-    outlist = []
-    outlist += ftab if ftab[4] else []
-    outlist += ctab if ctab[4] else []
-    outlist += wtab if wtab[1] else []
-    outlist += dtab if dtab[1] else []
+    outlist = ftab + ctab + wtab + dtab
     if not outlist:
         return
+    outlist = [b"q"] + outlist
     # make sure we insert behind a leading "save graphics state"
-    if aptab[0] == b"q":
-        outlist = [b"q"] + outlist
+    while aptab[0] == b"q":
         aptab = aptab[1:]
     # now change every color, width and dashes spec
     aptab = modAP(aptab, ctab, ftab, wtab, dtab)

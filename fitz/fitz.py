@@ -102,9 +102,9 @@ import sys
 
 
 VersionFitz = "1.13.0"
-VersionBind = "1.13.6"
-VersionDate = "2018-05-27 05:27:32"
-version = (VersionBind, VersionFitz, "20180527052732")
+VersionBind = "1.13.7"
+VersionDate = "2018-06-05 07:37:48"
+version = (VersionBind, VersionFitz, "20180605073748")
 
 
 #------------------------------------------------------------------------------
@@ -157,7 +157,9 @@ Base14_fontnames = ("Courier", "Courier-Oblique", "Courier-Bold",
 #------------------------------------------------------------------------------
 class linkDest():
     '''link or outline destination details'''
-    def __init__(self, obj):
+    def __init__(self, obj, rlink):
+        isExt = obj.isExternal
+        isInt = not isExt
         self.dest = ""
         self.fileSpec = ""
         self.flags = 0
@@ -170,13 +172,15 @@ class linkDest():
         self.page = obj.page
         self.rb = Point(0, 0)
         self.uri = obj.uri
+        if rlink and not self.uri.startswith("#"):
+            self.uri = "#%i,%g,%g" % (rlink[0]+1, rlink[1], rlink[2])
         if obj.isExternal:
             self.page = -1
             self.kind = LINK_URI
         if not self.uri:
             self.page = -1
             self.kind = LINK_NONE
-        if not obj.isExternal and self.uri:
+        if isInt and self.uri:
             if self.uri.startswith("#"):
                 self.named = ""
                 self.kind = LINK_GOTO
@@ -478,8 +482,8 @@ def ConversionTrailer(i):
 
 class Document(_object):
     """open() - new empty PDF
-open('pdf', stream) - from bytes/bytearray
-open(filename, filetype=None) - from file"""
+open('type', stream) - from bytes/bytearray
+open(filename, filetype='type') - from file"""
 
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Document, name, value)
@@ -489,8 +493,8 @@ open(filename, filetype=None) - from file"""
     __swig_destroy__ = _fitz.delete_Document
     __del__ = lambda self: None
 
-    def __init__(self, filename=None, stream=None, filetype=None):
-        """__init__(self, filename=None, stream=None, filetype=None) -> Document"""
+    def __init__(self, filename=None, stream=None, filetype=None, rect=None, fontsize=11):
+        """__init__(self, filename=None, stream=None, filetype=None, rect=None, fontsize=11) -> Document"""
 
         if not filename or type(filename) == str:
             pass
@@ -507,14 +511,14 @@ open(filename, filetype=None) - from file"""
         self.isClosed    = False
         self.isEncrypted = 0
         self.metadata    = None
-        self.stream      = stream
+        self.stream      = stream       # do not garbage collect it
         self.openErrCode = 0
         self.openErrMsg  = ''
         self.FontInfos   = []
         self.Graftmaps   = {}
         self._page_refs  = weakref.WeakValueDictionary()
 
-        this = _fitz.new_Document(filename, stream, filetype)
+        this = _fitz.new_Document(filename, stream, filetype, rect, fontsize)
         try:
             self.this.append(this)
         except __builtin__.Exception:
@@ -524,7 +528,6 @@ open(filename, filetype=None) - from file"""
             self.openErrCode = self._getGCTXerrcode()
             self.openErrMsg  = self._getGCTXerrmsg()
             self.thisown = True
-            self.isClosed    = False
             if self.needsPass:
                 self.isEncrypted = 1
             else: # we won't init until doc is decrypted
@@ -545,6 +548,7 @@ open(filename, filetype=None) - from file"""
             self._outline = None
         self._reset_page_refs()
         self.metadata    = None
+        self.stream      = None
         self.isClosed    = True
         self.openErrCode = 0
         self.openErrMsg  = ''
@@ -675,6 +679,31 @@ open(filename, filetype=None) - from file"""
             raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_needsPass(self)
+
+
+    def resolveLink(self, uri=None):
+        """resolveLink(self, uri=None) -> PyObject *"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document_resolveLink(self, uri)
+
+
+    def layout(self, rect, fontsize=11):
+        """layout(self, rect, fontsize=11) -> PyObject *"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document_layout(self, rect, fontsize)
+
+    @property
+
+    def isReflowable(self):
+        """isReflowable(self) -> PyObject *"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document_isReflowable(self)
 
     @property
 
@@ -1098,6 +1127,7 @@ open(filename, filetype=None) - from file"""
             self.thisown = False
             self.__swig_destroy__(self)
         self.Graftmaps = {}
+        self.stream    = None
         self._reset_page_refs = DUMMY
         self.__swig_destroy__ = DUMMY
         self.isClosed = True
@@ -1145,6 +1175,165 @@ class Page(_object):
         CheckParent(self)
 
         return _fitz.Page_getSVGimage(self, matrix)
+
+
+    def addLineAnnot(self, p1, p2):
+        """addLineAnnot(self, p1, p2) -> Annot"""
+        CheckParent(self)
+
+        val = _fitz.Page_addLineAnnot(self, p1, p2)
+
+        if val:
+            val.thisown = True
+            val.parent = weakref.proxy(self) # owning page object
+            self._annot_refs[id(val)] = val
+
+
+        return val
+
+
+    def addTextAnnot(self, point, text):
+        """addTextAnnot(self, point, text) -> Annot"""
+        CheckParent(self)
+
+        val = _fitz.Page_addTextAnnot(self, point, text)
+
+        if val:
+            val.thisown = True
+            val.parent = weakref.proxy(self) # the parent page
+            self._annot_refs[id(val)] = val  # record annot in page dict
+
+
+        return val
+
+
+    def addStrikeoutAnnot(self, rect):
+        """addStrikeoutAnnot(self, rect) -> Annot"""
+        CheckParent(self)
+
+        val = _fitz.Page_addStrikeoutAnnot(self, rect)
+
+        if val:
+            val.thisown = True
+            val.parent = weakref.proxy(self) # the parent page
+            self._annot_refs[id(val)] = val  # record annot in page dict
+
+
+        return val
+
+
+    def addUnderlineAnnot(self, rect):
+        """addUnderlineAnnot(self, rect) -> Annot"""
+        CheckParent(self)
+
+        val = _fitz.Page_addUnderlineAnnot(self, rect)
+
+        if val:
+            val.thisown = True
+            val.parent = weakref.proxy(self) # the parent page
+            self._annot_refs[id(val)] = val  # record annot in page dict
+
+
+        return val
+
+
+    def addHighlightAnnot(self, rect):
+        """addHighlightAnnot(self, rect) -> Annot"""
+        CheckParent(self)
+
+        val = _fitz.Page_addHighlightAnnot(self, rect)
+
+        if val:
+            val.thisown = True
+            val.parent = weakref.proxy(self) # the parent page
+            self._annot_refs[id(val)] = val  # record annot in page dict
+
+
+        return val
+
+
+    def addRectAnnot(self, rect):
+        """addRectAnnot(self, rect) -> Annot"""
+        CheckParent(self)
+
+        val = _fitz.Page_addRectAnnot(self, rect)
+
+        if val:
+            val.thisown = True
+            val.parent = weakref.proxy(self) # the parent page
+            self._annot_refs[id(val)] = val  # record annot in page dict
+
+
+        return val
+
+
+    def addCircleAnnot(self, rect):
+        """addCircleAnnot(self, rect) -> Annot"""
+        CheckParent(self)
+
+        val = _fitz.Page_addCircleAnnot(self, rect)
+
+        if val:
+            val.thisown = True
+            val.parent = weakref.proxy(self) # owning page object
+            self._annot_refs[id(val)] = val
+
+
+        return val
+
+
+    def addPolylineAnnot(self, points):
+        """addPolylineAnnot(self, points) -> Annot"""
+        CheckParent(self)
+
+        val = _fitz.Page_addPolylineAnnot(self, points)
+
+        if val:
+            val.thisown = True
+            val.parent = weakref.proxy(self) # owning page object
+            self._annot_refs[id(val)] = val
+
+
+        return val
+
+
+    def addPolygonAnnot(self, points):
+        """addPolygonAnnot(self, points) -> Annot"""
+        CheckParent(self)
+
+        val = _fitz.Page_addPolygonAnnot(self, points)
+
+        if val:
+            val.thisown = True
+            val.parent = weakref.proxy(self) # owning page object
+            self._annot_refs[id(val)] = val
+
+
+        return val
+
+
+    def addFreetextAnnot(self, pos, text, fontsize=11, color=None):
+        """addFreetextAnnot(self, pos, text, fontsize=11, color=None) -> Annot"""
+
+        CheckParent(self)
+        t = ""
+        for c in text:
+            if 32 <= ord(c) <= 127:
+                t += c
+            else:
+                t += "?"
+        text = t
+
+
+        val = _fitz.Page_addFreetextAnnot(self, pos, text, fontsize, color)
+
+        if val:
+            val.thisown = True
+            val.parent = weakref.proxy(self) # owning page object
+            self._annot_refs[id(val)] = val
+
+
+        return val
 
 
     def getDisplayList(self):
@@ -2108,7 +2297,7 @@ class Outline(_object):
     @property
     def dest(self):
         '''outline destination details'''
-        return linkDest(self)
+        return linkDest(self, None)
 
     __swig_destroy__ = _fitz.delete_Outline
     __del__ = lambda self: None
@@ -2279,14 +2468,14 @@ class Annot(_object):
     @property
 
     def rect(self):
-        """rect: rectangle containing the annot"""
+        """Rectangle containing the annot"""
         CheckParent(self)
 
         return _fitz.Annot_rect(self)
 
 
     def _getXref(self):
-        """return xref number of annotation"""
+        """Xref number of annotation"""
         CheckParent(self)
 
         return _fitz.Annot__getXref(self)
@@ -2315,7 +2504,7 @@ class Annot(_object):
     @property
 
     def vertices(self):
-        """vertices: point coordinates for various annot types"""
+        """Point coordinates for various annot types"""
         CheckParent(self)
 
         return _fitz.Annot_vertices(self)
@@ -2329,10 +2518,17 @@ class Annot(_object):
         return _fitz.Annot_colors(self)
 
 
+    def updateAppearance(self):
+        """Update the appearance of an annotation."""
+        CheckParent(self)
+
+        return _fitz.Annot_updateAppearance(self)
+
+
     def setColors(self, colors):
         """
         setColors(dict)
-        Changes the 'common' and 'fill' colors of an annotation. If provided, values must be lists of up to 4 floats.
+        Changes the 'stroke' and 'fill' colors of an annotation. If provided, values must be lists of up to 4 floats.
         """
         CheckParent(self)
 
@@ -2360,6 +2556,21 @@ class Annot(_object):
         CheckParent(self)
 
         return _fitz.Annot_type(self)
+
+    @property
+
+    def opacity(self):
+        """opacity(self) -> float"""
+        CheckParent(self)
+
+        return _fitz.Annot_opacity(self)
+
+
+    def setOpacity(self, opacity):
+        """setOpacity(self, opacity)"""
+        CheckParent(self)
+
+        return _fitz.Annot_setOpacity(self, opacity)
 
     @property
 
@@ -2549,7 +2760,8 @@ class Link(_object):
             raise ValueError("orphaned object: parent is None")
         if self.parent.parent.isClosed:
             raise ValueError("operation illegal for closed doc")
-        return linkDest(self)        
+        doc = self.parent.parent
+        return linkDest(self, doc.resolveLink(self.uri))
 
     @property
 

@@ -49,7 +49,9 @@ Base14_fontnames = ("Courier", "Courier-Oblique", "Courier-Bold",
 #------------------------------------------------------------------------------
 class linkDest():
     '''link or outline destination details'''
-    def __init__(self, obj):
+    def __init__(self, obj, rlink):
+        isExt = obj.isExternal
+        isInt = not isExt
         self.dest = ""
         self.fileSpec = ""
         self.flags = 0
@@ -62,13 +64,15 @@ class linkDest():
         self.page = obj.page
         self.rb = Point(0, 0)
         self.uri = obj.uri
+        if rlink and not self.uri.startswith("#"):
+            self.uri = "#%i,%g,%g" % (rlink[0]+1, rlink[1], rlink[2])
         if obj.isExternal:
             self.page = -1
             self.kind = LINK_URI
         if not self.uri:
             self.page = -1
             self.kind = LINK_NONE
-        if not obj.isExternal and self.uri:
+        if isInt and self.uri:
             if self.uri.startswith("#"):
                 self.named = ""
                 self.kind = LINK_GOTO

@@ -18,6 +18,10 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
     fz_buffer *contents = NULL;
     pdf_obj *resources = NULL;
     fz_page *page;
+    fz_var(dev);
+    fz_var(contents);
+    fz_var(resources);
+    fz_var(page);
     for (i = fp; INRANGE(i, s, e); i += incr)
     {   // interpret & write document pages as PDF pages
         fz_try(ctx)
