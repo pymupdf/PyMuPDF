@@ -2,6 +2,7 @@
 
 Program | Purpose
 ------- | -------
+annot-tests.py | produce a PDF with assorted annotations
 caustic.py | demo producing a PDF with the catacaustic
 list-fields.py | prints field information for a Form PDF
 demo.py | demonstrates a broad range of PyMuPDF high-level functions
