@@ -102,9 +102,9 @@ import sys
 
 
 VersionFitz = "1.13.0"
-VersionBind = "1.13.7"
-VersionDate = "2018-06-05 07:37:48"
-version = (VersionBind, VersionFitz, "20180605073748")
+VersionBind = "1.13.8"
+VersionDate = "2018-06-07 17:10:40"
+version = (VersionBind, VersionFitz, "20180607171040")
 
 
 #------------------------------------------------------------------------------
@@ -1314,16 +1314,7 @@ class Page(_object):
 
     def addFreetextAnnot(self, pos, text, fontsize=11, color=None):
         """addFreetextAnnot(self, pos, text, fontsize=11, color=None) -> Annot"""
-
         CheckParent(self)
-        t = ""
-        for c in text:
-            if 32 <= ord(c) <= 127:
-                t += c
-            else:
-                t += "?"
-        text = t
-
 
         val = _fitz.Page_addFreetextAnnot(self, pos, text, fontsize, color)
 
@@ -2848,11 +2839,6 @@ class DisplayList(_object):
         """getTextPage(self, flags=3) -> TextPage"""
         return _fitz.DisplayList_getTextPage(self, flags)
 
-
-    def __del__(self):
-        if not type(self) is DisplayList: return
-        self.__swig_destroy__(self)
-
 DisplayList_swigregister = _fitz.DisplayList_swigregister
 DisplayList_swigregister(DisplayList)
 
@@ -2876,8 +2862,17 @@ class TextPage(_object):
     __del__ = lambda self: None
 
     def search(self, needle, hit_max=16):
-        """search(self, needle, hit_max=16) -> Rect"""
-        return _fitz.TextPage_search(self, needle, hit_max)
+        """search(self, needle, hit_max=16) -> PyObject *"""
+        val = _fitz.TextPage_search(self, needle, hit_max)
+
+        if val:
+            nval = []
+            for r in val:
+                nval.append(Rect(r))
+            val = nval
+
+
+        return val
 
 
     def _extractTextBlocks_AsList(self):
@@ -2926,10 +2921,6 @@ class TextPage(_object):
 
     def extractDICT(self):
         return self._extractText(5)
-
-    def __del__(self):
-        if not type(self) is TextPage: return
-        self.__swig_destroy__(self)
 
 TextPage_swigregister = _fitz.TextPage_swigregister
 TextPage_swigregister(TextPage)

@@ -33,7 +33,7 @@
 %feature("autodoc", "0");
 
 %{
-// #define MEMDEBUG
+//#define MEMDEBUG
 #ifdef MEMDEBUG
 #define DEBUGMSG1(x) fprintf(stderr, "[DEBUG] free %s ", x)
 #define DEBUGMSG2 fprintf(stderr, "... done!\n")
@@ -63,7 +63,7 @@
 #define JM_BinFromBuffer(ctx, x) PyByteArray_FromStringAndSize(fz_string_from_buffer(ctx, x), (Py_ssize_t) fz_buffer_storage(ctx, x, NULL))
 # endif
 // define Python None object
-#define NONE SWIG_Py_Void()
+#define NONE Py_BuildValue("s", NULL)
 #include <fitz.h>
 #include <pdf.h>
 #include <zlib.h>
@@ -553,7 +553,7 @@ struct fz_document_s
         %feature("autodoc","Convert document to PDF selecting copy range and optional rotation. Output bytes object.") convertToPDF;
         PyObject *convertToPDF(int from_page=0, int to_page=-1, int rotate=0)
         {
-            PyObject *doc;
+            PyObject *doc = NULL;
             fz_try(gctx)
             {
                 int fp = from_page, tp = to_page, srcCount = fz_count_pages(gctx, $self);
@@ -1761,12 +1761,13 @@ struct fz_page_s {
         struct fz_annot_s *addLineAnnot(struct fz_point_s *p1, struct fz_point_s *p2)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            pdf_annot *annot;
+            pdf_annot *annot = NULL;
             float col[3] = {0,0,0};
-            float width  = 1;
+            float width  = 1.0f;
             fz_point a = {p1->x, p1->y};
             fz_point b = {p2->x, p2->y};
             fz_rect r  = {MIN(a.x, b.x), MIN(a.y, b.y), MAX(a.x, b.x), MAX(a.y, b.y)};
+            fz_var(annot);
             fz_try(gctx)
             {
                 assert_PDF(page);
@@ -1778,7 +1779,9 @@ struct fz_page_s {
                 pdf_set_annot_rect(gctx, annot, &r);
             }
             fz_catch(gctx) return NULL;
-            return (fz_annot *) annot;
+            fz_annot *fzannot = (fz_annot *) annot;
+            fz_keep_annot(gctx, fzannot);
+            return fzannot;
         }
 
         //---------------------------------------------------------------------
@@ -1795,9 +1798,10 @@ struct fz_page_s {
         struct fz_annot_s *addTextAnnot(struct fz_point_s *point, char *text)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            pdf_annot *annot;
+            pdf_annot *annot = NULL;
             char *name = "Note";
             fz_point pos = {point->x, point->y};
+            fz_var(annot);
             fz_try(gctx)
             {
                 assert_PDF(page);
@@ -1808,7 +1812,9 @@ struct fz_page_s {
                 pdf_update_appearance(gctx, annot);
             }
             fz_catch(gctx) return NULL;
-            return (fz_annot *) annot;
+            fz_annot *fzannot = (fz_annot *) annot;
+            fz_keep_annot(gctx, fzannot);
+            return fzannot;
         }
 
         //---------------------------------------------------------------------
@@ -1825,14 +1831,17 @@ struct fz_page_s {
         struct fz_annot_s *addStrikeoutAnnot(struct fz_rect_s *rect)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            fz_annot *annot;
+            fz_annot *annot = NULL;
+            fz_var(annot);
             fz_try(gctx)
             {
                 assert_PDF(page);
-                annot = JM_AnnotTextmaker(gctx, page, rect, PDF_ANNOT_STRIKE_OUT);
+                annot = JM_AnnotTextmarker(gctx, page, rect, PDF_ANNOT_STRIKE_OUT);
             }
             fz_catch(gctx) return NULL;
-            return annot;
+            fz_annot *fzannot = (fz_annot *) annot;
+            fz_keep_annot(gctx, fzannot);
+            return fzannot;
         }
 
         //---------------------------------------------------------------------
@@ -1849,14 +1858,17 @@ struct fz_page_s {
         struct fz_annot_s *addUnderlineAnnot(struct fz_rect_s *rect)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            fz_annot *annot;
+            fz_annot *annot = NULL;
+            fz_var(annot);
             fz_try(gctx)
             {
                 assert_PDF(page);
-                annot = JM_AnnotTextmaker(gctx, page, rect, PDF_ANNOT_UNDERLINE);
+                annot = JM_AnnotTextmarker(gctx, page, rect, PDF_ANNOT_UNDERLINE);
             }
             fz_catch(gctx) return NULL;
-            return annot;
+            fz_annot *fzannot = (fz_annot *) annot;
+            fz_keep_annot(gctx, fzannot);
+            return fzannot;
         }
 
         //---------------------------------------------------------------------
@@ -1873,14 +1885,17 @@ struct fz_page_s {
         struct fz_annot_s *addHighlightAnnot(struct fz_rect_s *rect)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            fz_annot *annot;
+            fz_annot *annot = NULL;
+            fz_var(annot);
             fz_try(gctx)
             {
                 assert_PDF(page);
-                annot = JM_AnnotTextmaker(gctx, page, rect, PDF_ANNOT_HIGHLIGHT);
+                annot = JM_AnnotTextmarker(gctx, page, rect, PDF_ANNOT_HIGHLIGHT);
             }
             fz_catch(gctx) return NULL;
-            return annot;
+            fz_annot *fzannot = (fz_annot *) annot;
+            fz_keep_annot(gctx, fzannot);
+            return fzannot;
         }
 
         //---------------------------------------------------------------------
@@ -1897,14 +1912,17 @@ struct fz_page_s {
         struct fz_annot_s *addRectAnnot(struct fz_rect_s *rect)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            fz_annot *annot;
+            fz_annot *annot = NULL;
+            fz_var(annot);
             fz_try(gctx)
             {
                 assert_PDF(page);
                 annot = JM_AnnotCircleOrRect(gctx, page, rect, PDF_ANNOT_SQUARE);
             }
             fz_catch(gctx) return NULL;
-            return annot;
+            fz_annot *fzannot = (fz_annot *) annot;
+            fz_keep_annot(gctx, fzannot);
+            return fzannot;
         }
 
         //---------------------------------------------------------------------
@@ -1921,14 +1939,17 @@ struct fz_page_s {
         struct fz_annot_s *addCircleAnnot(struct fz_rect_s *rect)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            fz_annot *annot;
+            fz_annot *annot = NULL;
+            fz_var(annot);
             fz_try(gctx)
             {
                 assert_PDF(page);
                 annot = JM_AnnotCircleOrRect(gctx, page, rect, PDF_ANNOT_CIRCLE);
             }
             fz_catch(gctx) return NULL;
-            return annot;
+            fz_annot *fzannot = (fz_annot *) annot;
+            fz_keep_annot(gctx, fzannot);
+            return fzannot;
         }
 
         //---------------------------------------------------------------------
@@ -1945,14 +1966,17 @@ struct fz_page_s {
         struct fz_annot_s *addPolylineAnnot(PyObject *points)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            fz_annot *annot;
+            fz_annot *annot = NULL;
+            fz_var(annot);
             fz_try(gctx)
             {
                 assert_PDF(page);
                 annot = JM_AnnotMultiline(gctx, page, points, PDF_ANNOT_POLY_LINE);
             }
             fz_catch(gctx) return NULL;
-            return annot;
+            fz_annot *fzannot = (fz_annot *) annot;
+            fz_keep_annot(gctx, fzannot);
+            return fzannot;
         }
 
         //---------------------------------------------------------------------
@@ -1969,30 +1993,24 @@ struct fz_page_s {
         struct fz_annot_s *addPolygonAnnot(PyObject *points)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            fz_annot *annot;
+            fz_annot *annot = NULL;
+            fz_var(annot);
             fz_try(gctx)
             {
                 assert_PDF(page);
                 annot = JM_AnnotMultiline(gctx, page, points, PDF_ANNOT_POLYGON);
             }
             fz_catch(gctx) return NULL;
-            return annot;
+            fz_annot *fzannot = (fz_annot *) annot;
+            fz_keep_annot(gctx, fzannot);
+            return fzannot;
         }
 
         //---------------------------------------------------------------------
         // page addFreetextAnnot
         //---------------------------------------------------------------------
         FITZEXCEPTION(addFreetextAnnot, !result)
-        %pythonprepend addFreetextAnnot %{
-        CheckParent(self)
-        t = ""
-        for c in text:
-            if 32 <= ord(c) <= 127:
-                t += c
-            else:
-                t += "?"
-        text = t
-        %}
+        PARENTCHECK(addFreetextAnnot)
         %pythonappend addFreetextAnnot %{
         if val:
             val.thisown = True
@@ -2003,26 +2021,31 @@ struct fz_page_s {
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             float col[3] = {0, 0, 0};
-            if (color && PySequence_Check(color))
+            if (color && PySequence_Check(color) && PySequence_Size(color) == 3)
             {
                 col[0] = (float) PyFloat_AsDouble(PySequence_GetItem(color, 0));
                 col[1] = (float) PyFloat_AsDouble(PySequence_GetItem(color, 1));
                 col[2] = (float) PyFloat_AsDouble(PySequence_GetItem(color, 2));
             }
             char *fname = "Helvetica";
-            pdf_annot *annot;
-
+            pdf_annot *annot = NULL;
+            char *ascii = JM_ASCIIFromChar(text);
+            fz_var(ascii);
+            fz_var(annot);
             fz_try(gctx)
             {
                 assert_PDF(page);
                 pdf_document *pdf = page->doc;
                 annot = pdf_create_annot(gctx, page, PDF_ANNOT_FREE_TEXT);
                 pdf_set_free_text_details(gctx, annot, pos,
-                                          text, fname, fontsize, col);
+                                          ascii, fname, fontsize, col);
                 pdf_update_free_text_annot_appearance(gctx, pdf, annot);
             }
+            fz_always(gctx) free(ascii);
             fz_catch(gctx) return NULL;
-            return (fz_annot *) annot;
+            fz_annot *fzannot = (fz_annot *) annot;
+            fz_keep_annot(gctx, fzannot);
+            return fzannot;
         }
 
         //---------------------------------------------------------------------
@@ -4604,11 +4627,10 @@ struct fz_annot_s
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
             if (!annot) return;
             if (!PyDict_Check(colors)) return;
-            pdf_document *pdf = annot->page->doc;
             PyObject *ccol, *icol;
             ccol = PyDict_GetItemString(colors, "stroke");
             icol = PyDict_GetItemString(colors, "fill");
-            int i, n, type = pdf_annot_type(gctx, annot);
+            int i, n;
             float col[4];
             n = 0;
             if (ccol)
@@ -5024,12 +5046,17 @@ struct fz_annot_s
         PyObject *setInfo(PyObject *info)
         {
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
-            pdf_document *pdf;
+            pdf_document *pdf = NULL;
             if (annot) pdf = annot->page->doc;
-            PyObject *value;
+            PyObject *value = NULL;
             char *uc = NULL;
             // ensure we have valid dictionary keys ...
             int dictvalid = checkDictKeys(info, "content", "title", "modDate", "creationDate", "subject", "name", 0);
+            // use this to indicate a 'markup' annot type
+            int is_markup = pdf_annot_has_author(gctx, annot);
+            fz_var(is_markup);
+            fz_var(annot);
+            fz_var(pdf);
             fz_try(gctx)
             {
                 assert_PDF(annot);
@@ -5037,27 +5064,26 @@ struct fz_annot_s
                     THROWMSG("info not a dict");
                 if (!dictvalid)
                     THROWMSG("invalid key in info dict");
-                
-                // use this to indicate a markup annot type
-                int is_markup = pdf_annot_has_author(gctx, annot);
 
                 // contents
                 value = PyDict_GetItemString(info, "content");
                 if (value)
                 {
                     uc = JM_Python_str_AsChar(value);
-                    if (uc) pdf_set_annot_contents(gctx, annot, (const char *) uc);
+                    if (uc) pdf_set_annot_contents(gctx, annot, uc);
                     JM_Python_str_DelForPy3(uc);
                 }
+                Py_XDECREF(value);
 
                 // title (= author)
                 value = PyDict_GetItemString(info, "title");
                 if (value && is_markup)
                 {
                     uc = JM_Python_str_AsChar(value);
-                    if (uc) pdf_set_annot_author(gctx, annot, (const char *) uc);
+                    if (uc) pdf_set_annot_author(gctx, annot, uc);
                     JM_Python_str_DelForPy3(uc);
                 }
+                Py_XDECREF(value);
 
                 // creation date
                 value = PyDict_GetItemString(info, "creationDate");
@@ -5068,6 +5094,7 @@ struct fz_annot_s
                                        pdf_new_string(gctx, pdf, uc, strlen(uc)));
                     JM_Python_str_DelForPy3(uc);
                 }
+                Py_XDECREF(value);
 
                 // mod date
                 value = PyDict_GetItemString(info, "modDate");
@@ -5078,6 +5105,7 @@ struct fz_annot_s
                                       pdf_new_string(gctx, pdf, uc, strlen(uc)));
                     JM_Python_str_DelForPy3(uc);
                 }
+                Py_XDECREF(value);
 
                 // subject
                 value = PyDict_GetItemString(info, "subject");
@@ -5088,7 +5116,9 @@ struct fz_annot_s
                                        pdf_new_string(gctx, pdf, uc, strlen(uc)));
                     JM_Python_str_DelForPy3(uc);
                 }
+                Py_XDECREF(value);
             }
+            fz_always(gctx) Py_XDECREF(value);
             fz_catch(gctx) return NULL;
             return NONE;
         }
@@ -5105,8 +5135,6 @@ struct fz_annot_s
             PyObject *res = PyDict_New();
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
             if (!annot) return res;                   // not a PDF -> empty dict
-            PyObject *emptylst_py = PyList_New(0);
-            PyObject *blank_py = PyString_FromString("");
             PyObject *dash_py   = PyList_New(0);
             PyObject *effect_py = PyList_New(0);
             int i;
@@ -5183,7 +5211,8 @@ struct fz_annot_s
                 PyDict_SetItemString(res, "style", PyString_FromString(style));
 
             if (effect1 > -1) PyDict_SetItemString(res, "effect", effect_py);
-
+            Py_DECREF(effect_py);
+            Py_DECREF(dash_py);
             return res;
         }
 
@@ -5324,7 +5353,6 @@ struct fz_annot_s
             struct fz_matrix_s *ctm = NULL;
             struct fz_colorspace_s *cs = NULL;
             fz_pixmap *pix = NULL;
-            fz_separations *seps = NULL;
 
             if (matrix) ctm = matrix;
             else ctm = (fz_matrix *) &fz_identity;
@@ -5488,7 +5516,8 @@ struct fz_display_list_s {
 
         FITZEXCEPTION(run, result)
         int run(struct DeviceWrapper *dw, const struct fz_matrix_s *m, const struct fz_rect_s *area) {
-            fz_try(gctx) {
+            fz_try(gctx)
+            {
                 fz_run_display_list(gctx, $self, dw->device, m, area, NULL);
             }
             fz_catch(gctx) return 1;
@@ -5535,42 +5564,22 @@ struct fz_display_list_s {
         FITZEXCEPTION(getTextPage, !result)
         struct fz_stext_page_s *getTextPage(int flags = 3)
         {
-            struct fz_stext_page_s *tp;
+            struct fz_stext_page_s *tp = NULL;
             fz_try(gctx)
             {
-                fz_stext_options stext_options;
+                fz_stext_options stext_options = { 0 };
                 stext_options.flags = flags;
                 tp = fz_new_stext_page_from_display_list(gctx, $self, &stext_options);
             }
             fz_catch(gctx) return NULL;
             return tp;
         }
-        %pythoncode %{
-        def __del__(self):
-            if not type(self) is DisplayList: return
-            self.__swig_destroy__(self)
-        %}
-
     }
 };
 
 //-----------------------------------------------------------------------------
 // fz_stext_page
 //-----------------------------------------------------------------------------
-%typemap(out) struct fz_rect_s * {
-    PyObject *pyRect;
-    struct fz_rect_s *rect;
-    $result = PyList_New(0);
-    rect = (struct fz_rect_s *)$1;
-    while(!fz_is_empty_rect(rect)) {
-        pyRect = SWIG_NewPointerObj(memcpy(malloc(sizeof(struct fz_rect_s)), rect, sizeof(struct fz_rect_s)), SWIGTYPE_p_fz_rect_s, SWIG_POINTER_OWN);
-        PyList_Append($result, pyRect);
-        Py_DECREF(pyRect);
-        rect += 1;
-    }
-    free($1);
-}
-
 %rename(TextPage) fz_stext_page_s;
 struct fz_stext_page_s {
     %extend {
@@ -5592,17 +5601,31 @@ struct fz_stext_page_s {
         //---------------------------------------------------------------------
         // method search()
         //---------------------------------------------------------------------
-        struct fz_rect_s *search(const char *needle, int hit_max=16) {
-            fz_rect *result;
-            int count;
-            if(hit_max < 0) {
-                fprintf(stderr, "[DEBUG]invalid hit max number %d\n", hit_max);
-                return NULL;
+        %pythonappend search %{
+        if val:
+            nval = []
+            for r in val:
+                nval.append(Rect(r))
+            val = nval
+        %}
+        PyObject *search(const char *needle, int hit_max=16)
+        {
+            fz_rect *result = NULL;
+            PyObject *liste = PyList_New(0);
+            int i, mymax = hit_max;
+            if (mymax < 1) mymax = 16;
+            result = (fz_rect *)malloc(sizeof(fz_rect)*(mymax+1));
+            struct fz_rect_s *rect = (struct fz_rect_s *) result;
+            int count = fz_search_stext_page(gctx, $self, needle, result, hit_max);
+            for (i = 0; i < count; i++)
+            {
+                PyList_Append(liste,
+                              Py_BuildValue("ffff", rect->x0, rect->y0,
+                                            rect->x1,rect->y1));
+                rect += 1;
             }
-            result = (fz_rect *)malloc(sizeof(fz_rect)*(hit_max+1));
-            count = fz_search_stext_page(gctx, $self, needle, result, hit_max);
-            result[count] = fz_empty_rect;
-            return result;
+            free(result);
+            return liste;
         }
 
         //---------------------------------------------------------------------
@@ -5772,6 +5795,8 @@ struct fz_stext_page_s {
             fz_output *out = NULL;
             size_t res_len = 0;
             PyObject *text = NULL;
+            fz_var(res);
+            fz_var(out);
             fz_try(gctx)
             {
                 res = fz_new_buffer(gctx, 1024);
@@ -5832,10 +5857,6 @@ struct fz_stext_page_s {
 
             def extractDICT(self):
                 return self._extractText(5)
-
-            def __del__(self):
-                if not type(self) is TextPage: return
-                self.__swig_destroy__(self)
         %}
     }
 };

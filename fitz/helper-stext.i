@@ -88,11 +88,9 @@ JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block)
     fz_stext_char *ch;
     fz_font *font = NULL;
     fz_buffer *buff = NULL;
-    char *text = NULL;
     float size = 0;
-    int sup = 0, n = 0, i = 0;
-    size_t len = 0;
-    PyObject *span = NULL, *spanlist = NULL, *linelist = NULL, *linedict;
+    int sup = 0;
+    PyObject *span = NULL, *spanlist = NULL, *linelist = NULL, *linedict = NULL;
     linelist = PyList_New(0);
     PyObject *dict = PyDict_New();
     PyDict_SetItemString(dict, "type",  PyInt_FromLong(FZ_STEXT_BLOCK_TEXT));

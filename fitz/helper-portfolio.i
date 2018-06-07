@@ -20,7 +20,6 @@
 int JM_FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
 {
     char *name = NULL;
-    Py_ssize_t name_len = 0;
     char *tname= NULL;
     int i = -1;
     int count = pdf_count_portfolio_entries(ctx, pdf);

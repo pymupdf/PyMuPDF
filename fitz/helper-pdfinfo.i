@@ -1,19 +1,36 @@
 %{
 //----------------------------------------------------------------------------
+// convert (char *) to ASCII-only (char*) (which must be freed!)
+//----------------------------------------------------------------------------
+char *JM_ASCIIFromChar(char *in)
+{
+    if (!in) return NULL;
+    size_t i, j = strlen(in);
+    unsigned char *out = (unsigned char *) malloc(j+1);
+    if (!out) return NULL;
+    memcpy(out, in, j+1);
+    for (i = 0; i < j; i++)
+    {
+        if (out[i] > 126)
+        {
+            out[i] = 63;
+            continue;
+        }
+        if (out[i] < 32)
+            out[i] = 32;
+    }
+    return (char *) out;
+}
+
+//----------------------------------------------------------------------------
 // create an ASCII-only Python string of a (char*)
 //----------------------------------------------------------------------------
-PyObject *JM_FORCEASCII(const char *in)
+PyObject *JM_UnicodeFromASCII(const char *in)
 {
-    int i;
-    char out[128] = "";
-    strncpy(out, in, 127);
-    for (i = 0; i < strlen(in); i++)
-    {
-        if (out[i] >= 32 && out[i] <= 127)
-            continue;
-        out[i] = 63; // chr(63) = "?"
-    }
-    return PyString_FromString(out);
+    char *c = JM_ASCIIFromChar((char *) in);
+    PyObject *p = Py_BuildValue("s", c);
+    free(c);
+    return p;
 }
 
 //-----------------------------------------------------------------------------
@@ -53,12 +70,12 @@ void JM_gatherfonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
         int xref = pdf_to_num(ctx, fontdict);
         char *ext = fontextension(ctx, pdf, xref);
         PyObject *entry = PyList_New(0);
-        PyList_Append(entry, PyInt_FromLong((long) xref));
-        PyList_Append(entry, PyString_FromString(ext));
-        PyList_Append(entry, JM_FORCEASCII(pdf_to_name(ctx, subtype)));
-        PyList_Append(entry, JM_FORCEASCII(pdf_to_name(ctx, name)));
-        PyList_Append(entry, JM_FORCEASCII(pdf_to_name(ctx, refname)));
-        PyList_Append(entry, JM_FORCEASCII(pdf_to_name(ctx, encoding)));
+        PyList_Append(entry, Py_BuildValue("i", xref));
+        PyList_Append(entry, Py_BuildValue("s", ext));
+        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, subtype)));
+        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, name)));
+        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, refname)));
+        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, encoding)));
         PyList_Append(fontlist, entry);
         Py_DECREF(entry);
     }
@@ -124,15 +141,15 @@ void JM_gatherimages(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
         bpc = pdf_dict_get(ctx, imagedict, PDF_NAME_BitsPerComponent);
 
         PyObject *entry = PyList_New(0);
-        PyList_Append(entry, PyInt_FromLong((long) xref));
-        PyList_Append(entry, PyInt_FromLong((long) gen));
-        PyList_Append(entry, PyInt_FromLong((long) pdf_to_int(ctx, width)));
-        PyList_Append(entry, PyInt_FromLong((long) pdf_to_int(ctx, height)));
-        PyList_Append(entry, PyInt_FromLong((long) pdf_to_int(ctx, bpc)));
-        PyList_Append(entry, JM_FORCEASCII(pdf_to_name(ctx, cs)));
-        PyList_Append(entry, JM_FORCEASCII(pdf_to_name(ctx, altcs)));
-        PyList_Append(entry, JM_FORCEASCII(pdf_to_name(ctx, refname)));
-        PyList_Append(entry, JM_FORCEASCII(pdf_to_name(ctx, filter)));
+        PyList_Append(entry, Py_BuildValue("i", xref));
+        PyList_Append(entry, Py_BuildValue("i", gen));
+        PyList_Append(entry, Py_BuildValue("i", pdf_to_int(ctx, width)));
+        PyList_Append(entry, Py_BuildValue("i", pdf_to_int(ctx, height)));
+        PyList_Append(entry, Py_BuildValue("i", pdf_to_int(ctx, bpc)));
+        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, cs)));
+        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, altcs)));
+        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, refname)));
+        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, filter)));
         PyList_Append(imagelist, entry);
         Py_DECREF(entry);
     }

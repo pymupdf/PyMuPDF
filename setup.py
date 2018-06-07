@@ -23,14 +23,7 @@ elif sys.platform.startswith('darwin'):
                        ['fitz/fitz_wrap.c'], # C source file
                        # this are directories containing mupdf's and zlib's header files
                        include_dirs=['/usr/local/include/mupdf', '/usr/local/include'],
-                       # libraries should already be linked here by brew
                        library_dirs=['/usr/local/lib'],
-                       #library_dirs=['/usr/local/Cellar/mupdf-tools/1.8/lib/',
-                                    #'/usr/local/Cellar/openssl/1.0.2g/lib/',
-                                    #'/usr/local/Cellar/jpeg/8d/lib/',
-                                    #'/usr/local/Cellar/freetype/2.6.3/lib/',
-                                    #'/usr/local/Cellar/jbig2dec/0.12/lib/'
-                           #],
                        libraries=['mupdf', 'mupdfthird']
                       )
 
@@ -57,7 +50,7 @@ else:
                        sources=['./fitz/fitz_wrap.c',])
 
 setup(name = 'PyMuPDF',
-      version = "1.13.7",
+      version = "1.13.8",
       description = 'Python bindings for the PDF rendering library MuPDF',
       classifiers = ['Development Status :: 5 - Production/Stable',
                      'Environment :: Console',

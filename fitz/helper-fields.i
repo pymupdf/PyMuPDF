@@ -39,8 +39,7 @@ PyObject *JM_text_value(fz_context *ctx, pdf_annot *annot)
 
 PyObject *JM_listbox_value(fz_context *ctx, pdf_annot *annot)
 {
-    pdf_document *pdf = pdf_get_bound_document(ctx, annot->obj);
-    int i, n;
+    int i = 0, n = 0;
     // may be single value or array
     pdf_obj *optarr = pdf_dict_get(ctx, annot->obj, PDF_NAME_V);
     if (pdf_is_string(ctx, optarr))         // a single string

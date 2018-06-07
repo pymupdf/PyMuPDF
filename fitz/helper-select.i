@@ -187,7 +187,6 @@ void retainpages(fz_context *ctx, globals *glo, PyObject *liste)
     pdf_obj *oldroot, *root, *pages, *kids, *countobj, *olddests;
     Py_ssize_t argc = PySequence_Size(liste);
     pdf_document *doc = glo->doc;
-    int argidx = 0;
     pdf_obj *names_list = NULL;
     pdf_obj *outlines;
     pdf_obj *ocproperties;

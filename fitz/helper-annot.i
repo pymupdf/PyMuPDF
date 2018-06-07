@@ -134,15 +134,15 @@ char *annot_type_str(int type)
 //-----------------------------------------------------------------------------
 // create a strike-out / underline / highlight annotation
 //-----------------------------------------------------------------------------
-struct fz_annot_s *JM_AnnotTextmaker(fz_context *ctx, pdf_page *page, fz_rect *rect, int type)
+struct fz_annot_s *JM_AnnotTextmarker(fz_context *ctx, pdf_page *page, fz_rect *rect, int type)
 {
-    pdf_annot *annot;
-    float line_thickness;
-    float line_height;
-    float alpha;
+    pdf_annot *annot = NULL;
+    float line_thickness = 0.0f;
+    float line_height = 0.0f;
+    float alpha = 1.0f;
     float h  = rect->y1 - rect->y0;
     fz_rect bbox = {rect->x0, rect->y0, rect->x1, rect->y1};
-    float color[3];
+    float color[3] = {0,0,0};
 	switch (type)
 	{
 		case PDF_ANNOT_HIGHLIGHT:

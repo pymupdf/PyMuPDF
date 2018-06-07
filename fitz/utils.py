@@ -41,7 +41,10 @@ def searchFor(page, text, hit_max = 16):
     dl = page.getDisplayList()         # create DisplayList
     tp = dl.getTextPage()              # create TextPage
     # return list of hitting reactangles
-    return tp.search(text, hit_max = hit_max)
+    rlist = tp.search(text, hit_max = hit_max)
+    dl = None
+    tp = None
+    return rlist
 
 #==============================================================================
 # A function for searching string occurrences on a page.
