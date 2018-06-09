@@ -711,6 +711,7 @@ struct fz_document_s
                 if ((incremental) && (fz_needs_password(gctx, $self)))
                     THROWMSG("decrypted file - save to new");
                 pdf_finish_edit(gctx, pdf);
+                JM_embedded_clean(gctx, pdf);
                 pdf_save_document(gctx, pdf, filename, &opts);
                 pdf->dirty = 0;
                 }
@@ -757,6 +758,7 @@ struct fz_document_s
                 if (fz_count_pages(gctx, $self) < 1)
                     THROWMSG("document has zero pages");
                 pdf_finish_edit(gctx, pdf);
+                JM_embedded_clean(gctx, pdf);
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 pdf_write_document(gctx, pdf, out, &opts);

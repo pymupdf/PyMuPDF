@@ -45,4 +45,27 @@ int JM_FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
     JM_Python_str_DelForPy3(name);
     return i;
 }
+
+//-----------------------------------------------------------------------------
+// perform some cleaning if we have embeddedfiles
+//-----------------------------------------------------------------------------
+void JM_embedded_clean(fz_context *ctx, pdf_document *pdf)
+{
+    pdf_obj *root = pdf_dict_get(ctx, pdf_trailer(ctx, pdf), PDF_NAME_Root);
+    pdf_obj *efiles = pdf_dict_getl(ctx, root, PDF_NAME_Names,
+                                    PDF_NAME_EmbeddedFiles, NULL);
+    if (efiles)         // we have embedded files
+    {   // make sure they are displayed
+        pdf_dict_put_name(ctx, root, PDF_NAME_PageMode, "UseAttachments");
+        // remove the limits entry: seems to be a MuPDF bug
+        pdf_dict_del(ctx, efiles, PDF_NAME_Limits);
+    }
+
+    // also remove an empty /Collection entry
+    pdf_obj *coll = pdf_dict_get(ctx, root, PDF_NAME_Collection);
+    if (coll && pdf_dict_len(ctx, coll) == 0)
+        pdf_dict_del(ctx, root, PDF_NAME_Collection);
+    return;
+
+}
 %}

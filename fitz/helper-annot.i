@@ -75,7 +75,28 @@ void refresh_link_table(fz_context *ctx, pdf_page *page)
 #define ANNOT_LE_Slash 9
 
 //----------------------------------------------------------------------------
-// return character string for line end style
+// annotation field (widget) types
+//----------------------------------------------------------------------------
+#define ANNOT_WG_NOT_WIDGET -1
+#define ANNOT_WG_PUSHBUTTON 0
+#define ANNOT_WG_CHECKBOX 1
+#define ANNOT_WG_RADIOBUTTON 2
+#define ANNOT_WG_TEXT 3
+#define ANNOT_WG_LISTBOX 4
+#define ANNOT_WG_COMBOBOX 5
+#define ANNOT_WG_SIGNATURE 6
+
+//----------------------------------------------------------------------------
+// annotation text widget subtypes
+//----------------------------------------------------------------------------
+#define ANNOT_WG_TEXT_UNRESTRAINED 0
+#define ANNOT_WG_TEXT_NUMBER 1
+#define ANNOT_WG_TEXT_SPECIAL 2
+#define ANNOT_WG_TEXT_DATE 3
+#define ANNOT_WG_TEXT_TIME 4
+
+//----------------------------------------------------------------------------
+// return string for line end style
 //----------------------------------------------------------------------------
 char *annot_le_style_str(int type)
 {
@@ -96,7 +117,7 @@ char *annot_le_style_str(int type)
 }
 
 //----------------------------------------------------------------------------
-// return character name of annotation type
+// return string name of annotation type
 //----------------------------------------------------------------------------
 char *annot_type_str(int type)
 {

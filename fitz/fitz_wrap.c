@@ -3150,7 +3150,28 @@ void refresh_link_table(fz_context *ctx, pdf_page *page)
 #define ANNOT_LE_Slash 9
 
 //----------------------------------------------------------------------------
-// return character string for line end style
+// annotation field (widget) types
+//----------------------------------------------------------------------------
+#define ANNOT_WG_NOT_WIDGET -1
+#define ANNOT_WG_PUSHBUTTON 0
+#define ANNOT_WG_CHECKBOX 1
+#define ANNOT_WG_RADIOBUTTON 2
+#define ANNOT_WG_TEXT 3
+#define ANNOT_WG_LISTBOX 4
+#define ANNOT_WG_COMBOBOX 5
+#define ANNOT_WG_SIGNATURE 6
+
+//----------------------------------------------------------------------------
+// annotation text widget subtypes
+//----------------------------------------------------------------------------
+#define ANNOT_WG_TEXT_UNRESTRAINED 0
+#define ANNOT_WG_TEXT_NUMBER 1
+#define ANNOT_WG_TEXT_SPECIAL 2
+#define ANNOT_WG_TEXT_DATE 3
+#define ANNOT_WG_TEXT_TIME 4
+
+//----------------------------------------------------------------------------
+// return string for line end style
 //----------------------------------------------------------------------------
 char *annot_le_style_str(int type)
 {
@@ -3171,7 +3192,7 @@ char *annot_le_style_str(int type)
 }
 
 //----------------------------------------------------------------------------
-// return character name of annotation type
+// return string name of annotation type
 //----------------------------------------------------------------------------
 char *annot_type_str(int type)
 {
@@ -4263,6 +4284,29 @@ int JM_FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
     }
     JM_Python_str_DelForPy3(name);
     return i;
+}
+
+//-----------------------------------------------------------------------------
+// perform some cleaning if we have embeddedfiles
+//-----------------------------------------------------------------------------
+void JM_embedded_clean(fz_context *ctx, pdf_document *pdf)
+{
+    pdf_obj *root = pdf_dict_get(ctx, pdf_trailer(ctx, pdf), PDF_NAME_Root);
+    pdf_obj *efiles = pdf_dict_getl(ctx, root, PDF_NAME_Names,
+                                    PDF_NAME_EmbeddedFiles, NULL);
+    if (efiles)         // we have embedded files
+    {   // make sure they are displayed
+        pdf_dict_put_name(ctx, root, PDF_NAME_PageMode, "UseAttachments");
+        // remove the limits entry: seems to be a MuPDF bug
+        pdf_dict_del(ctx, efiles, PDF_NAME_Limits);
+    }
+
+    // also remove an empty /Collection entry
+    pdf_obj *coll = pdf_dict_get(ctx, root, PDF_NAME_Collection);
+    if (coll && pdf_dict_len(ctx, coll) == 0)
+        pdf_dict_del(ctx, root, PDF_NAME_Collection);
+    return;
+
 }
 
 
@@ -5795,6 +5839,7 @@ SWIGINTERN PyObject *fz_document_s_save(struct fz_document_s *self,char *filenam
                 if ((incremental) && (fz_needs_password(gctx, self)))
                     THROWMSG("decrypted file - save to new");
                 pdf_finish_edit(gctx, pdf);
+                JM_embedded_clean(gctx, pdf);
                 pdf_save_document(gctx, pdf, filename, &opts);
                 pdf->dirty = 0;
                 }
@@ -5829,6 +5874,7 @@ SWIGINTERN PyObject *fz_document_s_write(struct fz_document_s *self,int garbage,
                 if (fz_count_pages(gctx, self) < 1)
                     THROWMSG("document has zero pages");
                 pdf_finish_edit(gctx, pdf);
+                JM_embedded_clean(gctx, pdf);
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 pdf_write_document(gctx, pdf, out, &opts);
