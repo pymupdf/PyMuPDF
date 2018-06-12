@@ -1,27 +1,40 @@
 from __future__ import print_function
-import sys
 import fitz
+import argparse
+
 #------------------------------------------------------------------------------
 # Example program
 # License: GNU GPL V3
 # Imports a new file into an existing PDF
 # Command line:
-# python embedded-import.py out.pdf input.file
+# python embedded-import.py some.pdf embed.file
 #------------------------------------------------------------------------------
-pdffn = sys.argv[1]
-impfn = sys.argv[2]
+
+parser = argparse.ArgumentParser(description="Enter PDF, file to embed, and optional name, description and output pdf.")
+parser.add_argument('pdf', help='PDF filename')
+parser.add_argument('file', help='name of embedded file')
+parser.add_argument('-n', "--name", help='name for embedded file entry (default: file)')
+parser.add_argument('-d', "--desc", help='description (default:  file)')
+parser.add_argument('-o', "--output", help = 'output PDF (default: modify pdf)')
+args = parser.parse_args()
+delim = args.desc               # requested CSV delimiter character
+pdffn = args.pdf
+impfn = args.file
 
 doc = fitz.open(pdffn)
+if not args.name:
+    name = impfn
+desc = args.desc
+if not args.desc:
+    desc = impfn
 
 # to be on the safe side, always open as binary
 content = open(impfn, "rb").read()  # read all file content in
 
-# now some description of what is going to imported
-name = "import1"                  # mandatory: unique name inside the PDF
-filename = impfn                  # optional filename, need not be the original
-desc = "something documentary"    # optional other comments
-
 # import the file into the PDF
-doc.embeddedFileAdd(content, name, filename, desc)
+doc.embeddedFileAdd(content, name, impfn, desc)
 # save PDF (either incremental or to new PDF file)
-doc.saveIncr()
+if not args.output:
+    doc.saveIncr()
+else:
+    doc.save(args.output, garbage = 4, deflate = True)
