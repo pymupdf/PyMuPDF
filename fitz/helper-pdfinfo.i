@@ -68,7 +68,8 @@ void JM_gatherfonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
         if (pdf_is_dict(ctx, encoding))
             encoding = pdf_dict_get(ctx, encoding, PDF_NAME_BaseEncoding);
         int xref = pdf_to_num(ctx, fontdict);
-        char *ext = fontextension(ctx, pdf, xref);
+        char *ext = "n/a";
+        if (xref) ext = fontextension(ctx, pdf, xref);
         PyObject *entry = PyList_New(0);
         PyList_Append(entry, Py_BuildValue("i", xref));
         PyList_Append(entry, Py_BuildValue("s", ext));

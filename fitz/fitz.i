@@ -1754,6 +1754,7 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         FITZEXCEPTION(addLineAnnot, !result)
         PARENTCHECK(addLineAnnot)
+        %feature("autodoc","Add a Line annotation between Points p1, p2") addLineAnnot;
         %pythonappend addLineAnnot %{
         if val:
             val.thisown = True
@@ -1782,8 +1783,7 @@ struct fz_page_s {
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 
         //---------------------------------------------------------------------
@@ -1791,6 +1791,7 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         FITZEXCEPTION(addTextAnnot, !result)
         PARENTCHECK(addTextAnnot)
+        %feature("autodoc","Add a 'sticky note' at Point pos") addTextAnnot;
         %pythonappend addTextAnnot %{
         if val:
             val.thisown = True
@@ -1815,8 +1816,7 @@ struct fz_page_s {
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 
         //---------------------------------------------------------------------
@@ -1824,6 +1824,7 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         FITZEXCEPTION(addStrikeoutAnnot, !result)
         PARENTCHECK(addStrikeoutAnnot)
+        %feature("autodoc","Strike out content in a Rect") addStrikeoutAnnot;
         %pythonappend addStrikeoutAnnot %{
         if val:
             val.thisown = True
@@ -1842,8 +1843,7 @@ struct fz_page_s {
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 
         //---------------------------------------------------------------------
@@ -1851,6 +1851,7 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         FITZEXCEPTION(addUnderlineAnnot, !result)
         PARENTCHECK(addUnderlineAnnot)
+        %feature("autodoc","Underline content in a Rect") addUnderlineAnnot;
         %pythonappend addUnderlineAnnot %{
         if val:
             val.thisown = True
@@ -1869,8 +1870,7 @@ struct fz_page_s {
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 
         //---------------------------------------------------------------------
@@ -1878,6 +1878,7 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         FITZEXCEPTION(addHighlightAnnot, !result)
         PARENTCHECK(addHighlightAnnot)
+        %feature("autodoc","Highlight content in a Rect") addHighlightAnnot;
         %pythonappend addHighlightAnnot %{
         if val:
             val.thisown = True
@@ -1896,8 +1897,7 @@ struct fz_page_s {
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 
         //---------------------------------------------------------------------
@@ -1905,6 +1905,7 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         FITZEXCEPTION(addRectAnnot, !result)
         PARENTCHECK(addRectAnnot)
+        %feature("autodoc","Add a rectangle annotation") addRectAnnot;
         %pythonappend addRectAnnot %{
         if val:
             val.thisown = True
@@ -1923,8 +1924,7 @@ struct fz_page_s {
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 
         //---------------------------------------------------------------------
@@ -1932,6 +1932,7 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         FITZEXCEPTION(addCircleAnnot, !result)
         PARENTCHECK(addCircleAnnot)
+        %feature("autodoc","Add a circle annotation") addCircleAnnot;
         %pythonappend addCircleAnnot %{
         if val:
             val.thisown = True
@@ -1950,8 +1951,7 @@ struct fz_page_s {
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 
         //---------------------------------------------------------------------
@@ -1959,6 +1959,7 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         FITZEXCEPTION(addPolylineAnnot, !result)
         PARENTCHECK(addPolylineAnnot)
+        %feature("autodoc","Add a polyline annotation for a sequence of Points") addPolylineAnnot;
         %pythonappend addPolylineAnnot %{
         if val:
             val.thisown = True
@@ -1977,8 +1978,7 @@ struct fz_page_s {
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 
         //---------------------------------------------------------------------
@@ -1986,6 +1986,7 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         FITZEXCEPTION(addPolygonAnnot, !result)
         PARENTCHECK(addPolygonAnnot)
+        %feature("autodoc","Add a polygon annotation for a sequence of Points") addPolygonAnnot;
         %pythonappend addPolygonAnnot %{
         if val:
             val.thisown = True
@@ -2004,8 +2005,7 @@ struct fz_page_s {
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 
         //---------------------------------------------------------------------
@@ -2013,6 +2013,7 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         FITZEXCEPTION(addFreetextAnnot, !result)
         PARENTCHECK(addFreetextAnnot)
+        %feature("autodoc","Add a FreeText annotation at Point pos") addFreetextAnnot;
         %pythonappend addFreetextAnnot %{
         if val:
             val.thisown = True
@@ -2046,8 +2047,7 @@ struct fz_page_s {
             fz_always(gctx) free(ascii);
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 
         //---------------------------------------------------------------------
@@ -2060,7 +2060,7 @@ struct fz_page_s {
             fz_display_list *dl = NULL;
             fz_try(gctx) dl = fz_new_display_list_from_page(gctx, $self);
             fz_catch(gctx) return NULL;
-            return dl;
+            return fz_keep_display_list(gctx, dl);
         }
 
         //---------------------------------------------------------------------
@@ -2272,9 +2272,8 @@ fannot._erase()
             {
                 pdf_page *page = pdf_page_from_fz_page(gctx, $self);
                 assert_PDF(page);
-                if (rot % 90) THROWMSG("rotate not int. multiple of 90");
-                pdf_obj *rot_o = pdf_new_int(gctx, page->doc, rot);
-                pdf_dict_put_drop(gctx, page->obj, PDF_NAME_Rotate, rot_o);
+                if (rot % 90) THROWMSG("rotate not 90 * int");
+                pdf_dict_put_int(gctx, page->obj, PDF_NAME_Rotate, (int64_t) rot);
                 page->doc->dirty = 1;
             }
             fz_catch(gctx) return NULL;
@@ -3002,17 +3001,10 @@ struct fz_rect_s
         struct fz_irect_s *round()
         {
             fz_irect *irect = (fz_irect *)malloc(sizeof(fz_irect));
-            fz_rect rect = {$self->x0, $self->y0,  $self->x1, $self->y1};
-            if ($self->x1 < $self->x0)
-            {
-                rect.x0 = $self->x1;
-                rect.x1 = $self->x0;
-            }
-            if ($self->y1 < $self->y0)
-            {
-                rect.y0 = $self->y1;
-                rect.y1 = $self->y0;
-            }
+            fz_rect rect = {MIN($self->x0, $self->x1),
+                            MIN($self->y0, $self->y1),
+                            MAX($self->x0, $self->x1),
+                            MAX($self->y0, $self->y1)};
             fz_round_rect(irect, &rect);
             return irect;
         }
@@ -3721,7 +3713,7 @@ struct fz_pixmap_s
         {
             fz_try(gctx)
             {
-                if ($self->alpha == 0) THROWMSG("pixmap has no alpha channel");
+                if ($self->alpha == 0) THROWMSG("pixmap has no alpha");
                 int n = fz_pixmap_colorants(gctx, $self);
                 int w = fz_pixmap_width(gctx, $self);
                 int h = fz_pixmap_height(gctx, $self);
@@ -3732,7 +3724,7 @@ struct fz_pixmap_s
                 {
                     data_len = JM_CharFromBytesOrArray(alphavalues, &data);
                     if (data_len > 0 && data_len < w * h)
-                        THROWMSG("too few alpha values");
+                        THROWMSG("not enough alpha values");
                 }
                 int i = 0, k = 0;
                 while (i < balen)
@@ -4336,7 +4328,9 @@ struct fz_point_s
 //-----------------------------------------------------------------------------
 // Annotation
 //-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // annotation types
+//----------------------------------------------------------------------------
 #define ANNOT_TEXT 0
 #define ANNOT_LINK 1
 #define ANNOT_FREETEXT 2
@@ -4362,18 +4356,24 @@ struct fz_point_s
 #define ANNOT_TRAPNET 22
 #define ANNOT_WATERMARK 23
 #define ANNOT_3D 24
-// annotation flags
-#define ANNOT_XF_Invisible  1 << (1-1)
-#define ANNOT_XF_Hidden  1 << (2-1)
-#define ANNOT_XF_Print  1 << (3-1)
-#define ANNOT_XF_NoZoom  1 << (4-1)
-#define ANNOT_XF_NoRotate  1 << (5-1)
-#define ANNOT_XF_NoView  1 << (6-1)
-#define ANNOT_XF_ReadOnly  1 << (7-1)
-#define ANNOT_XF_Locked  1 << (8-1)
-#define ANNOT_XF_ToggleNoView  1 << (9-1)
-#define ANNOT_XF_LockedContents  1 << (10-1)
-// annotation line end styles
+
+//----------------------------------------------------------------------------
+// annotation flag bits
+//----------------------------------------------------------------------------
+#define ANNOT_XF_Invisible 1 << (1-1)
+#define ANNOT_XF_Hidden 1 << (2-1)
+#define ANNOT_XF_Print 1 << (3-1)
+#define ANNOT_XF_NoZoom 1 << (4-1)
+#define ANNOT_XF_NoRotate 1 << (5-1)
+#define ANNOT_XF_NoView 1 << (6-1)
+#define ANNOT_XF_ReadOnly 1 << (7-1)
+#define ANNOT_XF_Locked 1 << (8-1)
+#define ANNOT_XF_ToggleNoView 1 << (9-1)
+#define ANNOT_XF_LockedContents 1 << (10-1)
+
+//----------------------------------------------------------------------------
+// annotation line ending styles
+//----------------------------------------------------------------------------
 #define ANNOT_LE_None 0
 #define ANNOT_LE_Square 1
 #define ANNOT_LE_Circle 2
@@ -4384,6 +4384,27 @@ struct fz_point_s
 #define ANNOT_LE_ROpenArrow 7
 #define ANNOT_LE_RClosedArrow 8
 #define ANNOT_LE_Slash 9
+
+//----------------------------------------------------------------------------
+// annotation field (widget) types
+//----------------------------------------------------------------------------
+#define ANNOT_WG_NOT_WIDGET -1
+#define ANNOT_WG_PUSHBUTTON 0
+#define ANNOT_WG_CHECKBOX 1
+#define ANNOT_WG_RADIOBUTTON 2
+#define ANNOT_WG_TEXT 3
+#define ANNOT_WG_LISTBOX 4
+#define ANNOT_WG_COMBOBOX 5
+#define ANNOT_WG_SIGNATURE 6
+
+//----------------------------------------------------------------------------
+// annotation text widget subtypes
+//----------------------------------------------------------------------------
+#define ANNOT_WG_TEXT_UNRESTRAINED 0
+#define ANNOT_WG_TEXT_NUMBER 1
+#define ANNOT_WG_TEXT_SPECIAL 2
+#define ANNOT_WG_TEXT_DATE 3
+#define ANNOT_WG_TEXT_TIME 4
 
 %rename(Annot) fz_annot_s;
 %nodefaultctor;
@@ -4800,7 +4821,7 @@ struct fz_annot_s
         }
 
         //---------------------------------------------------------------------
-        // widget text
+        // widget value
         //---------------------------------------------------------------------
         PARENTCHECK(widget_value)
         %pythoncode %{@property%}
@@ -4980,8 +5001,7 @@ struct fz_annot_s
                 pdf_dict_put(gctx, stream, PDF_NAME_Filter,
                                            PDF_NAME_FlateDecode);
                 pdf_obj *p_o = pdf_dict_get(gctx, stream, PDF_NAME_Params);
-                pdf_dict_put_drop(gctx, p_o, PDF_NAME_Size,
-                                  pdf_new_int(gctx, pdf, (int) size));
+                pdf_dict_put_int(gctx, p_o, PDF_NAME_Size, (int64_t) size);
                 res = JM_deflatebuf(gctx, data, size);
                 pdf_update_stream(gctx, pdf, stream, res, 1);
             }
@@ -5244,12 +5264,13 @@ struct fz_annot_s
                 if (pyo) width = (float) PyFloat_AsDouble(pyo);
                 pydashes = PyDict_GetItemString(border, "dashes");
             }
-            // first get current width and dash entries of annot
+            // first get current width and dash
             PyObject *cur_border = fz_annot_s_border($self);
             pyo = PyDict_GetItemString(cur_border, "width");
             if (pyo) cur_width = (float) PyFloat_AsDouble(pyo);
             pycur_dashes = PyDict_GetItemString(cur_border, "dashes");
-            // then delete what might be in annot dictionary
+
+            // then delete current annot entries
             pdf_dict_del(gctx, annot->obj, PDF_NAME_BS);
             pdf_dict_del(gctx, annot->obj, PDF_NAME_BE);
             pdf_dict_del(gctx, annot->obj, PDF_NAME_Border);
@@ -5259,23 +5280,21 @@ struct fz_annot_s
             if (width < 0) width = cur_width;    // no new width: take current
             if (width < 0) width = 0;            // default if no width given
             pdf_obj *bdr = pdf_new_array(gctx, doc, 3);
-            pdf_array_push_drop(gctx, bdr, pdf_new_real(gctx, doc, 0));
-            pdf_array_push_drop(gctx, bdr, pdf_new_real(gctx, doc, 0));
-            pdf_array_push_drop(gctx, bdr, pdf_new_real(gctx, doc, width));
+            pdf_array_push_real(gctx, bdr, 0);
+            pdf_array_push_real(gctx, bdr, 0);
+            pdf_array_push_real(gctx, bdr, (double) width);
             
             if (!pydashes) pydashes = pycur_dashes;   // no new dashes: current
-            if (!pydashes)
-                {}
-            else if (PyList_Check(pydashes))
+            
+            if (pydashes && PySequence_Check(pydashes))
                 {
-                // dashes specified: create another array
-                pdf_obj *darr = pdf_new_array(gctx, doc, 1);
-                for (i = 0; i < (int) PyList_Size(pydashes); i++)
+                    pdf_obj *darr = pdf_new_array(gctx, doc, 1);
+                    for (i = 0; i < (int) PySequence_Size(pydashes); i++)
                     {
-                    d = (int) PyInt_AsLong(PyList_GetItem(pydashes, i));
-                    pdf_array_push_drop(gctx, darr, pdf_new_int(gctx, doc, d));
+                        d = (int64_t) PyInt_AsLong(PySequence_GetItem(pydashes, i));
+                        pdf_array_push_int(gctx, darr, d);
                     }
-                pdf_array_push_drop(gctx, bdr, darr);
+                    pdf_array_push_drop(gctx, bdr, darr);
                 }
             pdf_dict_put_drop(gctx, annot->obj, PDF_NAME_Border, bdr);
             pdf_dirty_annot(gctx, annot);
@@ -5369,7 +5388,75 @@ struct fz_annot_s
             fz_catch(gctx) return NULL;
             return pix;
         }
+
+        //---------------------------------------------------------------------
+        // annotation _getWidget - PDF field information
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(_getWidget, !result)
+        PARENTCHECK(_getWidget)
+        PyObject *_getWidget(PyObject *Widget)
+        {
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
+            pdf_document *pdf = annot->page->doc;
+            pdf_widget *tw = (pdf_widget *) annot;
+            Py_ssize_t i = 0, n = 0;
+            fz_try(gctx)
+            {
+                char *border_style = pdf_field_border_style(gctx, pdf, annot->obj);
+                int text_maxlen = pdf_to_int(gctx, pdf_get_inheritable(gctx, pdf, annot->obj, PDF_NAME_MaxLen));
+                int text_type = pdf_text_widget_content_type(gctx, pdf, tw);
+                int list_ismultiselect = pdf_choice_widget_is_multiselect(gctx, pdf, tw);
+
+                char *da = pdf_to_str_buf(gctx, pdf_get_inheritable(gctx, pdf, annot->obj, PDF_NAME_DA));
+
+                pdf_obj *bgcol = pdf_dict_getl(gctx, annot->obj, PDF_NAME_MK, PDF_NAME_BG, NULL);
+
+                if (pdf_is_array(gctx, bgcol))
+                {
+                    n = (Py_ssize_t) pdf_array_len(gctx, bgcol);
+                    PyObject *col = PyList_New(n);
+                    for (i = 0; i < n; i++)
+                    {
+                        PyList_SetItem(col, i, Py_BuildValue("i", pdf_array_get(gctx, bgcol, (int) i)));
+                    }
+                    PyObject_SetAttrString(Widget, "fill_color", col);
+                    Py_DECREF(col);
+                }
+
+                PyObject_SetAttrString(Widget, "border_style", Py_BuildValue("s", border_style));
+
+                PyObject_SetAttrString(Widget, "text_maxlen", Py_BuildValue("i", text_maxlen));
+
+                PyObject_SetAttrString(Widget, "text_type", Py_BuildValue("i", text_type));
+
+                PyObject_SetAttrString(Widget, "list_ismultiselect", Py_BuildValue("i", list_ismultiselect));
+
+                PyObject_SetAttrString(Widget, "text_color", Py_BuildValue("s", da));
+            }
+            fz_catch(gctx) return NULL;
+            return NONE;
+        }
+
         %pythoncode %{
+        @property
+        def widget(self):
+            annot_type = self.type[0]
+            if annot_type != ANNOT_WIDGET:
+                return None
+            w = Widget()
+            w.field_type      = self.widget_type[0]
+            w.field_type_text = self.widget_type[1]
+            w.field_value     = self.widget_value
+            w.field_name      = self.widget_name
+            w.list_values     = self.widget_choices
+            w.rect            = self.rect
+            self._getWidget(w)
+            return w
+
+        def updateWidget(self, widget):
+            widget._validate()
+            self._updateWidget(widget)
+
         def _erase(self):
             try:
                 self.parent._forget_annot(self)

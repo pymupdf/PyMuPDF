@@ -3075,24 +3075,6 @@ struct DeviceWrapper {
 
 
 //----------------------------------------------------------------------------
-// refreshes the link and annotation tables of a page
-//----------------------------------------------------------------------------
-void refresh_link_table(fz_context *ctx, pdf_page *page)
-{
-    pdf_obj *annots_arr = pdf_dict_get(ctx, page->obj, PDF_NAME_Annots);
-    if (annots_arr)
-    {
-        fz_rect page_mediabox;
-        fz_matrix page_ctm;
-        pdf_page_transform(ctx, page, &page_mediabox, &page_ctm);
-        page->links = pdf_load_link_annots(ctx, page->doc, annots_arr,
-                                           pdf_to_num(ctx, page->obj), &page_ctm);
-        pdf_load_annots(ctx, page, annots_arr);
-    }
-    return;
-}
-
-//----------------------------------------------------------------------------
 // annotation types
 //----------------------------------------------------------------------------
 #define ANNOT_TEXT 0
@@ -3227,6 +3209,24 @@ char *annot_type_str(int type)
     }
 }
 
+//----------------------------------------------------------------------------
+// refreshes the link and annotation tables of a page
+//----------------------------------------------------------------------------
+void refresh_link_table(fz_context *ctx, pdf_page *page)
+{
+    pdf_obj *annots_arr = pdf_dict_get(ctx, page->obj, PDF_NAME_Annots);
+    if (annots_arr)
+    {
+        fz_rect page_mediabox;
+        fz_matrix page_ctm;
+        pdf_page_transform(ctx, page, &page_mediabox, &page_ctm);
+        page->links = pdf_load_link_annots(ctx, page->doc, annots_arr,
+                                           pdf_to_num(ctx, page->obj), &page_ctm);
+        pdf_load_annots(ctx, page, annots_arr);
+    }
+    return;
+}
+
 //-----------------------------------------------------------------------------
 // create a strike-out / underline / highlight annotation
 //-----------------------------------------------------------------------------
@@ -3355,6 +3355,7 @@ struct fz_annot_s *JM_AnnotMultiline(fz_context *ctx, pdf_page *page, PyObject *
 
 
 
+PyObject *JM_UnicodeFromASCII(const char *in);
 //-----------------------------------------------------------------------------
 // Plain text output. An identical copy of fz_print_stext_page_as_text,
 // but lines within a block are concatenated by space instead a new-line
@@ -3423,7 +3424,7 @@ JM_style_begin_dict(fz_context *ctx, PyObject *span, fz_font *font, float size, 
     flags += fz_font_is_serif(ctx, font) * 4;
     flags += fz_font_is_monospaced(ctx, font) * 8;
     flags += fz_font_is_bold(ctx, font) * 16;
-    PyDict_SetItemString(span, "font", Py_BuildValue("s", family));
+    PyDict_SetItemString(span, "font", JM_UnicodeFromASCII(family));
     PyDict_SetItemString(span, "size", Py_BuildValue("f", size));
     PyDict_SetItemString(span, "flags", Py_BuildValue("i", flags));
 }
@@ -4251,7 +4252,6 @@ struct fz_store_s
 #define PDF_SCHEMA_CREATIONDATE 6
 #define PDF_SCHEMA_FILENAME 7
 #define PDF_SCHEMA_UNKNOWN 8
-
 //-----------------------------------------------------------------------------
 // finds index of an embedded file in a pdf
 // Object "id" contains either entry name (str) or supposed index.
@@ -4830,7 +4830,8 @@ void JM_gatherfonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
         if (pdf_is_dict(ctx, encoding))
             encoding = pdf_dict_get(ctx, encoding, PDF_NAME_BaseEncoding);
         int xref = pdf_to_num(ctx, fontdict);
-        char *ext = fontextension(ctx, pdf, xref);
+        char *ext = "n/a";
+        if (xref) ext = fontextension(ctx, pdf, xref);
         PyObject *entry = PyList_New(0);
         PyList_Append(entry, Py_BuildValue("i", xref));
         PyList_Append(entry, Py_BuildValue("s", ext));
@@ -6522,8 +6523,7 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addLineAnnot(struct fz_page_s *self,stru
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addTextAnnot(struct fz_page_s *self,struct fz_point_s *point,char *text){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6542,8 +6542,7 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addTextAnnot(struct fz_page_s *self,stru
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addStrikeoutAnnot(struct fz_page_s *self,struct fz_rect_s *rect){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6556,8 +6555,7 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addStrikeoutAnnot(struct fz_page_s *self
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addUnderlineAnnot(struct fz_page_s *self,struct fz_rect_s *rect){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6570,8 +6568,7 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addUnderlineAnnot(struct fz_page_s *self
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addHighlightAnnot(struct fz_page_s *self,struct fz_rect_s *rect){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6584,8 +6581,7 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addHighlightAnnot(struct fz_page_s *self
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addRectAnnot(struct fz_page_s *self,struct fz_rect_s *rect){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6598,8 +6594,7 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addRectAnnot(struct fz_page_s *self,stru
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addCircleAnnot(struct fz_page_s *self,struct fz_rect_s *rect){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6612,8 +6607,7 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addCircleAnnot(struct fz_page_s *self,st
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addPolylineAnnot(struct fz_page_s *self,PyObject *points){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6626,8 +6620,7 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addPolylineAnnot(struct fz_page_s *self,
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addPolygonAnnot(struct fz_page_s *self,PyObject *points){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6640,8 +6633,7 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addPolygonAnnot(struct fz_page_s *self,P
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addFreetextAnnot(struct fz_page_s *self,struct fz_point_s *pos,char *text,float fontsize,PyObject *color){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6669,14 +6661,13 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addFreetextAnnot(struct fz_page_s *self,
             fz_always(gctx) free(ascii);
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
-            fz_keep_annot(gctx, fzannot);
-            return fzannot;
+            return fz_keep_annot(gctx, fzannot);
         }
 SWIGINTERN struct fz_display_list_s *fz_page_s_getDisplayList(struct fz_page_s *self){
             fz_display_list *dl = NULL;
             fz_try(gctx) dl = fz_new_display_list_from_page(gctx, self);
             fz_catch(gctx) return NULL;
-            return dl;
+            return fz_keep_display_list(gctx, dl);
         }
 SWIGINTERN PyObject *fz_page_s_setCropBox(struct fz_page_s *self,struct fz_rect_s *rect){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6788,9 +6779,8 @@ SWIGINTERN PyObject *fz_page_s_setRotation(struct fz_page_s *self,int rot){
             {
                 pdf_page *page = pdf_page_from_fz_page(gctx, self);
                 assert_PDF(page);
-                if (rot % 90) THROWMSG("rotate not int. multiple of 90");
-                pdf_obj *rot_o = pdf_new_int(gctx, page->doc, rot);
-                pdf_dict_put_drop(gctx, page->obj, PDF_NAME_Rotate, rot_o);
+                if (rot % 90) THROWMSG("rotate not 90 * int");
+                pdf_dict_put_int(gctx, page->obj, PDF_NAME_Rotate, (int64_t) rot);
                 page->doc->dirty = 1;
             }
             fz_catch(gctx) return NULL;
@@ -7343,17 +7333,10 @@ SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_6(PyObject *list){
         }
 SWIGINTERN struct fz_irect_s *fz_rect_s_round(struct fz_rect_s *self){
             fz_irect *irect = (fz_irect *)malloc(sizeof(fz_irect));
-            fz_rect rect = {self->x0, self->y0,  self->x1, self->y1};
-            if (self->x1 < self->x0)
-            {
-                rect.x0 = self->x1;
-                rect.x1 = self->x0;
-            }
-            if (self->y1 < self->y0)
-            {
-                rect.y0 = self->y1;
-                rect.y1 = self->y0;
-            }
+            fz_rect rect = {MIN(self->x0, self->x1),
+                            MIN(self->y0, self->y1),
+                            MAX(self->x0, self->x1),
+                            MAX(self->y0, self->y1)};
             fz_round_rect(irect, &rect);
             return irect;
         }
@@ -7760,7 +7743,7 @@ SWIGINTERN int fz_pixmap_s_size(struct fz_pixmap_s *self){
 SWIGINTERN PyObject *fz_pixmap_s_setAlpha(struct fz_pixmap_s *self,PyObject *alphavalues){
             fz_try(gctx)
             {
-                if (self->alpha == 0) THROWMSG("pixmap has no alpha channel");
+                if (self->alpha == 0) THROWMSG("pixmap has no alpha");
                 int n = fz_pixmap_colorants(gctx, self);
                 int w = fz_pixmap_width(gctx, self);
                 int h = fz_pixmap_height(gctx, self);
@@ -7771,7 +7754,7 @@ SWIGINTERN PyObject *fz_pixmap_s_setAlpha(struct fz_pixmap_s *self,PyObject *alp
                 {
                     data_len = JM_CharFromBytesOrArray(alphavalues, &data);
                     if (data_len > 0 && data_len < w * h)
-                        THROWMSG("too few alpha values");
+                        THROWMSG("not enough alpha values");
                 }
                 int i = 0, k = 0;
                 while (i < balen)
@@ -8471,8 +8454,7 @@ SWIGINTERN PyObject *fz_annot_s_fileUpd(struct fz_annot_s *self,PyObject *buffer
                 pdf_dict_put(gctx, stream, PDF_NAME_Filter,
                                            PDF_NAME_FlateDecode);
                 pdf_obj *p_o = pdf_dict_get(gctx, stream, PDF_NAME_Params);
-                pdf_dict_put_drop(gctx, p_o, PDF_NAME_Size,
-                                  pdf_new_int(gctx, pdf, (int) size));
+                pdf_dict_put_int(gctx, p_o, PDF_NAME_Size, (int64_t) size);
                 res = JM_deflatebuf(gctx, data, size);
                 pdf_update_stream(gctx, pdf, stream, res, 1);
             }
@@ -8704,12 +8686,13 @@ SWIGINTERN int fz_annot_s_setBorder(struct fz_annot_s *self,PyObject *border){
                 if (pyo) width = (float) PyFloat_AsDouble(pyo);
                 pydashes = PyDict_GetItemString(border, "dashes");
             }
-            // first get current width and dash entries of annot
+            // first get current width and dash
             PyObject *cur_border = fz_annot_s_border(self);
             pyo = PyDict_GetItemString(cur_border, "width");
             if (pyo) cur_width = (float) PyFloat_AsDouble(pyo);
             pycur_dashes = PyDict_GetItemString(cur_border, "dashes");
-            // then delete what might be in annot dictionary
+
+            // then delete current annot entries
             pdf_dict_del(gctx, annot->obj, PDF_NAME_BS);
             pdf_dict_del(gctx, annot->obj, PDF_NAME_BE);
             pdf_dict_del(gctx, annot->obj, PDF_NAME_Border);
@@ -8719,23 +8702,21 @@ SWIGINTERN int fz_annot_s_setBorder(struct fz_annot_s *self,PyObject *border){
             if (width < 0) width = cur_width;    // no new width: take current
             if (width < 0) width = 0;            // default if no width given
             pdf_obj *bdr = pdf_new_array(gctx, doc, 3);
-            pdf_array_push_drop(gctx, bdr, pdf_new_real(gctx, doc, 0));
-            pdf_array_push_drop(gctx, bdr, pdf_new_real(gctx, doc, 0));
-            pdf_array_push_drop(gctx, bdr, pdf_new_real(gctx, doc, width));
+            pdf_array_push_real(gctx, bdr, 0);
+            pdf_array_push_real(gctx, bdr, 0);
+            pdf_array_push_real(gctx, bdr, (double) width);
             
             if (!pydashes) pydashes = pycur_dashes;   // no new dashes: current
-            if (!pydashes)
-                {}
-            else if (PyList_Check(pydashes))
+            
+            if (pydashes && PySequence_Check(pydashes))
                 {
-                // dashes specified: create another array
-                pdf_obj *darr = pdf_new_array(gctx, doc, 1);
-                for (i = 0; i < (int) PyList_Size(pydashes); i++)
+                    pdf_obj *darr = pdf_new_array(gctx, doc, 1);
+                    for (i = 0; i < (int) PySequence_Size(pydashes); i++)
                     {
-                    d = (int) PyInt_AsLong(PyList_GetItem(pydashes, i));
-                    pdf_array_push_drop(gctx, darr, pdf_new_int(gctx, doc, d));
+                        d = (int64_t) PyInt_AsLong(PySequence_GetItem(pydashes, i));
+                        pdf_array_push_int(gctx, darr, d);
                     }
-                pdf_array_push_drop(gctx, bdr, darr);
+                    pdf_array_push_drop(gctx, bdr, darr);
                 }
             pdf_dict_put_drop(gctx, annot->obj, PDF_NAME_Border, bdr);
             pdf_dirty_annot(gctx, annot);
@@ -8789,6 +8770,47 @@ SWIGINTERN struct fz_pixmap_s *fz_annot_s_getPixmap(struct fz_annot_s *self,stru
             }
             fz_catch(gctx) return NULL;
             return pix;
+        }
+SWIGINTERN PyObject *fz_annot_s__getWidget(struct fz_annot_s *self,PyObject *Widget){
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
+            pdf_document *pdf = annot->page->doc;
+            pdf_widget *tw = (pdf_widget *) annot;
+            Py_ssize_t i = 0, n = 0;
+            fz_try(gctx)
+            {
+                char *border_style = pdf_field_border_style(gctx, pdf, annot->obj);
+                int text_maxlen = pdf_to_int(gctx, pdf_get_inheritable(gctx, pdf, annot->obj, PDF_NAME_MaxLen));
+                int text_type = pdf_text_widget_content_type(gctx, pdf, tw);
+                int list_ismultiselect = pdf_choice_widget_is_multiselect(gctx, pdf, tw);
+
+                char *da = pdf_to_str_buf(gctx, pdf_get_inheritable(gctx, pdf, annot->obj, PDF_NAME_DA));
+
+                pdf_obj *bgcol = pdf_dict_getl(gctx, annot->obj, PDF_NAME_MK, PDF_NAME_BG, NULL);
+
+                if (pdf_is_array(gctx, bgcol))
+                {
+                    n = (Py_ssize_t) pdf_array_len(gctx, bgcol);
+                    PyObject *col = PyList_New(n);
+                    for (i = 0; i < n; i++)
+                    {
+                        PyList_SetItem(col, i, Py_BuildValue("i", pdf_array_get(gctx, bgcol, (int) i)));
+                    }
+                    PyObject_SetAttrString(Widget, "fill_color", col);
+                    Py_DECREF(col);
+                }
+
+                PyObject_SetAttrString(Widget, "border_style", Py_BuildValue("s", border_style));
+
+                PyObject_SetAttrString(Widget, "text_maxlen", Py_BuildValue("i", text_maxlen));
+
+                PyObject_SetAttrString(Widget, "text_type", Py_BuildValue("i", text_type));
+
+                PyObject_SetAttrString(Widget, "list_ismultiselect", Py_BuildValue("i", list_ismultiselect));
+
+                PyObject_SetAttrString(Widget, "text_color", Py_BuildValue("s", da));
+            }
+            fz_catch(gctx) return NULL;
+            return NONE;
         }
 SWIGINTERN void delete_fz_link_s(struct fz_link_s *self){
             DEBUGMSG1("link");
@@ -18306,6 +18328,38 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Annot__getWidget(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
+  PyObject *arg2 = (PyObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Annot__getWidget",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_annot_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot__getWidget" "', argument " "1"" of type '" "struct fz_annot_s *""'"); 
+  }
+  arg1 = (struct fz_annot_s *)(argp1);
+  arg2 = obj1;
+  {
+    result = (PyObject *)fz_annot_s__getWidget(arg1,arg2);
+    if(!result)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *Annot_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
@@ -19166,16 +19220,16 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Page_bound", _wrap_Page_bound, METH_VARARGS, (char *)"Page_bound(self) -> Rect"},
 	 { (char *)"Page_run", _wrap_Page_run, METH_VARARGS, (char *)"Page_run(self, dw, m) -> int"},
 	 { (char *)"Page_getSVGimage", _wrap_Page_getSVGimage, METH_VARARGS, (char *)"Page_getSVGimage(self, matrix=None) -> PyObject *"},
-	 { (char *)"Page_addLineAnnot", _wrap_Page_addLineAnnot, METH_VARARGS, (char *)"Page_addLineAnnot(self, p1, p2) -> Annot"},
-	 { (char *)"Page_addTextAnnot", _wrap_Page_addTextAnnot, METH_VARARGS, (char *)"Page_addTextAnnot(self, point, text) -> Annot"},
-	 { (char *)"Page_addStrikeoutAnnot", _wrap_Page_addStrikeoutAnnot, METH_VARARGS, (char *)"Page_addStrikeoutAnnot(self, rect) -> Annot"},
-	 { (char *)"Page_addUnderlineAnnot", _wrap_Page_addUnderlineAnnot, METH_VARARGS, (char *)"Page_addUnderlineAnnot(self, rect) -> Annot"},
-	 { (char *)"Page_addHighlightAnnot", _wrap_Page_addHighlightAnnot, METH_VARARGS, (char *)"Page_addHighlightAnnot(self, rect) -> Annot"},
-	 { (char *)"Page_addRectAnnot", _wrap_Page_addRectAnnot, METH_VARARGS, (char *)"Page_addRectAnnot(self, rect) -> Annot"},
-	 { (char *)"Page_addCircleAnnot", _wrap_Page_addCircleAnnot, METH_VARARGS, (char *)"Page_addCircleAnnot(self, rect) -> Annot"},
-	 { (char *)"Page_addPolylineAnnot", _wrap_Page_addPolylineAnnot, METH_VARARGS, (char *)"Page_addPolylineAnnot(self, points) -> Annot"},
-	 { (char *)"Page_addPolygonAnnot", _wrap_Page_addPolygonAnnot, METH_VARARGS, (char *)"Page_addPolygonAnnot(self, points) -> Annot"},
-	 { (char *)"Page_addFreetextAnnot", _wrap_Page_addFreetextAnnot, METH_VARARGS, (char *)"Page_addFreetextAnnot(self, pos, text, fontsize=11, color=None) -> Annot"},
+	 { (char *)"Page_addLineAnnot", _wrap_Page_addLineAnnot, METH_VARARGS, (char *)"Add a Line annotation between Points p1, p2"},
+	 { (char *)"Page_addTextAnnot", _wrap_Page_addTextAnnot, METH_VARARGS, (char *)"Add a 'sticky note' at Point pos"},
+	 { (char *)"Page_addStrikeoutAnnot", _wrap_Page_addStrikeoutAnnot, METH_VARARGS, (char *)"Strike out content in a Rect"},
+	 { (char *)"Page_addUnderlineAnnot", _wrap_Page_addUnderlineAnnot, METH_VARARGS, (char *)"Underline content in a Rect"},
+	 { (char *)"Page_addHighlightAnnot", _wrap_Page_addHighlightAnnot, METH_VARARGS, (char *)"Highlight content in a Rect"},
+	 { (char *)"Page_addRectAnnot", _wrap_Page_addRectAnnot, METH_VARARGS, (char *)"Add a rectangle annotation"},
+	 { (char *)"Page_addCircleAnnot", _wrap_Page_addCircleAnnot, METH_VARARGS, (char *)"Add a circle annotation"},
+	 { (char *)"Page_addPolylineAnnot", _wrap_Page_addPolylineAnnot, METH_VARARGS, (char *)"Add a polyline annotation for a sequence of Points"},
+	 { (char *)"Page_addPolygonAnnot", _wrap_Page_addPolygonAnnot, METH_VARARGS, (char *)"Add a polygon annotation for a sequence of Points"},
+	 { (char *)"Page_addFreetextAnnot", _wrap_Page_addFreetextAnnot, METH_VARARGS, (char *)"Add a FreeText annotation at Point pos"},
 	 { (char *)"Page_getDisplayList", _wrap_Page_getDisplayList, METH_VARARGS, (char *)"Page_getDisplayList(self) -> DisplayList"},
 	 { (char *)"Page_setCropBox", _wrap_Page_setCropBox, METH_VARARGS, (char *)"Page_setCropBox(self, rect=None) -> PyObject *"},
 	 { (char *)"Page_loadLinks", _wrap_Page_loadLinks, METH_VARARGS, (char *)"Page_loadLinks(self) -> Link"},
@@ -19395,6 +19449,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Annot_setFlags", _wrap_Annot_setFlags, METH_VARARGS, (char *)"Annot_setFlags(self, flags)"},
 	 { (char *)"Annot_next", _wrap_Annot_next, METH_VARARGS, (char *)"Annot_next(self) -> Annot"},
 	 { (char *)"Annot_getPixmap", _wrap_Annot_getPixmap, METH_VARARGS, (char *)"Annot_getPixmap(self, matrix=None, colorspace=None, alpha=0) -> Pixmap"},
+	 { (char *)"Annot__getWidget", _wrap_Annot__getWidget, METH_VARARGS, (char *)"Annot__getWidget(self, Widget) -> PyObject *"},
 	 { (char *)"Annot_swigregister", Annot_swigregister, METH_VARARGS, NULL},
 	 { (char *)"delete_Link", _wrap_delete_Link, METH_VARARGS, (char *)"delete_Link(self)"},
 	 { (char *)"Link_uri", _wrap_Link_uri, METH_VARARGS, (char *)"Link_uri(self) -> char *"},
@@ -20259,6 +20314,19 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, "ANNOT_LE_ROpenArrow",SWIG_From_int((int)(7)));
   SWIG_Python_SetConstant(d, "ANNOT_LE_RClosedArrow",SWIG_From_int((int)(8)));
   SWIG_Python_SetConstant(d, "ANNOT_LE_Slash",SWIG_From_int((int)(9)));
+  SWIG_Python_SetConstant(d, "ANNOT_WG_NOT_WIDGET",SWIG_From_int((int)(-1)));
+  SWIG_Python_SetConstant(d, "ANNOT_WG_PUSHBUTTON",SWIG_From_int((int)(0)));
+  SWIG_Python_SetConstant(d, "ANNOT_WG_CHECKBOX",SWIG_From_int((int)(1)));
+  SWIG_Python_SetConstant(d, "ANNOT_WG_RADIOBUTTON",SWIG_From_int((int)(2)));
+  SWIG_Python_SetConstant(d, "ANNOT_WG_TEXT",SWIG_From_int((int)(3)));
+  SWIG_Python_SetConstant(d, "ANNOT_WG_LISTBOX",SWIG_From_int((int)(4)));
+  SWIG_Python_SetConstant(d, "ANNOT_WG_COMBOBOX",SWIG_From_int((int)(5)));
+  SWIG_Python_SetConstant(d, "ANNOT_WG_SIGNATURE",SWIG_From_int((int)(6)));
+  SWIG_Python_SetConstant(d, "ANNOT_WG_TEXT_UNRESTRAINED",SWIG_From_int((int)(0)));
+  SWIG_Python_SetConstant(d, "ANNOT_WG_TEXT_NUMBER",SWIG_From_int((int)(1)));
+  SWIG_Python_SetConstant(d, "ANNOT_WG_TEXT_SPECIAL",SWIG_From_int((int)(2)));
+  SWIG_Python_SetConstant(d, "ANNOT_WG_TEXT_DATE",SWIG_From_int((int)(3)));
+  SWIG_Python_SetConstant(d, "ANNOT_WG_TEXT_TIME",SWIG_From_int((int)(4)));
 #if PY_VERSION_HEX >= 0x03000000
   return m;
 #else

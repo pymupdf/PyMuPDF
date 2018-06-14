@@ -102,9 +102,70 @@ import sys
 
 
 VersionFitz = "1.13.0"
-VersionBind = "1.13.9"
-VersionDate = "2018-06-09 15:14:41"
-version = (VersionBind, VersionFitz, "20180609151441")
+VersionBind = "1.13.10"
+VersionDate = "2018-06-14 07:13:02"
+version = (VersionBind, VersionFitz, "20180614071302")
+
+
+#------------------------------------------------------------------------------
+# Class describing a PDF form field ("widget")
+#------------------------------------------------------------------------------
+class Widget():
+    def __init__(self):
+        self.border_color       = None           # annot value
+        self.border_style       = None           # annot value
+        self.border_width       = 0              # annot value
+        self.list_ismultiselect = False          # list- / comboboxes
+        self.list_values        = None           # list- / comboboxes
+        self.field_name         = None           # field name
+        self.field_value        = None           # supports all field types
+        self.fill_color         = None
+        self.pb_caption         = None           # pushbutton text
+        self.rect               = None           # annot value
+        self.text_color         = None           # text fields only
+        self.text_maxlen        = 0              # text fields only
+        self.text_type          = 0              # text fields only
+        self.field_type         = -1             # valid range 0 through 6
+        self.field_type_text    = None
+        if str is not bytes:
+            unicode = str
+        self._str_types         = (str, unicode) if str is bytes else (str)
+
+    def _validate(self):
+        checker = (self._check0, self._check1, self._check2, self._check3,
+                   self._check4, self._check5)
+        valid_types = tuple(range(6))
+        if self.field_type not in valid_types:
+            raise NotImplementedError("unsupported widget type")
+        if type(self.rect) is not Rect:
+            raise ValueError("invalid rect")
+        if not self.field_name:
+            raise ValueError("field name missing")
+        checker[self.type](self)
+
+    def _check0(self):
+        if any([self.text_color, self.text_maxlen, self.text_type,
+                self.list_ismultiselect, self.list_values]):
+            raise ValueError("invalid value(s) for PushButton")
+        if type(self.pb_caption) not in self._str_types:
+            raise ValueError("caption must be a string")
+
+    def _check1(self):
+        return
+
+    def _check2(self):
+        return
+
+    def _check3(self):
+        if len(self.field_value) > self.text_maxlen:
+            raise ValueError("length of text exceeds maxlwn")
+        return
+
+    def _check4(self):
+        return
+
+    def _check5(self):
+        return
 
 
 #------------------------------------------------------------------------------
@@ -272,13 +333,13 @@ def getPDFstr(x):
 
     return "(" + r + ")"
 
-#===============================================================================
+#------------------------------------------------------------------------------
 # Return a PDF string suitable for the TJ operator enclosed in "[]" brackets.
 # The input string is converted to either 2 or 4 hex digits per character.
 # If no glyphs are supplied, then a simple font is assumed and each character
 # taken directly.
 # Otherwise a char's glyph is taken and 4 hex digits per char are put out.
-#===============================================================================
+#------------------------------------------------------------------------------
 def getTJstr(text, glyphs):
     if text.startswith("[<") and text.endswith(">]"): # already done
         return text
@@ -478,7 +539,6 @@ def ConversionTrailer(i):
         r = text
 
     return r
-
 
 class Document(_object):
     """open() - new empty PDF
@@ -1178,7 +1238,7 @@ class Page(_object):
 
 
     def addLineAnnot(self, p1, p2):
-        """addLineAnnot(self, p1, p2) -> Annot"""
+        """Add a Line annotation between Points p1, p2"""
         CheckParent(self)
 
         val = _fitz.Page_addLineAnnot(self, p1, p2)
@@ -1193,7 +1253,7 @@ class Page(_object):
 
 
     def addTextAnnot(self, point, text):
-        """addTextAnnot(self, point, text) -> Annot"""
+        """Add a 'sticky note' at Point pos"""
         CheckParent(self)
 
         val = _fitz.Page_addTextAnnot(self, point, text)
@@ -1208,7 +1268,7 @@ class Page(_object):
 
 
     def addStrikeoutAnnot(self, rect):
-        """addStrikeoutAnnot(self, rect) -> Annot"""
+        """Strike out content in a Rect"""
         CheckParent(self)
 
         val = _fitz.Page_addStrikeoutAnnot(self, rect)
@@ -1223,7 +1283,7 @@ class Page(_object):
 
 
     def addUnderlineAnnot(self, rect):
-        """addUnderlineAnnot(self, rect) -> Annot"""
+        """Underline content in a Rect"""
         CheckParent(self)
 
         val = _fitz.Page_addUnderlineAnnot(self, rect)
@@ -1238,7 +1298,7 @@ class Page(_object):
 
 
     def addHighlightAnnot(self, rect):
-        """addHighlightAnnot(self, rect) -> Annot"""
+        """Highlight content in a Rect"""
         CheckParent(self)
 
         val = _fitz.Page_addHighlightAnnot(self, rect)
@@ -1253,7 +1313,7 @@ class Page(_object):
 
 
     def addRectAnnot(self, rect):
-        """addRectAnnot(self, rect) -> Annot"""
+        """Add a rectangle annotation"""
         CheckParent(self)
 
         val = _fitz.Page_addRectAnnot(self, rect)
@@ -1268,7 +1328,7 @@ class Page(_object):
 
 
     def addCircleAnnot(self, rect):
-        """addCircleAnnot(self, rect) -> Annot"""
+        """Add a circle annotation"""
         CheckParent(self)
 
         val = _fitz.Page_addCircleAnnot(self, rect)
@@ -1283,7 +1343,7 @@ class Page(_object):
 
 
     def addPolylineAnnot(self, points):
-        """addPolylineAnnot(self, points) -> Annot"""
+        """Add a polyline annotation for a sequence of Points"""
         CheckParent(self)
 
         val = _fitz.Page_addPolylineAnnot(self, points)
@@ -1298,7 +1358,7 @@ class Page(_object):
 
 
     def addPolygonAnnot(self, points):
-        """addPolygonAnnot(self, points) -> Annot"""
+        """Add a polygon annotation for a sequence of Points"""
         CheckParent(self)
 
         val = _fitz.Page_addPolygonAnnot(self, points)
@@ -1313,7 +1373,7 @@ class Page(_object):
 
 
     def addFreetextAnnot(self, pos, text, fontsize=11, color=None):
-        """addFreetextAnnot(self, pos, text, fontsize=11, color=None) -> Annot"""
+        """Add a FreeText annotation at Point pos"""
         CheckParent(self)
 
         val = _fitz.Page_addFreetextAnnot(self, pos, text, fontsize, color)
@@ -2443,6 +2503,19 @@ ANNOT_LE_Butt = _fitz.ANNOT_LE_Butt
 ANNOT_LE_ROpenArrow = _fitz.ANNOT_LE_ROpenArrow
 ANNOT_LE_RClosedArrow = _fitz.ANNOT_LE_RClosedArrow
 ANNOT_LE_Slash = _fitz.ANNOT_LE_Slash
+ANNOT_WG_NOT_WIDGET = _fitz.ANNOT_WG_NOT_WIDGET
+ANNOT_WG_PUSHBUTTON = _fitz.ANNOT_WG_PUSHBUTTON
+ANNOT_WG_CHECKBOX = _fitz.ANNOT_WG_CHECKBOX
+ANNOT_WG_RADIOBUTTON = _fitz.ANNOT_WG_RADIOBUTTON
+ANNOT_WG_TEXT = _fitz.ANNOT_WG_TEXT
+ANNOT_WG_LISTBOX = _fitz.ANNOT_WG_LISTBOX
+ANNOT_WG_COMBOBOX = _fitz.ANNOT_WG_COMBOBOX
+ANNOT_WG_SIGNATURE = _fitz.ANNOT_WG_SIGNATURE
+ANNOT_WG_TEXT_UNRESTRAINED = _fitz.ANNOT_WG_TEXT_UNRESTRAINED
+ANNOT_WG_TEXT_NUMBER = _fitz.ANNOT_WG_TEXT_NUMBER
+ANNOT_WG_TEXT_SPECIAL = _fitz.ANNOT_WG_TEXT_SPECIAL
+ANNOT_WG_TEXT_DATE = _fitz.ANNOT_WG_TEXT_DATE
+ANNOT_WG_TEXT_TIME = _fitz.ANNOT_WG_TEXT_TIME
 class Annot(_object):
     """Proxy of C fz_annot_s struct."""
 
@@ -2689,6 +2762,32 @@ class Annot(_object):
 
         return _fitz.Annot_getPixmap(self, matrix, colorspace, alpha)
 
+
+    def _getWidget(self, Widget):
+        """_getWidget(self, Widget) -> PyObject *"""
+        CheckParent(self)
+
+        return _fitz.Annot__getWidget(self, Widget)
+
+
+    @property
+    def widget(self):
+        annot_type = self.type[0]
+        if annot_type != ANNOT_WIDGET:
+            return None
+        w = Widget()
+        w.field_type      = self.widget_type[0]
+        w.field_type_text = self.widget_type[1]
+        w.field_value     = self.widget_value
+        w.field_name      = self.widget_name
+        w.list_values     = self.widget_choices
+        w.rect            = self.rect
+        self._getWidget(w)
+        return w
+
+    def updateWidget(self, widget):
+        widget._validate()
+        self._updateWidget(widget)
 
     def _erase(self):
         try:

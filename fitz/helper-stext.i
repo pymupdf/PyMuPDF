@@ -1,4 +1,5 @@
 %{
+PyObject *JM_UnicodeFromASCII(const char *in);
 //-----------------------------------------------------------------------------
 // Plain text output. An identical copy of fz_print_stext_page_as_text,
 // but lines within a block are concatenated by space instead a new-line
@@ -67,7 +68,7 @@ JM_style_begin_dict(fz_context *ctx, PyObject *span, fz_font *font, float size, 
     flags += fz_font_is_serif(ctx, font) * 4;
     flags += fz_font_is_monospaced(ctx, font) * 8;
     flags += fz_font_is_bold(ctx, font) * 16;
-    PyDict_SetItemString(span, "font", Py_BuildValue("s", family));
+    PyDict_SetItemString(span, "font", JM_UnicodeFromASCII(family));
     PyDict_SetItemString(span, "size", Py_BuildValue("f", size));
     PyDict_SetItemString(span, "flags", Py_BuildValue("i", flags));
 }

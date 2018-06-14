@@ -1,23 +1,5 @@
 %{
 //----------------------------------------------------------------------------
-// refreshes the link and annotation tables of a page
-//----------------------------------------------------------------------------
-void refresh_link_table(fz_context *ctx, pdf_page *page)
-{
-    pdf_obj *annots_arr = pdf_dict_get(ctx, page->obj, PDF_NAME_Annots);
-    if (annots_arr)
-    {
-        fz_rect page_mediabox;
-        fz_matrix page_ctm;
-        pdf_page_transform(ctx, page, &page_mediabox, &page_ctm);
-        page->links = pdf_load_link_annots(ctx, page->doc, annots_arr,
-                                           pdf_to_num(ctx, page->obj), &page_ctm);
-        pdf_load_annots(ctx, page, annots_arr);
-    }
-    return;
-}
-
-//----------------------------------------------------------------------------
 // annotation types
 //----------------------------------------------------------------------------
 #define ANNOT_TEXT 0
@@ -152,6 +134,24 @@ char *annot_type_str(int type)
     }
 }
 
+//----------------------------------------------------------------------------
+// refreshes the link and annotation tables of a page
+//----------------------------------------------------------------------------
+void refresh_link_table(fz_context *ctx, pdf_page *page)
+{
+    pdf_obj *annots_arr = pdf_dict_get(ctx, page->obj, PDF_NAME_Annots);
+    if (annots_arr)
+    {
+        fz_rect page_mediabox;
+        fz_matrix page_ctm;
+        pdf_page_transform(ctx, page, &page_mediabox, &page_ctm);
+        page->links = pdf_load_link_annots(ctx, page->doc, annots_arr,
+                                           pdf_to_num(ctx, page->obj), &page_ctm);
+        pdf_load_annots(ctx, page, annots_arr);
+    }
+    return;
+}
+
 //-----------------------------------------------------------------------------
 // create a strike-out / underline / highlight annotation
 //-----------------------------------------------------------------------------
@@ -278,4 +278,65 @@ struct fz_annot_s *JM_AnnotMultiline(fz_context *ctx, pdf_page *page, PyObject *
     return (fz_annot *) annot;
 }
 
+%}
+%pythoncode %{
+#------------------------------------------------------------------------------
+# Class describing a PDF form field ("widget")
+#------------------------------------------------------------------------------
+class Widget():
+    def __init__(self):
+        self.border_color       = None           # annot value
+        self.border_style       = None           # annot value
+        self.border_width       = 0              # annot value
+        self.list_ismultiselect = False          # list- / comboboxes
+        self.list_values        = None           # list- / comboboxes
+        self.field_name         = None           # field name
+        self.field_value        = None           # supports all field types
+        self.fill_color         = None
+        self.pb_caption         = None           # pushbutton text
+        self.rect               = None           # annot value
+        self.text_color         = None           # text fields only
+        self.text_maxlen        = 0              # text fields only
+        self.text_type          = 0              # text fields only
+        self.field_type         = -1             # valid range 0 through 6
+        self.field_type_text    = None
+        if str is not bytes:
+            unicode = str
+        self._str_types         = (str, unicode) if str is bytes else (str)
+    
+    def _validate(self):
+        checker = (self._check0, self._check1, self._check2, self._check3,
+                   self._check4, self._check5)
+        valid_types = tuple(range(6))
+        if self.field_type not in valid_types:
+            raise NotImplementedError("unsupported widget type")
+        if type(self.rect) is not Rect:
+            raise ValueError("invalid rect")
+        if not self.field_name:
+            raise ValueError("field name missing")
+        checker[self.type](self)
+
+    def _check0(self):
+        if any([self.text_color, self.text_maxlen, self.text_type,
+                self.list_ismultiselect, self.list_values]):
+            raise ValueError("invalid value(s) for PushButton")
+        if type(self.pb_caption) not in self._str_types:
+            raise ValueError("caption must be a string")
+    
+    def _check1(self):
+        return
+
+    def _check2(self):
+        return
+
+    def _check3(self):
+        if len(self.field_value) > self.text_maxlen:
+            raise ValueError("length of text exceeds maxlwn")
+        return
+
+    def _check4(self):
+        return
+
+    def _check5(self):
+        return
 %}

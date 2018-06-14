@@ -164,13 +164,13 @@ def getPDFstr(x):
 
     return "(" + r + ")"
 
-#===============================================================================
+#------------------------------------------------------------------------------
 # Return a PDF string suitable for the TJ operator enclosed in "[]" brackets.
 # The input string is converted to either 2 or 4 hex digits per character.
 # If no glyphs are supplied, then a simple font is assumed and each character
 # taken directly.
 # Otherwise a char's glyph is taken and 4 hex digits per char are put out.
-#===============================================================================
+#------------------------------------------------------------------------------
 def getTJstr(text, glyphs):
     if text.startswith("[<") and text.endswith(">]"): # already done
         return text
@@ -370,5 +370,4 @@ def ConversionTrailer(i):
         r = text
     
     return r
-
 %}

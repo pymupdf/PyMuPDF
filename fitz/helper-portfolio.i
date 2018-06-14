@@ -11,7 +11,6 @@
 #define PDF_SCHEMA_CREATIONDATE 6
 #define PDF_SCHEMA_FILENAME 7
 #define PDF_SCHEMA_UNKNOWN 8
-
 //-----------------------------------------------------------------------------
 // finds index of an embedded file in a pdf
 // Object "id" contains either entry name (str) or supposed index.
