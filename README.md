@@ -2,7 +2,7 @@
 
 ![logo](https://github.com/rk700/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: June 14, 2018
+Release date: June 20, 2018
 
 # Authors
 * [Ruikai Liu](mailto:lrk700@gmail.com)
