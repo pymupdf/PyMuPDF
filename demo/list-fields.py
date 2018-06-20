@@ -1,71 +1,61 @@
+from __future__ import print_function
 """
 A demo showing all PDF form fields of a document.
 """
 import sys
 import fitz
+
+def print_widget(w):
+    if not w:
+        return
+    d = w.__dict__
+    print("".ljust(80, "-"))
+    for k in d.keys():
+        if k.startswith("_"):
+            continue
+        print(k, "=", d[k])
+
 doc = fitz.open(sys.argv[1])
 if not doc.isFormPDF:
     raise SystemExit("PDF has no form fields.")
+print("".ljust(80, "-"))
+print("Form field synopsis of file '%s'" % sys.argv[1])
+print("".ljust(80, "-"))
 for page in doc:
     a = page.firstAnnot
     header_shown = False
 
     while a:
-        if a.type[0] != fitz.ANNOT_WIDGET:
-            a = a.next
-            continue
         if not header_shown:
             print("\nShowing the form fields of page", page.number)
-            print("".ljust(80, "-"))
             header_shown = True
-        print("\nField type '%s', name '%s', value '%s'" % (a.widget_type[1],
-        a.widget_name, a.widget_value))
-        if a.widget_type[0] in (4, 5):      # listbox / combobox
-            print("... from possible values:", a.widget_choices, "\n")
+        print_widget(a.widget)
         a = a.next
 
 """
-Example output of above script:
+Above script produces the following type of output:
 
 Showing the form fields of page 0
 --------------------------------------------------------------------------------
 
-Field type 'Text', name 'Given Name Text Box', value 'Jorj X.'
+border_color = None
+border_style = Solid
+border_width = 1.0
+list_ismultiselect = 0
+list_values = None
+field_name = Textfeld-1
+field_value =
+field_flags = 0
+fill_color = [1.0, 1.0, 0.0]
+pb_caption = None
+rect = fitz.Rect(50.0, 100.0, 250.0, 115.0)
+text_color = None
+text_font = None
+text_fontsize = None
+text_maxlen = 40
+text_type = 0
+text_da = 0 0 1 rg /Helvetica 11 Tf
+field_type = 3
+field_type_string = Text
 
-Field type 'Text', name 'Family Name Text Box', value 'McKie'
-
-Field type 'Text', name 'Address 1 Text Box', value 'House near the Beach'
-
-Field type 'Text', name 'House nr Text Box', value '4711'
-
-Field type 'Text', name 'Address 2 Text Box', value 'A Secret Place'
-
-Field type 'Text', name 'Postcode Text Box', value '314159'
-
-Field type 'Text', name 'City Text Box', value 'Valetta'
-
-Field type 'ComboBox', name 'Country Combo Box', value 'Malta'
-... from possible values: ['Austria', 'Belgium', 'Britain', 'Bulgaria', 'Croatia', 'Cyprus', 'Czech-Republic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece', 'Hungary', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg', 'Malta', 'Netherlands', 'Poland', 'Portugal', 'Romania', 'Slovakia', 'Slovenia', 'Spain', 'Sweden']
-
-
-Field type 'ComboBox', name 'Gender List Box', value 'Man'
-... from possible values: ['Man', 'Woman']
-
-
-Field type 'Text', name 'Height Formatted Field', value '180'
-
-Field type 'CheckBox', name 'Driving License Check Box', value 'True'
-
-Field type 'CheckBox', name 'Language 1 Check Box', value 'True'
-
-Field type 'CheckBox', name 'Language 2 Check Box', value 'True'
-
-Field type 'CheckBox', name 'Language 3 Check Box', value 'False'
-
-Field type 'CheckBox', name 'Language 4 Check Box', value 'False'
-
-Field type 'CheckBox', name 'Language 5 Check Box', value 'False'
-
-Field type 'ComboBox', name 'Favourite Colour List Box', value 'Blue'
-... from possible values: ['Black', 'Brown', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Violet', 'Grey', 'White']
 """
