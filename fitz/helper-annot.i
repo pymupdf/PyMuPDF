@@ -78,6 +78,37 @@
 #define ANNOT_WG_TEXT_TIME 4
 
 //----------------------------------------------------------------------------
+// annotation widget flags
+//----------------------------------------------------------------------------
+// Common to all field types
+#define WIDGET_Ff_ReadOnly 1
+#define WIDGET_Ff_Required 2
+#define WIDGET_Ff_NoExport 4
+
+// Text fields
+#define WIDGET_Ff_Multiline 4096
+#define WIDGET_Ff_Password 8192
+
+#define WIDGET_Ff_FileSelect 1048576
+#define WIDGET_Ff_DoNotSpellCheck 4194304
+#define WIDGET_Ff_DoNotScroll 8388608
+#define WIDGET_Ff_Comb 16777216
+#define WIDGET_Ff_RichText 33554432
+
+// Button fields
+#define WIDGET_Ff_NoToggleToOff 16384
+#define WIDGET_Ff_Radio 32768
+#define WIDGET_Ff_Pushbutton 65536
+#define WIDGET_Ff_RadioInUnison 33554432
+
+// Choice fields
+#define WIDGET_Ff_Combo 131072
+#define WIDGET_Ff_Edit 262144
+#define WIDGET_Ff_Sort 524288
+#define WIDGET_Ff_MultiSelect 2097152
+#define WIDGET_Ff_CommitOnSelCHange 67108864
+
+//----------------------------------------------------------------------------
 // return string for line end style
 //----------------------------------------------------------------------------
 char *annot_le_style_str(int type)
@@ -167,8 +198,8 @@ struct fz_annot_s *JM_AnnotTextmarker(fz_context *ctx, pdf_page *page, fz_rect *
 	switch (type)
 	{
 		case PDF_ANNOT_HIGHLIGHT:
-			color[0] = 0.933333f;
-			color[1] = 0.788235f;
+			color[0] = 1.0f;
+			color[1] = 1.0f;
 			color[2] = 0.0f;
 			alpha = 0.3f;
 			line_thickness = 1.0f;
@@ -278,65 +309,4 @@ struct fz_annot_s *JM_AnnotMultiline(fz_context *ctx, pdf_page *page, PyObject *
     return (fz_annot *) annot;
 }
 
-%}
-%pythoncode %{
-#------------------------------------------------------------------------------
-# Class describing a PDF form field ("widget")
-#------------------------------------------------------------------------------
-class Widget():
-    def __init__(self):
-        self.border_color       = None           # annot value
-        self.border_style       = None           # annot value
-        self.border_width       = 0              # annot value
-        self.list_ismultiselect = False          # list- / comboboxes
-        self.list_values        = None           # list- / comboboxes
-        self.field_name         = None           # field name
-        self.field_value        = None           # supports all field types
-        self.fill_color         = None
-        self.pb_caption         = None           # pushbutton text
-        self.rect               = None           # annot value
-        self.text_color         = None           # text fields only
-        self.text_maxlen        = 0              # text fields only
-        self.text_type          = 0              # text fields only
-        self.field_type         = -1             # valid range 0 through 6
-        self.field_type_text    = None
-        if str is not bytes:
-            unicode = str
-        self._str_types         = (str, unicode) if str is bytes else (str)
-    
-    def _validate(self):
-        checker = (self._check0, self._check1, self._check2, self._check3,
-                   self._check4, self._check5)
-        valid_types = tuple(range(6))
-        if self.field_type not in valid_types:
-            raise NotImplementedError("unsupported widget type")
-        if type(self.rect) is not Rect:
-            raise ValueError("invalid rect")
-        if not self.field_name:
-            raise ValueError("field name missing")
-        checker[self.type](self)
-
-    def _check0(self):
-        if any([self.text_color, self.text_maxlen, self.text_type,
-                self.list_ismultiselect, self.list_values]):
-            raise ValueError("invalid value(s) for PushButton")
-        if type(self.pb_caption) not in self._str_types:
-            raise ValueError("caption must be a string")
-    
-    def _check1(self):
-        return
-
-    def _check2(self):
-        return
-
-    def _check3(self):
-        if len(self.field_value) > self.text_maxlen:
-            raise ValueError("length of text exceeds maxlwn")
-        return
-
-    def _check4(self):
-        return
-
-    def _check5(self):
-        return
 %}

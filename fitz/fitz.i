@@ -19,6 +19,12 @@
 //-----------------------------------------------------------------------------
 %define CLOSECHECK(meth)
 %pythonprepend meth
+%{if self.isClosed or self.isEncrypted:
+    raise ValueError("operation illegal for closed / encrypted doc")%}
+%enddef
+
+%define CLOSECHECK0(meth)
+%pythonprepend meth
 %{if self.isClosed:
     raise ValueError("operation illegal for closed doc")%}
 %enddef
@@ -68,6 +74,7 @@
 #include <pdf.h>
 #include <zlib.h>
 #include <time.h>
+char *JM_Python_str_AsChar(PyObject *str);
 %}
 
 //-----------------------------------------------------------------------------
@@ -105,11 +112,11 @@ from binascii import hexlify
 import sys
 %}
 %include version.i
+%include helper-other.i
 %include helper-annot.i
 %include helper-stext.i
 %include helper-fields.i
 %include helper-python.i
-%include helper-other.i
 %include helper-portfolio.i
 %include helper-select.i
 %include helper-xobject.i
@@ -278,7 +285,7 @@ struct fz_document_s
             return page;
         }
 
-        CLOSECHECK(_loadOutline)
+        CLOSECHECK0(_loadOutline)
         struct fz_outline_s *_loadOutline()
         {
             fz_outline *ol = NULL;
@@ -569,14 +576,14 @@ struct fz_document_s
             return doc;
         }
 
-        CLOSECHECK(pageCount)
+        CLOSECHECK0(pageCount)
         %pythoncode%{@property%}
         int pageCount() 
         {
             return fz_count_pages(gctx, $self);
         }
 
-        CLOSECHECK(_getMetadata)
+        CLOSECHECK0(_getMetadata)
         char *_getMetadata(const char *key) {
             int vsize;
             char *value;
@@ -590,18 +597,21 @@ struct fz_document_s
                 return NULL;
         }
 
-        CLOSECHECK(needsPass)
+        CLOSECHECK0(needsPass)
         %pythoncode%{@property%}
         int needsPass() {
             return fz_needs_password(gctx, $self);
         }
 
-        CLOSECHECK(resolveLink)
         PyObject *resolveLink(char *uri = NULL)
         {
             if (!uri) return NONE;
             float xp = 0.0, yp = 0.0;
-            int pno = fz_resolve_link(gctx, $self, uri, &xp, &yp);
+            int pno = -1;
+            fz_try(gctx)
+                pno = fz_resolve_link(gctx, $self, uri, &xp, &yp);
+            fz_catch(gctx)
+                return NONE;
             if (pno < 0) return NONE;
             return Py_BuildValue("iff", pno, xp, yp);
         }
@@ -623,14 +633,14 @@ struct fz_document_s
             return NONE;
         }
 
-        CLOSECHECK(isReflowable)
+        CLOSECHECK0(isReflowable)
         %pythoncode%{@property%}
         PyObject *isReflowable()
         {
             return truth_value(fz_is_document_reflowable(gctx, $self));
         }
 
-        CLOSECHECK(isPDF)
+        CLOSECHECK0(isPDF)
         %pythoncode%{@property%}
         PyObject *isPDF()
         {
@@ -638,7 +648,7 @@ struct fz_document_s
             else Py_RETURN_FALSE;
         }
 
-        CLOSECHECK(isDirty)
+        CLOSECHECK0(isDirty)
         %pythoncode%{@property%}
         PyObject *isDirty()
         {
@@ -655,7 +665,7 @@ struct fz_document_s
             return fz_caught_message(gctx);
         }
 
-        CLOSECHECK(authenticate)
+        CLOSECHECK0(authenticate)
         %feature("autodoc", "Decrypt document with a password.") authenticate;
         %pythonappend authenticate %{
             if val: # the doc is decrypted successfully and we init the outline
@@ -671,8 +681,8 @@ struct fz_document_s
         //---------------------------------------------------------------------
         FITZEXCEPTION(save, !result)
         %pythonprepend save %{
-            if self.isClosed:
-                raise ValueError("operation illegal for closed doc")
+            if self.isClosed or self.isEncrypted:
+                raise ValueError("operation illegal for closed / encrypted doc")
             if type(filename) == str:
                 pass
             elif type(filename) == unicode:
@@ -725,8 +735,8 @@ struct fz_document_s
         FITZEXCEPTION(write, !result)
         %feature("autodoc", "Write document to a bytes object.") write;
         %pythonprepend write %{
-            if self.isClosed:
-                raise ValueError("operation illegal for closed doc")%}
+            if self.isClosed or self.isEncrypted:
+                raise ValueError("operation illegal for closed / encrypted doc")%}
 
         PyObject *write(int garbage=0, int clean=0, int deflate=0,
                         int ascii=0, int expand=0, int linear=0, int pretty = 0)
@@ -781,8 +791,8 @@ struct fz_document_s
         //*********************************************************************
         FITZEXCEPTION(insertPDF, !result)
         %pythonprepend insertPDF
-%{if self.isClosed:
-    raise ValueError("operation illegal for closed doc")
+%{if self.isClosed or self.isEncrypted:
+    raise ValueError("operation illegal for closed / encrypted doc")
 if id(self) == id(docsrc):
     raise ValueError("source must not equal target PDF")
 sa = start_at
@@ -831,8 +841,8 @@ if links:
         FITZEXCEPTION(insertPage, result<0)
         %feature("autodoc","Insert a new page in front of 'pno'. Use arguments 'width', 'height' to specify a non-default page size, and optionally text insertion arguments.") insertPage;
         %pythonprepend insertPage %{
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
         if bool(text):
             CheckColor(color)
             if fontname and fontname[0] == "/":
@@ -921,7 +931,7 @@ if links:
         // get document permissions
         //********************************************************************
         %feature("autodoc","Get permissions dictionary.") permissions;
-        CLOSECHECK(permissions)
+        CLOSECHECK0(permissions)
         %pythoncode%{@property%}
         PyObject *permissions()
         {
@@ -1011,7 +1021,7 @@ if links:
         }
 
         FITZEXCEPTION(_getPageObjNumber, !result)
-        CLOSECHECK(_getPageObjNumber)
+        CLOSECHECK0(_getPageObjNumber)
         PyObject *_getPageObjNumber(int pno)
         {
             int pageCount = fz_count_pages(gctx, $self);
@@ -1242,7 +1252,7 @@ if links:
         //---------------------------------------------------------------------
         // Check: do we have an AcroForm & any field?
         //---------------------------------------------------------------------
-        CLOSECHECK(isFormPDF)
+        CLOSECHECK0(isFormPDF)
         %pythoncode%{@property%}
         PyObject *isFormPDF()
         {
@@ -1263,6 +1273,58 @@ if links:
             fz_catch(gctx) Py_RETURN_FALSE;      // any problem yields false
             if (!have_form) Py_RETURN_FALSE;     // no form / no fields
             Py_RETURN_TRUE;
+        }
+
+        //---------------------------------------------------------------------
+        // Return the list of field font resource names
+        //---------------------------------------------------------------------
+        CLOSECHECK0(FormFonts)
+        %pythoncode%{@property%}
+        PyObject *FormFonts()
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            if (!pdf) return NONE;           // not a PDF
+            pdf_obj *fonts = NULL;
+            PyObject *liste = PyList_New(0);
+            fz_try(gctx)
+            {
+                fonts = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root, PDF_NAME_AcroForm, PDF_NAME_DR, PDF_NAME_Font, NULL);
+                if (fonts && pdf_is_dict(gctx, fonts))       // fonts exist
+                {
+                    int i, n = pdf_dict_len(gctx, fonts);
+                    for (i = 0; i < n; i++)
+                    {
+                        pdf_obj *f = pdf_dict_get_key(gctx, fonts, i);
+                        PyList_Append(liste, Py_BuildValue("s", pdf_to_name(gctx, f)));
+                    }
+                }
+            }
+            fz_catch(gctx) NONE;       // any problem yields None
+            return liste;
+        }
+
+        //---------------------------------------------------------------------
+        // Add a field font
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(addFormFont, !result)
+        CLOSECHECK(addFormFont)
+        PyObject *addFormFont(char *name, char *font)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            if (!pdf) NONE;           // not a PDF
+            pdf_obj *fonts = NULL;
+            fz_try(gctx)
+            {
+                fonts = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root,
+                             PDF_NAME_AcroForm, PDF_NAME_DR, PDF_NAME_Font, NULL);
+                if (!fonts || !pdf_is_dict(gctx, fonts))
+                    THROWMSG("not a form PDF or no form fonts yet");
+                pdf_obj *k = pdf_new_name(gctx, pdf, (const char *) name);
+                pdf_obj *v = pdf_new_obj_from_str(gctx, pdf, font);
+                pdf_dict_put(gctx, fonts, k, v);
+            }
+            fz_catch(gctx) NULL;
+            return NONE;
         }
 
         //---------------------------------------------------------------------
@@ -1311,7 +1373,7 @@ if links:
         //---------------------------------------------------------------------
         // Get Length of Xref
         //---------------------------------------------------------------------
-        CLOSECHECK(_getXrefLength)
+        CLOSECHECK0(_getXrefLength)
         int _getXrefLength()
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
@@ -1323,7 +1385,7 @@ if links:
         // Get XML Metadata xref
         //---------------------------------------------------------------------
         FITZEXCEPTION(_getXmlMetadataXref, result<0)
-        CLOSECHECK(_getXmlMetadataXref)
+        CLOSECHECK0(_getXmlMetadataXref)
         int _getXmlMetadataXref()
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); // get pdf document
@@ -1364,7 +1426,7 @@ if links:
         // Get Object String of xref
         //---------------------------------------------------------------------
         FITZEXCEPTION(_getObjectString, !result)
-        CLOSECHECK(_getObjectString)
+        CLOSECHECK0(_getObjectString)
         const char *_getObjectString(int xref)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); // conv doc to pdf
@@ -1533,8 +1595,8 @@ if links:
             def getPageFontList(self, pno):
                 """Retrieve a list of fonts used on a page.
                 """
-                if self.isClosed:
-                    raise ValueError("operation illegal for closed doc")
+                if self.isClosed or self.isEncrypted:
+                    raise ValueError("operation illegal for closed / encrypted doc")
                 if self.isPDF:
                     return self._getPageInfo(pno, 1)
                 return []
@@ -1542,8 +1604,8 @@ if links:
             def getPageImageList(self, pno):
                 """Retrieve a list of images used on a page.
                 """
-                if self.isClosed:
-                    raise ValueError("operation illegal for closed doc")
+                if self.isClosed or self.isEncrypted:
+                    raise ValueError("operation illegal for closed / encrypted doc")
                 if self.isPDF:
                     return self._getPageInfo(pno, 2)
                 return []
@@ -1704,6 +1766,7 @@ struct fz_page_s {
         // Page.getSVGimage
         //---------------------------------------------------------------------
         FITZEXCEPTION(getSVGimage, !result)
+        %feature("autodoc","Create an SVG image from the page as a string.") getSVGimage;
         PARENTCHECK(getSVGimage)
         PyObject *getSVGimage(struct fz_matrix_s *matrix = NULL)
         {
@@ -2045,6 +2108,219 @@ struct fz_page_s {
                 pdf_update_free_text_annot_appearance(gctx, pdf, annot);
             }
             fz_always(gctx) free(ascii);
+            fz_catch(gctx) return NULL;
+            fz_annot *fzannot = (fz_annot *) annot;
+            return fz_keep_annot(gctx, fzannot);
+        }
+
+        %pythoncode %{
+            #---------------------------------------------------------------------
+            # page addWidget
+            #---------------------------------------------------------------------
+            def addWidget(self, widget):
+                CheckParent(self)
+                doc = self.parent
+                if not doc.isPDF:
+                    raise ValueError("not a PDF")
+                widget._validate()
+                
+                # check if this PDF already has all of our forms
+                # either insert all of them in a new object and store the xref
+                # or add the missing fonts
+                xref = 0
+                ff = doc.FormFonts               # the existing fonts list
+                if not widget.text_font:         # are we ok alreay?
+                    widget.text_font = "Helv"
+                if not widget.text_font in ff:
+                    if not doc.isFormPDF or not ff:   # a fresh /AcroForm PDF!
+                        xref = doc._getNewXref()
+                        doc._updateObject(xref, Widget_fontobjects)
+                    else:                       # add any missing fonts
+                        for k in Widget_fontdict.keys():
+                            if not k in ff:     # add our font if missing
+                                doc.addFormFont(k, Widget_fontdict[k])
+                    widget._adjust_font()
+                widget._dr_xref = xref          # non-zero causes /DR creation
+                widget.text_da = "%g %g %g rg /%s %g Tf" % (widget.text_color[0],
+                                                        widget.text_color[1],
+                                                        widget.text_color[2],
+                                                        widget.text_font,
+                                                        widget.text_fontsize)
+                annot = self._addWidget(widget)
+                if annot:
+                    annot.thisown = True
+                    annot.parent = weakref.proxy(self) # owning page object
+                    self._annot_refs[id(annot)] = annot
+                return annot
+        %}
+        FITZEXCEPTION(_addWidget, !result)
+        struct fz_annot_s *_addWidget(PyObject *Widget)
+        {
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            pdf_document *pdf = page->doc;
+            pdf_annot *annot = NULL;
+            pdf_widget *widget = NULL;
+            PyObject *value = NULL;
+
+            int i;
+            fz_var(annot);
+            fz_try(gctx)
+            {
+                fz_rect rect = {0,0,0,0};
+                pdf_obj *fill_col = NULL, *text_col = NULL, *border_col = NULL;
+
+                value = PyObject_GetAttrString(Widget, "rect");
+                rect.x0 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 0));
+                rect.y0 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 1));
+                rect.x1 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 2));
+                rect.y1 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 3));
+                Py_DECREF(value);
+                PyErr_Clear();
+
+                value = PyObject_GetAttrString(Widget, "fill_color");
+                if (value && PySequence_Check(value))
+                {
+                    fill_col = pdf_new_array(gctx, pdf, 4);
+                    for (i = 0; i < PySequence_Size(value); i++)
+                    {
+                        pdf_array_push_real(gctx, fill_col, PyFloat_AsDouble(PySequence_GetItem(value, i)));
+                    }
+                }
+                Py_DECREF(value);
+                PyErr_Clear();
+
+                value = PyObject_GetAttrString(Widget, "border_color");
+                if (value && PySequence_Check(value))
+                {
+                    border_col = pdf_new_array(gctx, pdf, 4);
+                    for (i = 0; i < PySequence_Size(value); i++)
+                    {
+                        pdf_array_push_real(gctx, border_col, PyFloat_AsDouble(PySequence_GetItem(value, i)));
+                    }
+                }
+                Py_DECREF(value);
+                PyErr_Clear();
+
+                int field_type = (int) PyInt_AsLong(PyObject_GetAttrString(Widget, "field_type"));
+                PyErr_Clear();
+
+                int text_type = (int) PyInt_AsLong(PyObject_GetAttrString(Widget, "text_type"));
+                PyErr_Clear();
+
+                int text_maxlen = (int) PyInt_AsLong(PyObject_GetAttrString(Widget, "text_maxlen"));
+                PyErr_Clear();
+
+                char *field_name = JM_Python_str_AsChar(PyObject_GetAttrString(Widget, "field_name"));
+                PyErr_Clear();
+
+                // create the widget
+                widget = pdf_create_widget(gctx, pdf, page, field_type, field_name);
+                JM_Python_str_DelForPy3(field_name);
+                PyErr_Clear();
+
+                // check if font resources dict exists
+                pdf_obj *dr = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                          PDF_NAME_Root, PDF_NAME_AcroForm, PDF_NAME_DR, NULL);
+                // if not, we create it using the object prepared in xref
+                if (!dr)
+                {
+                    pdf_obj *form = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                                       PDF_NAME_Root, PDF_NAME_AcroForm, NULL);
+                    int xref = (int) PyInt_AsLong(PyObject_GetAttrString(Widget, "_dr_xref"));
+                    pdf_obj *f = pdf_new_indirect(gctx, pdf, xref, 0);
+                    dr = pdf_new_dict(gctx, pdf, 1);
+                    pdf_dict_put(gctx, dr, PDF_NAME_Font, f);
+                    pdf_dict_put(gctx, form, PDF_NAME_DR, dr);
+                    PyErr_Clear();
+                }
+
+                // do further widget modifications
+                annot = (pdf_annot *) widget;
+                pdf_set_annot_rect(gctx, annot, &rect);    // set the rect
+
+                pdf_dict_put(gctx, annot->obj, PDF_NAME_DR, dr); // copy DR obj
+
+                if (field_type == PDF_WIDGET_TYPE_LISTBOX ||field_type == PDF_WIDGET_TYPE_COMBOBOX)
+                {   // set choices where necessary
+                    value = PyObject_GetAttrString(Widget, "list_values");
+                    JM_set_choice_options(gctx, annot, value);
+                    Py_DECREF(value);
+                }
+                PyErr_Clear();
+
+                if (text_maxlen)
+                    pdf_dict_put_int(gctx, annot->obj, PDF_NAME_MaxLen, text_maxlen);
+                
+                if (fill_col)
+                {
+                    pdf_field_set_fill_color(gctx, pdf, annot->obj, fill_col);
+                    pdf_drop_obj(gctx, fill_col);
+                    fill_col = NULL;
+                }
+
+                if (border_col)
+                {
+                    pdf_dict_putl(gctx, annot->obj, border_col, PDF_NAME_MK, PDF_NAME_BC, NULL);
+                    pdf_drop_obj(gctx, border_col);
+                    border_col = NULL;
+                }
+
+                char *border_style = JM_Python_str_AsChar(PyObject_GetAttrString(Widget, "border_style"));
+                PyErr_Clear();
+                if (border_style)
+                {
+                    pdf_field_set_border_style(gctx, pdf, annot->obj, border_style);
+                    JM_Python_str_DelForPy3(border_style);
+                }
+
+                float border_width = (float) PyFloat_AsDouble(PyObject_GetAttrString(Widget, "border_width"));
+                if (border_width > 0)
+                {
+                    pdf_dict_putl_drop(gctx, annot->obj, pdf_new_real(gctx, pdf, border_width), PDF_NAME_BS, PDF_NAME_W, NULL);
+                }
+                PyErr_Clear();
+
+                char *da = JM_Python_str_AsChar(PyObject_GetAttrString(Widget, "text_da"));
+                if (da)
+                {
+                    pdf_dict_put_text_string(gctx, annot->obj, PDF_NAME_DA, da);
+                    JM_Python_str_DelForPy3(da);
+                }
+                PyErr_Clear();
+
+                int field_flags = 0, Ff = 0;
+                if (field_type != PDF_WIDGET_TYPE_CHECKBOX)
+                {
+                    field_flags = (int) PyInt_AsLong(PyObject_GetAttrString(Widget, "field_flags"));
+                    if (!PyErr_Occurred())
+                    {
+                        Ff = pdf_get_field_flags(gctx, pdf, annot->obj);
+                        Ff |= field_flags;
+                    }
+                }
+                
+                pdf_dict_put_int(gctx, annot->obj, PDF_NAME_Ff, Ff);
+                PyErr_Clear();
+
+                if (field_type == PDF_WIDGET_TYPE_RADIOBUTTON ||
+                    field_type == PDF_WIDGET_TYPE_PUSHBUTTON ||
+                    field_type == PDF_WIDGET_TYPE_CHECKBOX)
+                {
+                    char *ca = JM_Python_str_AsChar(PyObject_GetAttrString(Widget, "button_caption"));
+                    if (ca)
+                    {
+                        pdf_dict_putl(gctx, annot->obj, pdf_new_text_string(gctx, NULL, ca),PDF_NAME_MK, PDF_NAME_CA, NULL);
+                        JM_Python_str_DelForPy3(ca);
+                    }
+                    PyErr_Clear();
+                }
+
+            }
+            fz_always(gctx)
+            {
+                PyErr_Clear();
+            }
+
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
             return fz_keep_annot(gctx, fzannot);
@@ -4180,6 +4456,19 @@ struct fz_outline_s {
 */
     %extend {
         %pythoncode %{@property%}
+        %pythonappend uri %{
+        if not val:
+            return ""
+        if val.isprintable():
+            return val
+        nval = ""
+        for c in val:
+            if c.isprintable():
+                nval += c
+            else:
+                break
+        val = nval
+        %}
         char *uri()
             {
             return $self->uri;
@@ -4405,6 +4694,37 @@ struct fz_point_s
 #define ANNOT_WG_TEXT_SPECIAL 2
 #define ANNOT_WG_TEXT_DATE 3
 #define ANNOT_WG_TEXT_TIME 4
+
+//----------------------------------------------------------------------------
+// annotation widget flags
+//----------------------------------------------------------------------------
+// Common to all field types
+#define WIDGET_Ff_ReadOnly 1
+#define WIDGET_Ff_Required 2
+#define WIDGET_Ff_NoExport 4
+
+// Text fields
+#define WIDGET_Ff_Multiline 4096
+#define WIDGET_Ff_Password 8192
+
+#define WIDGET_Ff_FileSelect 1048576
+#define WIDGET_Ff_DoNotSpellCheck 4194304
+#define WIDGET_Ff_DoNotScroll 8388608
+#define WIDGET_Ff_Comb 16777216
+#define WIDGET_Ff_RichText 33554432
+
+// Button fields
+#define WIDGET_Ff_NoToggleToOff 16384
+#define WIDGET_Ff_Radio 32768
+#define WIDGET_Ff_Pushbutton 65536
+#define WIDGET_Ff_RadioInUnison 33554432
+
+// Choice fields
+#define WIDGET_Ff_Combo 131072
+#define WIDGET_Ff_Edit 262144
+#define WIDGET_Ff_Sort 524288
+#define WIDGET_Ff_MultiSelect 2097152
+#define WIDGET_Ff_CommitOnSelCHange 67108864
 
 %rename(Annot) fz_annot_s;
 %nodefaultctor;
@@ -5403,11 +5723,12 @@ struct fz_annot_s
             fz_try(gctx)
             {
                 char *border_style = pdf_field_border_style(gctx, pdf, annot->obj);
-                int text_maxlen = pdf_to_int(gctx, pdf_get_inheritable(gctx, pdf, annot->obj, PDF_NAME_MaxLen));
-                int text_type = pdf_text_widget_content_type(gctx, pdf, tw);
-                int list_ismultiselect = pdf_choice_widget_is_multiselect(gctx, pdf, tw);
 
-                char *da = pdf_to_str_buf(gctx, pdf_get_inheritable(gctx, pdf, annot->obj, PDF_NAME_DA));
+                int text_maxlen = pdf_to_int(gctx, pdf_get_inheritable(gctx, pdf, annot->obj, PDF_NAME_MaxLen));
+
+                int text_type = pdf_text_widget_content_type(gctx, pdf, tw);
+
+                int list_ismultiselect = pdf_choice_widget_is_multiselect(gctx, pdf, tw);
 
                 pdf_obj *bgcol = pdf_dict_getl(gctx, annot->obj, PDF_NAME_MK, PDF_NAME_BG, NULL);
 
@@ -5417,11 +5738,39 @@ struct fz_annot_s
                     PyObject *col = PyList_New(n);
                     for (i = 0; i < n; i++)
                     {
-                        PyList_SetItem(col, i, Py_BuildValue("i", pdf_array_get(gctx, bgcol, (int) i)));
+                        PyList_SetItem(col, i, Py_BuildValue("f",
+                        pdf_to_real(gctx, pdf_array_get(gctx, bgcol, (int) i))));
                     }
                     PyObject_SetAttrString(Widget, "fill_color", col);
                     Py_DECREF(col);
                 }
+
+                pdf_obj *bccol = pdf_dict_getl(gctx, annot->obj, PDF_NAME_MK, PDF_NAME_BC, NULL);
+
+                if (pdf_is_array(gctx, bccol))
+                {
+                    n = (Py_ssize_t) pdf_array_len(gctx, bccol);
+                    PyObject *col = PyList_New(n);
+                    for (i = 0; i < n; i++)
+                    {
+                        PyList_SetItem(col, i, Py_BuildValue("f",
+                        pdf_to_real(gctx, pdf_array_get(gctx, bccol, (int) i))));
+                    }
+                    PyObject_SetAttrString(Widget, "border_color", col);
+                    Py_DECREF(col);
+                }
+
+                char *da = pdf_to_str_buf(gctx, pdf_get_inheritable(gctx, pdf, annot->obj, PDF_NAME_DA));
+                PyObject_SetAttrString(Widget, "text_da", Py_BuildValue("s", da));
+
+                pdf_obj *ca = pdf_dict_getl(gctx, annot->obj, PDF_NAME_MK, PDF_NAME_CA, NULL);
+                if (ca)
+                {
+                    PyObject_SetAttrString(Widget, "button_caption", Py_BuildValue("s", pdf_to_str_buf(gctx, ca)));
+                }
+
+                int field_flags = pdf_get_field_flags(gctx, pdf, annot->obj);
+                PyObject_SetAttrString(Widget, "field_flags", Py_BuildValue("i", field_flags));
 
                 PyObject_SetAttrString(Widget, "border_style", Py_BuildValue("s", border_style));
 
@@ -5431,8 +5780,8 @@ struct fz_annot_s
 
                 PyObject_SetAttrString(Widget, "list_ismultiselect", Py_BuildValue("i", list_ismultiselect));
 
-                PyObject_SetAttrString(Widget, "text_color", Py_BuildValue("s", da));
             }
+            fz_always(gctx) PyErr_Clear();
             fz_catch(gctx) return NULL;
             return NONE;
         }
@@ -5444,12 +5793,14 @@ struct fz_annot_s
             if annot_type != ANNOT_WIDGET:
                 return None
             w = Widget()
-            w.field_type      = self.widget_type[0]
-            w.field_type_text = self.widget_type[1]
-            w.field_value     = self.widget_value
-            w.field_name      = self.widget_name
-            w.list_values     = self.widget_choices
-            w.rect            = self.rect
+            w.field_type        = self.widget_type[0]
+            w.field_type_string = self.widget_type[1]
+            w.border_width      = self.border.get("width", 1.0)
+            w.field_value       = self.widget_value
+            w.field_name        = self.widget_name
+            w.list_values       = self.widget_choices
+            w.rect              = self.rect
+            w.text_font         = None
             self._getWidget(w)
             return w
 
@@ -5498,6 +5849,19 @@ struct fz_link_s
 
         PARENTCHECK(uri)
         %pythoncode %{@property%}
+        %pythonappend uri %{
+        if not val:
+            return ""
+        if val.isprintable():
+            return val
+        nval = ""
+        for c in val:
+            if c.isprintable():
+                nval += c
+            else:
+                break
+        val = nval
+        %}
         char *uri()
         {
             return $self->uri;
@@ -5519,10 +5883,16 @@ struct fz_link_s
             """Create link destination details."""
             if hasattr(self, "parent") and self.parent is None:
                 raise ValueError("orphaned object: parent is None")
-            if self.parent.parent.isClosed:
-                raise ValueError("operation illegal for closed doc")
+            if self.parent.parent.isClosed or self.parent.parent.isEncrypted:
+                raise ValueError("operation illegal for closed / encrypted doc")
             doc = self.parent.parent
-            return linkDest(self, doc.resolveLink(self.uri))
+        
+            if self.isExternal or self.uri.startswith("#"):
+                uri = None
+            else:
+                uri = doc.resolveLink(self.uri)
+            
+            return linkDest(self, uri)
         %}
 
         PARENTCHECK(rect)

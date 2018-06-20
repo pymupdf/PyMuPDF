@@ -102,53 +102,111 @@ import sys
 
 
 VersionFitz = "1.13.0"
-VersionBind = "1.13.10"
-VersionDate = "2018-06-14 07:13:02"
-version = (VersionBind, VersionFitz, "20180614071302")
+VersionBind = "1.13.11"
+VersionDate = "2018-06-20 09:36:02"
+version = (VersionBind, VersionFitz, "20180620093602")
 
 
 #------------------------------------------------------------------------------
 # Class describing a PDF form field ("widget")
 #------------------------------------------------------------------------------
+Widget_fontobjects = """<</CoBI <</Type/Font/Subtype/Type1/BaseFont/Courier-BoldOblique/Encoding/WinAnsiEncoding>>\n/CoBo <</Type/Font/Subtype/Type1/BaseFont/Courier-Bold/Encoding/WinAnsiEncoding>>\n/CoIt <</Type/Font/Subtype/Type1/BaseFont/Courier-Oblique/Encoding/WinAnsiEncoding>>\n/Cour <</Type/Font/Subtype/Type1/BaseFont/Courier/Encoding/WinAnsiEncoding>>\n/HeBI <</Type/Font/Subtype/Type1/BaseFont/Helvetica-BoldOblique/Encoding/WinAnsiEncoding>>\n/HeBo <</Type/Font/Subtype/Type1/BaseFont/Helvetica-Bold/Encoding/WinAnsiEncoding>>\n/HeIt <</Type/Font/Subtype/Type1/BaseFont/Helvetica-Oblique/Encoding/WinAnsiEncoding>>\n/Helv <</Type/Font/Subtype/Type1/BaseFont/Helvetica/Encoding/WinAnsiEncoding>>\n/Symb <</Type/Font/Subtype/Type1/BaseFont/Symbol/Encoding/WinAnsiEncoding>>\n/TiBI <</Type/Font/Subtype/Type1/BaseFont/Times-BoldItalic/Encoding/WinAnsiEncoding>>\n/TiBo <</Type/Font/Subtype/Type1/BaseFont/Times-Bold/Encoding/WinAnsiEncoding>>\n/TiIt <</Type/Font/Subtype/Type1/BaseFont/Times-Italic/Encoding/WinAnsiEncoding>>\n/TiRo <</Type/Font/Subtype/Type1/BaseFont/Times-Roman/Encoding/WinAnsiEncoding>>\n/ZaDb <</Type/Font/Subtype/Type1/BaseFont/ZapfDingbats/Encoding/WinAnsiEncoding>>>>"""
+
+def _Widget_fontdict():
+    flist = Widget_fontobjects[2:-2].splitlines()
+    fdict = {}
+    for f in flist:
+        k, v = f.split(" ")
+        fdict[k[1:]] = v
+    return fdict
+
+Widget_fontdict = _Widget_fontdict()
+
 class Widget():
     def __init__(self):
-        self.border_color       = None           # annot value
-        self.border_style       = None           # annot value
-        self.border_width       = 0              # annot value
-        self.list_ismultiselect = False          # list- / comboboxes
-        self.list_values        = None           # list- / comboboxes
+        self.border_color       = None
+        self.border_style       = "s"
+        self.border_width       = 0
+        self.list_values        = None           # choice fields
         self.field_name         = None           # field name
-        self.field_value        = None           # supports all field types
+        self.field_value        = None
+        self.field_flags        = None
         self.fill_color         = None
-        self.pb_caption         = None           # pushbutton text
+        self.button_caption     = None           # button caption
         self.rect               = None           # annot value
         self.text_color         = None           # text fields only
+        self.text_font          = "Helv"
+        self.text_fontsize      = None           # text fields only
         self.text_maxlen        = 0              # text fields only
         self.text_type          = 0              # text fields only
-        self.field_type         = -1             # valid range 0 through 6
-        self.field_type_text    = None
-        if str is not bytes:
-            unicode = str
-        self._str_types         = (str, unicode) if str is bytes else (str)
+        self.text_da            = None           # /DA = default apparance
+        self.field_type         = 3              # valid range 0 through 6
+        self.field_type_string  = None           # field type as string
+        self._dr_xref           = 0              # xref of /DR entry
 
     def _validate(self):
         checker = (self._check0, self._check1, self._check2, self._check3,
                    self._check4, self._check5)
-        valid_types = tuple(range(6))
-        if self.field_type not in valid_types:
+        if not 0 <= self.field_type <= 5:
             raise NotImplementedError("unsupported widget type")
         if type(self.rect) is not Rect:
             raise ValueError("invalid rect")
+        if self.rect.isInfinite or self.rect.isEmpty:
+            raise ValueError("rect must be finite and not empty")
         if not self.field_name:
             raise ValueError("field name missing")
-        checker[self.type](self)
+        if self.border_color:
+            if not len(self.border_color) in range(1,5) or \
+               type(self.border_color) not in (list, tuple):
+               raise ValueError("border_color must be 1 - 4 floats")
+        if self.fill_color:
+            if not len(self.fill_color) in range(1,5) or \
+               type(self.fill_color) not in (list, tuple):
+               raise ValueError("fill_color must be 1 - 4 floats")
+        if not self.border_width:
+            self.border_width = 0
+
+        if not self.text_color:
+            self.text_color = (0, 0, 0)
+        if not len(self.fill_color) == 3 or \
+            type(self.fill_color) not in (list, tuple):
+            raise ValueError("text_color must be 3 floats")
+
+        if not self.text_fontsize:
+            self.text_fontsize = 0
+
+        bs = self.border_style
+        if not bs:
+            bs = "Solid"
+        else:
+            bs = bs.title()
+            if bs[0] == "S":
+                bs = "Solid"
+            elif bs[0] == "B":
+                bs = "Beveled"
+            elif bs[0] == "D":
+                bs = "Dashed"
+            elif bs[0] == "U":
+                bs = "Underline"
+            elif bs[0] == "I":
+                bs = "Inset"
+            else:
+                bs = "Solid"
+        self.boder_style = bs
+
+        checker[self.field_type]()
+
+    def _adjust_font(self):
+        fnames = [k for k in Widget_fontdict.keys()]
+        fl = list(map(str.lower, fnames))
+        if (not self.text_font) or self.text_font.lower() not in fl:
+            self.text_font = "helv"
+        i = fl.index(self.text_font.lower())
+        self.text_font = fnames[i]
+        return
 
     def _check0(self):
-        if any([self.text_color, self.text_maxlen, self.text_type,
-                self.list_ismultiselect, self.list_values]):
-            raise ValueError("invalid value(s) for PushButton")
-        if type(self.pb_caption) not in self._str_types:
-            raise ValueError("caption must be a string")
+        return
 
     def _check1(self):
         return
@@ -157,15 +215,24 @@ class Widget():
         return
 
     def _check3(self):
-        if len(self.field_value) > self.text_maxlen:
-            raise ValueError("length of text exceeds maxlwn")
+        if not 0 <= self.text_type <= 4:
+            raise ValueError("text subtype not in range 0 - 4")
         return
 
     def _check4(self):
+        if type(self.list_values) not in (tuple, list):
+            raise ValueError("field type requires a value list")
+        if len(self.list_values) < 2:
+            raise ValueError("too few values in list")
         return
 
     def _check5(self):
+        if type(self.list_values) not in (tuple, list):
+            raise ValueError("field type requires a value list")
+        if len(self.list_values) < 2:
+            raise ValueError("too few values in list")
         return
+
 
 
 #------------------------------------------------------------------------------
@@ -626,8 +693,8 @@ open(filename, filetype='type') - from file"""
 
     def loadPage(self, number=0):
         """loadPage(self, number=0) -> Page"""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         val = _fitz.Document_loadPage(self, number)
 
@@ -661,56 +728,56 @@ open(filename, filetype='type') - from file"""
 
     def embeddedFileCount(self):
         """Return number of embedded files."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document_embeddedFileCount(self)
 
 
     def embeddedFileDel(self, name):
         """Delete embedded file by name."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document_embeddedFileDel(self, name)
 
 
     def embeddedFileInfo(self, id):
         """Retrieve embedded file information given its entry number or name."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document_embeddedFileInfo(self, id)
 
 
     def embeddedFileSetInfo(self, id, filename=None, desc=None):
         """Change filename or description of embedded file given its entry number or name."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document_embeddedFileSetInfo(self, id, filename, desc)
 
 
     def embeddedFileGet(self, id):
         """Retrieve embedded file content given its entry number or name."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document_embeddedFileGet(self, id)
 
 
     def embeddedFileAdd(self, buffer, name, filename=None, desc=None):
         """Add new file from buffer."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document_embeddedFileAdd(self, buffer, name, filename, desc)
 
 
     def convertToPDF(self, from_page=0, to_page=-1, rotate=0):
         """Convert document to PDF selecting copy range and optional rotation. Output bytes object."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document_convertToPDF(self, from_page, to_page, rotate)
 
@@ -743,16 +810,13 @@ open(filename, filetype='type') - from file"""
 
     def resolveLink(self, uri=None):
         """resolveLink(self, uri=None) -> PyObject *"""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
-
         return _fitz.Document_resolveLink(self, uri)
 
 
     def layout(self, rect, fontsize=11):
         """layout(self, rect, fontsize=11) -> PyObject *"""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document_layout(self, rect, fontsize)
 
@@ -813,8 +877,8 @@ open(filename, filetype='type') - from file"""
     def save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0, pretty=0):
         """save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0, pretty=0) -> PyObject *"""
 
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
         if type(filename) == str:
             pass
         elif type(filename) == unicode:
@@ -833,16 +897,16 @@ open(filename, filetype='type') - from file"""
     def write(self, garbage=0, clean=0, deflate=0, ascii=0, expand=0, linear=0, pretty=0):
         """Write document to a bytes object."""
 
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document_write(self, garbage, clean, deflate, ascii, expand, linear, pretty)
 
 
     def insertPDF(self, docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=1):
         """Copy page range ['from', 'to'] of source PDF, starting as page number 'start_at'."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
         if id(self) == id(docsrc):
             raise ValueError("source must not equal target PDF")
         sa = start_at
@@ -861,8 +925,8 @@ open(filename, filetype='type') - from file"""
     def insertPage(self, pno=-1, text=None, fontsize=11, width=595, height=842, idx=0, fontname=None, fontfile=None, set_simple=0, color=None):
         """Insert a new page in front of 'pno'. Use arguments 'width', 'height' to specify a non-default page size, and optionally text insertion arguments."""
 
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
         if bool(text):
             CheckColor(color)
             if fontname and fontname[0] == "/":
@@ -885,8 +949,8 @@ open(filename, filetype='type') - from file"""
 
     def select(self, pyliste):
         """Build sub-pdf with page numbers in 'list'."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         val = _fitz.Document_select(self, pyliste)
 
@@ -907,8 +971,8 @@ open(filename, filetype='type') - from file"""
 
     def _getCharWidths(self, xref, limit, idx=0):
         """Return list of glyphs and glyph widths of a font."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document__getCharWidths(self, xref, limit, idx)
 
@@ -923,8 +987,8 @@ open(filename, filetype='type') - from file"""
 
     def _getPageInfo(self, pno, what):
         """Show fonts or images used on a page."""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         val = _fitz.Document__getPageInfo(self, pno, what)
 
@@ -939,24 +1003,24 @@ open(filename, filetype='type') - from file"""
 
     def extractFont(self, xref=0, info_only=0):
         """extractFont(self, xref=0, info_only=0) -> PyObject *"""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document_extractFont(self, xref, info_only)
 
 
     def extractImage(self, xref=0):
         """Extract image an xref points to. Return dict of extension and image content"""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document_extractImage(self, xref)
 
 
     def _delToC(self):
         """_delToC(self) -> PyObject *"""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         val = _fitz.Document__delToC(self)
         self.initData()
@@ -972,19 +1036,36 @@ open(filename, filetype='type') - from file"""
 
         return _fitz.Document_isFormPDF(self)
 
+    @property
+
+    def FormFonts(self):
+        """FormFonts(self) -> PyObject *"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document_FormFonts(self)
+
+
+    def addFormFont(self, name, font):
+        """addFormFont(self, name, font) -> PyObject *"""
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
+
+        return _fitz.Document_addFormFont(self, name, font)
+
 
     def _getOLRootNumber(self):
         """_getOLRootNumber(self) -> int"""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document__getOLRootNumber(self)
 
 
     def _getNewXref(self):
         """_getNewXref(self) -> int"""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document__getNewXref(self)
 
@@ -1007,8 +1088,8 @@ open(filename, filetype='type') - from file"""
 
     def _delXmlMetadata(self):
         """_delXmlMetadata(self) -> PyObject *"""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document__delXmlMetadata(self)
 
@@ -1024,32 +1105,32 @@ open(filename, filetype='type') - from file"""
 
     def _getXrefStream(self, xref):
         """_getXrefStream(self, xref) -> PyObject *"""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document__getXrefStream(self, xref)
 
 
     def _updateObject(self, xref, text, page=None):
         """_updateObject(self, xref, text, page=None) -> PyObject *"""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document__updateObject(self, xref, text, page)
 
 
     def _updateStream(self, xref=0, stream=None, new=0):
         """_updateStream(self, xref=0, stream=None, new=0) -> PyObject *"""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document__updateStream(self, xref, stream, new)
 
 
     def _setMetadata(self, text):
         """_setMetadata(self, text) -> PyObject *"""
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document__setMetadata(self, text)
 
@@ -1067,8 +1148,8 @@ open(filename, filetype='type') - from file"""
     def getPageFontList(self, pno):
         """Retrieve a list of fonts used on a page.
         """
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
         if self.isPDF:
             return self._getPageInfo(pno, 1)
         return []
@@ -1076,8 +1157,8 @@ open(filename, filetype='type') - from file"""
     def getPageImageList(self, pno):
         """Retrieve a list of images used on a page.
         """
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
         if self.isPDF:
             return self._getPageInfo(pno, 2)
         return []
@@ -1231,7 +1312,7 @@ class Page(_object):
 
 
     def getSVGimage(self, matrix=None):
-        """getSVGimage(self, matrix=None) -> PyObject *"""
+        """Create an SVG image from the page as a string."""
         CheckParent(self)
 
         return _fitz.Page_getSVGimage(self, matrix)
@@ -1385,6 +1466,51 @@ class Page(_object):
 
 
         return val
+
+
+                #---------------------------------------------------------------------
+                # page addWidget
+                #---------------------------------------------------------------------
+    def addWidget(self, widget):
+        CheckParent(self)
+        doc = self.parent
+        if not doc.isPDF:
+            raise ValueError("not a PDF")
+        widget._validate()
+
+    # check if this PDF already has all of our forms
+    # either insert all of them in a new object and store the xref
+    # or add the missing fonts
+        xref = 0
+        ff = doc.FormFonts               # the existing fonts list
+        if not widget.text_font:         # are we ok alreay?
+            widget.text_font = "Helv"
+        if not widget.text_font in ff:
+            if not doc.isFormPDF or not ff:   # a fresh /AcroForm PDF!
+                xref = doc._getNewXref()
+                doc._updateObject(xref, Widget_fontobjects)
+            else:                       # add any missing fonts
+                for k in Widget_fontdict.keys():
+                    if not k in ff:     # add our font if missing
+                        doc.addFormFont(k, Widget_fontdict[k])
+            widget._adjust_font()
+        widget._dr_xref = xref          # non-zero causes /DR creation
+        widget.text_da = "%g %g %g rg /%s %g Tf" % (widget.text_color[0],
+                                                widget.text_color[1],
+                                                widget.text_color[2],
+                                                widget.text_font,
+                                                widget.text_fontsize)
+        annot = self._addWidget(widget)
+        if annot:
+            annot.thisown = True
+            annot.parent = weakref.proxy(self) # owning page object
+            self._annot_refs[id(annot)] = annot
+        return annot
+
+
+    def _addWidget(self, Widget):
+        """_addWidget(self, Widget) -> Annot"""
+        return _fitz.Page__addWidget(self, Widget)
 
 
     def getDisplayList(self):
@@ -2335,7 +2461,22 @@ class Outline(_object):
 
     def uri(self):
         """uri(self) -> char *"""
-        return _fitz.Outline_uri(self)
+        val = _fitz.Outline_uri(self)
+
+        if not val:
+            return ""
+        if val.isprintable():
+            return val
+        nval = ""
+        for c in val:
+            if c.isprintable():
+                nval += c
+            else:
+                break
+        val = nval
+
+
+        return val
 
     @property
 
@@ -2516,6 +2657,25 @@ ANNOT_WG_TEXT_NUMBER = _fitz.ANNOT_WG_TEXT_NUMBER
 ANNOT_WG_TEXT_SPECIAL = _fitz.ANNOT_WG_TEXT_SPECIAL
 ANNOT_WG_TEXT_DATE = _fitz.ANNOT_WG_TEXT_DATE
 ANNOT_WG_TEXT_TIME = _fitz.ANNOT_WG_TEXT_TIME
+WIDGET_Ff_ReadOnly = _fitz.WIDGET_Ff_ReadOnly
+WIDGET_Ff_Required = _fitz.WIDGET_Ff_Required
+WIDGET_Ff_NoExport = _fitz.WIDGET_Ff_NoExport
+WIDGET_Ff_Multiline = _fitz.WIDGET_Ff_Multiline
+WIDGET_Ff_Password = _fitz.WIDGET_Ff_Password
+WIDGET_Ff_FileSelect = _fitz.WIDGET_Ff_FileSelect
+WIDGET_Ff_DoNotSpellCheck = _fitz.WIDGET_Ff_DoNotSpellCheck
+WIDGET_Ff_DoNotScroll = _fitz.WIDGET_Ff_DoNotScroll
+WIDGET_Ff_Comb = _fitz.WIDGET_Ff_Comb
+WIDGET_Ff_RichText = _fitz.WIDGET_Ff_RichText
+WIDGET_Ff_NoToggleToOff = _fitz.WIDGET_Ff_NoToggleToOff
+WIDGET_Ff_Radio = _fitz.WIDGET_Ff_Radio
+WIDGET_Ff_Pushbutton = _fitz.WIDGET_Ff_Pushbutton
+WIDGET_Ff_RadioInUnison = _fitz.WIDGET_Ff_RadioInUnison
+WIDGET_Ff_Combo = _fitz.WIDGET_Ff_Combo
+WIDGET_Ff_Edit = _fitz.WIDGET_Ff_Edit
+WIDGET_Ff_Sort = _fitz.WIDGET_Ff_Sort
+WIDGET_Ff_MultiSelect = _fitz.WIDGET_Ff_MultiSelect
+WIDGET_Ff_CommitOnSelCHange = _fitz.WIDGET_Ff_CommitOnSelCHange
 class Annot(_object):
     """Proxy of C fz_annot_s struct."""
 
@@ -2776,12 +2936,14 @@ class Annot(_object):
         if annot_type != ANNOT_WIDGET:
             return None
         w = Widget()
-        w.field_type      = self.widget_type[0]
-        w.field_type_text = self.widget_type[1]
-        w.field_value     = self.widget_value
-        w.field_name      = self.widget_name
-        w.list_values     = self.widget_choices
-        w.rect            = self.rect
+        w.field_type        = self.widget_type[0]
+        w.field_type_string = self.widget_type[1]
+        w.border_width      = self.border.get("width", 1.0)
+        w.field_value       = self.widget_value
+        w.field_name        = self.widget_name
+        w.list_values       = self.widget_choices
+        w.rect              = self.rect
+        w.text_font         = None
         self._getWidget(w)
         return w
 
@@ -2831,7 +2993,22 @@ class Link(_object):
         """uri(self) -> char *"""
         CheckParent(self)
 
-        return _fitz.Link_uri(self)
+        val = _fitz.Link_uri(self)
+
+        if not val:
+            return ""
+        if val.isprintable():
+            return val
+        nval = ""
+        for c in val:
+            if c.isprintable():
+                nval += c
+            else:
+                break
+        val = nval
+
+
+        return val
 
     @property
 
@@ -2848,10 +3025,16 @@ class Link(_object):
         """Create link destination details."""
         if hasattr(self, "parent") and self.parent is None:
             raise ValueError("orphaned object: parent is None")
-        if self.parent.parent.isClosed:
-            raise ValueError("operation illegal for closed doc")
+        if self.parent.parent.isClosed or self.parent.parent.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
         doc = self.parent.parent
-        return linkDest(self, doc.resolveLink(self.uri))
+
+        if self.isExternal or self.uri.startswith("#"):
+            uri = None
+        else:
+            uri = doc.resolveLink(self.uri)
+
+        return linkDest(self, uri)
 
     @property
 
