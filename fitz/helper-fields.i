@@ -3,7 +3,7 @@
 // Functions dealing with PDF form fields
 //-----------------------------------------------------------------------------
 
-// retrieve field value of PushButton
+// PushButton get state
 //-----------------------------------------------------------------------------
 PyObject *JM_pushbtn_state(fz_context *ctx, pdf_annot *annot)
 {   // pushed buttons do not reflect status changes in the PDF
@@ -11,7 +11,7 @@ PyObject *JM_pushbtn_state(fz_context *ctx, pdf_annot *annot)
     Py_RETURN_FALSE;
 }
 
-// retrieve field value of CheckBox
+// CheckBox get state
 //-----------------------------------------------------------------------------
 PyObject *JM_checkbox_state(fz_context *ctx, pdf_annot *annot)
 {
@@ -20,18 +20,20 @@ PyObject *JM_checkbox_state(fz_context *ctx, pdf_annot *annot)
     pdf_obj *leafas = pdf_get_inheritable(ctx, pdf, annot->obj, PDF_NAME_AS);
     if (!leafv) Py_RETURN_FALSE;
     if (leafv  == PDF_NAME_Off) Py_RETURN_FALSE;
+    if (pdf_is_string(ctx, leafv) && !strcmp(pdf_to_str_buf(ctx, leafv), "Yes"))
+        Py_RETURN_TRUE;
     if (leafas && leafas == PDF_NAME_Off) Py_RETURN_FALSE;
     Py_RETURN_TRUE;
 }
 
-// retrieve field value of RadioBox
+// RadioBox get state
 //-----------------------------------------------------------------------------
 PyObject *JM_radiobtn_state(fz_context *ctx, pdf_annot *annot)
 {   // MuPDF treats radio buttons like check boxes - hence so do we
     return JM_checkbox_state(ctx, annot);
 }
 
-// retrieve value of Text fields
+// Text field retrieve value
 //-----------------------------------------------------------------------------
 PyObject *JM_text_value(fz_context *ctx, pdf_annot *annot)
 {
@@ -41,11 +43,10 @@ PyObject *JM_text_value(fz_context *ctx, pdf_annot *annot)
     fz_try(ctx)
         text = pdf_field_value(ctx, pdf, annot->obj);
     fz_catch(ctx) return NONE;
-    if (text) return JM_UNICODE(text, strlen(text));
-    return NONE;
+    return Py_BuildValue("s", text);
 }
 
-// retrieve value of ListBox fields
+// ListBox retrieve value
 //-----------------------------------------------------------------------------
 PyObject *JM_listbox_value(fz_context *ctx, pdf_annot *annot)
 {
@@ -55,6 +56,7 @@ PyObject *JM_listbox_value(fz_context *ctx, pdf_annot *annot)
     if (pdf_is_string(ctx, optarr))         // a single string
         return PyString_FromString(pdf_to_utf8(ctx, optarr));
 
+    // value is an array (may have len 0)
     n = pdf_array_len(ctx, optarr);
     PyObject *liste = PyList_New(0);
 
@@ -70,20 +72,20 @@ PyObject *JM_listbox_value(fz_context *ctx, pdf_annot *annot)
     return liste;
 }
 
-// retrieve value of ComboBox fields
+// ComboBox retrieve value
 //-----------------------------------------------------------------------------
 PyObject *JM_combobox_value(fz_context *ctx, pdf_annot *annot)
 {   // combobox values are treated like listbox values
     return JM_listbox_value(ctx, annot);
 }
 
-// retrieve value of Signature fields
+// Signature field retrieve value
 PyObject *JM_signature_value(fz_context *ctx, pdf_annot *annot)
 {   // signatures are currently not supported
     return NONE;
 }
 
-// retrieve valid ListBox / ComboBox values
+// retrieve ListBox / ComboBox choice values
 //-----------------------------------------------------------------------------
 PyObject *JM_choice_options(fz_context *ctx, pdf_annot *annot)
 {   // return list of choices for list or combo boxes
@@ -132,15 +134,207 @@ void JM_set_choice_options(fz_context *ctx, pdf_annot *annot, PyObject *liste)
     return;
 }
 
+//-----------------------------------------------------------------------------
+// set properties of new or updated widget
+//-----------------------------------------------------------------------------
+void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widget, int field_type)
+{
+    pdf_document *pdf = annot->page->doc;
+    fz_rect rect = {0,0,0,0};
+    pdf_obj *fill_col = NULL, *text_col = NULL, *border_col = NULL;
+    pdf_obj *dashes = NULL;
+    Py_ssize_t i, n = 0;
+    PyObject *value;
+
+    // check if font resources dict /DR exists, ...
+    pdf_obj *dr = pdf_dict_getl(ctx, pdf_trailer(ctx, pdf),
+                           PDF_NAME_Root, PDF_NAME_AcroForm, PDF_NAME_DR, NULL);
+    // if not, we create it using the object prepared in xref
+    if (!dr)
+    {
+        pdf_obj *form = pdf_dict_getl(ctx, pdf_trailer(ctx, pdf),
+                                        PDF_NAME_Root, PDF_NAME_AcroForm, NULL);
+        int xref = (int) PyInt_AsLong(PyObject_GetAttrString(Widget,
+                                                                   "_dr_xref"));
+        pdf_obj *f = pdf_new_indirect(ctx, pdf, xref, 0);
+        dr = pdf_new_dict(ctx, pdf, 1);
+        pdf_dict_put(ctx, dr, PDF_NAME_Font, f);
+        pdf_dict_put_drop(ctx, form, PDF_NAME_DR, dr);
+        JM_PyErr_Clear;
+    }
+
+    // rectangle --------------------------------------------------
+    value = PyObject_GetAttrString(Widget, "rect");
+    rect.x0 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 0));
+    rect.y0 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 1));
+    rect.x1 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 2));
+    rect.y1 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 3));
+    Py_XDECREF(value);
+    JM_PyErr_Clear;
+    pdf_set_annot_rect(ctx, annot, &rect);    // set the rect
+
+    // fill color -------------------------------------------------
+    value = PyObject_GetAttrString(Widget, "fill_color");
+    if (value && PySequence_Check(value))
+    {
+        n = PySequence_Size(value);
+        fill_col = pdf_new_array(ctx, pdf, n);
+        for (i = 0; i < n; i++)
+            pdf_array_push_real(ctx, fill_col,
+                                PyFloat_AsDouble(PySequence_GetItem(value, i)));
+        pdf_field_set_fill_color(ctx, pdf, annot->obj, fill_col);
+        pdf_drop_obj(ctx, fill_col);
+    }
+    Py_XDECREF(value);
+    JM_PyErr_Clear;
+
+    // dashes -----------------------------------------------------
+    value = PyObject_GetAttrString(Widget, "border_dashes");
+    if (value && PySequence_Check(value))
+    {
+        n = PySequence_Size(value);
+        dashes = pdf_new_array(ctx, pdf, n);
+        for (i = 0; i < n; i++)
+            pdf_array_push_int(ctx, dashes,
+                                    PyInt_AsLong(PySequence_GetItem(value, i)));
+        pdf_dict_putl_drop(ctx, annot->obj, dashes, PDF_NAME_BS,
+                                                              PDF_NAME_D, NULL);
+    }
+    Py_XDECREF(value);
+    JM_PyErr_Clear;
+
+    // border color -----------------------------------------------
+    value = PyObject_GetAttrString(Widget, "border_color");
+    if (value && PySequence_Check(value))
+    {
+        n = PySequence_Size(value);
+        border_col = pdf_new_array(ctx, pdf, n);
+        for (i = 0; i < n; i++)
+            pdf_array_push_real(ctx, border_col,
+                                PyFloat_AsDouble(PySequence_GetItem(value, i)));
+        pdf_dict_putl_drop(ctx, annot->obj, border_col, PDF_NAME_MK,
+                                                             PDF_NAME_BC, NULL);
+    }
+    Py_XDECREF(value);
+    JM_PyErr_Clear;
+
+    // entry ignored - may be later use
+    /*
+    int text_type = (int) PyInt_AsLong(PyObject_GetAttrString(Widget,
+                                                                  "text_type"));
+    JM_PyErr_Clear;
+    */
+
+    // max text len -----------------------------------------------
+    if (field_type == PDF_WIDGET_TYPE_TEXT)
+    {
+        int text_maxlen = (int) PyInt_AsLong(PyObject_GetAttrString(Widget,
+                                                               "text_maxlen"));
+        if (text_maxlen)
+            pdf_dict_put_int(ctx, annot->obj, PDF_NAME_MaxLen, text_maxlen);
+        JM_PyErr_Clear;
+    }
+    
+    // choice values ----------------------------------------------
+    if (field_type == PDF_WIDGET_TYPE_LISTBOX ||
+        field_type == PDF_WIDGET_TYPE_COMBOBOX)
+    {
+        value = PyObject_GetAttrString(Widget, "choice_values");
+        JM_set_choice_options(ctx, annot, value);
+        Py_DECREF(value);
+    }
+    JM_PyErr_Clear;
+
+    // border style -----------------------------------------------
+    pdf_obj *val = JM_get_border_style(ctx,
+                                PyObject_GetAttrString(Widget, "border_style"));
+    pdf_dict_putl_drop(ctx, annot->obj, val, PDF_NAME_BS, PDF_NAME_S, NULL);
+
+    // border width -----------------------------------------------
+    float border_width = (float) PyFloat_AsDouble(PyObject_GetAttrString(Widget,
+                                                               "border_width"));
+    pdf_dict_putl_drop(ctx, annot->obj, pdf_new_real(ctx, pdf,
+                                  border_width), PDF_NAME_BS, PDF_NAME_W, NULL);
+    JM_PyErr_Clear;
+
+    // /DA string -------------------------------------------------
+    char *da = JM_Python_str_AsChar(PyObject_GetAttrString(Widget, "text_da"));
+    if (da)
+    {
+        pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME_DA, da);
+        JM_Python_str_DelForPy3(da);
+    }
+    JM_PyErr_Clear;
+
+    // field flags ------------------------------------------------
+    int field_flags = 0, Ff = 0;
+    if (field_type != PDF_WIDGET_TYPE_CHECKBOX)
+    {
+        field_flags = (int) PyInt_AsLong(PyObject_GetAttrString(Widget,
+                                                                "field_flags"));
+        if (!PyErr_Occurred())
+        {
+            Ff = pdf_get_field_flags(ctx, pdf, annot->obj);
+            Ff |= field_flags;
+        }
+        JM_PyErr_Clear;
+    }
+    pdf_dict_put_int(ctx, annot->obj, PDF_NAME_Ff, Ff);
+
+    // button caption ---------------------------------------------
+    if (field_type == PDF_WIDGET_TYPE_RADIOBUTTON ||
+        field_type == PDF_WIDGET_TYPE_PUSHBUTTON ||
+        field_type == PDF_WIDGET_TYPE_CHECKBOX)
+    {
+        char *ca = JM_Python_str_AsChar(PyObject_GetAttrString(Widget,
+                                                             "button_caption"));
+        if (ca)
+        {
+            pdf_dict_putl(ctx, annot->obj, pdf_new_text_string(ctx, NULL, ca),
+                                                PDF_NAME_MK, PDF_NAME_CA, NULL);
+            JM_Python_str_DelForPy3(ca);
+        }
+        JM_PyErr_Clear;
+    }
+
+    // field value ------------------------------------------------------------
+    value = PyObject_GetAttrString(Widget, "field_value");
+    int result = 0;
+    char *text = NULL;
+    switch(field_type)
+    {
+    case PDF_WIDGET_TYPE_CHECKBOX:
+    case PDF_WIDGET_TYPE_RADIOBUTTON:
+        if (PyObject_RichCompareBool(value, Py_True, Py_EQ))
+            result = pdf_field_set_value(ctx, pdf, annot->obj, "Yes");
+        else
+            result = pdf_field_set_value(ctx, pdf, annot->obj, "Off");
+        break;
+    default:
+        text = JM_Python_str_AsChar(value);
+        if (text)
+        {
+            result = pdf_field_set_value(ctx, pdf, annot->obj, (const char *)text);
+            JM_Python_str_DelForPy3(text);
+        }
+    }
+    Py_XDECREF(value);
+    pdf_dirty_annot(ctx, annot);
+}
+
 %}
 
 %pythoncode %{
 #------------------------------------------------------------------------------
-# Class describing a PDF form field ("widget")
+# Font definitions for new PyMuPDF widgets.
+# IMPORTANT: do not change anything here! Line breaks are required, as well
+# as are the spaces after the font ref names.
 #------------------------------------------------------------------------------
 Widget_fontobjects = """<</CoBI <</Type/Font/Subtype/Type1/BaseFont/Courier-BoldOblique/Encoding/WinAnsiEncoding>>\n/CoBo <</Type/Font/Subtype/Type1/BaseFont/Courier-Bold/Encoding/WinAnsiEncoding>>\n/CoIt <</Type/Font/Subtype/Type1/BaseFont/Courier-Oblique/Encoding/WinAnsiEncoding>>\n/Cour <</Type/Font/Subtype/Type1/BaseFont/Courier/Encoding/WinAnsiEncoding>>\n/HeBI <</Type/Font/Subtype/Type1/BaseFont/Helvetica-BoldOblique/Encoding/WinAnsiEncoding>>\n/HeBo <</Type/Font/Subtype/Type1/BaseFont/Helvetica-Bold/Encoding/WinAnsiEncoding>>\n/HeIt <</Type/Font/Subtype/Type1/BaseFont/Helvetica-Oblique/Encoding/WinAnsiEncoding>>\n/Helv <</Type/Font/Subtype/Type1/BaseFont/Helvetica/Encoding/WinAnsiEncoding>>\n/Symb <</Type/Font/Subtype/Type1/BaseFont/Symbol/Encoding/WinAnsiEncoding>>\n/TiBI <</Type/Font/Subtype/Type1/BaseFont/Times-BoldItalic/Encoding/WinAnsiEncoding>>\n/TiBo <</Type/Font/Subtype/Type1/BaseFont/Times-Bold/Encoding/WinAnsiEncoding>>\n/TiIt <</Type/Font/Subtype/Type1/BaseFont/Times-Italic/Encoding/WinAnsiEncoding>>\n/TiRo <</Type/Font/Subtype/Type1/BaseFont/Times-Roman/Encoding/WinAnsiEncoding>>\n/ZaDb <</Type/Font/Subtype/Type1/BaseFont/ZapfDingbats/Encoding/WinAnsiEncoding>>>>"""
 
 def _Widget_fontdict():
+    """Turns the above font definitions into a dictionary. Assumes certain line breaks and spaces.
+    """
     flist = Widget_fontobjects[2:-2].splitlines()
     fdict = {}
     for f in flist:
@@ -148,14 +342,18 @@ def _Widget_fontdict():
         fdict[k[1:]] = v
     return fdict
 
-Widget_fontdict = _Widget_fontdict()
+Widget_fontdict = _Widget_fontdict()   # needed so we can use it as a property
 
+#------------------------------------------------------------------------------
+# Class describing a PDF form field ("widget")
+#------------------------------------------------------------------------------
 class Widget():
     def __init__(self):
         self.border_color       = None
-        self.border_style       = "s"
+        self.border_style       = "S"
         self.border_width       = 0
-        self.list_values        = None           # choice fields
+        self.border_dashes      = None
+        self.choice_values      = None           # choice fields only
         self.field_name         = None           # field name
         self.field_value        = None
         self.field_flags        = None
@@ -173,6 +371,8 @@ class Widget():
         self._dr_xref           = 0              # xref of /DR entry
     
     def _validate(self):
+        """Validate the class entries.
+        """
         checker = (self._check0, self._check1, self._check2, self._check3,
                    self._check4, self._check5)
         if not 0 <= self.field_type <= 5:
@@ -183,48 +383,34 @@ class Widget():
             raise ValueError("rect must be finite and not empty")
         if not self.field_name:
             raise ValueError("field name missing")
+        
         if self.border_color:
             if not len(self.border_color) in range(1,5) or \
                type(self.border_color) not in (list, tuple):
                raise ValueError("border_color must be 1 - 4 floats")
+        
         if self.fill_color:
             if not len(self.fill_color) in range(1,5) or \
                type(self.fill_color) not in (list, tuple):
                raise ValueError("fill_color must be 1 - 4 floats")
-        if not self.border_width:
-            self.border_width = 0
-
+        
         if not self.text_color:
             self.text_color = (0, 0, 0)
-        if not len(self.fill_color) == 3 or \
-            type(self.fill_color) not in (list, tuple):
-            raise ValueError("text_color must be 3 floats")
+        if not len(self.text_color) in range(1,5) or \
+            type(self.text_color) not in (list, tuple):
+            raise ValueError("text_color must be 1 - 4 floats")
+
+        if not self.border_width:
+            self.border_width = 0
 
         if not self.text_fontsize:
             self.text_fontsize = 0
 
-        bs = self.border_style
-        if not bs:
-            bs = "Solid"
-        else:
-            bs = bs.title()
-            if bs[0] == "S":
-                bs = "Solid"
-            elif bs[0] == "B":
-                bs = "Beveled"
-            elif bs[0] == "D":
-                bs = "Dashed"
-            elif bs[0] == "U":
-                bs = "Underline"
-            elif bs[0] == "I":
-                bs = "Inset"
-            else:
-                bs = "Solid"
-        self.boder_style = bs
-
         checker[self.field_type]()
 
     def _adjust_font(self):
+        """Ensure the font name is from our list and correctly spelled.
+        """
         fnames = [k for k in Widget_fontdict.keys()]
         fl = list(map(str.lower, fnames))
         if (not self.text_font) or self.text_font.lower() not in fl:
@@ -233,6 +419,35 @@ class Widget():
         self.text_font = fnames[i]
         return
 
+    def _da_reconstruct(self):
+        """Extract font name, size and color from default appearance string (/DA object).
+        """
+        if not self.text_da:
+            return
+        font = None
+        fsize = None
+        col = None
+        dat = self.text_da.split(" ")
+        for i, item in enumerate(dat):
+            if item == "Tf":
+                font = dat[i - 2][1:]
+                fsize = float(dat[i - 1])
+                continue
+            if item == "g":            # unicolor text
+                col = [(float(dat[i - 1]))]
+                continue
+            if item == "rg":           # RGB colored text
+                col = [float(f) for f in dat[i - 3:i]]
+                continue
+            if item == "k":            # CMYK colored text
+                col = [float(f) for f in dat[i - 4:i]]
+                continue
+        self.text_font     = font
+        self.text_fontsize = fsize
+        self.text_color    = col
+        return
+
+    # any widget type specific checks
     def _check0(self):
         return
     
@@ -248,17 +463,17 @@ class Widget():
         return
 
     def _check4(self):
-        if type(self.list_values) not in (tuple, list):
+        if type(self.choice_values) not in (tuple, list):
             raise ValueError("field type requires a value list")
-        if len(self.list_values) < 2:
-            raise ValueError("too few values in list")
+        if len(self.choice_values) < 2:
+            raise ValueError("too few choice values")
         return
 
     def _check5(self):
-        if type(self.list_values) not in (tuple, list):
+        if type(self.choice_values) not in (tuple, list):
             raise ValueError("field type requires a value list")
-        if len(self.list_values) < 2:
-            raise ValueError("too few values in list")
+        if len(self.choice_values) < 2:
+            raise ValueError("too few choice values")
         return
 
 %}

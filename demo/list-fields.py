@@ -14,10 +14,11 @@ def print_widget(w):
         if k.startswith("_"):
             continue
         print(k, "=", d[k])
+    print("")
 
 doc = fitz.open(sys.argv[1])
 if not doc.isFormPDF:
-    raise SystemExit("PDF has no form fields.")
+    raise SystemExit("'%s' has no form fields." % doc.name)
 print("".ljust(80, "-"))
 print("Form field synopsis of file '%s'" % sys.argv[1])
 print("".ljust(80, "-"))

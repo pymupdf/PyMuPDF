@@ -85,6 +85,17 @@ def getTextWords(page):
     del tp
     return l
     
+def getTextUWords(page):
+    """Return the text words as a list with the bbox for each word.
+    """
+    fitz.CheckParent(page)
+    dl = page.getDisplayList()
+    tp = dl.getTextPage()
+    l = tp._extractUniWords_AsList()
+    del dl
+    del tp
+    return l
+    
 #==============================================================================
 # A function for extracting a page's text.
 #==============================================================================

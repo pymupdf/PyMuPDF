@@ -37,12 +37,14 @@ lineheight = fontsize + 4
 # Field 1: Simple Text
 #------------------------------------------------------------------------------
 r11 = fitz.Rect(50, 100, 200, 100 + lineheight)  # rect of field label
-r12 = r11 + (r11.width+2, 0, r11.width+2, 0)     # rect of field value
+r12 = r11 + (r11.width+2, 0, 2 * r11.width+2, 0) # rect of field value
 page.insertTextbox(r11, "simple Text field:", align = fitz.TEXT_ALIGN_RIGHT)
 
 widget = fitz.Widget()                           # create a widget object
 widget.border_color = blue                       # border color
 widget.border_width = 0.3                        # border width
+widget.border_style = "d"
+widget.border_dashes = [2, 3]
 widget.field_name = "textfield-1"                # field name
 widget.field_type = fitz.ANNOT_WG_TEXT           # field type
 widget.fill_color = gold                         # field background
@@ -51,6 +53,7 @@ widget.text_color = blue                         # rext color
 widget.text_font = "tibo"                        # use font Times-Bold
 widget.text_fontsize = fontsize                  # set fontsize
 widget.text_maxlen = 40                          # restrict to 40 characters
+widget.field_value = "Times-Roman-Bold, 40 char."
 annot = page.addWidget(widget)                   # create the field
 
 #------------------------------------------------------------------------------
@@ -68,6 +71,7 @@ widget.fill_color = gold
 widget.rect = r22
 widget.text_color = blue
 widget.text_font = "ZaDb"
+widget.field_value = True
 annot = page.addWidget(widget)
 
 #------------------------------------------------------------------------------
@@ -81,11 +85,13 @@ widget = fitz.Widget()
 widget.field_name = "ListBox-1"
 widget.field_type = fitz.ANNOT_WG_LISTBOX
 widget.fill_color = gold
-widget.list_values = ["Frankfurt", "Hamburg", "Stuttgart", "Hannover", "Berlin", "München", "Köln", "Potsdam"]
-widget.list_values.sort()                        # sort the choices 
+widget.choice_values = ["Frankfurt", "Hamburg", "Stuttgart", "Hannover", "Berlin", "München", "Köln", "Potsdam"]
+widget.choice_values.sort()                        # sort the choices 
 widget.rect = r32
 widget.text_color = blue
-widget.field_flags = 0
+widget.text_fontsize = fontsize
+widget.field_flags = fitz.WIDGET_Ff_CommitOnSelCHange
+widget.field_value = widget.choice_values[-1]
 annot = page.addWidget(widget)
 
 #------------------------------------------------------------------------------
@@ -99,11 +105,13 @@ widget.field_flags = fitz.WIDGET_Ff_Edit         # make field editable
 widget.field_name = "ComboBox-1"
 widget.field_type = fitz.ANNOT_WG_COMBOBOX
 widget.fill_color = gold
-widget.list_values = ["Spanien", "Frankreich", "Holland", "Dänemark", "Schweden", "Norwegen", "England", "Polen", "Russland", "Italien", "Portugal", "Griechenland"]
-widget.list_values.sort()                        # sort the choices
+widget.choice_values = ["Spanien", "Frankreich", "Holland", "Dänemark", "Schweden", "Norwegen", "England", "Polen", "Russland", "Italien", "Portugal", "Griechenland"]
+widget.choice_values.sort()                      # sort the choices
 widget.rect = r42
 widget.text_color = blue
 widget.text_fontsize = fontsize
+widget.field_flags = fitz.WIDGET_Ff_CommitOnSelCHange
+widget.field_value = widget.choice_values[-1]
 annot = page.addWidget(widget)
 
 #------------------------------------------------------------------------------
@@ -121,6 +129,7 @@ widget.rect = r52
 widget.text_color = blue
 widget.text_font = "TiRo"
 widget.text_fontsize = fontsize
+widget.field_value = "this\nis\na\nmulti-\nline\ntext."
 annot = page.addWidget(widget)
 
-doc.save("widgettest.pdf", pretty = True)
+doc.save("widgettest.pdf", clean = True, garbage = 4)

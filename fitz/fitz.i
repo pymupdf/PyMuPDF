@@ -55,8 +55,10 @@
 #define INRANGE(v, low, high) ((low) <= v && v <= (high))
 #define MAX(a, b) ((a) < (b)) ? (b) : (a)
 #define MIN(a, b) ((a) < (b)) ? (a) : (b)
-#define JM_UNICODE(data, len) PyUnicode_DecodeUTF8(data, (Py_ssize_t) len, "replace")
+#define JM_UNICODE(data) PyUnicode_DecodeUTF8(data, strlen(data), "replace")
 #define JM_BytesFromBuffer(ctx, x) PyBytes_FromStringAndSize(fz_string_from_buffer(ctx, x), (Py_ssize_t) fz_buffer_storage(ctx, x, NULL))
+#define JM_StrFromBuffer(ctx, x) PyUnicode_DecodeUTF8(fz_string_from_buffer(ctx, x), (Py_ssize_t) fz_buffer_storage(ctx, x, NULL), "replace")
+#define JM_PyErr_Clear if (PyErr_Occurred()) PyErr_Clear()
 
 // binary output depending on Python major
 # if PY_VERSION_HEX >= 0x03000000
@@ -409,15 +411,15 @@ struct fz_document_s
             PyObject *infodict = PyDict_New();
             // name of file entry
             name = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, n));
-            PyDict_SetItemString(infodict, "name", 
-                                 JM_UNICODE(name, strlen(name)));
+            PyDict_SetItemString(infodict, "name", JM_UNICODE(name));
+
             pdf_obj *o = pdf_portfolio_entry_obj(gctx, pdf, n);
             name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_F));
-            PyDict_SetItemString(infodict, "file", 
-                                 JM_UNICODE(name, strlen(name)));
+            PyDict_SetItemString(infodict, "file", JM_UNICODE(name));
+
             name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_Desc));
-            PyDict_SetItemString(infodict, "desc", 
-                                 JM_UNICODE(name, strlen(name)));
+            PyDict_SetItemString(infodict, "desc", JM_UNICODE(name));
+
             pdf_obj *olen = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F,
                                           PDF_NAME_Length, NULL);
             int len = -1;
@@ -1774,7 +1776,6 @@ struct fz_page_s {
             fz_bound_page(gctx, $self, &mediabox);
             fz_device *dev = NULL;
             fz_buffer *res = NULL;
-            size_t res_len = 0;
             PyObject *text = NULL;
             fz_matrix *ctm = matrix;
             if (!matrix) ctm = (fz_matrix *) &fz_identity;
@@ -1792,12 +1793,10 @@ struct fz_page_s {
             {
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
-                unsigned char *data;
                 dev = fz_new_svg_device(gctx, out, tbounds.x1-tbounds.x0, tbounds.y1-tbounds.y0, FZ_SVG_TEXT_AS_PATH, 1);
                 fz_run_page(gctx, $self, dev, ctm, cookie);
                 fz_close_device(gctx, dev);
-                res_len = fz_buffer_storage(gctx, res, &data);
-                text = JM_UNICODE(data, res_len);
+                text = JM_StrFromBuffer(gctx, res);
             }
             fz_always(gctx)
             {
@@ -2123,29 +2122,36 @@ struct fz_page_s {
                 if not doc.isPDF:
                     raise ValueError("not a PDF")
                 widget._validate()
-                
-                # check if this PDF already has all of our forms
-                # either insert all of them in a new object and store the xref
-                # or add the missing fonts
+
+                # Check if PDF already has our fonts.
+                # If none insert all of them in a new object and store the xref.
+                # Else only add any missing fonts.
+                # To determine the situation, /DR object is checked.
                 xref = 0
-                ff = doc.FormFonts               # the existing fonts list
-                if not widget.text_font:         # are we ok alreay?
+                ff = doc.FormFonts               # /DR object: existing fonts
+                if not widget.text_font:         # ensure default
                     widget.text_font = "Helv"
-                if not widget.text_font in ff:
+                if not widget.text_font in ff:   # if no existent font ...
                     if not doc.isFormPDF or not ff:   # a fresh /AcroForm PDF!
-                        xref = doc._getNewXref()
+                        xref = doc._getNewXref()      # insert all our fonts
                         doc._updateObject(xref, Widget_fontobjects)
-                    else:                       # add any missing fonts
+                    else:                        # add any missing fonts
                         for k in Widget_fontdict.keys():
-                            if not k in ff:     # add our font if missing
+                            if not k in ff:      # add our font if missing
                                 doc.addFormFont(k, Widget_fontdict[k])
-                    widget._adjust_font()
-                widget._dr_xref = xref          # non-zero causes /DR creation
-                widget.text_da = "%g %g %g rg /%s %g Tf" % (widget.text_color[0],
-                                                        widget.text_color[1],
-                                                        widget.text_color[2],
-                                                        widget.text_font,
-                                                        widget.text_fontsize)
+                    widget._adjust_font()        # ensure correct font spelling
+                widget._dr_xref = xref           # non-zero causes /DR creation
+
+                # now create the /DA string
+                if   len(widget.text_color) == 3:
+                    fmt = "{:g} {:g} {:g} rg /{f:s} {s:g} Tf"
+                elif len(widget.text_color) == 1:
+                    fmt = "{:g} g /{f:s} {s:g} Tf"
+                elif len(widget.text_color) == 4:
+                    fmt = "{:g} {:g} {:g} {:g} k /{f:s} {s:g} Tf"
+                widget.text_da = fmt.format(*widget.text_color, f=widget.text_font,
+                                            s=widget.text_fontsize)
+                # create the widget at last
                 annot = self._addWidget(widget)
                 if annot:
                     annot.thisown = True
@@ -2160,167 +2166,31 @@ struct fz_page_s {
             pdf_document *pdf = page->doc;
             pdf_annot *annot = NULL;
             pdf_widget *widget = NULL;
-            PyObject *value = NULL;
-
-            int i;
             fz_var(annot);
             fz_try(gctx)
             {
-                fz_rect rect = {0,0,0,0};
-                pdf_obj *fill_col = NULL, *text_col = NULL, *border_col = NULL;
+                //-------------------------------------------------------------
+                // create the widget - only need type and field name for this
+                //-------------------------------------------------------------
+                int field_type = (int) PyInt_AsLong(PyObject_GetAttrString(Widget,
+                                                    "field_type"));
+                JM_PyErr_Clear;
 
-                value = PyObject_GetAttrString(Widget, "rect");
-                rect.x0 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 0));
-                rect.y0 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 1));
-                rect.x1 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 2));
-                rect.y1 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 3));
-                Py_DECREF(value);
-                PyErr_Clear();
+                char *field_name = JM_Python_str_AsChar(PyObject_GetAttrString(Widget,
+                                                        "field_name"));
+                JM_PyErr_Clear;
 
-                value = PyObject_GetAttrString(Widget, "fill_color");
-                if (value && PySequence_Check(value))
-                {
-                    fill_col = pdf_new_array(gctx, pdf, 4);
-                    for (i = 0; i < PySequence_Size(value); i++)
-                    {
-                        pdf_array_push_real(gctx, fill_col, PyFloat_AsDouble(PySequence_GetItem(value, i)));
-                    }
-                }
-                Py_DECREF(value);
-                PyErr_Clear();
-
-                value = PyObject_GetAttrString(Widget, "border_color");
-                if (value && PySequence_Check(value))
-                {
-                    border_col = pdf_new_array(gctx, pdf, 4);
-                    for (i = 0; i < PySequence_Size(value); i++)
-                    {
-                        pdf_array_push_real(gctx, border_col, PyFloat_AsDouble(PySequence_GetItem(value, i)));
-                    }
-                }
-                Py_DECREF(value);
-                PyErr_Clear();
-
-                int field_type = (int) PyInt_AsLong(PyObject_GetAttrString(Widget, "field_type"));
-                PyErr_Clear();
-
-                int text_type = (int) PyInt_AsLong(PyObject_GetAttrString(Widget, "text_type"));
-                PyErr_Clear();
-
-                int text_maxlen = (int) PyInt_AsLong(PyObject_GetAttrString(Widget, "text_maxlen"));
-                PyErr_Clear();
-
-                char *field_name = JM_Python_str_AsChar(PyObject_GetAttrString(Widget, "field_name"));
-                PyErr_Clear();
-
-                // create the widget
                 widget = pdf_create_widget(gctx, pdf, page, field_type, field_name);
                 JM_Python_str_DelForPy3(field_name);
-                PyErr_Clear();
-
-                // check if font resources dict exists
-                pdf_obj *dr = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
-                          PDF_NAME_Root, PDF_NAME_AcroForm, PDF_NAME_DR, NULL);
-                // if not, we create it using the object prepared in xref
-                if (!dr)
-                {
-                    pdf_obj *form = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
-                                       PDF_NAME_Root, PDF_NAME_AcroForm, NULL);
-                    int xref = (int) PyInt_AsLong(PyObject_GetAttrString(Widget, "_dr_xref"));
-                    pdf_obj *f = pdf_new_indirect(gctx, pdf, xref, 0);
-                    dr = pdf_new_dict(gctx, pdf, 1);
-                    pdf_dict_put(gctx, dr, PDF_NAME_Font, f);
-                    pdf_dict_put(gctx, form, PDF_NAME_DR, dr);
-                    PyErr_Clear();
-                }
-
-                // do further widget modifications
+                JM_PyErr_Clear;
                 annot = (pdf_annot *) widget;
-                pdf_set_annot_rect(gctx, annot, &rect);    // set the rect
 
-                pdf_dict_put(gctx, annot->obj, PDF_NAME_DR, dr); // copy DR obj
-
-                if (field_type == PDF_WIDGET_TYPE_LISTBOX ||field_type == PDF_WIDGET_TYPE_COMBOBOX)
-                {   // set choices where necessary
-                    value = PyObject_GetAttrString(Widget, "list_values");
-                    JM_set_choice_options(gctx, annot, value);
-                    Py_DECREF(value);
-                }
-                PyErr_Clear();
-
-                if (text_maxlen)
-                    pdf_dict_put_int(gctx, annot->obj, PDF_NAME_MaxLen, text_maxlen);
-                
-                if (fill_col)
-                {
-                    pdf_field_set_fill_color(gctx, pdf, annot->obj, fill_col);
-                    pdf_drop_obj(gctx, fill_col);
-                    fill_col = NULL;
-                }
-
-                if (border_col)
-                {
-                    pdf_dict_putl(gctx, annot->obj, border_col, PDF_NAME_MK, PDF_NAME_BC, NULL);
-                    pdf_drop_obj(gctx, border_col);
-                    border_col = NULL;
-                }
-
-                char *border_style = JM_Python_str_AsChar(PyObject_GetAttrString(Widget, "border_style"));
-                PyErr_Clear();
-                if (border_style)
-                {
-                    pdf_field_set_border_style(gctx, pdf, annot->obj, border_style);
-                    JM_Python_str_DelForPy3(border_style);
-                }
-
-                float border_width = (float) PyFloat_AsDouble(PyObject_GetAttrString(Widget, "border_width"));
-                if (border_width > 0)
-                {
-                    pdf_dict_putl_drop(gctx, annot->obj, pdf_new_real(gctx, pdf, border_width), PDF_NAME_BS, PDF_NAME_W, NULL);
-                }
-                PyErr_Clear();
-
-                char *da = JM_Python_str_AsChar(PyObject_GetAttrString(Widget, "text_da"));
-                if (da)
-                {
-                    pdf_dict_put_text_string(gctx, annot->obj, PDF_NAME_DA, da);
-                    JM_Python_str_DelForPy3(da);
-                }
-                PyErr_Clear();
-
-                int field_flags = 0, Ff = 0;
-                if (field_type != PDF_WIDGET_TYPE_CHECKBOX)
-                {
-                    field_flags = (int) PyInt_AsLong(PyObject_GetAttrString(Widget, "field_flags"));
-                    if (!PyErr_Occurred())
-                    {
-                        Ff = pdf_get_field_flags(gctx, pdf, annot->obj);
-                        Ff |= field_flags;
-                    }
-                }
-                
-                pdf_dict_put_int(gctx, annot->obj, PDF_NAME_Ff, Ff);
-                PyErr_Clear();
-
-                if (field_type == PDF_WIDGET_TYPE_RADIOBUTTON ||
-                    field_type == PDF_WIDGET_TYPE_PUSHBUTTON ||
-                    field_type == PDF_WIDGET_TYPE_CHECKBOX)
-                {
-                    char *ca = JM_Python_str_AsChar(PyObject_GetAttrString(Widget, "button_caption"));
-                    if (ca)
-                    {
-                        pdf_dict_putl(gctx, annot->obj, pdf_new_text_string(gctx, NULL, ca),PDF_NAME_MK, PDF_NAME_CA, NULL);
-                        JM_Python_str_DelForPy3(ca);
-                    }
-                    PyErr_Clear();
-                }
-
+                //-------------------------------------------------------------
+                // now field exists, adjust its properties
+                //-------------------------------------------------------------
+                JM_set_widget_properties(gctx, annot, Widget, field_type);
             }
-            fz_always(gctx)
-            {
-                PyErr_Clear();
-            }
-
+            fz_always(gctx) JM_PyErr_Clear;
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
             return fz_keep_annot(gctx, fzannot);
@@ -4892,6 +4762,9 @@ struct fz_annot_s
         %pythoncode %{@property%}
         PyObject *colors()
         {
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
+            if (!annot) return NONE;
+             
             PyObject *res = PyDict_New();
             PyObject *bc = PyList_New(0);        // fill colors
             PyObject *fc = PyList_New(0);        // stroke colors
@@ -4899,14 +4772,6 @@ struct fz_annot_s
             PyDict_SetItemString(res, "stroke", bc);
             PyDict_SetItemString(res, "fill", fc);
 
-            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
-            if (!annot)
-            {
-                Py_DECREF(bc);
-                Py_DECREF(fc);
-                return res;                   // not a PDF
-            }
-             
             PyObject *col_o;
             int i;
             float col;
@@ -4970,6 +4835,11 @@ struct fz_annot_s
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
             if (!annot) return;
             if (!PyDict_Check(colors)) return;
+            if (pdf_annot_type(gctx, annot) == PDF_ANNOT_WIDGET)
+            {
+                PySys_WriteStdout("use 'updateWidget' to change form field colors\n");
+                return;
+            }
             PyObject *ccol, *icol;
             ccol = PyDict_GetItemString(colors, "stroke");
             icol = PyDict_GetItemString(colors, "fill");
@@ -5022,8 +4892,8 @@ struct fz_annot_s
             if (!annot) return res;                   // no a PDF: empty dict
             pdf_obj *o = pdf_dict_gets(gctx, annot->obj, "LE");
             if (!o) return res;                       // no LE: empty dict
-            char *lstart = "";
-            char *lend = "";
+            char *lstart = NULL;
+            char *lend = NULL;
             if (pdf_is_name(gctx, o)) lstart = (char *) pdf_to_name(gctx, o);
             else if (pdf_is_array(gctx, o))
                 {
@@ -5031,11 +4901,10 @@ struct fz_annot_s
                 if (pdf_array_len(gctx, o) > 1)
                     lend   = (char *) pdf_to_name(gctx, pdf_array_get(gctx, o, 1));
                 }
-            PyObject *cpy;
-            cpy = JM_UNICODE(lstart, strlen(lstart));
-            PyDict_SetItemString(res, "start", cpy);
-            cpy = JM_UNICODE(lend, strlen(lend));
-            PyDict_SetItemString(res, "end", cpy);
+
+            PyDict_SetItemString(res, "start", Py_BuildValue("s", lstart));
+
+            PyDict_SetItemString(res, "end", Py_BuildValue("s", lend));
             return res;
         }
 
@@ -5243,8 +5112,7 @@ struct fz_annot_s
             if (f_o) filename = pdf_to_utf8(gctx, f_o);
             else     filename = "<undefined>";
 
-            PyDict_SetItemString(res, "filename",
-                   JM_UNICODE(filename, strlen(filename)));
+            PyDict_SetItemString(res, "filename", JM_UNICODE(filename));
             PyDict_SetItemString(res, "length", PyInt_FromLong((long) length));
             PyDict_SetItemString(res, "size", PyInt_FromLong((long) size));
             return res;
@@ -5341,41 +5209,34 @@ struct fz_annot_s
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
             if (!annot) return res;                   // not a PDF
             pdf_obj *o;
-            PyObject *cpy;
             char *c;
             c = pdf_copy_annot_contents(gctx, annot);
-            cpy = JM_UNICODE(c, strlen(c));
-            PyDict_SetItemString(res, "content", cpy);
+            PyDict_SetItemString(res, "content", JM_UNICODE(c));
 
             c = "";                                   // Name
             o = pdf_dict_get(gctx, annot->obj, PDF_NAME_Name);
             if (o) c = (char *) pdf_to_name(gctx, o);
-            cpy = JM_UNICODE(c, strlen(c));
-            PyDict_SetItemString(res, "name", cpy);
+            PyDict_SetItemString(res, "name", JM_UNICODE(c));
 
             c = "";                                   // Title
             o = pdf_dict_get(gctx, annot->obj, PDF_NAME_T);
             if (o) c = pdf_to_utf8(gctx, o);
-            cpy = JM_UNICODE(c, strlen(c));
-            PyDict_SetItemString(res, "title", cpy);
+            PyDict_SetItemString(res, "title", JM_UNICODE(c));
 
             c = "";                                   // CreationDate
             o = pdf_dict_gets(gctx, annot->obj, "CreationDate");
             if (o) c = pdf_to_utf8(gctx, o);
-            cpy = JM_UNICODE(c, strlen(c));
-            PyDict_SetItemString(res, "creationDate", cpy);
+            PyDict_SetItemString(res, "creationDate", JM_UNICODE(c));
 
             c = "";                                   // ModDate
             o = pdf_dict_get(gctx, annot->obj, PDF_NAME_M);
             if (o) c = pdf_to_utf8(gctx, o);
-            cpy = JM_UNICODE(c, strlen(c));
-            PyDict_SetItemString(res, "modDate", cpy);
+            PyDict_SetItemString(res, "modDate", JM_UNICODE(c));
 
             c = "";                                   // Subj
             o = pdf_dict_gets(gctx, annot->obj, "Subj");
             if (o) c = pdf_to_utf8(gctx, o);
-            cpy = JM_UNICODE(c, strlen(c));
-            PyDict_SetItemString(res, "subject", cpy);
+            PyDict_SetItemString(res, "subject", JM_UNICODE(c));
 
             return res;
         }
@@ -5474,83 +5335,65 @@ struct fz_annot_s
         %pythoncode %{@property%}
         PyObject *border()
         {
-            PyObject *res = PyDict_New();
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
-            if (!annot) return res;                   // not a PDF -> empty dict
+            if (!annot) return NONE;                   // not a PDF
+            PyObject *res = PyDict_New();
             PyObject *dash_py   = PyList_New(0);
             PyObject *effect_py = PyList_New(0);
             int i;
-            char *effect2, *style;
-            effect2 = style = "";
-            double width = -1.0;
+            char *effect2 = NULL, *style = NULL;
+            float width = 0;
             int effect1 = -1;
-            long dashes[10];
-            int dashlen = 10;
-            for (i = 0; i < dashlen; i++) dashes[i] = 0;
-            int dash_ind, style_ind;
-            dash_ind = style_ind = 0;
 
             pdf_obj *o = pdf_dict_get(gctx, annot->obj, PDF_NAME_Border);
             if (pdf_is_array(gctx, o))
-                {
-                width = (double) pdf_to_real(gctx, pdf_array_get(gctx, o, 2));
+            {
+                width = pdf_to_real(gctx, pdf_array_get(gctx, o, 2));
                 if (pdf_array_len(gctx, o) == 4)
-                    {
-                    dash_ind = 1;
+                {
                     pdf_obj *dash = pdf_array_get(gctx, o, 3);
                     for (i = 0; i < pdf_array_len(gctx, dash); i++)
-                        if (i < dashlen)
-                            dashes[i] = (long) pdf_to_int(gctx,
-                                             pdf_array_get(gctx, dash, i));
-                    }
+                        PyList_Append(dash_py, Py_BuildValue("i",
+                                      pdf_to_int(gctx, pdf_array_get(gctx, dash, i))));
                 }
+            }
 
             pdf_obj *bs_o = pdf_dict_get(gctx, annot->obj, PDF_NAME_BS);
             if (bs_o)
-                {
+            {
                 o = pdf_dict_get(gctx, bs_o, PDF_NAME_W);
-                if (o) width = (double) pdf_to_real(gctx, o);
+                if (o) width = pdf_to_real(gctx, o);
                 o = pdf_dict_get(gctx, bs_o, PDF_NAME_S);
                 if (o)
-                    {
-                    style_ind = 1;
+                {
                     style = (char *) pdf_to_name(gctx, o);
-                    }
+                }
                 o = pdf_dict_get(gctx, bs_o, PDF_NAME_D);
                 if (o)
-                    {
-                    dash_ind = 1;
+                {
                     for (i = 0; i < pdf_array_len(gctx, o); i++)
-                        if (i < dashlen)
-                            dashes[i] = (long) pdf_to_int(gctx,
-                                             pdf_array_get(gctx, o, i));
-                    }
+                        PyList_Append(dash_py, Py_BuildValue("i",
+                                      pdf_to_int(gctx, pdf_array_get(gctx, o, i))));
                 }
+            }
 
             pdf_obj *be_o = pdf_dict_gets(gctx, annot->obj, "BE");
             if (be_o)
-                {
+            {
                 o = pdf_dict_get(gctx, be_o, PDF_NAME_S);
                 if (o) effect2 = (char *) pdf_to_name(gctx, o);
                 o = pdf_dict_get(gctx, be_o, PDF_NAME_I);
                 if (o) effect1 = pdf_to_int(gctx, o);
-                }
+            }
 
-            for (i = 0; i < dashlen; i++)
-                if (dashes[i] > 0)
-                    PyList_Append(dash_py, PyInt_FromLong(dashes[i]));
+            PyList_Append(effect_py, Py_BuildValue("i", effect1));
+            PyList_Append(effect_py, Py_BuildValue("s", effect2));
 
-            PyList_Append(effect_py, PyInt_FromLong((long) effect1));
-            PyList_Append(effect_py, PyString_FromString(effect2));
+            PyDict_SetItemString(res, "width", Py_BuildValue("f", width));
 
-            if (width >=0)
-                PyDict_SetItemString(res, "width", PyFloat_FromDouble(width));
+            PyDict_SetItemString(res, "dashes", dash_py);
 
-            if (dash_ind > 0)
-                PyDict_SetItemString(res, "dashes", dash_py);
-
-            if (style_ind > 0)
-                PyDict_SetItemString(res, "style", PyString_FromString(style));
+            PyDict_SetItemString(res, "style", Py_BuildValue("s", style));
 
             if (effect1 > -1) PyDict_SetItemString(res, "effect", effect_py);
             Py_DECREF(effect_py);
@@ -5559,66 +5402,77 @@ struct fz_annot_s
         }
 
         //---------------------------------------------------------------------
-        // set annotation border (destroys any /BE or /BS entries)
-        // Argument 'border' must be number or dict.
-        // Width and dashes may both be modified.
+        // set annotation border
         //---------------------------------------------------------------------
         PARENTCHECK(setBorder)
-        int setBorder(PyObject *border)
+        PyObject *setBorder(PyObject *border)
         {
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
-            if(!annot) return -1;                     // not a PDF
-            pdf_document *doc = annot->page->doc;     // PDF document
-            float width = -1;                         // new width
-            float cur_width = -1;                     // current width
-            PyObject *pyo;
-            PyObject *pydashes = NULL;                // new dashes
-            PyObject *pycur_dashes = NULL;            // current dashes
-            if (PyFloat_Check(border) || PyInt_Check(border))
-                width = (float) PyFloat_AsDouble(border);
-            else
+            if (!annot) return NONE;                   // not a PDF
+            if (!PyDict_Check(border))
             {
-                if (!PyDict_Check(border)) return -2;     // not a dict
-                if (PyDict_Size(border) == 0) return -3;  // ignore empty dict
-                pyo = PyDict_GetItemString(border, "width");
-                if (pyo) width = (float) PyFloat_AsDouble(pyo);
-                pydashes = PyDict_GetItemString(border, "dashes");
+                PySys_WriteStdout("arg must be a dict");
+                return NONE;     // not a dict
             }
-            // first get current width and dash
-            PyObject *cur_border = fz_annot_s_border($self);
-            pyo = PyDict_GetItemString(cur_border, "width");
-            if (pyo) cur_width = (float) PyFloat_AsDouble(pyo);
-            pycur_dashes = PyDict_GetItemString(cur_border, "dashes");
+
+            pdf_document *doc = annot->page->doc;     // PDF document
+            float nwidth = -1;                        // new width
+            PyObject *ndashes = NULL;                 // new dashes
+            PyObject *nstyle = NULL;                  // new style
+            float owidth = -1;                        // old width
+            PyObject *odashes = NULL;                 // old dashes
+            PyObject *ostyle  = NULL;                 // old style
+
+            nwidth = (float) PyFloat_AsDouble(PyDict_GetItemString(border, "width"));
+            PyErr_Clear();
+            ndashes = PyDict_GetItemString(border, "dashes");
+            nstyle  = PyDict_GetItemString(border, "style");
+
+            // first get old border properties
+            PyObject *oborder = fz_annot_s_border($self);
+            owidth = (float) PyFloat_AsDouble(PyDict_GetItemString(oborder, "width"));
+            PyErr_Clear();
+            odashes = PyDict_GetItemString(oborder, "dashes");
+            ostyle = PyDict_GetItemString(oborder, "style");
 
             // then delete current annot entries
             pdf_dict_del(gctx, annot->obj, PDF_NAME_BS);
             pdf_dict_del(gctx, annot->obj, PDF_NAME_BE);
             pdf_dict_del(gctx, annot->obj, PDF_NAME_Border);
             
-            int i, d;
+            Py_ssize_t i, n;
+            int d;
             // populate new border array
-            if (width < 0) width = cur_width;    // no new width: take current
-            if (width < 0) width = 0;            // default if no width given
-            pdf_obj *bdr = pdf_new_array(gctx, doc, 3);
-            pdf_array_push_real(gctx, bdr, 0);
-            pdf_array_push_real(gctx, bdr, 0);
-            pdf_array_push_real(gctx, bdr, (double) width);
+            if (nwidth < 0) nwidth = owidth;     // no new width: take current
+            if (nwidth < 0) nwidth = 0;          // default if no width given
             
-            if (!pydashes) pydashes = pycur_dashes;   // no new dashes: current
-            
-            if (pydashes && PySequence_Check(pydashes))
+            if (!ndashes) ndashes = odashes;     // no new dashes: take old
+
+            if (!nstyle)  nstyle  = ostyle;      // no new style: take old
+
+            if (ndashes && PySequence_Check(ndashes) && PySequence_Size(ndashes))
+            {
+                n = PySequence_Size(ndashes);
+                pdf_obj *darr = pdf_new_array(gctx, doc, n);
+                for (i = 0; i < n; i++)
                 {
-                    pdf_obj *darr = pdf_new_array(gctx, doc, 1);
-                    for (i = 0; i < (int) PySequence_Size(pydashes); i++)
-                    {
-                        d = (int64_t) PyInt_AsLong(PySequence_GetItem(pydashes, i));
-                        pdf_array_push_int(gctx, darr, d);
-                    }
-                    pdf_array_push_drop(gctx, bdr, darr);
+                    d = (int) PyInt_AsLong(PySequence_GetItem(ndashes, i));
+                    pdf_array_push_int(gctx, darr, (int64_t) d);
                 }
-            pdf_dict_put_drop(gctx, annot->obj, PDF_NAME_Border, bdr);
+                pdf_dict_putl_drop(gctx, annot->obj, darr, PDF_NAME_BS, PDF_NAME_D, NULL);
+            }
+
+            pdf_dict_putl_drop(gctx, annot->obj, pdf_new_real(gctx, doc, nwidth),
+                               PDF_NAME_BS, PDF_NAME_W, NULL);
+
+            pdf_obj *val = JM_get_border_style(gctx, nstyle);
+
+            pdf_dict_putl_drop(gctx, annot->obj, val,
+                               PDF_NAME_BS, PDF_NAME_S, NULL);
+
             pdf_dirty_annot(gctx, annot);
-            return 0;
+            PyErr_Clear();
+            return NONE;
         }
 
         //---------------------------------------------------------------------
@@ -5710,6 +5564,29 @@ struct fz_annot_s
         }
 
         //---------------------------------------------------------------------
+        // annotation _updateWidget - change PDF field information
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(_updateWidget, !result)
+        PARENTCHECK(_updateWidget)
+        PyObject *_updateWidget(PyObject *Widget)
+        {
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
+            pdf_document *pdf = pdf_get_bound_document(gctx, annot->obj);
+            fz_try(gctx)
+            {
+                int field_type = (int) PyInt_AsLong(PyObject_GetAttrString(Widget,
+                                                    "field_type"));
+                JM_set_widget_properties(gctx, annot, Widget, field_type);
+            }
+            fz_always(gctx)
+            {
+                JM_PyErr_Clear;
+            }
+            fz_catch(gctx) return NULL;
+            return NONE;
+        }
+
+        //---------------------------------------------------------------------
         // annotation _getWidget - PDF field information
         //---------------------------------------------------------------------
         FITZEXCEPTION(_getWidget, !result)
@@ -5723,24 +5600,48 @@ struct fz_annot_s
             fz_try(gctx)
             {
                 char *border_style = pdf_field_border_style(gctx, pdf, annot->obj);
+                PyObject_SetAttrString(Widget, "border_style",
+                                       Py_BuildValue("s", border_style));
+
+                float border_width = pdf_to_real(gctx, pdf_dict_getl(gctx, annot->obj,
+                                      PDF_NAME_BS, PDF_NAME_W, NULL));
+                if (border_width == 0.0f) border_width = 1.0f;
+                PyObject_SetAttrString(Widget, "border_width",
+                                       Py_BuildValue("f", border_width));
+
+                pdf_obj *dashes = pdf_dict_getl(gctx, annot->obj,
+                                      PDF_NAME_BS, PDF_NAME_D, NULL);
+                if (pdf_is_array(gctx, dashes))
+                {
+                    n = (Py_ssize_t) pdf_array_len(gctx, dashes);
+                    PyObject *d = PyList_New(n);
+                    for (i = 0; i < n; i++)
+                        PyList_SetItem(d, i, Py_BuildValue("i", pdf_to_int(gctx,
+                                      pdf_array_get(gctx, dashes, (int) i))));
+
+                    PyObject_SetAttrString(Widget, "border_dashes", d);
+                    Py_DECREF(d);
+                }
 
                 int text_maxlen = pdf_to_int(gctx, pdf_get_inheritable(gctx, pdf, annot->obj, PDF_NAME_MaxLen));
+                PyObject_SetAttrString(Widget, "text_maxlen",
+                                       Py_BuildValue("i", text_maxlen));
 
+                // entry ignored for new / updated widgets
                 int text_type = pdf_text_widget_content_type(gctx, pdf, tw);
+                PyObject_SetAttrString(Widget, "text_type",
+                                       Py_BuildValue("i", text_type));
 
-                int list_ismultiselect = pdf_choice_widget_is_multiselect(gctx, pdf, tw);
-
-                pdf_obj *bgcol = pdf_dict_getl(gctx, annot->obj, PDF_NAME_MK, PDF_NAME_BG, NULL);
-
+                pdf_obj *bgcol = pdf_dict_getl(gctx, annot->obj,
+                                               PDF_NAME_MK, PDF_NAME_BG, NULL);
                 if (pdf_is_array(gctx, bgcol))
                 {
                     n = (Py_ssize_t) pdf_array_len(gctx, bgcol);
                     PyObject *col = PyList_New(n);
                     for (i = 0; i < n; i++)
-                    {
                         PyList_SetItem(col, i, Py_BuildValue("f",
                         pdf_to_real(gctx, pdf_array_get(gctx, bgcol, (int) i))));
-                    }
+
                     PyObject_SetAttrString(Widget, "fill_color", col);
                     Py_DECREF(col);
                 }
@@ -5752,33 +5653,31 @@ struct fz_annot_s
                     n = (Py_ssize_t) pdf_array_len(gctx, bccol);
                     PyObject *col = PyList_New(n);
                     for (i = 0; i < n; i++)
-                    {
                         PyList_SetItem(col, i, Py_BuildValue("f",
                         pdf_to_real(gctx, pdf_array_get(gctx, bccol, (int) i))));
-                    }
+
                     PyObject_SetAttrString(Widget, "border_color", col);
                     Py_DECREF(col);
                 }
 
-                char *da = pdf_to_str_buf(gctx, pdf_get_inheritable(gctx, pdf, annot->obj, PDF_NAME_DA));
+                char *da = pdf_to_str_buf(gctx, pdf_get_inheritable(gctx,
+                                                pdf, annot->obj, PDF_NAME_DA));
                 PyObject_SetAttrString(Widget, "text_da", Py_BuildValue("s", da));
 
-                pdf_obj *ca = pdf_dict_getl(gctx, annot->obj, PDF_NAME_MK, PDF_NAME_CA, NULL);
+                pdf_obj *ca = pdf_dict_getl(gctx, annot->obj,
+                                            PDF_NAME_MK, PDF_NAME_CA, NULL);
                 if (ca)
-                {
-                    PyObject_SetAttrString(Widget, "button_caption", Py_BuildValue("s", pdf_to_str_buf(gctx, ca)));
-                }
+                    PyObject_SetAttrString(Widget, "button_caption",
+                                 Py_BuildValue("s", pdf_to_str_buf(gctx, ca)));
 
                 int field_flags = pdf_get_field_flags(gctx, pdf, annot->obj);
-                PyObject_SetAttrString(Widget, "field_flags", Py_BuildValue("i", field_flags));
-
-                PyObject_SetAttrString(Widget, "border_style", Py_BuildValue("s", border_style));
-
-                PyObject_SetAttrString(Widget, "text_maxlen", Py_BuildValue("i", text_maxlen));
-
-                PyObject_SetAttrString(Widget, "text_type", Py_BuildValue("i", text_type));
-
-                PyObject_SetAttrString(Widget, "list_ismultiselect", Py_BuildValue("i", list_ismultiselect));
+                PyObject_SetAttrString(Widget, "field_flags",
+                                       Py_BuildValue("i", field_flags));
+                
+                // call Py method to reconstruct text color, font name, size
+                PyObject *call = PyObject_CallMethod(Widget,
+                                                     "_da_reconstruct", NULL);
+                Py_XDECREF(call);
 
             }
             fz_always(gctx) PyErr_Clear();
@@ -5795,17 +5694,43 @@ struct fz_annot_s
             w = Widget()
             w.field_type        = self.widget_type[0]
             w.field_type_string = self.widget_type[1]
-            w.border_width      = self.border.get("width", 1.0)
             w.field_value       = self.widget_value
             w.field_name        = self.widget_name
-            w.list_values       = self.widget_choices
+            w.choice_values     = self.widget_choices
             w.rect              = self.rect
             w.text_font         = None
             self._getWidget(w)
             return w
 
         def updateWidget(self, widget):
+            if self.widget_type[0] != widget.field_type:
+                raise ValueError("cannot change widget type")
             widget._validate()
+            doc = self.parent.parent
+            xref = 0
+            ff = doc.FormFonts
+            if not widget.text_font:         # ensure default
+                widget.text_font = "Helv"
+            if not widget.text_font in ff:   # if no existent font ...
+                if not doc.isFormPDF or not ff:   # a fresh /AcroForm PDF!
+                    xref = doc._getNewXref()      # insert all our fonts
+                    doc._updateObject(xref, Widget_fontobjects)
+                else:                        # add any missing fonts
+                    for k in Widget_fontdict.keys():
+                        if not k in ff:      # add our font if missing
+                            doc.addFormFont(k, Widget_fontdict[k])
+                widget._adjust_font()        # ensure correct font spelling
+            widget._dr_xref = xref           # non-zero causes /DR creation
+            # now create the /DA string
+            if   len(widget.text_color) == 3:
+                fmt = "{:g} {:g} {:g} rg /{f:s} {s:g} Tf"
+            elif len(widget.text_color) == 1:
+                fmt = "{:g} g /{f:s} {s:g} Tf"
+            elif len(widget.text_color) == 4:
+                fmt = "{:g} {:g} {:g} {:g} k /{f:s} {s:g} Tf"
+            widget.text_da = fmt.format(*widget.text_color, f=widget.text_font,
+                                        s=widget.text_fontsize)
+            # update the widget at last
             self._updateWidget(widget)
 
         def _erase(self):
@@ -6101,10 +6026,9 @@ struct fz_stext_page_s {
             PyObject *lines = PyList_New(0);
             PyObject *text = NULL, *litem;
             fz_buffer *res = NULL;
-            size_t res_len = 0;
-            unsigned char *data;
             for (block = $self->first_block; block; block = block->next)
             {
+                fz_rect *blockrect = JM_empty_rect();
                 if (block->type == FZ_STEXT_BLOCK_TEXT)
                 {
                     fz_try(gctx)
@@ -6114,19 +6038,26 @@ struct fz_stext_page_s {
                         float last_y0 = 0.0;
                         for (line = block->u.t.first_line; line; line = line->next)
                         {
+                            fz_rect *linerect = JM_empty_rect();
                             // append line no. 2 with new-line 
                             if (line_n > 0)
                             {
-                                if (line->bbox.y0 != last_y0) fz_append_string(gctx, res, "\n");
-                                else                          fz_append_string(gctx, res, " ");
+                                if (linerect->y0 != last_y0)
+                                    fz_append_string(gctx, res, "\n");
+                                else
+                                    fz_append_string(gctx, res, " ");
                             }
-                            last_y0 = line->bbox.y0;
+                            last_y0 = linerect->y0;
                             line_n++;
                             for (ch = line->first_char; ch; ch = ch->next)
+                            {
                                 fz_append_rune(gctx, res, ch->c);
+                                JM_join_rect(linerect, &ch->bbox, ch->size);
+                            }
+                            JM_join_rect(blockrect, linerect, 0);
+                            free(linerect);
                         }
-                        res_len = fz_buffer_storage(gctx, res, &data);
-                        text = JM_UNICODE(data, res_len);
+                        text = JM_StrFromBuffer(gctx, res);
                     }
                     fz_always(gctx)
                     {
@@ -6140,13 +6071,15 @@ struct fz_stext_page_s {
                     fz_image *img = block->u.i.image;
                     fz_colorspace *cs = img->colorspace;
                     text = PyUnicode_FromFormat("<image: %s, width %d, height %d, bpc %d>", fz_colorspace_name(gctx, cs), img->w, img->h, img->bpc);
+                    JM_join_rect(blockrect, &block->bbox, 0);
                 }
-                litem = Py_BuildValue("ffffOii", block->bbox.x0, block->bbox.y0,
-                                      block->bbox.x1, block->bbox.y1,
+                litem = Py_BuildValue("ffffOii", blockrect->x0, blockrect->y0,
+                                      blockrect->x1, blockrect->y1,
                                       text, block_n, block->type);
                 PyList_Append(lines, litem);
                 Py_DECREF(litem);
                 Py_DECREF(text);
+                free(blockrect);
                 block_n++;
             }
             return lines;
@@ -6163,11 +6096,9 @@ struct fz_stext_page_s {
             fz_stext_char *ch;
             fz_buffer *buff = NULL;
             size_t buflen = 0;
-            char *word;
             int block_n = 0, line_n, word_n;
+            fz_rect *wbbox = JM_empty_rect();         // word bbox
             PyObject *lines = PyList_New(0);
-            PyObject *litem;
-            float c_x0, c_y0, c_x1, c_y1;
             for (block = $self->first_block; block; block = block->next)
             {
                 if (block->type != FZ_STEXT_BLOCK_TEXT)
@@ -6178,48 +6109,33 @@ struct fz_stext_page_s {
                 line_n = 0;
                 for (line = block->u.t.first_line; line; line = line->next)
                 {
-                    word_n = 0;           // word counter per line
-                    buff = NULL;          // reset word buffer
-                    buflen = 0;           // reset char counter
-                    c_x0 = line->bbox.x0; // start of 1st word of line
-                    c_x1 = c_x0;          // initialize word end
-                    c_y0 = line->bbox.y0; // line baseline - never changes
-                    c_y1 = c_y0;          // initialize word height
+                    word_n = 0;                       // word counter per line
+                    buff = NULL;                      // reset word buffer
+                    buflen = 0;                       // reset char counter
                     for (ch = line->first_char; ch; ch = ch->next)
                     {
-                        if (ch->c == 32 && buflen == 0) continue;
+                        if (ch->c == 32 && buflen == 0)
+                            continue;                 // skip spaces at line start
                         if (ch->c == 32)
-                        { // --> finish the word
-                            buflen = fz_buffer_storage(gctx, buff, &word);
-                            litem = Py_BuildValue("[ffffOiii]", c_x0, c_y0, c_x1, c_y1,
-                                                                JM_UNICODE(word, buflen),
-                                                                block_n, line_n, word_n);
-                            PyList_Append(lines, litem);
-                            Py_DECREF(litem);
-                            word_n++;            // word counter
-                            c_x0 = ch->bbox.x1;  // start pos. of next word
-                            c_y1 = c_y0;         // initialize word height
+                        {   // --> finish the word
+                            word_n = JM_append_word(gctx, lines, buff, wbbox,
+                                                    block_n, line_n, word_n);
                             fz_drop_buffer(gctx, buff);
                             buff = NULL;
-                            buflen = 0;          // reset char counter
+                            buflen = 0;               // reset char counter
                             continue;
                         }
                         // append one unicode character to the word
                         if (!buff) buff = fz_new_buffer(gctx, 64);
-                        c_y1 = MAX(ch->bbox.y1, c_y1);     // adjust word height
-                        c_x1 = ch->bbox.x1;                // adjust end of word
-
                         fz_append_rune(gctx, buff, ch->c);
                         buflen++;
+                        // enlarge word bbox
+                        JM_join_rect(wbbox, &ch->bbox, ch->size);
                     }
-                    if (buff)                    // store any remaining word
+                    if (buff)                         // store any remaining word
                     {
-                        buflen = fz_buffer_storage(gctx, buff, &word);
-                        litem = Py_BuildValue("[ffffOiii]", c_x0, c_y0, c_x1, c_y1,
-                                                            JM_UNICODE(word, buflen),
-                                                            block_n, line_n, word_n);
-                        PyList_Append(lines, litem);
-                        Py_DECREF(litem);
+                        word_n = JM_append_word(gctx, lines, buff, wbbox,
+                                                block_n, line_n, word_n);
                         fz_drop_buffer(gctx, buff);
                         buff = NULL;
                         buflen = 0;
@@ -6228,6 +6144,7 @@ struct fz_stext_page_s {
                 }
                 block_n++;
             }
+            free(wbbox);
             return lines;
         }
 
@@ -6252,7 +6169,6 @@ struct fz_stext_page_s {
         {
             fz_buffer *res = NULL;
             fz_output *out = NULL;
-            size_t res_len = 0;
             PyObject *text = NULL;
             fz_var(res);
             fz_var(out);
@@ -6260,7 +6176,6 @@ struct fz_stext_page_s {
             {
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
-                unsigned char *data;
                 switch(format)
                 {
                     case(1):
@@ -6282,11 +6197,7 @@ struct fz_stext_page_s {
                         JM_print_stext_page_as_text(gctx, out, $self);
                         break;
                 }
-                if (!text)
-                {
-                    res_len = fz_buffer_storage(gctx, res, &data);
-                    text = JM_UNICODE(data, res_len);
-                }
+                if (!text) text = JM_StrFromBuffer(gctx, res);
                 
             }
             fz_always(gctx)

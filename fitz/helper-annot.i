@@ -166,6 +166,24 @@ char *annot_type_str(int type)
 }
 
 //----------------------------------------------------------------------------
+// return pdf_obj border style from Python str
+//----------------------------------------------------------------------------
+pdf_obj *JM_get_border_style(fz_context *ctx, PyObject *style)
+{
+    pdf_obj *val = PDF_NAME_S;
+    if (!style) return val;
+    char *s = JM_Python_str_AsChar(style);
+    JM_PyErr_Clear;
+    if (!s) return val;
+    if      (!strncmp(s, "b", 1) || !strncmp(s, "B", 1)) val = PDF_NAME_B;
+    else if (!strncmp(s, "d", 1) || !strncmp(s, "D", 1)) val = PDF_NAME_D;
+    else if (!strncmp(s, "i", 1) || !strncmp(s, "I", 1)) val = PDF_NAME_I;
+    else if (!strncmp(s, "u", 1) || !strncmp(s, "U", 1)) val = PDF_NAME_U;
+    JM_Python_str_DelForPy3(s);
+    return val;
+}
+
+//----------------------------------------------------------------------------
 // refreshes the link and annotation tables of a page
 //----------------------------------------------------------------------------
 void refresh_link_table(fz_context *ctx, pdf_page *page)

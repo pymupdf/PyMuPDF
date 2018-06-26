@@ -102,17 +102,21 @@ import sys
 
 
 VersionFitz = "1.13.0"
-VersionBind = "1.13.11"
-VersionDate = "2018-06-20 09:36:02"
-version = (VersionBind, VersionFitz, "20180620093602")
+VersionBind = "1.13.12"
+VersionDate = "2018-06-26 08:12:05"
+version = (VersionBind, VersionFitz, "20180626081205")
 
 
 #------------------------------------------------------------------------------
-# Class describing a PDF form field ("widget")
+# Font definitions for new PyMuPDF widgets.
+# IMPORTANT: do not change anything here! Line breaks are required, as well
+# as are the spaces after the font ref names.
 #------------------------------------------------------------------------------
 Widget_fontobjects = """<</CoBI <</Type/Font/Subtype/Type1/BaseFont/Courier-BoldOblique/Encoding/WinAnsiEncoding>>\n/CoBo <</Type/Font/Subtype/Type1/BaseFont/Courier-Bold/Encoding/WinAnsiEncoding>>\n/CoIt <</Type/Font/Subtype/Type1/BaseFont/Courier-Oblique/Encoding/WinAnsiEncoding>>\n/Cour <</Type/Font/Subtype/Type1/BaseFont/Courier/Encoding/WinAnsiEncoding>>\n/HeBI <</Type/Font/Subtype/Type1/BaseFont/Helvetica-BoldOblique/Encoding/WinAnsiEncoding>>\n/HeBo <</Type/Font/Subtype/Type1/BaseFont/Helvetica-Bold/Encoding/WinAnsiEncoding>>\n/HeIt <</Type/Font/Subtype/Type1/BaseFont/Helvetica-Oblique/Encoding/WinAnsiEncoding>>\n/Helv <</Type/Font/Subtype/Type1/BaseFont/Helvetica/Encoding/WinAnsiEncoding>>\n/Symb <</Type/Font/Subtype/Type1/BaseFont/Symbol/Encoding/WinAnsiEncoding>>\n/TiBI <</Type/Font/Subtype/Type1/BaseFont/Times-BoldItalic/Encoding/WinAnsiEncoding>>\n/TiBo <</Type/Font/Subtype/Type1/BaseFont/Times-Bold/Encoding/WinAnsiEncoding>>\n/TiIt <</Type/Font/Subtype/Type1/BaseFont/Times-Italic/Encoding/WinAnsiEncoding>>\n/TiRo <</Type/Font/Subtype/Type1/BaseFont/Times-Roman/Encoding/WinAnsiEncoding>>\n/ZaDb <</Type/Font/Subtype/Type1/BaseFont/ZapfDingbats/Encoding/WinAnsiEncoding>>>>"""
 
 def _Widget_fontdict():
+    """Turns the above font definitions into a dictionary. Assumes certain line breaks and spaces.
+    """
     flist = Widget_fontobjects[2:-2].splitlines()
     fdict = {}
     for f in flist:
@@ -120,14 +124,18 @@ def _Widget_fontdict():
         fdict[k[1:]] = v
     return fdict
 
-Widget_fontdict = _Widget_fontdict()
+Widget_fontdict = _Widget_fontdict()   # needed so we can use it as a property
 
+#------------------------------------------------------------------------------
+# Class describing a PDF form field ("widget")
+#------------------------------------------------------------------------------
 class Widget():
     def __init__(self):
         self.border_color       = None
-        self.border_style       = "s"
+        self.border_style       = "S"
         self.border_width       = 0
-        self.list_values        = None           # choice fields
+        self.border_dashes      = None
+        self.choice_values      = None           # choice fields only
         self.field_name         = None           # field name
         self.field_value        = None
         self.field_flags        = None
@@ -145,6 +153,8 @@ class Widget():
         self._dr_xref           = 0              # xref of /DR entry
 
     def _validate(self):
+        """Validate the class entries.
+        """
         checker = (self._check0, self._check1, self._check2, self._check3,
                    self._check4, self._check5)
         if not 0 <= self.field_type <= 5:
@@ -155,48 +165,34 @@ class Widget():
             raise ValueError("rect must be finite and not empty")
         if not self.field_name:
             raise ValueError("field name missing")
+
         if self.border_color:
             if not len(self.border_color) in range(1,5) or \
                type(self.border_color) not in (list, tuple):
                raise ValueError("border_color must be 1 - 4 floats")
+
         if self.fill_color:
             if not len(self.fill_color) in range(1,5) or \
                type(self.fill_color) not in (list, tuple):
                raise ValueError("fill_color must be 1 - 4 floats")
-        if not self.border_width:
-            self.border_width = 0
 
         if not self.text_color:
             self.text_color = (0, 0, 0)
-        if not len(self.fill_color) == 3 or \
-            type(self.fill_color) not in (list, tuple):
-            raise ValueError("text_color must be 3 floats")
+        if not len(self.text_color) in range(1,5) or \
+            type(self.text_color) not in (list, tuple):
+            raise ValueError("text_color must be 1 - 4 floats")
+
+        if not self.border_width:
+            self.border_width = 0
 
         if not self.text_fontsize:
             self.text_fontsize = 0
 
-        bs = self.border_style
-        if not bs:
-            bs = "Solid"
-        else:
-            bs = bs.title()
-            if bs[0] == "S":
-                bs = "Solid"
-            elif bs[0] == "B":
-                bs = "Beveled"
-            elif bs[0] == "D":
-                bs = "Dashed"
-            elif bs[0] == "U":
-                bs = "Underline"
-            elif bs[0] == "I":
-                bs = "Inset"
-            else:
-                bs = "Solid"
-        self.boder_style = bs
-
         checker[self.field_type]()
 
     def _adjust_font(self):
+        """Ensure the font name is from our list and correctly spelled.
+        """
         fnames = [k for k in Widget_fontdict.keys()]
         fl = list(map(str.lower, fnames))
         if (not self.text_font) or self.text_font.lower() not in fl:
@@ -205,6 +201,35 @@ class Widget():
         self.text_font = fnames[i]
         return
 
+    def _da_reconstruct(self):
+        """Extract font name, size and color from default appearance string (/DA object).
+        """
+        if not self.text_da:
+            return
+        font = None
+        fsize = None
+        col = None
+        dat = self.text_da.split(" ")
+        for i, item in enumerate(dat):
+            if item == "Tf":
+                font = dat[i - 2][1:]
+                fsize = float(dat[i - 1])
+                continue
+            if item == "g":            # unicolor text
+                col = [(float(dat[i - 1]))]
+                continue
+            if item == "rg":           # RGB colored text
+                col = [float(f) for f in dat[i - 3:i]]
+                continue
+            if item == "k":            # CMYK colored text
+                col = [float(f) for f in dat[i - 4:i]]
+                continue
+        self.text_font     = font
+        self.text_fontsize = fsize
+        self.text_color    = col
+        return
+
+# any widget type specific checks
     def _check0(self):
         return
 
@@ -220,17 +245,17 @@ class Widget():
         return
 
     def _check4(self):
-        if type(self.list_values) not in (tuple, list):
+        if type(self.choice_values) not in (tuple, list):
             raise ValueError("field type requires a value list")
-        if len(self.list_values) < 2:
-            raise ValueError("too few values in list")
+        if len(self.choice_values) < 2:
+            raise ValueError("too few choice values")
         return
 
     def _check5(self):
-        if type(self.list_values) not in (tuple, list):
+        if type(self.choice_values) not in (tuple, list):
             raise ValueError("field type requires a value list")
-        if len(self.list_values) < 2:
-            raise ValueError("too few values in list")
+        if len(self.choice_values) < 2:
+            raise ValueError("too few choice values")
         return
 
 
@@ -1478,28 +1503,35 @@ class Page(_object):
             raise ValueError("not a PDF")
         widget._validate()
 
-    # check if this PDF already has all of our forms
-    # either insert all of them in a new object and store the xref
-    # or add the missing fonts
+    # Check if PDF already has our fonts.
+    # If none insert all of them in a new object and store the xref.
+    # Else only add any missing fonts.
+    # To determine the situation, /DR object is checked.
         xref = 0
-        ff = doc.FormFonts               # the existing fonts list
-        if not widget.text_font:         # are we ok alreay?
+        ff = doc.FormFonts               # /DR object: existing fonts
+        if not widget.text_font:         # ensure default
             widget.text_font = "Helv"
-        if not widget.text_font in ff:
+        if not widget.text_font in ff:   # if no existent font ...
             if not doc.isFormPDF or not ff:   # a fresh /AcroForm PDF!
-                xref = doc._getNewXref()
+                xref = doc._getNewXref()      # insert all our fonts
                 doc._updateObject(xref, Widget_fontobjects)
-            else:                       # add any missing fonts
+            else:                        # add any missing fonts
                 for k in Widget_fontdict.keys():
-                    if not k in ff:     # add our font if missing
+                    if not k in ff:      # add our font if missing
                         doc.addFormFont(k, Widget_fontdict[k])
-            widget._adjust_font()
-        widget._dr_xref = xref          # non-zero causes /DR creation
-        widget.text_da = "%g %g %g rg /%s %g Tf" % (widget.text_color[0],
-                                                widget.text_color[1],
-                                                widget.text_color[2],
-                                                widget.text_font,
-                                                widget.text_fontsize)
+            widget._adjust_font()        # ensure correct font spelling
+        widget._dr_xref = xref           # non-zero causes /DR creation
+
+    # now create the /DA string
+        if   len(widget.text_color) == 3:
+            fmt = "{:g} {:g} {:g} rg /{f:s} {s:g} Tf"
+        elif len(widget.text_color) == 1:
+            fmt = "{:g} g /{f:s} {s:g} Tf"
+        elif len(widget.text_color) == 4:
+            fmt = "{:g} {:g} {:g} {:g} k /{f:s} {s:g} Tf"
+        widget.text_da = fmt.format(*widget.text_color, f=widget.text_font,
+                                    s=widget.text_fontsize)
+    # create the widget at last
         annot = self._addWidget(widget)
         if annot:
             annot.thisown = True
@@ -2874,7 +2906,7 @@ class Annot(_object):
 
 
     def setBorder(self, border):
-        """setBorder(self, border) -> int"""
+        """setBorder(self, border) -> PyObject *"""
         CheckParent(self)
 
         return _fitz.Annot_setBorder(self, border)
@@ -2923,6 +2955,13 @@ class Annot(_object):
         return _fitz.Annot_getPixmap(self, matrix, colorspace, alpha)
 
 
+    def _updateWidget(self, Widget):
+        """_updateWidget(self, Widget) -> PyObject *"""
+        CheckParent(self)
+
+        return _fitz.Annot__updateWidget(self, Widget)
+
+
     def _getWidget(self, Widget):
         """_getWidget(self, Widget) -> PyObject *"""
         CheckParent(self)
@@ -2938,17 +2977,43 @@ class Annot(_object):
         w = Widget()
         w.field_type        = self.widget_type[0]
         w.field_type_string = self.widget_type[1]
-        w.border_width      = self.border.get("width", 1.0)
         w.field_value       = self.widget_value
         w.field_name        = self.widget_name
-        w.list_values       = self.widget_choices
+        w.choice_values     = self.widget_choices
         w.rect              = self.rect
         w.text_font         = None
         self._getWidget(w)
         return w
 
     def updateWidget(self, widget):
+        if self.widget_type[0] != widget.field_type:
+            raise ValueError("cannot change widget type")
         widget._validate()
+        doc = self.parent.parent
+        xref = 0
+        ff = doc.FormFonts
+        if not widget.text_font:         # ensure default
+            widget.text_font = "Helv"
+        if not widget.text_font in ff:   # if no existent font ...
+            if not doc.isFormPDF or not ff:   # a fresh /AcroForm PDF!
+                xref = doc._getNewXref()      # insert all our fonts
+                doc._updateObject(xref, Widget_fontobjects)
+            else:                        # add any missing fonts
+                for k in Widget_fontdict.keys():
+                    if not k in ff:      # add our font if missing
+                        doc.addFormFont(k, Widget_fontdict[k])
+            widget._adjust_font()        # ensure correct font spelling
+        widget._dr_xref = xref           # non-zero causes /DR creation
+    # now create the /DA string
+        if   len(widget.text_color) == 3:
+            fmt = "{:g} {:g} {:g} rg /{f:s} {s:g} Tf"
+        elif len(widget.text_color) == 1:
+            fmt = "{:g} g /{f:s} {s:g} Tf"
+        elif len(widget.text_color) == 4:
+            fmt = "{:g} {:g} {:g} {:g} k /{f:s} {s:g} Tf"
+        widget.text_da = fmt.format(*widget.text_color, f=widget.text_font,
+                                    s=widget.text_fontsize)
+    # update the widget at last
         self._updateWidget(widget)
 
     def _erase(self):
