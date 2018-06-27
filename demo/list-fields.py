@@ -13,7 +13,7 @@ def print_widget(w):
     for k in d.keys():
         if k.startswith("_"):
             continue
-        print(k, "=", repro(d[k]))
+        print(k, "=", repr(d[k]))
     print("")
 
 doc = fitz.open(sys.argv[1])
