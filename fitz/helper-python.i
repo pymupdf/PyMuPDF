@@ -370,4 +370,87 @@ def ConversionTrailer(i):
         r = text
     
     return r
+
+def make_line_AP(annot):
+    w = annot.border["width"]
+    sc = annot.colors["stroke"]
+    fc = annot.colors["fill"]
+    vert = annot.vertices
+    h = annot.rect.height
+    r = Rect(0, 0, annot.rect.width, h)
+    x0 = annot.rect.x0
+    y0 = annot.rect.y0
+    scol = "%g %g %g RG\n" % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG\n"
+    fcol = "%g %g %g rg\n" % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg\n"
+
+    ap = "%g %g m\n" % (vert[0][0] - x0, h - (vert[0][1] - y0))
+    for v in vert:
+        ap += "%g %g l\n" % (v[0] - x0, h - (v[1] - y0))
+    
+    ap += scol + fcol + "%g w 1 J 1 j\n" % w
+    if annot.type[0] == ANNOT_POLYLINE:
+        ap += "S"
+    else:
+        ap += "b"
+    
+    ap = ap.encode("utf-8")
+    annot._setAP(ap)
+    return
+
+def make_rect_AP(annot):
+    w = annot.border["width"]
+    sc = annot.colors["stroke"]
+    fc = annot.colors["fill"]
+    r = annot.rect
+    r1 = r2 = w/2.
+    r3 = r.width - w
+    r4 = r.height - w
+    str1 = " %g %g %g %g re %g w 1 J 1 j " % (r1, r2, r3, r4, w)
+    scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
+    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg "
+    ap = (str1 + scol + fcol + "b").encode("utf-8")
+    annot._setAP(ap)
+    return
+
+def make_circle_AP(annot):
+    kappa = 0.55228474983
+    sc = annot.colors["stroke"]
+    scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
+    fc = annot.colors["fill"]
+    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg "
+
+    lw = annot.border["width"]
+    lw2 = lw / 2.
+    h = annot.rect.height
+    r = Rect(lw2, lw2, annot.rect.width - lw2, h - lw2)
+
+    def bezier(p, q, r):
+        f = "%g %g %g %g %g %g c\n"
+        return f % (p.x, h - p.y, q.x, h - q.y, r.x, h - r.y)
+    
+    ml = r.tl + (r.bl - r.tl) * 0.5    # Mitte links
+    mo = r.tl + (r.tr - r.tl) * 0.5    # Mitte oben
+    mr = r.tr + (r.br - r.tr) * 0.5    # Mitte rechts
+    mu = r.bl + (r.br - r.bl) * 0.5    # Mitte unten
+    ol1 = ml + (r.tl - ml) * kappa
+    ol2 = mo + (r.tl - mo) * kappa
+    or1 = mo + (r.tr - mo) * kappa
+    or2 = mr + (r.tr - mr) * kappa
+    ur1 = mr + (r.br - mr) * kappa
+    ur2 = mu + (r.br - mu) * kappa
+    ul1 = mu + (r.bl - mu) * kappa
+    ul2 = ml + (r.bl - ml) * kappa
+
+    ap = " %g %g m\n" % (ml.x, h - ml.y)
+    ap += bezier(ol1, ol2, mo)
+    ap += bezier(or1, or2, mr)
+    ap += bezier(ur1, ur2, mu)
+    ap += bezier(ul1, ul2, ml)
+
+    ap += "%g w 1 J 1 j\n" % lw
+    ap += scol + fcol + "b"
+    ap = ap.encode("utf-8")
+    annot._setAP(ap)
+    return
+
 %}

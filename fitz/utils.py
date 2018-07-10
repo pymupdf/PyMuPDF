@@ -643,13 +643,13 @@ def setToC(doc, toc):
         t1 = toc[i]
         t2 = toc[i+1]
         if not -1 <= t1[2] <= pageCount:
-            raise ValueError("row %s:page number out of range" % (str(i),))
+            raise ValueError("row %i:page number out of range" % i)
         if (type(t2) is not list) or len(t2) < 3 or len(t2) > 4:
             raise ValueError("arg2 must contain lists of 3 or 4 items")
         if (type(t2[0]) is not int) or t2[0] < 1:
             raise ValueError("hierarchy levels must be int > 0")
         if t2[0] > t1[0] + 1:
-            raise ValueError("row %s: hierarchy steps must not be > 1" + (str(i),))
+            raise ValueError("row %i: hierarchy step is > 1" % i)
     # no formal errors in toc --------------------------------------------------
 
     old_xrefs = doc._delToC()          # del old outlines, get xref numbers
@@ -725,29 +725,32 @@ def setToC(doc, toc):
     for i, ol in enumerate(olitems):
         txt = "<<"
         if ol["count"] > 0:
-            txt += "/Count -" + str(ol["count"])
+            if i > 0:
+                txt += "/Count -%i" % ol["count"]
+            else:
+                txt += "/Count %i" % ol["count"]
         try:
             txt += ol["dest"]
         except: pass
         try:
             if ol["first"] > -1:
-                txt += "/First " + str(xref[ol["first"]]) + " 0 R"
+                txt += "/First %i 0 R" % xref[ol["first"]]
         except: pass
         try:
             if ol["last"] > -1:
-                txt += "/Last " + str(xref[ol["last"]]) + " 0 R"
+                txt += "/Last %i 0 R" % xref[ol["last"]]
         except: pass
         try:
             if ol["next"] > -1:
-                txt += "/Next " + str(xref[ol["next"]]) + " 0 R"
+                txt += "/Next %i 0 R" % xref[ol["next"]]
         except: pass
         try:
             if ol["parent"] > -1:
-                txt += "/Parent " + str(xref[ol["parent"]]) + " 0 R"
+                txt += "/Parent %i 0 R" % xref[ol["parent"]]
         except: pass
         try:
             if ol["prev"] > -1:
-                txt += "/Prev " + str(xref[ol["prev"]]) + " 0 R"
+                txt += "/Prev %i 0 R" % xref[ol["prev"]]
         except: pass
         try:
             txt += "/Title" + ol["title"]
@@ -766,9 +769,9 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
     #--------------------------------------------------------------------------
     # define skeletons for /Annots object texts
     #--------------------------------------------------------------------------
-    annot_goto ='''<</Dest[%s 0 R /XYZ %s %s 0]/Rect[%s]/Subtype/Link>>'''
+    annot_goto ='''<</Dest[%i 0 R /XYZ %g %g 0]/Rect[%s]/Subtype/Link>>'''
 
-    annot_gotor = '''<</A<</D[%s /XYZ %g %g 0]/F<</F(%s)/UF(%s)/Type/Filespec
+    annot_gotor = '''<</A<</D[%i /XYZ %g %g 0]/F<</F(%s)/UF(%s)/Type/Filespec
     >>/S/GoToR>>/Rect[%s]/Subtype/Link>>'''
 
     annot_gotor_n = "<</A<</D(%s)/F(%s)/S/GoToR>>/Rect[%s]/Subtype/Link>>"
@@ -787,20 +790,19 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
         # "from" rectangle is always there. Note: y-coords are from bottom!
 
         r = lnk["from"]
-        rect = "%g %g %g %g" % (r.x0, height - r.y0,   # correct y0
-                                r.x1, height - r.y1)   # correct y1
+        rect = "%g %g %g %g" % (r.x0, height - r.y0, r.x1, height - r.y1)
         if lnk["kind"] == fitz.LINK_GOTO:
             txt = annot_goto
             idx = list_src.index(lnk["page"])
-            annot = txt % (str(xref_dst[idx]), str(lnk["to"].x),
-                           str(lnk["to"].y), rect)
+            annot = txt % (xref_dst[idx], lnk["to"].x,
+                           lnk["to"].y, rect)
         elif lnk["kind"] == fitz.LINK_GOTOR:
             if lnk["page"] >= 0:
                 txt = annot_gotor
                 pnt = lnk.get("to", fitz.Point(0, 0))          # destination point
                 if type(pnt) is not fitz.Point:
                     pnt = fitz.Point(0, 0)
-                annot = txt % (str(lnk["page"]), pnt.x, pnt.y,
+                annot = txt % (lnk["page"], pnt.x, pnt.y,
                            lnk["file"], lnk["file"], rect)
             else:
                 txt = annot_gotor_n
@@ -886,7 +888,7 @@ def getLinkText(page, lnk):
 
     annot_goto_n = "<</A<</D%s/S/GoTo>>/Rect[%s]/Subtype/Link>>"
 
-    annot_gotor = '''<</A<</D[%s /XYZ %g %g 0]/F<</F(%s)/UF(%s)/Type/Filespec
+    annot_gotor = '''<</A<</D[%i /XYZ %g %g 0]/F<</F(%s)/UF(%s)/Type/Filespec
     >>/S/GoToR>>/Rect[%s]/Subtype/Link>>'''
 
     annot_gotor_n = "<</A<</D%s/F(%s)/S/GoToR>>/Rect[%s]/Subtype/Link>>"
@@ -920,7 +922,7 @@ def getLinkText(page, lnk):
             pnt = lnk.get("to", fitz.Point(0, 0))          # destination point
             if type(pnt) is not fitz.Point:
                 pnt = fitz.Point(0, 0)
-            annot = txt % (str(lnk["page"]), pnt.x, pnt.y,
+            annot = txt % (lnk["page"], pnt.x, pnt.y,
                            lnk["file"], lnk["file"], rect)
         else:
             txt = annot_gotor_n

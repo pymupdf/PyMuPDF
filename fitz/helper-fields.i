@@ -20,6 +20,10 @@ PyObject *JM_checkbox_state(fz_context *ctx, pdf_annot *annot)
     pdf_obj *leafas = pdf_get_inheritable(ctx, pdf, annot->obj, PDF_NAME_AS);
     if (!leafv) Py_RETURN_FALSE;
     if (leafv  == PDF_NAME_Off) Py_RETURN_FALSE;
+    if (leafv == pdf_new_name(ctx, NULL, "Yes"))
+        Py_RETURN_TRUE;
+    if (pdf_is_string(ctx, leafv) && !strcmp(pdf_to_str_buf(ctx, leafv), "Off"))
+        Py_RETURN_FALSE;
     if (pdf_is_string(ctx, leafv) && !strcmp(pdf_to_str_buf(ctx, leafv), "Yes"))
         Py_RETURN_TRUE;
     if (leafas && leafas == PDF_NAME_Off) Py_RETURN_FALSE;
@@ -135,21 +139,26 @@ void JM_set_choice_options(fz_context *ctx, pdf_annot *annot, PyObject *liste)
 }
 
 //-----------------------------------------------------------------------------
-// set properties of new or updated widget
+// Called by "Page.addWidget" and "Annot.updateWidget".
+// Set all properties of a new or updated widget, whether changed or not.
+// Should be no performance issue, because verifying a change before updating
+// is costly as well (and a code bloat). No problem on the PDF side, because
+// any change will always lead to the complete new PDF object being stored.
 //-----------------------------------------------------------------------------
 void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widget, int field_type)
 {
     pdf_document *pdf = annot->page->doc;
+    pdf_page *page = annot->page;
     fz_rect rect = {0,0,0,0};
     pdf_obj *fill_col = NULL, *text_col = NULL, *border_col = NULL;
     pdf_obj *dashes = NULL;
     Py_ssize_t i, n = 0;
     PyObject *value;
 
-    // check if font resources dict /DR exists, ...
+    // ensure a font resources dict /DR --- -----------------------------------
     pdf_obj *dr = pdf_dict_getl(ctx, pdf_trailer(ctx, pdf),
                            PDF_NAME_Root, PDF_NAME_AcroForm, PDF_NAME_DR, NULL);
-    // if not, we create it using the object prepared in xref
+    // new /DR using the object prepared in xref
     if (!dr)
     {
         pdf_obj *form = pdf_dict_getl(ctx, pdf_trailer(ctx, pdf),
@@ -163,7 +172,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         JM_PyErr_Clear;
     }
 
-    // rectangle --------------------------------------------------
+    // rectangle --------------------------------------------------------------
     value = PyObject_GetAttrString(Widget, "rect");
     rect.x0 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 0));
     rect.y0 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 1));
@@ -173,7 +182,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     JM_PyErr_Clear;
     pdf_set_annot_rect(ctx, annot, &rect);    // set the rect
 
-    // fill color -------------------------------------------------
+    // fill color -------------------------------------------------------------
     value = PyObject_GetAttrString(Widget, "fill_color");
     if (value && PySequence_Check(value))
     {
@@ -188,7 +197,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     Py_XDECREF(value);
     JM_PyErr_Clear;
 
-    // dashes -----------------------------------------------------
+    // dashes -----------------------------------------------------------------
     value = PyObject_GetAttrString(Widget, "border_dashes");
     if (value && PySequence_Check(value))
     {
@@ -203,7 +212,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     Py_XDECREF(value);
     JM_PyErr_Clear;
 
-    // border color -----------------------------------------------
+    // border color -----------------------------------------------------------
     value = PyObject_GetAttrString(Widget, "border_color");
     if (value && PySequence_Check(value))
     {
@@ -225,7 +234,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     JM_PyErr_Clear;
     */
 
-    // max text len -----------------------------------------------
+    // max text len -----------------------------------------------------------
     if (field_type == PDF_WIDGET_TYPE_TEXT)
     {
         int text_maxlen = (int) PyInt_AsLong(PyObject_GetAttrString(Widget,
@@ -235,7 +244,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         JM_PyErr_Clear;
     }
     
-    // choice values ----------------------------------------------
+    // choice values ----------------------------------------------------------
     if (field_type == PDF_WIDGET_TYPE_LISTBOX ||
         field_type == PDF_WIDGET_TYPE_COMBOBOX)
     {
@@ -245,28 +254,30 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     }
     JM_PyErr_Clear;
 
-    // border style -----------------------------------------------
+    // border style -----------------------------------------------------------
     pdf_obj *val = JM_get_border_style(ctx,
                                 PyObject_GetAttrString(Widget, "border_style"));
     pdf_dict_putl_drop(ctx, annot->obj, val, PDF_NAME_BS, PDF_NAME_S, NULL);
 
-    // border width -----------------------------------------------
+    // border width -----------------------------------------------------------
     float border_width = (float) PyFloat_AsDouble(PyObject_GetAttrString(Widget,
                                                                "border_width"));
     pdf_dict_putl_drop(ctx, annot->obj, pdf_new_real(ctx, pdf,
                                   border_width), PDF_NAME_BS, PDF_NAME_W, NULL);
     JM_PyErr_Clear;
 
-    // /DA string -------------------------------------------------
-    char *da = JM_Python_str_AsChar(PyObject_GetAttrString(Widget, "text_da"));
+    // /DA string -------------------------------------------------------------
+    char *da = JM_Python_str_AsChar(PyObject_GetAttrString(Widget, "_text_da"));
     if (da)
     {
         pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME_DA, da);
         JM_Python_str_DelForPy3(da);
+        pdf_dict_dels(ctx, annot->obj, "DS");  // unsupported
+        pdf_dict_dels(ctx, annot->obj, "RC");  // unsupported
     }
     JM_PyErr_Clear;
 
-    // field flags ------------------------------------------------
+    // field flags ------------------------------------------------------------
     int field_flags = 0, Ff = 0;
     if (field_type != PDF_WIDGET_TYPE_CHECKBOX)
     {
@@ -281,7 +292,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     }
     pdf_dict_put_int(ctx, annot->obj, PDF_NAME_Ff, Ff);
 
-    // button caption ---------------------------------------------
+    // button caption ---------------------------------------------------------
     if (field_type == PDF_WIDGET_TYPE_RADIOBUTTON ||
         field_type == PDF_WIDGET_TYPE_PUSHBUTTON ||
         field_type == PDF_WIDGET_TYPE_CHECKBOX)
@@ -298,6 +309,9 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     }
 
     // field value ------------------------------------------------------------
+    // MuPDF function "pdf_field_set_value" always sets strings. For button
+    // fields this may lead to an unrecognized state for some PDF viewers.
+    //-------------------------------------------------------------------------
     value = PyObject_GetAttrString(Widget, "field_value");
     int result = 0;
     char *text = NULL;
@@ -306,9 +320,15 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     case PDF_WIDGET_TYPE_CHECKBOX:
     case PDF_WIDGET_TYPE_RADIOBUTTON:
         if (PyObject_RichCompareBool(value, Py_True, Py_EQ))
+        {
             result = pdf_field_set_value(ctx, pdf, annot->obj, "Yes");
+            pdf_dict_put_name(ctx, annot->obj, PDF_NAME_V, "Yes");
+        }
         else
+        {
             result = pdf_field_set_value(ctx, pdf, annot->obj, "Off");
+            pdf_dict_put(ctx, annot->obj, PDF_NAME_V, PDF_NAME_Off);
+        }
         break;
     default:
         text = JM_Python_str_AsChar(value);
@@ -320,6 +340,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     }
     Py_XDECREF(value);
     pdf_dirty_annot(ctx, annot);
+    pdf_update_page(gctx, page);
 }
 
 %}
@@ -360,14 +381,15 @@ class Widget():
         self.fill_color         = None
         self.button_caption     = None           # button caption
         self.rect               = None           # annot value
-        self.text_color         = None           # text fields only
+        self.text_color         = (0, 0, 0)
         self.text_font          = "Helv"
-        self.text_fontsize      = None           # text fields only
+        self.text_fontsize      = 0
         self.text_maxlen        = 0              # text fields only
         self.text_type          = 0              # text fields only
-        self.text_da            = None           # /DA = default apparance
+        self._text_da           = ""             # /DA = default apparance
         self.field_type         = 3              # valid range 0 through 6
         self.field_type_string  = None           # field type as string
+        self._text_da           = ""             # /DA = default apparance
         self._dr_xref           = 0              # xref of /DR entry
     
     def _validate(self):
@@ -419,32 +441,33 @@ class Widget():
         self.text_font = fnames[i]
         return
 
-    def _da_reconstruct(self):
-        """Extract font name, size and color from default appearance string (/DA object).
+    def _parse_da(self):
+        """Extract font name, size and color from default appearance string (/DA object). Equivalent to 'pdf_parse_default_appearance' function in MuPDF's 'pdf-annot.c'.
         """
-        if not self.text_da:
+        if not self._text_da:
             return
-        font = None
-        fsize = None
-        col = None
-        dat = self.text_da.split(" ")
+        font = "Helv"
+        fsize = 0
+        col = (0, 0, 0)
+        dat = self._text_da.split()              # split on any whitespace
         for i, item in enumerate(dat):
             if item == "Tf":
                 font = dat[i - 2][1:]
                 fsize = float(dat[i - 1])
+                dat[i] = dat[i-1] = dat[i-2] = ""
                 continue
             if item == "g":            # unicolor text
                 col = [(float(dat[i - 1]))]
+                dat[i] = dat[i-1] = ""
                 continue
             if item == "rg":           # RGB colored text
                 col = [float(f) for f in dat[i - 3:i]]
-                continue
-            if item == "k":            # CMYK colored text
-                col = [float(f) for f in dat[i - 4:i]]
+                dat[i] = dat[i-1] = dat[i-2] = dat[i-3] = ""
                 continue
         self.text_font     = font
         self.text_fontsize = fsize
         self.text_color    = col
+        self._text_da = " ".join([c for c in dat if c != ""])
         return
 
     # any widget type specific checks

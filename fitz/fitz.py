@@ -102,9 +102,9 @@ import sys
 
 
 VersionFitz = "1.13.0"
-VersionBind = "1.13.12"
-VersionDate = "2018-06-26 08:12:05"
-version = (VersionBind, VersionFitz, "20180626081205")
+VersionBind = "1.13.13"
+VersionDate = "2018-07-10 07:30:21"
+version = (VersionBind, VersionFitz, "20180710073021")
 
 
 #------------------------------------------------------------------------------
@@ -142,14 +142,15 @@ class Widget():
         self.fill_color         = None
         self.button_caption     = None           # button caption
         self.rect               = None           # annot value
-        self.text_color         = None           # text fields only
+        self.text_color         = (0, 0, 0)
         self.text_font          = "Helv"
-        self.text_fontsize      = None           # text fields only
+        self.text_fontsize      = 0
         self.text_maxlen        = 0              # text fields only
         self.text_type          = 0              # text fields only
-        self.text_da            = None           # /DA = default apparance
+        self._text_da           = ""             # /DA = default apparance
         self.field_type         = 3              # valid range 0 through 6
         self.field_type_string  = None           # field type as string
+        self._text_da           = ""             # /DA = default apparance
         self._dr_xref           = 0              # xref of /DR entry
 
     def _validate(self):
@@ -201,32 +202,33 @@ class Widget():
         self.text_font = fnames[i]
         return
 
-    def _da_reconstruct(self):
-        """Extract font name, size and color from default appearance string (/DA object).
+    def _parse_da(self):
+        """Extract font name, size and color from default appearance string (/DA object). Equivalent to 'pdf_parse_default_appearance' function in MuPDF's 'pdf-annot.c'.
         """
-        if not self.text_da:
+        if not self._text_da:
             return
-        font = None
-        fsize = None
-        col = None
-        dat = self.text_da.split(" ")
+        font = "Helv"
+        fsize = 0
+        col = (0, 0, 0)
+        dat = self._text_da.split()              # split on any whitespace
         for i, item in enumerate(dat):
             if item == "Tf":
                 font = dat[i - 2][1:]
                 fsize = float(dat[i - 1])
+                dat[i] = dat[i-1] = dat[i-2] = ""
                 continue
             if item == "g":            # unicolor text
                 col = [(float(dat[i - 1]))]
+                dat[i] = dat[i-1] = ""
                 continue
             if item == "rg":           # RGB colored text
                 col = [float(f) for f in dat[i - 3:i]]
-                continue
-            if item == "k":            # CMYK colored text
-                col = [float(f) for f in dat[i - 4:i]]
+                dat[i] = dat[i-1] = dat[i-2] = dat[i-3] = ""
                 continue
         self.text_font     = font
         self.text_fontsize = fsize
         self.text_color    = col
+        self._text_da = " ".join([c for c in dat if c != ""])
         return
 
 # any widget type specific checks
@@ -632,6 +634,89 @@ def ConversionTrailer(i):
 
     return r
 
+def make_line_AP(annot):
+    w = annot.border["width"]
+    sc = annot.colors["stroke"]
+    fc = annot.colors["fill"]
+    vert = annot.vertices
+    h = annot.rect.height
+    r = Rect(0, 0, annot.rect.width, h)
+    x0 = annot.rect.x0
+    y0 = annot.rect.y0
+    scol = "%g %g %g RG\n" % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG\n"
+    fcol = "%g %g %g rg\n" % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg\n"
+
+    ap = "%g %g m\n" % (vert[0][0] - x0, h - (vert[0][1] - y0))
+    for v in vert:
+        ap += "%g %g l\n" % (v[0] - x0, h - (v[1] - y0))
+
+    ap += scol + fcol + "%g w 1 J 1 j\n" % w
+    if annot.type[0] == ANNOT_POLYLINE:
+        ap += "S"
+    else:
+        ap += "b"
+
+    ap = ap.encode("utf-8")
+    annot._setAP(ap)
+    return
+
+def make_rect_AP(annot):
+    w = annot.border["width"]
+    sc = annot.colors["stroke"]
+    fc = annot.colors["fill"]
+    r = annot.rect
+    r1 = r2 = w/2.
+    r3 = r.width - w
+    r4 = r.height - w
+    str1 = " %g %g %g %g re %g w 1 J 1 j " % (r1, r2, r3, r4, w)
+    scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
+    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg "
+    ap = (str1 + scol + fcol + "b").encode("utf-8")
+    annot._setAP(ap)
+    return
+
+def make_circle_AP(annot):
+    kappa = 0.55228474983
+    sc = annot.colors["stroke"]
+    scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
+    fc = annot.colors["fill"]
+    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg "
+
+    lw = annot.border["width"]
+    lw2 = lw / 2.
+    h = annot.rect.height
+    r = Rect(lw2, lw2, annot.rect.width - lw2, h - lw2)
+
+    def bezier(p, q, r):
+        f = "%g %g %g %g %g %g c\n"
+        return f % (p.x, h - p.y, q.x, h - q.y, r.x, h - r.y)
+
+    ml = r.tl + (r.bl - r.tl) * 0.5    # Mitte links
+    mo = r.tl + (r.tr - r.tl) * 0.5    # Mitte oben
+    mr = r.tr + (r.br - r.tr) * 0.5    # Mitte rechts
+    mu = r.bl + (r.br - r.bl) * 0.5    # Mitte unten
+    ol1 = ml + (r.tl - ml) * kappa
+    ol2 = mo + (r.tl - mo) * kappa
+    or1 = mo + (r.tr - mo) * kappa
+    or2 = mr + (r.tr - mr) * kappa
+    ur1 = mr + (r.br - mr) * kappa
+    ur2 = mu + (r.br - mu) * kappa
+    ul1 = mu + (r.bl - mu) * kappa
+    ul2 = ml + (r.bl - ml) * kappa
+
+    ap = " %g %g m\n" % (ml.x, h - ml.y)
+    ap += bezier(ol1, ol2, mo)
+    ap += bezier(or1, or2, mr)
+    ap += bezier(ur1, ur2, mu)
+    ap += bezier(ul1, ul2, ml)
+
+    ap += "%g w 1 J 1 j\n" % lw
+    ap += scol + fcol + "b"
+    ap = ap.encode("utf-8")
+    annot._setAP(ap)
+    return
+
+
 class Document(_object):
     """open() - new empty PDF
 open('type', stream) - from bytes/bytearray
@@ -775,28 +860,33 @@ open(filename, filetype='type') - from file"""
         return _fitz.Document_embeddedFileInfo(self, id)
 
 
-    def embeddedFileSetInfo(self, id, filename=None, desc=None):
-        """Change filename or description of embedded file given its entry number or name."""
+    def embeddedFileUpd(self, id, buffer=None, filename=None, ufilename=None, desc=None):
+        """Change an embedded file given its entry number or name."""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
 
-        return _fitz.Document_embeddedFileSetInfo(self, id, filename, desc)
+        return _fitz.Document_embeddedFileUpd(self, id, buffer, filename, ufilename, desc)
+
+
+    def embeddedFileSetInfo(self, id, filename=None, ufilename=None, desc=None):
+        self.embeddedFileUpd(id, filename=filename, ufilename=ufilename, desc=desc)
+        return
 
 
     def embeddedFileGet(self, id):
-        """Retrieve embedded file content given its entry number or name."""
+        """Retrieve embedded file content by name or by number."""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document_embeddedFileGet(self, id)
 
 
-    def embeddedFileAdd(self, buffer, name, filename=None, desc=None):
-        """Add new file from buffer."""
+    def embeddedFileAdd(self, buffer, name, filename=None, ufilename=None, desc=None):
+        """Embed a new file."""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
 
-        return _fitz.Document_embeddedFileAdd(self, buffer, name, filename, desc)
+        return _fitz.Document_embeddedFileAdd(self, buffer, name, filename, ufilename, desc)
 
 
     def convertToPDF(self, from_page=0, to_page=-1, rotate=0):
@@ -853,6 +943,14 @@ open(filename, filetype='type') - from file"""
             raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_isReflowable(self)
+
+
+    def _getPDFroot(self):
+        """PDF catalog xref number"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document__getPDFroot(self)
 
     @property
 
@@ -1071,12 +1169,12 @@ open(filename, filetype='type') - from file"""
         return _fitz.Document_FormFonts(self)
 
 
-    def addFormFont(self, name, font):
-        """addFormFont(self, name, font) -> PyObject *"""
+    def _addFormFont(self, name, font):
+        """_addFormFont(self, name, font) -> PyObject *"""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
 
-        return _fitz.Document_addFormFont(self, name, font)
+        return _fitz.Document__addFormFont(self, name, font)
 
 
     def _getOLRootNumber(self):
@@ -1344,151 +1442,220 @@ class Page(_object):
 
 
     def addLineAnnot(self, p1, p2):
-        """Add a Line annotation between Points p1, p2"""
+        """Add 'Line' annot between points p1 and p2."""
         CheckParent(self)
 
         val = _fitz.Page_addLineAnnot(self, p1, p2)
 
-        if val:
-            val.thisown = True
-            val.parent = weakref.proxy(self) # owning page object
-            self._annot_refs[id(val)] = val
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
+
+#check for unexpected /AP existence
+        if val._getAP():
+            print("warning: annot already has an /AP")
+            return val
+
+        if val.type[0] == ANNOT_SQUARE:
+            make_rect_AP(val)
+        elif val.type[0] == ANNOT_CIRCLE:
+            make_circle_AP(val)
+        elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
+            make_line_AP(val)
 
 
         return val
 
 
     def addTextAnnot(self, point, text):
-        """Add a 'sticky note' at Point pos"""
+        """Add a 'sticky note' at position 'point'."""
         CheckParent(self)
 
         val = _fitz.Page_addTextAnnot(self, point, text)
 
-        if val:
-            val.thisown = True
-            val.parent = weakref.proxy(self) # the parent page
-            self._annot_refs[id(val)] = val  # record annot in page dict
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
 
+        return val
+
+
+    def addFileAnnot(self, point, buffer, filename, ufilename=None, desc=None):
+        """Add a 'FileAttachment' annotation."""
+        CheckParent(self)
+
+        val = _fitz.Page_addFileAnnot(self, point, buffer, filename, ufilename, desc)
+
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
 
         return val
 
 
     def addStrikeoutAnnot(self, rect):
-        """Strike out content in a Rect"""
+        """Strike out content in a rectangle."""
         CheckParent(self)
 
         val = _fitz.Page_addStrikeoutAnnot(self, rect)
 
-        if val:
-            val.thisown = True
-            val.parent = weakref.proxy(self) # the parent page
-            self._annot_refs[id(val)] = val  # record annot in page dict
-
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
 
         return val
 
 
     def addUnderlineAnnot(self, rect):
-        """Underline content in a Rect"""
+        """Underline content in a rectangle."""
         CheckParent(self)
 
         val = _fitz.Page_addUnderlineAnnot(self, rect)
 
-        if val:
-            val.thisown = True
-            val.parent = weakref.proxy(self) # the parent page
-            self._annot_refs[id(val)] = val  # record annot in page dict
-
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
 
         return val
 
 
     def addHighlightAnnot(self, rect):
-        """Highlight content in a Rect"""
+        """Highlight content in a rectangle."""
         CheckParent(self)
 
         val = _fitz.Page_addHighlightAnnot(self, rect)
 
-        if val:
-            val.thisown = True
-            val.parent = weakref.proxy(self) # the parent page
-            self._annot_refs[id(val)] = val  # record annot in page dict
-
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
 
         return val
 
 
     def addRectAnnot(self, rect):
-        """Add a rectangle annotation"""
+        """Add a 'Rectangle' annotation."""
         CheckParent(self)
 
         val = _fitz.Page_addRectAnnot(self, rect)
 
-        if val:
-            val.thisown = True
-            val.parent = weakref.proxy(self) # the parent page
-            self._annot_refs[id(val)] = val  # record annot in page dict
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
+
+#check for unexpected /AP existence
+        if val._getAP():
+            print("warning: annot already has an /AP")
+            return val
+
+        if val.type[0] == ANNOT_SQUARE:
+            make_rect_AP(val)
+        elif val.type[0] == ANNOT_CIRCLE:
+            make_circle_AP(val)
+        elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
+            make_line_AP(val)
 
 
         return val
 
 
     def addCircleAnnot(self, rect):
-        """Add a circle annotation"""
+        """Add a 'Circle' annotation."""
         CheckParent(self)
 
         val = _fitz.Page_addCircleAnnot(self, rect)
 
-        if val:
-            val.thisown = True
-            val.parent = weakref.proxy(self) # owning page object
-            self._annot_refs[id(val)] = val
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
+
+#check for unexpected /AP existence
+        if val._getAP():
+            print("warning: annot already has an /AP")
+            return val
+
+        if val.type[0] == ANNOT_SQUARE:
+            make_rect_AP(val)
+        elif val.type[0] == ANNOT_CIRCLE:
+            make_circle_AP(val)
+        elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
+            make_line_AP(val)
 
 
         return val
 
 
     def addPolylineAnnot(self, points):
-        """Add a polyline annotation for a sequence of Points"""
+        """Add a 'Polyline' annotation for a sequence of points."""
         CheckParent(self)
 
         val = _fitz.Page_addPolylineAnnot(self, points)
 
-        if val:
-            val.thisown = True
-            val.parent = weakref.proxy(self) # owning page object
-            self._annot_refs[id(val)] = val
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
+
+#check for unexpected /AP existence
+        if val._getAP():
+            print("warning: annot already has an /AP")
+            return val
+
+        if val.type[0] == ANNOT_SQUARE:
+            make_rect_AP(val)
+        elif val.type[0] == ANNOT_CIRCLE:
+            make_circle_AP(val)
+        elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
+            make_line_AP(val)
 
 
         return val
 
 
     def addPolygonAnnot(self, points):
-        """Add a polygon annotation for a sequence of Points"""
+        """Add a 'Polygon' annotation for a sequence of points."""
         CheckParent(self)
 
         val = _fitz.Page_addPolygonAnnot(self, points)
 
-        if val:
-            val.thisown = True
-            val.parent = weakref.proxy(self) # owning page object
-            self._annot_refs[id(val)] = val
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
+
+#check for unexpected /AP existence
+        if val._getAP():
+            print("warning: annot already has an /AP")
+            return val
+
+        if val.type[0] == ANNOT_SQUARE:
+            make_rect_AP(val)
+        elif val.type[0] == ANNOT_CIRCLE:
+            make_circle_AP(val)
+        elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
+            make_line_AP(val)
 
 
         return val
 
 
     def addFreetextAnnot(self, pos, text, fontsize=11, color=None):
-        """Add a FreeText annotation at Point pos"""
+        """Add a 'FreeText' annotation at position 'point'."""
         CheckParent(self)
 
         val = _fitz.Page_addFreetextAnnot(self, pos, text, fontsize, color)
 
-        if val:
-            val.thisown = True
-            val.parent = weakref.proxy(self) # owning page object
-            self._annot_refs[id(val)] = val
-
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
 
         return val
 
@@ -1497,6 +1664,8 @@ class Page(_object):
                 # page addWidget
                 #---------------------------------------------------------------------
     def addWidget(self, widget):
+        """Add a form field.
+        """
         CheckParent(self)
         doc = self.parent
         if not doc.isPDF:
@@ -1518,19 +1687,19 @@ class Page(_object):
             else:                        # add any missing fonts
                 for k in Widget_fontdict.keys():
                     if not k in ff:      # add our font if missing
-                        doc.addFormFont(k, Widget_fontdict[k])
+                        doc._addFormFont(k, Widget_fontdict[k])
             widget._adjust_font()        # ensure correct font spelling
         widget._dr_xref = xref           # non-zero causes /DR creation
 
     # now create the /DA string
         if   len(widget.text_color) == 3:
-            fmt = "{:g} {:g} {:g} rg /{f:s} {s:g} Tf"
+            fmt = "{:g} {:g} {:g} rg /{f:s} {s:g} Tf " + widget._text_da
         elif len(widget.text_color) == 1:
-            fmt = "{:g} g /{f:s} {s:g} Tf"
+            fmt = "{:g} g /{f:s} {s:g} Tf " + widget._text_da
         elif len(widget.text_color) == 4:
-            fmt = "{:g} {:g} {:g} {:g} k /{f:s} {s:g} Tf"
-        widget.text_da = fmt.format(*widget.text_color, f=widget.text_font,
-                                    s=widget.text_fontsize)
+            fmt = "{:g} {:g} {:g} {:g} k /{f:s} {s:g} Tf " + widget._text_da
+        widget._text_da = fmt.format(*widget.text_color, f=widget.text_font,
+                                     s=widget.text_fontsize)
     # create the widget at last
         annot = self._addWidget(widget)
         if annot:
@@ -2875,11 +3044,11 @@ class Annot(_object):
         return _fitz.Annot_fileGet(self)
 
 
-    def fileUpd(self, buffer, filename=None):
+    def fileUpd(self, buffer=None, filename=None, ufilename=None, desc=None):
         """Update annotation attached file content."""
         CheckParent(self)
 
-        return _fitz.Annot_fileUpd(self, buffer, filename)
+        return _fitz.Annot_fileUpd(self, buffer, filename, ufilename, desc)
 
     @property
 
@@ -3001,17 +3170,17 @@ class Annot(_object):
             else:                        # add any missing fonts
                 for k in Widget_fontdict.keys():
                     if not k in ff:      # add our font if missing
-                        doc.addFormFont(k, Widget_fontdict[k])
+                        doc._addFormFont(k, Widget_fontdict[k])
             widget._adjust_font()        # ensure correct font spelling
         widget._dr_xref = xref           # non-zero causes /DR creation
     # now create the /DA string
         if   len(widget.text_color) == 3:
-            fmt = "{:g} {:g} {:g} rg /{f:s} {s:g} Tf"
+            fmt = "{:g} {:g} {:g} rg /{f:s} {s:g} Tf " + widget._text_da
         elif len(widget.text_color) == 1:
-            fmt = "{:g} g /{f:s} {s:g} Tf"
+            fmt = "{:g} g /{f:s} {s:g} Tf " + widget._text_da
         elif len(widget.text_color) == 4:
-            fmt = "{:g} {:g} {:g} {:g} k /{f:s} {s:g} Tf"
-        widget.text_da = fmt.format(*widget.text_color, f=widget.text_font,
+            fmt = "{:g} {:g} {:g} {:g} k /{f:s} {s:g} Tf " + widget._text_da
+        widget._text_da = fmt.format(*widget.text_color, f=widget.text_font,
                                     s=widget.text_fontsize)
     # update the widget at last
         self._updateWidget(widget)

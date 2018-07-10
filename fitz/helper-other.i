@@ -1,4 +1,63 @@
 %{
+//----------------------------------------------------------------------------
+// deflate char* into a buffer
+// this is a copy of function "deflatebuf" of pdf_write.c
+//----------------------------------------------------------------------------
+fz_buffer *JM_deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
+{
+    fz_buffer *buf = NULL;
+    uLongf csize;
+    int t;
+    uLong longN = (uLong) n;
+    unsigned char *data = NULL;
+    size_t cap;
+    fz_try(ctx)
+    {
+        if (n != (size_t)longN) THROWMSG("buffer too large to deflate");
+        cap = compressBound(longN);
+        data = fz_malloc(ctx, cap);
+        buf = fz_new_buffer_from_data(ctx, data, cap);
+        csize = (uLongf)cap;
+        t = compress(data, &csize, p, longN);
+        if (t != Z_OK) THROWMSG("cannot deflate buffer");
+    }
+    fz_catch(ctx)
+    {
+        fz_drop_buffer(ctx, buf);
+        fz_rethrow(ctx);
+    }
+    fz_resize_buffer(ctx, buf, csize);
+    return buf;
+}
+
+//----------------------------------------------------------------------------
+// update a stream object
+// use compressed stream where beneficial
+//----------------------------------------------------------------------------
+void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffer *buffer)
+{
+    size_t len, nlen;
+    char *data;
+    fz_buffer *nres = NULL;
+    len = fz_buffer_storage(ctx, buffer, &data);
+    nlen = len;
+    if (len > 20)       // ignore small stuff
+    {
+        nres = JM_deflatebuf(ctx, data, len);
+        nlen = fz_buffer_storage(ctx, nres, NULL);
+    }
+    if (nlen < len)     // was it worth the effort?
+    {
+        pdf_dict_put(ctx, obj, PDF_NAME_Filter, PDF_NAME_FlateDecode);
+        pdf_update_stream(ctx, doc, obj, nres, 1);
+    }
+    else
+    {
+        pdf_update_stream(ctx, doc, obj, buffer, 0);
+    }
+    fz_drop_buffer(ctx, nres);
+}
+
 //-----------------------------------------------------------------------------
 // Version of fz_pixmap_from_display_list (utils.c) to support rendering
 // of only the 'clip' part of the displaylist rectangle
@@ -131,37 +190,6 @@ PyObject *truth_value(int v)
 {
     if (v == 0) Py_RETURN_FALSE;
     Py_RETURN_TRUE;
-}
-
-//----------------------------------------------------------------------------
-// deflate char* into a buffer
-// this is a copy of function "deflatebuf" of pdf_write.c
-//----------------------------------------------------------------------------
-fz_buffer *JM_deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
-{
-    fz_buffer *buf = NULL;
-    uLongf csize;
-    int t;
-    uLong longN = (uLong) n;
-    unsigned char *data = NULL;
-    size_t cap;
-    fz_try(ctx)
-    {
-        if (n != (size_t)longN) THROWMSG("buffer too large to deflate");
-        cap = compressBound(longN);
-        data = fz_malloc(ctx, cap);
-        buf = fz_new_buffer_from_data(ctx, data, cap);
-        csize = (uLongf)cap;
-        t = compress(data, &csize, p, longN);
-        if (t != Z_OK) THROWMSG("cannot deflate buffer");
-    }
-    fz_catch(ctx)
-    {
-        fz_drop_buffer(ctx, buf);
-        fz_rethrow(ctx);
-    }
-    fz_resize_buffer(ctx, buf, csize);
-    return buf;
 }
 
 //----------------------------------------------------------------------------
@@ -351,7 +379,7 @@ int fillOLNumbers(fz_context *ctx, int *res, pdf_obj *obj, int oc, int argc)
 }
 
 //----------------------------------------------------------------------------
-// Returns (int) number of outlines
+// Returns number of outlines
 // 'obj' must be first OL item
 //----------------------------------------------------------------------------
 int countOutlines(fz_context *ctx, pdf_obj *obj, int oc)
@@ -373,11 +401,12 @@ int countOutlines(fz_context *ctx, pdf_obj *obj, int oc)
 //-----------------------------------------------------------------------------
 // Return the contents of a font file
 //-----------------------------------------------------------------------------
-fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
+fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int xref)
 {
+    if (xref < 1) return NULL;
     pdf_obj *o, *obj = NULL, *desft, *stream = NULL;
     char *ext = "";
-    o = pdf_load_object(ctx, doc, num);
+    o = pdf_load_object(ctx, doc, xref);
     desft = pdf_dict_get(ctx, o, PDF_NAME_DescendantFonts);
     if (desft)
     {
@@ -385,9 +414,7 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
         obj = pdf_dict_get(ctx, obj, PDF_NAME_FontDescriptor);
     }
     else
-    {
         obj = pdf_dict_get(ctx, o, PDF_NAME_FontDescriptor);
-    }
 
     if (!obj)
     {
@@ -399,18 +426,10 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
     o = obj;
 
     obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile);
-    if (obj)
-    {
-        stream = obj;
-        ext = "pfa";
-    }
+    if (obj) stream = obj;             // ext = "pfa"
 
     obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile2);
-    if (obj)
-    {
-        stream = obj;
-        ext = "ttf";
-    }
+    if (obj) stream = obj;             // ext = "ttf"
 
     obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile3);
     if (obj)
@@ -446,11 +465,11 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
 //-----------------------------------------------------------------------------
 // Return the file extension of an embedded font file
 //-----------------------------------------------------------------------------
-char *fontextension(fz_context *ctx, pdf_document *doc, int num)
+char *fontextension(fz_context *ctx, pdf_document *doc, int xref)
 {
-    pdf_obj *o, *obj = NULL, *desft, *stream = NULL;
-    char *ext = "n/a";
-    o = pdf_load_object(ctx, doc, num);
+    if (xref < 1) return "n/a";
+    pdf_obj *o, *obj = NULL, *desft;
+    o = pdf_load_object(ctx, doc, xref);
     desft = pdf_dict_get(ctx, o, PDF_NAME_DescendantFonts);
     if (desft)
     {
@@ -458,52 +477,39 @@ char *fontextension(fz_context *ctx, pdf_document *doc, int num)
         obj = pdf_dict_get(ctx, obj, PDF_NAME_FontDescriptor);
     }
     else
-    {
         obj = pdf_dict_get(ctx, o, PDF_NAME_FontDescriptor);
-    }
 
     pdf_drop_obj(ctx, o);
-    if (!obj)
-    {
-        return ext;
-    }
-    o = obj;
+    if (!obj) return "n/a";           // this is a base-14 font
+
+    o = obj;                           // we have the FontDescriptor
 
     obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile);
-    if (obj)
-    {
-        stream = obj;
-        ext = "pfa";
-    }
+    if (obj) return "pfa";
 
     obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile2);
-    if (obj)
-    {
-        stream = obj;
-        ext = "ttf";
-    }
+    if (obj) return "ttf";
 
     obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile3);
     if (obj)
     {
-        stream = obj;
         obj = pdf_dict_get(ctx, obj, PDF_NAME_Subtype);
         if (obj && !pdf_is_name(ctx, obj))
         {
             PySys_WriteStdout("invalid font descriptor subtype");
-            return ext;
+            return "n/a";
         }
         if (pdf_name_eq(ctx, obj, PDF_NAME_Type1C))
-            ext = "cff";
+            return "cff";
         else if (pdf_name_eq(ctx, obj, PDF_NAME_CIDFontType0C))
-            ext = "cid";
+            return "cid";
         else if (pdf_name_eq(ctx, obj, PDF_NAME_OpenType))
-            ext = "otf";
+            return "otf";
         else
             PySys_WriteStdout("unhandled font type '%s'", pdf_to_name(ctx, obj));
     }
 
-    return ext;
+    return "n/a";
 }
 
 //-----------------------------------------------------------------------------

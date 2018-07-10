@@ -166,7 +166,7 @@ char *annot_type_str(int type)
 }
 
 //----------------------------------------------------------------------------
-// return pdf_obj border style from Python str
+// return pdf_obj "border style" from Python str
 //----------------------------------------------------------------------------
 pdf_obj *JM_get_border_style(fz_context *ctx, PyObject *style)
 {
@@ -213,37 +213,37 @@ struct fz_annot_s *JM_AnnotTextmarker(fz_context *ctx, pdf_page *page, fz_rect *
     float h  = rect->y1 - rect->y0;
     fz_rect bbox = {rect->x0, rect->y0, rect->x1, rect->y1};
     float color[3] = {0,0,0};
-	switch (type)
-	{
-		case PDF_ANNOT_HIGHLIGHT:
-			color[0] = 1.0f;
-			color[1] = 1.0f;
-			color[2] = 0.0f;
-			alpha = 0.3f;
-			line_thickness = 1.0f;
-			line_height = 0.5f;
-			break;
-		case PDF_ANNOT_UNDERLINE:
-			color[0] = 0.0f;
-			color[1] = 0.0f;
-			color[2] = 1.0f;
-			alpha = 1.0f;
-			line_thickness = 0.07f;
-			line_height = 0.075f;
+    switch (type)
+    {
+        case PDF_ANNOT_HIGHLIGHT:
+            color[0] = 1.0f;
+            color[1] = 1.0f;
+            color[2] = 0.0f;
+            alpha = 0.3f;
+            line_thickness = 1.0f;
+            line_height = 0.5f;
+            break;
+        case PDF_ANNOT_UNDERLINE:
+            color[0] = 0.0f;
+            color[1] = 0.0f;
+            color[2] = 1.0f;
+            alpha = 1.0f;
+            line_thickness = 0.07f;
+            line_height = 0.075f;
             bbox.y0 += 0.8f * h;
             bbox.y1 += 0.8f * h;
-			break;
-		case PDF_ANNOT_STRIKE_OUT:
-			color[0] = 1.0f;
-			color[1] = 0.0f;
-			color[2] = 0.0f;
-			alpha = 1.0f;
-			line_thickness = 0.07f;
-			line_height = 0.375f;
+            break;
+        case PDF_ANNOT_STRIKE_OUT:
+            color[0] = 1.0f;
+            color[1] = 0.0f;
+            color[2] = 0.0f;
+            alpha = 1.0f;
+            line_thickness = 0.07f;
+            line_height = 0.375f;
             bbox.y0 += 0.17f * h;
             bbox.y1 += 0.17f * h;
-			break;
-	}
+            break;
+    }
     fz_try(ctx)
     {
         pdf_document *pdf = page->doc;
@@ -255,6 +255,7 @@ struct fz_annot_s *JM_AnnotTextmarker(fz_context *ctx, pdf_page *page, fz_rect *
         pdf_set_markup_appearance(ctx, pdf, annot, color, alpha, line_thickness, line_height);
     }
     fz_catch(ctx) fz_rethrow(ctx);
+    pdf_dirty_annot(ctx, annot);
     return (fz_annot *) annot;
 }
 
@@ -273,12 +274,9 @@ struct fz_annot_s *JM_AnnotCircleOrRect(fz_context *ctx, pdf_page *page, fz_rect
         pdf_set_annot_border(ctx, annot, width);
         pdf_set_annot_color(ctx, annot, 3, col);
         pdf_set_annot_rect(ctx, annot, rect);
-        pdf_obj *rd = pdf_new_array(ctx, pdf, 4);
-        pdf_dict_puts_drop(ctx, annot->obj, "RD", rd);
-        for (int i = 0; i < 4; i++)
-            pdf_array_push_real(ctx, rd, width);
     }
     fz_catch(ctx) fz_rethrow(ctx);
+    pdf_dirty_annot(ctx, annot);
     return (fz_annot *) annot;
 }
 
@@ -304,7 +302,6 @@ struct fz_annot_s *JM_AnnotMultiline(fz_context *ctx, pdf_page *page, PyObject *
             PyObject *p = PySequence_ITEM(points, i);
             if (!PySequence_Check(p) || PySequence_Size(p) != 2)
                 THROWMSG("invalid points list");
-            // ===> treating a fitz.Point as a 2-tuple seems to work!
             point.x = (float) PyFloat_AsDouble(PySequence_GetItem(p, 0));
             point.y = (float) PyFloat_AsDouble(PySequence_GetItem(p, 1));
             Py_DECREF(p);
@@ -321,10 +318,115 @@ struct fz_annot_s *JM_AnnotMultiline(fz_context *ctx, pdf_page *page, PyObject *
         }
         pdf_set_annot_border(ctx, annot, width); // standard: width = 1
         pdf_set_annot_color(ctx, annot, 3, col); // standard: black
+        fz_expand_rect(&rect, 2 * width);
         pdf_set_annot_rect(ctx, annot, &rect);
     }
     fz_catch(ctx) fz_rethrow(ctx);
+    pdf_dirty_annot(ctx, annot);
     return (fz_annot *) annot;
+}
+
+void JM_draw_pushpin1(fz_context *ctx, fz_path *path)
+{
+    fz_moveto(ctx, path, 2.8f, 29.0f);
+    fz_lineto(ctx, path, 17.2f, 29.0f);
+    fz_lineto(ctx, path, 13.6f, 22.0f);
+    fz_lineto(ctx, path, 13.6f, 17.8f);
+    fz_lineto(ctx, path, 19.0f, 10.8f);
+    fz_lineto(ctx, path, 1.0f, 10.8f);
+    fz_lineto(ctx, path, 6.4f, 17.8f);
+    fz_lineto(ctx, path, 6.4f, 22.0f);
+    fz_lineto(ctx, path, 2.8f, 29.0f);
+    fz_closepath(ctx, path);
+}
+
+void JM_draw_pushpin2(fz_context *ctx, fz_path *path)
+{
+    fz_moveto(ctx, path, 13.6f, 22.0f);
+    fz_lineto(ctx, path, 6.4f, 22.0f);
+    fz_moveto(ctx, path, 13.6f, 17.8f);
+    fz_lineto(ctx, path, 6.4f, 17.8f);
+    fz_closepath(ctx, path);
+}
+
+void JM_draw_pushpin3(fz_context *ctx, fz_path *path)
+{
+    fz_moveto(ctx, path, 9.1f, 10.8f);
+    fz_lineto(ctx, path, 10.0f, 1.0f);
+    fz_lineto(ctx, path, 10.9f, 10.8f);
+    fz_closepath(ctx, path);
+}
+
+void JM_update_file_attachment_annot(fz_context *ctx, pdf_document *doc, pdf_annot *annot)
+{
+    static float yellow[3] = {1.0f, 1.0f, 0.0f};
+    static float blue[3] = {0.0f, 0.0f, 1.0f};
+    static float black[3] = {0.0f, 0.0f, 0.0f};
+    static float outline_thickness = 0.5;
+    fz_display_list *dlist = NULL;
+    fz_device *dev = NULL;
+    fz_colorspace *cs = NULL;
+    fz_path *path = NULL;
+    fz_stroke_state *stroke = NULL;
+    fz_matrix page_ctm;
+    pdf_page_transform(ctx, annot->page, NULL, &page_ctm);
+    fz_var(path);
+    fz_var(stroke);
+    fz_var(dlist);
+    fz_var(dev);
+    fz_var(cs);
+    fz_try(ctx)
+    {
+        fz_rect rect;
+
+        pdf_to_rect(ctx, pdf_dict_get(ctx, annot->obj, PDF_NAME_Rect), &rect);
+        dlist = fz_new_display_list(ctx, NULL);
+        dev = fz_new_list_device(ctx, dlist);
+        cs = fz_device_rgb(ctx); /* Borrowed reference */
+        stroke = fz_new_stroke_state(ctx);
+        stroke->linewidth = outline_thickness;
+        stroke->linejoin = FZ_LINEJOIN_ROUND;
+
+        path = fz_new_path(ctx);
+        JM_draw_pushpin1(ctx, path);
+        fz_fill_path(ctx, dev, path, 0, &page_ctm, cs, yellow, 1.0f, NULL);
+        fz_stroke_path(ctx, dev, path, stroke, &page_ctm, cs, black, 1.0f, NULL);
+        fz_drop_path(ctx, path);
+        path = NULL;
+
+        path = fz_new_path(ctx);
+        JM_draw_pushpin2(ctx, path);
+        fz_stroke_path(ctx, dev, path, stroke, &page_ctm, cs, black, 1.0f, NULL);
+        fz_drop_path(ctx, path);
+        path = NULL;
+
+        path = fz_new_path(ctx);
+        JM_draw_pushpin3(ctx, path);
+        fz_fill_path(ctx, dev, path, 0, &page_ctm, cs, blue, 1.0f, NULL);
+        fz_stroke_path(ctx, dev, path, stroke, &page_ctm, cs, black, 1.0f, NULL);
+        fz_close_device(ctx, dev);
+
+        fz_transform_rect(&rect, &page_ctm);
+        pdf_set_annot_appearance(ctx, doc, annot, &rect, dlist);
+        rect.x0 = rect.y0 = 0;
+        rect.x1 = 20;
+        rect.y1 = 30;
+        pdf_obj *ap = pdf_dict_getl(ctx, annot->obj, PDF_NAME_AP, PDF_NAME_N, NULL);
+        pdf_dict_put_rect(ctx, ap, PDF_NAME_BBox, &rect);
+        pdf_drop_obj(ctx, annot->ap);
+        annot->ap = NULL;
+    }
+    fz_always(ctx)
+    {
+        fz_drop_device(ctx, dev);
+        fz_drop_display_list(ctx, dlist);
+        fz_drop_stroke_state(ctx, stroke);
+        fz_drop_path(ctx, path);
+    }
+    fz_catch(ctx)
+    {
+        fz_rethrow(ctx);
+    }
 }
 
 %}

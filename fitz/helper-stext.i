@@ -65,19 +65,24 @@ fz_rect *JM_empty_rect()
 // enlarge rect r1 by r2. modify r2-height by size
 void JM_join_rect(fz_rect *r1, fz_rect *r2, float size)
 {
+    fz_rect r = {MIN(r2->x0, r2->x1), MIN(r2->y0, r2->y1),
+                 MAX(r2->x0, r2->x1), MAX(r2->y0, r2->y1)};
+    if (abs(r.x1 - r.x0) < 0.00001f) r.x0 = r.x1 - size;
+    if (abs(r.y1 - r.y0) < 0.00001f) r.y0 = r.y1 - size;
+
     if (fz_is_empty_rect(r1))
     {
-        r1->x0 = r2->x0;
-        r1->y0 = r2->y0;
-        r1->x1 = r2->x1;
-        r1->y1 = MAX(r2->y1, r2->y0 + size);
+        r1->x0 = r.x0;
+        r1->y0 = r.y0;
+        r1->x1 = r.x1;
+        r1->y1 = r.y1;
     }
     else
     {
-        r1->x0 = MIN(r1->x0, r2->x0);
-        r1->y0 = MIN(r1->y0, r2->y0);
-        r1->x1 = MAX(r1->x1, r2->x1);
-        r1->y1 = MAX(r1->y1, MAX(r2->y1, r2->y0 + size));
+        r1->x0 = MIN(r1->x0, r.x0);
+        r1->y0 = MIN(r1->y0, r.y0);
+        r1->x1 = MAX(r1->x1, r.x1);
+        r1->y1 = MAX(r1->y1, r.y1);
     }
 }
 
@@ -186,7 +191,7 @@ JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block)
                                          linerect->x0, linerect->y0,
                                          linerect->x1, linerect->y1));
 
-        JM_join_rect(blockrect, linerect, 0);
+        JM_join_rect(blockrect, linerect, 0.0f);
 
         free(linerect);
         PyList_Append(linelist, linedict);

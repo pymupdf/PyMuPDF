@@ -3045,17 +3045,18 @@ static swig_module_info swig_module = {swig_types, 17, 0, 0, 0, 0};
 #define INRANGE(v, low, high) ((low) <= v && v <= (high))
 #define MAX(a, b) ((a) < (b)) ? (b) : (a)
 #define MIN(a, b) ((a) < (b)) ? (a) : (b)
-#define JM_UNICODE(data) PyUnicode_DecodeUTF8(data, strlen(data), "replace")
 #define JM_BytesFromBuffer(ctx, x) PyBytes_FromStringAndSize(fz_string_from_buffer(ctx, x), (Py_ssize_t) fz_buffer_storage(ctx, x, NULL))
 #define JM_StrFromBuffer(ctx, x) PyUnicode_DecodeUTF8(fz_string_from_buffer(ctx, x), (Py_ssize_t) fz_buffer_storage(ctx, x, NULL), "replace")
 #define JM_PyErr_Clear if (PyErr_Occurred()) PyErr_Clear()
 
 // binary output depending on Python major
 # if PY_VERSION_HEX >= 0x03000000
+#define JM_UNICODE(data) Py_BuildValue("s", data)
 #define JM_BinFromChar(x) PyBytes_FromString(x)
 #define JM_BinFromCharSize(x, y) PyBytes_FromStringAndSize(x, (Py_ssize_t) y)
 #define JM_BinFromBuffer(ctx, x) PyBytes_FromStringAndSize(fz_string_from_buffer(ctx, x), (Py_ssize_t) fz_buffer_storage(ctx, x, NULL))
 # else
+#define JM_UNICODE(data) data ? PyUnicode_DecodeUTF8(data, strlen(data), "replace") : Py_BuildValue("s", NULL)
 #define JM_BinFromChar(x) PyByteArray_FromStringAndSize(x, (Py_ssize_t) strlen(x))
 #define JM_BinFromCharSize(x, y) PyByteArray_FromStringAndSize(x, (Py_ssize_t) y)
 #define JM_BinFromBuffer(ctx, x) PyByteArray_FromStringAndSize(fz_string_from_buffer(ctx, x), (Py_ssize_t) fz_buffer_storage(ctx, x, NULL))
@@ -3076,6 +3077,65 @@ struct DeviceWrapper {
     fz_display_list *list;
 };
 
+
+//----------------------------------------------------------------------------
+// deflate char* into a buffer
+// this is a copy of function "deflatebuf" of pdf_write.c
+//----------------------------------------------------------------------------
+fz_buffer *JM_deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
+{
+    fz_buffer *buf = NULL;
+    uLongf csize;
+    int t;
+    uLong longN = (uLong) n;
+    unsigned char *data = NULL;
+    size_t cap;
+    fz_try(ctx)
+    {
+        if (n != (size_t)longN) THROWMSG("buffer too large to deflate");
+        cap = compressBound(longN);
+        data = fz_malloc(ctx, cap);
+        buf = fz_new_buffer_from_data(ctx, data, cap);
+        csize = (uLongf)cap;
+        t = compress(data, &csize, p, longN);
+        if (t != Z_OK) THROWMSG("cannot deflate buffer");
+    }
+    fz_catch(ctx)
+    {
+        fz_drop_buffer(ctx, buf);
+        fz_rethrow(ctx);
+    }
+    fz_resize_buffer(ctx, buf, csize);
+    return buf;
+}
+
+//----------------------------------------------------------------------------
+// update a stream object
+// use compressed stream where beneficial
+//----------------------------------------------------------------------------
+void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffer *buffer)
+{
+    size_t len, nlen;
+    char *data;
+    fz_buffer *nres = NULL;
+    len = fz_buffer_storage(ctx, buffer, &data);
+    nlen = len;
+    if (len > 20)       // ignore small stuff
+    {
+        nres = JM_deflatebuf(ctx, data, len);
+        nlen = fz_buffer_storage(ctx, nres, NULL);
+    }
+    if (nlen < len)     // was it worth the effort?
+    {
+        pdf_dict_put(ctx, obj, PDF_NAME_Filter, PDF_NAME_FlateDecode);
+        pdf_update_stream(ctx, doc, obj, nres, 1);
+    }
+    else
+    {
+        pdf_update_stream(ctx, doc, obj, buffer, 0);
+    }
+    fz_drop_buffer(ctx, nres);
+}
 
 //-----------------------------------------------------------------------------
 // Version of fz_pixmap_from_display_list (utils.c) to support rendering
@@ -3209,37 +3269,6 @@ PyObject *truth_value(int v)
 {
     if (v == 0) Py_RETURN_FALSE;
     Py_RETURN_TRUE;
-}
-
-//----------------------------------------------------------------------------
-// deflate char* into a buffer
-// this is a copy of function "deflatebuf" of pdf_write.c
-//----------------------------------------------------------------------------
-fz_buffer *JM_deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
-{
-    fz_buffer *buf = NULL;
-    uLongf csize;
-    int t;
-    uLong longN = (uLong) n;
-    unsigned char *data = NULL;
-    size_t cap;
-    fz_try(ctx)
-    {
-        if (n != (size_t)longN) THROWMSG("buffer too large to deflate");
-        cap = compressBound(longN);
-        data = fz_malloc(ctx, cap);
-        buf = fz_new_buffer_from_data(ctx, data, cap);
-        csize = (uLongf)cap;
-        t = compress(data, &csize, p, longN);
-        if (t != Z_OK) THROWMSG("cannot deflate buffer");
-    }
-    fz_catch(ctx)
-    {
-        fz_drop_buffer(ctx, buf);
-        fz_rethrow(ctx);
-    }
-    fz_resize_buffer(ctx, buf, csize);
-    return buf;
 }
 
 //----------------------------------------------------------------------------
@@ -3429,7 +3458,7 @@ int fillOLNumbers(fz_context *ctx, int *res, pdf_obj *obj, int oc, int argc)
 }
 
 //----------------------------------------------------------------------------
-// Returns (int) number of outlines
+// Returns number of outlines
 // 'obj' must be first OL item
 //----------------------------------------------------------------------------
 int countOutlines(fz_context *ctx, pdf_obj *obj, int oc)
@@ -3451,11 +3480,12 @@ int countOutlines(fz_context *ctx, pdf_obj *obj, int oc)
 //-----------------------------------------------------------------------------
 // Return the contents of a font file
 //-----------------------------------------------------------------------------
-fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
+fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int xref)
 {
+    if (xref < 1) return NULL;
     pdf_obj *o, *obj = NULL, *desft, *stream = NULL;
     char *ext = "";
-    o = pdf_load_object(ctx, doc, num);
+    o = pdf_load_object(ctx, doc, xref);
     desft = pdf_dict_get(ctx, o, PDF_NAME_DescendantFonts);
     if (desft)
     {
@@ -3463,9 +3493,7 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
         obj = pdf_dict_get(ctx, obj, PDF_NAME_FontDescriptor);
     }
     else
-    {
         obj = pdf_dict_get(ctx, o, PDF_NAME_FontDescriptor);
-    }
 
     if (!obj)
     {
@@ -3477,18 +3505,10 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
     o = obj;
 
     obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile);
-    if (obj)
-    {
-        stream = obj;
-        ext = "pfa";
-    }
+    if (obj) stream = obj;             // ext = "pfa"
 
     obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile2);
-    if (obj)
-    {
-        stream = obj;
-        ext = "ttf";
-    }
+    if (obj) stream = obj;             // ext = "ttf"
 
     obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile3);
     if (obj)
@@ -3524,11 +3544,11 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int num)
 //-----------------------------------------------------------------------------
 // Return the file extension of an embedded font file
 //-----------------------------------------------------------------------------
-char *fontextension(fz_context *ctx, pdf_document *doc, int num)
+char *fontextension(fz_context *ctx, pdf_document *doc, int xref)
 {
-    pdf_obj *o, *obj = NULL, *desft, *stream = NULL;
-    char *ext = "n/a";
-    o = pdf_load_object(ctx, doc, num);
+    if (xref < 1) return "n/a";
+    pdf_obj *o, *obj = NULL, *desft;
+    o = pdf_load_object(ctx, doc, xref);
     desft = pdf_dict_get(ctx, o, PDF_NAME_DescendantFonts);
     if (desft)
     {
@@ -3536,52 +3556,39 @@ char *fontextension(fz_context *ctx, pdf_document *doc, int num)
         obj = pdf_dict_get(ctx, obj, PDF_NAME_FontDescriptor);
     }
     else
-    {
         obj = pdf_dict_get(ctx, o, PDF_NAME_FontDescriptor);
-    }
 
     pdf_drop_obj(ctx, o);
-    if (!obj)
-    {
-        return ext;
-    }
-    o = obj;
+    if (!obj) return "n/a";           // this is a base-14 font
+
+    o = obj;                           // we have the FontDescriptor
 
     obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile);
-    if (obj)
-    {
-        stream = obj;
-        ext = "pfa";
-    }
+    if (obj) return "pfa";
 
     obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile2);
-    if (obj)
-    {
-        stream = obj;
-        ext = "ttf";
-    }
+    if (obj) return "ttf";
 
     obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile3);
     if (obj)
     {
-        stream = obj;
         obj = pdf_dict_get(ctx, obj, PDF_NAME_Subtype);
         if (obj && !pdf_is_name(ctx, obj))
         {
             PySys_WriteStdout("invalid font descriptor subtype");
-            return ext;
+            return "n/a";
         }
         if (pdf_name_eq(ctx, obj, PDF_NAME_Type1C))
-            ext = "cff";
+            return "cff";
         else if (pdf_name_eq(ctx, obj, PDF_NAME_CIDFontType0C))
-            ext = "cid";
+            return "cid";
         else if (pdf_name_eq(ctx, obj, PDF_NAME_OpenType))
-            ext = "otf";
+            return "otf";
         else
             PySys_WriteStdout("unhandled font type '%s'", pdf_to_name(ctx, obj));
     }
 
-    return ext;
+    return "n/a";
 }
 
 //-----------------------------------------------------------------------------
@@ -3792,7 +3799,7 @@ char *annot_type_str(int type)
 }
 
 //----------------------------------------------------------------------------
-// return pdf_obj border style from Python str
+// return pdf_obj "border style" from Python str
 //----------------------------------------------------------------------------
 pdf_obj *JM_get_border_style(fz_context *ctx, PyObject *style)
 {
@@ -3839,37 +3846,37 @@ struct fz_annot_s *JM_AnnotTextmarker(fz_context *ctx, pdf_page *page, fz_rect *
     float h  = rect->y1 - rect->y0;
     fz_rect bbox = {rect->x0, rect->y0, rect->x1, rect->y1};
     float color[3] = {0,0,0};
-	switch (type)
-	{
-		case PDF_ANNOT_HIGHLIGHT:
-			color[0] = 1.0f;
-			color[1] = 1.0f;
-			color[2] = 0.0f;
-			alpha = 0.3f;
-			line_thickness = 1.0f;
-			line_height = 0.5f;
-			break;
-		case PDF_ANNOT_UNDERLINE:
-			color[0] = 0.0f;
-			color[1] = 0.0f;
-			color[2] = 1.0f;
-			alpha = 1.0f;
-			line_thickness = 0.07f;
-			line_height = 0.075f;
+    switch (type)
+    {
+        case PDF_ANNOT_HIGHLIGHT:
+            color[0] = 1.0f;
+            color[1] = 1.0f;
+            color[2] = 0.0f;
+            alpha = 0.3f;
+            line_thickness = 1.0f;
+            line_height = 0.5f;
+            break;
+        case PDF_ANNOT_UNDERLINE:
+            color[0] = 0.0f;
+            color[1] = 0.0f;
+            color[2] = 1.0f;
+            alpha = 1.0f;
+            line_thickness = 0.07f;
+            line_height = 0.075f;
             bbox.y0 += 0.8f * h;
             bbox.y1 += 0.8f * h;
-			break;
-		case PDF_ANNOT_STRIKE_OUT:
-			color[0] = 1.0f;
-			color[1] = 0.0f;
-			color[2] = 0.0f;
-			alpha = 1.0f;
-			line_thickness = 0.07f;
-			line_height = 0.375f;
+            break;
+        case PDF_ANNOT_STRIKE_OUT:
+            color[0] = 1.0f;
+            color[1] = 0.0f;
+            color[2] = 0.0f;
+            alpha = 1.0f;
+            line_thickness = 0.07f;
+            line_height = 0.375f;
             bbox.y0 += 0.17f * h;
             bbox.y1 += 0.17f * h;
-			break;
-	}
+            break;
+    }
     fz_try(ctx)
     {
         pdf_document *pdf = page->doc;
@@ -3881,6 +3888,7 @@ struct fz_annot_s *JM_AnnotTextmarker(fz_context *ctx, pdf_page *page, fz_rect *
         pdf_set_markup_appearance(ctx, pdf, annot, color, alpha, line_thickness, line_height);
     }
     fz_catch(ctx) fz_rethrow(ctx);
+    pdf_dirty_annot(ctx, annot);
     return (fz_annot *) annot;
 }
 
@@ -3899,12 +3907,9 @@ struct fz_annot_s *JM_AnnotCircleOrRect(fz_context *ctx, pdf_page *page, fz_rect
         pdf_set_annot_border(ctx, annot, width);
         pdf_set_annot_color(ctx, annot, 3, col);
         pdf_set_annot_rect(ctx, annot, rect);
-        pdf_obj *rd = pdf_new_array(ctx, pdf, 4);
-        pdf_dict_puts_drop(ctx, annot->obj, "RD", rd);
-        for (int i = 0; i < 4; i++)
-            pdf_array_push_real(ctx, rd, width);
     }
     fz_catch(ctx) fz_rethrow(ctx);
+    pdf_dirty_annot(ctx, annot);
     return (fz_annot *) annot;
 }
 
@@ -3930,7 +3935,6 @@ struct fz_annot_s *JM_AnnotMultiline(fz_context *ctx, pdf_page *page, PyObject *
             PyObject *p = PySequence_ITEM(points, i);
             if (!PySequence_Check(p) || PySequence_Size(p) != 2)
                 THROWMSG("invalid points list");
-            // ===> treating a fitz.Point as a 2-tuple seems to work!
             point.x = (float) PyFloat_AsDouble(PySequence_GetItem(p, 0));
             point.y = (float) PyFloat_AsDouble(PySequence_GetItem(p, 1));
             Py_DECREF(p);
@@ -3947,10 +3951,115 @@ struct fz_annot_s *JM_AnnotMultiline(fz_context *ctx, pdf_page *page, PyObject *
         }
         pdf_set_annot_border(ctx, annot, width); // standard: width = 1
         pdf_set_annot_color(ctx, annot, 3, col); // standard: black
+        fz_expand_rect(&rect, 2 * width);
         pdf_set_annot_rect(ctx, annot, &rect);
     }
     fz_catch(ctx) fz_rethrow(ctx);
+    pdf_dirty_annot(ctx, annot);
     return (fz_annot *) annot;
+}
+
+void JM_draw_pushpin1(fz_context *ctx, fz_path *path)
+{
+    fz_moveto(ctx, path, 2.8f, 29.0f);
+    fz_lineto(ctx, path, 17.2f, 29.0f);
+    fz_lineto(ctx, path, 13.6f, 22.0f);
+    fz_lineto(ctx, path, 13.6f, 17.8f);
+    fz_lineto(ctx, path, 19.0f, 10.8f);
+    fz_lineto(ctx, path, 1.0f, 10.8f);
+    fz_lineto(ctx, path, 6.4f, 17.8f);
+    fz_lineto(ctx, path, 6.4f, 22.0f);
+    fz_lineto(ctx, path, 2.8f, 29.0f);
+    fz_closepath(ctx, path);
+}
+
+void JM_draw_pushpin2(fz_context *ctx, fz_path *path)
+{
+    fz_moveto(ctx, path, 13.6f, 22.0f);
+    fz_lineto(ctx, path, 6.4f, 22.0f);
+    fz_moveto(ctx, path, 13.6f, 17.8f);
+    fz_lineto(ctx, path, 6.4f, 17.8f);
+    fz_closepath(ctx, path);
+}
+
+void JM_draw_pushpin3(fz_context *ctx, fz_path *path)
+{
+    fz_moveto(ctx, path, 9.1f, 10.8f);
+    fz_lineto(ctx, path, 10.0f, 1.0f);
+    fz_lineto(ctx, path, 10.9f, 10.8f);
+    fz_closepath(ctx, path);
+}
+
+void JM_update_file_attachment_annot(fz_context *ctx, pdf_document *doc, pdf_annot *annot)
+{
+    static float yellow[3] = {1.0f, 1.0f, 0.0f};
+    static float blue[3] = {0.0f, 0.0f, 1.0f};
+    static float black[3] = {0.0f, 0.0f, 0.0f};
+    static float outline_thickness = 0.5;
+    fz_display_list *dlist = NULL;
+    fz_device *dev = NULL;
+    fz_colorspace *cs = NULL;
+    fz_path *path = NULL;
+    fz_stroke_state *stroke = NULL;
+    fz_matrix page_ctm;
+    pdf_page_transform(ctx, annot->page, NULL, &page_ctm);
+    fz_var(path);
+    fz_var(stroke);
+    fz_var(dlist);
+    fz_var(dev);
+    fz_var(cs);
+    fz_try(ctx)
+    {
+        fz_rect rect;
+
+        pdf_to_rect(ctx, pdf_dict_get(ctx, annot->obj, PDF_NAME_Rect), &rect);
+        dlist = fz_new_display_list(ctx, NULL);
+        dev = fz_new_list_device(ctx, dlist);
+        cs = fz_device_rgb(ctx); /* Borrowed reference */
+        stroke = fz_new_stroke_state(ctx);
+        stroke->linewidth = outline_thickness;
+        stroke->linejoin = FZ_LINEJOIN_ROUND;
+
+        path = fz_new_path(ctx);
+        JM_draw_pushpin1(ctx, path);
+        fz_fill_path(ctx, dev, path, 0, &page_ctm, cs, yellow, 1.0f, NULL);
+        fz_stroke_path(ctx, dev, path, stroke, &page_ctm, cs, black, 1.0f, NULL);
+        fz_drop_path(ctx, path);
+        path = NULL;
+
+        path = fz_new_path(ctx);
+        JM_draw_pushpin2(ctx, path);
+        fz_stroke_path(ctx, dev, path, stroke, &page_ctm, cs, black, 1.0f, NULL);
+        fz_drop_path(ctx, path);
+        path = NULL;
+
+        path = fz_new_path(ctx);
+        JM_draw_pushpin3(ctx, path);
+        fz_fill_path(ctx, dev, path, 0, &page_ctm, cs, blue, 1.0f, NULL);
+        fz_stroke_path(ctx, dev, path, stroke, &page_ctm, cs, black, 1.0f, NULL);
+        fz_close_device(ctx, dev);
+
+        fz_transform_rect(&rect, &page_ctm);
+        pdf_set_annot_appearance(ctx, doc, annot, &rect, dlist);
+        rect.x0 = rect.y0 = 0;
+        rect.x1 = 20;
+        rect.y1 = 30;
+        pdf_obj *ap = pdf_dict_getl(ctx, annot->obj, PDF_NAME_AP, PDF_NAME_N, NULL);
+        pdf_dict_put_rect(ctx, ap, PDF_NAME_BBox, &rect);
+        pdf_drop_obj(ctx, annot->ap);
+        annot->ap = NULL;
+    }
+    fz_always(ctx)
+    {
+        fz_drop_device(ctx, dev);
+        fz_drop_display_list(ctx, dlist);
+        fz_drop_stroke_state(ctx, stroke);
+        fz_drop_path(ctx, path);
+    }
+    fz_catch(ctx)
+    {
+        fz_rethrow(ctx);
+    }
 }
 
 
@@ -4021,19 +4130,24 @@ fz_rect *JM_empty_rect()
 // enlarge rect r1 by r2. modify r2-height by size
 void JM_join_rect(fz_rect *r1, fz_rect *r2, float size)
 {
+    fz_rect r = {MIN(r2->x0, r2->x1), MIN(r2->y0, r2->y1),
+                 MAX(r2->x0, r2->x1), MAX(r2->y0, r2->y1)};
+    if (abs(r.x1 - r.x0) < 0.00001f) r.x0 = r.x1 - size;
+    if (abs(r.y1 - r.y0) < 0.00001f) r.y0 = r.y1 - size;
+
     if (fz_is_empty_rect(r1))
     {
-        r1->x0 = r2->x0;
-        r1->y0 = r2->y0;
-        r1->x1 = r2->x1;
-        r1->y1 = MAX(r2->y1, r2->y0 + size);
+        r1->x0 = r.x0;
+        r1->y0 = r.y0;
+        r1->x1 = r.x1;
+        r1->y1 = r.y1;
     }
     else
     {
-        r1->x0 = MIN(r1->x0, r2->x0);
-        r1->y0 = MIN(r1->y0, r2->y0);
-        r1->x1 = MAX(r1->x1, r2->x1);
-        r1->y1 = MAX(r1->y1, MAX(r2->y1, r2->y0 + size));
+        r1->x0 = MIN(r1->x0, r.x0);
+        r1->y0 = MIN(r1->y0, r.y0);
+        r1->x1 = MAX(r1->x1, r.x1);
+        r1->y1 = MAX(r1->y1, r.y1);
     }
 }
 
@@ -4142,7 +4256,7 @@ JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block)
                                          linerect->x0, linerect->y0,
                                          linerect->x1, linerect->y1));
 
-        JM_join_rect(blockrect, linerect, 0);
+        JM_join_rect(blockrect, linerect, 0.0f);
 
         free(linerect);
         PyList_Append(linelist, linedict);
@@ -4263,6 +4377,10 @@ PyObject *JM_checkbox_state(fz_context *ctx, pdf_annot *annot)
     pdf_obj *leafas = pdf_get_inheritable(ctx, pdf, annot->obj, PDF_NAME_AS);
     if (!leafv) Py_RETURN_FALSE;
     if (leafv  == PDF_NAME_Off) Py_RETURN_FALSE;
+    if (leafv == pdf_new_name(ctx, NULL, "Yes"))
+        Py_RETURN_TRUE;
+    if (pdf_is_string(ctx, leafv) && !strcmp(pdf_to_str_buf(ctx, leafv), "Off"))
+        Py_RETURN_FALSE;
     if (pdf_is_string(ctx, leafv) && !strcmp(pdf_to_str_buf(ctx, leafv), "Yes"))
         Py_RETURN_TRUE;
     if (leafas && leafas == PDF_NAME_Off) Py_RETURN_FALSE;
@@ -4378,21 +4496,26 @@ void JM_set_choice_options(fz_context *ctx, pdf_annot *annot, PyObject *liste)
 }
 
 //-----------------------------------------------------------------------------
-// set properties of new or updated widget
+// Called by "Page.addWidget" and "Annot.updateWidget".
+// Set all properties of a new or updated widget, whether changed or not.
+// Should be no performance issue, because verifying a change before updating
+// is costly as well (and a code bloat). No problem on the PDF side, because
+// any change will always lead to the complete new PDF object being stored.
 //-----------------------------------------------------------------------------
 void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widget, int field_type)
 {
     pdf_document *pdf = annot->page->doc;
+    pdf_page *page = annot->page;
     fz_rect rect = {0,0,0,0};
     pdf_obj *fill_col = NULL, *text_col = NULL, *border_col = NULL;
     pdf_obj *dashes = NULL;
     Py_ssize_t i, n = 0;
     PyObject *value;
 
-    // check if font resources dict /DR exists, ...
+    // ensure a font resources dict /DR --- -----------------------------------
     pdf_obj *dr = pdf_dict_getl(ctx, pdf_trailer(ctx, pdf),
                            PDF_NAME_Root, PDF_NAME_AcroForm, PDF_NAME_DR, NULL);
-    // if not, we create it using the object prepared in xref
+    // new /DR using the object prepared in xref
     if (!dr)
     {
         pdf_obj *form = pdf_dict_getl(ctx, pdf_trailer(ctx, pdf),
@@ -4406,7 +4529,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         JM_PyErr_Clear;
     }
 
-    // rectangle --------------------------------------------------
+    // rectangle --------------------------------------------------------------
     value = PyObject_GetAttrString(Widget, "rect");
     rect.x0 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 0));
     rect.y0 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 1));
@@ -4416,7 +4539,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     JM_PyErr_Clear;
     pdf_set_annot_rect(ctx, annot, &rect);    // set the rect
 
-    // fill color -------------------------------------------------
+    // fill color -------------------------------------------------------------
     value = PyObject_GetAttrString(Widget, "fill_color");
     if (value && PySequence_Check(value))
     {
@@ -4431,7 +4554,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     Py_XDECREF(value);
     JM_PyErr_Clear;
 
-    // dashes -----------------------------------------------------
+    // dashes -----------------------------------------------------------------
     value = PyObject_GetAttrString(Widget, "border_dashes");
     if (value && PySequence_Check(value))
     {
@@ -4446,7 +4569,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     Py_XDECREF(value);
     JM_PyErr_Clear;
 
-    // border color -----------------------------------------------
+    // border color -----------------------------------------------------------
     value = PyObject_GetAttrString(Widget, "border_color");
     if (value && PySequence_Check(value))
     {
@@ -4468,7 +4591,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     JM_PyErr_Clear;
     */
 
-    // max text len -----------------------------------------------
+    // max text len -----------------------------------------------------------
     if (field_type == PDF_WIDGET_TYPE_TEXT)
     {
         int text_maxlen = (int) PyInt_AsLong(PyObject_GetAttrString(Widget,
@@ -4478,7 +4601,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         JM_PyErr_Clear;
     }
     
-    // choice values ----------------------------------------------
+    // choice values ----------------------------------------------------------
     if (field_type == PDF_WIDGET_TYPE_LISTBOX ||
         field_type == PDF_WIDGET_TYPE_COMBOBOX)
     {
@@ -4488,28 +4611,30 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     }
     JM_PyErr_Clear;
 
-    // border style -----------------------------------------------
+    // border style -----------------------------------------------------------
     pdf_obj *val = JM_get_border_style(ctx,
                                 PyObject_GetAttrString(Widget, "border_style"));
     pdf_dict_putl_drop(ctx, annot->obj, val, PDF_NAME_BS, PDF_NAME_S, NULL);
 
-    // border width -----------------------------------------------
+    // border width -----------------------------------------------------------
     float border_width = (float) PyFloat_AsDouble(PyObject_GetAttrString(Widget,
                                                                "border_width"));
     pdf_dict_putl_drop(ctx, annot->obj, pdf_new_real(ctx, pdf,
                                   border_width), PDF_NAME_BS, PDF_NAME_W, NULL);
     JM_PyErr_Clear;
 
-    // /DA string -------------------------------------------------
-    char *da = JM_Python_str_AsChar(PyObject_GetAttrString(Widget, "text_da"));
+    // /DA string -------------------------------------------------------------
+    char *da = JM_Python_str_AsChar(PyObject_GetAttrString(Widget, "_text_da"));
     if (da)
     {
         pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME_DA, da);
         JM_Python_str_DelForPy3(da);
+        pdf_dict_dels(ctx, annot->obj, "DS");  // unsupported
+        pdf_dict_dels(ctx, annot->obj, "RC");  // unsupported
     }
     JM_PyErr_Clear;
 
-    // field flags ------------------------------------------------
+    // field flags ------------------------------------------------------------
     int field_flags = 0, Ff = 0;
     if (field_type != PDF_WIDGET_TYPE_CHECKBOX)
     {
@@ -4524,7 +4649,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     }
     pdf_dict_put_int(ctx, annot->obj, PDF_NAME_Ff, Ff);
 
-    // button caption ---------------------------------------------
+    // button caption ---------------------------------------------------------
     if (field_type == PDF_WIDGET_TYPE_RADIOBUTTON ||
         field_type == PDF_WIDGET_TYPE_PUSHBUTTON ||
         field_type == PDF_WIDGET_TYPE_CHECKBOX)
@@ -4541,6 +4666,9 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     }
 
     // field value ------------------------------------------------------------
+    // MuPDF function "pdf_field_set_value" always sets strings. For button
+    // fields this may lead to an unrecognized state for some PDF viewers.
+    //-------------------------------------------------------------------------
     value = PyObject_GetAttrString(Widget, "field_value");
     int result = 0;
     char *text = NULL;
@@ -4549,9 +4677,15 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     case PDF_WIDGET_TYPE_CHECKBOX:
     case PDF_WIDGET_TYPE_RADIOBUTTON:
         if (PyObject_RichCompareBool(value, Py_True, Py_EQ))
+        {
             result = pdf_field_set_value(ctx, pdf, annot->obj, "Yes");
+            pdf_dict_put_name(ctx, annot->obj, PDF_NAME_V, "Yes");
+        }
         else
+        {
             result = pdf_field_set_value(ctx, pdf, annot->obj, "Off");
+            pdf_dict_put(ctx, annot->obj, PDF_NAME_V, PDF_NAME_Off);
+        }
         break;
     default:
         text = JM_Python_str_AsChar(value);
@@ -4563,6 +4697,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     }
     Py_XDECREF(value);
     pdf_dirty_annot(ctx, annot);
+    pdf_update_page(gctx, page);
 }
 
 
@@ -4581,16 +4716,17 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 #define PDF_SCHEMA_UNKNOWN 8
 //-----------------------------------------------------------------------------
 // finds index of an embedded file in a pdf
-// Object "id" contains either entry name (str) or supposed index.
-// Int "id" is returned as result if in valid range.
+// Object "id" contains either the entry name (str) or the index. An index is
+// only checked for valid range.
 //-----------------------------------------------------------------------------
-int JM_FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
+int JM_find_embedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
 {
     char *name = NULL;
     char *tname= NULL;
-    int i = -1;
-    int count = pdf_count_portfolio_entries(ctx, pdf);
+    int i = -1, count = pdf_count_portfolio_entries(ctx, pdf);
     if (count < 1) return -1;
+
+    // just return the integer id if in range
     if (PyInt_Check(id))
     {
         i = (int) PyInt_AsLong(id);
@@ -4602,23 +4738,66 @@ int JM_FindEmbedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
     for (i = 0; i < count; i++)
     {
         tname = pdf_to_utf8(ctx, pdf_portfolio_entry_name(ctx, pdf, i));
-        if (strcmp(tname, name) == 0) break;
-    }
-    if (strcmp(tname, name) != 0)
-    {
-        JM_Python_str_DelForPy3(name);
-        i = -1;
+        if (!strcmp(tname, name))
+        {
+            JM_Python_str_DelForPy3(name);
+            return i;
+        }
     }
     JM_Python_str_DelForPy3(name);
-    return i;
+    return -1;
 }
 
 //-----------------------------------------------------------------------------
-// perform some cleaning if we have embeddedfiles
+// Return the /Names object for embedded files
+//-----------------------------------------------------------------------------
+pdf_obj *JM_embedded_names(fz_context *ctx, pdf_document *pdf)
+{
+    pdf_obj *names = NULL, *kids = NULL, *o = NULL;
+    int i, n;
+    names = pdf_dict_getl(ctx, pdf_trailer(ctx, pdf), PDF_NAME_Root,                                         PDF_NAME_Names, PDF_NAME_EmbeddedFiles,
+                         PDF_NAME_Names, NULL);
+    if (names) return names;
+    
+    // not found, therefore a /Kids object contains the /Names
+    kids = pdf_dict_getl(ctx, pdf_trailer(ctx, pdf), PDF_NAME_Root,
+                         PDF_NAME_Names, PDF_NAME_EmbeddedFiles,
+                        PDF_NAME_Kids, NULL);
+    //-------------------------------------------------------------------------
+    // 'kids' is an array of indirect references pointing to dictionaries.
+    // Only /Limits and /Names can occur in those dictionaries
+    // We take the first encounter of /Names.
+    //-------------------------------------------------------------------------
+    if (!pdf_is_array(ctx, kids) || !(n = pdf_array_len(ctx, kids)))
+        return NULL;         // should never occur
+
+    for (i = 0; i < n; i++)
+    {
+        o = pdf_resolve_indirect(ctx, pdf_array_get(ctx, kids, i));
+        names = pdf_dict_get(ctx, o, PDF_NAME_Names);
+        if (names) return names;
+    }
+    return NULL;             // should never execute
+}
+
+//-----------------------------------------------------------------------------
+// perform some cleaning if we have /EmbeddedFiles:
+// (1) remove any /Limits if /Names exists
+// (2) remove any empty /Collection
+// (3) set /PageMode/UseAttachments
 //-----------------------------------------------------------------------------
 void JM_embedded_clean(fz_context *ctx, pdf_document *pdf)
 {
     pdf_obj *root = pdf_dict_get(ctx, pdf_trailer(ctx, pdf), PDF_NAME_Root);
+
+    // remove any empty /Collection entry
+    pdf_obj *coll = pdf_dict_get(ctx, root, PDF_NAME_Collection);
+    if (coll && pdf_dict_len(ctx, coll) == 0)
+        pdf_dict_del(ctx, root, PDF_NAME_Collection);
+    
+    if (!pdf_count_portfolio_entries(ctx, pdf))
+        return;
+
     pdf_obj *efiles = pdf_dict_getl(ctx, root, PDF_NAME_Names,
                                     PDF_NAME_EmbeddedFiles, NULL);
     if (efiles)         // we have embedded files
@@ -4628,12 +4807,49 @@ void JM_embedded_clean(fz_context *ctx, pdf_document *pdf)
         pdf_dict_del(ctx, efiles, PDF_NAME_Limits);
     }
 
-    // also remove an empty /Collection entry
-    pdf_obj *coll = pdf_dict_get(ctx, root, PDF_NAME_Collection);
-    if (coll && pdf_dict_len(ctx, coll) == 0)
-        pdf_dict_del(ctx, root, PDF_NAME_Collection);
     return;
+}
 
+//-----------------------------------------------------------------------------
+// insert new embedded file in PDF
+// not necessarily an /EmbeddedFiles entry
+//-----------------------------------------------------------------------------
+pdf_obj *JM_embed_file(fz_context *ctx, pdf_document *pdf, fz_buffer *buf,
+                       char *filename, char *ufilename, char *desc)
+{
+    size_t len = 0;
+    pdf_obj *ef, *f, *params;
+    pdf_obj *val = NULL;
+    fz_buffer *tbuf;
+    fz_var(val);
+    fz_try(ctx)
+    {
+        val = pdf_new_dict(ctx, pdf, 6);
+        pdf_dict_put_dict(ctx, val, PDF_NAME_CI, 4);
+        ef = pdf_dict_put_dict(ctx, val, PDF_NAME_EF, 4);
+        pdf_dict_put_text_string(ctx, val, PDF_NAME_F, filename);
+        pdf_dict_put_text_string(ctx, val, PDF_NAME_UF, filename);
+        pdf_dict_put_text_string(ctx, val, PDF_NAME_Desc, desc);
+        pdf_dict_put(ctx, val, PDF_NAME_Type, PDF_NAME_Filespec);
+        tbuf = fz_new_buffer(ctx, strlen(filename)+1);
+        fz_append_string(ctx, tbuf, filename);
+        fz_terminate_buffer(ctx, tbuf);
+        pdf_dict_put_drop(ctx, ef, PDF_NAME_F,
+                         (f = pdf_add_stream(ctx, pdf, tbuf, NULL, 0)));
+        fz_drop_buffer(ctx, tbuf);
+        JM_update_stream(ctx, pdf, f, buf);
+        len = fz_buffer_storage(ctx, buf, NULL);
+        pdf_dict_put_int(ctx, f, PDF_NAME_DL, len);
+        pdf_dict_put_int(ctx, f, PDF_NAME_Length, len);
+        params = pdf_dict_put_dict(ctx, f, PDF_NAME_Params, 4);
+        pdf_dict_put_int(ctx, params, PDF_NAME_Size, len);
+    }
+    fz_always(ctx)
+    {
+        ;
+    }
+    fz_catch(ctx) fz_rethrow(ctx);
+    return val;
 }
 
 
@@ -4960,21 +5176,9 @@ void retainpages(fz_context *ctx, globals *glo, PyObject *liste)
 }
 
 
-void JM_update_xobject_contents(fz_context *ctx, pdf_document *doc, pdf_obj *form, fz_buffer *buffer)
-{   // version of "pdf_update_xobject_contents" with compression
-    size_t c_len;
-    char *content_str;
-    fz_buffer *nres;
-    c_len = (size_t) fz_buffer_storage(ctx, buffer, &content_str);
-    nres = JM_deflatebuf(ctx, content_str, c_len);
-    pdf_dict_put(ctx, form, PDF_NAME_Filter, PDF_NAME_FlateDecode);
-    pdf_update_stream(ctx, doc, form, nres, 1);
-    fz_drop_buffer(ctx, nres);
-}
-
 //-----------------------------------------------------------------------------
 // Make an XObject from a PDF page
-// If positive xref, assume this object can be used instead
+// For a positive xref, assume its object can be used instead
 //-----------------------------------------------------------------------------
 pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_document *pdfsrc, int pno, fz_rect *mediabox, fz_rect *cropbox, int xref, pdf_graft_map *gmap)
 {
@@ -5030,7 +5234,7 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
             //-------------------------------------------------------------
             xobj1 = pdf_new_xobject(ctx, pdfout, mediabox, &fz_identity);
             // store spage contents
-            JM_update_xobject_contents(ctx, pdfout, xobj1, res);
+            JM_update_stream(ctx, pdfout, xobj1, res);
             fz_drop_buffer(ctx, res);
 
             // store spage resources
@@ -5042,50 +5246,73 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
 }
 
 //-----------------------------------------------------------------------------
-// append / prepend given buffer to the correct /Contents object
+// Append / prepend a buffer to the /Contents of a page.
 //-----------------------------------------------------------------------------
 void JM_extend_contents(fz_context *ctx, pdf_document *pdfout,
-                        pdf_obj *pageref, fz_buffer *nres, int overlay)
+                        pdf_obj *pageref, fz_buffer *newcont, int overlay)
 {
     int i;
-    fz_buffer *res = NULL;
-    char *content_str;
-    size_t c_len = 0;
+    fz_buffer *oldcont = NULL, *endcont = NULL;
     pdf_obj *contents = pdf_dict_get(ctx, pageref, PDF_NAME_Contents);
     fz_try(ctx)
     {
-        if (pdf_is_array(ctx, contents))     // multiple contents obj
+        if (pdf_is_array(ctx, contents))     // multiple contents objects!
         {   // choose the correct one (first / last)
             if (overlay == 1) i = pdf_array_len(ctx, contents) - 1;
             else  i = 0;
             contents = pdf_array_get(ctx, contents, i);
         }
-        res = pdf_load_stream(ctx, contents); // old contents buffer
+        oldcont = pdf_load_stream(ctx, contents);     // old contents buffer
 
-        if (overlay == 1)         // append our command
+        // allocate result buffer
+        endcont = fz_new_buffer(ctx, fz_buffer_storage(ctx, oldcont, NULL) +
+                                     fz_buffer_storage(ctx, newcont, NULL));
+
+        if (overlay == 1)                             // append new buffer
         {
-            fz_append_buffer(ctx, res, nres);
-            fz_drop_buffer(ctx, nres);
+            fz_append_buffer(ctx, endcont, oldcont);
+            fz_append_buffer(ctx, endcont, newcont);
         }
-        else                      // prepend our command
+        else                                          // prepend new buffer
         {
-            fz_append_buffer(ctx, nres, res);
-            fz_drop_buffer(ctx, res);
-            res = nres;
+            fz_append_buffer(ctx, endcont, newcont);
+            fz_append_buffer(ctx, endcont, oldcont);
         }
-        fz_terminate_buffer(ctx, res);
+        fz_terminate_buffer(ctx, endcont);            // finalize result buffer
     
-        // now compress and put back contents stream
-        c_len = (size_t) fz_buffer_storage(ctx, res, &content_str);
-        nres = JM_deflatebuf(ctx, content_str, c_len);
-        pdf_dict_put(ctx, contents, PDF_NAME_Filter, PDF_NAME_FlateDecode);
-        pdf_update_stream(ctx, pdfout, contents, nres, 1);
-        fz_drop_buffer(ctx, res);
-        fz_drop_buffer(ctx, nres);
+        // now update the content stream
+        JM_update_stream(ctx, pdfout, contents, endcont);
+    }
+    fz_always(ctx)
+    {
+        fz_drop_buffer(ctx, endcont);
+        fz_drop_buffer(ctx, oldcont);
     }
     fz_catch(ctx) fz_rethrow(ctx);
     return;
 }
+
+void JM_make_ap_object(fz_context *ctx, fz_annot *fzannot, fz_rect *rect, char *content)
+{
+    pdf_annot *annot = pdf_annot_from_fz_annot(ctx, fzannot);
+    pdf_document *pdf = annot->page->doc;
+    pdf_obj *xobj = pdf_new_xobject(ctx, pdf, rect, &fz_identity);
+    fz_buffer *contbuffer;
+    if (content)
+    {
+        contbuffer = fz_new_buffer_from_shared_data(ctx, content, strlen(content));
+        JM_update_stream(ctx, pdf, xobj, contbuffer);
+    }
+    else
+    {
+        contbuffer = fz_new_buffer(ctx, 10);
+        JM_update_stream(ctx, pdf, xobj, contbuffer);
+        fz_drop_buffer(ctx, contbuffer);
+    }
+    pdf_dict_putl_drop(ctx, annot->obj, xobj, PDF_NAME_AP, PDF_NAME_N, NULL);
+    annot->ap = NULL;
+}
+
 
 
 //----------------------------------------------------------------------------
@@ -5801,7 +6028,7 @@ SWIGINTERN void fz_document_s__dropOutline(struct fz_document_s *self,struct fz_
         }
 SWIGINTERN int fz_document_s_embeddedFileCount(struct fz_document_s *self){
             pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
-            if (!pdf) return -1;
+            if (!pdf) return 0;
             return pdf_count_portfolio_entries(gctx, pdf);
         }
 
@@ -5811,78 +6038,42 @@ SWIGINTERNINLINE PyObject*
   return PyInt_FromLong((long) value);
 }
 
-SWIGINTERN PyObject *fz_document_s_embeddedFileDel(struct fz_document_s *self,char *name){
+SWIGINTERN int fz_document_s_embeddedFileDel(struct fz_document_s *self,char *name){
             pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
-            pdf_obj *names, *limits, *efiles, *v, *stream;
-            char *limit1, *limit2, *tname;
-            int i, len;
+            pdf_obj *names;
+            int i, n, m;
+            fz_var(names);
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                // get the EmbeddedFiles entry
-                efiles = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
-                                      PDF_NAME_Root, PDF_NAME_Names,
-                                      PDF_NAME_EmbeddedFiles, NULL);
-                if (!efiles) THROWMSG("no embedded files");
-                names = pdf_dict_get(gctx, efiles, PDF_NAME_Names);
-                limits = pdf_dict_get(gctx, efiles, PDF_NAME_Limits);
-                limit1 = NULL;
-                limit2 = NULL;
-                if (limits)                      // have name limits?
+                // check presence of name
+                if (JM_find_embedded(gctx, Py_BuildValue("s", name), pdf) < 0)
+                    THROWMSG("name not found");
+
+                names = JM_embedded_names(gctx, pdf);
+                if (!pdf_is_array(gctx, names))
+                    THROWMSG("could not find names array");
+                n = pdf_array_len(gctx, names);
+
+                //-------------------------------------------------------------
+                // Every file has 2 entries: name and file descriptor.
+                // First delete file descriptor, then the name entry.
+                // Because it might be referenced elsewhere, we leave deletion
+                // of stream object to garbage collection.
+                //-------------------------------------------------------------
+                for (i = 0; i < n; i += 2)
+                {
+                    char *test = pdf_to_utf8(gctx, pdf_array_get(gctx, names, i));
+                    if (!strcmp(test, name))
                     {
-                        limit1 = pdf_to_utf8(gctx, pdf_array_get(gctx, limits, 0));
-                        limit2 = pdf_to_utf8(gctx, pdf_array_get(gctx, limits, 1));
+                        pdf_array_delete(gctx, names, i + 1);
+                        pdf_array_delete(gctx, names, i);
                     }
-                len = pdf_array_len(gctx, names);     // embedded files count*2
-                for (i=0; i < len; i+=2)              // search for the name
-                    {
-                        tname = pdf_to_utf8(gctx, pdf_array_get(gctx, names, i));
-                        if (strcmp(tname, name) == 0) break;   // name found
-                    }
-                if (strcmp(tname, name) != 0) THROWMSG("name not found");
+                }
+                m = (n - pdf_array_len(gctx, names)) / 2;
             }
-            fz_catch(gctx) return NULL;
-
-            v = pdf_array_get(gctx, names, i+1);      // file descriptor
-            
-            // stream object containing file contents
-            stream = pdf_dict_getl(gctx, v, PDF_NAME_EF, PDF_NAME_F, NULL);
-            
-            pdf_array_delete(gctx, names, i+1);  // delete file descriptor
-            pdf_array_delete(gctx, names, i);    // delete name entry
-            
-            // delete stream object
-            pdf_delete_object(gctx, pdf, pdf_to_num(gctx, stream));
-            
-            // adjust /Limits entry
-            if (!limits) return NONE;              // no Limits entry existed
-            
-            // no todo: deleted entry was not contained in Limits
-            if ((strcmp(tname, limit1) != 0) && (strcmp(tname, limit2) != 0))
-                return NONE;
-
-            // must re-calculate /Limits
-            len = pdf_array_len(gctx, names);     // embedded files count*2
-            if (len == 0)              // deleted last entry, also empty limits
-                {
-                pdf_array_delete(gctx, limits, 1);
-                pdf_array_delete(gctx, limits, 0);
-                return NONE;
-                }
-            limit1[0] = 0xff;                    // initialize low entry
-            limit2[0] = 0x00;                    // initialize high entry
-            for (i=0; i < len; i+=2)              // search for low / hi names
-                {
-                tname = pdf_to_utf8(gctx, pdf_array_get(gctx, names, i));
-                if (strcmp(tname, limit1) < 0) limit1 = tname;
-                if (strcmp(tname, limit2) > 0) limit2 = tname;
-                }
-
-            pdf_array_put_drop(gctx, limits, 0,
-                               pdf_new_string(gctx, pdf, limit1, strlen(limit1)));
-            pdf_array_put_drop(gctx, limits, 1,
-                               pdf_new_string(gctx, pdf, limit2, strlen(limit2)));
-            return NONE;
+            fz_catch(gctx) return -1;
+            return m;
         }
 SWIGINTERN PyObject *fz_document_s_embeddedFileInfo(struct fz_document_s *self,PyObject *id){
             pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
@@ -5893,7 +6084,7 @@ SWIGINTERN PyObject *fz_document_s_embeddedFileInfo(struct fz_document_s *self,P
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                n = JM_FindEmbedded(gctx, id, pdf);
+                n = JM_find_embedded(gctx, id, pdf);
                 if (n < 0) THROWMSG("entry not found");
             }
             fz_catch(gctx) return NULL;
@@ -5904,49 +6095,68 @@ SWIGINTERN PyObject *fz_document_s_embeddedFileInfo(struct fz_document_s *self,P
             PyDict_SetItemString(infodict, "name", JM_UNICODE(name));
 
             pdf_obj *o = pdf_portfolio_entry_obj(gctx, pdf, n);
+
             name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_F));
-            PyDict_SetItemString(infodict, "file", JM_UNICODE(name));
+            PyDict_SetItemString(infodict, "filename", JM_UNICODE(name));
+
+            name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_UF));
+            PyDict_SetItemString(infodict, "ufilename", JM_UNICODE(name));
 
             name = pdf_to_utf8(gctx, pdf_dict_get(gctx, o, PDF_NAME_Desc));
             PyDict_SetItemString(infodict, "desc", JM_UNICODE(name));
 
-            pdf_obj *olen = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F,
+            int len = -1, DL = -1;
+            pdf_obj *ef = pdf_dict_get(gctx, o, PDF_NAME_EF);
+            o = pdf_dict_getl(gctx, ef, PDF_NAME_F,
                                           PDF_NAME_Length, NULL);
-            int len = -1;
-            int DL = -1;
-            if (olen) len = pdf_to_int(gctx, olen);
-            pdf_obj *oDL = pdf_dict_getl(gctx, o, PDF_NAME_EF, PDF_NAME_F, PDF_NAME_DL, NULL);
-            if (oDL) DL = pdf_to_int(gctx, oDL);
-            PyDict_SetItemString(infodict, "size", PyInt_FromLong((long) DL));
-            PyDict_SetItemString(infodict, "length", PyInt_FromLong((long) len));
+            if (o) len = pdf_to_int(gctx, o);
+
+            o = pdf_dict_getl(gctx, ef, PDF_NAME_F, PDF_NAME_DL, NULL);
+            if (o) DL = pdf_to_int(gctx, o);
+            else
+            {
+                o = pdf_dict_getl(gctx, ef, PDF_NAME_F, PDF_NAME_Params,
+                                   PDF_NAME_Size, NULL);
+                if (o) DL = pdf_to_int(gctx, o);
+            }
+
+            PyDict_SetItemString(infodict, "size", Py_BuildValue("i", DL));
+            PyDict_SetItemString(infodict, "length", Py_BuildValue("i", len));
             return infodict;
         }
-SWIGINTERN PyObject *fz_document_s_embeddedFileSetInfo(struct fz_document_s *self,PyObject *id,char *filename,char *desc){
+SWIGINTERN PyObject *fz_document_s_embeddedFileUpd(struct fz_document_s *self,PyObject *id,PyObject *buffer,char *filename,char *ufilename,char *desc){
             pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                int flen = 0, dlen = 0;
-                if (filename) flen = (int) strlen(filename);
-                if (desc)     dlen = (int) strlen(desc);
-                if ((flen < 1) && (dlen < 1)) THROWMSG("nothing to change");
-                int n = JM_FindEmbedded(gctx, id, pdf);
-                if (n < 0) THROWMSG("entry not found");
-                pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, n);
-                
-                if (flen > 0)
-                    {
-                        pdf_dict_put_drop(gctx, entry, PDF_NAME_F,
-                             pdf_new_string(gctx, pdf, filename, (int) flen));
-                        pdf_dict_put_drop(gctx, entry, PDF_NAME_UF,
-                             pdf_new_string(gctx, pdf, filename, (int) flen));
-                    }
 
-                if (dlen > 0)
-                    {
-                        pdf_dict_put_drop(gctx, entry, PDF_NAME_Desc,
-                             pdf_new_string(gctx, pdf, desc, (int) dlen));
-                    }
+                int n = JM_find_embedded(gctx, id, pdf);
+                if (n < 0) THROWMSG("entry not found");
+
+                pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, n);
+                pdf_obj *filespec = pdf_dict_getl(gctx, entry, PDF_NAME_EF,
+                                                  PDF_NAME_F, NULL);
+
+                char *data = NULL;
+                size_t len = JM_CharFromBytesOrArray(buffer, &data);
+                if (len)
+                {
+                    if (!filespec) THROWMSG("/EF object not found");
+                    fz_buffer *res = fz_new_buffer_from_shared_data(gctx, data, len);
+                    JM_update_stream(gctx, pdf, filespec, res);
+                    // adjust /DL and /Size parameters
+                    pdf_obj *l = pdf_new_int(gctx, NULL, (int64_t) len);
+                    pdf_dict_put(gctx, filespec, PDF_NAME_DL, l);
+                    pdf_dict_putl(gctx, filespec, l, PDF_NAME_Params, PDF_NAME_Size, NULL);
+                }
+                if (filename)
+                    pdf_dict_put_text_string(gctx, entry, PDF_NAME_F, filename);
+
+                if (ufilename)
+                    pdf_dict_put_text_string(gctx, entry, PDF_NAME_UF, ufilename);
+
+                if (desc)
+                    pdf_dict_put_text_string(gctx, entry, PDF_NAME_Desc, desc);
             }
             fz_catch(gctx) return NULL;
             pdf->dirty = 1;
@@ -5960,7 +6170,7 @@ SWIGINTERN PyObject *fz_document_s_embeddedFileGet(struct fz_document_s *self,Py
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                int i = JM_FindEmbedded(gctx, id, pdf);
+                int i = JM_find_embedded(gctx, id, pdf);
                 if (i < 0) THROWMSG("entry not found");
                 buf = pdf_portfolio_entry(gctx, pdf, i);
                 cont = JM_BytesFromBuffer(gctx, buf);
@@ -5969,67 +6179,67 @@ SWIGINTERN PyObject *fz_document_s_embeddedFileGet(struct fz_document_s *self,Py
             fz_catch(gctx) return NULL;
             return cont;
         }
-SWIGINTERN int fz_document_s_embeddedFileAdd(struct fz_document_s *self,PyObject *buffer,char *name,char *filename,char *desc){
+SWIGINTERN PyObject *fz_document_s_embeddedFileAdd(struct fz_document_s *self,PyObject *buffer,char const *name,char *filename,char *ufilename,char *desc){
             pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
             fz_buffer *data, *buf = NULL;
             char *buffdata;
             int entry = 0;
             size_t size = 0;
-            int name_len, file_len = 0, desc_len = 0;
-            name_len = (int) strlen(name);
-            if (filename) file_len = (int) strlen(filename);
-            if (desc)     desc_len = (int) strlen(desc);
-            char *f = filename;
-            char *d = desc;
-            fz_try(gctx)
-            {
-                if (name_len < 1) THROWMSG("name entry not found");
-                assert_PDF(pdf);
-            }
-            fz_catch(gctx) return -1;
-            if (file_len == 0)              // no filename given
-                {
-                   f = name;                // take the name
-                   file_len = name_len;
-                }
-            if (desc_len == 0)              // no description given
-                {
-                    d = name;               // take the name
-                    desc_len = name_len;
-                }
-            
-            size = JM_CharFromBytesOrArray(buffer, &buffdata);
+            char *f = filename, *uf = ufilename, *d = desc;
+            int name_len = (int) strlen(name);
+            // make adjustments for omitted arguments
+            if (!f) f = (char *)name;
+            if (!uf) uf = f;
+            if (!d) d = f;
 
             fz_try(gctx)
             {
-                if (size < 1) THROWMSG("arg 1 not bytes or bytearray");
+                assert_PDF(pdf);
+                size = JM_CharFromBytesOrArray(buffer, &buffdata);
+                if (!size) THROWMSG("arg 1 not bytes or bytearray");
+
+                // we do not allow duplicate names
+                entry = JM_find_embedded(gctx, Py_BuildValue("s", name), pdf);
+                if (entry >= 0) THROWMSG("name already exists");
+
+                // first insert a dummy entry with no more than the name
+                buf = fz_new_buffer(gctx, name_len + 1);   // has no real meaning
+                fz_append_string(gctx, buf, name);         // fill something in
+                fz_terminate_buffer(gctx, buf);            // to make it usable
+                pdf_add_portfolio_entry(gctx, pdf,         // insert the entry
+                        name, name_len,                    // except the name,
+                        name, name_len,                    // everythinh will
+                        name, name_len,                    // be overwritten
+                        name, name_len,
+                        buf);
+                fz_drop_buffer(gctx, buf);                 // kick stupid buffer
+                buf = NULL;
+                //-------------------------------------------------------------
+                // now modify the entry just created:
+                // (1) allow unicode values for filenames and description
+                // (2) deflate the file content
+                //-------------------------------------------------------------
+                // locate the entry again
+                entry = JM_find_embedded(gctx, Py_BuildValue("s", name), pdf);
+                // (1) insert the real metadata
+                pdf_obj *o = pdf_portfolio_entry_obj(gctx, pdf, entry);
+                pdf_dict_put_text_string(gctx, o, PDF_NAME_F,    f);
+                pdf_dict_put_text_string(gctx, o, PDF_NAME_UF,  uf);
+                pdf_dict_put_text_string(gctx, o, PDF_NAME_Desc, d);
+                // (2) insert the real file contents
+                pdf_obj *filespec = pdf_dict_getl(gctx, o, PDF_NAME_EF,
+                                                  PDF_NAME_F, NULL);
                 data = fz_new_buffer_from_shared_data(gctx, buffdata, size);
-                int count = pdf_count_portfolio_entries(gctx, pdf);
-                int i;
-                char *tname;
-                Py_ssize_t len = 0;
-                for (i = 0; i < count; i++)      // check if name already exists
-                {
-                    tname = pdf_to_utf8(gctx, pdf_portfolio_entry_name(gctx, pdf, i));
-                    if (strcmp(tname, name)==0) THROWMSG("name already exists");
-                }
-                buf = fz_new_buffer(gctx, size);
-                fz_append_buffer(gctx, buf, data);
-                entry = pdf_add_portfolio_entry(gctx, pdf,
-                            name, name_len, /* name */
-                            d, desc_len, /* desc */
-                            f, file_len, /* filename */
-                            f, file_len, /* unicode filename */
-                            buf);
-                
+                JM_update_stream(gctx, pdf, filespec, data);
+                // finally update some size attributes
+                pdf_obj *l = pdf_new_int(gctx, NULL, (int64_t) size);
+                pdf_dict_put(gctx, filespec, PDF_NAME_DL, l);
+                pdf_dict_putl(gctx, filespec, l, PDF_NAME_Params, PDF_NAME_Size, NULL);
             }
-            fz_always(gctx)
-            {
-                fz_drop_buffer(gctx, buf);
-            }
-            fz_catch(gctx) return -1;
+            fz_always(gctx) fz_drop_buffer(gctx, buf);
+            fz_catch(gctx) return NULL;
             pdf->dirty = 1;
-            return entry;
+            return NONE;
         }
 SWIGINTERN PyObject *fz_document_s_convertToPDF(struct fz_document_s *self,int from_page,int to_page,int rotate){
             PyObject *doc = NULL;
@@ -6127,6 +6337,19 @@ SWIGINTERN PyObject *fz_document_s_layout(struct fz_document_s *self,struct fz_r
         }
 SWIGINTERN PyObject *fz_document_s_isReflowable(struct fz_document_s *self){
             return truth_value(fz_is_document_reflowable(gctx, self));
+        }
+SWIGINTERN int fz_document_s__getPDFroot(struct fz_document_s *self){
+            pdf_document *pdf = pdf_specifics(gctx, self);
+            int xref = 0;
+            if (!pdf) return xref;
+            fz_try(gctx)
+            {
+                pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf),
+                                             PDF_NAME_Root);
+                xref = pdf_to_num(gctx, root);
+            }
+            fz_catch(gctx) {;}
+            return xref;
         }
 SWIGINTERN PyObject *fz_document_s_isPDF(struct fz_document_s *self){
             if (pdf_specifics(gctx, self)) Py_RETURN_TRUE;
@@ -6482,7 +6705,6 @@ SWIGINTERN PyObject *fz_document_s_extractImage(struct fz_document_s *self,int x
             fz_buffer *buffer = NULL, *freebuf = NULL;
             pdf_obj *obj = NULL;
             PyObject *bytes = NULL;
-            PyObject *empty = PyDict_New();
             PyObject *rc = NULL;
             unsigned char ext[5];
             fz_image *image = NULL;
@@ -6532,7 +6754,7 @@ SWIGINTERN PyObject *fz_document_s_extractImage(struct fz_document_s *self,int x
                     rc = Py_BuildValue("{s:s,s:O}", "ext", ext, "image", bytes);
                 }
                 else
-                    rc = empty;
+                    rc = PyDict_New();
             }
             fz_always(gctx)
             {
@@ -6540,7 +6762,7 @@ SWIGINTERN PyObject *fz_document_s_extractImage(struct fz_document_s *self,int x
                 fz_drop_buffer(gctx, freebuf);
                 pdf_drop_obj(gctx, obj);
             }
-            fz_catch(gctx) return empty;
+            fz_catch(gctx) {;}
             return rc;
         }
 SWIGINTERN PyObject *fz_document_s__delToC(struct fz_document_s *self){
@@ -6617,7 +6839,7 @@ SWIGINTERN PyObject *fz_document_s_FormFonts(struct fz_document_s *self){
             fz_catch(gctx) NONE;       // any problem yields None
             return liste;
         }
-SWIGINTERN PyObject *fz_document_s_addFormFont(struct fz_document_s *self,char *name,char *font){
+SWIGINTERN PyObject *fz_document_s__addFormFont(struct fz_document_s *self,char *name,char *font){
             pdf_document *pdf = pdf_specifics(gctx, self);
             if (!pdf) NONE;           // not a PDF
             pdf_obj *fonts = NULL;
@@ -6626,7 +6848,7 @@ SWIGINTERN PyObject *fz_document_s_addFormFont(struct fz_document_s *self,char *
                 fonts = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf), PDF_NAME_Root,
                              PDF_NAME_AcroForm, PDF_NAME_DR, PDF_NAME_Font, NULL);
                 if (!fonts || !pdf_is_dict(gctx, fonts))
-                    THROWMSG("not a form PDF or no form fonts yet");
+                    THROWMSG("PDF has no form fonts yet");
                 pdf_obj *k = pdf_new_name(gctx, pdf, (const char *) name);
                 pdf_obj *v = pdf_new_obj_from_str(gctx, pdf, font);
                 pdf_dict_put(gctx, fonts, k, v);
@@ -6779,9 +7001,8 @@ SWIGINTERN PyObject *fz_document_s__updateStream(struct fz_document_s *self,int 
                 if (new == 0 && !pdf_is_stream(gctx, obj))
                     THROWMSG("xref not a stream object");
 
-                res = JM_deflatebuf(gctx, c, len);
-                pdf_dict_put(gctx, obj, PDF_NAME_Filter, PDF_NAME_FlateDecode);
-                pdf_update_stream(gctx, pdf, obj, res, 1);
+                res = fz_new_buffer_from_shared_data(gctx, c, len);
+                JM_update_stream(gctx, pdf, obj, res);
                 pdf_drop_obj(gctx, obj);
             }
             fz_catch(gctx) return NULL;
@@ -6885,7 +7106,14 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addLineAnnot(struct fz_page_s *self,stru
                 pdf_set_annot_line(gctx, annot, a, b);
                 pdf_set_annot_border(gctx, annot, width);
                 pdf_set_annot_color(gctx, annot, 3, col);
+                fz_expand_rect(&r, 2 * width);
                 pdf_set_annot_rect(gctx, annot, &r);
+                r.y1 -= r.y0;
+                r.x1 -= r.x0;
+                r.x0 = r.y0 = 0;
+                JM_make_ap_object(gctx, annot, &r, NULL);
+                pdf_dirty_annot(gctx, annot);
+                pdf_update_page(gctx, page);
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
@@ -6905,9 +7133,42 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addTextAnnot(struct fz_page_s *self,stru
                 pdf_set_annot_contents(gctx, annot, text);
                 pdf_set_annot_icon_name(gctx, annot, name);
                 pdf_update_appearance(gctx, annot);
+                pdf_dirty_annot(gctx, annot);
+                pdf_update_page(gctx, page);
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
+            return fz_keep_annot(gctx, fzannot);
+        }
+SWIGINTERN struct fz_annot_s *fz_page_s_addFileAnnot(struct fz_page_s *self,struct fz_point_s *point,PyObject *buffer,char *filename,char *ufilename,char *desc){
+            pdf_page *page = pdf_page_from_fz_page(gctx, self);
+            fz_annot *fzannot = NULL;
+            pdf_annot *annot = NULL;
+            char *data = NULL, *uf, *d;
+            if (!ufilename) uf = filename;
+            if (!desc) d = filename;
+            size_t len = 0;
+            fz_buffer *filebuf = NULL;
+            fz_rect r = {point->x, point->y, point->x + 20, point->y + 30};
+            fz_var(annot);
+            fz_try(gctx)
+            {
+                assert_PDF(page);
+                annot = pdf_create_annot(gctx, page, ANNOT_FILEATTACHMENT);
+                pdf_set_annot_rect(gctx, annot, &r);
+                pdf_set_annot_icon_name(gctx, annot, "PushPin");
+                len = JM_CharFromBytesOrArray(buffer, &data);
+                filebuf = fz_new_buffer_from_shared_data(gctx, data, len);
+                pdf_obj *val = JM_embed_file(gctx, page->doc, filebuf,
+                                             filename, uf, d);
+                pdf_dict_put(gctx, annot->obj, PDF_NAME_FS, val);
+                pdf_dict_put_text_string(gctx, annot->obj, PDF_NAME_Contents, filename);
+                JM_update_file_attachment_annot(gctx, page->doc, annot);
+                pdf_dirty_annot(gctx, annot);
+                pdf_update_page(gctx, page);
+            }
+            fz_catch(gctx) return NULL;
+            fzannot = (fz_annot *) annot;
             return fz_keep_annot(gctx, fzannot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addStrikeoutAnnot(struct fz_page_s *self,struct fz_rect_s *rect){
@@ -6920,8 +7181,7 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addStrikeoutAnnot(struct fz_page_s *self
                 annot = JM_AnnotTextmarker(gctx, page, rect, PDF_ANNOT_STRIKE_OUT);
             }
             fz_catch(gctx) return NULL;
-            fz_annot *fzannot = (fz_annot *) annot;
-            return fz_keep_annot(gctx, fzannot);
+            return fz_keep_annot(gctx, annot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addUnderlineAnnot(struct fz_page_s *self,struct fz_rect_s *rect){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6933,8 +7193,7 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addUnderlineAnnot(struct fz_page_s *self
                 annot = JM_AnnotTextmarker(gctx, page, rect, PDF_ANNOT_UNDERLINE);
             }
             fz_catch(gctx) return NULL;
-            fz_annot *fzannot = (fz_annot *) annot;
-            return fz_keep_annot(gctx, fzannot);
+            return fz_keep_annot(gctx, annot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addHighlightAnnot(struct fz_page_s *self,struct fz_rect_s *rect){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6946,8 +7205,7 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addHighlightAnnot(struct fz_page_s *self
                 annot = JM_AnnotTextmarker(gctx, page, rect, PDF_ANNOT_HIGHLIGHT);
             }
             fz_catch(gctx) return NULL;
-            fz_annot *fzannot = (fz_annot *) annot;
-            return fz_keep_annot(gctx, fzannot);
+            return fz_keep_annot(gctx, annot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addRectAnnot(struct fz_page_s *self,struct fz_rect_s *rect){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6957,10 +7215,12 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addRectAnnot(struct fz_page_s *self,stru
             {
                 assert_PDF(page);
                 annot = JM_AnnotCircleOrRect(gctx, page, rect, PDF_ANNOT_SQUARE);
+                fz_rect drect = {0, 0, rect->x1 - rect->x0, rect->y1 - rect->y0};
+                JM_make_ap_object(gctx, annot, &drect, NULL);
+                pdf_update_page(gctx, page);
             }
             fz_catch(gctx) return NULL;
-            fz_annot *fzannot = (fz_annot *) annot;
-            return fz_keep_annot(gctx, fzannot);
+            return fz_keep_annot(gctx, annot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addCircleAnnot(struct fz_page_s *self,struct fz_rect_s *rect){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6970,10 +7230,12 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addCircleAnnot(struct fz_page_s *self,st
             {
                 assert_PDF(page);
                 annot = JM_AnnotCircleOrRect(gctx, page, rect, PDF_ANNOT_CIRCLE);
+                fz_rect drect = {0, 0, rect->x1 - rect->x0, rect->y1 - rect->y0};
+                JM_make_ap_object(gctx, annot, &drect, NULL);
+                pdf_update_page(gctx, page);
             }
             fz_catch(gctx) return NULL;
-            fz_annot *fzannot = (fz_annot *) annot;
-            return fz_keep_annot(gctx, fzannot);
+            return fz_keep_annot(gctx, annot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addPolylineAnnot(struct fz_page_s *self,PyObject *points){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6983,10 +7245,16 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addPolylineAnnot(struct fz_page_s *self,
             {
                 assert_PDF(page);
                 annot = JM_AnnotMultiline(gctx, page, points, PDF_ANNOT_POLY_LINE);
+                fz_rect r;
+                fz_bound_annot(gctx, annot, &r);
+                r.y1 -= r.y0;
+                r.x1 -= r.x0;
+                r.x0 = r.y0 = 0;
+                JM_make_ap_object(gctx, annot, &r, NULL);
+                pdf_update_page(gctx, page);
             }
             fz_catch(gctx) return NULL;
-            fz_annot *fzannot = (fz_annot *) annot;
-            return fz_keep_annot(gctx, fzannot);
+            return fz_keep_annot(gctx, annot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addPolygonAnnot(struct fz_page_s *self,PyObject *points){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -6996,10 +7264,16 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addPolygonAnnot(struct fz_page_s *self,P
             {
                 assert_PDF(page);
                 annot = JM_AnnotMultiline(gctx, page, points, PDF_ANNOT_POLYGON);
+                fz_rect r;
+                fz_bound_annot(gctx, annot, &r);
+                r.y1 -= r.y0;
+                r.x1 -= r.x0;
+                r.x0 = r.y0 = 0;
+                JM_make_ap_object(gctx, annot, &r, NULL);
+                pdf_update_page(gctx, page);
             }
             fz_catch(gctx) return NULL;
-            fz_annot *fzannot = (fz_annot *) annot;
-            return fz_keep_annot(gctx, fzannot);
+            return fz_keep_annot(gctx, annot);
         }
 SWIGINTERN struct fz_annot_s *fz_page_s_addFreetextAnnot(struct fz_page_s *self,struct fz_point_s *pos,char *text,float fontsize,PyObject *color){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -7023,6 +7297,8 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addFreetextAnnot(struct fz_page_s *self,
                 pdf_set_free_text_details(gctx, annot, pos,
                                           ascii, fname, fontsize, col);
                 pdf_update_free_text_annot_appearance(gctx, pdf, annot);
+                pdf_dirty_annot(gctx, annot);
+                pdf_update_page(gctx, page);
             }
             fz_always(gctx) free(ascii);
             fz_catch(gctx) return NULL;
@@ -7328,7 +7604,7 @@ SWIGINTERN int fz_page_s__showPDFpage(struct fz_page_s *self,struct fz_rect_s *r
                     cropbox.x1 = clip->x1;
                     cropbox.y1 = mediabox.y1 - clip->y0;
                 }
-                fz_matrix mat = {1,0,0,1,0,0};
+                fz_matrix mat = {1, 0, 0, 1, 0, 0};
                 fz_rect prect = {0, 0, 0, 0};
                 fz_rect r = {0, 0, 0, 0};
                 fz_bound_page(gctx, self, &prect);
@@ -7403,6 +7679,7 @@ SWIGINTERN int fz_page_s__showPDFpage(struct fz_page_s *self,struct fz_rect_s *r
                 fz_append_string(gctx, nres, " Do ");
 
                 JM_extend_contents(gctx, pdfout, tpageref, nres, overlay);
+                fz_drop_buffer(gctx, nres);
             }
             fz_catch(gctx) return -1;
             return xref;
@@ -7523,6 +7800,7 @@ SWIGINTERN PyObject *fz_page_s_insertImage(struct fz_page_s *self,struct fz_rect
                 nres = fz_new_buffer(gctx, 1024);
                 fz_append_printf(gctx, nres, template, W, H, X, Y, name);
                 JM_extend_contents(gctx, pdf, page->obj, nres, overlay);
+                fz_drop_buffer(gctx, nres);
             }
             fz_always(gctx)
             {
@@ -8447,18 +8725,17 @@ SWIGINTERN PyObject *fz_annot_s__getAP(struct fz_annot_s *self){
             return r;
         }
 SWIGINTERN PyObject *fz_annot_s__setAP(struct fz_annot_s *self,PyObject *ap){
-            char *c = NULL;
-            size_t len = JM_CharFromBytesOrArray(ap, &c);
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
             fz_buffer *res = NULL;
             fz_try(gctx)
             {
                 assert_PDF(annot);
                 if (!annot->ap) THROWMSG("annot has no /AP object");
+                char *c = NULL;
+                size_t len = JM_CharFromBytesOrArray(ap, &c);
                 if (len < 1) THROWMSG("invalid argument type");
-                res = JM_deflatebuf(gctx, c, len);
-                pdf_dict_put(gctx, annot->ap, PDF_NAME_Filter, PDF_NAME_FlateDecode);
-                pdf_update_stream(gctx, annot->page->doc, annot->ap, res, 1);
+                res = fz_new_buffer_from_shared_data(gctx, c, len);
+                JM_update_stream(gctx, annot->page->doc, annot->ap, res);
                 pdf_dirty_annot(gctx, annot);
             }
             fz_catch(gctx) return NULL;
@@ -8762,8 +9039,9 @@ SWIGINTERN PyObject *fz_annot_s_fileInfo(struct fz_annot_s *self){
             PyObject *res = PyDict_New();             // create Python dict
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
             char *filename = NULL;
-            int length, size;
-            pdf_obj *f_o, *l_o, *s_o, *stream;
+            char *desc = NULL;
+            int length = -1, size = -1;
+            pdf_obj *stream = NULL, *o = NULL, *fs = NULL;
 
             fz_try(gctx)
             {
@@ -8773,27 +9051,34 @@ SWIGINTERN PyObject *fz_annot_s_fileInfo(struct fz_annot_s *self){
                     THROWMSG("not a file attachment annot");
                 stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
                                    PDF_NAME_EF, PDF_NAME_F, NULL);
-                if (!stream) THROWMSG("bad PDF: file has no stream");
+                if (!stream) THROWMSG("bad PDF: file entry not found");
             }
             fz_catch(gctx) return NULL;
 
-            f_o = pdf_dict_get(gctx, stream, PDF_NAME_F);
-            l_o = pdf_dict_get(gctx, stream, PDF_NAME_Length);
-            s_o = pdf_dict_getl(gctx, stream, PDF_NAME_Params,
+            fs = pdf_dict_get(gctx, annot->obj, PDF_NAME_FS);
+
+            o = pdf_dict_get(gctx, fs, PDF_NAME_UF);
+            if (o) filename = pdf_to_utf8(gctx, o);
+            else
+            {
+                o = pdf_dict_get(gctx, fs, PDF_NAME_F);
+                if (o) filename = pdf_to_utf8(gctx, o);
+            }
+
+            o = pdf_dict_get(gctx, fs, PDF_NAME_Desc);
+            if (o) desc = pdf_to_utf8(gctx, o);
+
+            o = pdf_dict_get(gctx, stream, PDF_NAME_Length);
+            if (o) length = pdf_to_int(gctx, o);
+
+            o = pdf_dict_getl(gctx, stream, PDF_NAME_Params,
                                 PDF_NAME_Size, NULL);
-
-            if (l_o) length = pdf_to_int(gctx, l_o);
-            else     length = -1;
-
-            if (s_o) size = pdf_to_int(gctx, s_o);
-            else     size = -1;
-
-            if (f_o) filename = pdf_to_utf8(gctx, f_o);
-            else     filename = "<undefined>";
+            if (o) size = pdf_to_int(gctx, o);
 
             PyDict_SetItemString(res, "filename", JM_UNICODE(filename));
-            PyDict_SetItemString(res, "length", PyInt_FromLong((long) length));
-            PyDict_SetItemString(res, "size", PyInt_FromLong((long) size));
+            PyDict_SetItemString(res, "desc", JM_UNICODE(desc));
+            PyDict_SetItemString(res, "length", Py_BuildValue("i", length));
+            PyDict_SetItemString(res, "size", Py_BuildValue("i", size));
             return res;
         }
 SWIGINTERN PyObject *fz_annot_s_fileGet(struct fz_annot_s *self){
@@ -8810,7 +9095,7 @@ SWIGINTERN PyObject *fz_annot_s_fileGet(struct fz_annot_s *self){
                     THROWMSG("not a file attachment annot");
                 stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
                                    PDF_NAME_EF, PDF_NAME_F, NULL);
-                if (!stream) THROWMSG("bad PDF: file has no stream");
+                if (!stream) THROWMSG("bad PDF: file entry not found");
                 buf = pdf_load_stream(gctx, stream);
                 res = JM_BytesFromBuffer(gctx, buf);
             }
@@ -8818,14 +9103,13 @@ SWIGINTERN PyObject *fz_annot_s_fileGet(struct fz_annot_s *self){
             fz_catch(gctx) return NULL;
             return res;
         }
-SWIGINTERN PyObject *fz_annot_s_fileUpd(struct fz_annot_s *self,PyObject *buffer,char *filename){
+SWIGINTERN PyObject *fz_annot_s_fileUpd(struct fz_annot_s *self,PyObject *buffer,char *filename,char *ufilename,char *desc){
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
             pdf_document *pdf = NULL;       // to be filled in
             char *data = NULL;              // for new file content
             fz_buffer *res = NULL;          // for compressed content
-            pdf_obj *stream = NULL;
-            size_t size = 0, file_len = 0;
-            if (filename) file_len = strlen(filename);
+            pdf_obj *stream = NULL, *fs = NULL;
+            int64_t size = 0;
             fz_try(gctx)
             {
                 assert_PDF(annot);          // must be a PDF
@@ -8836,25 +9120,45 @@ SWIGINTERN PyObject *fz_annot_s_fileUpd(struct fz_annot_s *self,PyObject *buffer
                 stream = pdf_dict_getl(gctx, annot->obj, PDF_NAME_FS,
                                    PDF_NAME_EF, PDF_NAME_F, NULL);
                 // the object for file content
-                if (!stream) THROWMSG("bad PDF: file has no stream");
+                if (!stream) THROWMSG("bad PDF: file entry not found");
+                
+                fs = pdf_dict_get(gctx, annot->obj, PDF_NAME_FS);
 
-                // new file content must by bytes / bytearray
-                size = JM_CharFromBytesOrArray(buffer, &data);
-                if (size < 1) THROWMSG("arg 1 not bytes or bytearray");
-                if (file_len > 0)              // new filename given
+                // file content is ignored if not bytes / bytearray
+                size = (int64_t) JM_CharFromBytesOrArray(buffer, &data);
+                if (size > 0)
                 {
-                    pdf_dict_put_drop(gctx, stream, PDF_NAME_F,
-                         pdf_new_string(gctx, pdf, filename, (int) file_len));
-                    pdf_dict_put_drop(gctx, stream, PDF_NAME_UF,
-                         pdf_new_string(gctx, pdf, filename, (int) file_len));
+                    pdf_obj *s = pdf_new_int(gctx, NULL, size);
+                    pdf_dict_put(gctx, stream, PDF_NAME_Filter,
+                                 PDF_NAME_FlateDecode);
+
+                    pdf_dict_putl_drop(gctx, stream, s,
+                                       PDF_NAME_Params, PDF_NAME_Size, NULL);
+                    res = JM_deflatebuf(gctx, data, size);
+                    pdf_update_stream(gctx, pdf, stream, res, 1);
                 }
-                // show that we provide a deflated stream
-                pdf_dict_put(gctx, stream, PDF_NAME_Filter,
-                                           PDF_NAME_FlateDecode);
-                pdf_obj *p_o = pdf_dict_get(gctx, stream, PDF_NAME_Params);
-                pdf_dict_put_int(gctx, p_o, PDF_NAME_Size, (int64_t) size);
-                res = JM_deflatebuf(gctx, data, size);
-                pdf_update_stream(gctx, pdf, stream, res, 1);
+
+                if (filename)               // new filename given
+                {
+                    pdf_dict_put_text_string(gctx, stream, PDF_NAME_F, filename);
+                    pdf_dict_put_text_string(gctx, fs, PDF_NAME_F, filename);
+                }
+
+                if (ufilename)
+                {
+                    pdf_dict_put_text_string(gctx, stream, PDF_NAME_UF, filename);
+                    pdf_dict_put_text_string(gctx, fs, PDF_NAME_UF, filename);
+                }
+
+                if (desc)                   // new description given
+                {
+                    pdf_dict_put_text_string(gctx, stream, PDF_NAME_Desc, desc);
+                    pdf_dict_put_text_string(gctx, fs, PDF_NAME_Desc, desc);
+                }
+            }
+            fz_always(gctx)
+            {
+                fz_drop_buffer(gctx, res);
             }
             fz_catch(gctx) return NULL;
             pdf->dirty = 1;
@@ -8869,29 +9173,28 @@ SWIGINTERN PyObject *fz_annot_s_info(struct fz_annot_s *self){
             c = pdf_copy_annot_contents(gctx, annot);
             PyDict_SetItemString(res, "content", JM_UNICODE(c));
 
-            c = "";                                   // Name
             o = pdf_dict_get(gctx, annot->obj, PDF_NAME_Name);
-            if (o) c = (char *) pdf_to_name(gctx, o);
+            c = (char *) pdf_to_name(gctx, o);
             PyDict_SetItemString(res, "name", JM_UNICODE(c));
 
-            c = "";                                   // Title
+            // Title, author
             o = pdf_dict_get(gctx, annot->obj, PDF_NAME_T);
-            if (o) c = pdf_to_utf8(gctx, o);
+            c = pdf_to_utf8(gctx, o);
             PyDict_SetItemString(res, "title", JM_UNICODE(c));
 
-            c = "";                                   // CreationDate
+            // CreationDate
             o = pdf_dict_gets(gctx, annot->obj, "CreationDate");
-            if (o) c = pdf_to_utf8(gctx, o);
+            c = pdf_to_utf8(gctx, o);
             PyDict_SetItemString(res, "creationDate", JM_UNICODE(c));
 
-            c = "";                                   // ModDate
+            // ModDate
             o = pdf_dict_get(gctx, annot->obj, PDF_NAME_M);
-            if (o) c = pdf_to_utf8(gctx, o);
+            c = pdf_to_utf8(gctx, o);
             PyDict_SetItemString(res, "modDate", JM_UNICODE(c));
 
-            c = "";                                   // Subj
+            // Subj
             o = pdf_dict_gets(gctx, annot->obj, "Subj");
-            if (o) c = pdf_to_utf8(gctx, o);
+            c = pdf_to_utf8(gctx, o);
             PyDict_SetItemString(res, "subject", JM_UNICODE(c));
 
             return res;
@@ -9243,13 +9546,13 @@ SWIGINTERN PyObject *fz_annot_s__getWidget(struct fz_annot_s *self,PyObject *Wid
 
                 char *da = pdf_to_str_buf(gctx, pdf_get_inheritable(gctx,
                                                 pdf, annot->obj, PDF_NAME_DA));
-                PyObject_SetAttrString(Widget, "text_da", Py_BuildValue("s", da));
+                PyObject_SetAttrString(Widget, "_text_da", Py_BuildValue("s", da));
 
                 pdf_obj *ca = pdf_dict_getl(gctx, annot->obj,
                                             PDF_NAME_MK, PDF_NAME_CA, NULL);
                 if (ca)
                     PyObject_SetAttrString(Widget, "button_caption",
-                                 Py_BuildValue("s", pdf_to_str_buf(gctx, ca)));
+                                 JM_UNICODE(pdf_to_str_buf(gctx, ca)));
 
                 int field_flags = pdf_get_field_flags(gctx, pdf, annot->obj);
                 PyObject_SetAttrString(Widget, "field_flags",
@@ -9257,7 +9560,7 @@ SWIGINTERN PyObject *fz_annot_s__getWidget(struct fz_annot_s *self,PyObject *Wid
                 
                 // call Py method to reconstruct text color, font name, size
                 PyObject *call = PyObject_CallMethod(Widget,
-                                                     "_da_reconstruct", NULL);
+                                                     "_parse_da", NULL);
                 Py_XDECREF(call);
 
             }
@@ -9408,7 +9711,7 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextBlocks_AsList(struct fz_stext_p
                                 fz_append_rune(gctx, res, ch->c);
                                 JM_join_rect(linerect, &ch->bbox, ch->size);
                             }
-                            JM_join_rect(blockrect, linerect, 0);
+                            JM_join_rect(blockrect, linerect, 0.0f);
                             free(linerect);
                         }
                         text = JM_StrFromBuffer(gctx, res);
@@ -9425,7 +9728,7 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextBlocks_AsList(struct fz_stext_p
                     fz_image *img = block->u.i.image;
                     fz_colorspace *cs = img->colorspace;
                     text = PyUnicode_FromFormat("<image: %s, width %d, height %d, bpc %d>", fz_colorspace_name(gctx, cs), img->w, img->h, img->bpc);
-                    JM_join_rect(blockrect, &block->bbox, 0);
+                    JM_join_rect(blockrect, &block->bbox, 0.0f);
                 }
                 litem = Py_BuildValue("ffffOii", blockrect->x0, blockrect->y0,
                                       blockrect->x1, blockrect->y1,
@@ -9929,7 +10232,7 @@ SWIGINTERN PyObject *_wrap_Document_embeddedFileDel(PyObject *SWIGUNUSEDPARM(sel
   int alloc2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  PyObject *result = 0 ;
+  int result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:Document_embeddedFileDel",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
@@ -9943,14 +10246,14 @@ SWIGINTERN PyObject *_wrap_Document_embeddedFileDel(PyObject *SWIGUNUSEDPARM(sel
   }
   arg2 = (char *)(buf2);
   {
-    result = (PyObject *)fz_document_s_embeddedFileDel(arg1,arg2);
-    if(!result)
+    result = (int)fz_document_s_embeddedFileDel(arg1,arg2);
+    if(result < 1)
     {
       PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
       return NULL;
     }
   }
-  resultobj = result;
+  resultobj = SWIG_From_int((int)(result));
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
 fail:
@@ -9991,49 +10294,66 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Document_embeddedFileSetInfo(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_Document_embeddedFileUpd(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
   PyObject *arg2 = (PyObject *) 0 ;
-  char *arg3 = (char *) NULL ;
+  PyObject *arg3 = (PyObject *) NULL ;
   char *arg4 = (char *) NULL ;
+  char *arg5 = (char *) NULL ;
+  char *arg6 = (char *) NULL ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int res3 ;
-  char *buf3 = 0 ;
-  int alloc3 = 0 ;
   int res4 ;
   char *buf4 = 0 ;
   int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
+  int res6 ;
+  char *buf6 = 0 ;
+  int alloc6 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
   PyObject *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO|OO:Document_embeddedFileSetInfo",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO|OOOO:Document_embeddedFileUpd",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_embeddedFileSetInfo" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_embeddedFileUpd" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
   }
   arg1 = (struct fz_document_s *)(argp1);
   arg2 = obj1;
   if (obj2) {
-    res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
-    if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Document_embeddedFileSetInfo" "', argument " "3"" of type '" "char *""'");
-    }
-    arg3 = (char *)(buf3);
+    arg3 = obj2;
   }
   if (obj3) {
     res4 = SWIG_AsCharPtrAndSize(obj3, &buf4, NULL, &alloc4);
     if (!SWIG_IsOK(res4)) {
-      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "Document_embeddedFileSetInfo" "', argument " "4"" of type '" "char *""'");
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "Document_embeddedFileUpd" "', argument " "4"" of type '" "char *""'");
     }
     arg4 = (char *)(buf4);
   }
+  if (obj4) {
+    res5 = SWIG_AsCharPtrAndSize(obj4, &buf5, NULL, &alloc5);
+    if (!SWIG_IsOK(res5)) {
+      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "Document_embeddedFileUpd" "', argument " "5"" of type '" "char *""'");
+    }
+    arg5 = (char *)(buf5);
+  }
+  if (obj5) {
+    res6 = SWIG_AsCharPtrAndSize(obj5, &buf6, NULL, &alloc6);
+    if (!SWIG_IsOK(res6)) {
+      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "Document_embeddedFileUpd" "', argument " "6"" of type '" "char *""'");
+    }
+    arg6 = (char *)(buf6);
+  }
   {
-    result = (PyObject *)fz_document_s_embeddedFileSetInfo(arg1,arg2,arg3,arg4);
+    result = (PyObject *)fz_document_s_embeddedFileUpd(arg1,arg2,arg3,arg4,arg5,arg6);
     if(!result)
     {
       PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
@@ -10041,12 +10361,14 @@ SWIGINTERN PyObject *_wrap_Document_embeddedFileSetInfo(PyObject *SWIGUNUSEDPARM
     }
   }
   resultobj = result;
-  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
   return resultobj;
 fail:
-  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
   return NULL;
 }
 
@@ -10090,6 +10412,7 @@ SWIGINTERN PyObject *_wrap_Document_embeddedFileAdd(PyObject *SWIGUNUSEDPARM(sel
   char *arg3 = (char *) 0 ;
   char *arg4 = (char *) NULL ;
   char *arg5 = (char *) NULL ;
+  char *arg6 = (char *) NULL ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res3 ;
@@ -10101,14 +10424,18 @@ SWIGINTERN PyObject *_wrap_Document_embeddedFileAdd(PyObject *SWIGUNUSEDPARM(sel
   int res5 ;
   char *buf5 = 0 ;
   int alloc5 = 0 ;
+  int res6 ;
+  char *buf6 = 0 ;
+  int alloc6 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
-  int result;
+  PyObject * obj5 = 0 ;
+  PyObject *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO|OO:Document_embeddedFileAdd",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO|OOO:Document_embeddedFileAdd",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_embeddedFileAdd" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
@@ -10117,7 +10444,7 @@ SWIGINTERN PyObject *_wrap_Document_embeddedFileAdd(PyObject *SWIGUNUSEDPARM(sel
   arg2 = obj1;
   res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Document_embeddedFileAdd" "', argument " "3"" of type '" "char *""'");
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Document_embeddedFileAdd" "', argument " "3"" of type '" "char const *""'");
   }
   arg3 = (char *)(buf3);
   if (obj3) {
@@ -10134,23 +10461,32 @@ SWIGINTERN PyObject *_wrap_Document_embeddedFileAdd(PyObject *SWIGUNUSEDPARM(sel
     }
     arg5 = (char *)(buf5);
   }
+  if (obj5) {
+    res6 = SWIG_AsCharPtrAndSize(obj5, &buf6, NULL, &alloc6);
+    if (!SWIG_IsOK(res6)) {
+      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "Document_embeddedFileAdd" "', argument " "6"" of type '" "char *""'");
+    }
+    arg6 = (char *)(buf6);
+  }
   {
-    result = (int)fz_document_s_embeddedFileAdd(arg1,arg2,arg3,arg4,arg5);
-    if(result < 0)
+    result = (PyObject *)fz_document_s_embeddedFileAdd(arg1,arg2,(char const *)arg3,arg4,arg5,arg6);
+    if(!result)
     {
       PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
       return NULL;
     }
   }
-  resultobj = SWIG_From_int((int)(result));
+  resultobj = result;
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
   if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
   return resultobj;
 fail:
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
   if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
   return NULL;
 }
 
@@ -10396,6 +10732,28 @@ SWIGINTERN PyObject *_wrap_Document_isReflowable(PyObject *SWIGUNUSEDPARM(self),
   arg1 = (struct fz_document_s *)(argp1);
   result = (PyObject *)fz_document_s_isReflowable(arg1);
   resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document__getPDFroot(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Document__getPDFroot",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__getPDFroot" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  result = (int)fz_document_s__getPDFroot(arg1);
+  resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
   return NULL;
@@ -11339,7 +11697,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Document_addFormFont(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_Document__addFormFont(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -11357,24 +11715,24 @@ SWIGINTERN PyObject *_wrap_Document_addFormFont(PyObject *SWIGUNUSEDPARM(self), 
   PyObject * obj2 = 0 ;
   PyObject *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO:Document_addFormFont",&obj0,&obj1,&obj2)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Document__addFormFont",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_addFormFont" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__addFormFont" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
   }
   arg1 = (struct fz_document_s *)(argp1);
   res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Document_addFormFont" "', argument " "2"" of type '" "char *""'");
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Document__addFormFont" "', argument " "2"" of type '" "char *""'");
   }
   arg2 = (char *)(buf2);
   res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Document_addFormFont" "', argument " "3"" of type '" "char *""'");
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Document__addFormFont" "', argument " "3"" of type '" "char *""'");
   }
   arg3 = (char *)(buf3);
   {
-    result = (PyObject *)fz_document_s_addFormFont(arg1,arg2,arg3);
+    result = (PyObject *)fz_document_s__addFormFont(arg1,arg2,arg3);
     if(!result)
     {
       PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
@@ -11994,6 +12352,87 @@ SWIGINTERN PyObject *_wrap_Page_addTextAnnot(PyObject *SWIGUNUSEDPARM(self), PyO
   return resultobj;
 fail:
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Page_addFileAnnot(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
+  struct fz_point_s *arg2 = (struct fz_point_s *) 0 ;
+  PyObject *arg3 = (PyObject *) 0 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) NULL ;
+  char *arg6 = (char *) NULL ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
+  int res6 ;
+  char *buf6 = 0 ;
+  int alloc6 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  struct fz_annot_s *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO|OO:Page_addFileAnnot",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page_addFileAnnot" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
+  }
+  arg1 = (struct fz_page_s *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_fz_point_s, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Page_addFileAnnot" "', argument " "2"" of type '" "struct fz_point_s *""'"); 
+  }
+  arg2 = (struct fz_point_s *)(argp2);
+  arg3 = obj2;
+  res4 = SWIG_AsCharPtrAndSize(obj3, &buf4, NULL, &alloc4);
+  if (!SWIG_IsOK(res4)) {
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "Page_addFileAnnot" "', argument " "4"" of type '" "char *""'");
+  }
+  arg4 = (char *)(buf4);
+  if (obj4) {
+    res5 = SWIG_AsCharPtrAndSize(obj4, &buf5, NULL, &alloc5);
+    if (!SWIG_IsOK(res5)) {
+      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "Page_addFileAnnot" "', argument " "5"" of type '" "char *""'");
+    }
+    arg5 = (char *)(buf5);
+  }
+  if (obj5) {
+    res6 = SWIG_AsCharPtrAndSize(obj5, &buf6, NULL, &alloc6);
+    if (!SWIG_IsOK(res6)) {
+      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "Page_addFileAnnot" "', argument " "6"" of type '" "char *""'");
+    }
+    arg6 = (char *)(buf6);
+  }
+  {
+    result = (struct fz_annot_s *)fz_page_s_addFileAnnot(arg1,arg2,arg3,arg4,arg5,arg6);
+    if(!result)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_fz_annot_s, 0 |  0 );
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
+  return resultobj;
+fail:
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
   return NULL;
 }
 
@@ -18565,25 +19004,37 @@ fail:
 SWIGINTERN PyObject *_wrap_Annot_fileUpd(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_annot_s *arg1 = (struct fz_annot_s *) 0 ;
-  PyObject *arg2 = (PyObject *) 0 ;
+  PyObject *arg2 = (PyObject *) NULL ;
   char *arg3 = (char *) NULL ;
+  char *arg4 = (char *) NULL ;
+  char *arg5 = (char *) NULL ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res3 ;
   char *buf3 = 0 ;
   int alloc3 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
   PyObject *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO|O:Annot_fileUpd",&obj0,&obj1,&obj2)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O|OOOO:Annot_fileUpd",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_annot_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Annot_fileUpd" "', argument " "1"" of type '" "struct fz_annot_s *""'"); 
   }
   arg1 = (struct fz_annot_s *)(argp1);
-  arg2 = obj1;
+  if (obj1) {
+    arg2 = obj1;
+  }
   if (obj2) {
     res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
     if (!SWIG_IsOK(res3)) {
@@ -18591,8 +19042,22 @@ SWIGINTERN PyObject *_wrap_Annot_fileUpd(PyObject *SWIGUNUSEDPARM(self), PyObjec
     }
     arg3 = (char *)(buf3);
   }
+  if (obj3) {
+    res4 = SWIG_AsCharPtrAndSize(obj3, &buf4, NULL, &alloc4);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "Annot_fileUpd" "', argument " "4"" of type '" "char *""'");
+    }
+    arg4 = (char *)(buf4);
+  }
+  if (obj4) {
+    res5 = SWIG_AsCharPtrAndSize(obj4, &buf5, NULL, &alloc5);
+    if (!SWIG_IsOK(res5)) {
+      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "Annot_fileUpd" "', argument " "5"" of type '" "char *""'");
+    }
+    arg5 = (char *)(buf5);
+  }
   {
-    result = (PyObject *)fz_annot_s_fileUpd(arg1,arg2,arg3);
+    result = (PyObject *)fz_annot_s_fileUpd(arg1,arg2,arg3,arg4,arg5);
     if(!result)
     {
       PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
@@ -18601,9 +19066,13 @@ SWIGINTERN PyObject *_wrap_Annot_fileUpd(PyObject *SWIGUNUSEDPARM(self), PyObjec
   }
   resultobj = result;
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
   return resultobj;
 fail:
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
   return NULL;
 }
 
@@ -19755,9 +20224,9 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document_embeddedFileCount", _wrap_Document_embeddedFileCount, METH_VARARGS, (char *)"Return number of embedded files."},
 	 { (char *)"Document_embeddedFileDel", _wrap_Document_embeddedFileDel, METH_VARARGS, (char *)"Delete embedded file by name."},
 	 { (char *)"Document_embeddedFileInfo", _wrap_Document_embeddedFileInfo, METH_VARARGS, (char *)"Retrieve embedded file information given its entry number or name."},
-	 { (char *)"Document_embeddedFileSetInfo", _wrap_Document_embeddedFileSetInfo, METH_VARARGS, (char *)"Change filename or description of embedded file given its entry number or name."},
-	 { (char *)"Document_embeddedFileGet", _wrap_Document_embeddedFileGet, METH_VARARGS, (char *)"Retrieve embedded file content given its entry number or name."},
-	 { (char *)"Document_embeddedFileAdd", _wrap_Document_embeddedFileAdd, METH_VARARGS, (char *)"Add new file from buffer."},
+	 { (char *)"Document_embeddedFileUpd", _wrap_Document_embeddedFileUpd, METH_VARARGS, (char *)"Change an embedded file given its entry number or name."},
+	 { (char *)"Document_embeddedFileGet", _wrap_Document_embeddedFileGet, METH_VARARGS, (char *)"Retrieve embedded file content by name or by number."},
+	 { (char *)"Document_embeddedFileAdd", _wrap_Document_embeddedFileAdd, METH_VARARGS, (char *)"Embed a new file."},
 	 { (char *)"Document_convertToPDF", _wrap_Document_convertToPDF, METH_VARARGS, (char *)"Convert document to PDF selecting copy range and optional rotation. Output bytes object."},
 	 { (char *)"Document_pageCount", _wrap_Document_pageCount, METH_VARARGS, (char *)"Document_pageCount(self) -> int"},
 	 { (char *)"Document__getMetadata", _wrap_Document__getMetadata, METH_VARARGS, (char *)"Document__getMetadata(self, key) -> char *"},
@@ -19765,6 +20234,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document_resolveLink", _wrap_Document_resolveLink, METH_VARARGS, (char *)"Document_resolveLink(self, uri=None) -> PyObject *"},
 	 { (char *)"Document_layout", _wrap_Document_layout, METH_VARARGS, (char *)"Document_layout(self, rect, fontsize=11) -> PyObject *"},
 	 { (char *)"Document_isReflowable", _wrap_Document_isReflowable, METH_VARARGS, (char *)"Document_isReflowable(self) -> PyObject *"},
+	 { (char *)"Document__getPDFroot", _wrap_Document__getPDFroot, METH_VARARGS, (char *)"PDF catalog xref number"},
 	 { (char *)"Document_isPDF", _wrap_Document_isPDF, METH_VARARGS, (char *)"Document_isPDF(self) -> PyObject *"},
 	 { (char *)"Document_isDirty", _wrap_Document_isDirty, METH_VARARGS, (char *)"Document_isDirty(self) -> PyObject *"},
 	 { (char *)"Document__getGCTXerrcode", _wrap_Document__getGCTXerrcode, METH_VARARGS, (char *)"Document__getGCTXerrcode(self) -> int"},
@@ -19784,7 +20254,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document__delToC", _wrap_Document__delToC, METH_VARARGS, (char *)"Document__delToC(self) -> PyObject *"},
 	 { (char *)"Document_isFormPDF", _wrap_Document_isFormPDF, METH_VARARGS, (char *)"Document_isFormPDF(self) -> PyObject *"},
 	 { (char *)"Document_FormFonts", _wrap_Document_FormFonts, METH_VARARGS, (char *)"Document_FormFonts(self) -> PyObject *"},
-	 { (char *)"Document_addFormFont", _wrap_Document_addFormFont, METH_VARARGS, (char *)"Document_addFormFont(self, name, font) -> PyObject *"},
+	 { (char *)"Document__addFormFont", _wrap_Document__addFormFont, METH_VARARGS, (char *)"Document__addFormFont(self, name, font) -> PyObject *"},
 	 { (char *)"Document__getOLRootNumber", _wrap_Document__getOLRootNumber, METH_VARARGS, (char *)"Document__getOLRootNumber(self) -> int"},
 	 { (char *)"Document__getNewXref", _wrap_Document__getNewXref, METH_VARARGS, (char *)"Document__getNewXref(self) -> int"},
 	 { (char *)"Document__getXrefLength", _wrap_Document__getXrefLength, METH_VARARGS, (char *)"Document__getXrefLength(self) -> int"},
@@ -19800,16 +20270,17 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Page_bound", _wrap_Page_bound, METH_VARARGS, (char *)"Page_bound(self) -> Rect"},
 	 { (char *)"Page_run", _wrap_Page_run, METH_VARARGS, (char *)"Page_run(self, dw, m) -> int"},
 	 { (char *)"Page_getSVGimage", _wrap_Page_getSVGimage, METH_VARARGS, (char *)"Create an SVG image from the page as a string."},
-	 { (char *)"Page_addLineAnnot", _wrap_Page_addLineAnnot, METH_VARARGS, (char *)"Add a Line annotation between Points p1, p2"},
-	 { (char *)"Page_addTextAnnot", _wrap_Page_addTextAnnot, METH_VARARGS, (char *)"Add a 'sticky note' at Point pos"},
-	 { (char *)"Page_addStrikeoutAnnot", _wrap_Page_addStrikeoutAnnot, METH_VARARGS, (char *)"Strike out content in a Rect"},
-	 { (char *)"Page_addUnderlineAnnot", _wrap_Page_addUnderlineAnnot, METH_VARARGS, (char *)"Underline content in a Rect"},
-	 { (char *)"Page_addHighlightAnnot", _wrap_Page_addHighlightAnnot, METH_VARARGS, (char *)"Highlight content in a Rect"},
-	 { (char *)"Page_addRectAnnot", _wrap_Page_addRectAnnot, METH_VARARGS, (char *)"Add a rectangle annotation"},
-	 { (char *)"Page_addCircleAnnot", _wrap_Page_addCircleAnnot, METH_VARARGS, (char *)"Add a circle annotation"},
-	 { (char *)"Page_addPolylineAnnot", _wrap_Page_addPolylineAnnot, METH_VARARGS, (char *)"Add a polyline annotation for a sequence of Points"},
-	 { (char *)"Page_addPolygonAnnot", _wrap_Page_addPolygonAnnot, METH_VARARGS, (char *)"Add a polygon annotation for a sequence of Points"},
-	 { (char *)"Page_addFreetextAnnot", _wrap_Page_addFreetextAnnot, METH_VARARGS, (char *)"Add a FreeText annotation at Point pos"},
+	 { (char *)"Page_addLineAnnot", _wrap_Page_addLineAnnot, METH_VARARGS, (char *)"Add 'Line' annot between points p1 and p2."},
+	 { (char *)"Page_addTextAnnot", _wrap_Page_addTextAnnot, METH_VARARGS, (char *)"Add a 'sticky note' at position 'point'."},
+	 { (char *)"Page_addFileAnnot", _wrap_Page_addFileAnnot, METH_VARARGS, (char *)"Add a 'FileAttachment' annotation."},
+	 { (char *)"Page_addStrikeoutAnnot", _wrap_Page_addStrikeoutAnnot, METH_VARARGS, (char *)"Strike out content in a rectangle."},
+	 { (char *)"Page_addUnderlineAnnot", _wrap_Page_addUnderlineAnnot, METH_VARARGS, (char *)"Underline content in a rectangle."},
+	 { (char *)"Page_addHighlightAnnot", _wrap_Page_addHighlightAnnot, METH_VARARGS, (char *)"Highlight content in a rectangle."},
+	 { (char *)"Page_addRectAnnot", _wrap_Page_addRectAnnot, METH_VARARGS, (char *)"Add a 'Rectangle' annotation."},
+	 { (char *)"Page_addCircleAnnot", _wrap_Page_addCircleAnnot, METH_VARARGS, (char *)"Add a 'Circle' annotation."},
+	 { (char *)"Page_addPolylineAnnot", _wrap_Page_addPolylineAnnot, METH_VARARGS, (char *)"Add a 'Polyline' annotation for a sequence of points."},
+	 { (char *)"Page_addPolygonAnnot", _wrap_Page_addPolygonAnnot, METH_VARARGS, (char *)"Add a 'Polygon' annotation for a sequence of points."},
+	 { (char *)"Page_addFreetextAnnot", _wrap_Page_addFreetextAnnot, METH_VARARGS, (char *)"Add a 'FreeText' annotation at position 'point'."},
 	 { (char *)"Page__addWidget", _wrap_Page__addWidget, METH_VARARGS, (char *)"Page__addWidget(self, Widget) -> Annot"},
 	 { (char *)"Page_getDisplayList", _wrap_Page_getDisplayList, METH_VARARGS, (char *)"Page_getDisplayList(self) -> DisplayList"},
 	 { (char *)"Page_setCropBox", _wrap_Page_setCropBox, METH_VARARGS, (char *)"Page_setCropBox(self, rect=None) -> PyObject *"},
