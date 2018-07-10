@@ -75,7 +75,7 @@ print("added 'Underline'")
 
 r = r2 + displ
 annot = page.addPolylineAnnot([r.bl, r.tr, r.br, r.tl])
-annot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Diamond)
+annot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Diamond) # a no-op currently
 annot.setColors(colors)
 annot.updateImage()
 print_descr(annot.rect, annot)
@@ -90,7 +90,7 @@ print("added 'Polygon'")
 
 r+= displ
 annot = page.addLineAnnot(r.tr, r.bl)
-annot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Diamond)
+annot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Diamond) # a no-op currently
 annot.setColors(colors)
 annot.updateImage()
 print_descr(annot.rect, annot)
