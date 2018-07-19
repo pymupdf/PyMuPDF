@@ -98,13 +98,13 @@ except __builtin__.Exception:
 
 import weakref
 from binascii import hexlify
-import sys
+import math
 
 
 VersionFitz = "1.13.0"
-VersionBind = "1.13.13"
-VersionDate = "2018-07-10 07:30:21"
-version = (VersionBind, VersionFitz, "20180710073021")
+VersionBind = "1.13.14"
+VersionDate = "2018-07-19 15:44:39"
+version = (VersionBind, VersionFitz, "20180719154439")
 
 
 #------------------------------------------------------------------------------
@@ -634,88 +634,343 @@ def ConversionTrailer(i):
 
     return r
 
-def make_line_AP(annot):
-    w = annot.border["width"]
-    sc = annot.colors["stroke"]
-    fc = annot.colors["fill"]
-    vert = annot.vertices
-    h = annot.rect.height
-    r = Rect(0, 0, annot.rect.width, h)
-    x0 = annot.rect.x0
-    y0 = annot.rect.y0
+def _make_line_AP(annot, nv = None, r0 = None):
+    """ Create the /AP stream for 'Line', 'PolyLine' and 'Polygon' annotations.
+    """
+    w = annot.border["width"]          # get line width
+    sc = annot.colors["stroke"]        # get stroke color
+    fc = annot.colors["fill"]          # get fill color
+    vert = nv if nv else annot.vertices # get list of points
+    rn = r0 if r0 else annot.rect
+    h = rn.height                      # annot rectangle height
+    r = Rect(0, 0, rn.width, h)        # this is the /BBox of the /AP
+    x0 = rn.x0                         # annot rect origin x
+    y0 = rn.y0                         # annot rect origin y
     scol = "%g %g %g RG\n" % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG\n"
-    fcol = "%g %g %g rg\n" % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg\n"
+    fcol = "%g %g %g rg\n" % (fc[0], fc[1], fc[2]) if fc else ""
 
-    ap = "%g %g m\n" % (vert[0][0] - x0, h - (vert[0][1] - y0))
-    for v in vert:
+    dt = annot.border.get("dashes")
+    dtab = []
+    if dt:
+        dtab = ["[", "]0 d\n"]
+        for n in dt:
+            dtab[0] += "%i " % n
+    dtab = "".join(dtab)
+
+# start /AP string with a goto command
+    ap = "q\n%g %g m\n" % (vert[0][0] - x0, h - (vert[0][1] - y0))
+
+# add line commands for all subsequent points
+    for v in vert[1:]:
         ap += "%g %g l\n" % (v[0] - x0, h - (v[1] - y0))
 
-    ap += scol + fcol + "%g w 1 J 1 j\n" % w
-    if annot.type[0] == ANNOT_POLYLINE:
-        ap += "S"
-    else:
+# add color triples and other stuff commands
+    ap += scol + fcol + dtab + "%g w 1 J 1 j\n" % w
+
+# add stroke / fill & stroke command depending on type
+    if fcol and annot.type[0] == ANNOT_POLYGON:
         ap += "b"
+    else:
+        ap += "S"
+    ap += "\nQ\n"
 
-    ap = ap.encode("utf-8")
-    annot._setAP(ap)
-    return
+    le_left = annot.lineEnds[0]
+    le_right = annot.lineEnds[1]
+    if max(le_left, le_right) < 1:          # leave if there is no line end
+        return ap
 
-def make_rect_AP(annot):
+    _le_func = (None, _le_square, _le_circle, _le_diamond, _le_openarrow,
+                _le_closedarrow, _le_butt, _le_ropenarrow,
+                _le_rclosedarrow, _le_slash)
+
+    if le_left:
+        ap += _le_func[le_left](annot, Point(vert[0]), Point(vert[1]), False)
+
+    if le_right:
+        ap += _le_func[le_right](annot, Point(vert[-2]), Point(vert[-1]), True)
+    return ap
+
+def _hor_matrix(C, P):
+    S = P - C                               # vector 'C' -> 'P'
+    try:
+        alfa = math.asin(abs(S.y) / abs(S)) # absolute angle from horizontal
+    except ZeroDivisionError:
+        print("points are too close:")
+        return Matrix()
+    if S.x < 0:                             # make arcsin result unique
+        if S.y <= 0:                        # bottom-left
+            alfa = -(math.pi - alfa)
+        else:                               # top-left
+            alfa = math.pi - alfa
+    else:
+        if S.y >= 0:                        # top-right
+            pass
+        else:                               # bottom-right
+            alfa = - alfa
+    ca = math.cos(alfa)
+    sa = math.sin(alfa)
+    m = Matrix(ca, -sa, sa, ca, -C.x, -C.y)
+    return m
+
+def _make_rect_AP(annot):
+    """ Create /AP stream for rectangle annotation.
+    """
+    w = annot.border["width"]          # get line width
+    sc = annot.colors["stroke"]        # get stroke color
+    fc = annot.colors["fill"]          # get fill color
+    scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
+    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else ""
+    dt = annot.border.get("dashes")
+    dtab = []
+    if dt:
+        dtab = ["[", "]0 d"]
+        for n in dt:
+            dtab[0] += "%i " % n
+    dtab = "".join(dtab)
+    r = annot.rect                     # annot rectangle
+    r1 = r2 = w/2.                     # rect starts bottom-left here
+    r3 = r.width - w                   # rect width reduced by line width
+    r4 = r.height - w                  # rect height reduced by line with
+    ap = "q\n%g %g %g %g re %g w 1 J 1 j\n" % (r1, r2, r3, r4, w)
+    ap += scol + fcol + dtab
+    if fcol:
+        ap += "\nb\nQ\n"
+    else:
+        ap += "\ns\nQ\n"
+    return ap
+
+def _le_annot_parms(annot, p1, p2):
     w = annot.border["width"]
     sc = annot.colors["stroke"]
+    scol = "%g %g %g RG\n" % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG\n"
     fc = annot.colors["fill"]
-    r = annot.rect
-    r1 = r2 = w/2.
-    r3 = r.width - w
-    r4 = r.height - w
-    str1 = " %g %g %g %g re %g w 1 J 1 j " % (r1, r2, r3, r4, w)
-    scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
-    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg "
-    ap = (str1 + scol + fcol + "b").encode("utf-8")
-    annot._setAP(ap)
-    return
+    fcol = "%g %g %g rg\n" % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg\n"
+    delta = Point(annot.rect.x0, annot.rect.y0)
+    nr = annot.rect - Rect(delta, delta)
+    h = nr.height
+    np1 = p1 - delta         # point coord relative to annot rect
+    np2 = p2 - delta         # point coord relative to annot rect
+    m = _hor_matrix(np1, np2)   # matrix makes the line horizontal
+    if m == Matrix():
+        print(tuple(p1), tuple(p2))
+    im = ~m                  # inverted matrix
+    L = np1 * m              # converted start (left) point
+    R = np2 * m              # converted end (right) point
+    return m, im, L, R, w, h, scol, fcol
 
-def make_circle_AP(annot):
-    kappa = 0.55228474983
+def _make_circle_AP(annot):
     sc = annot.colors["stroke"]
     scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
     fc = annot.colors["fill"]
-    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg "
-
+    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else ""
+    dt = annot.border.get("dashes")
+    dtab = []
+    if dt:
+        dtab = ["[", "]0 d\n"]
+        for n in dt:
+            dtab[0] += "%i " % n
+    dtab = "".join(dtab)
     lw = annot.border["width"]
     lw2 = lw / 2.
     h = annot.rect.height
     r = Rect(lw2, lw2, annot.rect.width - lw2, h - lw2)
 
+    ap = "q\n" + _oval_string(h, r.tl, r.tr, r.br, r.bl)
+    ap += "%g w 1 J 1 j\n" % lw
+    ap += scol + fcol + dtab
+    if fcol:
+        ap += "\nb\nQ\n"
+    else:
+        ap += "\ns\nQ\n"
+    return ap
+
+def _oval_string(h, p1, p2, p3, p4):
+    """Return string defining an oval within a 4-polygon
+    """
     def bezier(p, q, r):
         f = "%g %g %g %g %g %g c\n"
         return f % (p.x, h - p.y, q.x, h - q.y, r.x, h - r.y)
 
-    ml = r.tl + (r.bl - r.tl) * 0.5    # Mitte links
-    mo = r.tl + (r.tr - r.tl) * 0.5    # Mitte oben
-    mr = r.tr + (r.br - r.tr) * 0.5    # Mitte rechts
-    mu = r.bl + (r.br - r.bl) * 0.5    # Mitte unten
-    ol1 = ml + (r.tl - ml) * kappa
-    ol2 = mo + (r.tl - mo) * kappa
-    or1 = mo + (r.tr - mo) * kappa
-    or2 = mr + (r.tr - mr) * kappa
-    ur1 = mr + (r.br - mr) * kappa
-    ur2 = mu + (r.br - mu) * kappa
-    ul1 = mu + (r.bl - mu) * kappa
-    ul2 = ml + (r.bl - ml) * kappa
+    kappa = 0.55228474983
+    ml = p1 + (p4 - p1) * 0.5    # Mitte links
+    mo = p1 + (p2 - p1) * 0.5    # Mitte oben
+    mr = p2 + (p3 - p2) * 0.5    # Mitte rechts
+    mu = p4 + (p3 - p4) * 0.5    # Mitte unten
+    ol1 = ml + (p1 - ml) * kappa
+    ol2 = mo + (p1 - mo) * kappa
+    or1 = mo + (p2 - mo) * kappa
+    or2 = mr + (p2 - mr) * kappa
+    ur1 = mr + (p3 - mr) * kappa
+    ur2 = mu + (p3 - mu) * kappa
+    ul1 = mu + (p4 - mu) * kappa
+    ul2 = ml + (p4 - ml) * kappa
 
-    ap = " %g %g m\n" % (ml.x, h - ml.y)
+    ap = "%g %g m\n" % (ml.x, h - ml.y)
     ap += bezier(ol1, ol2, mo)
     ap += bezier(or1, or2, mr)
     ap += bezier(ur1, ur2, mu)
     ap += bezier(ul1, ul2, ml)
+    return ap
 
-    ap += "%g w 1 J 1 j\n" % lw
-    ap += scol + fcol + "b"
-    ap = ap.encode("utf-8")
-    annot._setAP(ap)
+def _le_diamond(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    shift = 1.75             # 2*shift*width = length of square edge
+    d = w * shift
+    M = R - (w, 0) if lr else L + (w, 0)
+    r = Rect(M, M) + (-d, -d, d, d)         # the square
+# the square makes line longer by (2*shift - 1)*width
+    p = (r.tl + (r.bl - r.tl) * 0.5) * im
+    ap = "q\n%g %g m\n" % (p.x, h - p.y)
+    p = (r.tl + (r.tr - r.tl) * 0.5) * im
+    ap += "%g %g l\n"   % (p.x, h - p.y)
+    p = (r.tr + (r.br - r.tr) * 0.5) * im
+    ap += "%g %g l\n"   % (p.x, h - p.y)
+    p = (r.br + (r.bl - r.br) * 0.5) * im
+    ap += "%g %g l\n"   % (p.x, h - p.y)
+    ap += "%g w\n" % w
+    ap += scol + fcol + "b\nQ\n"
+    return ap
+
+def _le_square(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    shift = 1.25             # 2*shift*width = length of square edge
+    d = w * shift
+    M = R - (w, 0) if lr else L + (w, 0)
+    r = Rect(M, M) + (-d, -d, d, d)         # the square
+# the square makes line longer by (2*shift - 1)*width
+    p = r.tl * im
+    ap = "q\n%g %g m\n" % (p.x, h - p.y)
+    p = r.tr * im
+    ap += "%g %g l\n"   % (p.x, h - p.y)
+    p = r.br * im
+    ap += "%g %g l\n"   % (p.x, h - p.y)
+    p = r.bl * im
+    ap += "%g %g l\n"   % (p.x, h - p.y)
+    ap += "%g w\n" % w
+    ap += scol + fcol + "b\nQ\n"
+    return ap
+
+def _le_circle(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    shift = 1.50             # 2*shift*width = length of square edge
+    d = w * shift
+    M = R - (w, 0) if lr else L + (w, 0)
+    r = Rect(M, M) + (-d, -d, d, d)         # the square
+    ap = "q\n" + _oval_string(h, r.tl * im, r.tr * im, r.br * im, r.bl * im)
+    ap += "%g w\n" % w
+    ap += scol + fcol + "b\nQ\n"
+    return ap
+
+def _le_butt(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    M = R if lr else L
+    top = (M + (0, -2 * w)) * im
+    bot = (M + (0, 2 * w)) * im
+    ap = "\nq\n%g %g m\n" % (top.x, h - top.y)
+    ap += "%g %g l\n" % (bot.x, h - bot.y)
+    ap += "%g w\n" % w
+    ap += scol + "s\nQ\n"
+    return ap
+
+def _le_slash(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    rw = 1.1547 * w * 0.5         # makes rect diagonal a 30 deg inclination
+    M = R if lr else L
+    r = Rect(M.x - rw, M.y - 2 * w, M.x + rw, M.y + 2 * w)
+    top = r.tl * im
+    bot = r.br * im
+    ap = "\nq\n%g %g m\n" % (top.x, h - top.y)
+    ap += "%g %g l\n" % (bot.x, h - bot.y)
+    ap += "%g w\n" % w
+    ap += scol + "s\nQ\n"
+    return ap
+
+def _le_openarrow(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    p2 = R + (1.5 * w, 0) if lr else L - (1.5 * w, 0)
+    p1 = p2 + (-3 * w, -1.5 * w) if lr else p2 + (3 * w, -1.5 * w)
+    p3 = p2 + (-3 * w, 1.5 * w) if lr else p2 + (3 * w, 1.5 * w)
+    p1 *= im
+    p2 *= im
+    p3 *= im
+    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
+    ap += "%g %g l\n" % (p2.x, h - p2.y)
+    ap += "%g %g l\n" % (p3.x, h - p3.y)
+    ap += "%g w\n" % w
+    ap += scol + "S\nQ\n"
+    return ap
+
+def _le_closedarrow(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    p2 = R + (1.5 * w, 0) if lr else L - (1.5 * w, 0)
+    p1 = p2 + (-3 * w, -1.5 * w) if lr else p2 + (3 * w, -1.5 * w)
+    p3 = p2 + (-3 * w, 1.5 * w) if lr else p2 + (3 * w, 1.5 * w)
+    p1 *= im
+    p2 *= im
+    p3 *= im
+    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
+    ap += "%g %g l\n" % (p2.x, h - p2.y)
+    ap += "%g %g l\n" % (p3.x, h - p3.y)
+    ap += "%g w\n" % w
+    ap += scol + fcol + "b\nQ\n"
+    return ap
+
+def _le_ropenarrow(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    p2 = R - (0.5 * w, 0) if lr else L + (0.5 * w, 0)
+    p1 = p2 + (3 * w, -1.5 * w) if lr else p2 + (-3 * w, -1.5 * w)
+    p3 = p2 + (3 * w, 1.5 * w) if lr else p2 + (-3 * w, 1.5 * w)
+    p1 *= im
+    p2 *= im
+    p3 *= im
+    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
+    ap += "%g %g l\n" % (p2.x, h - p2.y)
+    ap += "%g %g l\n" % (p3.x, h - p3.y)
+    ap += "%g w\n" % w
+    ap += scol + fcol + "S\nQ\n"
+    return ap
+
+def _le_rclosedarrow(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    p2 = R - (3.0 * w, 0) if lr else L + (3.0 * w, 0)
+    p1 = p2 + (3 * w, -1.5 * w) if lr else p2 + (-3 * w, -1.5 * w)
+    p3 = p2 + (3 * w, 1.5 * w) if lr else p2 + (-3 * w, 1.5 * w)
+    p1 *= im
+    p2 *= im
+    p3 *= im
+    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
+    ap += "%g %g l\n" % (p2.x, h - p2.y)
+    ap += "%g %g l\n" % (p3.x, h - p3.y)
+    ap += "%g w\n" % w
+    ap += scol + fcol + "b\nQ\n"
+    return ap
+
+def _upd_my_AP(annot):
+    if annot.type[0] not in range(2, 8):
+        return
+    r = Rect(0, 0, annot.rect.width, annot.rect.height)
+
+    if annot.type[0] == ANNOT_CIRCLE:
+        ap = _make_circle_AP(annot)
+        annot._checkAP(r, ap)
+        return
+
+    if annot.type[0] == ANNOT_SQUARE:
+        ap = _make_rect_AP(annot)
+        annot._checkAP(r, ap)
+        return
+
+    ov = annot.vertices
+    rect = Rect(Point(ov[0]), Point(ov[0]))
+    for v in ov[1:]:
+        rect |= v
+    w = 3 * annot.border["width"]
+    rect += (-w, -w, w, w)
+    annot._setRect(rect)
+    r = Rect(0, 0, rect.width, rect.height)
+    ap = _make_line_AP(annot)
+    annot._checkAP(r, ap)
     return
-
 
 class Document(_object):
     """open() - new empty PDF
@@ -1442,7 +1697,7 @@ class Page(_object):
 
 
     def addLineAnnot(self, p1, p2):
-        """Add 'Line' annot between points p1 and p2."""
+        """Add 'Line' annot for points p1 and p2."""
         CheckParent(self)
 
         val = _fitz.Page_addLineAnnot(self, p1, p2)
@@ -1452,17 +1707,16 @@ class Page(_object):
         val.parent = weakref.proxy(self)
         self._annot_refs[id(val)] = val
 
-#check for unexpected /AP existence
-        if val._getAP():
-            print("warning: annot already has an /AP")
-            return val
-
         if val.type[0] == ANNOT_SQUARE:
-            make_rect_AP(val)
+            ap = _make_rect_AP(val)
         elif val.type[0] == ANNOT_CIRCLE:
-            make_circle_AP(val)
+            ap = _make_circle_AP(val)
         elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
-            make_line_AP(val)
+            ap = _make_line_AP(val)
+        else:
+            return val
+        r = Rect(0, 0, val.rect.width, val.rect.height)
+        val._checkAP(r, ap)
 
 
         return val
@@ -1549,17 +1803,16 @@ class Page(_object):
         val.parent = weakref.proxy(self)
         self._annot_refs[id(val)] = val
 
-#check for unexpected /AP existence
-        if val._getAP():
-            print("warning: annot already has an /AP")
-            return val
-
         if val.type[0] == ANNOT_SQUARE:
-            make_rect_AP(val)
+            ap = _make_rect_AP(val)
         elif val.type[0] == ANNOT_CIRCLE:
-            make_circle_AP(val)
+            ap = _make_circle_AP(val)
         elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
-            make_line_AP(val)
+            ap = _make_line_AP(val)
+        else:
+            return val
+        r = Rect(0, 0, val.rect.width, val.rect.height)
+        val._checkAP(r, ap)
 
 
         return val
@@ -1576,17 +1829,16 @@ class Page(_object):
         val.parent = weakref.proxy(self)
         self._annot_refs[id(val)] = val
 
-#check for unexpected /AP existence
-        if val._getAP():
-            print("warning: annot already has an /AP")
-            return val
-
         if val.type[0] == ANNOT_SQUARE:
-            make_rect_AP(val)
+            ap = _make_rect_AP(val)
         elif val.type[0] == ANNOT_CIRCLE:
-            make_circle_AP(val)
+            ap = _make_circle_AP(val)
         elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
-            make_line_AP(val)
+            ap = _make_line_AP(val)
+        else:
+            return val
+        r = Rect(0, 0, val.rect.width, val.rect.height)
+        val._checkAP(r, ap)
 
 
         return val
@@ -1603,17 +1855,16 @@ class Page(_object):
         val.parent = weakref.proxy(self)
         self._annot_refs[id(val)] = val
 
-#check for unexpected /AP existence
-        if val._getAP():
-            print("warning: annot already has an /AP")
-            return val
-
         if val.type[0] == ANNOT_SQUARE:
-            make_rect_AP(val)
+            ap = _make_rect_AP(val)
         elif val.type[0] == ANNOT_CIRCLE:
-            make_circle_AP(val)
+            ap = _make_circle_AP(val)
         elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
-            make_line_AP(val)
+            ap = _make_line_AP(val)
+        else:
+            return val
+        r = Rect(0, 0, val.rect.width, val.rect.height)
+        val._checkAP(r, ap)
 
 
         return val
@@ -1630,17 +1881,16 @@ class Page(_object):
         val.parent = weakref.proxy(self)
         self._annot_refs[id(val)] = val
 
-#check for unexpected /AP existence
-        if val._getAP():
-            print("warning: annot already has an /AP")
-            return val
-
         if val.type[0] == ANNOT_SQUARE:
-            make_rect_AP(val)
+            ap = _make_rect_AP(val)
         elif val.type[0] == ANNOT_CIRCLE:
-            make_circle_AP(val)
+            ap = _make_circle_AP(val)
         elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
-            make_line_AP(val)
+            ap = _make_line_AP(val)
+        else:
+            return val
+        r = Rect(0, 0, val.rect.width, val.rect.height)
+        val._checkAP(r, ap)
 
 
         return val
@@ -1850,11 +2100,20 @@ class Page(_object):
         return _fitz.Page__showPDFpage(self, rect, docsrc, pno, overlay, keep_proportion, reuse_xref, clip, graftmap)
 
 
-    def insertImage(self, rect, filename=None, pixmap=None, stream=None, overlay=1):
+    def insertImage(self, rect, filename=None, pixmap=None, stream=None, overlay=1, _imgname=None):
         """Insert a new image into a rectangle."""
-        CheckParent(self)
 
-        return _fitz.Page_insertImage(self, rect, filename, pixmap, stream, overlay)
+        CheckParent(self)
+        imglst = self.parent.getPageImageList(self.number)
+        ilst = [i[7] for i in imglst]
+        n = "fitzImg"
+        i = 0
+        _imgname = n + "0"
+        while _imgname in ilst:
+            i += 1
+            _imgname = n + str(i)
+
+        return _fitz.Page_insertImage(self, rect, filename, pixmap, stream, overlay, _imgname)
 
 
     def insertFont(self, fontname=None, fontfile=None, fontbuffer=None, xref=0, set_simple=0, idx=0):
@@ -2920,11 +3179,55 @@ class Annot(_object):
         return _fitz.Annot__setAP(self, ap)
 
 
-    def setRect(self, r):
-        """setRect: changes the annot's rectangle"""
+    def _checkAP(self, rect, c):
+        """Check and update /AP object of annot"""
         CheckParent(self)
 
-        return _fitz.Annot_setRect(self, r)
+        return _fitz.Annot__checkAP(self, rect, c)
+
+
+    def _setRect(self, rect):
+        """_setRect(self, rect)"""
+        return _fitz.Annot__setRect(self, rect)
+
+
+    def setRect(self, rect):
+        """Change the annot's rectangle."""
+        CheckParent(self)
+        if rect.isEmpty or rect.isInfinite:
+            raise ValueError("Rect must be finite and not empty.")
+    # only handle Circle, Square, Line, PolyLine and Polygon here
+        if self.type[0] not in range(2, 8):
+            self._setRect(rect)
+            return
+
+        if self.type[0] == ANNOT_CIRCLE:
+            self._setRect(rect)
+            ap = _make_circle_AP(self)
+            self._checkAP(Rect(0, 0, rect.width, rect.height), ap)
+            return
+
+        if self.type[0] == ANNOT_SQUARE:
+            self._setRect(rect)
+            ap = _make_rect_AP(self)
+            self._checkAP(Rect(0, 0, rect.width, rect.height), ap)
+            return
+
+        orect = self.rect
+        m = Matrix(rect.width / orect.width, rect.height / orect.height)
+
+    # now transform the points of the annot
+        ov = self.vertices
+        nv = [(Point(v) - orect.tl) * m + rect.tl for v in ov] # new points
+        r0 = Rect(nv[0], nv[0])              # recalculate new rectangle
+        for v in nv[1:]:
+            r0 |= v                          # enveloping all points
+        w = self.border["width"] * 3         # allow for add'l space
+        r0 += (-w, -w, w, w)                 # for line end symbols
+        self._setRect(r0)                    # this is the final rect
+        self._setVertices(nv)                # put the points in annot
+        ap = _make_line_AP(self, nv, r0)
+        self._checkAP(Rect(0, 0, r0.width, r0.height), ap)
 
     @property
 
@@ -2933,6 +3236,13 @@ class Annot(_object):
         CheckParent(self)
 
         return _fitz.Annot_vertices(self)
+
+
+    def _setVertices(self, vertices):
+        """Change the annot's vertices. Only for 'Line', 'PolyLine' and 'Polygon' types."""
+        CheckParent(self)
+
+        return _fitz.Annot__setVertices(self, vertices)
 
     @property
 
@@ -2957,7 +3267,21 @@ class Annot(_object):
         """
         CheckParent(self)
 
-        return _fitz.Annot_setColors(self, colors)
+        val = _fitz.Annot_setColors(self, colors)
+
+        if self.type[0] not in range(2, 8):
+            return
+        r = Rect(0, 0, self.rect.width, self.rect.height)
+        if self.type[0] == ANNOT_CIRCLE:
+            ap = _make_circle_AP(self)
+        elif self.type[0] == ANNOT_SQUARE:
+            ap = _make_rect_AP(self)
+        else:
+            ap = _make_line_AP(self)
+        self._checkAP(r, ap)
+
+
+        return val
 
     @property
 
@@ -2972,7 +3296,18 @@ class Annot(_object):
         """setLineEnds(self, start, end)"""
         CheckParent(self)
 
-        return _fitz.Annot_setLineEnds(self, start, end)
+        val = _fitz.Annot_setLineEnds(self, start, end)
+
+        if self.type[0] not in range(2, 8):
+            return
+        if self.type[0] in (ANNOT_CIRCLE, ANNOT_SQUARE):
+            return
+        r = Rect(0, 0, self.rect.width, self.rect.height)
+        ap = _make_line_AP(self)
+        self._checkAP(r, ap)
+
+
+        return val
 
     @property
 
@@ -3078,7 +3413,10 @@ class Annot(_object):
         """setBorder(self, border) -> PyObject *"""
         CheckParent(self)
 
-        return _fitz.Annot_setBorder(self, border)
+        val = _fitz.Annot_setBorder(self, border)
+        _upd_my_AP(self)
+
+        return val
 
     @property
 

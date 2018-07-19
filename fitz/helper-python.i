@@ -371,86 +371,341 @@ def ConversionTrailer(i):
     
     return r
 
-def make_line_AP(annot):
-    w = annot.border["width"]
-    sc = annot.colors["stroke"]
-    fc = annot.colors["fill"]
-    vert = annot.vertices
-    h = annot.rect.height
-    r = Rect(0, 0, annot.rect.width, h)
-    x0 = annot.rect.x0
-    y0 = annot.rect.y0
+def _make_line_AP(annot, nv = None, r0 = None):
+    """ Create the /AP stream for 'Line', 'PolyLine' and 'Polygon' annotations.
+    """
+    w = annot.border["width"]          # get line width
+    sc = annot.colors["stroke"]        # get stroke color
+    fc = annot.colors["fill"]          # get fill color
+    vert = nv if nv else annot.vertices # get list of points
+    rn = r0 if r0 else annot.rect
+    h = rn.height                      # annot rectangle height
+    r = Rect(0, 0, rn.width, h)        # this is the /BBox of the /AP
+    x0 = rn.x0                         # annot rect origin x
+    y0 = rn.y0                         # annot rect origin y
     scol = "%g %g %g RG\n" % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG\n"
-    fcol = "%g %g %g rg\n" % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg\n"
+    fcol = "%g %g %g rg\n" % (fc[0], fc[1], fc[2]) if fc else ""
 
-    ap = "%g %g m\n" % (vert[0][0] - x0, h - (vert[0][1] - y0))
-    for v in vert:
+    dt = annot.border.get("dashes")
+    dtab = []
+    if dt:
+        dtab = ["[", "]0 d\n"]
+        for n in dt:
+            dtab[0] += "%i " % n
+    dtab = "".join(dtab)
+
+    # start /AP string with a goto command
+    ap = "q\n%g %g m\n" % (vert[0][0] - x0, h - (vert[0][1] - y0))
+
+    # add line commands for all subsequent points
+    for v in vert[1:]:
         ap += "%g %g l\n" % (v[0] - x0, h - (v[1] - y0))
-    
-    ap += scol + fcol + "%g w 1 J 1 j\n" % w
-    if annot.type[0] == ANNOT_POLYLINE:
-        ap += "S"
-    else:
-        ap += "b"
-    
-    ap = ap.encode("utf-8")
-    annot._setAP(ap)
-    return
 
-def make_rect_AP(annot):
+    # add color triples and other stuff commands
+    ap += scol + fcol + dtab + "%g w 1 J 1 j\n" % w
+
+    # add stroke / fill & stroke command depending on type
+    if fcol and annot.type[0] == ANNOT_POLYGON:
+        ap += "b"
+    else:
+        ap += "S"
+    ap += "\nQ\n"
+
+    le_left = annot.lineEnds[0]
+    le_right = annot.lineEnds[1]
+    if max(le_left, le_right) < 1:          # leave if there is no line end
+        return ap
+
+    _le_func = (None, _le_square, _le_circle, _le_diamond, _le_openarrow,
+                _le_closedarrow, _le_butt, _le_ropenarrow,
+                _le_rclosedarrow, _le_slash)
+    
+    if le_left:
+        ap += _le_func[le_left](annot, Point(vert[0]), Point(vert[1]), False)
+
+    if le_right:
+        ap += _le_func[le_right](annot, Point(vert[-2]), Point(vert[-1]), True)
+    return ap
+
+def _hor_matrix(C, P):
+    S = P - C                               # vector 'C' -> 'P'
+    try:
+        alfa = math.asin(abs(S.y) / abs(S)) # absolute angle from horizontal
+    except ZeroDivisionError:
+        print("points are too close:")
+        return Matrix()
+    if S.x < 0:                             # make arcsin result unique
+        if S.y <= 0:                        # bottom-left
+            alfa = -(math.pi - alfa)
+        else:                               # top-left
+            alfa = math.pi - alfa
+    else:
+        if S.y >= 0:                        # top-right
+            pass
+        else:                               # bottom-right
+            alfa = - alfa
+    ca = math.cos(alfa)
+    sa = math.sin(alfa)
+    m = Matrix(ca, -sa, sa, ca, -C.x, -C.y)
+    return m
+
+def _make_rect_AP(annot):
+    """ Create /AP stream for rectangle annotation.
+    """
+    w = annot.border["width"]          # get line width
+    sc = annot.colors["stroke"]        # get stroke color
+    fc = annot.colors["fill"]          # get fill color
+    scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
+    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else ""
+    dt = annot.border.get("dashes")
+    dtab = []
+    if dt:
+        dtab = ["[", "]0 d"]
+        for n in dt:
+            dtab[0] += "%i " % n
+    dtab = "".join(dtab)
+    r = annot.rect                     # annot rectangle
+    r1 = r2 = w/2.                     # rect starts bottom-left here
+    r3 = r.width - w                   # rect width reduced by line width
+    r4 = r.height - w                  # rect height reduced by line with
+    ap = "q\n%g %g %g %g re %g w 1 J 1 j\n" % (r1, r2, r3, r4, w)
+    ap += scol + fcol + dtab
+    if fcol:
+        ap += "\nb\nQ\n"
+    else:
+        ap += "\ns\nQ\n"
+    return ap
+
+def _le_annot_parms(annot, p1, p2):
     w = annot.border["width"]
     sc = annot.colors["stroke"]
+    scol = "%g %g %g RG\n" % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG\n"
     fc = annot.colors["fill"]
-    r = annot.rect
-    r1 = r2 = w/2.
-    r3 = r.width - w
-    r4 = r.height - w
-    str1 = " %g %g %g %g re %g w 1 J 1 j " % (r1, r2, r3, r4, w)
-    scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
-    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg "
-    ap = (str1 + scol + fcol + "b").encode("utf-8")
-    annot._setAP(ap)
-    return
+    fcol = "%g %g %g rg\n" % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg\n"
+    delta = Point(annot.rect.x0, annot.rect.y0)
+    nr = annot.rect - Rect(delta, delta)
+    h = nr.height
+    np1 = p1 - delta         # point coord relative to annot rect
+    np2 = p2 - delta         # point coord relative to annot rect
+    m = _hor_matrix(np1, np2)   # matrix makes the line horizontal
+    if m == Matrix():
+        print(tuple(p1), tuple(p2))
+    im = ~m                  # inverted matrix
+    L = np1 * m              # converted start (left) point
+    R = np2 * m              # converted end (right) point
+    return m, im, L, R, w, h, scol, fcol
 
-def make_circle_AP(annot):
-    kappa = 0.55228474983
+def _make_circle_AP(annot):
     sc = annot.colors["stroke"]
     scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
     fc = annot.colors["fill"]
-    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg "
-
+    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else ""
+    dt = annot.border.get("dashes")
+    dtab = []
+    if dt:
+        dtab = ["[", "]0 d\n"]
+        for n in dt:
+            dtab[0] += "%i " % n
+    dtab = "".join(dtab)
     lw = annot.border["width"]
     lw2 = lw / 2.
     h = annot.rect.height
     r = Rect(lw2, lw2, annot.rect.width - lw2, h - lw2)
 
+    ap = "q\n" + _oval_string(h, r.tl, r.tr, r.br, r.bl)
+    ap += "%g w 1 J 1 j\n" % lw
+    ap += scol + fcol + dtab
+    if fcol:
+        ap += "\nb\nQ\n"
+    else:
+        ap += "\ns\nQ\n"
+    return ap
+
+def _oval_string(h, p1, p2, p3, p4):
+    """Return string defining an oval within a 4-polygon
+    """
     def bezier(p, q, r):
         f = "%g %g %g %g %g %g c\n"
         return f % (p.x, h - p.y, q.x, h - q.y, r.x, h - r.y)
-    
-    ml = r.tl + (r.bl - r.tl) * 0.5    # Mitte links
-    mo = r.tl + (r.tr - r.tl) * 0.5    # Mitte oben
-    mr = r.tr + (r.br - r.tr) * 0.5    # Mitte rechts
-    mu = r.bl + (r.br - r.bl) * 0.5    # Mitte unten
-    ol1 = ml + (r.tl - ml) * kappa
-    ol2 = mo + (r.tl - mo) * kappa
-    or1 = mo + (r.tr - mo) * kappa
-    or2 = mr + (r.tr - mr) * kappa
-    ur1 = mr + (r.br - mr) * kappa
-    ur2 = mu + (r.br - mu) * kappa
-    ul1 = mu + (r.bl - mu) * kappa
-    ul2 = ml + (r.bl - ml) * kappa
 
-    ap = " %g %g m\n" % (ml.x, h - ml.y)
+    kappa = 0.55228474983
+    ml = p1 + (p4 - p1) * 0.5    # Mitte links
+    mo = p1 + (p2 - p1) * 0.5    # Mitte oben
+    mr = p2 + (p3 - p2) * 0.5    # Mitte rechts
+    mu = p4 + (p3 - p4) * 0.5    # Mitte unten
+    ol1 = ml + (p1 - ml) * kappa
+    ol2 = mo + (p1 - mo) * kappa
+    or1 = mo + (p2 - mo) * kappa
+    or2 = mr + (p2 - mr) * kappa
+    ur1 = mr + (p3 - mr) * kappa
+    ur2 = mu + (p3 - mu) * kappa
+    ul1 = mu + (p4 - mu) * kappa
+    ul2 = ml + (p4 - ml) * kappa
+
+    ap = "%g %g m\n" % (ml.x, h - ml.y)
     ap += bezier(ol1, ol2, mo)
     ap += bezier(or1, or2, mr)
     ap += bezier(ur1, ur2, mu)
     ap += bezier(ul1, ul2, ml)
+    return ap
 
-    ap += "%g w 1 J 1 j\n" % lw
-    ap += scol + fcol + "b"
-    ap = ap.encode("utf-8")
-    annot._setAP(ap)
+def _le_diamond(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    shift = 1.75             # 2*shift*width = length of square edge
+    d = w * shift
+    M = R - (w, 0) if lr else L + (w, 0)
+    r = Rect(M, M) + (-d, -d, d, d)         # the square
+    # the square makes line longer by (2*shift - 1)*width
+    p = (r.tl + (r.bl - r.tl) * 0.5) * im
+    ap = "q\n%g %g m\n" % (p.x, h - p.y)
+    p = (r.tl + (r.tr - r.tl) * 0.5) * im
+    ap += "%g %g l\n"   % (p.x, h - p.y)
+    p = (r.tr + (r.br - r.tr) * 0.5) * im
+    ap += "%g %g l\n"   % (p.x, h - p.y)
+    p = (r.br + (r.bl - r.br) * 0.5) * im
+    ap += "%g %g l\n"   % (p.x, h - p.y)
+    ap += "%g w\n" % w
+    ap += scol + fcol + "b\nQ\n"
+    return ap
+
+def _le_square(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    shift = 1.25             # 2*shift*width = length of square edge
+    d = w * shift
+    M = R - (w, 0) if lr else L + (w, 0)
+    r = Rect(M, M) + (-d, -d, d, d)         # the square
+    # the square makes line longer by (2*shift - 1)*width
+    p = r.tl * im
+    ap = "q\n%g %g m\n" % (p.x, h - p.y)
+    p = r.tr * im
+    ap += "%g %g l\n"   % (p.x, h - p.y)
+    p = r.br * im
+    ap += "%g %g l\n"   % (p.x, h - p.y)
+    p = r.bl * im
+    ap += "%g %g l\n"   % (p.x, h - p.y)
+    ap += "%g w\n" % w
+    ap += scol + fcol + "b\nQ\n"
+    return ap
+
+def _le_circle(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    shift = 1.50             # 2*shift*width = length of square edge
+    d = w * shift
+    M = R - (w, 0) if lr else L + (w, 0)
+    r = Rect(M, M) + (-d, -d, d, d)         # the square
+    ap = "q\n" + _oval_string(h, r.tl * im, r.tr * im, r.br * im, r.bl * im)
+    ap += "%g w\n" % w
+    ap += scol + fcol + "b\nQ\n"
+    return ap
+    
+def _le_butt(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    M = R if lr else L
+    top = (M + (0, -2 * w)) * im
+    bot = (M + (0, 2 * w)) * im
+    ap = "\nq\n%g %g m\n" % (top.x, h - top.y)
+    ap += "%g %g l\n" % (bot.x, h - bot.y)
+    ap += "%g w\n" % w
+    ap += scol + "s\nQ\n"
+    return ap
+    
+def _le_slash(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    rw = 1.1547 * w * 0.5         # makes rect diagonal a 30 deg inclination
+    M = R if lr else L
+    r = Rect(M.x - rw, M.y - 2 * w, M.x + rw, M.y + 2 * w)
+    top = r.tl * im
+    bot = r.br * im
+    ap = "\nq\n%g %g m\n" % (top.x, h - top.y)
+    ap += "%g %g l\n" % (bot.x, h - bot.y)
+    ap += "%g w\n" % w
+    ap += scol + "s\nQ\n"
+    return ap
+
+def _le_openarrow(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    p2 = R + (1.5 * w, 0) if lr else L - (1.5 * w, 0)
+    p1 = p2 + (-3 * w, -1.5 * w) if lr else p2 + (3 * w, -1.5 * w)
+    p3 = p2 + (-3 * w, 1.5 * w) if lr else p2 + (3 * w, 1.5 * w)
+    p1 *= im
+    p2 *= im
+    p3 *= im
+    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
+    ap += "%g %g l\n" % (p2.x, h - p2.y)
+    ap += "%g %g l\n" % (p3.x, h - p3.y)
+    ap += "%g w\n" % w
+    ap += scol + "S\nQ\n"
+    return ap
+    
+def _le_closedarrow(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    p2 = R + (1.5 * w, 0) if lr else L - (1.5 * w, 0)
+    p1 = p2 + (-3 * w, -1.5 * w) if lr else p2 + (3 * w, -1.5 * w)
+    p3 = p2 + (-3 * w, 1.5 * w) if lr else p2 + (3 * w, 1.5 * w)
+    p1 *= im
+    p2 *= im
+    p3 *= im
+    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
+    ap += "%g %g l\n" % (p2.x, h - p2.y)
+    ap += "%g %g l\n" % (p3.x, h - p3.y)
+    ap += "%g w\n" % w
+    ap += scol + fcol + "b\nQ\n"
+    return ap
+    
+def _le_ropenarrow(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    p2 = R - (0.5 * w, 0) if lr else L + (0.5 * w, 0)
+    p1 = p2 + (3 * w, -1.5 * w) if lr else p2 + (-3 * w, -1.5 * w)
+    p3 = p2 + (3 * w, 1.5 * w) if lr else p2 + (-3 * w, 1.5 * w)
+    p1 *= im
+    p2 *= im
+    p3 *= im
+    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
+    ap += "%g %g l\n" % (p2.x, h - p2.y)
+    ap += "%g %g l\n" % (p3.x, h - p3.y)
+    ap += "%g w\n" % w
+    ap += scol + fcol + "S\nQ\n"
+    return ap
+    
+def _le_rclosedarrow(annot, p1, p2, lr):
+    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
+    p2 = R - (3.0 * w, 0) if lr else L + (3.0 * w, 0)
+    p1 = p2 + (3 * w, -1.5 * w) if lr else p2 + (-3 * w, -1.5 * w)
+    p3 = p2 + (3 * w, 1.5 * w) if lr else p2 + (-3 * w, 1.5 * w)
+    p1 *= im
+    p2 *= im
+    p3 *= im
+    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
+    ap += "%g %g l\n" % (p2.x, h - p2.y)
+    ap += "%g %g l\n" % (p3.x, h - p3.y)
+    ap += "%g w\n" % w
+    ap += scol + fcol + "b\nQ\n"
+    return ap
+
+def _upd_my_AP(annot):
+    if annot.type[0] not in range(2, 8):
+        return
+    r = Rect(0, 0, annot.rect.width, annot.rect.height)
+
+    if annot.type[0] == ANNOT_CIRCLE:
+        ap = _make_circle_AP(annot)
+        annot._checkAP(r, ap)
+        return
+
+    if annot.type[0] == ANNOT_SQUARE:
+        ap = _make_rect_AP(annot)
+        annot._checkAP(r, ap)
+        return
+
+    ov = annot.vertices
+    rect = Rect(Point(ov[0]), Point(ov[0]))
+    for v in ov[1:]:
+        rect |= v
+    w = 3 * annot.border["width"]
+    rect += (-w, -w, w, w)
+    annot._setRect(rect)
+    r = Rect(0, 0, rect.width, rect.height)
+    ap = _make_line_AP(annot)
+    annot._checkAP(r, ap)
     return
-
 %}

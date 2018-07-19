@@ -111,58 +111,10 @@
 //----------------------------------------------------------------------------
 // return string for line end style
 //----------------------------------------------------------------------------
-char *annot_le_style_str(int type)
+int JM_le_value(fz_context *ctx, char *le)
 {
-    switch (type)
-    {
-    case ANNOT_LE_None: return "None";
-    case ANNOT_LE_Square: return "Square";
-    case ANNOT_LE_Circle: return "Circle";
-    case ANNOT_LE_Diamond: return "Diamond";
-    case ANNOT_LE_OpenArrow: return "OpenArrow";
-    case ANNOT_LE_ClosedArrow: return "ClosedArrow";
-    case ANNOT_LE_Butt: return "Butt";
-    case ANNOT_LE_ROpenArrow: return "ROpenArrow";
-    case ANNOT_LE_RClosedArrow: return "RClosedArrow";
-    case ANNOT_LE_Slash: return "Slash";
-    default: return "None";
-    }
-}
-
-//----------------------------------------------------------------------------
-// return string name of annotation type
-//----------------------------------------------------------------------------
-char *annot_type_str(int type)
-{
-    switch (type)
-    {
-    case ANNOT_TEXT: return "Text";
-    case ANNOT_LINK: return "Link";
-    case ANNOT_FREETEXT: return "FreeText";
-    case ANNOT_LINE: return "Line";
-    case ANNOT_SQUARE: return "Square";
-    case ANNOT_CIRCLE: return "Circle";
-    case ANNOT_POLYGON: return "Polygon";
-    case ANNOT_POLYLINE: return "PolyLine";
-    case ANNOT_HIGHLIGHT: return "Highlight";
-    case ANNOT_UNDERLINE: return "Underline";
-    case ANNOT_SQUIGGLY: return "Squiggly";
-    case ANNOT_STRIKEOUT: return "StrikeOut";
-    case ANNOT_STAMP: return "Stamp";
-    case ANNOT_CARET: return "Caret";
-    case ANNOT_INK: return "Ink";
-    case ANNOT_POPUP: return "Popup";
-    case ANNOT_FILEATTACHMENT: return "FileAttachment";
-    case ANNOT_SOUND: return "Sound";
-    case ANNOT_MOVIE: return "Movie";
-    case ANNOT_WIDGET: return "Widget";
-    case ANNOT_SCREEN: return "Screen";
-    case ANNOT_PRINTERMARK: return "PrinterMark";
-    case ANNOT_TRAPNET: return "TrapNet";
-    case ANNOT_WATERMARK: return "Watermark";
-    case ANNOT_3D: return "3D";
-    default: return "";
-    }
+    if (!le) return ANNOT_LE_None;
+    return pdf_line_ending_from_string(ctx, le);
 }
 
 //----------------------------------------------------------------------------
@@ -318,7 +270,7 @@ struct fz_annot_s *JM_AnnotMultiline(fz_context *ctx, pdf_page *page, PyObject *
         }
         pdf_set_annot_border(ctx, annot, width); // standard: width = 1
         pdf_set_annot_color(ctx, annot, 3, col); // standard: black
-        fz_expand_rect(&rect, 2 * width);
+        fz_expand_rect(&rect, 3 * width);
         pdf_set_annot_rect(ctx, annot, &rect);
     }
     fz_catch(ctx) fz_rethrow(ctx);
@@ -362,7 +314,7 @@ void JM_update_file_attachment_annot(fz_context *ctx, pdf_document *doc, pdf_ann
     static float yellow[3] = {1.0f, 1.0f, 0.0f};
     static float blue[3] = {0.0f, 0.0f, 1.0f};
     static float black[3] = {0.0f, 0.0f, 0.0f};
-    static float outline_thickness = 0.5;
+    static float outline_thickness = 0.9f;
     fz_display_list *dlist = NULL;
     fz_device *dev = NULL;
     fz_colorspace *cs = NULL;

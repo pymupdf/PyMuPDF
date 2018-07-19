@@ -1279,7 +1279,10 @@ def updateImage(annot):
                     del ntab[j:]
                     ntab.extend(dtab)
         return ntab
-        
+
+    # the following annot types are handled elsewhere
+    if annot.type[0] in range(2, 8):
+        return
     ap = annot._getAP() # get appearance text if present
     if not ap:
         return

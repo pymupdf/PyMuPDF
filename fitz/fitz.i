@@ -60,17 +60,16 @@
         val.parent = weakref.proxy(self)
         self._annot_refs[id(val)] = val
 
-        # check for unexpected /AP existence
-        if val._getAP():
-            print("warning: annot already has an /AP")
-            return val
-
         if val.type[0] == ANNOT_SQUARE:
-            make_rect_AP(val)
+            ap = _make_rect_AP(val)
         elif val.type[0] == ANNOT_CIRCLE:
-            make_circle_AP(val)
+            ap = _make_circle_AP(val)
         elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
-            make_line_AP(val)
+            ap = _make_line_AP(val)
+        else:
+            return val
+        r = Rect(0, 0, val.rect.width, val.rect.height)
+        val._checkAP(r, ap)
         %}
 %enddef
 
@@ -150,7 +149,7 @@ struct DeviceWrapper {
 %pythoncode %{
 import weakref
 from binascii import hexlify
-import sys
+import math
 %}
 %include version.i
 %include helper-other.i
@@ -1857,12 +1856,12 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         // page addLineAnnot
         //---------------------------------------------------------------------
-        ANNOTWRAP2(addLineAnnot, "Add 'Line' annot between points p1 and p2.")
+        ANNOTWRAP2(addLineAnnot, "Add 'Line' annot for points p1 and p2.")
         struct fz_annot_s *addLineAnnot(struct fz_point_s *p1, struct fz_point_s *p2)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_annot *annot = NULL;
-            float col[3] = {0,0,0};
+            float col[3] = {0, 0, 0};
             float width  = 1.0f;
             fz_point a = {p1->x, p1->y};
             fz_point b = {p2->x, p2->y};
@@ -1876,14 +1875,8 @@ struct fz_page_s {
                 pdf_set_annot_line(gctx, annot, a, b);
                 pdf_set_annot_border(gctx, annot, width);
                 pdf_set_annot_color(gctx, annot, 3, col);
-                fz_expand_rect(&r, 2 * width);
+                fz_expand_rect(&r, 3 * width);
                 pdf_set_annot_rect(gctx, annot, &r);
-                r.y1 -= r.y0;
-                r.x1 -= r.x0;
-                r.x0 = r.y0 = 0;
-                JM_make_ap_object(gctx, annot, &r, NULL);
-                pdf_dirty_annot(gctx, annot);
-                pdf_update_page(gctx, page);
             }
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
@@ -2015,18 +2008,15 @@ struct fz_page_s {
         struct fz_annot_s *addRectAnnot(struct fz_rect_s *rect)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            fz_annot *annot = NULL;
-            fz_var(annot);
+            fz_annot *fzannot = NULL;
+            fz_var(fzannot);
             fz_try(gctx)
             {
                 assert_PDF(page);
-                annot = JM_AnnotCircleOrRect(gctx, page, rect, PDF_ANNOT_SQUARE);
-                fz_rect drect = {0, 0, rect->x1 - rect->x0, rect->y1 - rect->y0};
-                JM_make_ap_object(gctx, annot, &drect, NULL);
-                pdf_update_page(gctx, page);
+                fzannot = JM_AnnotCircleOrRect(gctx, page, rect, PDF_ANNOT_SQUARE);
             }
             fz_catch(gctx) return NULL;
-            return fz_keep_annot(gctx, annot);
+            return fz_keep_annot(gctx, fzannot);
         }
 
         //---------------------------------------------------------------------
@@ -2036,18 +2026,15 @@ struct fz_page_s {
         struct fz_annot_s *addCircleAnnot(struct fz_rect_s *rect)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            fz_annot *annot = NULL;
-            fz_var(annot);
+            fz_annot *fzannot = NULL;
+            fz_var(fzannot);
             fz_try(gctx)
             {
                 assert_PDF(page);
-                annot = JM_AnnotCircleOrRect(gctx, page, rect, PDF_ANNOT_CIRCLE);
-                fz_rect drect = {0, 0, rect->x1 - rect->x0, rect->y1 - rect->y0};
-                JM_make_ap_object(gctx, annot, &drect, NULL);
-                pdf_update_page(gctx, page);
+                fzannot = JM_AnnotCircleOrRect(gctx, page, rect, PDF_ANNOT_CIRCLE);
             }
             fz_catch(gctx) return NULL;
-            return fz_keep_annot(gctx, annot);
+            return fz_keep_annot(gctx, fzannot);
         }
 
         //---------------------------------------------------------------------
@@ -2057,22 +2044,15 @@ struct fz_page_s {
         struct fz_annot_s *addPolylineAnnot(PyObject *points)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            fz_annot *annot = NULL;
-            fz_var(annot);
+            fz_annot *fzannot = NULL;
+            fz_var(fzannot);
             fz_try(gctx)
             {
                 assert_PDF(page);
-                annot = JM_AnnotMultiline(gctx, page, points, PDF_ANNOT_POLY_LINE);
-                fz_rect r;
-                fz_bound_annot(gctx, annot, &r);
-                r.y1 -= r.y0;
-                r.x1 -= r.x0;
-                r.x0 = r.y0 = 0;
-                JM_make_ap_object(gctx, annot, &r, NULL);
-                pdf_update_page(gctx, page);
+                fzannot = JM_AnnotMultiline(gctx, page, points, PDF_ANNOT_POLY_LINE);
             }
             fz_catch(gctx) return NULL;
-            return fz_keep_annot(gctx, annot);
+            return fz_keep_annot(gctx, fzannot);
         }
 
         //---------------------------------------------------------------------
@@ -2082,22 +2062,15 @@ struct fz_page_s {
         struct fz_annot_s *addPolygonAnnot(PyObject *points)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            fz_annot *annot = NULL;
-            fz_var(annot);
+            fz_annot *fzannot = NULL;
+            fz_var(fzannot);
             fz_try(gctx)
             {
                 assert_PDF(page);
-                annot = JM_AnnotMultiline(gctx, page, points, PDF_ANNOT_POLYGON);
-                fz_rect r;
-                fz_bound_annot(gctx, annot, &r);
-                r.y1 -= r.y0;
-                r.x1 -= r.x0;
-                r.x0 = r.y0 = 0;
-                JM_make_ap_object(gctx, annot, &r, NULL);
-                pdf_update_page(gctx, page);
+                fzannot = JM_AnnotMultiline(gctx, page, points, PDF_ANNOT_POLYGON);
             }
             fz_catch(gctx) return NULL;
-            return fz_keep_annot(gctx, annot);
+            return fz_keep_annot(gctx, fzannot);
         }
 
         //---------------------------------------------------------------------
@@ -2690,11 +2663,12 @@ fannot._erase()
                 // 2. contents object
                 //-------------------------------------------------------------
                 nres = fz_new_buffer(gctx, 50);       // buffer for Do-command
-                fz_append_string(gctx, nres, "/");    // Do-command
+                fz_append_string(gctx, nres, " q /");    // Do-command
                 fz_append_string(gctx, nres, data);
-                fz_append_string(gctx, nres, " Do ");
+                fz_append_string(gctx, nres, " Do Q ");
 
-                JM_extend_contents(gctx, pdfout, tpageref, nres, overlay);
+                //JM_extend_contents(gctx, pdfout, tpageref, nres, overlay);
+                JM_insert_contents(gctx, pdfout, tpageref, nres, overlay);
                 fz_drop_buffer(gctx, nres);
             }
             fz_catch(gctx) return -1;
@@ -2705,9 +2679,19 @@ fannot._erase()
         // insert an image
         //---------------------------------------------------------------------
         FITZEXCEPTION(insertImage, !result)
-        PARENTCHECK(insertImage)
+        %pythonprepend insertImage %{
+        CheckParent(self)
+        imglst = self.parent.getPageImageList(self.number)
+        ilst = [i[7] for i in imglst]
+        n = "fitzImg"
+        i = 0
+        _imgname = n + "0"
+        while _imgname in ilst:
+            i += 1
+            _imgname = n + str(i)%}
         %feature("autodoc", "Insert a new image into a rectangle.") insertImage;
-        PyObject *insertImage(struct fz_rect_s *rect, const char *filename=NULL, struct fz_pixmap_s *pixmap = NULL, PyObject *stream = NULL, int overlay = 1)
+        PyObject *insertImage(struct fz_rect_s *rect, const char *filename=NULL, struct fz_pixmap_s *pixmap = NULL, PyObject *stream = NULL, int overlay = 1,
+        char *_imgname = NULL)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_document *pdf;
@@ -2721,12 +2705,8 @@ fannot._erase()
             unsigned char *streamdata = NULL;
             size_t streamlen = JM_CharFromBytesOrArray(stream, &streamdata);
 
-            const char *template = "\nh q %g 0 0 %g %g %g cm /%s Do Q\n";
-            Py_ssize_t c_len = 0;
-            char name[50], md5hex[33];           // referencing the image
-            unsigned char md5[16];               // md5 of the image
+            const char *template = " q %g 0 0 %g %g %g cm /%s Do Q ";
             char *cont = NULL;
-            const char *name_templ = "fz%s";     // image ref template
             Py_ssize_t name_len = 0;
             fz_image *zimg = NULL, *image = NULL;
             int parm_count = 0;
@@ -2812,18 +2792,14 @@ fannot._erase()
                         image = fz_new_image_from_pixmap(gctx, pixmap, mask);
                     }
                 }
-                // put image into the PDF & get its md5
+                // put image in PDF
                 ref = pdf_add_image(gctx, pdf, image, 0);
-                JM_md5_image(gctx, image, md5);
-                hexlify(16, md5, md5hex);                  // md5 as 32 hex bytes
-                
-                snprintf(name, 50, name_templ, md5hex);    // our img ref
-                pdf_dict_puts(gctx, subres, name, ref);    // put in resources
+                pdf_dict_puts(gctx, subres, _imgname, ref);  // store ref-name
 
-                // retrieve and update contents stream
-                nres = fz_new_buffer(gctx, 1024);
-                fz_append_printf(gctx, nres, template, W, H, X, Y, name);
-                JM_extend_contents(gctx, pdf, page->obj, nres, overlay);
+                // prep contents stream buffer with invoking command
+                nres = fz_new_buffer(gctx, 50);
+                fz_append_printf(gctx, nres, template, W, H, X, Y, _imgname);
+                JM_insert_contents(gctx, pdf, page->obj, nres, overlay);
                 fz_drop_buffer(gctx, nres);
             }
             fz_always(gctx)
@@ -4683,7 +4659,7 @@ struct fz_annot_s
         }
 
         //---------------------------------------------------------------------
-        // annotation update appearance stream source
+        // annotation update /AP stream
         //---------------------------------------------------------------------
         FITZEXCEPTION(_setAP, !result)
         PARENTCHECK(_setAP)
@@ -4698,10 +4674,31 @@ struct fz_annot_s
                 if (!annot->ap) THROWMSG("annot has no /AP object");
                 char *c = NULL;
                 size_t len = JM_CharFromBytesOrArray(ap, &c);
-                if (len < 1) THROWMSG("invalid argument type");
+                if (len < 1) THROWMSG("invalid content argument");
                 res = fz_new_buffer_from_shared_data(gctx, c, len);
                 JM_update_stream(gctx, annot->page->doc, annot->ap, res);
                 pdf_dirty_annot(gctx, annot);
+                pdf_update_page(gctx, annot->page);
+            }
+            fz_catch(gctx) return NULL;
+            return NONE;
+        }
+
+        //---------------------------------------------------------------------
+        // annotation create or update /AP object
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(_checkAP, !result)
+        PARENTCHECK(_checkAP)
+        %feature("autodoc","Check and update /AP object of annot") _checkAP;
+        PyObject *_checkAP(struct fz_rect_s *rect, char *c)
+        {
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
+            fz_try(gctx)
+            {
+                assert_PDF(annot);
+                JM_make_ap_object(gctx, $self, rect, c);
+                pdf_dirty_annot(gctx, annot);
+                pdf_update_page(gctx, annot->page);
             }
             fz_catch(gctx) return NULL;
             return NONE;
@@ -4710,15 +4707,56 @@ struct fz_annot_s
         //---------------------------------------------------------------------
         // annotation set rectangle
         //---------------------------------------------------------------------
-        PARENTCHECK(setRect)
-        %feature("autodoc","setRect: changes the annot's rectangle") setRect;
-        void setRect(struct fz_rect_s *r)
+        void _setRect(struct fz_rect_s *rect)
         {
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
-            fz_try(gctx) if (annot) pdf_set_annot_rect(gctx, annot, r);
-            fz_catch(gctx) return;
+            if (!annot) return;
+            fz_try(gctx)
+            {
+                pdf_set_annot_rect(gctx, annot, rect);
+            }
+            fz_catch(gctx) {;}
             return;
         }
+        %pythoncode %{
+        def setRect(self, rect):
+            """Change the annot's rectangle."""
+            CheckParent(self)
+            if rect.isEmpty or rect.isInfinite:
+                raise ValueError("Rect must be finite and not empty.")
+            # only handle Circle, Square, Line, PolyLine and Polygon here
+            if self.type[0] not in range(2, 8):
+                self._setRect(rect)
+                return
+
+            if self.type[0] == ANNOT_CIRCLE:
+                self._setRect(rect)
+                ap = _make_circle_AP(self)
+                self._checkAP(Rect(0, 0, rect.width, rect.height), ap)
+                return
+
+            if self.type[0] == ANNOT_SQUARE:
+                self._setRect(rect)
+                ap = _make_rect_AP(self)
+                self._checkAP(Rect(0, 0, rect.width, rect.height), ap)
+                return
+
+            orect = self.rect
+            m = Matrix(rect.width / orect.width, rect.height / orect.height)
+            
+            # now transform the points of the annot
+            ov = self.vertices
+            nv = [(Point(v) - orect.tl) * m + rect.tl for v in ov] # new points
+            r0 = Rect(nv[0], nv[0])              # recalculate new rectangle
+            for v in nv[1:]:
+                r0 |= v                          # enveloping all points
+            w = self.border["width"] * 3         # allow for add'l space
+            r0 += (-w, -w, w, w)                 # for line end symbols
+            self._setRect(r0)                    # this is the final rect
+            self._setVertices(nv)                # put the points in annot
+            ap = _make_line_AP(self, nv, r0)
+            self._checkAP(Rect(0, 0, r0.width, r0.height), ap)
+        %}
 
         //---------------------------------------------------------------------
         // annotation vertices (for "Line", "Polgon", "Ink", etc.
@@ -4729,16 +4767,16 @@ struct fz_annot_s
         PyObject *vertices()
         {
             PyObject *res, *list;
-            res = PyList_New(0);                      // create Python list
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
-            if (!annot) return res;                   // not a PDF!
+            if (!annot) return NONE;                  // not a PDF!
+
             //----------------------------------------------------------------
             // The following objects occur in different annotation types.
             // So we are sure that o != NULL occurs at most once.
             // Every pair of floats is one point, that needs to be separately
             // transformed with the page's transformation matrix.
             //----------------------------------------------------------------
-            pdf_obj *o = pdf_dict_gets(gctx, annot->obj, "Vertices");
+            pdf_obj *o = pdf_dict_get(gctx, annot->obj, PDF_NAME_Vertices);
             if (!o) o = pdf_dict_get(gctx, annot->obj, PDF_NAME_L);
             if (!o) o = pdf_dict_get(gctx, annot->obj, PDF_NAME_QuadPoints);
             if (!o) o = pdf_dict_gets(gctx, annot->obj, "CL");
@@ -4746,39 +4784,88 @@ struct fz_annot_s
             fz_point point;            // point object to work with
             fz_matrix page_ctm;        // page transformation matrix
             pdf_page_transform(gctx, annot->page, NULL, &page_ctm);
-            
+
             if (o)                     // anything found yet?
-                {
+            {
+                res = PyList_New(0);   // create Python list
                 n = pdf_array_len(gctx, o);
                 for (i = 0; i < n; i += 2)
-                    {
-                        point.x = pdf_to_real(gctx, pdf_array_get(gctx, o, i));
-                        point.y = pdf_to_real(gctx, pdf_array_get(gctx, o, i+1));
-                        fz_transform_point(&point, &page_ctm);
-                        PyList_Append(res, Py_BuildValue("ff", point.x, point.y));
-                    }
-                return res;
+                {
+                    point.x = pdf_to_real(gctx, pdf_array_get(gctx, o, i));
+                    point.y = pdf_to_real(gctx, pdf_array_get(gctx, o, i+1));
+                    fz_transform_point(&point, &page_ctm);
+                    PyList_Append(res, Py_BuildValue("ff", point.x, point.y));
                 }
+                return res;
+            }
             // nothing found so far - maybe an Ink annotation?
             pdf_obj *il_o = pdf_dict_get(gctx, annot->obj, PDF_NAME_InkList);
-            if (!il_o) return res;                    // no inkList
+            if (!il_o) return NONE;                   // no inkList
+            res = PyList_New(0);                      // create result list
             n = pdf_array_len(gctx, il_o);
             for (i = 0; i < n; i++)
+            {
+                list = PyList_New(0);
+                o = pdf_array_get(gctx, il_o, i);
+                int m = pdf_array_len(gctx, o);
+                for (j = 0; j < m; j += 2)
                 {
-                    list = PyList_New(0);
-                    o = pdf_array_get(gctx, il_o, i);
-                    int m = pdf_array_len(gctx, o);
-                    for (j = 0; j < m; j += 2)
-                        {
-                        point.x = pdf_to_real(gctx, pdf_array_get(gctx, o, j));
-                        point.y = pdf_to_real(gctx, pdf_array_get(gctx, o, j+1));
-                        fz_transform_point(&point, &page_ctm);
-                        PyList_Append(list, Py_BuildValue("ff", point.x, point.y));
-                        }
-                    PyList_Append(res, list);
-                    Py_DECREF(list);
+                    point.x = pdf_to_real(gctx, pdf_array_get(gctx, o, j));
+                    point.y = pdf_to_real(gctx, pdf_array_get(gctx, o, j+1));
+                    fz_transform_point(&point, &page_ctm);
+                    PyList_Append(list, Py_BuildValue("ff", point.x, point.y));
                 }
+                PyList_Append(res, list);
+                Py_DECREF(list);
+            }
             return res;
+        }
+
+        //---------------------------------------------------------------------
+        // annotation set vertices
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(_setVertices, !result)
+        PARENTCHECK(_setVertices)
+        %feature("autodoc","Change the annot's vertices. Only for 'Line', 'PolyLine' and 'Polygon' types.") _setVertices;
+        PyObject *_setVertices(PyObject *vertices)
+        {
+            pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
+            if (!annot) return NONE;
+            int type = pdf_annot_type(gctx, annot);
+            if (!INRANGE(type, 3, 7)) return NONE;
+            if (INRANGE(type, 4, 5)) return NONE; // only handling 3 types
+            fz_try(gctx)
+            {
+                fz_point a, b;
+                PyObject *p = NULL;
+                if (type == PDF_ANNOT_LINE)
+                {
+                    p = PySequence_ITEM(vertices, 0);
+                    a.x = (float) PyFloat_AsDouble(PySequence_ITEM(p, 0));
+                    a.y = (float) PyFloat_AsDouble(PySequence_ITEM(p, 1));
+                    Py_DECREF(p);
+                    p = PySequence_ITEM(vertices, 1);
+                    b.x = (float) PyFloat_AsDouble(PySequence_ITEM(p, 0));
+                    b.y = (float) PyFloat_AsDouble(PySequence_ITEM(p, 1));
+                    Py_DECREF(p);
+                    pdf_set_annot_line(gctx, annot, a, b);
+                }
+                else
+                {
+                    int i, n = PySequence_Size(vertices);
+                    for (i = 0; i < n; i++)
+                    {
+                        p = PySequence_ITEM(vertices, i);
+                        a.x = (float) PyFloat_AsDouble(PySequence_ITEM(p, 0));
+                        a.y = (float) PyFloat_AsDouble(PySequence_ITEM(p, 1));
+                        Py_DECREF(p);
+                        pdf_set_annot_vertex(gctx, annot, i, a);
+                    }
+                }
+
+            }
+            fz_catch(gctx) return NULL;
+            return NONE;
         }
 
         //---------------------------------------------------------------------
@@ -4793,39 +4880,35 @@ struct fz_annot_s
             if (!annot) return NONE;
              
             PyObject *res = PyDict_New();
-            PyObject *bc = PyList_New(0);        // fill colors
-            PyObject *fc = PyList_New(0);        // stroke colors
-            // default: '{"stroke": [], "fill": []}'
-            PyDict_SetItemString(res, "stroke", bc);
-            PyDict_SetItemString(res, "fill", fc);
+            PyObject *bc = PyList_New(0);        // stroke colors
+            PyObject *fc = PyList_New(0);        // fill colors
 
-            PyObject *col_o;
             int i;
             float col;
             pdf_obj *o = pdf_dict_get(gctx, annot->obj, PDF_NAME_C);
-            if ((o != NULL) & (pdf_is_array(gctx, o)))
-                {
+            if (pdf_is_array(gctx, o))
+            {
                 int n = pdf_array_len(gctx, o);
                 for (i = 0; i < n; i++)
-                    {
+                {
                     col = pdf_to_real(gctx, pdf_array_get(gctx, o, i));
-                    col_o = PyFloat_FromDouble((double) col);
-                    PyList_Append(bc, col_o);
-                    }
+                    PyList_Append(bc, Py_BuildValue("f", col));
                 }
+            }
             PyDict_SetItemString(res, "stroke", bc);
+
             o = pdf_dict_gets(gctx, annot->obj, "IC");
-            if ((o != NULL) & (pdf_is_array(gctx, o)))
-                {
+            if (pdf_is_array(gctx, o))
+            {
                 int n = pdf_array_len(gctx, o);
                 for (i = 0; i < n; i++)
-                    {
+                {
                     col = pdf_to_real(gctx, pdf_array_get(gctx, o, i));
-                    col_o = PyFloat_FromDouble((double) col);
-                    PyList_Append(fc, col_o);
-                    }
+                    PyList_Append(fc, Py_BuildValue("f", col));
                 }
+            }
             PyDict_SetItemString(res, "fill", fc);
+
             Py_DECREF(bc);
             Py_DECREF(fc);
             return res;
@@ -4857,6 +4940,18 @@ struct fz_annot_s
         //---------------------------------------------------------------------
         PARENTCHECK(setColors)
         %feature("autodoc","setColors(dict)\nChanges the 'stroke' and 'fill' colors of an annotation. If provided, values must be lists of up to 4 floats.") setColors;
+        %pythonappend setColors %{
+        if self.type[0] not in range(2, 8):
+            return
+        r = Rect(0, 0, self.rect.width, self.rect.height)
+        if self.type[0] == ANNOT_CIRCLE:
+            ap = _make_circle_AP(self)
+        elif self.type[0] == ANNOT_SQUARE:
+            ap = _make_rect_AP(self)
+        else:
+            ap = _make_line_AP(self)
+        self._checkAP(r, ap)
+        %}
         void setColors(PyObject *colors)
         {
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
@@ -4864,7 +4959,7 @@ struct fz_annot_s
             if (!PyDict_Check(colors)) return;
             if (pdf_annot_type(gctx, annot) == PDF_ANNOT_WIDGET)
             {
-                PySys_WriteStdout("use 'updateWidget' to change form field colors\n");
+                PySys_WriteStdout("use 'updateWidget' to change form fields\n");
                 return;
             }
             PyObject *ccol, *icol;
@@ -4913,10 +5008,13 @@ struct fz_annot_s
         %pythoncode %{@property%}
         PyObject *lineEnds()
         {
-            PyObject *res;
-            res = PyDict_New();                       // create Python Dict
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
-            if (!annot) return res;                   // no a PDF: empty dict
+            if (!annot) return NONE;                   // no a PDF
+            int i = pdf_annot_type(gctx, annot);
+            // return nothing for invalid annot types
+            if (!INRANGE(i, 2, 7)) return NONE;
+            if (INRANGE(i, 4, 5)) return NONE;
+            PyObject *res = Py_BuildValue("[ii]", 0, 0); // stanard
             pdf_obj *o = pdf_dict_gets(gctx, annot->obj, "LE");
             if (!o) return res;                       // no LE: empty dict
             char *lstart = NULL;
@@ -4928,10 +5026,8 @@ struct fz_annot_s
                 if (pdf_array_len(gctx, o) > 1)
                     lend   = (char *) pdf_to_name(gctx, pdf_array_get(gctx, o, 1));
                 }
-
-            PyDict_SetItemString(res, "start", Py_BuildValue("s", lstart));
-
-            PyDict_SetItemString(res, "end", Py_BuildValue("s", lend));
+            PyList_SetItem(res, 0, Py_BuildValue("i", JM_le_value(gctx, lstart)));
+            PyList_SetItem(res, 1, Py_BuildValue("i", JM_le_value(gctx, lend)));
             return res;
         }
 
@@ -4939,24 +5035,23 @@ struct fz_annot_s
         // annotation set line ends
         //---------------------------------------------------------------------
         PARENTCHECK(setLineEnds)
+        %pythonappend setLineEnds %{
+        if self.type[0] not in range(2, 8):
+            return
+        if self.type[0] in (ANNOT_CIRCLE, ANNOT_SQUARE):
+            return
+        r = Rect(0, 0, self.rect.width, self.rect.height)
+        ap = _make_line_AP(self)
+        self._checkAP(r, ap)
+        %}
         void setLineEnds(int start, int end)
         {
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
-            if (annot && pdf_annot_has_line_ending_styles(gctx, annot))
-            {
-                pdf_document *pdf = annot->page->doc;
-                pdf_obj *o_s = pdf_new_name(gctx, pdf, annot_le_style_str(start));
-                pdf_obj *o_e = pdf_new_name(gctx, pdf, annot_le_style_str(end));
-                pdf_obj *o_arr = pdf_new_array(gctx, pdf, 2);
-                pdf_array_push_drop(gctx, o_arr, o_s);
-                pdf_array_push_drop(gctx, o_arr, o_e);
-                pdf_dict_puts_drop(gctx, annot->obj, "LE", o_arr);
-                pdf_dirty_annot(gctx, annot);
-            }
-            else if (annot)
-            {
+            if (!annot) return;
+            if (pdf_annot_has_line_ending_styles(gctx, annot))
+                pdf_set_annot_line_ending_styles(gctx, annot, start, end);
+            else
                 PySys_WriteStdout("annot type has no line ends\n");
-            }
         }
 
         //---------------------------------------------------------------------
@@ -4969,7 +5064,7 @@ struct fz_annot_s
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
             if (!annot) return NONE;             // not a PDF
             int type = pdf_annot_type(gctx, annot);
-            char *c = annot_type_str(type);
+            const char *c = pdf_string_from_annot_type(gctx, type);
             pdf_obj *o = pdf_dict_gets(gctx, annot->obj, "IT");
             if (!o || !pdf_is_name(gctx, o))
                 return Py_BuildValue("is", type, c);         // no IT entry
@@ -5458,6 +5553,7 @@ struct fz_annot_s
         // set annotation border
         //---------------------------------------------------------------------
         PARENTCHECK(setBorder)
+        %pythonappend setBorder %{_upd_my_AP(self)%}
         PyObject *setBorder(PyObject *border)
         {
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
@@ -5598,20 +5694,14 @@ struct fz_annot_s
         PARENTCHECK(getPixmap)
         struct fz_pixmap_s *getPixmap(struct fz_matrix_s *matrix = NULL, struct fz_colorspace_s *colorspace = NULL, int alpha = 0)
         {
-            struct fz_matrix_s *ctm = NULL;
-            struct fz_colorspace_s *cs = NULL;
+            struct fz_matrix_s *ctm = (fz_matrix *) &fz_identity;
+            struct fz_colorspace_s *cs = fz_device_rgb(gctx);
             fz_pixmap *pix = NULL;
-
             if (matrix) ctm = matrix;
-            else ctm = (fz_matrix *) &fz_identity;
-
             if (colorspace) cs = colorspace;
-            else cs = fz_device_rgb(gctx);
 
             fz_try(gctx)
-            {
                 pix = fz_new_pixmap_from_annot(gctx, $self, ctm, cs, alpha);
-            }
             fz_catch(gctx) return NULL;
             return pix;
         }

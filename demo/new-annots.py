@@ -33,7 +33,7 @@ red    = (1, 0, 0)
 blue   = (0, 0, 1)
 yellow = (1, 1, 0)
 colors = {"stroke": red, "fill": yellow}
-border = {"width": 1}
+border = {"width": 1, "dashes": [1, 3]}
 displ = fitz.Rect(0, 50, 0, 50)
 pos = fitz.Point(50, 100)
 t1 = u"têxt üsès Lätiñ charß,\nEuro: €, mu: µ, superscripts: ²³!"
@@ -75,39 +75,39 @@ print("added 'Underline'")
 
 r = r2 + displ
 annot = page.addPolylineAnnot([r.bl, r.tr, r.br, r.tl])
-annot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Diamond) # a no-op currently
+annot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Diamond)
+annot.setBorder(border)
 annot.setColors(colors)
-annot.updateImage()
 print_descr(annot.rect, annot)
 print("added 'PolyLine'")
 
 r+= displ
 annot = page.addPolygonAnnot([r.bl, r.tr, r.br, r.tl])
+annot.setBorder(border)
 annot.setColors(colors)
-annot.updateImage()
+annot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Diamond)
 print_descr(annot.rect, annot)
 print("added 'Polygon'")
 
 r+= displ
 annot = page.addLineAnnot(r.tr, r.bl)
-annot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Diamond) # a no-op currently
+annot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Diamond)
+annot.setBorder(border)
 annot.setColors(colors)
-annot.updateImage()
 print_descr(annot.rect, annot)
 print("added 'Line'")
 
 r+= displ
 annot = page.addRectAnnot(r)
+annot.setBorder(border)
 annot.setColors(colors)
-annot.updateImage()
 print_descr(annot.rect, annot)
 print("added 'Square'")
 
-
 r+= displ
 annot = page.addCircleAnnot(r)
+annot.setBorder(border)
 annot.setColors(colors)
-annot.updateImage()
 print_descr(annot.rect, annot)
 print("added 'Circle'")
 
@@ -116,5 +116,4 @@ annot = page.addFileAnnot(r.tl, b"just anything for testing", "testdata.txt")
 print_descr(annot.rect, annot)
 print("added 'FileAttachment'")
 
-doc.save("new-annots.pdf", clean=True)
-doc.close()
+doc.save("new-annots.pdf", garbage=4, deflate=True, clean=True)
