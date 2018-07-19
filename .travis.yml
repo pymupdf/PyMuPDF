@@ -15,7 +15,7 @@ matrix:
   include:
   - os: linux
     sudo: required
-    python: '3.6'
+    python: '3.7'
     services:
     - docker
     env: PIP=pip
@@ -38,7 +38,7 @@ matrix:
       prefix=/usr/local install && cd .."
     - export CIBW_ENVIRONMENT='CFLAGS=-fPIC'
 install:
-- "$PIP install cibuildwheel==0.8.0"
+- "$PIP install cibuildwheel==0.9.3"
 - mkdir mupdf && wget -q $MUPDF -O - | tar zx -C mupdf --strip-components=1
 - cp fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
 - cp fitz/_pdf-op-filter.c mupdf/source/pdf/pdf-op-filter.c
