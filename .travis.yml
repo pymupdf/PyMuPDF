@@ -1,6 +1,7 @@
 language: python
-dist: trusty
-sudo: false
+python: 3.7
+dist: xenial
+sudo: true
 cache:
   directories:
   - "$HOME/Library/Caches/Homebrew"
