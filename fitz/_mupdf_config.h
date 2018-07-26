@@ -60,7 +60,7 @@
 #define TOFU // <=== PyMuPDF
 
 /* To skip the CJK font, enable: (this implicitly enables TOFU_CJK_EXT and TOFU_CJK_LANG) */
-#define TOFU_CJK // <=== PyMuPDF
+// #define TOFU_CJK // <=== PyMuPDF
 
 /* To skip CJK Extension A, enable: (this implicitly enables TOFU_CJK_LANG) */
 #define TOFU_CJK_EXT // <=== PyMuPDF
