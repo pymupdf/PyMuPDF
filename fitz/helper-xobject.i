@@ -78,7 +78,7 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
 }
 
 //-----------------------------------------------------------------------------
-// Insert a buffer as a new separate /Contents object.
+// Insert a buffer as a new separate /Contents object of a page.
 //-----------------------------------------------------------------------------
 void JM_insert_contents(fz_context *ctx, pdf_document *pdf,
                         pdf_obj *pageref, fz_buffer *newcont, int overlay)
@@ -100,22 +100,20 @@ void JM_insert_contents(fz_context *ctx, pdf_document *pdf,
             if (overlay)
             {
                 pdf_array_push(ctx, carr, contents);
-                pdf_array_push(ctx, carr, newconts);
+                pdf_array_push_drop(ctx, carr, newconts);
             }
             else 
             {
-                pdf_array_push(ctx, carr, newconts);
+                pdf_array_push_drop(ctx, carr, newconts);
                 pdf_array_push(ctx, carr, contents);
             }
             pdf_dict_put_drop(ctx, pageref, PDF_NAME_Contents, carr);
         }
     }
-    fz_always(ctx)
-    {;}
     fz_catch(ctx) fz_rethrow(ctx);
     return;
 }
-
+/*-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // Append / prepend a buffer to the /Contents of a page.
 //-----------------------------------------------------------------------------
@@ -162,7 +160,7 @@ void JM_extend_contents(fz_context *ctx, pdf_document *pdfout,
     fz_catch(ctx) fz_rethrow(ctx);
     return;
 }
-
+-----------------------------------------------------------------------------*/
 //-----------------------------------------------------------------------------
 // Create / check AP object for the annotation
 // Always reset /BBOX to rect, /Matrix to the identity matrix.

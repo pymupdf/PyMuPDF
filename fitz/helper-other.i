@@ -32,7 +32,7 @@ fz_buffer *JM_deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 
 //----------------------------------------------------------------------------
 // update a stream object
-// use compressed stream where beneficial
+// compress stream where beneficial
 //----------------------------------------------------------------------------
 void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffer *buffer)
 {
@@ -103,30 +103,6 @@ JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_mat
 }
 
 //-----------------------------------------------------------------------------
-// md5 of an image
-//-----------------------------------------------------------------------------
-void
-JM_md5_image(fz_context *ctx, fz_image *image, unsigned char digest[16])
-{
-    fz_pixmap *pixmap;
-    fz_md5 state;
-    int h;
-    unsigned char *d;
-
-    pixmap = fz_get_pixmap_from_image(ctx, image, NULL, NULL, 0, 0);
-    fz_md5_init(&state);
-    d = pixmap->samples;
-    h = pixmap->h;
-    while (h--)
-    {
-        fz_md5_update(&state, d, pixmap->w * pixmap->n);
-        d += pixmap->stride;
-    }
-    fz_md5_final(&state, digest);
-    fz_drop_pixmap(ctx, pixmap);
-}
-
-//-----------------------------------------------------------------------------
 // return hex characters for n characters in input 'in'
 //-----------------------------------------------------------------------------
 void hexlify(int n, unsigned char *in, unsigned char *out)
@@ -141,46 +117,6 @@ void hexlify(int n, unsigned char *in, unsigned char *out)
         out[2*i + 1] = hdigit[i2];
     }
     out[2*n] = 0;
-}
-
-//----------------------------------------------------------------------------
-// Return set(dict.keys()) <= set([vkeys, ...])
-// keys of dict must be string or unicode in Py2 and string in Py3!
-// Parameters:
-// dict - the Python dictionary object to be checked
-// vkeys - a null-terminated list of keys (char *)
-//----------------------------------------------------------------------------
-int checkDictKeys(PyObject *dict, const char *vkeys, ...)
-{
-    int i, j, rc;
-    PyObject *dkeys = PyDict_Keys(dict);              // = dict.keys()
-    if (!dkeys) return 0;                             // no valid dictionary
-    j = PySequence_Size(dkeys);                       // len(dict.keys())
-    PyObject *validkeys = PyList_New(0);            // make list of valid keys
-    va_list ap;                                       // def var arg list
-    va_start(ap, vkeys);                              // start of args
-    while (vkeys != 0)                                // reached end yet?
-        { // build list of valid keys to check against
-#if PY_MAJOR_VERSION < 3
-        PyList_Append(validkeys, PyBytes_FromString(vkeys));    // Python 2
-#else
-        PyList_Append(validkeys, PyUnicode_FromString(vkeys));  // python 3
-#endif
-        vkeys = va_arg(ap, const char *);             // get next char string
-        }
-    va_end(ap);                                       // end the var args loop
-    rc = 1;                                           // prepare for success
-    for (i = 0; i < j; i++)
-    {   // loop through dictionary keys
-        if (!PySequence_Contains(validkeys, PySequence_GetItem(dkeys, i)))
-            {
-            rc = 0;
-            break;
-            }
-    }
-    Py_DECREF(validkeys);
-    Py_DECREF(dkeys);
-    return rc;
 }
 
 //----------------------------------------------------------------------------
@@ -218,17 +154,18 @@ size_t JM_CharFromBytesOrArray(PyObject *stream, char **data)
 //----------------------------------------------------------------------------
 char *JM_Python_str_AsChar(PyObject *str)
 {
+    if (!str) return NULL;
 #if PY_VERSION_HEX >= 0x03000000
   char *newstr = NULL;
-  str = PyUnicode_AsUTF8String(str);
-  if (str)
+  PyObject *xstr = PyUnicode_AsUTF8String(str);
+  if (xstr)
   {
     char *cstr;
     Py_ssize_t len;
-    PyBytes_AsStringAndSize(str, &cstr, &len);
+    PyBytes_AsStringAndSize(xstr, &cstr, &len);
     newstr = (char *) malloc(len+1);
     memcpy(newstr, cstr, len+1);
-    Py_XDECREF(str);
+    Py_XDECREF(xstr);
   }
   return newstr;
 #else

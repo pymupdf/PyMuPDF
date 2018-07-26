@@ -114,6 +114,7 @@
 #include <pdf.h>
 #include <zlib.h>
 #include <time.h>
+#include <fitz/config.h>
 char *JM_Python_str_AsChar(PyObject *str);
 %}
 
@@ -2667,7 +2668,6 @@ fannot._erase()
                 fz_append_string(gctx, nres, data);
                 fz_append_string(gctx, nres, " Do Q ");
 
-                //JM_extend_contents(gctx, pdfout, tpageref, nres, overlay);
                 JM_insert_contents(gctx, pdfout, tpageref, nres, overlay);
                 fz_drop_buffer(gctx, nres);
             }
@@ -5397,79 +5397,65 @@ struct fz_annot_s
         PyObject *setInfo(PyObject *info)
         {
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
-            pdf_document *pdf = NULL;
-            if (annot) pdf = annot->page->doc;
-            PyObject *value = NULL;
             char *uc = NULL;
-            // ensure we have valid dictionary keys ...
-            int dictvalid = checkDictKeys(info, "content", "title", "modDate", "creationDate", "subject", "name", 0);
+
             // use this to indicate a 'markup' annot type
             int is_markup = pdf_annot_has_author(gctx, annot);
             fz_var(is_markup);
             fz_var(annot);
-            fz_var(pdf);
             fz_try(gctx)
             {
                 assert_PDF(annot);
                 if (!PyDict_Check(info))
                     THROWMSG("info not a dict");
-                if (!dictvalid)
-                    THROWMSG("invalid key in info dict");
 
                 // contents
-                value = PyDict_GetItemString(info, "content");
-                if (value)
+                uc = JM_Python_str_AsChar(PyDict_GetItemString(info, "content"));
+                if (uc)
                 {
-                    uc = JM_Python_str_AsChar(value);
-                    if (uc) pdf_set_annot_contents(gctx, annot, uc);
+                    pdf_set_annot_contents(gctx, annot, uc);
                     JM_Python_str_DelForPy3(uc);
                 }
-                Py_XDECREF(value);
 
-                // title (= author)
-                value = PyDict_GetItemString(info, "title");
-                if (value && is_markup)
+                if (is_markup)
                 {
-                    uc = JM_Python_str_AsChar(value);
-                    if (uc) pdf_set_annot_author(gctx, annot, uc);
-                    JM_Python_str_DelForPy3(uc);
-                }
-                Py_XDECREF(value);
+                    // title (= author)
+                    uc = JM_Python_str_AsChar(PyDict_GetItemString(info, "title"));
+                    if (uc)
+                    {
+                        pdf_set_annot_author(gctx, annot, uc);
+                        JM_Python_str_DelForPy3(uc);
+                    }
 
-                // creation date
-                value = PyDict_GetItemString(info, "creationDate");
-                if (value && is_markup)
-                {
-                    uc = JM_Python_str_AsChar(value);
-                    if (uc) pdf_dict_puts_drop(gctx, annot->obj, "CreationDate",
-                                       pdf_new_string(gctx, pdf, uc, strlen(uc)));
-                    JM_Python_str_DelForPy3(uc);
-                }
-                Py_XDECREF(value);
+                    // creation date
+                    uc = JM_Python_str_AsChar(PyDict_GetItemString(info,
+                                              "creationDate"));
+                    if (uc)
+                    {
+                        pdf_dict_put_text_string(gctx, annot->obj,
+                                                 PDF_NAME_CreationDate, uc);
+                        JM_Python_str_DelForPy3(uc);
+                    }
 
-                // mod date
-                value = PyDict_GetItemString(info, "modDate");
-                if (value && is_markup)
-                {
-                    uc = JM_Python_str_AsChar(value);
-                    if (uc) pdf_dict_put_drop(gctx, annot->obj, PDF_NAME_M,
-                                      pdf_new_string(gctx, pdf, uc, strlen(uc)));
-                    JM_Python_str_DelForPy3(uc);
-                }
-                Py_XDECREF(value);
+                    // mod date
+                    uc = JM_Python_str_AsChar(PyDict_GetItemString(info, "modDate"));
+                    if (uc)
+                    {
+                        pdf_dict_put_text_string(gctx, annot->obj,
+                                                 PDF_NAME_M, uc);
+                        JM_Python_str_DelForPy3(uc);
+                    }
 
-                // subject
-                value = PyDict_GetItemString(info, "subject");
-                if (value && is_markup)
-                {
-                    uc = JM_Python_str_AsChar(value);
-                    if (uc) pdf_dict_puts_drop(gctx, annot->obj, "Subj",
-                                       pdf_new_string(gctx, pdf, uc, strlen(uc)));
-                    JM_Python_str_DelForPy3(uc);
+                    // subject
+                    uc = JM_Python_str_AsChar(PyDict_GetItemString(info, "subject"));
+                    if (uc)
+                    {
+                        pdf_dict_puts_drop(gctx, annot->obj, "Subj",
+                                           pdf_new_text_string(gctx, NULL, uc));
+                        JM_Python_str_DelForPy3(uc);
+                    }
                 }
-                Py_XDECREF(value);
             }
-            fz_always(gctx) Py_XDECREF(value);
             fz_catch(gctx) return NULL;
             return NONE;
         }

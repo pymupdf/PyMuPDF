@@ -3067,6 +3067,7 @@ static swig_module_info swig_module = {swig_types, 17, 0, 0, 0, 0};
 #include <pdf.h>
 #include <zlib.h>
 #include <time.h>
+#include <fitz/config.h>
 char *JM_Python_str_AsChar(PyObject *str);
 
 
@@ -3111,7 +3112,7 @@ fz_buffer *JM_deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 
 //----------------------------------------------------------------------------
 // update a stream object
-// use compressed stream where beneficial
+// compress stream where beneficial
 //----------------------------------------------------------------------------
 void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffer *buffer)
 {
@@ -3182,30 +3183,6 @@ JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_mat
 }
 
 //-----------------------------------------------------------------------------
-// md5 of an image
-//-----------------------------------------------------------------------------
-void
-JM_md5_image(fz_context *ctx, fz_image *image, unsigned char digest[16])
-{
-    fz_pixmap *pixmap;
-    fz_md5 state;
-    int h;
-    unsigned char *d;
-
-    pixmap = fz_get_pixmap_from_image(ctx, image, NULL, NULL, 0, 0);
-    fz_md5_init(&state);
-    d = pixmap->samples;
-    h = pixmap->h;
-    while (h--)
-    {
-        fz_md5_update(&state, d, pixmap->w * pixmap->n);
-        d += pixmap->stride;
-    }
-    fz_md5_final(&state, digest);
-    fz_drop_pixmap(ctx, pixmap);
-}
-
-//-----------------------------------------------------------------------------
 // return hex characters for n characters in input 'in'
 //-----------------------------------------------------------------------------
 void hexlify(int n, unsigned char *in, unsigned char *out)
@@ -3220,46 +3197,6 @@ void hexlify(int n, unsigned char *in, unsigned char *out)
         out[2*i + 1] = hdigit[i2];
     }
     out[2*n] = 0;
-}
-
-//----------------------------------------------------------------------------
-// Return set(dict.keys()) <= set([vkeys, ...])
-// keys of dict must be string or unicode in Py2 and string in Py3!
-// Parameters:
-// dict - the Python dictionary object to be checked
-// vkeys - a null-terminated list of keys (char *)
-//----------------------------------------------------------------------------
-int checkDictKeys(PyObject *dict, const char *vkeys, ...)
-{
-    int i, j, rc;
-    PyObject *dkeys = PyDict_Keys(dict);              // = dict.keys()
-    if (!dkeys) return 0;                             // no valid dictionary
-    j = PySequence_Size(dkeys);                       // len(dict.keys())
-    PyObject *validkeys = PyList_New(0);            // make list of valid keys
-    va_list ap;                                       // def var arg list
-    va_start(ap, vkeys);                              // start of args
-    while (vkeys != 0)                                // reached end yet?
-        { // build list of valid keys to check against
-#if PY_MAJOR_VERSION < 3
-        PyList_Append(validkeys, PyBytes_FromString(vkeys));    // Python 2
-#else
-        PyList_Append(validkeys, PyUnicode_FromString(vkeys));  // python 3
-#endif
-        vkeys = va_arg(ap, const char *);             // get next char string
-        }
-    va_end(ap);                                       // end the var args loop
-    rc = 1;                                           // prepare for success
-    for (i = 0; i < j; i++)
-    {   // loop through dictionary keys
-        if (!PySequence_Contains(validkeys, PySequence_GetItem(dkeys, i)))
-            {
-            rc = 0;
-            break;
-            }
-    }
-    Py_DECREF(validkeys);
-    Py_DECREF(dkeys);
-    return rc;
 }
 
 //----------------------------------------------------------------------------
@@ -3297,17 +3234,18 @@ size_t JM_CharFromBytesOrArray(PyObject *stream, char **data)
 //----------------------------------------------------------------------------
 char *JM_Python_str_AsChar(PyObject *str)
 {
+    if (!str) return NULL;
 #if PY_VERSION_HEX >= 0x03000000
   char *newstr = NULL;
-  str = PyUnicode_AsUTF8String(str);
-  if (str)
+  PyObject *xstr = PyUnicode_AsUTF8String(str);
+  if (xstr)
   {
     char *cstr;
     Py_ssize_t len;
-    PyBytes_AsStringAndSize(str, &cstr, &len);
+    PyBytes_AsStringAndSize(xstr, &cstr, &len);
     newstr = (char *) malloc(len+1);
     memcpy(newstr, cstr, len+1);
-    Py_XDECREF(str);
+    Py_XDECREF(xstr);
   }
   return newstr;
 #else
@@ -5207,7 +5145,7 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
 }
 
 //-----------------------------------------------------------------------------
-// Insert a buffer as a new separate /Contents object.
+// Insert a buffer as a new separate /Contents object of a page.
 //-----------------------------------------------------------------------------
 void JM_insert_contents(fz_context *ctx, pdf_document *pdf,
                         pdf_obj *pageref, fz_buffer *newcont, int overlay)
@@ -5229,22 +5167,20 @@ void JM_insert_contents(fz_context *ctx, pdf_document *pdf,
             if (overlay)
             {
                 pdf_array_push(ctx, carr, contents);
-                pdf_array_push(ctx, carr, newconts);
+                pdf_array_push_drop(ctx, carr, newconts);
             }
             else 
             {
-                pdf_array_push(ctx, carr, newconts);
+                pdf_array_push_drop(ctx, carr, newconts);
                 pdf_array_push(ctx, carr, contents);
             }
             pdf_dict_put_drop(ctx, pageref, PDF_NAME_Contents, carr);
         }
     }
-    fz_always(ctx)
-    {;}
     fz_catch(ctx) fz_rethrow(ctx);
     return;
 }
-
+/*-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // Append / prepend a buffer to the /Contents of a page.
 //-----------------------------------------------------------------------------
@@ -5291,7 +5227,7 @@ void JM_extend_contents(fz_context *ctx, pdf_document *pdfout,
     fz_catch(ctx) fz_rethrow(ctx);
     return;
 }
-
+-----------------------------------------------------------------------------*/
 //-----------------------------------------------------------------------------
 // Create / check AP object for the annotation
 // Always reset /BBOX to rect, /Matrix to the identity matrix.
@@ -7665,7 +7601,6 @@ SWIGINTERN int fz_page_s__showPDFpage(struct fz_page_s *self,struct fz_rect_s *r
                 fz_append_string(gctx, nres, data);
                 fz_append_string(gctx, nres, " Do Q ");
 
-                //JM_extend_contents(gctx, pdfout, tpageref, nres, overlay);
                 JM_insert_contents(gctx, pdfout, tpageref, nres, overlay);
                 fz_drop_buffer(gctx, nres);
             }
@@ -9226,79 +9161,65 @@ SWIGINTERN PyObject *fz_annot_s_info(struct fz_annot_s *self){
         }
 SWIGINTERN PyObject *fz_annot_s_setInfo(struct fz_annot_s *self,PyObject *info){
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
-            pdf_document *pdf = NULL;
-            if (annot) pdf = annot->page->doc;
-            PyObject *value = NULL;
             char *uc = NULL;
-            // ensure we have valid dictionary keys ...
-            int dictvalid = checkDictKeys(info, "content", "title", "modDate", "creationDate", "subject", "name", 0);
+
             // use this to indicate a 'markup' annot type
             int is_markup = pdf_annot_has_author(gctx, annot);
             fz_var(is_markup);
             fz_var(annot);
-            fz_var(pdf);
             fz_try(gctx)
             {
                 assert_PDF(annot);
                 if (!PyDict_Check(info))
                     THROWMSG("info not a dict");
-                if (!dictvalid)
-                    THROWMSG("invalid key in info dict");
 
                 // contents
-                value = PyDict_GetItemString(info, "content");
-                if (value)
+                uc = JM_Python_str_AsChar(PyDict_GetItemString(info, "content"));
+                if (uc)
                 {
-                    uc = JM_Python_str_AsChar(value);
-                    if (uc) pdf_set_annot_contents(gctx, annot, uc);
+                    pdf_set_annot_contents(gctx, annot, uc);
                     JM_Python_str_DelForPy3(uc);
                 }
-                Py_XDECREF(value);
 
-                // title (= author)
-                value = PyDict_GetItemString(info, "title");
-                if (value && is_markup)
+                if (is_markup)
                 {
-                    uc = JM_Python_str_AsChar(value);
-                    if (uc) pdf_set_annot_author(gctx, annot, uc);
-                    JM_Python_str_DelForPy3(uc);
-                }
-                Py_XDECREF(value);
+                    // title (= author)
+                    uc = JM_Python_str_AsChar(PyDict_GetItemString(info, "title"));
+                    if (uc)
+                    {
+                        pdf_set_annot_author(gctx, annot, uc);
+                        JM_Python_str_DelForPy3(uc);
+                    }
 
-                // creation date
-                value = PyDict_GetItemString(info, "creationDate");
-                if (value && is_markup)
-                {
-                    uc = JM_Python_str_AsChar(value);
-                    if (uc) pdf_dict_puts_drop(gctx, annot->obj, "CreationDate",
-                                       pdf_new_string(gctx, pdf, uc, strlen(uc)));
-                    JM_Python_str_DelForPy3(uc);
-                }
-                Py_XDECREF(value);
+                    // creation date
+                    uc = JM_Python_str_AsChar(PyDict_GetItemString(info,
+                                              "creationDate"));
+                    if (uc)
+                    {
+                        pdf_dict_put_text_string(gctx, annot->obj,
+                                                 PDF_NAME_CreationDate, uc);
+                        JM_Python_str_DelForPy3(uc);
+                    }
 
-                // mod date
-                value = PyDict_GetItemString(info, "modDate");
-                if (value && is_markup)
-                {
-                    uc = JM_Python_str_AsChar(value);
-                    if (uc) pdf_dict_put_drop(gctx, annot->obj, PDF_NAME_M,
-                                      pdf_new_string(gctx, pdf, uc, strlen(uc)));
-                    JM_Python_str_DelForPy3(uc);
-                }
-                Py_XDECREF(value);
+                    // mod date
+                    uc = JM_Python_str_AsChar(PyDict_GetItemString(info, "modDate"));
+                    if (uc)
+                    {
+                        pdf_dict_put_text_string(gctx, annot->obj,
+                                                 PDF_NAME_M, uc);
+                        JM_Python_str_DelForPy3(uc);
+                    }
 
-                // subject
-                value = PyDict_GetItemString(info, "subject");
-                if (value && is_markup)
-                {
-                    uc = JM_Python_str_AsChar(value);
-                    if (uc) pdf_dict_puts_drop(gctx, annot->obj, "Subj",
-                                       pdf_new_string(gctx, pdf, uc, strlen(uc)));
-                    JM_Python_str_DelForPy3(uc);
+                    // subject
+                    uc = JM_Python_str_AsChar(PyDict_GetItemString(info, "subject"));
+                    if (uc)
+                    {
+                        pdf_dict_puts_drop(gctx, annot->obj, "Subj",
+                                           pdf_new_text_string(gctx, NULL, uc));
+                        JM_Python_str_DelForPy3(uc);
+                    }
                 }
-                Py_XDECREF(value);
             }
-            fz_always(gctx) Py_XDECREF(value);
             fz_catch(gctx) return NULL;
             return NONE;
         }
@@ -10005,6 +9926,63 @@ SWIGINTERN void Tools__store_debug(struct Tools *self){
         }
 SWIGINTERN void Tools_glyph_cache_empty(struct Tools *self){
             fz_purge_glyph_cache(gctx);
+        }
+SWIGINTERN PyObject *Tools_font_config(struct Tools *self){
+            PyObject *dict = PyDict_New();
+            const char *data = NULL;
+            size_t len = 0;
+            fz_font *font = NULL;
+            char *name = NULL;
+            data = fz_lookup_base14_font(gctx, "Helvetica", &len);
+            if (data)
+                PyDict_SetItemString(dict, "Base14", Py_True);
+            else
+                PyDict_SetItemString(dict, "Base14", Py_False);
+
+            data = fz_lookup_cjk_font(gctx, FZ_ADOBE_KOREA_1, 1, 0, &len, 0);
+            if (data)
+            {
+                font = fz_new_font_from_memory(gctx, NULL, data, len, 0, 0);
+                name = fz_font_name(gctx, font);
+                PyDict_SetItemString(dict, "Korea", Py_BuildValue("s", name));
+                fz_drop_font(gctx, font);
+            }
+            else
+                PyDict_SetItemString(dict, "Korea", Py_False);
+
+            data = fz_lookup_cjk_font(gctx, FZ_ADOBE_JAPAN_1, 1, 0, &len, 0);
+            if (data)
+            {
+                font = fz_new_font_from_memory(gctx, NULL, data, len, 0, 0);
+                name = fz_font_name(gctx, font);
+                PyDict_SetItemString(dict, "Japan", Py_BuildValue("s", name));
+                fz_drop_font(gctx, font);
+            }
+            else
+                PyDict_SetItemString(dict, "Japan", Py_False);
+
+            data = fz_lookup_cjk_font(gctx, FZ_ADOBE_GB_1, 1, 0, &len, 0);
+            if (data)
+            {
+                font = fz_new_font_from_memory(gctx, NULL, data, len, 0, 0);
+                name = fz_font_name(gctx, font);
+                PyDict_SetItemString(dict, "China-Trad", Py_BuildValue("s", name));
+                fz_drop_font(gctx, font);
+            }
+            else
+                PyDict_SetItemString(dict, "China-Trad", Py_False);
+
+            data = fz_lookup_cjk_font(gctx, FZ_ADOBE_CNS_1, 1, 0, &len, 0);
+            if (data)
+            {
+                font = fz_new_font_from_memory(gctx, NULL, data, len, 0, 0);
+                name = fz_font_name(gctx, font);
+                PyDict_SetItemString(dict, "China-Simpl", Py_BuildValue("s", name));
+                fz_drop_font(gctx, font);
+            }
+            else
+                PyDict_SetItemString(dict, "China-Simpl", Py_False);
+            return dict;
         }
 #ifdef __cplusplus
 extern "C" {
@@ -20287,6 +20265,28 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Tools_font_config(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct Tools *arg1 = (struct Tools *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Tools_font_config",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Tools, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Tools_font_config" "', argument " "1"" of type '" "struct Tools *""'"); 
+  }
+  arg1 = (struct Tools *)(argp1);
+  result = (PyObject *)Tools_font_config(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_Tools(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct Tools *result = 0 ;
@@ -20650,6 +20650,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Tools_store_maxsize", _wrap_Tools_store_maxsize, METH_VARARGS, (char *)"Maximum store size."},
 	 { (char *)"Tools__store_debug", _wrap_Tools__store_debug, METH_VARARGS, (char *)"Tools__store_debug(self)"},
 	 { (char *)"Tools_glyph_cache_empty", _wrap_Tools_glyph_cache_empty, METH_VARARGS, (char *)"Empty the glyph cache."},
+	 { (char *)"Tools_font_config", _wrap_Tools_font_config, METH_VARARGS, (char *)"Tools_font_config(self) -> PyObject *"},
 	 { (char *)"new_Tools", _wrap_new_Tools, METH_VARARGS, (char *)"new_Tools() -> Tools"},
 	 { (char *)"delete_Tools", _wrap_delete_Tools, METH_VARARGS, (char *)"delete_Tools(self)"},
 	 { (char *)"Tools_swigregister", Tools_swigregister, METH_VARARGS, NULL},

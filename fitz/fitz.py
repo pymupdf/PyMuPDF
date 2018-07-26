@@ -102,9 +102,9 @@ import math
 
 
 VersionFitz = "1.13.0"
-VersionBind = "1.13.14"
-VersionDate = "2018-07-19 15:44:39"
-version = (VersionBind, VersionFitz, "20180719154439")
+VersionBind = "1.13.15"
+VersionDate = "2018-07-25 23:50:27"
+version = (VersionBind, VersionFitz, "20180725235027")
 
 
 #------------------------------------------------------------------------------
@@ -3843,6 +3843,11 @@ class Tools(_object):
     def glyph_cache_empty(self):
         """Empty the glyph cache."""
         return _fitz.Tools_glyph_cache_empty(self)
+
+
+    def font_config(self):
+        """font_config(self) -> PyObject *"""
+        return _fitz.Tools_font_config(self)
 
 
     def __init__(self):
