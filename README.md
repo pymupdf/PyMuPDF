@@ -56,7 +56,7 @@ Have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/de
 
 Our documentation, written using Sphinx, is available in various formats from the following sources.
 
-* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/). For **download**, only use the following links.
+* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/). For **best quality downloads** use the following links.
 * [HTML](https://github.com/rk700/PyMuPDF/tree/master/doc/html.zip)
 * [Windows CHM](https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm)
 * [PDF](https://github.com/rk700/PyMuPDF/tree/master/doc/pymupdf.pdf)
@@ -69,10 +69,6 @@ Earlier versions are available in the [releases](https://github.com/rk700/PyMuPD
 PyMuPDF is distributed under GNU GPL V3. Because you will also be using MuPDF, its license GNU AFFERO GPL V3 applies as well. Copies of both licenses are included in this repository.
 
 # Contact
-You can also find us on the Python Package Index [PyPI](https://pypi.org/project/PyMuPDF/). Currently, total [![](http://pepy.tech/badge/pymupdf)](http://pepy.tech/project/pymupdf) from that site.
+You can also find us on the Python Package Index [PyPI](https://pypi.org/project/PyMuPDF/). Currently, totalling [![](http://pepy.tech/badge/pymupdf)](http://pepy.tech/project/pymupdf) from that site since August 2015.
 
-> Please note, that the project description there may be less up-to-date than the one you are currently looking at.
-
-We invite you to join our efforts by contributing to the [Wiki](https://github.com/rk700/PyMuPDF/wiki) pages.
-
-Please submit comments or issues [here](https://github.com/rk700/PyMuPDF/issues), or directly contact the authors.
+Please submit questions, comments or issues [here](https://github.com/rk700/PyMuPDF/issues), or directly contact the authors via their e-mail addresses.
