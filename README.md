@@ -20,18 +20,20 @@ See the [Wiki](https://github.com/rk700/PyMuPDF/wiki) for more information, [new
 
 # Installation
 
-For all **Windows** and (thanks to our user **@jbarlow83**) for the major **Mac OSX** and **Linux** versions we offer [wheels](https://github.com/rk700/PyMuPDF/releases/latest). They can also be found in the [download section of PyPI](https://pypi.org/project/PyMuPDF/#files), where we are present since August 2015 - [![](http://pepy.tech/badge/pymupdf)](http://pepy.tech/project/pymupdf) since then.
+For all **Windows** and (thanks to our user **@jbarlow83**!) for the major **Mac OSX** and **Linux** versions we offer [wheels](https://github.com/rk700/PyMuPDF/releases/latest). They can also be found in the [download section of PyPI](https://pypi.org/project/PyMuPDF/#files), where we are present since August 2015 - [![](http://pepy.tech/badge/pymupdf)](http://pepy.tech/project/pymupdf) since then.
 
-If - for whatever reason - you need to generate PyMuPDF yourself, you must download and generate MuPDF before you can generate PyMuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures to achieve this.
+As an unconfirmed information: the Linux wheels may be **usable on FreeBSD** systems as well - give it a try by manually downloading the wheel and using PIP with that file.
 
-Be sure to download the official MuPDF source release from [here](https://mupdf.com/downloads). The [GitHub repo](https://github.com/ArtifexSoftware/mupdf) of MuPDF contains their current **development source**, which more often than not is incompatible with this PyMuPDF version.
+On other operating systems you need to generate PyMuPDF yourself. Before you can do this, you must download and generate MuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures for achieving this.
+
+Be sure to download the official MuPDF source release from [here](https://mupdf.com/downloads). The [GitHub repo](https://github.com/ArtifexSoftware/mupdf) of MuPDF contains their current **development source**, which is not incompatible with this PyMuPDF version most of the time.
 
 Once this is done, adjust directories in ``setup.py`` and the rest should be as easy as running the usual ``python setup.py install``.
 
 The following sections contain some platform-specific comments.
 
 ## Ubuntu
-One of our users (thanks to **@gileadslostson**) has documented his MuPDF installation experience from sources in this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Experience-from-an-Ubuntu-installation).
+One of our users (thanks to **@gileadslostson**!) has documented his MuPDF installation experience from sources in this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Experience-from-an-Ubuntu-installation).
 
 ## OSX
 First, install the MuPDF headers and libraries, which are provided by mupdf-tools: ``brew install mupdf-tools``.
