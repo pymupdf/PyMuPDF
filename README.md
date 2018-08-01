@@ -27,7 +27,7 @@ For all **Windows** and (thanks to our user **@jbarlow83**!) for the major **Mac
 
 The platform tag for Mac OSX is `macosx_10_6_intel`.
 
-The plaform tag for Linux is `manylinux1_x86_64`, which works on Debian, Ubuntu and most others.
+The platform tag for Linux is `manylinux1_x86_64`, which works on Debian, Ubuntu and most others.
 
 On other operating systems you need to generate PyMuPDF yourself. Before you can do this, you must download and generate MuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures for achieving this.
 
