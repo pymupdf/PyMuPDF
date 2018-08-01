@@ -12,6 +12,17 @@ def showPDFpage(page, rect, src, pno, overlay = True, keep_proportion = True,
     """
     fitz.CheckParent(page)
     doc = page.parent
+    # list of existing /Form /XObjcts
+    xobjlist = doc._getPageInfo(page.number, 3)
+    ilst = [i[1] for i in xobjlist]
+    # create a new name not in that list
+    n = "fzFrm"
+    i = 0
+    _imgname = n + "0"
+    while _imgname in ilst:
+        i += 1
+        _imgname = n + str(i)
+
     isrc = id(src)                # used as key for graftmaps
     if id(doc) == isrc:
         raise ValueError("source document must not equal target")
@@ -26,7 +37,7 @@ def showPDFpage(page, rect, src, pno, overlay = True, keep_proportion = True,
     return page._showPDFpage(rect, src, pno, overlay = overlay,
                              keep_proportion = keep_proportion,
                              reuse_xref = reuse_xref, clip = clip,
-                             graftmap = gmap)
+                             graftmap = gmap, _imgname = _imgname)
 
 #==============================================================================
 # A function for searching string occurrences on a page.
@@ -356,7 +367,7 @@ def writeImage(*arg, **kw):
 # arithmetic methods for fitz.Matrix
 #==============================================================================
 def mat_mult(m1, m2):     # __mul__
-    if getattr(m2, "__len__", 1) == 1:
+    if hasattr(m2, "__float__"):
         return fitz.Matrix(m1.a * m2, m1.b * m2, m1.c * m2,
                            m1.d * m2, m1.e * m2, m1.f * m2)
     m = fitz.Matrix()
@@ -367,9 +378,9 @@ def mat_mult(m1, m2):     # __mul__
     return m
 
 def mat_div(m1, m2):     # __mul__
-    if getattr(m2, "__len__", 1) == 1:
-        return fitz.Matrix(m1.a * 1./m2, m1.b * 1./m2, m1.c * 1./m2,
-                           m1.d * 1./m2, m1.e * 1./m2, m1.f * 1./m2)
+    if hasattr(m2, "__float__"):
+        return fitz.Matrix(m1.a /m2, m1.b /m2, m1.c /m2,
+                           m1.d /m2, m1.e /m2, m1.f /m2)
     m = fitz.Matrix()
     mi1 = fitz.Matrix(m2)
     mi2 = mat_invert(mi1)
@@ -384,19 +395,19 @@ def mat_invert(me):       # __invert__
     return m
 
 def mat_add(m1, m2):      # __add__
-    if getattr(m2, "__len__", 1) == 1:
-        me = fitz.Matrix(m2, m2, m2, m2, m2, m2)
-    else:
-        me = fitz.Matrix(m2)
+    if hasattr(m2, "__float__"):
+        return fitz.Matrix(m1.a + m2, m1.b + m2, m1.c + m2,
+                       m1.d + m2, m1.e + m2, m1.f + m2)
+    me = fitz.Matrix(m2)
     return fitz.Matrix(m1.a + me.a, m1.b + me.b, m1.c + me.c,
                        m1.d + me.d, m1.e + me.e, m1.f + me.f)
 
 
 def mat_sub(m1, m2):      # __sub__
-    if getattr(m2, "__len__", 1) == 1:
-        me = fitz.Matrix(m2, m2, m2, m2, m2, m2)
-    else:
-        me = fitz.Matrix(m2)
+    if hasattr(m2, "__float__"):
+        return fitz.Matrix(m1.a - m2, m1.b - m2, m1.c - m2,
+                       m1.d - m2, m1.e - m2, m1.f - m2)
+    me = fitz.Matrix(m2)
     return fitz.Matrix(m1.a - me.a, m1.b - me.b, m1.c - me.c,
                        m1.d - me.d, m1.e - me.e, m1.f - me.f)
 
@@ -431,7 +442,7 @@ def rect_and(r1, r2):        # __and__: intersection with rect or irect
 
 def rect_add(r1, r2):        # __add__: add number, rect or irect to rect
     r = fitz.Rect(r1)
-    if getattr(r2, "__len__", 1) == 1:
+    if hasattr(r2, "__float__"):
         a = fitz.Rect(r2, r2, r2, r2)
     else:
         a = fitz.Rect(r2)
@@ -443,7 +454,7 @@ def rect_add(r1, r2):        # __add__: add number, rect or irect to rect
 
 def rect_sub(r1, r2):        # __sub__: subtract number, rect or irect from rect
     r = fitz.Rect(r1)
-    if getattr(r2, "__len__", 1) == 1:
+    if hasattr(r2, "__float__"):
         a = fitz.Rect(r2, r2, r2, r2)
     else:
         a = fitz.Rect(r2)
@@ -455,15 +466,16 @@ def rect_sub(r1, r2):        # __sub__: subtract number, rect or irect from rect
 
 def rect_mul(r, m):          # __mul__: transform with matrix
     r1 = fitz.Rect(r)
-    if getattr(m, "__len__", 1) == 1:
+    if hasattr(m, "__float__"):
         r1 = fitz.Rect(r1.x0 * m, r1.y0 * m, r1.x1 * m, r1.y1 * m)
     else:
-        r1.transform(fitz.Matrix(m))
+        m1 = fitz.Matrix(m)
+        r1.transform(m1)
     return r1 if type(r) is fitz.Rect else r1.irect
 
 def rect_div(r, m):          # __div__ / __truediv__
     r1 = fitz.Rect(r)
-    if getattr(m, "__len__", 1) == 1:
+    if hasattr(m, "__float__"):
         r1 = fitz.Rect(r1.x0 * 1. / m, r1.y0 * 1. / m, r1.x1 * 1. / m, r1.y1 * 1. / m)
     else:
         m1 = ~fitz.Matrix(m)
@@ -481,7 +493,7 @@ def rect_true(r):
 def rect_contains(r, x):
     if type(x) in (fitz.Point, fitz.IRect, fitz.Rect):
         return r.contains(x)
-    if getattr(x, "__len__", 1) == 1:
+    if hasattr(x, "__float__"):
         return x in tuple(r)
     if len(x) == 2:
         return r.contains(fitz.Point(x))
@@ -491,27 +503,26 @@ def rect_contains(r, x):
 # arithmetic methods for fitz.Point
 #==============================================================================
 def point_add(p1, p2):
-    if getattr(p2, "__len__", 1) == 1:
-        p = fitz.Point(p2, p2)
-    else:
-        p = fitz.Point(p2)
+    if hasattr(p2, "__float__"):
+        return fitz.Point(p1.x + p2, p1.y + p2)
+    p = fitz.Point(p2)
     return fitz.Point(p1.x + p.x, p1.y + p.y)
 
 def point_sub(p1, p2):
-    if getattr(p2, "__len__", 1) == 1:
-        p = fitz.Point(p2, p2)
-    else:
-        p = fitz.Point(p2)
+    if hasattr(p2, "__float__"):
+        return fitz.Point(p1.x - p2, p1.y - p2)
+    p = fitz.Point(p2)
     return fitz.Point(p1.x - p.x, p1.y - p.y)
 
 def point_mul(p, m):
-    if getattr(m, "__len__", 1) == 1:
-        return fitz.Point(p.x*m, p.y*m)
+    if hasattr(m, "__float__"):
+        return fitz.Point(p.x * m, p.y * m)
     p1 = fitz.Point(p)
-    return p1.transform(fitz.Matrix(m))
+    m1 = fitz.Matrix(m)
+    return p1.transform(m1)
 
 def point_div(p, m):
-    if getattr(m, "__len__", 1) == 1:
+    if hasattr(m, "__float__"):
         return fitz.Point(p.x*1./m, p.y*1./m)
     p1 = fitz.Point(p)
     m1 = ~fitz.Matrix(m)
@@ -529,10 +540,7 @@ def point_equ(p, p2):       # __equ__
     return type(p) == type(p2) and point_true(p - p2) == 0
 
 def point_contains(p, x):
-    if len(x) != 1:
-        return False
-    else:
-        return x in tuple(p)
+    return x in tuple(p)
 
 #==============================================================================
 # Document method Set Metadata

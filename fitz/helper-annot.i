@@ -256,7 +256,7 @@ struct fz_annot_s *JM_AnnotMultiline(fz_context *ctx, pdf_page *page, PyObject *
                 THROWMSG("invalid points list");
             point.x = (float) PyFloat_AsDouble(PySequence_GetItem(p, 0));
             point.y = (float) PyFloat_AsDouble(PySequence_GetItem(p, 1));
-            Py_DECREF(p);
+            Py_CLEAR(p);
             pdf_add_annot_vertex(ctx, annot, point);
             if (i == 0)
             {

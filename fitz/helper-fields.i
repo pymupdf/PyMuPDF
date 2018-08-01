@@ -178,7 +178,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     rect.y0 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 1));
     rect.x1 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 2));
     rect.y1 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 3));
-    Py_XDECREF(value);
+    Py_CLEAR(value);
     JM_PyErr_Clear;
     pdf_set_annot_rect(ctx, annot, &rect);    // set the rect
 
@@ -194,7 +194,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         pdf_field_set_fill_color(ctx, pdf, annot->obj, fill_col);
         pdf_drop_obj(ctx, fill_col);
     }
-    Py_XDECREF(value);
+    Py_CLEAR(value);
     JM_PyErr_Clear;
 
     // dashes -----------------------------------------------------------------
@@ -209,7 +209,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         pdf_dict_putl_drop(ctx, annot->obj, dashes, PDF_NAME_BS,
                                                               PDF_NAME_D, NULL);
     }
-    Py_XDECREF(value);
+    Py_CLEAR(value);
     JM_PyErr_Clear;
 
     // border color -----------------------------------------------------------
@@ -224,7 +224,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         pdf_dict_putl_drop(ctx, annot->obj, border_col, PDF_NAME_MK,
                                                              PDF_NAME_BC, NULL);
     }
-    Py_XDECREF(value);
+    Py_CLEAR(value);
     JM_PyErr_Clear;
 
     // entry ignored - may be later use
@@ -250,7 +250,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     {
         value = PyObject_GetAttrString(Widget, "choice_values");
         JM_set_choice_options(ctx, annot, value);
-        Py_DECREF(value);
+        Py_CLEAR(value);
     }
     JM_PyErr_Clear;
 
@@ -338,7 +338,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
             JM_Python_str_DelForPy3(text);
         }
     }
-    Py_XDECREF(value);
+    Py_CLEAR(value);
     pdf_dirty_annot(ctx, annot);
     pdf_update_page(gctx, page);
 }

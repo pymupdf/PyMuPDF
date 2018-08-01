@@ -36,7 +36,7 @@ PyObject *JM_UnicodeFromASCII(const char *in)
 //-----------------------------------------------------------------------------
 // Store info of a font in Python list
 //-----------------------------------------------------------------------------
-void JM_gatherfonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
+void JM_gather_fonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
                     PyObject *fontlist)
 {
     int i, n;
@@ -78,14 +78,14 @@ void JM_gatherfonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
         PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, refname)));
         PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, encoding)));
         PyList_Append(fontlist, entry);
-        Py_DECREF(entry);
+        Py_CLEAR(entry);
     }
 }
 
 //-----------------------------------------------------------------------------
 // Store info of an image in Python list
 //-----------------------------------------------------------------------------
-void JM_gatherimages(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
+void JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
                      PyObject *imagelist)
 {
     int i, n;
@@ -152,14 +152,51 @@ void JM_gatherimages(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
         PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, refname)));
         PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, filter)));
         PyList_Append(imagelist, entry);
-        Py_DECREF(entry);
+        Py_CLEAR(entry);
+    }
+}
+
+//-----------------------------------------------------------------------------
+// Store info of a /Form in Python list
+//-----------------------------------------------------------------------------
+void JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
+                     PyObject *imagelist)
+{
+    int i, n;
+    n = pdf_dict_len(ctx, dict);
+    for (i = 0; i < n; i++)
+    {
+        pdf_obj *imagedict;
+        pdf_obj *refname = NULL;
+        pdf_obj *type;
+
+        imagedict = pdf_dict_get_val(ctx, dict, i);
+        if (!pdf_is_dict(ctx, imagedict))
+        {
+            PySys_WriteStdout("warning: not a form dict (%d 0 R)",
+                              pdf_to_num(ctx, imagedict));
+            continue;
+        }
+        refname = pdf_dict_get_key(ctx, dict, i);
+
+        type = pdf_dict_get(ctx, imagedict, PDF_NAME_Subtype);
+        if (!pdf_name_eq(ctx, type, PDF_NAME_Form))
+            continue;
+
+        int xref = pdf_to_num(ctx, imagedict);
+
+        PyObject *entry = PyList_New(0);
+        PyList_Append(entry, Py_BuildValue("i", xref));
+        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, refname)));
+        PyList_Append(imagelist, entry);
+        Py_CLEAR(entry);
     }
 }
 
 //-----------------------------------------------------------------------------
 // Step through /Resources, looking up image or font information
 //-----------------------------------------------------------------------------
-void JM_ScanResources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
+void JM_scan_resources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
                  PyObject *liste, int what)
 {
     pdf_obj *font, *xobj, *subrsrc;
@@ -167,25 +204,30 @@ void JM_ScanResources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
     if (pdf_mark_obj(ctx, rsrc)) return;    // stop on cylic dependencies
     fz_try(ctx)
     {
-        if (what == 1)            // looking up fonts
+        if (what == 1)            // look up fonts
         {
             font = pdf_dict_get(ctx, rsrc, PDF_NAME_Font);
-            JM_gatherfonts(ctx, pdf, font, liste);
+            JM_gather_fonts(ctx, pdf, font, liste);
             n = pdf_dict_len(ctx, font);
             for (i = 0; i < n; i++)
             {
                 pdf_obj *obj = pdf_dict_get_val(ctx, font, i);
                 subrsrc = pdf_dict_get(ctx, obj, PDF_NAME_Resources);
                 if (subrsrc)
-                    JM_ScanResources(ctx, pdf, subrsrc, liste, what);
+                    JM_scan_resources(ctx, pdf, subrsrc, liste, what);
             }
         }
 
         xobj = pdf_dict_get(ctx, rsrc, PDF_NAME_XObject);
 
-        if (what == 2)            // looking up images
+        if (what == 2)            // look up images
         {
-            JM_gatherimages(ctx, pdf, xobj, liste);
+            JM_gather_images(ctx, pdf, xobj, liste);
+        }
+
+        if (what == 3)            // look up forms
+        {
+            JM_gather_forms(ctx, pdf, xobj, liste);
         }
 
         n = pdf_dict_len(ctx, xobj);
@@ -194,7 +236,7 @@ void JM_ScanResources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
             pdf_obj *obj = pdf_dict_get_val(ctx, xobj, i);
             subrsrc = pdf_dict_get(ctx, obj, PDF_NAME_Resources);
             if (subrsrc)
-                JM_ScanResources(ctx, pdf, subrsrc, liste, what);
+                JM_scan_resources(ctx, pdf, subrsrc, liste, what);
         }
     }
     fz_always(ctx) pdf_unmark_obj(ctx, rsrc);

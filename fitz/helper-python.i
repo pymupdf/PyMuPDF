@@ -377,6 +377,8 @@ def _make_line_AP(annot, nv = None, r0 = None):
     w = annot.border["width"]          # get line width
     sc = annot.colors["stroke"]        # get stroke color
     fc = annot.colors["fill"]          # get fill color
+    ca = annot.opacity                 # get opacity value
+    Alp0 = "/Alp0 gs\n" if ca >= 0 else ""
     vert = nv if nv else annot.vertices # get list of points
     rn = r0 if r0 else annot.rect
     h = rn.height                      # annot rectangle height
@@ -395,7 +397,7 @@ def _make_line_AP(annot, nv = None, r0 = None):
     dtab = "".join(dtab)
 
     # start /AP string with a goto command
-    ap = "q\n%g %g m\n" % (vert[0][0] - x0, h - (vert[0][1] - y0))
+    ap = "q\n%s%g %g m\n" % (Alp0, vert[0][0] - x0, h - (vert[0][1] - y0))
 
     # add line commands for all subsequent points
     for v in vert[1:]:
@@ -455,6 +457,8 @@ def _make_rect_AP(annot):
     w = annot.border["width"]          # get line width
     sc = annot.colors["stroke"]        # get stroke color
     fc = annot.colors["fill"]          # get fill color
+    ca = annot.opacity                 # get opacity value
+    Alp0 = "/Alp0 gs\n" if ca >= 0 else ""
     scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
     fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else ""
     dt = annot.border.get("dashes")
@@ -468,7 +472,7 @@ def _make_rect_AP(annot):
     r1 = r2 = w/2.                     # rect starts bottom-left here
     r3 = r.width - w                   # rect width reduced by line width
     r4 = r.height - w                  # rect height reduced by line with
-    ap = "q\n%g %g %g %g re %g w 1 J 1 j\n" % (r1, r2, r3, r4, w)
+    ap = "q\n%s%g %g %g %g re %g w 1 J 1 j\n" % (Alp0, r1, r2, r3, r4, w)
     ap += scol + fcol + dtab
     if fcol:
         ap += "\nb\nQ\n"
@@ -499,6 +503,8 @@ def _make_circle_AP(annot):
     sc = annot.colors["stroke"]
     scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
     fc = annot.colors["fill"]
+    ca = annot.opacity                 # get opacity value
+    Alp0 = "/Alp0 gs\n" if ca >= 0 else ""
     fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else ""
     dt = annot.border.get("dashes")
     dtab = []
@@ -512,7 +518,7 @@ def _make_circle_AP(annot):
     h = annot.rect.height
     r = Rect(lw2, lw2, annot.rect.width - lw2, h - lw2)
 
-    ap = "q\n" + _oval_string(h, r.tl, r.tr, r.br, r.bl)
+    ap = "q\n" + Alp0 + _oval_string(h, r.tl, r.tr, r.br, r.bl)
     ap += "%g w 1 J 1 j\n" % lw
     ap += scol + fcol + dtab
     if fcol:

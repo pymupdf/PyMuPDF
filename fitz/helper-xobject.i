@@ -1,7 +1,7 @@
 %{
 //-----------------------------------------------------------------------------
 // Make an XObject from a PDF page
-// For a positive xref, assume its object can be used instead
+// For a positive xref assume that that object can be used instead
 //-----------------------------------------------------------------------------
 pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_document *pdfsrc, int pno, fz_rect *mediabox, fz_rect *cropbox, int xref, pdf_graft_map *gmap)
 {
@@ -163,13 +163,13 @@ void JM_extend_contents(fz_context *ctx, pdf_document *pdfout,
 -----------------------------------------------------------------------------*/
 //-----------------------------------------------------------------------------
 // Create / check AP object for the annotation
-// Always reset /BBOX to rect, /Matrix to the identity matrix.
+// Always reset /BBOX to rect and /Matrix to the identity matrix.
 //-----------------------------------------------------------------------------
 void JM_make_ap_object(fz_context *ctx, fz_annot *fzannot, fz_rect *rect, char *c)
 {
     pdf_annot *annot = pdf_annot_from_fz_annot(ctx, fzannot);
     pdf_document *pdf = annot->page->doc;
-    pdf_obj *xobj;
+    pdf_obj *xobj, *ca = NULL, *extgstate = NULL;
     fz_buffer *contbuffer = NULL;
     fz_try(ctx)
     {
@@ -181,6 +181,18 @@ void JM_make_ap_object(fz_context *ctx, fz_annot *fzannot, fz_rect *rect, char *
         }
         else
             xobj = pdf_new_xobject(ctx, pdf, rect, &fz_identity);
+
+        ca = pdf_dict_get(ctx, annot->obj, PDF_NAME_CA);
+        if (ca)
+        {
+            pdf_obj *fcao = pdf_new_real(ctx, pdf, pdf_to_real(ctx, ca));
+            pdf_obj *alp0 = pdf_new_dict(ctx, pdf, 2);
+            pdf_dict_put(ctx, alp0, PDF_NAME_CA, fcao);
+            pdf_dict_put(ctx, alp0, PDF_NAME_ca, fcao);
+            pdf_obj *extg = pdf_new_dict(ctx, pdf, 1);
+            pdf_dict_puts_drop(ctx, extg, "Alp0", alp0);
+            pdf_dict_putl_drop(ctx, xobj, extg, PDF_NAME_Resources, PDF_NAME_ExtGState, NULL);
+        }
 
         contbuffer = fz_new_buffer_from_copied_data(ctx, c, strlen(c));
         JM_update_stream(ctx, pdf, xobj, contbuffer);

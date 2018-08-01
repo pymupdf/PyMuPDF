@@ -45,7 +45,7 @@ int JM_append_word(fz_context *ctx, PyObject *lines, fz_buffer *buff, fz_rect *w
                                     JM_StrFromBuffer(ctx, buff),
                                     block_n, line_n, word_n);
     PyList_Append(lines, litem);
-    Py_DECREF(litem);
+    Py_CLEAR(litem);
     wbbox->x0 = wbbox->y0 = wbbox->x1 = wbbox->y1 = 0;
     return word_n + 1;                 // word counter
 }
@@ -163,8 +163,7 @@ JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block)
                 if (font)    // must finish old span first
                 {
                     JM_style_end_dict(ctx, buff, span, spanlist);
-                    Py_DECREF(span);
-                    span = NULL;
+                    Py_CLEAR(span);
                     fz_drop_buffer(ctx, buff);
                     buff = NULL;
                     font = NULL;
@@ -181,12 +180,12 @@ JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block)
         if (font)
         {
             JM_style_end_dict(ctx, buff, span, spanlist);
-            Py_DECREF(span);
+            Py_CLEAR(span);
             font = NULL;
         }
 
         PyDict_SetItemString(linedict, "spans",  spanlist);
-        Py_DECREF(spanlist);
+        Py_CLEAR(spanlist);
         PyDict_SetItemString(linedict, "bbox",   Py_BuildValue("ffff",
                                          linerect->x0, linerect->y0,
                                          linerect->x1, linerect->y1));
@@ -195,10 +194,10 @@ JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block)
 
         free(linerect);
         PyList_Append(linelist, linedict);
-        Py_DECREF(linedict);
+        Py_CLEAR(linedict);
     }
     PyDict_SetItemString(dict, "lines",  linelist);
-    Py_DECREF(linelist);
+    Py_CLEAR(linelist);
     PyDict_SetItemString(dict, "bbox",   Py_BuildValue("ffff",
                                          blockrect->x0, blockrect->y0,
                                          blockrect->x1, blockrect->y1));
@@ -262,7 +261,7 @@ JM_extract_stext_imageblock_as_dict(fz_context *ctx, fz_stext_block *block)
         fz_drop_buffer(ctx, freebuf);
         PyDict_SetItemString(dict, "ext",  PyString_FromString(ext));
         PyDict_SetItemString(dict, "image",  bytes);
-        Py_DECREF(bytes);
+        Py_CLEAR(bytes);
     }
     fz_catch(ctx) {;}
     return dict;
@@ -286,7 +285,7 @@ JM_stext_page_as_dict(fz_context *ctx, fz_stext_page *page)
             PyList_Append(blocklist, JM_extract_stext_textblock_as_dict(ctx, block));
     }
     PyDict_SetItemString(dict, "blocks", blocklist);
-    Py_DECREF(blocklist);
+    Py_CLEAR(blocklist);
     return dict;
 }
 %}

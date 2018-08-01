@@ -102,6 +102,13 @@ JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_mat
     return pix;
 }
 
+PyObject *JM_BOOL(int v)
+{
+    if (v == 0)
+        Py_RETURN_FALSE;
+    Py_RETURN_TRUE;
+}
+
 //-----------------------------------------------------------------------------
 // return hex characters for n characters in input 'in'
 //-----------------------------------------------------------------------------
@@ -117,15 +124,6 @@ void hexlify(int n, unsigned char *in, unsigned char *out)
         out[2*i + 1] = hdigit[i2];
     }
     out[2*n] = 0;
-}
-
-//----------------------------------------------------------------------------
-// returns Python True / False for an integer
-//----------------------------------------------------------------------------
-PyObject *truth_value(int v)
-{
-    if (v == 0) Py_RETURN_FALSE;
-    Py_RETURN_TRUE;
 }
 
 //----------------------------------------------------------------------------
