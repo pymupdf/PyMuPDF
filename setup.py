@@ -18,7 +18,7 @@ if sys.platform.startswith('linux'):
                            # 'crypto', #openssl is required by mupdf on archlinux
                            ], # the libraries to link with
                       )
-elif sys.platform.startswith(('darwin', 'freebsd'))
+elif sys.platform.startswith(('darwin', 'freebsd')):
     module = Extension('fitz._fitz', # name of the module
                        ['fitz/fitz_wrap.c'], # C source file
                        # this are directories containing mupdf's and zlib's header files
