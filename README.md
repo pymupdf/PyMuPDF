@@ -13,7 +13,7 @@ On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2015: [![](http://p
 
 # Introduction
 
-This is **version 1.13.16 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.13.0](http://mupdf.com/) - "a lightweight PDF and XPS viewer".
+This is **version 1.13.16 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.13.0](http://mupdf.com/) - "a lightweight PDF, XPS and E-Book viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -25,9 +25,9 @@ See the [Wiki](https://github.com/rk700/PyMuPDF/wiki) for more information, [new
 
 For all **Windows** and (thanks to our user **@jbarlow83**!) for the major **Mac OSX** and **Linux** versions we offer [wheels](https://github.com/rk700/PyMuPDF/releases/latest). They can also be found in the [download section of PyPI](https://pypi.org/project/PyMuPDF/#files).
 
-The platform tag for Mac OSX is `macosx_10_6_intel`.
+The platform tag for **Mac OSX** is `macosx_10_6_intel`.
 
-The platform tag for Linux is `manylinux1_x86_64`, which works on Debian, Ubuntu and most others.
+The platform tag for **Linux** is `manylinux1_x86_64`, so these wheels work on Debian, Ubuntu and most others.
 
 On other operating systems you need to generate PyMuPDF yourself. Before you can do this, you must download and generate MuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures for achieving this.
 
@@ -54,7 +54,7 @@ In addition to wheels, this platform offers [pre-generated binaries](https://git
 If you are looking to make your own binary, consult this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation). It explains how to use Visual Studio for generating MuPDF in quite some detail.
 
 # Usage and Documentation
-Have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) (which contain complete, working programs), and the **recipies** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar, which contains more than a dozen of guides in How-To-style.
+Have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) (which contain complete, working programs), and the **recipies** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar, which contains more than a dozen of guides in How-To style.
 
 Our documentation, written using Sphinx, is available in various formats from the following sources.
 
