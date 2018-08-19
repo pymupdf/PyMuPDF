@@ -92,7 +92,6 @@
 #define INRANGE(v, low, high) ((low) <= v && v <= (high))
 #define MAX(a, b) ((a) < (b)) ? (b) : (a)
 #define MIN(a, b) ((a) < (b)) ? (a) : (b)
-#define JM_BytesFromBuffer(ctx, x) PyBytes_FromStringAndSize(fz_string_from_buffer(ctx, x), (Py_ssize_t) fz_buffer_storage(ctx, x, NULL))
 #define JM_StrFromBuffer(ctx, x) PyUnicode_DecodeUTF8(fz_string_from_buffer(ctx, x), (Py_ssize_t) fz_buffer_storage(ctx, x, NULL), "replace")
 #define JM_PyErr_Clear if (PyErr_Occurred()) PyErr_Clear()
 
@@ -101,12 +100,10 @@
 #define JM_UNICODE(data) Py_BuildValue("s", data)
 #define JM_BinFromChar(x) PyBytes_FromString(x)
 #define JM_BinFromCharSize(x, y) PyBytes_FromStringAndSize(x, (Py_ssize_t) y)
-#define JM_BinFromBuffer(ctx, x) PyBytes_FromStringAndSize(fz_string_from_buffer(ctx, x), (Py_ssize_t) fz_buffer_storage(ctx, x, NULL))
 # else
 #define JM_UNICODE(data) data ? PyUnicode_DecodeUTF8(data, strlen(data), "replace") : Py_BuildValue("s", NULL)
 #define JM_BinFromChar(x) PyByteArray_FromStringAndSize(x, (Py_ssize_t) strlen(x))
 #define JM_BinFromCharSize(x, y) PyByteArray_FromStringAndSize(x, (Py_ssize_t) y)
-#define JM_BinFromBuffer(ctx, x) PyByteArray_FromStringAndSize(fz_string_from_buffer(ctx, x), (Py_ssize_t) fz_buffer_storage(ctx, x, NULL))
 # endif
 // define Python None object
 #define NONE Py_BuildValue("s", NULL)
@@ -116,8 +113,6 @@
 #include <time.h>
 char *JM_Python_str_AsChar(PyObject *str);
 %}
-
-%include _mupdf_config.h
 
 //-----------------------------------------------------------------------------
 // global context
@@ -197,7 +192,7 @@ struct fz_document_s
             self.isClosed    = False
             self.isEncrypted = 0
             self.metadata    = None
-            self.stream      = stream       # do not garbage collect it
+            self.stream      = stream       # prevent garbage collecting this
             self.openErrCode = 0
             self.openErrMsg  = ''
             self.FontInfos   = []
@@ -209,6 +204,9 @@ struct fz_document_s
                 self.openErrCode = self._getGCTXerrcode()
                 self.openErrMsg  = self._getGCTXerrmsg()
                 self.thisown = True
+                tools = Tools()
+                self._graft_id = tools.gen_id()
+                tools = None
                 if self.needsPass:
                     self.isEncrypted = 1
                 else: # we won't init until doc is decrypted
@@ -233,7 +231,7 @@ struct fz_document_s
                 {
                     if (fz_is_empty_rect(rect) || fz_is_infinite_rect(rect))
                         THROWMSG("rect must be finite and not empty");
-                    if (rect->x0 != 0.0 || rect->y0 != 0)
+                    if (rect->x0 != 0.0f || rect->y0 != 0.0f)
                         THROWMSG("rect must start at (0,0)");
                 }
                 if (streamlen > 0)
@@ -469,7 +467,7 @@ struct fz_document_s
 
                 char *data = NULL;
                 size_t len = JM_CharFromBytesOrArray(buffer, &data);
-                if (len)
+                if (len > 0)
                 {
                     if (!filespec) THROWMSG("/EF object not found");
                     res = fz_new_buffer_from_copied_data(gctx, data, len);
@@ -517,7 +515,7 @@ struct fz_document_s
                 int i = JM_find_embedded(gctx, id, pdf);
                 if (i < 0) THROWMSG("entry not found");
                 buf = pdf_portfolio_entry(gctx, pdf, i);
-                cont = JM_BytesFromBuffer(gctx, buf);
+                cont = JM_BinFromBuffer(gctx, buf);
             }
             fz_always(gctx) fz_drop_buffer(gctx, buf);
             fz_catch(gctx) return NULL;
@@ -547,7 +545,7 @@ struct fz_document_s
             {
                 assert_PDF(pdf);
                 size = JM_CharFromBytesOrArray(buffer, &buffdata);
-                if (!size) THROWMSG("arg 1 not bytes or bytearray");
+                if (size < 1) THROWMSG("buffer not bytes / bytearray");
 
                 // we do not allow duplicate names
                 entry = JM_find_embedded(gctx, Py_BuildValue("s", name), pdf);
@@ -648,7 +646,7 @@ struct fz_document_s
         PyObject *resolveLink(char *uri = NULL)
         {
             if (!uri) return NONE;
-            float xp = 0.0, yp = 0.0;
+            float xp = 0.0f, yp = 0.0f;
             int pno = -1;
             fz_try(gctx)
                 pno = fz_resolve_link(gctx, $self, uri, &xp, &yp);
@@ -680,6 +678,23 @@ struct fz_document_s
         PyObject *isReflowable()
         {
             return JM_BOOL(fz_is_document_reflowable(gctx, $self));
+        }
+
+        FITZEXCEPTION(_deleteObject, !result)
+        CLOSECHECK0(_deleteObject)
+        %feature("autodoc", "Delete the object given by its xref") _deleteObject;
+        PyObject *_deleteObject(int xref)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                if (!INRANGE(xref, 1, pdf_xref_len(gctx, pdf)-1))
+                    THROWMSG("xref out of range");
+                pdf_delete_object(gctx, pdf, xref);
+            }
+            fz_catch(gctx) return NULL;
+            return NONE;
         }
 
         CLOSECHECK0(_getPDFroot)
@@ -832,7 +847,7 @@ struct fz_document_s
                 out = fz_new_output_with_buffer(gctx, res);
                 pdf_write_document(gctx, pdf, out, &opts);
                 pdf->dirty = 0;
-                r = JM_BytesFromBuffer(gctx, res);
+                r = JM_BinFromBuffer(gctx, res);
             }
             fz_always(gctx)
             {
@@ -1172,7 +1187,7 @@ if links:
                     if (strcmp(ext, "n/a") != 0 && !info_only)
                     {
                         buffer = fontbuffer(gctx, pdf, xref);
-                        bytes = JM_BytesFromBuffer(gctx, buffer);
+                        bytes = JM_BinFromBuffer(gctx, buffer);
                         fz_drop_buffer(gctx, buffer);
                     }
                     tuple = Py_BuildValue("sssO", fontname, ext, stype, bytes);
@@ -1191,7 +1206,7 @@ if links:
 
         FITZEXCEPTION(extractImage, !result)
         CLOSECHECK(extractImage)
-        %feature("autodoc","Extract image an xref points to. Return dict of extension and image content") extractImage;
+        %feature("autodoc","Extract image an xref points to.") extractImage;
         PyObject *extractImage(int xref = 0)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
@@ -1204,14 +1219,19 @@ if links:
             fz_catch(gctx) return NULL;
 
             fz_buffer *buffer = NULL, *freebuf = NULL;
+            fz_var(freebuf);
+            fz_pixmap *pix = NULL;
+            fz_var(pix);
             pdf_obj *obj = NULL;
-            PyObject *bytes = NULL;
             PyObject *rc = NULL;
             unsigned char ext[5];
             fz_image *image = NULL;
+            fz_var(image);
+            fz_output *out = NULL;
+            fz_var(out);
             fz_compressed_buffer *cbuf = NULL;
-            int type = 0;
-            int n = 0;
+            int type = 0, n = 0, xres = 0, yres = 0;
+            int smask = 0, width = 0, height = 0;
             fz_try(gctx)
             {
                 obj = pdf_new_indirect(gctx, pdf, xref, 0);
@@ -1221,19 +1241,23 @@ if links:
                     image = pdf_load_image(gctx, pdf, obj);
                     cbuf = fz_compressed_image_buffer(gctx, image);
                     type = cbuf == NULL ? FZ_IMAGE_UNKNOWN : cbuf->params.type;
-
                     // ensure returning a PNG for unsupported images ----------
-                    if (image->use_colorkey) type = FZ_IMAGE_UNKNOWN;
-                    if (image->use_decode)   type = FZ_IMAGE_UNKNOWN;
-                    if (image->mask)         type = FZ_IMAGE_UNKNOWN;
                     if (type < FZ_IMAGE_BMP) type = FZ_IMAGE_UNKNOWN;
-                    n = fz_colorspace_n(gctx, image->colorspace);
-                    if (n != 1 && n != 3 && type == FZ_IMAGE_JPEG)
-                        type = FZ_IMAGE_UNKNOWN;
 
+                    pdf_obj *o = pdf_dict_get(gctx, obj, PDF_NAME_SMask);
+                    if (o) smask = pdf_to_num(gctx, o);
+
+                    o = pdf_dict_get(gctx, obj, PDF_NAME_Width);
+                    if (o) width = pdf_to_int(gctx, o);
+
+                    o = pdf_dict_get(gctx, obj, PDF_NAME_Height);
+                    if (o) height = pdf_to_int(gctx, o);
+
+                    n = fz_colorspace_n(gctx, image->colorspace);
+                    fz_image_resolution(image, &xres, &yres);
                     if (type != FZ_IMAGE_UNKNOWN)
                     {
-                        buffer = cbuf->buffer;
+                        buffer = cbuf->buffer;   // we will return this buffer
                         switch(type)
                         {
                             case(FZ_IMAGE_BMP):  strcpy(ext, "bmp");  break;
@@ -1246,13 +1270,39 @@ if links:
                             default:             strcpy(ext, "png");  break;
                         }
                     }
-                    else
+                    else     // we need a pixmap for making the PNG buffer
                     {
-                        buffer = freebuf = fz_new_buffer_from_image_as_png(gctx, image, NULL);
+                        pix = fz_get_pixmap_from_image(gctx, image,
+                                                       NULL, NULL, NULL, NULL);
+                        n = pix->n;
+                        // only gray & rgb pixmaps support PNG!
+                        if (pix->colorspace &&
+                            pix->colorspace != fz_device_gray(gctx) &&
+                            pix->colorspace != fz_device_rgb(gctx))
+                        {
+                            fz_pixmap *pix2 = fz_convert_pixmap(gctx, pix,
+                                     fz_device_rgb(gctx), NULL, NULL, NULL, 1);
+                            fz_drop_pixmap(gctx, pix);
+                            pix = pix2;
+                        }
+
+                        freebuf = fz_new_buffer(gctx, 2048);
+                        out = fz_new_output_with_buffer(gctx, freebuf);
+                        fz_write_pixmap_as_png(gctx, out, pix);
+                        buffer = freebuf;
                         strcpy(ext, "png");
                     }
-                    bytes = JM_BinFromBuffer(gctx, buffer);
-                    rc = Py_BuildValue("{s:s,s:O}", "ext", ext, "image", bytes);
+                    PyObject *bytes = JM_BinFromBuffer(gctx, buffer);
+                    rc = Py_BuildValue("{s:s,s:i,s:i,s:i,s:i,s:i,s:i,s:O}",
+                                       "ext", ext,
+                                       "smask", smask,
+                                       "width", width,
+                                       "height", height,
+                                       "colorspace", n,
+                                       "xres", xres,
+                                       "yres", yres,
+                                       "image", bytes);
+                    Py_CLEAR(bytes);
                 }
                 else
                     rc = PyDict_New();
@@ -1261,6 +1311,8 @@ if links:
             {
                 fz_drop_image(gctx, image);
                 fz_drop_buffer(gctx, freebuf);
+                fz_drop_output(gctx, out);
+                fz_drop_pixmap(gctx, pix);
                 pdf_drop_obj(gctx, obj);
             }
             fz_catch(gctx) {;}
@@ -1520,26 +1572,41 @@ if links:
         
         //---------------------------------------------------------------------
         // Get decompressed stream of an object by xref
-        // Throws exception if not a stream.
+        // Return NONE if not stream
         //---------------------------------------------------------------------
         FITZEXCEPTION(_getXrefStream, !result)
         CLOSECHECK(_getXrefStream)
         PyObject *_getXrefStream(int xref)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            PyObject *r;
-            struct fz_buffer_s *res;
+            PyObject *r = NONE;
+            pdf_obj *obj = NULL;
+            fz_var(obj);
+            fz_buffer *res = NULL;
+            fz_var(res);
             fz_try(gctx)
             {
                 assert_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
                     THROWMSG("xref out of range");
-                res = pdf_load_stream_number(gctx, pdf, xref);
-                r = JM_BytesFromBuffer(gctx, res);
-                fz_drop_buffer(gctx, res);
+                obj = pdf_new_indirect(gctx, pdf, xref, 0);
+                if (pdf_is_stream(gctx, obj))
+                {
+                    res = pdf_load_stream_number(gctx, pdf, xref);
+                    r = JM_BinFromBuffer(gctx, res);
+                }
             }
-            fz_catch(gctx) return NULL;
+            fz_always(gctx)
+            {
+                fz_drop_buffer(gctx, res);
+                pdf_drop_obj(gctx, obj);
+            }
+            fz_catch(gctx)
+            {
+                Py_CLEAR(r);
+                return NULL;
+            }
             return r;
         }
 
@@ -1577,10 +1644,9 @@ if links:
         PyObject *_updateStream(int xref = 0, PyObject *stream = NULL, int new = 0)
         {
             pdf_obj *obj = NULL;
+            fz_var(obj);
             fz_buffer *res = NULL;
             fz_var(res);
-            size_t len = 0;
-            char *c = NULL;
             pdf_document *pdf = pdf_specifics(gctx, $self);     // get pdf doc
             fz_try(gctx)
             {
@@ -1588,20 +1654,20 @@ if links:
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
                     THROWMSG("xref out of range");
-                len = JM_CharFromBytesOrArray(stream, &c);
-                if (len < 1) THROWMSG("stream must be bytes or bytearray");
                 // get the object
                 obj = pdf_new_indirect(gctx, pdf, xref, 0);
-                if (!obj) THROWMSG("xref invalid");
-                if (new == 0 && !pdf_is_stream(gctx, obj))
+                if (!new && !pdf_is_stream(gctx, obj))
                     THROWMSG("xref not a stream object");
-
-                res = fz_new_buffer_from_copied_data(gctx, c, len);
+                res = JM_BufferFromBytes(gctx, stream);
+                if (!res) THROWMSG("stream must be bytes or bytearray");
                 JM_update_stream(gctx, pdf, obj, res);
-                pdf_drop_obj(gctx, obj);
+                
             }
             fz_always(gctx)
+            {
                 fz_drop_buffer(gctx, res);
+                pdf_drop_obj(gctx, obj);
+            }
             fz_catch(gctx)
                 return NULL;
             pdf->dirty = 1;
@@ -3691,7 +3757,6 @@ struct fz_pixmap_s
             fz_always(gctx)
             {
                 fz_drop_image(gctx, img);
-                fz_drop_buffer(gctx, data);
             }
             fz_catch(gctx) return NULL;
             return pm;
@@ -3717,20 +3782,17 @@ struct fz_pixmap_s
                 type = pdf_dict_get(gctx, ref, PDF_NAME_Subtype);
                 if (!pdf_name_eq(gctx, type, PDF_NAME_Image))
                     THROWMSG("xref not an image");
-                if (!pdf_is_stream(gctx, ref))
-                    THROWMSG("xref is not a stream");
                 img = pdf_load_image(gctx, pdf, ref);
-                pdf_drop_obj(gctx, ref);
                 pix = fz_get_pixmap_from_image(gctx, img, NULL, NULL, NULL, NULL);
             }
             fz_always(gctx)
             {
                 fz_drop_image(gctx, img);
+                pdf_drop_obj(gctx, ref);
             }
             fz_catch(gctx)
             {
                 fz_drop_pixmap(gctx, pix);
-                pdf_drop_obj(gctx, ref);
                 return NULL;
             }
             return pix;
@@ -3775,16 +3837,7 @@ struct fz_pixmap_s
         }
 
         //----------------------------------------------------------------------
-        // Pixmap.setResolution
-        //----------------------------------------------------------------------
-        void setResolution(int xres, int yres)
-        {
-            $self->xres = xres;
-            $self->yres = yres;
-        }
-
-        //----------------------------------------------------------------------
-        // clear total pixmap with 0x00 */
+        // clear all of pixmap samples to 0x00 */
         //----------------------------------------------------------------------
         void clearWith()
         {
@@ -4665,8 +4718,11 @@ struct fz_annot_s
             if (!annot) return NONE;
             fz_try(gctx)
             {
-                res = pdf_load_stream(gctx, annot->ap);
-                if (res) r = JM_BytesFromBuffer(gctx, res);
+                pdf_obj *ap = pdf_dict_getl(gctx, annot->obj, PDF_NAME_AP,
+                                              PDF_NAME_N, NULL);
+                
+                if (pdf_is_stream(gctx, ap))  res = pdf_load_stream(gctx, ap);
+                if (res) r = JM_BinFromBuffer(gctx, res);
             }
             fz_always(gctx) fz_drop_buffer(gctx, res);
             fz_catch(gctx) return NONE;
@@ -4687,12 +4743,16 @@ struct fz_annot_s
             fz_try(gctx)
             {
                 assert_PDF(annot);
-                if (!annot->ap) THROWMSG("annot has no /AP object");
+                pdf_obj *apobj = pdf_dict_getl(gctx, annot->obj, PDF_NAME_AP,
+                                              PDF_NAME_N, NULL);
+                if (!apobj) THROWMSG("annot has no /AP/N object");
+                if (!pdf_is_stream(gctx, apobj))
+                    THROWMSG("/AP/N object is no stream");
                 char *c = NULL;
                 size_t len = JM_CharFromBytesOrArray(ap, &c);
-                if (len < 1) THROWMSG("invalid content argument");
-                res = fz_new_buffer_from_copied_data(gctx, c, len);
-                JM_update_stream(gctx, annot->page->doc, annot->ap, res);
+                if (!c) THROWMSG("invalid /AP stream argument");
+                res = fz_new_buffer_from_copied_data(gctx, c, strlen(c));
+                JM_update_stream(gctx, annot->page->doc, apobj, res);
                 pdf_dirty_annot(gctx, annot);
                 pdf_update_page(gctx, annot->page);
             }
@@ -5293,7 +5353,7 @@ struct fz_annot_s
                                    PDF_NAME_EF, PDF_NAME_F, NULL);
                 if (!stream) THROWMSG("bad PDF: file entry not found");
                 buf = pdf_load_stream(gctx, stream);
-                res = JM_BytesFromBuffer(gctx, buf);
+                res = JM_BinFromBuffer(gctx, buf);
             }
             fz_always(gctx) fz_drop_buffer(gctx, buf);
             fz_catch(gctx) return NULL;
@@ -6460,83 +6520,7 @@ struct Tools
         %pythoncode%{@property%}
         PyObject *fitz_config()
         {
-#if defined(TOFU)
-#define have_TOFU JM_BOOL(0)
-#else
-#define have_TOFU JM_BOOL(1)
-#endif
-#if defined(TOFU_CJK)
-#define have_TOFU_CJK JM_BOOL(0)
-#else
-#define have_TOFU_CJK JM_BOOL(1)
-#endif
-#if defined(TOFU_CJK_EXT)
-#define have_TOFU_CJK_EXT JM_BOOL(0)
-#else
-#define have_TOFU_CJK_EXT JM_BOOL(1)
-#endif
-#if defined(TOFU_CJK_LANG)
-#define have_TOFU_CJK_LANG JM_BOOL(0)
-#else
-#define have_TOFU_CJK_LANG JM_BOOL(1)
-#endif
-#if defined(TOFU_EMOJI)
-#define have_TOFU_EMOJI JM_BOOL(0)
-#else
-#define have_TOFU_EMOJI JM_BOOL(1)
-#endif
-#if defined(TOFU_HISTORIC)
-#define have_TOFU_HISTORIC JM_BOOL(0)
-#else
-#define have_TOFU_HISTORIC JM_BOOL(1)
-#endif
-#if defined(TOFU_SYMBOL)
-#define have_TOFU_SYMBOL JM_BOOL(0)
-#else
-#define have_TOFU_SYMBOL JM_BOOL(1)
-#endif
-#if defined(TOFU_SIL)
-#define have_TOFU_SIL JM_BOOL(0)
-#else
-#define have_TOFU_SIL JM_BOOL(1)
-#endif
-#if defined(NO_ICC)
-#define have_NO_ICC JM_BOOL(0)
-#else
-#define have_NO_ICC JM_BOOL(1)
-#endif
-#if defined(TOFU_BASE14)
-#define have_TOFU_BASE14 JM_BOOL(0)
-#else
-#define have_TOFU_BASE14 JM_BOOL(1)
-#endif
-            PyObject *dict = PyDict_New();
-            PyDict_SetItemString(dict, "plotter-g", JM_BOOL(FZ_PLOTTERS_G));
-            PyDict_SetItemString(dict, "plotter-rgb", JM_BOOL(FZ_PLOTTERS_RGB));
-            PyDict_SetItemString(dict, "plotter-cmyk", JM_BOOL(FZ_PLOTTERS_CMYK));
-            PyDict_SetItemString(dict, "plotter-n", JM_BOOL(FZ_PLOTTERS_N));
-            PyDict_SetItemString(dict, "pdf", JM_BOOL(FZ_ENABLE_PDF));
-            PyDict_SetItemString(dict, "xps", JM_BOOL(FZ_ENABLE_XPS));
-            PyDict_SetItemString(dict, "svg", JM_BOOL(FZ_ENABLE_SVG));
-            PyDict_SetItemString(dict, "cbz", JM_BOOL(FZ_ENABLE_CBZ));
-            PyDict_SetItemString(dict, "img", JM_BOOL(FZ_ENABLE_IMG));
-            PyDict_SetItemString(dict, "tiff", JM_BOOL(FZ_ENABLE_TIFF));
-            PyDict_SetItemString(dict, "html", JM_BOOL(FZ_ENABLE_HTML));
-            PyDict_SetItemString(dict, "epub", JM_BOOL(FZ_ENABLE_EPUB));
-            PyDict_SetItemString(dict, "gprf", JM_BOOL(FZ_ENABLE_GPRF));
-            PyDict_SetItemString(dict, "jpx", JM_BOOL(FZ_ENABLE_JPX));
-            PyDict_SetItemString(dict, "js", JM_BOOL(FZ_ENABLE_JS));
-            PyDict_SetItemString(dict, "tofu", have_TOFU);
-            PyDict_SetItemString(dict, "tofu-cjk", have_TOFU_CJK);
-            PyDict_SetItemString(dict, "tofu-cjk-ext", have_TOFU_CJK_EXT);
-            PyDict_SetItemString(dict, "tofu-cjk-lang", have_TOFU_CJK_LANG);
-            PyDict_SetItemString(dict, "tofu-emoji", have_TOFU_EMOJI);
-            PyDict_SetItemString(dict, "tofu-historic", have_TOFU_HISTORIC);
-            PyDict_SetItemString(dict, "tofu-symbol", have_TOFU_SYMBOL);
-            PyDict_SetItemString(dict, "tofu-sil", have_TOFU_SIL);
-            PyDict_SetItemString(dict, "icc", have_NO_ICC);
-            PyDict_SetItemString(dict, "base14", have_TOFU_BASE14);
-            return dict;
+            return JM_fitz_config();
         }
 
         void _store_debug()

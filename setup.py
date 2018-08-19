@@ -50,7 +50,7 @@ else:
                        sources=['./fitz/fitz_wrap.c',])
 
 setup(name = 'PyMuPDF',
-      version = "1.13.16",
+      version = "1.13.17",
       description = 'Python bindings for the PDF rendering library MuPDF',
       classifiers = ['Development Status :: 5 - Production/Stable',
                      'Environment :: Console',
@@ -65,7 +65,7 @@ setup(name = 'PyMuPDF',
                      'Programming Language :: Python :: 3',
                      'Topic :: Utilities'],
       url = 'https://github.com/rk700/PyMuPDF',
-      author = 'Ruikai Liu',
+      author = 'Ruikai Liu, Jorj McKie',
       author_email = 'lrk700@gmail.com',
       license = 'GPLv3+',
       ext_modules = [module],

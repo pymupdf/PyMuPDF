@@ -12,7 +12,7 @@ def showPDFpage(page, rect, src, pno, overlay = True, keep_proportion = True,
     """
     fitz.CheckParent(page)
     doc = page.parent
-    # list of existing /Form /XObjcts
+    # list of existing /Form /XObjects
     xobjlist = doc._getPageInfo(page.number, 3)
     ilst = [i[1] for i in xobjlist]
     # create a new name not in that list
@@ -23,8 +23,8 @@ def showPDFpage(page, rect, src, pno, overlay = True, keep_proportion = True,
         i += 1
         _imgname = n + str(i)
 
-    isrc = id(src)                # used as key for graftmaps
-    if id(doc) == isrc:
+    isrc = src._graft_id          # used as key for graftmaps
+    if doc._graft_id == isrc:
         raise ValueError("source document must not equal target")
 
     # check if we have already copied objects from this source doc

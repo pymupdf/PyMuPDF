@@ -95,21 +95,6 @@ except __builtin__.Exception:
         pass
     _newclass = 0
 
-FZ_PLOTTERS_G = _fitz.FZ_PLOTTERS_G
-FZ_PLOTTERS_RGB = _fitz.FZ_PLOTTERS_RGB
-FZ_PLOTTERS_CMYK = _fitz.FZ_PLOTTERS_CMYK
-FZ_PLOTTERS_N = _fitz.FZ_PLOTTERS_N
-FZ_ENABLE_PDF = _fitz.FZ_ENABLE_PDF
-FZ_ENABLE_XPS = _fitz.FZ_ENABLE_XPS
-FZ_ENABLE_SVG = _fitz.FZ_ENABLE_SVG
-FZ_ENABLE_CBZ = _fitz.FZ_ENABLE_CBZ
-FZ_ENABLE_IMG = _fitz.FZ_ENABLE_IMG
-FZ_ENABLE_TIFF = _fitz.FZ_ENABLE_TIFF
-FZ_ENABLE_HTML = _fitz.FZ_ENABLE_HTML
-FZ_ENABLE_EPUB = _fitz.FZ_ENABLE_EPUB
-FZ_ENABLE_GPRF = _fitz.FZ_ENABLE_GPRF
-FZ_ENABLE_JPX = _fitz.FZ_ENABLE_JPX
-FZ_ENABLE_JS = _fitz.FZ_ENABLE_JS
 
 import weakref
 from binascii import hexlify
@@ -117,9 +102,9 @@ import math
 
 
 VersionFitz = "1.13.0"
-VersionBind = "1.13.16"
-VersionDate = "2018-08-01 13:43:15"
-version = (VersionBind, VersionFitz, "20180801134315")
+VersionBind = "1.13.17"
+VersionDate = "2018-08-18 20:39:19"
+version = (VersionBind, VersionFitz, "20180818203919")
 
 
 #------------------------------------------------------------------------------
@@ -528,6 +513,12 @@ def PaperSize(s):
     if f == "p":
         return rc
     return (rc[1], rc[0])
+
+def PaperRect(s):
+    """Return a fitz.Rect for the paper size indicated in string 's'. Must conform to the argument of method 'PaperSize', which will be invoked.
+    """
+    width, height = PaperSize(s)
+    return Rect(0.0, 0.0, width, height)
 
 def CheckParent(o):
     if not hasattr(o, "parent") or o.parent is None:
@@ -1024,7 +1015,7 @@ open(filename, filetype='type') - from file"""
         self.isClosed    = False
         self.isEncrypted = 0
         self.metadata    = None
-        self.stream      = stream       # do not garbage collect it
+        self.stream      = stream       # prevent garbage collecting this
         self.openErrCode = 0
         self.openErrMsg  = ''
         self.FontInfos   = []
@@ -1041,6 +1032,9 @@ open(filename, filetype='type') - from file"""
             self.openErrCode = self._getGCTXerrcode()
             self.openErrMsg  = self._getGCTXerrmsg()
             self.thisown = True
+            tools = Tools()
+            self._graft_id = tools.gen_id()
+            tools = None
             if self.needsPass:
                 self.isEncrypted = 1
             else: # we won't init until doc is decrypted
@@ -1219,6 +1213,14 @@ open(filename, filetype='type') - from file"""
             raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document_isReflowable(self)
+
+
+    def _deleteObject(self, xref):
+        """Delete the object given by its xref"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document__deleteObject(self, xref)
 
 
     def _getPDFroot(self):
@@ -1409,7 +1411,7 @@ open(filename, filetype='type') - from file"""
 
 
     def extractImage(self, xref=0):
-        """Extract image an xref points to. Return dict of extension and image content"""
+        """Extract image an xref points to."""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
 
@@ -2618,11 +2620,6 @@ Pixmap(Document, xref) - from a PDF image"""
             return
 
         return _fitz.Pixmap_tintWith(self, red, green, blue)
-
-
-    def setResolution(self, xres, yres):
-        """setResolution(self, xres, yres)"""
-        return _fitz.Pixmap_setResolution(self, xres, yres)
 
 
     def clearWith(self, *args):

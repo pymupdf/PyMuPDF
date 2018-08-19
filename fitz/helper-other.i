@@ -1,4 +1,104 @@
 %{
+
+PyObject *JM_BOOL(int v)
+{
+    if (v == 0)
+        Py_RETURN_FALSE;
+    Py_RETURN_TRUE;
+}
+
+PyObject *JM_fitz_config()
+{
+#if defined(TOFU)
+#define have_TOFU JM_BOOL(0)
+#else
+#define have_TOFU JM_BOOL(1)
+#endif
+#if defined(TOFU_CJK)
+#define have_TOFU_CJK JM_BOOL(0)
+#else
+#define have_TOFU_CJK JM_BOOL(1)
+#endif
+#if defined(TOFU_CJK_EXT)
+#define have_TOFU_CJK_EXT JM_BOOL(0)
+#else
+#define have_TOFU_CJK_EXT JM_BOOL(1)
+#endif
+#if defined(TOFU_CJK_LANG)
+#define have_TOFU_CJK_LANG JM_BOOL(0)
+#else
+#define have_TOFU_CJK_LANG JM_BOOL(1)
+#endif
+#if defined(TOFU_EMOJI)
+#define have_TOFU_EMOJI JM_BOOL(0)
+#else
+#define have_TOFU_EMOJI JM_BOOL(1)
+#endif
+#if defined(TOFU_HISTORIC)
+#define have_TOFU_HISTORIC JM_BOOL(0)
+#else
+#define have_TOFU_HISTORIC JM_BOOL(1)
+#endif
+#if defined(TOFU_SYMBOL)
+#define have_TOFU_SYMBOL JM_BOOL(0)
+#else
+#define have_TOFU_SYMBOL JM_BOOL(1)
+#endif
+#if defined(TOFU_SIL)
+#define have_TOFU_SIL JM_BOOL(0)
+#else
+#define have_TOFU_SIL JM_BOOL(1)
+#endif
+#if defined(NO_ICC)
+#define have_NO_ICC JM_BOOL(0)
+#else
+#define have_NO_ICC JM_BOOL(1)
+#endif
+#if defined(TOFU_BASE14)
+#define have_TOFU_BASE14 JM_BOOL(0)
+#else
+#define have_TOFU_BASE14 JM_BOOL(1)
+#endif
+    PyObject *dict = PyDict_New();
+    PyDict_SetItemString(dict, "plotter-g", JM_BOOL(FZ_PLOTTERS_G));
+    PyDict_SetItemString(dict, "plotter-rgb", JM_BOOL(FZ_PLOTTERS_RGB));
+    PyDict_SetItemString(dict, "plotter-cmyk", JM_BOOL(FZ_PLOTTERS_CMYK));
+    PyDict_SetItemString(dict, "plotter-n", JM_BOOL(FZ_PLOTTERS_N));
+    PyDict_SetItemString(dict, "pdf", JM_BOOL(FZ_ENABLE_PDF));
+    PyDict_SetItemString(dict, "xps", JM_BOOL(FZ_ENABLE_XPS));
+    PyDict_SetItemString(dict, "svg", JM_BOOL(FZ_ENABLE_SVG));
+    PyDict_SetItemString(dict, "cbz", JM_BOOL(FZ_ENABLE_CBZ));
+    PyDict_SetItemString(dict, "img", JM_BOOL(FZ_ENABLE_IMG));
+    PyDict_SetItemString(dict, "tiff", JM_BOOL(FZ_ENABLE_TIFF));
+    PyDict_SetItemString(dict, "html", JM_BOOL(FZ_ENABLE_HTML));
+    PyDict_SetItemString(dict, "epub", JM_BOOL(FZ_ENABLE_EPUB));
+    PyDict_SetItemString(dict, "gprf", JM_BOOL(FZ_ENABLE_GPRF));
+    PyDict_SetItemString(dict, "jpx", JM_BOOL(FZ_ENABLE_JPX));
+    PyDict_SetItemString(dict, "js", JM_BOOL(FZ_ENABLE_JS));
+    PyDict_SetItemString(dict, "tofu", have_TOFU);
+    PyDict_SetItemString(dict, "tofu-cjk", have_TOFU_CJK);
+    PyDict_SetItemString(dict, "tofu-cjk-ext", have_TOFU_CJK_EXT);
+    PyDict_SetItemString(dict, "tofu-cjk-lang", have_TOFU_CJK_LANG);
+    PyDict_SetItemString(dict, "tofu-emoji", have_TOFU_EMOJI);
+    PyDict_SetItemString(dict, "tofu-historic", have_TOFU_HISTORIC);
+    PyDict_SetItemString(dict, "tofu-symbol", have_TOFU_SYMBOL);
+    PyDict_SetItemString(dict, "tofu-sil", have_TOFU_SIL);
+    PyDict_SetItemString(dict, "icc", have_NO_ICC);
+    PyDict_SetItemString(dict, "base14", have_TOFU_BASE14);
+    return dict;
+}
+
+//----------------------------------------------------------------------------
+// Return a Python bytes object for an fz_buffer
+//----------------------------------------------------------------------------
+PyObject *JM_BinFromBuffer(fz_context *ctx, fz_buffer *buffer)
+{
+    if (!buffer) return NULL;
+    char *c = NULL;
+    size_t len = fz_buffer_storage(gctx, buffer, &c);
+    return PyBytes_FromStringAndSize(c, (Py_ssize_t) len);
+}
+
 //----------------------------------------------------------------------------
 // deflate char* into a buffer
 // this is a copy of function "deflatebuf" of pdf_write.c
@@ -37,7 +137,7 @@ fz_buffer *JM_deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffer *buffer)
 {
     size_t len, nlen;
-    char *data;
+    unsigned char *data = NULL;
     fz_buffer *nres = NULL;
     len = fz_buffer_storage(ctx, buffer, &data);
     nlen = len;
@@ -102,13 +202,6 @@ JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_mat
     return pix;
 }
 
-PyObject *JM_BOOL(int v)
-{
-    if (v == 0)
-        Py_RETURN_FALSE;
-    Py_RETURN_TRUE;
-}
-
 //-----------------------------------------------------------------------------
 // return hex characters for n characters in input 'in'
 //-----------------------------------------------------------------------------
@@ -127,22 +220,50 @@ void hexlify(int n, unsigned char *in, unsigned char *out)
 }
 
 //----------------------------------------------------------------------------
-// Turn Python a bytes or bytearray object into char* string
+// Turn a bytes or bytearray object into char* string
 // using the "_AsString" functions. Returns string size or 0 on error.
 //----------------------------------------------------------------------------
 size_t JM_CharFromBytesOrArray(PyObject *stream, char **data)
 {
+    *data = NULL;
+    size_t len = 0;
+    if (!stream) return 0;
     if (PyBytes_Check(stream))
     {
         *data = PyBytes_AsString(stream);
-        return (size_t) PyBytes_Size(stream);
+        len = (size_t) PyBytes_Size(stream);
     }
-    if (PyByteArray_Check(stream))
+    else if (PyByteArray_Check(stream))
     {
         *data = PyByteArray_AsString(stream);
-        return (size_t) PyByteArray_Size(stream);
+        len = (size_t) PyByteArray_Size(stream);
     }
-    return 0;
+    return len;
+}
+
+//----------------------------------------------------------------------------
+// Return fz_buffer from a PyBytes or PyByteArray object
+//----------------------------------------------------------------------------
+fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
+{
+    if (!stream) return NULL;
+    char *c = NULL;
+    size_t len = JM_CharFromBytesOrArray(stream, &c);
+    if (!c) return NULL;
+    fz_buffer *res = NULL;
+    fz_var(res);
+    fz_try(ctx)
+    {
+        res = fz_new_buffer(ctx, len);
+        fz_append_data(ctx, res, c, len);
+        fz_terminate_buffer(ctx, res);
+    }
+    fz_catch(ctx)
+    {
+        fz_drop_buffer(ctx, res);
+        fz_rethrow(ctx);
+    }
+    return res;
 }
 
 //----------------------------------------------------------------------------

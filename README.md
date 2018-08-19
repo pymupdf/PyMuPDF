@@ -1,4 +1,4 @@
-# PyMuPDF 1.13.16
+# PyMuPDF 1.13.17
 
 ![logo](https://github.com/rk700/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
@@ -6,20 +6,20 @@ Release date: August 1, 2018
 
 **Travis-CI:** [![Build Status](https://travis-ci.org/rk700/PyMuPDF.svg?branch=master)](https://travis-ci.org/rk700/PyMuPDF)
 
-On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2015: [![](http://pepy.tech/badge/pymupdf)](http://pepy.tech/project/pymupdf)
+On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![](http://pepy.tech/badge/pymupdf)](http://pepy.tech/project/pymupdf)
 # Authors
 * [Ruikai Liu](mailto:lrk700@gmail.com)
 * [Jorj X. McKie](mailto:jorj.x.mckie@outlook.de)
 
 # Introduction
 
-This is **version 1.13.16 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.13.0](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
+This is **version 1.13.17 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.13.0](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
 With PyMuPDF you therefore can access files with extensions like ".pdf", ".xps", ".oxps", ".cbz", ".fb2" or ".epub" from your Python scripts.
 
-See the [Wiki](https://github.com/rk700/PyMuPDF/wiki) for more information, [news](https://github.com/rk700/PyMuPDF/wiki/Change-and-News-Log), release notes and usage recipies.
+See the [Wiki](https://github.com/rk700/PyMuPDF/wiki) for more information, [news](https://github.com/rk700/PyMuPDF/wiki/Change-and-News-Log), release notes and usage recipes.
 
 # Installation
 
@@ -27,11 +27,11 @@ For all **Windows** and (thanks to our user **@jbarlow83**!) for the major **Mac
 
 The platform tag for Mac OSX is `macosx_10_6_intel`.
 
-The platform tag for Linux is `manylinux1_x86_64`, which works on Debian, Ubuntu and most others.
+The platform tag for Linux is `manylinux1_x86_64`, which makes these wheels usable on Debian, Ubuntu and most other variations.
 
 On other operating systems you need to generate PyMuPDF yourself. Before you can do this, you must download and generate MuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures for achieving this.
 
-Be sure to download the official MuPDF source release from [here](https://mupdf.com/downloads). The [GitHub repo](https://github.com/ArtifexSoftware/mupdf) of MuPDF contains their current **development source**, which is **not compatible** with this PyMuPDF version most of the time.
+Be sure to download the official MuPDF source release from [here](https://mupdf.com/downloads). Do **not use** MuPDF's [GitHub repo](https://github.com/ArtifexSoftware/mupdf). It contains their current **development source**, which is **not compatible** with the published PyMuPDF version most of the time.
 
 Once this is done, adjust directories in ``setup.py`` and the rest should be as easy as running the usual ``python setup.py install``.
 
@@ -54,7 +54,7 @@ In addition to wheels, this platform offers [pre-generated binaries](https://git
 If you are looking to make your own binary, consult this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation). It explains how to use Visual Studio for generating MuPDF in quite some detail.
 
 # Usage and Documentation
-Have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) (which contain complete, working programs), and the **recipies** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar, which contains more than a dozen of guides in How-To-style.
+Have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) (which contain complete, working programs), and the **recipes** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar, which contains more than a dozen of guides in How-To-style.
 
 Our documentation, written using Sphinx, is available in various formats from the following sources.
 
@@ -67,7 +67,7 @@ Our documentation, written using Sphinx, is available in various formats from th
 Earlier versions are available in the [releases](https://github.com/rk700/PyMuPDF/releases) directory.
 
 # License
-PyMuPDF is distributed under GNU GPL V3. Because you will also be using MuPDF, its license GNU AFFERO GPL V3 applies as well. Copies of both are included in this repository.
+PyMuPDF is distributed under GNU GPL V3. Because you will implicitely also be using MuPDF, its license GNU AFFERO GPL V3 applies as well. Copies of both are included in this repository.
 
 # Contact
 

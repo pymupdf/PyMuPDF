@@ -251,6 +251,12 @@ def PaperSize(s):
         return rc
     return (rc[1], rc[0])
 
+def PaperRect(s):
+    """Return a fitz.Rect for the paper size indicated in string 's'. Must conform to the argument of method 'PaperSize', which will be invoked.
+    """
+    width, height = PaperSize(s)
+    return Rect(0.0, 0.0, width, height)
+
 def CheckParent(o):
     if not hasattr(o, "parent") or o.parent is None:
         raise ValueError("orphaned object: parent is None") 
