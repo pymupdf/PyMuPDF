@@ -835,7 +835,7 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
     if from_page < 0:
         fp = 0
     elif from_page >= doc2.pageCount:
-        from_page = doc2.page_count - 1
+        from_page = doc2.pageCount - 1
     else:
         fp = from_page
 
