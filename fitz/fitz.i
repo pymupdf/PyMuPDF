@@ -6393,7 +6393,7 @@ struct fz_stext_page_s {
                         fz_print_stext_page_as_html(gctx, out, $self);
                         break;
                     case(2):
-                        text = JM_stext_page_as_dict(gctx, $self);
+                        text = JM_stext_page_as_dict(gctx, $self, 0);
                         break;
                     case(3):
                         fz_print_stext_page_as_xml(gctx, out, $self);
@@ -6402,7 +6402,10 @@ struct fz_stext_page_s {
                         fz_print_stext_page_as_xhtml(gctx, out, $self);
                         break;
                     case(5):
-                        text = JM_stext_page_as_dict(gctx, $self);
+                        text = JM_stext_page_as_dict(gctx, $self, 0);
+                        break;
+                    case(6):
+                        text = JM_stext_page_as_dict(gctx, $self, 1);
                         break;
                     default:
                         JM_print_stext_page_as_text(gctx, out, $self);
@@ -6438,6 +6441,9 @@ struct fz_stext_page_s {
 
             def extractDICT(self):
                 return self._extractText(5)
+
+            def extractRAWDICT(self):
+                return self._extractText(6)
         %}
     }
 };

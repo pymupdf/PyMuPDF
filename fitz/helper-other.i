@@ -93,10 +93,19 @@ PyObject *JM_fitz_config()
 //----------------------------------------------------------------------------
 PyObject *JM_BinFromBuffer(fz_context *ctx, fz_buffer *buffer)
 {
-    if (!buffer) return NULL;
+    PyObject *bytes = NULL;
     char *c = NULL;
-    size_t len = fz_buffer_storage(gctx, buffer, &c);
-    return PyBytes_FromStringAndSize(c, (Py_ssize_t) len);
+    if (buffer)
+    {
+        size_t len = fz_buffer_storage(gctx, buffer, &c);
+        bytes = PyBytes_FromStringAndSize(c, (Py_ssize_t) len);
+    }
+    else
+    {
+        bytes = PyBytes_FromString("");
+    }
+    Py_INCREF(bytes);
+    return bytes;
 }
 
 //----------------------------------------------------------------------------
