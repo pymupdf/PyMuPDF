@@ -1,4 +1,45 @@
 %{
+// a simple tracer
+void JM_TRACE(const char *id)
+{
+    PySys_WriteStdout("%s\n", id);
+}
+
+//-----------------------------------------------------------------------------
+// The following 3 functions replace MuPDF standard memory allocation.
+// This will ensure, that MuPDF memory handling becomes part of Python's
+// memory management.
+//-----------------------------------------------------------------------------
+static void *JM_Py_Malloc(void *opaque, size_t size)
+{
+    //void *p = PyMem_Malloc(size);
+    //PySys_WriteStdout("%p alloc %u\n", p, size);
+    //return p;
+    return PyMem_Malloc(size);
+}
+
+static void *JM_Py_Realloc(void *opaque, void *old, size_t size)
+{
+    //void *p = PyMem_Realloc(old, size);
+    //if (old) PySys_WriteStdout("%p free\n", old);
+    //PySys_WriteStdout("%p alloc %u\n", p, size);
+    //return p;
+    return PyMem_Realloc(old, size);
+}
+
+static void JM_PY_Free(void *opaque, void *ptr)
+{
+    PyMem_Free(ptr);
+}
+
+const fz_alloc_context JM_Alloc_Context =
+{
+	NULL,
+	JM_Py_Malloc,
+	JM_Py_Realloc,
+	JM_PY_Free
+};
+
 
 PyObject *JM_BOOL(int v)
 {
@@ -85,6 +126,7 @@ PyObject *JM_fitz_config()
     PyDict_SetItemString(dict, "tofu-sil", have_TOFU_SIL);
     PyDict_SetItemString(dict, "icc", have_NO_ICC);
     PyDict_SetItemString(dict, "base14", have_TOFU_BASE14);
+    PyDict_SetItemString(dict, "py-memory", JM_BOOL(JM_MEMORY));
     return dict;
 }
 
@@ -104,7 +146,6 @@ PyObject *JM_BinFromBuffer(fz_context *ctx, fz_buffer *buffer)
     {
         bytes = PyBytes_FromString("");
     }
-    Py_INCREF(bytes);
     return bytes;
 }
 
@@ -168,7 +209,7 @@ void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffe
 }
 
 //-----------------------------------------------------------------------------
-// Version of fz_pixmap_from_display_list (utils.c) to support rendering
+// Version of fz_new_pixmap_from_display_list (util.c) to support rendering
 // of only the 'clip' part of the displaylist rectangle
 //-----------------------------------------------------------------------------
 fz_pixmap *
@@ -176,8 +217,10 @@ JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_mat
 {
     fz_rect rect;
     fz_irect irect;
-    fz_pixmap *pix;
-    fz_device *dev;
+    fz_pixmap *pix = NULL;
+    fz_var(pix);
+    fz_device *dev = NULL;
+    fz_var(dev);
     fz_separations *seps = NULL;
     fz_bound_display_list(ctx, list, &rect);
     if (clip) fz_intersect_rect(&rect, clip);
@@ -277,7 +320,7 @@ fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
 
 //----------------------------------------------------------------------------
 // Modified copy of SWIG_Python_str_AsChar
-// If Py3, the SWIG original v3.0.12does *not* deliver NULL for a
+// If Py3, the SWIG original v3.0.12 does *not* deliver NULL for a
 // non-string input, as does PyString_AsString in Py2.
 //----------------------------------------------------------------------------
 char *JM_Python_str_AsChar(PyObject *str)
@@ -291,8 +334,9 @@ char *JM_Python_str_AsChar(PyObject *str)
     char *cstr;
     Py_ssize_t len;
     PyBytes_AsStringAndSize(xstr, &cstr, &len);
-    newstr = (char *) malloc(len+1);
-    memcpy(newstr, cstr, len+1);
+    size_t l = len + 1;
+    newstr = JM_Alloc(char, l);
+    memcpy(newstr, cstr, l);
     Py_XDECREF(xstr);
   }
   return newstr;
@@ -302,7 +346,7 @@ char *JM_Python_str_AsChar(PyObject *str)
 }
 
 #if PY_VERSION_HEX >= 0x03000000
-#  define JM_Python_str_DelForPy3(x) free((void*) (x))
+#  define JM_Python_str_DelForPy3(x) JM_Free(x)
 #else
 #  define JM_Python_str_DelForPy3(x) 
 #endif

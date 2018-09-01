@@ -57,7 +57,7 @@ int JM_append_word(fz_context *ctx, PyObject *lines, fz_buffer *buff, fz_rect *w
 // create an empty rectangle --------------------------------------------------
 fz_rect *JM_empty_rect()
 {
-    fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+    fz_rect *r = JM_Alloc(fz_rect, 1);
     r->x0 = r->y0 = r->x1 = r->y1 = 0;
     return r;
 }
@@ -106,9 +106,10 @@ static void font_family_name(fz_context *ctx, fz_font *font, char *buf, int size
     fz_strlcpy(buf, name, size);
 }
 
-void
-JM_style_begin_dict(fz_context *ctx, PyObject *span, fz_font *font, float size, int sup)
+PyObject *
+JM_style_begin_dict(fz_context *ctx, fz_font *font, float size, int sup)
 {
+    //JM_TRACE("entering JM_style_begin_dict");
     char family[80];
     font_family_name(ctx, font, family, sizeof family);
     int flags = sup;
@@ -116,9 +117,12 @@ JM_style_begin_dict(fz_context *ctx, PyObject *span, fz_font *font, float size, 
     flags += fz_font_is_serif(ctx, font) * 4;
     flags += fz_font_is_monospaced(ctx, font) * 8;
     flags += fz_font_is_bold(ctx, font) * 16;
+    PyObject *span = PyDict_New();
     PyDict_SetItemString(span, "font", JM_UnicodeFromASCII(family));
     PyDict_SetItemString(span, "size", Py_BuildValue("f", size));
     PyDict_SetItemString(span, "flags", Py_BuildValue("i", flags));
+    //JM_TRACE("leaving JM_style_begin_dict");
+    return span;
 }
 
 void
@@ -132,84 +136,23 @@ JM_style_end_dict(fz_context *ctx, fz_buffer *buff, PyObject *span, PyObject *sp
 PyObject *
 JM_extract_stext_textchar_as_dict(fz_context *ctx, fz_stext_char *ch)
 {
-    PyObject *chardict = NULL;
-
-    chardict = PyDict_New();
-    PyDict_SetItemString(chardict, "c",  Py_BuildValue("C", ch->c));
+    //JM_TRACE("entering JM_extract_stext_textchar_as_dict");
+    char data[10];
+    Py_ssize_t len = (Py_ssize_t) fz_runetochar(data, ch->c);
+    PyObject *chardict = PyDict_New();
+    PyDict_SetItemString(chardict, "c",  PyUnicode_FromStringAndSize(data, len));
     PyDict_SetItemString(chardict, "origin",  Py_BuildValue("ff", ch->origin.x, ch->origin.y));
     PyDict_SetItemString(chardict, "bbox",   Py_BuildValue("ffff",
                                      ch->bbox.x0, ch->bbox.y0,
                                      ch->bbox.x1, ch->bbox.y1));
+    //JM_TRACE("leaving JM_extract_stext_textchar_as_dict");
     return chardict;
-}
-
-PyObject *
-JM_extract_stext_textline_as_dict(fz_context *ctx, fz_stext_line *line)
-{
-    fz_stext_char *ch;
-    fz_font *font = NULL;
-    fz_buffer *buff = NULL;
-    float size = 0;
-    int sup = 0;
-    PyObject *span=NULL, *spanlist = NULL, *linedict = NULL, *charlist;
-    PyObject *chardict;
-
-    linedict = PyDict_New();
-    fz_rect *linerect = JM_empty_rect();
-    PyDict_SetItemString(linedict, "wmode",  Py_BuildValue("i", line->wmode));
-    PyDict_SetItemString(linedict, "dir",  Py_BuildValue("ff", line->dir.x, line->dir.y));
-    spanlist = PyList_New(0);
-    font = NULL;
-    size = 0;
-
-    for (ch = line->first_char; ch; ch = ch->next)
-    {
-        JM_join_rect(linerect, &ch->bbox, ch->size);
-
-        int ch_sup = detect_super_script(line, ch);
-        if (ch->font != font || ch->size != size)
-        {   // start new span
-            if (font)    // must finish old span first
-            {
-                PyDict_SetItemString(span, "chars",  charlist);
-                Py_CLEAR(charlist);
-                JM_style_end_dict(ctx, NULL, span, spanlist);
-                Py_CLEAR(span);
-                font = NULL;
-            }
-            font = ch->font;
-            size = ch->size;
-            sup = ch_sup;
-            charlist = PyList_New(0);
-            span = PyDict_New();
-            JM_style_begin_dict(ctx, span, font, size, sup);
-        }
-        chardict = JM_extract_stext_textchar_as_dict(ctx, ch);
-        PyList_Append(charlist, chardict);
-        Py_CLEAR(chardict);
-    }
-    if (font)
-    {
-        PyDict_SetItemString(span, "chars",  charlist);
-        Py_CLEAR(charlist);
-        JM_style_end_dict(ctx, NULL, span, spanlist);
-        Py_CLEAR(span);
-        font = NULL;
-    }
-
-    PyDict_SetItemString(linedict, "spans",  spanlist);
-    Py_CLEAR(spanlist);
-    PyDict_SetItemString(linedict, "bbox",   Py_BuildValue("ffff",
-                                     linerect->x0, linerect->y0,
-                                     linerect->x1, linerect->y1));
-
-    free(linerect);
-    return linedict;
 }
 
 PyObject *
 JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block, int rawdict)
 {
+    //JM_TRACE("enter: JM_extract_stext_textblock_as_dict");
     fz_stext_line *line;
     fz_stext_char *ch;
     fz_font *font = NULL;
@@ -217,63 +160,81 @@ JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block, int r
     float size = 0;
     int sup = 0;
     PyObject *span = NULL, *spanlist = NULL, *linelist = NULL, *linedict = NULL;
+    PyObject *charlist = NULL, *chardict = NULL;
     linelist = PyList_New(0);
     PyObject *dict = PyDict_New();
     fz_rect *blockrect = JM_empty_rect();
     PyDict_SetItemString(dict, "type",  PyInt_FromLong(FZ_STEXT_BLOCK_TEXT));
-
+    //JM_TRACE("before line loop");
     for (line = block->u.t.first_line; line; line = line->next)
     {
-        if (rawdict != 0)
-        {
-            linedict = JM_extract_stext_textline_as_dict(ctx, line);
-            PyList_Append(linelist, linedict);
-            Py_CLEAR(linedict);
-            JM_join_rect(blockrect, &line->bbox, 0.0f);
-            continue;
-        }
-
         linedict = PyDict_New();
         fz_rect *linerect = JM_empty_rect();
         PyDict_SetItemString(linedict, "wmode",  Py_BuildValue("i", line->wmode));
         PyDict_SetItemString(linedict, "dir",  Py_BuildValue("ff", line->dir.x, line->dir.y));
         spanlist = PyList_New(0);
         font = NULL;
+        buff = NULL;
         size = 0;
-
+        //JM_TRACE("before character loop");
         for (ch = line->first_char; ch; ch = ch->next)
         {
             JM_join_rect(linerect, &ch->bbox, ch->size);
-
+            //JM_TRACE("joined char bbox to linerect");
             int ch_sup = detect_super_script(line, ch);
             if (ch->font != font || ch->size != size)
             {   // start new span
+                //JM_TRACE("starting new span");
                 if (font)    // must finish old span first
                 {
+                    //JM_TRACE("finishing old span");
+                    if (rawdict)
+                    {
+                        PyDict_SetItemString(span, "chars",  charlist);
+                        Py_CLEAR(charlist);
+                    }
                     JM_style_end_dict(ctx, buff, span, spanlist);
                     Py_CLEAR(span);
                     fz_drop_buffer(ctx, buff);
                     buff = NULL;
                     font = NULL;
+                    //JM_TRACE("finished old span");
                 }
                 font = ch->font;
                 size = ch->size;
                 sup = ch_sup;
-                span = PyDict_New();
-                buff = fz_new_buffer(ctx, 64);
-                JM_style_begin_dict(ctx, span, font, size, sup);
+                span = JM_style_begin_dict(ctx, font, size, sup);
+                if (rawdict)
+                    charlist = PyList_New(0);
+                else
+                    buff = fz_new_buffer(ctx, 64);
+                //JM_TRACE("new span started");
             }
-            fz_append_rune(ctx, buff, ch->c);
+            if (!rawdict)
+                fz_append_rune(ctx, buff, ch->c);
+            else 
+            {
+                chardict = JM_extract_stext_textchar_as_dict(ctx, ch);
+                PyList_Append(charlist, chardict);
+                Py_CLEAR(chardict);
+            }
+            //JM_TRACE("finished one char");
         }
         if (font)
         {
+            //JM_TRACE("start output last span");
+            if (rawdict)
+            {
+                PyDict_SetItemString(span, "chars",  charlist);
+                Py_CLEAR(charlist);
+            }
             JM_style_end_dict(ctx, buff, span, spanlist);
             Py_CLEAR(span);
             fz_drop_buffer(ctx, buff);
             buff = NULL;
             font = NULL;
         }
-
+        //JM_TRACE("finishing line");
         PyDict_SetItemString(linedict, "spans",  spanlist);
         Py_CLEAR(spanlist);
         PyDict_SetItemString(linedict, "bbox",   Py_BuildValue("ffff",
@@ -282,16 +243,18 @@ JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block, int r
 
         JM_join_rect(blockrect, linerect, 0.0f);
 
-        free(linerect);
+        JM_Free(linerect);
         PyList_Append(linelist, linedict);
         Py_CLEAR(linedict);
     }
+    //JM_TRACE("after line loop");
     PyDict_SetItemString(dict, "lines",  linelist);
     Py_CLEAR(linelist);
     PyDict_SetItemString(dict, "bbox",   Py_BuildValue("ffff",
                                          blockrect->x0, blockrect->y0,
                                          blockrect->x1, blockrect->y1));
-    free(blockrect);
+    JM_Free(blockrect);
+    //JM_TRACE("leaving JM_extract_stext_textblock_as_dict");
     return dict;
 }
 
@@ -300,6 +263,8 @@ JM_extract_stext_imageblock_as_dict(fz_context *ctx, fz_stext_block *block)
 {
     fz_image *image = block->u.i.image;
     fz_buffer *buf = NULL, *freebuf = NULL;
+    fz_var(buf);
+    fz_var(freebuf);
     fz_compressed_buffer *buffer = NULL;
     int n = fz_colorspace_n(ctx, image->colorspace);
     int w = image->w;
@@ -307,6 +272,7 @@ JM_extract_stext_imageblock_as_dict(fz_context *ctx, fz_stext_block *block)
     int type = 0;
     unsigned char ext[5];
     PyObject *bytes = JM_BinFromChar("");
+    fz_var(bytes);
     buffer = fz_compressed_image_buffer(ctx, image);
     if (buffer) type = buffer->params.type;
     PyObject *dict = PyDict_New();

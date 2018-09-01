@@ -5,11 +5,11 @@
 char *JM_ASCIIFromChar(char *in)
 {
     if (!in) return NULL;
-    size_t i, j = strlen(in);
-    unsigned char *out = (unsigned char *) malloc(j+1);
+    size_t i, j = strlen(in) + 1;
+    unsigned char *out = JM_Alloc(unsigned char, j);
     if (!out) return NULL;
-    memcpy(out, in, j+1);
-    for (i = 0; i < j; i++)
+    memcpy(out, in, j);
+    for (i = 0; i < j-1; i++)
     {
         if (out[i] > 126)
         {
@@ -29,7 +29,7 @@ PyObject *JM_UnicodeFromASCII(const char *in)
 {
     char *c = JM_ASCIIFromChar((char *) in);
     PyObject *p = Py_BuildValue("s", c);
-    free(c);
+    JM_Free(c);
     return p;
 }
 

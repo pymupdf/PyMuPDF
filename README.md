@@ -1,4 +1,4 @@
-# PyMuPDF 1.13.18
+# PyMuPDF 1.13.19
 
 ![logo](https://github.com/rk700/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
@@ -6,14 +6,15 @@ Release date: August 24, 2018
 
 **Travis-CI:** [![Build Status](https://travis-ci.org/rk700/PyMuPDF.svg?branch=master)](https://travis-ci.org/rk700/PyMuPDF)
 
-On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![](http://pepy.tech/badge/pymupdf)](http://pepy.tech/project/pymupdf)
+On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![](https://pepy.tech/badge/pymupdf)](https://pepy.tech/project/pymupdf)
+
 # Authors
 * [Ruikai Liu](mailto:lrk700@gmail.com)
 * [Jorj X. McKie](mailto:jorj.x.mckie@outlook.de)
 
 # Introduction
 
-This is **version 1.13.18 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.13.0](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
+This is **version 1.13.19 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.13.0](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -54,6 +55,14 @@ In addition to wheels, this platform offers [pre-generated binaries](https://git
 If you are looking to make your own binary, consult this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation). It explains how to use Visual Studio for generating MuPDF in quite some detail.
 
 # Usage and Documentation
+For all document types you can render pages in raster (PNG) or vector (SVG) formats, extract text and access meta information, links, annotations and bookmarks, as well as decrypt the document. For PDF files, most of these objects can also be created, modified or deleted. Plus you can rotate, re-arrange, duplicate, create, or delete pages and join or split documents.
+
+Specifically for PDF files, PyMuPDF provides update access to low-level structure data, supports handling of embedded files and modification of page contents (like inserting images, fonts, text, annotations and drawings).
+
+Other features include embedding vector images (SVG, PDF) such as logos or watermarks, "posterizing" a PDF or creating "booklet" and "4-up" versions.
+
+You can now also create PDF Form fields with support for text, checkbox, listbox and combobox widgets.
+
 Have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) (which contain complete, working programs), and the **recipes** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar, which contains more than a dozen of guides in How-To-style.
 
 Our documentation, written using Sphinx, is available in various formats from the following sources.

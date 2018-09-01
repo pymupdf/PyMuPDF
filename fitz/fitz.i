@@ -78,8 +78,8 @@
 %{
 //#define MEMDEBUG
 #ifdef MEMDEBUG
-#define DEBUGMSG1(x) fprintf(stderr, "[DEBUG] free %s ", x)
-#define DEBUGMSG2 fprintf(stderr, "... done!\n")
+#define DEBUGMSG1(x) PySys_WriteStderr("[DEBUG] free %s ", x)
+#define DEBUGMSG2 PySys_WriteStderr("... done!\n")
 #else
 #define DEBUGMSG1(x)
 #define DEBUGMSG2
@@ -87,6 +87,20 @@
 
 #define SWIG_FILE_WITH_INIT
 #define SWIG_PYTHON_2_UNICODE
+
+// memory allocation macros
+#define JM_MEMORY 1
+#if  PY_VERSION_HEX < 0x03000000
+#define JM_MEMORY 0
+#endif
+#if JM_MEMORY == 1
+#define JM_Alloc(type, len) PyMem_New(type, len)
+#define JM_Free(x) PyMem_Del(x)
+#else
+#define JM_Alloc(type, len) (type *) malloc(sizeof(type)*len)
+#define JM_Free(x) free(x)
+#endif
+
 #define THROWMSG(msg) fz_throw(gctx, FZ_ERROR_GENERIC, msg)
 #define assert_PDF(cond) if (cond == NULL) THROWMSG("not a PDF")
 #define INRANGE(v, low, high) ((low) <= v && v <= (high))
@@ -118,7 +132,11 @@ char *JM_Python_str_AsChar(PyObject *str);
 // global context
 //-----------------------------------------------------------------------------
 %init %{
+#if JM_MEMORY == 1
+    gctx = fz_new_context(&JM_Alloc_Context, NULL, FZ_STORE_DEFAULT);
+#else
     gctx = fz_new_context(NULL, NULL, FZ_STORE_DEFAULT);
+#endif
     if(!gctx)
     {
         PyErr_SetString(PyExc_RuntimeError, "Fatal error: could not create global context.");
@@ -628,8 +646,9 @@ struct fz_document_s
             int vsize;
             char *value;
             vsize = fz_lookup_metadata(gctx, $self, key, NULL, 0)+1;
-            if(vsize > 1) {
-                value = (char *)malloc(sizeof(char)*vsize);
+            if(vsize > 1)
+            {
+                value = JM_Alloc(char, vsize);
                 fz_lookup_metadata(gctx, $self, key, value, vsize);
                 return value;
             }
@@ -1162,9 +1181,8 @@ if links:
             fz_buffer *buffer = NULL;
             pdf_obj *obj, *basefont, *bname;
             PyObject *bytes = PyBytes_FromString("");
-            const char *ext = "";
-            const char *fontname = "";
-            const char *stype = "";
+            char *ext = NULL;
+            char *fontname = NULL;
             PyObject *nulltuple = Py_BuildValue("sssO", "", "", "", bytes);
             PyObject *tuple;
             Py_ssize_t len = 0;
@@ -1181,25 +1199,34 @@ if links:
                         bname = pdf_dict_get(gctx, obj, PDF_NAME_Name);
                     else
                         bname = basefont;
-                    fontname = (char *) pdf_to_name(gctx, bname);
                     ext = fontextension(gctx, pdf, xref);
-                    stype = (char *) pdf_to_name(gctx, subtype);
                     if (strcmp(ext, "n/a") != 0 && !info_only)
                     {
                         buffer = fontbuffer(gctx, pdf, xref);
                         bytes = JM_BinFromBuffer(gctx, buffer);
                         fz_drop_buffer(gctx, buffer);
                     }
-                    tuple = Py_BuildValue("sssO", fontname, ext, stype, bytes);
+                    fontname = JM_ASCIIFromChar(pdf_to_name(gctx, bname));
+                    tuple = Py_BuildValue("sssO",
+                                fontname,
+                                ext,
+                                pdf_to_name(gctx, subtype),
+                                bytes);
                 }
                 else
                 {
                     tuple = nulltuple;
                 }
             }
+            fz_always(gctx)
+            {
+                JM_PyErr_Clear;
+                JM_Free(fontname);
+            }
+
             fz_catch(gctx)
             {
-                tuple = Py_BuildValue("sssO", fontname, ext, stype, bytes);
+                tuple = Py_BuildValue("sssO", "invalid-name", "", "", bytes);
             }
             return tuple;
         }
@@ -1345,7 +1372,7 @@ if links:
             if (!first) return xrefs;
             argc = countOutlines(gctx, first, argc);  // get number of outlines
             if (argc < 1) return xrefs;
-            res = malloc(argc * sizeof(int));         // object number table
+            res = JM_Alloc(int, (size_t) argc);         // object number table
             objcount = fillOLNumbers(gctx, res, first, objcount, argc); // fill table
             pdf_dict_del(gctx, olroot, PDF_NAME_First);
             pdf_dict_del(gctx, olroot, PDF_NAME_Last);
@@ -1356,13 +1383,13 @@ if links:
                 pdf_delete_object(gctx, pdf, res[i]);      // delete outline item
                 PyList_Append(xrefs, PyInt_FromLong((long) res[i]));
             }
-            free(res);
+            JM_Free(res);
             pdf->dirty = 1;
             return xrefs;
         }
 
         //---------------------------------------------------------------------
-        // Check: do we have an AcroForm & any field?
+        // Check: is this an AcroForm with at least one field?
         //---------------------------------------------------------------------
         CLOSECHECK0(isFormPDF)
         %pythoncode%{@property%}
@@ -1873,7 +1900,7 @@ struct fz_page_s {
         // bound()
         //---------------------------------------------------------------------
         struct fz_rect_s *bound() {
-            fz_rect *rect = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *rect = JM_Alloc(fz_rect, 1);
             fz_bound_page(gctx, $self, rect);
             return rect;
         }
@@ -2188,7 +2215,7 @@ struct fz_page_s {
                 pdf_dirty_annot(gctx, annot);
                 pdf_update_page(gctx, page);
             }
-            fz_always(gctx) free(ascii);
+            fz_always(gctx) JM_Free(ascii);
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
             return fz_keep_annot(gctx, fzannot);
@@ -2290,7 +2317,7 @@ struct fz_page_s {
             fz_display_list *dl = NULL;
             fz_try(gctx) dl = fz_new_display_list_from_page(gctx, $self);
             fz_catch(gctx) return NULL;
-            return fz_keep_display_list(gctx, dl);
+            return dl;
         }
 
         //---------------------------------------------------------------------
@@ -2441,7 +2468,7 @@ fannot._erase()
         %}
         struct fz_point_s *MediaBoxSize()
         {
-            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            fz_point *p = JM_Alloc(fz_point, 1);
             p->x = p->y = 0.0;
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             if (!page) return p;
@@ -2462,7 +2489,7 @@ fannot._erase()
         %feature("autodoc","Retrieve position of /CropBox. Return (0,0) for non-PDF, or no /CropBox.") CropBoxPosition;
         struct fz_point_s *CropBoxPosition()
         {
-            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            fz_point *p = JM_Alloc(fz_point, 1);
             p->x = p->y = 0.0;
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             if (!page) return p;                 // not a PDF
@@ -3150,12 +3177,12 @@ struct fz_rect_s
     %extend {
         ~fz_rect_s() {
             DEBUGMSG1("rect");
-            free($self);
+            JM_Free($self);
             DEBUGMSG2;
         }
         FITZEXCEPTION(fz_rect_s, !result)
         fz_rect_s(const struct fz_rect_s *s) {
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             if (!s)
             {
                 r->x0 = r->y0 = r->x1 = r->y1 = 0;
@@ -3165,7 +3192,7 @@ struct fz_rect_s
         }
 
         fz_rect_s(const struct fz_point_s *lt, const struct fz_point_s *rb) {
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             r->x0 = lt->x;
             r->y0 = lt->y;
             r->x1 = rb->x;
@@ -3174,7 +3201,7 @@ struct fz_rect_s
         }
 
         fz_rect_s(float x0, float y0, const struct fz_point_s *rb) {
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             r->x0 = x0;
             r->y0 = y0;
             r->x1 = rb->x;
@@ -3183,7 +3210,7 @@ struct fz_rect_s
         }
 
         fz_rect_s(const struct fz_point_s *lt, float x1, float y1) {
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             r->x0 = lt->x;
             r->y0 = lt->y;
             r->x1 = x1;
@@ -3192,7 +3219,7 @@ struct fz_rect_s
         }
 
         fz_rect_s(float x0, float y0, float x1, float y1) {
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             r->x0 = x0;
             r->y0 = y0;
             r->x1 = x1;
@@ -3205,7 +3232,7 @@ struct fz_rect_s
         //--------------------------------------------------------------------
         fz_rect_s(PyObject *list)
         {
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             fz_try(gctx)
             {
                 if (!PySequence_Check(list)) THROWMSG("expected a sequence");
@@ -3221,7 +3248,7 @@ struct fz_rect_s
             }
             fz_catch(gctx)
             {
-                free(r);
+                JM_Free(r);
                 return NULL;
             }
             return r;
@@ -3231,7 +3258,7 @@ struct fz_rect_s
         %feature("autodoc","Create enclosing 'IRect'") round;
         struct fz_irect_s *round()
         {
-            fz_irect *irect = (fz_irect *)malloc(sizeof(fz_irect));
+            fz_irect *irect = JM_Alloc(fz_irect, 1);
             fz_rect rect = {MIN($self->x0, $self->x1),
                             MIN($self->y0, $self->y1),
                             MAX($self->x0, $self->x1),
@@ -3403,12 +3430,12 @@ struct fz_irect_s
     %extend {
         ~fz_irect_s() {
             DEBUGMSG1("irect");
-            free($self);
+            JM_Free($self);
             DEBUGMSG2;
         }
         FITZEXCEPTION(fz_irect_s, !result)
         fz_irect_s(const struct fz_irect_s *s) {
-            fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
+            fz_irect *r = JM_Alloc(fz_irect, 1);
             if (!s)
             {
                 r->x0 = r->y0 = r->x1 = r->y1 = 0;
@@ -3418,7 +3445,7 @@ struct fz_irect_s
         }
 
         fz_irect_s(int x0, int y0, int x1, int y1) {
-            fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
+            fz_irect *r = JM_Alloc(fz_irect, 1);
             r->x0 = x0;
             r->y0 = y0;
             r->x1 = x1;
@@ -3431,7 +3458,7 @@ struct fz_irect_s
         //--------------------------------------------------------------------
         fz_irect_s(PyObject *list)
         {
-            fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
+            fz_irect *r = JM_Alloc(fz_irect, 1);
             fz_try(gctx)
             {
                 if (!PySequence_Check(list)) THROWMSG("expected a sequence");
@@ -3447,7 +3474,7 @@ struct fz_irect_s
             }
             fz_catch(gctx) 
             {
-                free(r);
+                JM_Free(r);
                 return NULL;
             }
             return r;
@@ -3909,7 +3936,7 @@ struct fz_pixmap_s
         %pythoncode %{@property%}
         struct fz_irect_s *irect()
         {
-            fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
+            fz_irect *r = JM_Alloc(fz_irect, 1);
             r->x0 = r->y0 = r->x1 = r->y1 = 0;
             return fz_pixmap_bbox(gctx, $self, r);
         }
@@ -4203,7 +4230,7 @@ struct fz_matrix_s
         ~fz_matrix_s()
         {
             DEBUGMSG1("matrix");
-            free($self);
+            JM_Free($self);
             DEBUGMSG2;
         }
         
@@ -4212,7 +4239,7 @@ struct fz_matrix_s
         //--------------------------------------------------------------------
         fz_matrix_s(const struct fz_matrix_s* n)
         {
-            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            fz_matrix *m = JM_Alloc(fz_matrix, 1);
             if (!n)
             {
                 m->a = m->b = m->c = m->d = m->e = m->f = 0;
@@ -4229,7 +4256,7 @@ struct fz_matrix_s
         //--------------------------------------------------------------------
         fz_matrix_s(float sx, float sy, int shear=0)
         {
-            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            fz_matrix *m = JM_Alloc(fz_matrix, 1);
             if(shear) return fz_shear(m, sx, sy);
             return fz_scale(m, sx, sy);
         }
@@ -4239,7 +4266,7 @@ struct fz_matrix_s
         //--------------------------------------------------------------------
         fz_matrix_s(float r, float s, float t, float u, float v, float w)
         {
-            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            fz_matrix *m = JM_Alloc(fz_matrix, 1);
             m->a = r;
             m->b = s;
             m->c = t;
@@ -4254,7 +4281,7 @@ struct fz_matrix_s
         //--------------------------------------------------------------------
         fz_matrix_s(float degree)
         {
-            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            fz_matrix *m = JM_Alloc(fz_matrix, 1);
             return fz_rotate(m, degree);
         }
 
@@ -4263,7 +4290,7 @@ struct fz_matrix_s
         //--------------------------------------------------------------------
         fz_matrix_s(PyObject *list)
         {
-            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            fz_matrix *m = JM_Alloc(fz_matrix, 1);
             fz_try(gctx)
             {
                 if (!PySequence_Check(list)) THROWMSG("expected a sequence");
@@ -4283,7 +4310,7 @@ struct fz_matrix_s
             }
             fz_catch(gctx)
             {
-                free(m);
+                JM_Free(m);
                 return NULL;
             }
             return m;
@@ -4401,14 +4428,8 @@ struct fz_outline_s {
         %pythonappend uri %{
         if not val:
             return ""
-        if val.isprintable():
-            return val
-        nval = ""
-        for c in val:
-            if c.isprintable():
-                nval += c
-            else:
-                break
+
+        nval = "".join([c for c in val if 32 <= ord(c) <= 127])
         val = nval
         %}
         char *uri()
@@ -4446,7 +4467,7 @@ struct fz_point_s
     {
         FITZEXCEPTION(fz_point_s, !result)
         fz_point_s(const struct fz_point_s *q) {
-            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            fz_point *p = JM_Alloc(fz_point, 1);
             if (!q)
             {
                 p->x = p->y = 0;
@@ -4456,7 +4477,7 @@ struct fz_point_s
         }
 
         fz_point_s(float x, float y) {
-            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            fz_point *p = JM_Alloc(fz_point, 1);
             p->x = x;
             p->y = y;
             return p;
@@ -4467,7 +4488,7 @@ struct fz_point_s
         //--------------------------------------------------------------------
         fz_point_s(PyObject *list)
         {
-            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            fz_point *p = JM_Alloc(fz_point, 1);
             fz_try(gctx)
             {
                 if (!PySequence_Check(list)) THROWMSG("expected a sequence");
@@ -4479,7 +4500,7 @@ struct fz_point_s
             }
             fz_catch(gctx)
             {
-                free(p);
+                JM_Free(p);
                 return NULL;
             }
             return p;
@@ -4550,7 +4571,7 @@ struct fz_point_s
         ~fz_point_s()
         {
             DEBUGMSG1("point");
-            free($self);
+            JM_Free($self);
             DEBUGMSG2;
         }
     }
@@ -4688,7 +4709,7 @@ struct fz_annot_s
         %pythoncode %{@property%}
         struct fz_rect_s *rect()
         {
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             return fz_bound_annot(gctx, $self, r);
         }
 
@@ -5988,14 +6009,7 @@ struct fz_link_s
         %pythonappend uri %{
         if not val:
             return ""
-        if val.isprintable():
-            return val
-        nval = ""
-        for c in val:
-            if c.isprintable():
-                nval += c
-            else:
-                break
+        nval = "".join([c for c in val if 32 <= ord(c) <= 127])
         val = nval
         %}
         char *uri()
@@ -6035,7 +6049,7 @@ struct fz_link_s
         %pythoncode %{@property%}
         struct fz_rect_s *rect()
         {
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             r->x0 = $self->rect.x0;
             r->y0 = $self->rect.y0;
             r->x1 = $self->rect.x1;
@@ -6125,7 +6139,7 @@ struct fz_display_list_s {
         %pythoncode%{@property%}
         struct fz_rect_s *rect()
         {
-            fz_rect *mediabox = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *mediabox = JM_Alloc(fz_rect, 1);
             fz_bound_display_list(gctx, $self, mediabox);
             return mediabox;
         }
@@ -6169,6 +6183,11 @@ struct fz_display_list_s {
             fz_catch(gctx) return NULL;
             return tp;
         }
+        %pythoncode %{
+        def __del__(self):
+            if not type(self) is DisplayList: return
+            self.__swig_destroy__(self)
+        %}
     }
 };
 
@@ -6209,7 +6228,7 @@ struct fz_stext_page_s {
             PyObject *liste = PyList_New(0);
             int i, mymax = hit_max;
             if (mymax < 1) mymax = 16;
-            result = (fz_rect *)malloc(sizeof(fz_rect)*(mymax+1));
+            result = JM_Alloc(fz_rect, (mymax+1));
             struct fz_rect_s *rect = (struct fz_rect_s *) result;
             int count = fz_search_stext_page(gctx, $self, needle, result, hit_max);
             for (i = 0; i < count; i++)
@@ -6219,7 +6238,7 @@ struct fz_stext_page_s {
                                             rect->x1,rect->y1));
                 rect += 1;
             }
-            free(result);
+            JM_Free(result);
             return liste;
         }
 
@@ -6266,7 +6285,7 @@ struct fz_stext_page_s {
                                 JM_join_rect(linerect, &ch->bbox, ch->size);
                             }
                             JM_join_rect(blockrect, linerect, 0.0f);
-                            free(linerect);
+                            JM_Free(linerect);
                         }
                         text = JM_StrFromBuffer(gctx, res);
                     }
@@ -6290,7 +6309,7 @@ struct fz_stext_page_s {
                 PyList_Append(lines, litem);
                 Py_CLEAR(litem);
                 Py_CLEAR(text);
-                free(blockrect);
+                JM_Free(blockrect);
                 block_n++;
             }
             return lines;
@@ -6355,7 +6374,7 @@ struct fz_stext_page_s {
                 }
                 block_n++;
             }
-            free(wbbox);
+            JM_Free(wbbox);
             return lines;
         }
 
@@ -6444,6 +6463,11 @@ struct fz_stext_page_s {
 
             def extractRAWDICT(self):
                 return self._extractText(6)
+        %}
+        %pythoncode %{
+        def __del__(self):
+            if not type(self) is TextPage: return
+            self.__swig_destroy__(self)
         %}
     }
 };

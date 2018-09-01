@@ -29,4 +29,4 @@ svg-logo.py | put an SVG as logo an each PDF page.
 spumoni.py | create the ReportLab drawing on page 26 with PyMuPDF
 text2pdf.py | convert a text file to PDF
 wavy-polygon.py | draw a regular polygon with curly borders
-xps-converter.py | convert arbitrary documents to PDF (XPS, EPUB, CBZ, etc.)
+pdf-converter.py | convert arbitrary documents (XPS, EPUB, CBZ, etc.) to PDF

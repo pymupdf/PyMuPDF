@@ -3031,8 +3031,8 @@ static swig_module_info swig_module = {swig_types, 17, 0, 0, 0, 0};
 
 //#define MEMDEBUG
 #ifdef MEMDEBUG
-#define DEBUGMSG1(x) fprintf(stderr, "[DEBUG] free %s ", x)
-#define DEBUGMSG2 fprintf(stderr, "... done!\n")
+#define DEBUGMSG1(x) PySys_WriteStderr("[DEBUG] free %s ", x)
+#define DEBUGMSG2 PySys_WriteStderr("... done!\n")
 #else
 #define DEBUGMSG1(x)
 #define DEBUGMSG2
@@ -3040,6 +3040,20 @@ static swig_module_info swig_module = {swig_types, 17, 0, 0, 0, 0};
 
 #define SWIG_FILE_WITH_INIT
 #define SWIG_PYTHON_2_UNICODE
+
+// memory allocation macros
+#define JM_MEMORY 1
+#if  PY_VERSION_HEX < 0x03000000
+#define JM_MEMORY 0
+#endif
+#if JM_MEMORY == 1
+#define JM_Alloc(type, len) PyMem_New(type, len)
+#define JM_Free(x) PyMem_Del(x)
+#else
+#define JM_Alloc(type, len) (type *) malloc(sizeof(type)*len)
+#define JM_Free(x) free(x)
+#endif
+
 #define THROWMSG(msg) fz_throw(gctx, FZ_ERROR_GENERIC, msg)
 #define assert_PDF(cond) if (cond == NULL) THROWMSG("not a PDF")
 #define INRANGE(v, low, high) ((low) <= v && v <= (high))
@@ -3074,6 +3088,47 @@ struct DeviceWrapper {
     fz_display_list *list;
 };
 
+
+// a simple tracer
+void JM_TRACE(const char *id)
+{
+    PySys_WriteStdout("%s\n", id);
+}
+
+//-----------------------------------------------------------------------------
+// The following 3 functions replace MuPDF standard memory allocation.
+// This will ensure, that MuPDF memory handling becomes part of Python's
+// memory management.
+//-----------------------------------------------------------------------------
+static void *JM_Py_Malloc(void *opaque, size_t size)
+{
+    //void *p = PyMem_Malloc(size);
+    //PySys_WriteStdout("%p alloc %u\n", p, size);
+    //return p;
+    return PyMem_Malloc(size);
+}
+
+static void *JM_Py_Realloc(void *opaque, void *old, size_t size)
+{
+    //void *p = PyMem_Realloc(old, size);
+    //if (old) PySys_WriteStdout("%p free\n", old);
+    //PySys_WriteStdout("%p alloc %u\n", p, size);
+    //return p;
+    return PyMem_Realloc(old, size);
+}
+
+static void JM_PY_Free(void *opaque, void *ptr)
+{
+    PyMem_Free(ptr);
+}
+
+const fz_alloc_context JM_Alloc_Context =
+{
+	NULL,
+	JM_Py_Malloc,
+	JM_Py_Realloc,
+	JM_PY_Free
+};
 
 
 PyObject *JM_BOOL(int v)
@@ -3161,6 +3216,7 @@ PyObject *JM_fitz_config()
     PyDict_SetItemString(dict, "tofu-sil", have_TOFU_SIL);
     PyDict_SetItemString(dict, "icc", have_NO_ICC);
     PyDict_SetItemString(dict, "base14", have_TOFU_BASE14);
+    PyDict_SetItemString(dict, "py-memory", JM_BOOL(JM_MEMORY));
     return dict;
 }
 
@@ -3180,7 +3236,6 @@ PyObject *JM_BinFromBuffer(fz_context *ctx, fz_buffer *buffer)
     {
         bytes = PyBytes_FromString("");
     }
-    Py_INCREF(bytes);
     return bytes;
 }
 
@@ -3244,7 +3299,7 @@ void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffe
 }
 
 //-----------------------------------------------------------------------------
-// Version of fz_pixmap_from_display_list (utils.c) to support rendering
+// Version of fz_new_pixmap_from_display_list (util.c) to support rendering
 // of only the 'clip' part of the displaylist rectangle
 //-----------------------------------------------------------------------------
 fz_pixmap *
@@ -3252,8 +3307,10 @@ JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_mat
 {
     fz_rect rect;
     fz_irect irect;
-    fz_pixmap *pix;
-    fz_device *dev;
+    fz_pixmap *pix = NULL;
+    fz_var(pix);
+    fz_device *dev = NULL;
+    fz_var(dev);
     fz_separations *seps = NULL;
     fz_bound_display_list(ctx, list, &rect);
     if (clip) fz_intersect_rect(&rect, clip);
@@ -3353,7 +3410,7 @@ fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
 
 //----------------------------------------------------------------------------
 // Modified copy of SWIG_Python_str_AsChar
-// If Py3, the SWIG original v3.0.12does *not* deliver NULL for a
+// If Py3, the SWIG original v3.0.12 does *not* deliver NULL for a
 // non-string input, as does PyString_AsString in Py2.
 //----------------------------------------------------------------------------
 char *JM_Python_str_AsChar(PyObject *str)
@@ -3367,8 +3424,9 @@ char *JM_Python_str_AsChar(PyObject *str)
     char *cstr;
     Py_ssize_t len;
     PyBytes_AsStringAndSize(xstr, &cstr, &len);
-    newstr = (char *) malloc(len+1);
-    memcpy(newstr, cstr, len+1);
+    size_t l = len + 1;
+    newstr = JM_Alloc(char, l);
+    memcpy(newstr, cstr, l);
     Py_XDECREF(xstr);
   }
   return newstr;
@@ -3378,7 +3436,7 @@ char *JM_Python_str_AsChar(PyObject *str)
 }
 
 #if PY_VERSION_HEX >= 0x03000000
-#  define JM_Python_str_DelForPy3(x) free((void*) (x))
+#  define JM_Python_str_DelForPy3(x) JM_Free(x)
 #else
 #  define JM_Python_str_DelForPy3(x) 
 #endif
@@ -4136,7 +4194,7 @@ int JM_append_word(fz_context *ctx, PyObject *lines, fz_buffer *buff, fz_rect *w
 // create an empty rectangle --------------------------------------------------
 fz_rect *JM_empty_rect()
 {
-    fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+    fz_rect *r = JM_Alloc(fz_rect, 1);
     r->x0 = r->y0 = r->x1 = r->y1 = 0;
     return r;
 }
@@ -4185,9 +4243,10 @@ static void font_family_name(fz_context *ctx, fz_font *font, char *buf, int size
     fz_strlcpy(buf, name, size);
 }
 
-void
-JM_style_begin_dict(fz_context *ctx, PyObject *span, fz_font *font, float size, int sup)
+PyObject *
+JM_style_begin_dict(fz_context *ctx, fz_font *font, float size, int sup)
 {
+    //JM_TRACE("entering JM_style_begin_dict");
     char family[80];
     font_family_name(ctx, font, family, sizeof family);
     int flags = sup;
@@ -4195,9 +4254,12 @@ JM_style_begin_dict(fz_context *ctx, PyObject *span, fz_font *font, float size, 
     flags += fz_font_is_serif(ctx, font) * 4;
     flags += fz_font_is_monospaced(ctx, font) * 8;
     flags += fz_font_is_bold(ctx, font) * 16;
+    PyObject *span = PyDict_New();
     PyDict_SetItemString(span, "font", JM_UnicodeFromASCII(family));
     PyDict_SetItemString(span, "size", Py_BuildValue("f", size));
     PyDict_SetItemString(span, "flags", Py_BuildValue("i", flags));
+    //JM_TRACE("leaving JM_style_begin_dict");
+    return span;
 }
 
 void
@@ -4211,84 +4273,23 @@ JM_style_end_dict(fz_context *ctx, fz_buffer *buff, PyObject *span, PyObject *sp
 PyObject *
 JM_extract_stext_textchar_as_dict(fz_context *ctx, fz_stext_char *ch)
 {
-    PyObject *chardict = NULL;
-
-    chardict = PyDict_New();
-    PyDict_SetItemString(chardict, "c",  Py_BuildValue("C", ch->c));
+    //JM_TRACE("entering JM_extract_stext_textchar_as_dict");
+    char data[10];
+    Py_ssize_t len = (Py_ssize_t) fz_runetochar(data, ch->c);
+    PyObject *chardict = PyDict_New();
+    PyDict_SetItemString(chardict, "c",  PyUnicode_FromStringAndSize(data, len));
     PyDict_SetItemString(chardict, "origin",  Py_BuildValue("ff", ch->origin.x, ch->origin.y));
     PyDict_SetItemString(chardict, "bbox",   Py_BuildValue("ffff",
                                      ch->bbox.x0, ch->bbox.y0,
                                      ch->bbox.x1, ch->bbox.y1));
+    //JM_TRACE("leaving JM_extract_stext_textchar_as_dict");
     return chardict;
-}
-
-PyObject *
-JM_extract_stext_textline_as_dict(fz_context *ctx, fz_stext_line *line)
-{
-    fz_stext_char *ch;
-    fz_font *font = NULL;
-    fz_buffer *buff = NULL;
-    float size = 0;
-    int sup = 0;
-    PyObject *span=NULL, *spanlist = NULL, *linedict = NULL, *charlist;
-    PyObject *chardict;
-
-    linedict = PyDict_New();
-    fz_rect *linerect = JM_empty_rect();
-    PyDict_SetItemString(linedict, "wmode",  Py_BuildValue("i", line->wmode));
-    PyDict_SetItemString(linedict, "dir",  Py_BuildValue("ff", line->dir.x, line->dir.y));
-    spanlist = PyList_New(0);
-    font = NULL;
-    size = 0;
-
-    for (ch = line->first_char; ch; ch = ch->next)
-    {
-        JM_join_rect(linerect, &ch->bbox, ch->size);
-
-        int ch_sup = detect_super_script(line, ch);
-        if (ch->font != font || ch->size != size)
-        {   // start new span
-            if (font)    // must finish old span first
-            {
-                PyDict_SetItemString(span, "chars",  charlist);
-                Py_CLEAR(charlist);
-                JM_style_end_dict(ctx, NULL, span, spanlist);
-                Py_CLEAR(span);
-                font = NULL;
-            }
-            font = ch->font;
-            size = ch->size;
-            sup = ch_sup;
-            charlist = PyList_New(0);
-            span = PyDict_New();
-            JM_style_begin_dict(ctx, span, font, size, sup);
-        }
-        chardict = JM_extract_stext_textchar_as_dict(ctx, ch);
-        PyList_Append(charlist, chardict);
-        Py_CLEAR(chardict);
-    }
-    if (font)
-    {
-        PyDict_SetItemString(span, "chars",  charlist);
-        Py_CLEAR(charlist);
-        JM_style_end_dict(ctx, NULL, span, spanlist);
-        Py_CLEAR(span);
-        font = NULL;
-    }
-
-    PyDict_SetItemString(linedict, "spans",  spanlist);
-    Py_CLEAR(spanlist);
-    PyDict_SetItemString(linedict, "bbox",   Py_BuildValue("ffff",
-                                     linerect->x0, linerect->y0,
-                                     linerect->x1, linerect->y1));
-
-    free(linerect);
-    return linedict;
 }
 
 PyObject *
 JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block, int rawdict)
 {
+    //JM_TRACE("enter: JM_extract_stext_textblock_as_dict");
     fz_stext_line *line;
     fz_stext_char *ch;
     fz_font *font = NULL;
@@ -4296,63 +4297,81 @@ JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block, int r
     float size = 0;
     int sup = 0;
     PyObject *span = NULL, *spanlist = NULL, *linelist = NULL, *linedict = NULL;
+    PyObject *charlist = NULL, *chardict = NULL;
     linelist = PyList_New(0);
     PyObject *dict = PyDict_New();
     fz_rect *blockrect = JM_empty_rect();
     PyDict_SetItemString(dict, "type",  PyInt_FromLong(FZ_STEXT_BLOCK_TEXT));
-
+    //JM_TRACE("before line loop");
     for (line = block->u.t.first_line; line; line = line->next)
     {
-        if (rawdict != 0)
-        {
-            linedict = JM_extract_stext_textline_as_dict(ctx, line);
-            PyList_Append(linelist, linedict);
-            Py_CLEAR(linedict);
-            JM_join_rect(blockrect, &line->bbox, 0.0f);
-            continue;
-        }
-
         linedict = PyDict_New();
         fz_rect *linerect = JM_empty_rect();
         PyDict_SetItemString(linedict, "wmode",  Py_BuildValue("i", line->wmode));
         PyDict_SetItemString(linedict, "dir",  Py_BuildValue("ff", line->dir.x, line->dir.y));
         spanlist = PyList_New(0);
         font = NULL;
+        buff = NULL;
         size = 0;
-
+        //JM_TRACE("before character loop");
         for (ch = line->first_char; ch; ch = ch->next)
         {
             JM_join_rect(linerect, &ch->bbox, ch->size);
-
+            //JM_TRACE("joined char bbox to linerect");
             int ch_sup = detect_super_script(line, ch);
             if (ch->font != font || ch->size != size)
             {   // start new span
+                //JM_TRACE("starting new span");
                 if (font)    // must finish old span first
                 {
+                    //JM_TRACE("finishing old span");
+                    if (rawdict)
+                    {
+                        PyDict_SetItemString(span, "chars",  charlist);
+                        Py_CLEAR(charlist);
+                    }
                     JM_style_end_dict(ctx, buff, span, spanlist);
                     Py_CLEAR(span);
                     fz_drop_buffer(ctx, buff);
                     buff = NULL;
                     font = NULL;
+                    //JM_TRACE("finished old span");
                 }
                 font = ch->font;
                 size = ch->size;
                 sup = ch_sup;
-                span = PyDict_New();
-                buff = fz_new_buffer(ctx, 64);
-                JM_style_begin_dict(ctx, span, font, size, sup);
+                span = JM_style_begin_dict(ctx, font, size, sup);
+                if (rawdict)
+                    charlist = PyList_New(0);
+                else
+                    buff = fz_new_buffer(ctx, 64);
+                //JM_TRACE("new span started");
             }
-            fz_append_rune(ctx, buff, ch->c);
+            if (!rawdict)
+                fz_append_rune(ctx, buff, ch->c);
+            else 
+            {
+                chardict = JM_extract_stext_textchar_as_dict(ctx, ch);
+                PyList_Append(charlist, chardict);
+                Py_CLEAR(chardict);
+            }
+            //JM_TRACE("finished one char");
         }
         if (font)
         {
+            //JM_TRACE("start output last span");
+            if (rawdict)
+            {
+                PyDict_SetItemString(span, "chars",  charlist);
+                Py_CLEAR(charlist);
+            }
             JM_style_end_dict(ctx, buff, span, spanlist);
             Py_CLEAR(span);
             fz_drop_buffer(ctx, buff);
             buff = NULL;
             font = NULL;
         }
-
+        //JM_TRACE("finishing line");
         PyDict_SetItemString(linedict, "spans",  spanlist);
         Py_CLEAR(spanlist);
         PyDict_SetItemString(linedict, "bbox",   Py_BuildValue("ffff",
@@ -4361,16 +4380,18 @@ JM_extract_stext_textblock_as_dict(fz_context *ctx, fz_stext_block *block, int r
 
         JM_join_rect(blockrect, linerect, 0.0f);
 
-        free(linerect);
+        JM_Free(linerect);
         PyList_Append(linelist, linedict);
         Py_CLEAR(linedict);
     }
+    //JM_TRACE("after line loop");
     PyDict_SetItemString(dict, "lines",  linelist);
     Py_CLEAR(linelist);
     PyDict_SetItemString(dict, "bbox",   Py_BuildValue("ffff",
                                          blockrect->x0, blockrect->y0,
                                          blockrect->x1, blockrect->y1));
-    free(blockrect);
+    JM_Free(blockrect);
+    //JM_TRACE("leaving JM_extract_stext_textblock_as_dict");
     return dict;
 }
 
@@ -4379,6 +4400,8 @@ JM_extract_stext_imageblock_as_dict(fz_context *ctx, fz_stext_block *block)
 {
     fz_image *image = block->u.i.image;
     fz_buffer *buf = NULL, *freebuf = NULL;
+    fz_var(buf);
+    fz_var(freebuf);
     fz_compressed_buffer *buffer = NULL;
     int n = fz_colorspace_n(ctx, image->colorspace);
     int w = image->w;
@@ -4386,6 +4409,7 @@ JM_extract_stext_imageblock_as_dict(fz_context *ctx, fz_stext_block *block)
     int type = 0;
     unsigned char ext[5];
     PyObject *bytes = JM_BinFromChar("");
+    fz_var(bytes);
     buffer = fz_compressed_image_buffer(ctx, image);
     if (buffer) type = buffer->params.type;
     PyObject *dict = PyDict_New();
@@ -5495,11 +5519,11 @@ void JM_make_ap_object(fz_context *ctx, fz_annot *fzannot, fz_rect *rect, char *
 char *JM_ASCIIFromChar(char *in)
 {
     if (!in) return NULL;
-    size_t i, j = strlen(in);
-    unsigned char *out = (unsigned char *) malloc(j+1);
+    size_t i, j = strlen(in) + 1;
+    unsigned char *out = JM_Alloc(unsigned char, j);
     if (!out) return NULL;
-    memcpy(out, in, j+1);
-    for (i = 0; i < j; i++)
+    memcpy(out, in, j);
+    for (i = 0; i < j-1; i++)
     {
         if (out[i] > 126)
         {
@@ -5519,7 +5543,7 @@ PyObject *JM_UnicodeFromASCII(const char *in)
 {
     char *c = JM_ASCIIFromChar((char *) in);
     PyObject *p = Py_BuildValue("s", c);
-    free(c);
+    JM_Free(c);
     return p;
 }
 
@@ -6491,8 +6515,9 @@ SWIGINTERN char *fz_document_s__getMetadata(struct fz_document_s *self,char cons
             int vsize;
             char *value;
             vsize = fz_lookup_metadata(gctx, self, key, NULL, 0)+1;
-            if(vsize > 1) {
-                value = (char *)malloc(sizeof(char)*vsize);
+            if(vsize > 1)
+            {
+                value = JM_Alloc(char, vsize);
                 fz_lookup_metadata(gctx, self, key, value, vsize);
                 return value;
             }
@@ -6892,9 +6917,8 @@ SWIGINTERN PyObject *fz_document_s_extractFont(struct fz_document_s *self,int xr
             fz_buffer *buffer = NULL;
             pdf_obj *obj, *basefont, *bname;
             PyObject *bytes = PyBytes_FromString("");
-            const char *ext = "";
-            const char *fontname = "";
-            const char *stype = "";
+            char *ext = NULL;
+            char *fontname = NULL;
             PyObject *nulltuple = Py_BuildValue("sssO", "", "", "", bytes);
             PyObject *tuple;
             Py_ssize_t len = 0;
@@ -6911,25 +6935,34 @@ SWIGINTERN PyObject *fz_document_s_extractFont(struct fz_document_s *self,int xr
                         bname = pdf_dict_get(gctx, obj, PDF_NAME_Name);
                     else
                         bname = basefont;
-                    fontname = (char *) pdf_to_name(gctx, bname);
                     ext = fontextension(gctx, pdf, xref);
-                    stype = (char *) pdf_to_name(gctx, subtype);
                     if (strcmp(ext, "n/a") != 0 && !info_only)
                     {
                         buffer = fontbuffer(gctx, pdf, xref);
                         bytes = JM_BinFromBuffer(gctx, buffer);
                         fz_drop_buffer(gctx, buffer);
                     }
-                    tuple = Py_BuildValue("sssO", fontname, ext, stype, bytes);
+                    fontname = JM_ASCIIFromChar(pdf_to_name(gctx, bname));
+                    tuple = Py_BuildValue("sssO",
+                                fontname,
+                                ext,
+                                pdf_to_name(gctx, subtype),
+                                bytes);
                 }
                 else
                 {
                     tuple = nulltuple;
                 }
             }
+            fz_always(gctx)
+            {
+                JM_PyErr_Clear;
+                JM_Free(fontname);
+            }
+
             fz_catch(gctx)
             {
-                tuple = Py_BuildValue("sssO", fontname, ext, stype, bytes);
+                tuple = Py_BuildValue("sssO", "invalid-name", "", "", bytes);
             }
             return tuple;
         }
@@ -7062,7 +7095,7 @@ SWIGINTERN PyObject *fz_document_s__delToC(struct fz_document_s *self){
             if (!first) return xrefs;
             argc = countOutlines(gctx, first, argc);  // get number of outlines
             if (argc < 1) return xrefs;
-            res = malloc(argc * sizeof(int));         // object number table
+            res = JM_Alloc(int, (size_t) argc);         // object number table
             objcount = fillOLNumbers(gctx, res, first, objcount, argc); // fill table
             pdf_dict_del(gctx, olroot, PDF_NAME_First);
             pdf_dict_del(gctx, olroot, PDF_NAME_Last);
@@ -7073,7 +7106,7 @@ SWIGINTERN PyObject *fz_document_s__delToC(struct fz_document_s *self){
                 pdf_delete_object(gctx, pdf, res[i]);      // delete outline item
                 PyList_Append(xrefs, PyInt_FromLong((long) res[i]));
             }
-            free(res);
+            JM_Free(res);
             pdf->dirty = 1;
             return xrefs;
         }
@@ -7337,7 +7370,7 @@ SWIGINTERN void delete_fz_page_s(struct fz_page_s *self){
             DEBUGMSG2;
         }
 SWIGINTERN struct fz_rect_s *fz_page_s_bound(struct fz_page_s *self){
-            fz_rect *rect = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *rect = JM_Alloc(fz_rect, 1);
             fz_bound_page(gctx, self, rect);
             return rect;
         }
@@ -7570,7 +7603,7 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addFreetextAnnot(struct fz_page_s *self,
                 pdf_dirty_annot(gctx, annot);
                 pdf_update_page(gctx, page);
             }
-            fz_always(gctx) free(ascii);
+            fz_always(gctx) JM_Free(ascii);
             fz_catch(gctx) return NULL;
             fz_annot *fzannot = (fz_annot *) annot;
             return fz_keep_annot(gctx, fzannot);
@@ -7613,7 +7646,7 @@ SWIGINTERN struct fz_display_list_s *fz_page_s_getDisplayList(struct fz_page_s *
             fz_display_list *dl = NULL;
             fz_try(gctx) dl = fz_new_display_list_from_page(gctx, self);
             fz_catch(gctx) return NULL;
-            return fz_keep_display_list(gctx, dl);
+            return dl;
         }
 SWIGINTERN PyObject *fz_page_s_setCropBox(struct fz_page_s *self,struct fz_rect_s *rect){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
@@ -7688,7 +7721,7 @@ SWIGINTERN struct fz_annot_s *fz_page_s_deleteAnnot(struct fz_page_s *self,struc
             return nextannot;
         }
 SWIGINTERN struct fz_point_s *fz_page_s_MediaBoxSize(struct fz_page_s *self){
-            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            fz_point *p = JM_Alloc(fz_point, 1);
             p->x = p->y = 0.0;
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
             if (!page) return p;
@@ -7701,7 +7734,7 @@ SWIGINTERN struct fz_point_s *fz_page_s_MediaBoxSize(struct fz_page_s *self){
             return p;
         }
 SWIGINTERN struct fz_point_s *fz_page_s_CropBoxPosition(struct fz_page_s *self){
-            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            fz_point *p = JM_Alloc(fz_point, 1);
             p->x = p->y = 0.0;
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
             if (!page) return p;                 // not a PDF
@@ -8202,11 +8235,11 @@ SWIG_From_float  (float value)
 
 SWIGINTERN void delete_fz_rect_s(struct fz_rect_s *self){
             DEBUGMSG1("rect");
-            free(self);
+            JM_Free(self);
             DEBUGMSG2;
         }
 SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_1(struct fz_rect_s const *s){
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             if (!s)
             {
                 r->x0 = r->y0 = r->x1 = r->y1 = 0;
@@ -8215,7 +8248,7 @@ SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_1(struct fz_rect_s const *s){
             return r;
         }
 SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_2(struct fz_point_s const *lt,struct fz_point_s const *rb){
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             r->x0 = lt->x;
             r->y0 = lt->y;
             r->x1 = rb->x;
@@ -8223,7 +8256,7 @@ SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_2(struct fz_point_s const *lt,s
             return r;
         }
 SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_3(float x0,float y0,struct fz_point_s const *rb){
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             r->x0 = x0;
             r->y0 = y0;
             r->x1 = rb->x;
@@ -8231,7 +8264,7 @@ SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_3(float x0,float y0,struct fz_p
             return r;
         }
 SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_4(struct fz_point_s const *lt,float x1,float y1){
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             r->x0 = lt->x;
             r->y0 = lt->y;
             r->x1 = x1;
@@ -8239,7 +8272,7 @@ SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_4(struct fz_point_s const *lt,f
             return r;
         }
 SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_5(float x0,float y0,float x1,float y1){
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             r->x0 = x0;
             r->y0 = y0;
             r->x1 = x1;
@@ -8247,7 +8280,7 @@ SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_5(float x0,float y0,float x1,fl
             return r;
         }
 SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_6(PyObject *list){
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             fz_try(gctx)
             {
                 if (!PySequence_Check(list)) THROWMSG("expected a sequence");
@@ -8263,13 +8296,13 @@ SWIGINTERN struct fz_rect_s *new_fz_rect_s__SWIG_6(PyObject *list){
             }
             fz_catch(gctx)
             {
-                free(r);
+                JM_Free(r);
                 return NULL;
             }
             return r;
         }
 SWIGINTERN struct fz_irect_s *fz_rect_s_round(struct fz_rect_s *self){
-            fz_irect *irect = (fz_irect *)malloc(sizeof(fz_irect));
+            fz_irect *irect = JM_Alloc(fz_irect, 1);
             fz_rect rect = {MIN(self->x0, self->x1),
                             MIN(self->y0, self->y1),
                             MAX(self->x0, self->x1),
@@ -8349,11 +8382,11 @@ SWIGINTERN PyObject *fz_rect_s_isInfinite(struct fz_rect_s *self){
         }
 SWIGINTERN void delete_fz_irect_s(struct fz_irect_s *self){
             DEBUGMSG1("irect");
-            free(self);
+            JM_Free(self);
             DEBUGMSG2;
         }
 SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_1(struct fz_irect_s const *s){
-            fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
+            fz_irect *r = JM_Alloc(fz_irect, 1);
             if (!s)
             {
                 r->x0 = r->y0 = r->x1 = r->y1 = 0;
@@ -8362,7 +8395,7 @@ SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_1(struct fz_irect_s const *s)
             return r;
         }
 SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_2(int x0,int y0,int x1,int y1){
-            fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
+            fz_irect *r = JM_Alloc(fz_irect, 1);
             r->x0 = x0;
             r->y0 = y0;
             r->x1 = x1;
@@ -8370,7 +8403,7 @@ SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_2(int x0,int y0,int x1,int y1
             return r;
         }
 SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_3(PyObject *list){
-            fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
+            fz_irect *r = JM_Alloc(fz_irect, 1);
             fz_try(gctx)
             {
                 if (!PySequence_Check(list)) THROWMSG("expected a sequence");
@@ -8386,7 +8419,7 @@ SWIGINTERN struct fz_irect_s *new_fz_irect_s__SWIG_3(PyObject *list){
             }
             fz_catch(gctx) 
             {
-                free(r);
+                JM_Free(r);
                 return NULL;
             }
             return r;
@@ -8662,7 +8695,7 @@ SWIGINTERN struct fz_colorspace_s *fz_pixmap_s_colorspace(struct fz_pixmap_s *se
             return fz_pixmap_colorspace(gctx, self);
         }
 SWIGINTERN struct fz_irect_s *fz_pixmap_s_irect(struct fz_pixmap_s *self){
-            fz_irect *r = (fz_irect *)malloc(sizeof(fz_irect));
+            fz_irect *r = JM_Alloc(fz_irect, 1);
             r->x0 = r->y0 = r->x1 = r->y1 = 0;
             return fz_pixmap_bbox(gctx, self, r);
         }
@@ -8830,11 +8863,11 @@ SWIGINTERN void delete_DeviceWrapper(struct DeviceWrapper *self){
         }
 SWIGINTERN void delete_fz_matrix_s(struct fz_matrix_s *self){
             DEBUGMSG1("matrix");
-            free(self);
+            JM_Free(self);
             DEBUGMSG2;
         }
 SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_1(struct fz_matrix_s const *n){
-            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            fz_matrix *m = JM_Alloc(fz_matrix, 1);
             if (!n)
             {
                 m->a = m->b = m->c = m->d = m->e = m->f = 0;
@@ -8846,12 +8879,12 @@ SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_1(struct fz_matrix_s const 
             return m;
         }
 SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_2(float sx,float sy,int shear){
-            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            fz_matrix *m = JM_Alloc(fz_matrix, 1);
             if(shear) return fz_shear(m, sx, sy);
             return fz_scale(m, sx, sy);
         }
 SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_3(float r,float s,float t,float u,float v,float w){
-            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            fz_matrix *m = JM_Alloc(fz_matrix, 1);
             m->a = r;
             m->b = s;
             m->c = t;
@@ -8861,11 +8894,11 @@ SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_3(float r,float s,float t,f
             return m;
         }
 SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_4(float degree){
-            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            fz_matrix *m = JM_Alloc(fz_matrix, 1);
             return fz_rotate(m, degree);
         }
 SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_5(PyObject *list){
-            fz_matrix *m = (fz_matrix *)malloc(sizeof(fz_matrix));
+            fz_matrix *m = JM_Alloc(fz_matrix, 1);
             fz_try(gctx)
             {
                 if (!PySequence_Check(list)) THROWMSG("expected a sequence");
@@ -8885,7 +8918,7 @@ SWIGINTERN struct fz_matrix_s *new_fz_matrix_s__SWIG_5(PyObject *list){
             }
             fz_catch(gctx)
             {
-                free(m);
+                JM_Free(m);
                 return NULL;
             }
             return m;
@@ -8910,7 +8943,7 @@ SWIGINTERN int fz_outline_s_isExternal(struct fz_outline_s *self){
             return fz_is_external_link(gctx, self->uri);
             }
 SWIGINTERN struct fz_point_s *new_fz_point_s__SWIG_1(struct fz_point_s const *q){
-            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            fz_point *p = JM_Alloc(fz_point, 1);
             if (!q)
             {
                 p->x = p->y = 0;
@@ -8919,13 +8952,13 @@ SWIGINTERN struct fz_point_s *new_fz_point_s__SWIG_1(struct fz_point_s const *q)
             return p;
         }
 SWIGINTERN struct fz_point_s *new_fz_point_s__SWIG_2(float x,float y){
-            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            fz_point *p = JM_Alloc(fz_point, 1);
             p->x = x;
             p->y = y;
             return p;
         }
 SWIGINTERN struct fz_point_s *new_fz_point_s__SWIG_3(PyObject *list){
-            fz_point *p = (fz_point *)malloc(sizeof(fz_point));
+            fz_point *p = JM_Alloc(fz_point, 1);
             fz_try(gctx)
             {
                 if (!PySequence_Check(list)) THROWMSG("expected a sequence");
@@ -8937,14 +8970,14 @@ SWIGINTERN struct fz_point_s *new_fz_point_s__SWIG_3(PyObject *list){
             }
             fz_catch(gctx)
             {
-                free(p);
+                JM_Free(p);
                 return NULL;
             }
             return p;
         }
 SWIGINTERN void delete_fz_point_s(struct fz_point_s *self){
             DEBUGMSG1("point");
-            free(self);
+            JM_Free(self);
             DEBUGMSG2;
         }
 SWIGINTERN void delete_fz_annot_s(struct fz_annot_s *self){
@@ -8953,7 +8986,7 @@ SWIGINTERN void delete_fz_annot_s(struct fz_annot_s *self){
             DEBUGMSG2;
         }
 SWIGINTERN struct fz_rect_s *fz_annot_s_rect(struct fz_annot_s *self){
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             return fz_bound_annot(gctx, self, r);
         }
 SWIGINTERN int fz_annot_s__getXref(struct fz_annot_s *self){
@@ -9870,7 +9903,7 @@ SWIGINTERN int fz_link_s_isExternal(struct fz_link_s *self){
             return fz_is_external_link(gctx, self->uri);
         }
 SWIGINTERN struct fz_rect_s *fz_link_s_rect(struct fz_link_s *self){
-            fz_rect *r = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *r = JM_Alloc(fz_rect, 1);
             r->x0 = self->rect.x0;
             r->y0 = self->rect.y0;
             r->x1 = self->rect.x1;
@@ -9902,7 +9935,7 @@ SWIGINTERN int fz_display_list_s_run(struct fz_display_list_s *self,struct Devic
             return 0;
         }
 SWIGINTERN struct fz_rect_s *fz_display_list_s_rect(struct fz_display_list_s *self){
-            fz_rect *mediabox = (fz_rect *)malloc(sizeof(fz_rect));
+            fz_rect *mediabox = JM_Alloc(fz_rect, 1);
             fz_bound_display_list(gctx, self, mediabox);
             return mediabox;
         }
@@ -9951,7 +9984,7 @@ SWIGINTERN PyObject *fz_stext_page_s_search(struct fz_stext_page_s *self,char co
             PyObject *liste = PyList_New(0);
             int i, mymax = hit_max;
             if (mymax < 1) mymax = 16;
-            result = (fz_rect *)malloc(sizeof(fz_rect)*(mymax+1));
+            result = JM_Alloc(fz_rect, (mymax+1));
             struct fz_rect_s *rect = (struct fz_rect_s *) result;
             int count = fz_search_stext_page(gctx, self, needle, result, hit_max);
             for (i = 0; i < count; i++)
@@ -9961,7 +9994,7 @@ SWIGINTERN PyObject *fz_stext_page_s_search(struct fz_stext_page_s *self,char co
                                             rect->x1,rect->y1));
                 rect += 1;
             }
-            free(result);
+            JM_Free(result);
             return liste;
         }
 SWIGINTERN PyObject *fz_stext_page_s__extractTextBlocks_AsList(struct fz_stext_page_s *self){
@@ -10001,7 +10034,7 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextBlocks_AsList(struct fz_stext_p
                                 JM_join_rect(linerect, &ch->bbox, ch->size);
                             }
                             JM_join_rect(blockrect, linerect, 0.0f);
-                            free(linerect);
+                            JM_Free(linerect);
                         }
                         text = JM_StrFromBuffer(gctx, res);
                     }
@@ -10025,7 +10058,7 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextBlocks_AsList(struct fz_stext_p
                 PyList_Append(lines, litem);
                 Py_CLEAR(litem);
                 Py_CLEAR(text);
-                free(blockrect);
+                JM_Free(blockrect);
                 block_n++;
             }
             return lines;
@@ -10084,7 +10117,7 @@ SWIGINTERN PyObject *fz_stext_page_s__extractTextWords_AsList(struct fz_stext_pa
                 }
                 block_n++;
             }
-            free(wbbox);
+            JM_Free(wbbox);
             return lines;
         }
 SWIGINTERN PyObject *fz_stext_page_s__extractText(struct fz_stext_page_s *self,int format){
@@ -21736,7 +21769,11 @@ SWIG_init(void) {
   SWIG_InstallConstants(d,swig_const_table);
   
   
+#if JM_MEMORY == 1
+  gctx = fz_new_context(&JM_Alloc_Context, NULL, FZ_STORE_DEFAULT);
+#else
   gctx = fz_new_context(NULL, NULL, FZ_STORE_DEFAULT);
+#endif
   if(!gctx)
   {
     PyErr_SetString(PyExc_RuntimeError, "Fatal error: could not create global context.");
