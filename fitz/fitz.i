@@ -91,8 +91,10 @@
 // memory allocation macros
 #define JM_MEMORY 1
 #if  PY_VERSION_HEX < 0x03000000
+#undef JM_MEMORY
 #define JM_MEMORY 0
 #endif
+
 #if JM_MEMORY == 1
 #define JM_Alloc(type, len) PyMem_New(type, len)
 #define JM_Free(x) PyMem_Del(x)
@@ -119,8 +121,10 @@
 #define JM_BinFromChar(x) PyByteArray_FromStringAndSize(x, (Py_ssize_t) strlen(x))
 #define JM_BinFromCharSize(x, y) PyByteArray_FromStringAndSize(x, (Py_ssize_t) y)
 # endif
+
 // define Python None object
 #define NONE Py_BuildValue("s", NULL)
+
 #include <fitz.h>
 #include <pdf.h>
 #include <zlib.h>
@@ -235,6 +239,7 @@ struct fz_document_s
 
         fz_document_s(const char *filename = NULL, PyObject *stream = NULL,
                       const char *filetype = NULL, struct fz_rect_s *rect = NULL,
+                      float width = 0, float height = 0,
                       float fontsize = 11)
         {
             gctx->error->errcode = 0;       // reset any error code
@@ -242,6 +247,7 @@ struct fz_document_s
             struct fz_document_s *doc = NULL;
             fz_stream *data = NULL;
             char *streamdata;
+            float w = width, h = height;
             size_t streamlen = JM_CharFromBytesOrArray(stream, &streamdata);
             fz_try(gctx)
             {
@@ -249,8 +255,8 @@ struct fz_document_s
                 {
                     if (fz_is_empty_rect(rect) || fz_is_infinite_rect(rect))
                         THROWMSG("rect must be finite and not empty");
-                    if (rect->x0 != 0.0f || rect->y0 != 0.0f)
-                        THROWMSG("rect must start at (0,0)");
+                    w = rect->x1 - rect->x0;
+                    h = rect->y1 - rect->y0;
                 }
                 if (streamlen > 0)
                 {
@@ -282,8 +288,8 @@ struct fz_document_s
                 }
             }
             fz_catch(gctx) return NULL;
-            if (rect)
-                fz_layout_document(gctx, doc, rect->x1, rect->y1, fontsize);
+            if (w > 0 && h > 0)
+                fz_layout_document(gctx, doc, w, h, fontsize);
             return doc;
         }
 
@@ -677,19 +683,46 @@ struct fz_document_s
 
         FITZEXCEPTION(layout, !result)
         CLOSECHECK(layout)
-        PyObject *layout(struct fz_rect_s *rect, float fontsize = 11)
+        %pythonappend layout %{
+            self._reset_page_refs()
+            self.initData()%}
+        PyObject *layout(struct fz_rect_s *rect = NULL, float width = 0, float height = 0, float fontsize = 11)
         {
             if (!fz_is_document_reflowable(gctx, $self)) return NONE;
             fz_try(gctx)
             {
-                if (fz_is_empty_rect(rect) || fz_is_infinite_rect(rect))
-                    THROWMSG("rect must be finite and not empty");
-                if (rect->x0 != 0.0 || rect->y0 != 0)
-                    THROWMSG("rect must start at (0, 0)");
-                fz_layout_document(gctx, $self, rect->x1, rect->y1, fontsize);
+                float w = width, h = height;
+                if (rect)
+                {
+                    if (fz_is_empty_rect(rect) || fz_is_infinite_rect(rect))
+                        THROWMSG("rect must be finite and not empty");
+                    w = rect->x1 - rect->x0;
+                    h = rect->y1 - rect->y0;
+                }
+                if (w <= 0.0f || h <= 0.0f)
+                        THROWMSG("invalid page size");
+                fz_layout_document(gctx, $self, w, h, fontsize);
             }
             fz_catch(gctx) return NULL;
             return NONE;
+        }
+
+        CLOSECHECK(makeBookmark)
+        PyObject *makeBookmark(int pno = 0)
+        {
+            if (!fz_is_document_reflowable(gctx, $self)) return NONE;
+            int n = pno, cp = fz_count_pages(gctx, $self);
+            while(n < 0) n += cp;
+            long long mark = (long long) fz_make_bookmark(gctx, $self, n);
+            return PyLong_FromLongLong(mark);
+        }
+
+        CLOSECHECK(findBookmark)
+        int findBookmark(long long bookmark)
+        {
+            if (!fz_is_document_reflowable(gctx, $self)) return -1;
+            fz_bookmark m = (fz_bookmark) bookmark;
+            return fz_lookup_bookmark(gctx, $self, m);
         }
 
         CLOSECHECK0(isReflowable)
@@ -2031,7 +2064,7 @@ struct fz_page_s {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             fz_annot *fzannot = NULL;
             pdf_annot *annot = NULL;
-            char *data = NULL, *uf, *d;
+            char *data = NULL, *uf = ufilename, *d = desc;
             if (!ufilename) uf = filename;
             if (!desc) d = filename;
             size_t len = 0;

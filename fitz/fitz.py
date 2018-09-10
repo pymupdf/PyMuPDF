@@ -102,9 +102,9 @@ import math
 
 
 VersionFitz = "1.13.0"
-VersionBind = "1.13.19"
-VersionDate = "2018-08-31 12:11:48"
-version = (VersionBind, VersionFitz, "20180831121148")
+VersionBind = "1.13.20"
+VersionDate = "2018-09-09 09:54:14"
+version = (VersionBind, VersionFitz, "20180909095414")
 
 
 #------------------------------------------------------------------------------
@@ -1036,8 +1036,8 @@ open(filename, filetype='type') - from file"""
     __swig_destroy__ = _fitz.delete_Document
     __del__ = lambda self: None
 
-    def __init__(self, filename=None, stream=None, filetype=None, rect=None, fontsize=11):
-        """__init__(self, filename=None, stream=None, filetype=None, rect=None, fontsize=11) -> Document"""
+    def __init__(self, filename=None, stream=None, filetype=None, rect=None, width=0, height=0, fontsize=11):
+        """__init__(self, filename=None, stream=None, filetype=None, rect=None, width=0, height=0, fontsize=11) -> Document"""
 
         if not filename or type(filename) == str:
             pass
@@ -1061,7 +1061,7 @@ open(filename, filetype='type') - from file"""
         self.Graftmaps   = {}
         self._page_refs  = weakref.WeakValueDictionary()
 
-        this = _fitz.new_Document(filename, stream, filetype, rect, fontsize)
+        this = _fitz.new_Document(filename, stream, filetype, rect, width, height, fontsize)
         try:
             self.this.append(this)
         except __builtin__.Exception:
@@ -1237,12 +1237,33 @@ open(filename, filetype='type') - from file"""
         return _fitz.Document_resolveLink(self, uri)
 
 
-    def layout(self, rect, fontsize=11):
-        """layout(self, rect, fontsize=11) -> PyObject *"""
+    def layout(self, rect=None, width=0, height=0, fontsize=11):
+        """layout(self, rect=None, width=0, height=0, fontsize=11) -> PyObject *"""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
 
-        return _fitz.Document_layout(self, rect, fontsize)
+        val = _fitz.Document_layout(self, rect, width, height, fontsize)
+
+        self._reset_page_refs()
+        self.initData()
+
+        return val
+
+
+    def makeBookmark(self, pno=0):
+        """makeBookmark(self, pno=0) -> PyObject *"""
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
+
+        return _fitz.Document_makeBookmark(self, pno)
+
+
+    def findBookmark(self, bookmark):
+        """findBookmark(self, bookmark) -> int"""
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
+
+        return _fitz.Document_findBookmark(self, bookmark)
 
     @property
 
