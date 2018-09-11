@@ -61,7 +61,7 @@ Specifically for PDF files, PyMuPDF provides update access to low-level structur
 
 Other features include embedding vector images (SVG, PDF) such as logos or watermarks, "posterizing" a PDF or creating "booklet" and "4-up" versions.
 
-You can now also create PDF Form fields with support for text, checkbox, listbox and combobox widgets.
+You can now also create and update Form PDFs and form fields with support for text, checkbox, listbox and combobox widgets.
 
 Have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) (which contain complete, working programs), and the **recipes** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar, which contains more than a dozen of guides in How-To-style.
 
