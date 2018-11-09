@@ -58,15 +58,15 @@ void JM_gather_fonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
             continue;
         }
         refname = pdf_dict_get_key(ctx, dict, i);
-        subtype = pdf_dict_get(ctx, fontdict, PDF_NAME_Subtype);
-        basefont = pdf_dict_get(ctx, fontdict, PDF_NAME_BaseFont);
+        subtype = pdf_dict_get(ctx, fontdict, PDF_NAME(Subtype));
+        basefont = pdf_dict_get(ctx, fontdict, PDF_NAME(BaseFont));
         if (!basefont || pdf_is_null(ctx, basefont))
-            name = pdf_dict_get(ctx, fontdict, PDF_NAME_Name);
+            name = pdf_dict_get(ctx, fontdict, PDF_NAME(Name));
         else
             name = basefont;
-        encoding = pdf_dict_get(ctx, fontdict, PDF_NAME_Encoding);
+        encoding = pdf_dict_get(ctx, fontdict, PDF_NAME(Encoding));
         if (pdf_is_dict(ctx, encoding))
-            encoding = pdf_dict_get(ctx, encoding, PDF_NAME_BaseEncoding);
+            encoding = pdf_dict_get(ctx, encoding, PDF_NAME(BaseEncoding));
         int xref = pdf_to_num(ctx, fontdict);
         char *ext = "n/a";
         if (xref) ext = fontextension(ctx, pdf, xref);
@@ -111,25 +111,25 @@ void JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
         }
         refname = pdf_dict_get_key(ctx, dict, i);
 
-        type = pdf_dict_get(ctx, imagedict, PDF_NAME_Subtype);
-        if (!pdf_name_eq(ctx, type, PDF_NAME_Image))
+        type = pdf_dict_get(ctx, imagedict, PDF_NAME(Subtype));
+        if (!pdf_name_eq(ctx, type, PDF_NAME(Image)))
             continue;
         
         int xref = pdf_to_num(ctx, imagedict);
         int gen = 0;
-        smask = pdf_dict_get(ctx, imagedict, PDF_NAME_SMask);
+        smask = pdf_dict_get(ctx, imagedict, PDF_NAME(SMask));
         if (smask)
             gen = pdf_to_num(ctx, smask);
-        filter = pdf_dict_get(ctx, imagedict, PDF_NAME_Filter);
+        filter = pdf_dict_get(ctx, imagedict, PDF_NAME(Filter));
 
         altcs = NULL;
-        cs = pdf_dict_get(ctx, imagedict, PDF_NAME_ColorSpace);
+        cs = pdf_dict_get(ctx, imagedict, PDF_NAME(ColorSpace));
         if (pdf_is_array(ctx, cs))
         {
             pdf_obj *cses = cs;
             cs = pdf_array_get(ctx, cses, 0);
-            if (pdf_name_eq(ctx, cs, PDF_NAME_DeviceN) ||
-                pdf_name_eq(ctx, cs, PDF_NAME_Separation))
+            if (pdf_name_eq(ctx, cs, PDF_NAME(DeviceN)) ||
+                pdf_name_eq(ctx, cs, PDF_NAME(Separation)))
             {
                 altcs = pdf_array_get(ctx, cses, 2);
                 if (pdf_is_array(ctx, altcs))
@@ -137,9 +137,9 @@ void JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
             }
         }
 
-        width = pdf_dict_get(ctx, imagedict, PDF_NAME_Width);
-        height = pdf_dict_get(ctx, imagedict, PDF_NAME_Height);
-        bpc = pdf_dict_get(ctx, imagedict, PDF_NAME_BitsPerComponent);
+        width = pdf_dict_get(ctx, imagedict, PDF_NAME(Width));
+        height = pdf_dict_get(ctx, imagedict, PDF_NAME(Height));
+        bpc = pdf_dict_get(ctx, imagedict, PDF_NAME(BitsPerComponent));
 
         PyObject *entry = PyList_New(0);
         PyList_Append(entry, Py_BuildValue("i", xref));
@@ -179,8 +179,8 @@ void JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
         }
         refname = pdf_dict_get_key(ctx, dict, i);
 
-        type = pdf_dict_get(ctx, imagedict, PDF_NAME_Subtype);
-        if (!pdf_name_eq(ctx, type, PDF_NAME_Form))
+        type = pdf_dict_get(ctx, imagedict, PDF_NAME(Subtype));
+        if (!pdf_name_eq(ctx, type, PDF_NAME(Form)))
             continue;
 
         int xref = pdf_to_num(ctx, imagedict);
@@ -206,19 +206,19 @@ void JM_scan_resources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
     {
         if (what == 1)            // look up fonts
         {
-            font = pdf_dict_get(ctx, rsrc, PDF_NAME_Font);
+            font = pdf_dict_get(ctx, rsrc, PDF_NAME(Font));
             JM_gather_fonts(ctx, pdf, font, liste);
             n = pdf_dict_len(ctx, font);
             for (i = 0; i < n; i++)
             {
                 pdf_obj *obj = pdf_dict_get_val(ctx, font, i);
-                subrsrc = pdf_dict_get(ctx, obj, PDF_NAME_Resources);
+                subrsrc = pdf_dict_get(ctx, obj, PDF_NAME(Resources));
                 if (subrsrc)
                     JM_scan_resources(ctx, pdf, subrsrc, liste, what);
             }
         }
 
-        xobj = pdf_dict_get(ctx, rsrc, PDF_NAME_XObject);
+        xobj = pdf_dict_get(ctx, rsrc, PDF_NAME(XObject));
 
         if (what == 2)            // look up images
         {
@@ -234,7 +234,7 @@ void JM_scan_resources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
         for (i = 0; i < n; i++)
         {
             pdf_obj *obj = pdf_dict_get_val(ctx, xobj, i);
-            subrsrc = pdf_dict_get(ctx, obj, PDF_NAME_Resources);
+            subrsrc = pdf_dict_get(ctx, obj, PDF_NAME(Resources));
             if (subrsrc)
                 JM_scan_resources(ctx, pdf, subrsrc, liste, what);
         }

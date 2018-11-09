@@ -109,7 +109,7 @@
 #define WIDGET_Ff_CommitOnSelCHange 67108864
 
 //----------------------------------------------------------------------------
-// return string for line end style
+// return code for line end style string
 //----------------------------------------------------------------------------
 int JM_le_value(fz_context *ctx, char *le)
 {
@@ -122,17 +122,56 @@ int JM_le_value(fz_context *ctx, char *le)
 //----------------------------------------------------------------------------
 pdf_obj *JM_get_border_style(fz_context *ctx, PyObject *style)
 {
-    pdf_obj *val = PDF_NAME_S;
+    pdf_obj *val = PDF_NAME(S);
     if (!style) return val;
     char *s = JM_Python_str_AsChar(style);
     JM_PyErr_Clear;
     if (!s) return val;
-    if      (!strncmp(s, "b", 1) || !strncmp(s, "B", 1)) val = PDF_NAME_B;
-    else if (!strncmp(s, "d", 1) || !strncmp(s, "D", 1)) val = PDF_NAME_D;
-    else if (!strncmp(s, "i", 1) || !strncmp(s, "I", 1)) val = PDF_NAME_I;
-    else if (!strncmp(s, "u", 1) || !strncmp(s, "U", 1)) val = PDF_NAME_U;
+    if      (!strncmp(s, "b", 1) || !strncmp(s, "B", 1)) val = PDF_NAME(B);
+    else if (!strncmp(s, "d", 1) || !strncmp(s, "D", 1)) val = PDF_NAME(D);
+    else if (!strncmp(s, "i", 1) || !strncmp(s, "I", 1)) val = PDF_NAME(I);
+    else if (!strncmp(s, "u", 1) || !strncmp(s, "U", 1)) val = PDF_NAME(U);
     JM_Python_str_DelForPy3(s);
     return val;
+}
+
+//----------------------------------------------------------------------------
+// Make /DA string of annotation
+//----------------------------------------------------------------------------
+const char *JM_expand_fname(const char **name)
+{
+    if (!*name) return "Helv";
+    if (!strncmp(*name, "Co", 2)) return "Cour";
+    if (!strncmp(*name, "co", 2)) return "Cour";
+    if (!strncmp(*name, "Ti", 2)) return "TiRo";
+    if (!strncmp(*name, "ti", 2)) return "TiRo";
+    if (!strncmp(*name, "Sy", 2)) return "Symb";
+    if (!strncmp(*name, "sy", 2)) return "Symb";
+    if (!strncmp(*name, "Za", 2)) return "ZaDb";
+    if (!strncmp(*name, "za", 2)) return "ZaDb";
+    return "Helv";
+}
+
+void JM_make_annot_DA(fz_context *ctx, pdf_annot *annot, int ncol, float col[4], const char *fontname, float fontsize)
+{
+    fz_buffer *buf = NULL;
+    fz_try(ctx)
+    {
+        buf = fz_new_buffer(ctx, 50);
+       if (ncol == 1)
+            fz_append_printf(ctx, buf, "%g g ", col[0]);
+        else if (ncol == 3)
+            fz_append_printf(ctx, buf, "%g %g %g rg ", col[0], col[1], col[2]);
+        else
+            fz_append_printf(ctx, buf, "%g %g %g %g k ", col[0], col[1], col[2], col[3]);
+        fz_append_printf(ctx, buf, "/%s %g Tf", JM_expand_fname(&fontname), fontsize);
+        char *da = NULL;
+        size_t len = fz_buffer_storage(ctx, buf, &da);
+        pdf_dict_put_string(ctx, annot->obj, PDF_NAME(DA), (const char *)da, len);
+    }
+    fz_always(ctx) fz_drop_buffer(ctx, buf);
+    fz_catch(ctx) fz_rethrow(ctx);
+    return;
 }
 
 //----------------------------------------------------------------------------
@@ -140,14 +179,14 @@ pdf_obj *JM_get_border_style(fz_context *ctx, PyObject *style)
 //----------------------------------------------------------------------------
 void refresh_link_table(fz_context *ctx, pdf_page *page)
 {
-    pdf_obj *annots_arr = pdf_dict_get(ctx, page->obj, PDF_NAME_Annots);
+    pdf_obj *annots_arr = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
     if (annots_arr)
     {
         fz_rect page_mediabox;
         fz_matrix page_ctm;
         pdf_page_transform(ctx, page, &page_mediabox, &page_ctm);
         page->links = pdf_load_link_annots(ctx, page->doc, annots_arr,
-                                           pdf_to_num(ctx, page->obj), &page_ctm);
+                                           pdf_to_num(ctx, page->obj), page_ctm);
         pdf_load_annots(ctx, page, annots_arr);
     }
     return;
@@ -156,44 +195,28 @@ void refresh_link_table(fz_context *ctx, pdf_page *page)
 //-----------------------------------------------------------------------------
 // create a strike-out / underline / highlight annotation
 //-----------------------------------------------------------------------------
-struct fz_annot_s *JM_AnnotTextmarker(fz_context *ctx, pdf_page *page, fz_rect *rect, int type)
+struct fz_annot_s *JM_AnnotTextmarker(fz_context *ctx, pdf_page *page, fz_quad q, int type)
 {
     pdf_annot *annot = NULL;
-    float line_thickness = 0.0f;
-    float line_height = 0.0f;
-    float alpha = 1.0f;
-    float h  = rect->y1 - rect->y0;
-    fz_rect bbox = {rect->x0, rect->y0, rect->x1, rect->y1};
+    float width = 0;
     float color[3] = {0,0,0};
     switch (type)
     {
         case PDF_ANNOT_HIGHLIGHT:
-            color[0] = 1.0f;
-            color[1] = 1.0f;
-            color[2] = 0.0f;
-            alpha = 0.3f;
-            line_thickness = 1.0f;
-            line_height = 0.5f;
+            color[0] = color[1] = 1; color[2] = 0;
+            width = 1.0f;
             break;
         case PDF_ANNOT_UNDERLINE:
-            color[0] = 0.0f;
-            color[1] = 0.0f;
-            color[2] = 1.0f;
-            alpha = 1.0f;
-            line_thickness = 0.07f;
-            line_height = 0.075f;
-            bbox.y0 += 0.8f * h;
-            bbox.y1 += 0.8f * h;
+            color[0] = color[1] = 0; color[2] = 1;
+            width = 0.07f;
+            break;
+        case PDF_ANNOT_SQUIGGLY:
+            color[0] = color[1] = 0; color[2] = 1;
+            width = 0.07f;
             break;
         case PDF_ANNOT_STRIKE_OUT:
-            color[0] = 1.0f;
-            color[1] = 0.0f;
-            color[2] = 0.0f;
-            alpha = 1.0f;
-            line_thickness = 0.07f;
-            line_height = 0.375f;
-            bbox.y0 += 0.17f * h;
-            bbox.y1 += 0.17f * h;
+            color[0] = 1; color[1] = color[2] = 0;
+            width = 0.07f;
             break;
     }
     fz_try(ctx)
@@ -201,20 +224,19 @@ struct fz_annot_s *JM_AnnotTextmarker(fz_context *ctx, pdf_page *page, fz_rect *
         pdf_document *pdf = page->doc;
         annot = pdf_create_annot(ctx, page, type);
         pdf_set_annot_color(ctx, annot, 3, color);
-        pdf_set_annot_border(ctx, annot, line_thickness);
-        pdf_add_annot_quad_point(ctx, annot, bbox);
-        pdf_set_annot_rect(ctx, annot, &bbox);
-        pdf_set_markup_appearance(ctx, pdf, annot, color, alpha, line_thickness, line_height);
+        pdf_set_annot_border(ctx, annot, width);
+        pdf_add_annot_quad_point(ctx, annot, q);
+        pdf_set_annot_rect(ctx, annot, fz_rect_from_quad(q));
+        pdf_update_annot(ctx, annot);
     }
     fz_catch(ctx) fz_rethrow(ctx);
-    pdf_dirty_annot(ctx, annot);
     return (fz_annot *) annot;
 }
 
 //-----------------------------------------------------------------------------
 // create a circle or rectangle annotation
 //-----------------------------------------------------------------------------
-struct fz_annot_s *JM_AnnotCircleOrRect(fz_context *ctx, pdf_page *page, fz_rect *rect, int type)
+struct fz_annot_s *JM_AnnotCircleOrRect(fz_context *ctx, pdf_page *page, PyObject *rect, int type)
 {
     pdf_annot *annot;
     float col[3] = {0,0,0};
@@ -225,10 +247,10 @@ struct fz_annot_s *JM_AnnotCircleOrRect(fz_context *ctx, pdf_page *page, fz_rect
         annot = pdf_create_annot(ctx, page, type);
         pdf_set_annot_border(ctx, annot, width);
         pdf_set_annot_color(ctx, annot, 3, col);
-        pdf_set_annot_rect(ctx, annot, rect);
+        pdf_set_annot_rect(ctx, annot, JM_rect_from_py(rect));
+        pdf_update_annot(ctx, annot);
     }
     fz_catch(ctx) fz_rethrow(ctx);
-    pdf_dirty_annot(ctx, annot);
     return (fz_annot *) annot;
 }
 
@@ -266,119 +288,178 @@ struct fz_annot_s *JM_AnnotMultiline(fz_context *ctx, pdf_page *page, PyObject *
                 rect.y1 = point.y;
             }
             else
-                fz_include_point_in_rect(&rect, &point);
+                rect = fz_include_point_in_rect(rect, point);
         }
         pdf_set_annot_border(ctx, annot, width); // standard: width = 1
         pdf_set_annot_color(ctx, annot, 3, col); // standard: black
-        fz_expand_rect(&rect, 3 * width);
-        pdf_set_annot_rect(ctx, annot, &rect);
+        rect = fz_expand_rect(rect, 3 * width);
+        pdf_set_annot_rect(ctx, annot, rect);
+        pdf_update_annot(ctx, annot);
     }
     fz_catch(ctx) fz_rethrow(ctx);
-    pdf_dirty_annot(ctx, annot);
     return (fz_annot *) annot;
 }
 
-void JM_draw_pushpin1(fz_context *ctx, fz_path *path)
+PyObject *JM_annot_border(fz_context *ctx, pdf_obj *annot_obj)
 {
-    fz_moveto(ctx, path, 2.8f, 29.0f);
-    fz_lineto(ctx, path, 17.2f, 29.0f);
-    fz_lineto(ctx, path, 13.6f, 22.0f);
-    fz_lineto(ctx, path, 13.6f, 17.8f);
-    fz_lineto(ctx, path, 19.0f, 10.8f);
-    fz_lineto(ctx, path, 1.0f, 10.8f);
-    fz_lineto(ctx, path, 6.4f, 17.8f);
-    fz_lineto(ctx, path, 6.4f, 22.0f);
-    fz_lineto(ctx, path, 2.8f, 29.0f);
-    fz_closepath(ctx, path);
-}
+    PyObject *res = PyDict_New();
+    PyObject *dash_py   = PyList_New(0);
+    PyObject *effect_py = PyList_New(0);
+    int i;
+    char *effect2 = NULL, *style = NULL;
+    float width = -1.0f;
+    int effect1 = -1;
 
-void JM_draw_pushpin2(fz_context *ctx, fz_path *path)
-{
-    fz_moveto(ctx, path, 13.6f, 22.0f);
-    fz_lineto(ctx, path, 6.4f, 22.0f);
-    fz_moveto(ctx, path, 13.6f, 17.8f);
-    fz_lineto(ctx, path, 6.4f, 17.8f);
-    fz_closepath(ctx, path);
-}
-
-void JM_draw_pushpin3(fz_context *ctx, fz_path *path)
-{
-    fz_moveto(ctx, path, 9.1f, 10.8f);
-    fz_lineto(ctx, path, 10.0f, 1.0f);
-    fz_lineto(ctx, path, 10.9f, 10.8f);
-    fz_closepath(ctx, path);
-}
-
-void JM_update_file_attachment_annot(fz_context *ctx, pdf_document *doc, pdf_annot *annot)
-{
-    static float yellow[3] = {1.0f, 1.0f, 0.0f};
-    static float blue[3] = {0.0f, 0.0f, 1.0f};
-    static float black[3] = {0.0f, 0.0f, 0.0f};
-    static float outline_thickness = 0.9f;
-    fz_display_list *dlist = NULL;
-    fz_device *dev = NULL;
-    fz_colorspace *cs = NULL;
-    fz_path *path = NULL;
-    fz_stroke_state *stroke = NULL;
-    fz_matrix page_ctm;
-    pdf_page_transform(ctx, annot->page, NULL, &page_ctm);
-    fz_var(path);
-    fz_var(stroke);
-    fz_var(dlist);
-    fz_var(dev);
-    fz_var(cs);
-    fz_try(ctx)
+    pdf_obj *o = pdf_dict_get(ctx, annot_obj, PDF_NAME(Border));
+    if (pdf_is_array(ctx, o))
     {
-        fz_rect rect;
-
-        pdf_to_rect(ctx, pdf_dict_get(ctx, annot->obj, PDF_NAME_Rect), &rect);
-        dlist = fz_new_display_list(ctx, NULL);
-        dev = fz_new_list_device(ctx, dlist);
-        cs = fz_device_rgb(ctx); /* Borrowed reference */
-        stroke = fz_new_stroke_state(ctx);
-        stroke->linewidth = outline_thickness;
-        stroke->linejoin = FZ_LINEJOIN_ROUND;
-
-        path = fz_new_path(ctx);
-        JM_draw_pushpin1(ctx, path);
-        fz_fill_path(ctx, dev, path, 0, &page_ctm, cs, yellow, 1.0f, NULL);
-        fz_stroke_path(ctx, dev, path, stroke, &page_ctm, cs, black, 1.0f, NULL);
-        fz_drop_path(ctx, path);
-        path = NULL;
-
-        path = fz_new_path(ctx);
-        JM_draw_pushpin2(ctx, path);
-        fz_stroke_path(ctx, dev, path, stroke, &page_ctm, cs, black, 1.0f, NULL);
-        fz_drop_path(ctx, path);
-        path = NULL;
-
-        path = fz_new_path(ctx);
-        JM_draw_pushpin3(ctx, path);
-        fz_fill_path(ctx, dev, path, 0, &page_ctm, cs, blue, 1.0f, NULL);
-        fz_stroke_path(ctx, dev, path, stroke, &page_ctm, cs, black, 1.0f, NULL);
-        fz_close_device(ctx, dev);
-
-        fz_transform_rect(&rect, &page_ctm);
-        pdf_set_annot_appearance(ctx, doc, annot, &rect, dlist);
-        rect.x0 = rect.y0 = 0;
-        rect.x1 = 20;
-        rect.y1 = 30;
-        pdf_obj *ap = pdf_dict_getl(ctx, annot->obj, PDF_NAME_AP, PDF_NAME_N, NULL);
-        pdf_dict_put_rect(ctx, ap, PDF_NAME_BBox, &rect);
-        pdf_drop_obj(ctx, annot->ap);
-        annot->ap = NULL;
+        width = pdf_to_real(ctx, pdf_array_get(ctx, o, 2));
+        if (pdf_array_len(ctx, o) == 4)
+        {
+            pdf_obj *dash = pdf_array_get(ctx, o, 3);
+            for (i = 0; i < pdf_array_len(ctx, dash); i++)
+                PyList_Append(dash_py, Py_BuildValue("i",
+                              pdf_to_int(ctx, pdf_array_get(ctx, dash, i))));
+        }
     }
-    fz_always(ctx)
+
+    pdf_obj *bs_o = pdf_dict_get(ctx, annot_obj, PDF_NAME(BS));
+    if (bs_o)
     {
-        fz_drop_device(ctx, dev);
-        fz_drop_display_list(ctx, dlist);
-        fz_drop_stroke_state(ctx, stroke);
-        fz_drop_path(ctx, path);
+        o = pdf_dict_get(ctx, bs_o, PDF_NAME(W));
+        if (o) width = pdf_to_real(ctx, o);
+        o = pdf_dict_get(ctx, bs_o, PDF_NAME(S));
+        if (o) style = (char *) pdf_to_name(ctx, o);
+        o = pdf_dict_get(ctx, bs_o, PDF_NAME(D));
+        if (o)
+        {
+            for (i = 0; i < pdf_array_len(ctx, o); i++)
+                PyList_Append(dash_py, Py_BuildValue("i",
+                              pdf_to_int(ctx, pdf_array_get(ctx, o, i))));
+        }
     }
-    fz_catch(ctx)
+
+    pdf_obj *be_o = pdf_dict_gets(ctx, annot_obj, "BE");
+    if (be_o)
     {
-        fz_rethrow(ctx);
+        o = pdf_dict_get(ctx, be_o, PDF_NAME(S));
+        if (o) effect2 = (char *) pdf_to_name(ctx, o);
+        o = pdf_dict_get(ctx, be_o, PDF_NAME(I));
+        if (o) effect1 = pdf_to_int(ctx, o);
     }
+
+    PyList_Append(effect_py, Py_BuildValue("i", effect1));
+    PyList_Append(effect_py, Py_BuildValue("s", effect2));
+
+    PyDict_SetItemString(res, "width", Py_BuildValue("f", width));
+
+    PyDict_SetItemString(res, "dashes", dash_py);
+
+    PyDict_SetItemString(res, "style", Py_BuildValue("s", style));
+
+    if (effect1 > -1) PyDict_SetItemString(res, "effect", effect_py);
+    Py_CLEAR(effect_py);
+    Py_CLEAR(dash_py);
+    return res;
 }
 
+PyObject *JM_annot_set_border(fz_context *ctx, PyObject *border, pdf_document *doc, pdf_obj *annot_obj)
+{
+    if (!PyDict_Check(border))
+    {
+        JM_Warning("arg must be a dict");
+        return NONE;     // not a dict
+    }
+
+    double nwidth = -1;                       // new width
+    double owidth = -1;                       // old width
+    PyObject *ndashes = NULL;                 // new dashes
+    PyObject *odashes = NULL;                 // old dashes
+    PyObject *nstyle  = NULL;                 // new style
+    PyObject *ostyle  = NULL;                 // old style
+
+    nwidth = PyFloat_AsDouble(PyDict_GetItemString(border, "width"));
+    ndashes = PyDict_GetItemString(border, "dashes");
+    nstyle  = PyDict_GetItemString(border, "style");
+
+    // first get old border properties
+    PyObject *oborder = JM_annot_border(ctx, annot_obj);
+    owidth = PyFloat_AsDouble(PyDict_GetItemString(oborder, "width"));
+    odashes = PyDict_GetItemString(oborder, "dashes");
+    ostyle = PyDict_GetItemString(oborder, "style");
+
+    // then delete any relevant entries
+    pdf_dict_del(ctx, annot_obj, PDF_NAME(BS));
+    pdf_dict_del(ctx, annot_obj, PDF_NAME(BE));
+    pdf_dict_del(ctx, annot_obj, PDF_NAME(Border));
+
+    Py_ssize_t i, n;
+    int d;
+    // populate new border array
+    if (nwidth < 0) nwidth = owidth;     // no new width: take current
+    if (nwidth < 0) nwidth = 0.0f;       // default if no width given
+    if (!ndashes) ndashes = odashes;     // no new dashes: take old
+    if (!nstyle)  nstyle  = ostyle;      // no new style: take old
+
+    if (ndashes && PySequence_Check(ndashes) && PySequence_Size(ndashes) > 0)
+    {
+        n = PySequence_Size(ndashes);
+        pdf_obj *darr = pdf_new_array(ctx, doc, n);
+        for (i = 0; i < n; i++)
+        {
+            d = (int) PyInt_AsLong(PySequence_GetItem(ndashes, i));
+            pdf_array_push_int(ctx, darr, (int64_t) d);
+        }
+        pdf_dict_putl_drop(ctx, annot_obj, darr, PDF_NAME(BS), PDF_NAME(D), NULL);
+        nstyle = Py_BuildValue("s", "D");
+    }
+
+    pdf_dict_putl_drop(ctx, annot_obj, pdf_new_real(ctx, nwidth),
+                               PDF_NAME(BS), PDF_NAME(W), NULL);
+
+    pdf_obj *val = JM_get_border_style(ctx, nstyle);
+
+    pdf_dict_putl_drop(ctx, annot_obj, val,
+                               PDF_NAME(BS), PDF_NAME(S), NULL);
+
+    PyErr_Clear();
+    return NONE;
+}
+
+PyObject *JM_annot_colors(fz_context *ctx, pdf_obj *annot_obj)
+{
+    PyObject *res = PyDict_New();
+    PyObject *bc = PyList_New(0);        // stroke colors
+    PyObject *fc = PyList_New(0);        // fill colors
+
+    int i;
+    float col;
+    pdf_obj *o = pdf_dict_get(ctx, annot_obj, PDF_NAME(C));
+    if (pdf_is_array(ctx, o))
+    {
+        int n = pdf_array_len(ctx, o);
+        for (i = 0; i < n; i++)
+        {
+            col = pdf_to_real(ctx, pdf_array_get(ctx, o, i));
+            PyList_Append(bc, Py_BuildValue("f", col));
+        }
+    }
+    PyDict_SetItemString(res, "stroke", bc);
+
+    o = pdf_dict_gets(ctx, annot_obj, "IC");
+    if (pdf_is_array(ctx, o))
+    {
+        int n = pdf_array_len(ctx, o);
+        for (i = 0; i < n; i++)
+        {
+            col = pdf_to_real(ctx, pdf_array_get(ctx, o, i));
+            PyList_Append(fc, Py_BuildValue("f", col));
+        }
+    }
+    PyDict_SetItemString(res, "fill", fc);
+
+    Py_CLEAR(bc);
+    Py_CLEAR(fc);
+    return res;
+}
 %}

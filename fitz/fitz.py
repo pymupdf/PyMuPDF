@@ -99,12 +99,909 @@ except __builtin__.Exception:
 import weakref
 from binascii import hexlify
 import math
+import platform
+platform_bitness = platform.architecture()[0]
+del platform
 
 
-VersionFitz = "1.13.0"
-VersionBind = "1.13.20"
-VersionDate = "2018-09-09 09:54:14"
-version = (VersionBind, VersionFitz, "20180909095414")
+VersionFitz = "1.14.0"
+VersionBind = "1.14.0"
+VersionDate = "2018-11-09 17:02:08"
+version = (VersionBind, VersionFitz, "20181109170208")
+
+
+class Matrix():
+    """Matrix() - all zeros\nMatrix(a, b, c, d, e, f)\nMatrix(zoom-x, zoom-y) - zoom\nMatrix(shear-x, shear-y, 1) - shear\nMatrix(degree) - rotate\nMatrix(Matrix) - new copy\nMatrix(sequence) - from 'sequence'"""
+    def __init__(self, *args):
+        if not args:
+            self.a = self.b = self.c = self.d = self.e = self.f = 0.0
+            return None
+        if len(args) > 6:
+            raise ValueError("illegal sequ. length")
+        if len(args) == 6:                       # 6 numbers
+            self.a = float(args[0])
+            self.b = float(args[1])
+            self.c = float(args[2])
+            self.d = float(args[3])
+            self.e = float(args[4])
+            self.f = float(args[5])
+            return None
+        if len(args) == 1:                       # either an angle or a sequ
+            if hasattr(args[0], "__float__"):
+                theta = args[0] * math.pi / 180.0
+                c = math.cos(theta)
+                s = math.sin(theta)
+                self.a = self.d = c
+                self.b = s
+                self.c = -s
+                self.e = self.f = 0.0
+                return None
+            else:
+                self.a = float(args[0][0])
+                self.b = float(args[0][1])
+                self.c = float(args[0][2])
+                self.d = float(args[0][3])
+                self.e = float(args[0][4])
+                self.f = float(args[0][5])
+                return None
+        if len(args) == 2 or len(args) == 3 and args[2] == 0:
+            self.a, self.b, self.c, self.d, self.e, self.f = float(args[0]), \
+                0.0, 0.0, float(args[1]), 0.0, 0.0
+            return None
+        if len(args) == 3 and args[2] == 1:
+            self.a, self.b, self.c, self.d, self.e, self.f = 1.0, \
+                float(args[1]), float(args[0]), 1.0, 0.0, 0.0
+            return None
+        raise ValueError("illegal Matrix constructor")
+
+    def invert(self, src=None):
+        """Calculate the inverted matrix. Return 0 if successful and replace
+        current one. Else return 1 and do nothing.
+        """
+        if src is None:
+            src = self
+        dst = TOOLS.invert_matrix(src)
+        if min(dst) >= max(dst):
+            return 1
+        self.a = dst[0]
+        self.b = dst[1]
+        self.c = dst[2]
+        self.d = dst[3]
+        self.e = dst[4]
+        self.f = dst[5]
+        return 0
+
+    def preTranslate(self, tx, ty):
+        """Calculate pre translation and replace current matrix."""
+        self.e += tx * self.a + ty * self.c
+        self.f += tx * self.b + ty * self.d
+        return self
+
+    def preScale(self, sx, sy):
+        """Calculate pre scaling and replacing current matrix."""
+        self.a *= sx
+        self.b *= sx
+        self.c *= sy
+        self.d *= sy
+        return self
+
+    def preShear(self, h, v):
+        """Calculate pre shearing and replace current matrix."""
+        a, b = self.a, self.b
+        self.a += v * self.c
+        self.b += v * self.d
+        self.c += h * a
+        self.d += h * b
+        return self
+
+    def preRotate(self, theta):
+        """Calculate pre rotation and replace current matrix."""
+        while theta < 0: theta += 360
+        while theta >= 360: theta -= 360
+        epsilon = 1e-5
+        if abs(0 - theta) < epsilon:
+            pass
+
+        elif abs(90.0 - theta) < epsilon:
+            a = self.a
+            b = self.b
+            self.a = self.c
+            self.b = self.d
+            self.c = -a
+            self.d = -b
+
+        elif abs(180.0 - theta) < epsilon:
+            self.a = -self.a
+            self.b = -self.b
+            self.c = -self.c
+            self.d = -self.d
+
+        elif abs(270.0 - theta) < epsilon:
+            a = self.a
+            b = self.b
+            self.a = -self.c
+            self.b = -self.d
+            self.c = a
+            self.d = b
+
+        else:
+            s = math.sin(theta * math.pi / 180.0)
+            c = math.cos(theta * math.pi / 180.0)
+            a = self.a
+            b = self.b
+            self.a = c * a + s * self.c
+            self.b = c * b + s * self.d
+            self.c =-s * a + c * self.c
+            self.d =-s * b + c * self.d
+
+        return self
+
+    def concat(self, one, two):
+        """Multiply two matrices and replace current one."""
+        dst = Matrix()
+        dst.a = one[0] * two[0] + one[1] * two[2]
+        dst.b = one[0] * two[1] + one[1] * two[3]
+        dst.c = one[2] * two[0] + one[3] * two[2]
+        dst.d = one[2] * two[1] + one[3] * two[3]
+        dst.e = one[4] * two[0] + one[5] * two[2] + two[4]
+        dst.f = one[4] * two[1] + one[5] * two[3] + two[5]
+        self = dst
+        return self
+
+    def __getitem__(self, i):
+        return (self.a, self.b, self.c, self.d, self.e, self.f)[i]
+
+    def __setitem__(self, i, v):
+        if   i == 0: self.a = v
+        elif i == 1: self.b = v
+        elif i == 2: self.c = v
+        elif i == 3: self.d = v
+        elif i == 4: self.e = v
+        elif i == 5: self.f = v
+        else:
+            raise IndexError("index out of range")
+        return
+
+    def __len__(self):
+        return 6
+
+    def __repr__(self):
+        return "Matrix" + str(tuple(self))
+
+    def __invert__(self):
+        m1 = Matrix()
+        m1.invert(self)
+        return m1
+    __inv__ = __invert__
+
+    def __mul__(self, m):
+        if hasattr(m, "__float__"):
+            return Matrix(self.a * m, self.b * m, self.c * m,
+                          self.d * m, self.e * m, self.f * m)
+        a = self.a * m[0] + self.b * m[2]
+        b = self.a * m[1] + self.b * m[3]
+        c = self.c * m[0] + self.d * m[2]
+        d = self.c * m[1] + self.d * m[3]
+        e = self.e * m[0] + self.f * m[2] + m[4]
+        f = self.e * m[1] + self.f * m[3] + m[5]
+        return Matrix(a, b, c, d, e, f)
+
+    def __truediv__(self, m):
+        if hasattr(m, "__float__"):
+            return Matrix(self.a * 1./m, self.b * 1./m, self.c * 1./m,
+                          self.d * 1./m, self.e * 1./m, self.f * 1./m)
+        m1 = TOOLS.invert_matrix(m)
+        if min(m1) >= max(m1):
+            raise ZeroDivisionError("op2 is not invertible")
+        return self.concat(self, m1)
+    __div__ = __truediv__
+
+    def __add__(self, m):
+        if hasattr(m, "__float__"):
+            return Matrix(self.a + m, self.b + m, self.c + m,
+                          self.d + m, self.e + m, self.f + m)
+        return Matrix(self.a + m[0], self.b + m[1], self.c + m[2],
+                          self.d + m[3], self.e + m[4], self.f + m[5])
+
+    def __sub__(self, m):
+        if hasattr(m, "__float__"):
+            return Matrix(self.a - m, self.b - m, self.c - m,
+                          self.d - m, self.e - m, self.f - m)
+        return Matrix(self.a - m[0], self.b - m[1], self.c - m[2],
+                          self.d - m[3], self.e - m[4], self.f - m[5])
+
+    def __pos__(self):
+        return Matrix(self)
+
+    def __neg__(self):
+        return Matrix(-self.a, -self.b, -self.c, -self.d, -self.e, -self.f)
+
+    def __bool__(self):
+        return max(self) > 0 or min(self) < 0
+
+    def __nonzero__(self):
+        return max(self) > 0 or min(self) < 0
+
+    def __eq__(self, m):
+        if not hasattr(m, "__len__"):
+            return False
+        return len(m) == 6 and bool(self - m) is False
+
+    def __abs__(self):
+        return math.sqrt(self.a*self.a + self.b*self.b + self.c*self.c + \
+                         self.d*self.d + self.e*self.e + self.f*self.f)
+
+    @property
+    def isRectilinear(self):
+        epsilon = 1e-5
+        return (abs(self.b) < epsilon and abs(self.c) < epsilon) or \
+            (abs(self.a) < epsilon and abs(self.d) < epsilon);
+
+    def __hash__(self):
+        return hash(tuple(self))
+
+
+class IdentityMatrix(Matrix):
+    """Identity matrix [1, 0, 0, 1, 0, 0]"""
+    def __init__(self):
+        Matrix.__init__(self, 1.0, 1.0)
+    def __setattr__(self, name, value):
+        if name in "ad":
+            self.__dict__[name] = 1.0
+        elif name in "bcef":
+            self.__dict__[name] = 0.0
+        else:
+            self.__dict__[name] = value
+
+    def checkargs(*args):
+        raise NotImplementedError("Identity is readonly")
+    preRotate    = checkargs
+    preShear     = checkargs
+    preScale     = checkargs
+    preTranslate = checkargs
+    concat       = checkargs
+    invert       = checkargs
+    def __repr__(self):
+        return "IdentityMatrix(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)"
+
+Identity = IdentityMatrix()
+
+class Point():
+    """Point() - all zeros\nPoint(x, y)\nPoint(Point) - new copy\nPoint(sequence) - from 'sequence'"""
+    def __init__(self, *args):
+        if not args:
+            self.x = 0.0
+            self.y = 0.0
+            return None
+
+        if len(args) > 2:
+            raise ValueError("illegal sequ. length")
+        if len(args) == 2:
+            self.x = float(args[0])
+            self.y = float(args[1])
+            return None
+        if len(args) == 1:
+            l = args[0]
+            if hasattr(l, "__getitem__") is False:
+                raise ValueError("illegal Point constructor")
+            if len(l) != 2:
+                raise ValueError("illegal sequ. length")
+            self.x = float(l[0])
+            self.y = float(l[1])
+            return None
+        raise ValueError("illegal Point constructor")
+
+    def transform(self, m):
+        """Replace point by its transformation with matrix m."""
+        x = self.x
+        self.x = x * m[0] + self.y * m[2] + m[4]
+        self.y = x * m[1] + self.y * m[3] + m[5]
+        return self
+
+    @property
+    def unit(self):
+        """Return unit vector of a point."""
+        s = self.x * self.x + self.y * self.y
+        if s < 1e-5:
+            return Point(0,0)
+        s = math.sqrt(s)
+        return Point(self.x / s, self.y / s)
+
+    @property
+    def abs_unit(self):
+        """Return unit vector of a point with positive coordinates."""
+        s = self.x * self.x + self.y * self.y
+        if s < 1e-5:
+            return Point(0,0)
+        s = math.sqrt(s)
+        return Point(abs(self.x) / s, abs(self.y) / s)
+
+    def distance_to(self, *args):
+        """Return the distance to a rectangle or another point."""
+        assert len(args) > 0, "at least one parameter must be given"
+        x = args[0]
+        if len(args) > 1:
+            unit = args[1]
+        else:
+            unit = "px"
+        u = {"px": (1.,1.), "in": (1.,72.), "cm": (2.54, 72.), "mm": (25.4, 72.)}
+        f = u[unit][0] / u[unit][1]
+        if type(x) is Point:
+            return abs(self - x) * f
+
+# from here on, x is a rectangle
+# as a safeguard, make a finite copy of it
+        r = Rect(x.top_left, x.top_left)
+        r = r | x.bottom_right
+        if self in r:
+            return 0.0
+        if self.x > r.x1:
+            if self.y >= r.y1:
+                return self.distance_to(r.bottom_right, unit)
+            elif self.y <= r.y0:
+                return self.distance_to(r.top_right, unit)
+            else:
+                return (self.x - r.x1) * f
+        elif r.x0 <= self.x <= r.x1:
+            if self.y >= r.y1:
+                return (self.y - r.y1) * f
+            else:
+                return (r.y0 - self.y) * f
+        else:
+            if self.y >= r.y1:
+                return self.distance_to(r.bottom_left, unit)
+            elif self.y <= r.y0:
+                return self.distance_to(r.top_left, unit)
+            else:
+                return (r.x0 - self.x) * f
+
+    def __getitem__(self, i):
+        return (self.x, self.y)[i]
+
+    def __len__(self):
+        return 2
+
+    def __setitem__(self, i, v):
+        if   i == 0: self.x = float(v)
+        elif i == 1: self.y = float(v)
+        else:
+            raise IndexError("index out of range")
+        return None
+
+    def __repr__(self):
+        return "Point" + str(tuple(self))
+
+    def __pos__(self):
+        return Point(self)
+
+    def __neg__(self):
+        return Point(-self.x, -self.y)
+
+    def __bool__(self):
+        return max(self) > 0 or min(self) < 0
+
+    def __nonzero__(self):
+        return max(self) > 0 or min(self) < 0
+
+    def __eq__(self, p):
+        if not hasattr(p, "__len__"):
+            return False
+        return len(p) == 2 and bool(self - p) is False
+
+    def __abs__(self):
+        return math.sqrt(self.x * self.x + self.y * self.y)
+
+    def __add__(self, p):
+        if hasattr(p, "__float__"):
+            return Point(self.x + p, self.y + p)
+        return Point(self.x + p[0], self.y + p[1])
+
+    def __sub__(self, p):
+        if hasattr(p, "__float__"):
+            return Point(self.x - p, self.y - p)
+        return Point(self.x - p[0], self.y - p[1])
+
+    def __mul__(self, m):
+        if hasattr(m, "__float__"):
+            return Point(self.x * m, self.y * m)
+        p = Point(self)
+        return p.transform(m)
+
+    def __truediv__(self, m):
+        if hasattr(m, "__float__"):
+            return Point(self.x * 1./m, self.y * 1./m)
+        m1 = TOOLS.invert_matrix(m)
+        if min(m1) >= max(m1):
+            raise ZeroDivisionError("op2 is not invertible")
+        p = Point(self)
+        return p.transform(m1)
+
+    __div__ = __truediv__
+
+    def __hash__(self):
+        return hash(tuple(self))
+
+class Rect():
+    """Rect() - all zeros\nRect(x0, y0, x1, y1)\nRect(top-left, x1, y1)\nRect(x0, y0, bottom-right)\nRect(top-left, bottom-right)\nRect(Rect or IRect) - new copy\nRect(sequence) - from 'sequence'"""
+    def __init__(self, *args):
+        if not args:
+            self.x0 = self.y0 = self.x1 = self.y1 = 0.0
+            return None
+
+        if len(args) > 4:
+            raise ValueError("invalid sequ. length")
+        if len(args) == 4:
+            self.x0 = float(args[0])
+            self.y0 = float(args[1])
+            self.x1 = float(args[2])
+            self.y1 = float(args[3])
+            return None
+        if len(args) == 1:
+            l = args[0]
+            if hasattr(l, "__getitem__") is False:
+                raise ValueError("invalid Rect constructor")
+            if len(l) != 4:
+                raise ValueError("invalid sequ. length")
+            self.x0 = float(l[0])
+            self.y0 = float(l[1])
+            self.x1 = float(l[2])
+            self.y1 = float(l[3])
+            return None
+        if len(args) == 2:                  # 2 Points provided
+            self.x0 = float(args[0][0])
+            self.y0 = float(args[0][1])
+            self.x1 = float(args[1][0])
+            self.y1 = float(args[1][1])
+            return None
+        if len(args) == 3:                  # 2 floats and 1 Point provided
+            a0 = args[0]
+            a1 = args[1]
+            a2 = args[2]
+            if hasattr(a0, "__float__"):    # (float, float, Point) provided
+                self.x0 = float(a0)
+                self.y0 = float(a1)
+                self.x1 = float(a2[0])
+                self.y1 = float(a2[1])
+                return None
+            self.x0 = float(a0[0])          # (Point, float, float) provided
+            self.y0 = float(a0[1])
+            self.x1 = float(a1)
+            self.y1 = float(a2)
+            return None
+        raise ValueError("invalid Rect constructor")
+
+    def normalize(self):
+        """Replace rectangle with its finite version."""
+        if self.x1 < self.x0:
+            self.x0, self.x1 = self.x1, self.x0
+        if self.y1 < self.y0:
+            self.y0, self.y1 = self.y1, self.y0
+        return self
+
+    @property
+    def isEmpty(self):
+        """Check if rectangle area is empty."""
+        return self.x0 == self.x1 or self.y0 == self.y1
+
+    @property
+    def isInfinite(self):
+        """Check if rectangle is infinite."""
+        return self.x0 > self.x1 or self.y0 > self.y1
+
+    @property
+    def top_left(self):
+        return Point(self.x0, self.y0)
+
+    @property
+    def top_right(self):
+        return Point(self.x1, self.y0)
+
+    @property
+    def bottom_left(self):
+        return Point(self.x0, self.y1)
+
+    @property
+    def bottom_right(self):
+        return Point(self.x1, self.y1)
+
+    tl = top_left
+    tr = top_right
+    bl = bottom_left
+    br = bottom_right
+
+    @property
+    def quad(self):
+        return Quad(self.tl, self.tr, self.bl, self.br)
+
+    def round(self):
+        r = Rect(self).normalize()
+        ir = IRect(math.floor(r.x0), math.floor(r.y0), math.ceil(r.x1), math.ceil(r.y1))
+        return ir
+
+    irect = property(round)
+
+    width  = property(lambda self: abs(self.x1 - self.x0))
+    height = property(lambda self: abs(self.y1 - self.y0))
+
+    def includePoint(self, p):
+        """Extend rectangle to include point p."""
+        x0 = min(self.x0, self.x1, p[0])
+        x1 = max(self.x0, self.x1, p[0])
+        y0 = min(self.y0, self.y1, p[1])
+        y1 = max(self.y0, self.y1, p[1])
+        self.x0 = x0
+        self.y0 = y0
+        self.x1 = x1
+        self.y1 = y1
+        return self
+
+    def includeRect(self, r):
+        """Extend rectangle to include rectangle r."""
+        x0 = min(self.x0, self.x1, r[0], r[2])
+        x1 = max(self.x0, self.x1, r[0], r[2])
+        y0 = min(self.y0, self.y1, r[1], r[3])
+        y1 = max(self.y0, self.y1, r[1], r[3])
+        self.x0 = x0
+        self.y0 = y0
+        self.x1 = x1
+        self.y1 = y1
+        return self
+
+    def intersect(self, r):
+        """Restrict rectangle to common area with rectangle r."""
+        if self.isEmpty: return Rect()
+        r1 = Rect(r)
+        if r1.isEmpty: return Rect()
+        if r1.isInfinite: return self
+        if self.isInfinite: return r1
+        x0 = max(self.x0, r1.x0)
+        x1 = min(self.x1, r1.x1)
+        y0 = max(self.y0, r1.y0)
+        y1 = min(self.y1, r1.y1)
+        if x1 < x0 or y1 < y0:
+            self = Rect()
+        else:
+            self = Rect(x0, y0, x1, y1)
+        return self
+
+
+    def __getitem__(self, i):
+        return (self.x0, self.y0, self.x1, self.y1)[i]
+
+    def __len__(self):
+        return 4
+
+    def __setitem__(self, i, v):
+        if   i == 0: self.x0 = float(v)
+        elif i == 1: self.y0 = float(v)
+        elif i == 2: self.x1 = float(v)
+        elif i == 3: self.y1 = float(v)
+        else:
+            raise IndexError("index out of range")
+        return None
+
+    def __repr__(self):
+        return "Rect" + str(tuple(self))
+
+    def __pos__(self):
+        return Rect(self)
+
+    def __neg__(self):
+        return Rect(-self.x0, -self.y0, -self.x1, -self.y1)
+
+    def __bool__(self):
+        return max(self) > 0 or min(self) < 0
+
+    def __nonzero__(self):
+        return max(self) > 0 or min(self) < 0
+
+    def __eq__(self, p):
+        if not hasattr(p, "__len__"):
+            return False
+        return len(p) == 4 and bool(self - p) is False
+
+    def __abs__(self):
+        if self.isEmpty or self.isInfinite:
+            return 0.0
+        return (self.x1 - self.x0) * (self.y1 - self.y0)
+
+    def __add__(self, p):
+        if hasattr(p, "__float__"):
+            r = Rect(self.x0 + p, self.y0 + p, self.x1 + p, self.y1 + p)
+        else:
+            r = Rect(self.x0 + p[0], self.y0 + p[1], self.x1 + p[2], self.y1 + p[3])
+        return r
+
+    def __sub__(self, p):
+        if hasattr(p, "__float__"):
+            return Rect(self.x0 - p, self.y0 - p, self.x1 - p, self.y1 - p)
+        return Rect(self.x0 - p[0], self.y0 - p[1], self.x1 - p[2], self.y1 - p[3])
+
+    def transform(self, m):
+        """Replace rectangle with its transformation by matrix m."""
+        self = Rect(TOOLS.transform_rect(self, m))
+        return self
+
+    def __mul__(self, m):
+        if hasattr(m, "__float__"):
+            return Rect(self.x0 * m, self.y0 * m, self.x1 * m, self.y1 * m)
+        r = Rect(self)
+        r = r.transform(m)
+        return r
+
+    def __truediv__(self, m):
+        if hasattr(m, "__float__"):
+            return Rect(self.x0 * 1./m, self.y0 * 1./m, self.x1 * 1./m, self.y1 * 1./m)
+        im = TOOLS.invert_matrix(m)
+        if min(im) >= max(im):
+            raise ZeroDivisionError("op2 is not invertible")
+        r = Rect(self)
+        r = r.transform(im)
+        return r
+
+    __div__ = __truediv__
+
+    def __contains__(self, x):
+        if hasattr(x, "__float__"):
+            return x in tuple(self)
+        l = len(x)
+        r = Rect(self).normalize()
+        if l == 4:
+            if r.isEmpty: return False
+            xr = Rect(x).normalize()
+            if xr.isEmpty: return True
+            if r.x0 <= xr.x0 and r.y0 <= xr.y0 and \
+               r.x1 >= xr.x1 and r.y1 >= xr.y1:
+               return True
+            return False
+        if l == 2:
+            if r.x0 <= x[0] <= r.x1 and \
+               r.y0 <= x[1] <= r.y1:
+               return True
+            return False
+        return False
+
+    def __or__(self, x):
+        if not hasattr(x, "__len__"):
+            raise ValueError("op2 is an unsupported type")
+
+        r = Rect(self)
+        if len(x) == 2:
+            return r.includePoint(x)
+        if len(x) == 4:
+            return r.includeRect(x)
+        raise ValueError("op2 is an unsupported type")
+
+    def __and__(self, x):
+        if not hasattr(x, "__len__"):
+            raise ValueError("op2 is an unsupported type")
+
+        r1 = Rect(x)
+        r = Rect(self)
+        return r.intersect(r1)
+
+    def intersects(self, x):
+        """Check if intersection with rectangle x is not empty."""
+        r1 = Rect(x)
+        if self.isEmpty or self.isInfinite or r1.isEmpty:
+            return False
+        r = Rect(self)
+        if r.intersect(r1).isEmpty:
+            return False
+        return True
+
+    def __hash__(self):
+        return hash(tuple(self))
+
+class IRect(Rect):
+    """IRect() - all zeros\nIRect(x0, y0, x1, y1)\nIRect(Rect or IRect) - new copy\nIRect(sequence) - from 'sequence'"""
+    def __init__(self, *args):
+        Rect.__init__(self, *args)
+        self.x0 = math.floor(self.x0)
+        self.y0 = math.floor(self.y0)
+        self.x1 = math.ceil(self.x1)
+        self.y1 = math.ceil(self.y1)
+        return None
+
+    @property
+    def round(self):
+        pass
+
+    irect = round
+
+    @property
+    def rect(self):
+        return Rect(self)
+
+    def __repr__(self):
+        return "IRect" + str(tuple(self))
+
+    def includePoint(self, p):
+        """Extend rectangle to include point p."""
+        return Rect.includePoint(self, p).round()
+
+    def includeRect(self, r):
+        """Extend rectangle to include rectangle r."""
+        return Rect.includeRect(self, r).round()
+
+    def intersect(self, r):
+        """Restrict rectangle to intersection with rectangle r."""
+        return Rect.intersect(self, r).round()
+
+    def __setitem__(self, i, v):
+        if   i == 0: self.x0 = int(v)
+        elif i == 1: self.y0 = int(v)
+        elif i == 2: self.x1 = int(v)
+        elif i == 3: self.y1 = int(v)
+        else:
+            raise IndexError("index out of range")
+        return None
+
+    def __pos__(self):
+        return IRect(self)
+
+    def __neg__(self):
+        return IRect(-self.x0, -self.y0, -self.x1, -self.y1)
+
+    def __add__(self, p):
+        return Rect.__add__(self, p).round()
+
+    def __sub__(self, p):
+        return Rect.__sub__(self, p).round()
+
+    def transform(self, m):
+        return Rect.transform(self, m).round()
+
+    def __mul__(self, m):
+        return Rect.__mul__(self, m).round()
+
+    def __truediv__(self, m):
+        return Rect.__truediv__(self, m).round()
+
+    def __or__(self, x):
+        return Rect.__or__(self, x).round()
+
+    def __and__(self, x):
+        return Rect.__and__(self, x).round()
+
+class Quad():
+    """Quad() - all zero points\nQuad(ul, ur, ll, lr)\nQuad(quad) - new copy\nQuad(sequence) - from 'sequence'"""
+    def __init__(self, *args):
+        if not args:
+            self.ul = self.ur = self.ll = self.lr = Point()
+            return None
+
+        if len(args) > 4:
+            raise ValueError("invalid sequ. length")
+        if len(args) == 4:
+            self.ul = Point(args[0])
+            self.ur = Point(args[1])
+            self.ll = Point(args[2])
+            self.lr = Point(args[3])
+            return None
+        if len(args) == 1:
+            l = args[0]
+            if hasattr(l, "__getitem__") is False:
+                raise ValueError("invalid Quad constructor")
+            if len(l) != 4:
+                raise ValueError("invalid sequ. length")
+            self.ul = Point(l[0])
+            self.ur = Point(l[1])
+            self.ll = Point(l[2])
+            self.lr = Point(l[3])
+            return None
+        raise ValueError("invalid Quad constructor")
+
+    @property
+    def isRectangular(self):
+        upper = (self.ur - self.ul).unit
+        if not bool(upper):
+            return False
+        right = (self.lr - self.ur).unit
+        if not bool(right):
+            return False
+        left  = (self.ll - self.ul).unit
+        if not bool(left):
+            return False
+        lower = (self.lr - self.ll).unit
+        if not bool(lower):
+            return False
+        eps = 1e-5
+
+        return abs(sum(map(lambda x,y: x*y, upper, right))) <= eps and \
+               abs(sum(map(lambda x,y: x*y, upper, left))) <= eps and \
+               abs(sum(map(lambda x,y: x*y, left, lower))) <= eps
+
+    @property
+    def isEmpty(self):
+        if self.isRectangular:
+            return False
+        eps = 1e-5
+        ul = Point()
+        ur = (self.ur - self.ul).abs_unit
+        lr = (self.lr - self.ul).abs_unit
+        ll = (self.ll - self.ul).abs_unit
+        if max(ur.y, lr.y, ll.y) - min(ur.y, lr.y, ll.y) < eps:
+            return True
+        return False
+
+    width  = property(lambda self: max(abs(self.ul - self.ur), abs(self.ll - self.lr)))
+    height = property(lambda self: max(abs(self.ul - self.ll), abs(self.ur - self.lr)))
+
+    @property
+    def rect(self):
+        return Rect(self.ul, self.ur) | self.ll | self.lr
+
+    def __getitem__(self, i):
+        return (self.ul, self.ur, self.ll, self.lr)[i]
+
+    def __len__(self):
+        return 4
+
+    def __setitem__(self, i, v):
+        if   i == 0: self.ul = Point(v)
+        elif i == 1: self.ur = Point(v)
+        elif i == 2: self.ll = Point(v)
+        elif i == 3: self.lr = Point(v)
+        else:
+            raise IndexError("index out of range")
+        return None
+
+    def __repr__(self):
+        return "Quad" + str(tuple(self))
+
+    def __pos__(self):
+        return Quad(self)
+
+    def __neg__(self):
+        return Quad(-self.ul, -self.ur, -self.ll, -self.lr)
+
+    def __bool__(self):
+        return not self.isEmpty
+
+    def __nonzero__(self):
+        return not self.isEmpty
+
+    def __eq__(self, p):
+        if not hasattr(p, "__len__"):
+            return False
+        return len(p) == 4 and self.ul == p[0] and self.ur == p[1] and \
+               self.ll == p[3] and self.lr == p[3]
+
+    def __abs__(self):
+        if self.isEmpty:
+            return 0.0
+        return abs(self.ul - self.ur) * abs(self.ul - self.ll)
+
+    def transform(self, m):
+        """Replace quad by its transformation with matrix m."""
+        self.ul *= m
+        self.ur *= m
+        self.ll *= m
+        self.lr *= m
+        return self
+
+    def __mul__(self, m):
+        r = Quad(self)
+        r = r.transform(m)
+        return r
+
+    def __truediv__(self, m):
+        r = Quad(self)
+        if hasattr(m, "__float__"):
+            im = 1. / m
+        else:
+            im = TOOLS.invert_matrix(m)
+            if min(im) >= max(im):
+                raise ZeroDivisionError("op2 is not invertible")
+        r = r.transform(im)
+        return r
+
+    __div__ = __truediv__
+
+    def __hash__(self):
+        return hash(tuple(self))
+
 
 
 #------------------------------------------------------------------------------
@@ -298,6 +1195,24 @@ TEXT_PRESERVE_WHITESPACE = 2
 TEXT_PRESERVE_IMAGES     = 4
 
 #------------------------------------------------------------------------------
+# Stamp annotation icon numbers
+#------------------------------------------------------------------------------
+STAMP_Approved            = 0
+STAMP_AsIs                = 1
+STAMP_Confidential        = 2
+STAMP_Departmental        = 3
+STAMP_Experimental        = 4
+STAMP_Expired             = 5
+STAMP_Final               = 6
+STAMP_ForComment          = 7
+STAMP_ForPublicRelease    = 8
+STAMP_NotApproved         = 9
+STAMP_NotForPublicRelease = 10
+STAMP_Sold                = 11
+STAMP_TopSecret           = 12
+STAMP_Draft               = 13
+
+#------------------------------------------------------------------------------
 # Base 14 font names
 #------------------------------------------------------------------------------
 
@@ -311,7 +1226,7 @@ Base14_fontnames = ("Courier", "Courier-Oblique", "Courier-Bold",
 # Emulate old linkDest class
 #------------------------------------------------------------------------------
 class linkDest():
-    '''link or outline destination details'''
+    """link or outline destination details"""
     def __init__(self, obj, rlink):
         isExt = obj.isExternal
         isInt = not isExt
@@ -526,18 +1441,18 @@ def CheckParent(o):
 
 def CheckColor(c):
     if c is not None:
-        if type(c) not in (list, tuple) or len(c) != 3 or \
+        if type(c) not in (list, tuple) or len(c) not in (1, 3, 4) or \
             min(c) < 0 or max(c) > 1:
-            raise ValueError("need 3 color components in range 0 to 1")
+            raise ValueError("need 1, 3 or 4 color components in range 0 to 1")
 
 def CheckMorph(o):
     if not bool(o): return False
     if not (type(o) in (list, tuple) and len(o) == 2):
         raise ValueError("morph must be a sequence of length 2")
     if not (type(o[0]) == Point and issubclass(type(o[1]), Matrix)):
-        raise ValueError("invalid morph parameter")
+        raise ValueError("invalid morph parm 0")
     if not o[1].e == o[1].f == 0:
-        raise ValueError("invalid morph parameter")
+        raise ValueError("invalid morph parm 1")
     return True
 
 def CheckFont(page, fontname):
@@ -640,388 +1555,6 @@ def ConversionTrailer(i):
 
     return r
 
-#------------------------------------------------------------------------------
-# 
-#------------------------------------------------------------------------------
-def _hor_matrix(C, P):
-    """Given two points C, P calculate matrix that rotates the line C -> P parallel to the x-axis.
-    """
-    S = P - C                               # vector C -> P
-    try:
-        alfa = math.asin(abs(S.y) / abs(S)) # absolute angle from horizontal
-    except ZeroDivisionError:
-        print("points are too close:")
-        return Matrix()
-    if S.x < 0:                             # make arcsin result unique
-        if S.y <= 0:                        # bottom-left
-            alfa = -(math.pi - alfa)
-        else:                               # top-left
-            alfa = math.pi - alfa
-    else:
-        if S.y >= 0:                        # top-right
-            pass
-        else:                               # bottom-right
-            alfa = - alfa
-    ca = math.cos(alfa)
-    sa = math.sin(alfa)
-    m = Matrix(ca, -sa, sa, ca, -C.x, -C.y)
-    return m
-
-def _make_rect_AP(annot):
-    """ Create /AP stream for rectangle annotation.
-    """
-    w = annot.border["width"]          # get line width
-    sc = annot.colors["stroke"]        # get stroke color
-    fc = annot.colors["fill"]          # get fill color
-    ca = annot.opacity                 # get opacity value
-    Alp0 = "/Alp0 gs\n" if ca >= 0 else ""
-    scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
-    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else ""
-    dt = annot.border.get("dashes")    # get annot dashes
-    dtab = []
-    if dt:
-        dtab = ["[", "]0 d"]
-        for n in dt:
-            dtab[0] += "%i " % n
-    dtab = "".join(dtab)               # make dashes command
-    r = annot.rect                     # annot rectangle
-    r1 = r2 = w/2.                     # rect starts bottom-left here
-    r3 = r.width - w                   # rect width reduced by line width
-    r4 = r.height - w                  # rect height reduced by line with
-    ap = "q\n%s%g %g %g %g re %g w 1 J 1 j\n" % (Alp0, r1, r2, r3, r4, w)
-    ap += scol + fcol + dtab           # appearance stream so far
-    if fcol:                           # have fill color?
-        ap += "\nb\nQ\n"
-    else:
-        ap += "\ns\nQ\n"
-    return ap
-
-def _le_annot_parms(annot, p1, p2):
-    """Get common parameters for making line end symbols.
-    """
-    w = annot.border["width"]          # line width
-    sc = annot.colors["stroke"]        # stroke color
-    scol = "%g %g %g RG\n" % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG\n"
-    fc = annot.colors["fill"]          # fill color
-    fcol = "%g %g %g rg\n" % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg\n"
-    delta = Point(annot.rect.x0, annot.rect.y0)
-    nr = annot.rect - Rect(delta, delta)
-    h = nr.height
-    np1 = p1 - delta                   # point coord relative to annot rect
-    np2 = p2 - delta                   # point coord relative to annot rect
-    m = _hor_matrix(np1, np2)          # matrix makes the line horizontal
-    im = ~m                            # inverted matrix
-    L = np1 * m                        # converted start (left) point
-    R = np2 * m                        # converted end (right) point
-    return m, im, L, R, w, h, scol, fcol
-
-def _make_circle_AP(annot):
-    """Create /AP stream for circle annotation
-    """
-    sc = annot.colors["stroke"]        # stroke color
-    scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
-    fc = annot.colors["fill"]          # fill color
-    ca = annot.opacity                 # get opacity value
-    Alp0 = "/Alp0 gs\n" if ca >= 0 else ""
-    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else ""
-    dt = annot.border.get("dashes")    # get annot dashes
-    dtab = []
-    if dt:
-        dtab = ["[", "]0 d\n"]
-        for n in dt:
-            dtab[0] += "%i " % n
-    dtab = "".join(dtab)               # the dashes command
-    lw = annot.border["width"]         # line width
-    lw2 = lw / 2.
-    h = annot.rect.height
-    r = Rect(lw2, lw2, annot.rect.width - lw2, h - lw2)
-
-    ap = "q\n" + Alp0 + _oval_string(h, r.tl, r.tr, r.br, r.bl)
-    ap += "%g w 1 J 1 j\n" % lw
-    ap += scol + fcol + dtab           # ap stream so far
-    if fcol:                           # have fill color?
-        ap += "\nb\nQ\n"
-    else:
-        ap += "\ns\nQ\n"
-    return ap
-
-def _oval_string(h, p1, p2, p3, p4):
-    """Return /AP string defining an oval within a 4-polygon provided as points
-    """
-    def bezier(p, q, r):
-        f = "%g %g %g %g %g %g c\n"
-        return f % (p.x, h - p.y, q.x, h - q.y, r.x, h - r.y)
-
-    kappa = 0.55228474983              # magic number
-    ml = p1 + (p4 - p1) * 0.5          # middle points ...
-    mo = p1 + (p2 - p1) * 0.5          # for each ...
-    mr = p2 + (p3 - p2) * 0.5          # polygon ...
-    mu = p4 + (p3 - p4) * 0.5          # edge
-    ol1 = ml + (p1 - ml) * kappa       # the 8 bezier
-    ol2 = mo + (p1 - mo) * kappa       # helper points
-    or1 = mo + (p2 - mo) * kappa
-    or2 = mr + (p2 - mr) * kappa
-    ur1 = mr + (p3 - mr) * kappa
-    ur2 = mu + (p3 - mu) * kappa
-    ul1 = mu + (p4 - mu) * kappa
-    ul2 = ml + (p4 - ml) * kappa
-# now draw, starting from middle point of left edge
-    ap = "%g %g m\n" % (ml.x, h - ml.y)
-    ap += bezier(ol1, ol2, mo)
-    ap += bezier(or1, or2, mr)
-    ap += bezier(ur1, ur2, mu)
-    ap += bezier(ul1, ul2, ml)
-    return ap
-
-def _le_diamond(annot, p1, p2, lr):
-    """Make stream commands for diamond line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    shift = 1.75             # 2*shift*width = length of square edge
-    d = w * shift
-    M = R - (w, 0) if lr else L + (w, 0)
-    r = Rect(M, M) + (-d, -d, d, d)         # the square
-# the square makes line longer by (2*shift - 1)*width
-    p = (r.tl + (r.bl - r.tl) * 0.5) * im
-    ap = "q\n%g %g m\n" % (p.x, h - p.y)
-    p = (r.tl + (r.tr - r.tl) * 0.5) * im
-    ap += "%g %g l\n"   % (p.x, h - p.y)
-    p = (r.tr + (r.br - r.tr) * 0.5) * im
-    ap += "%g %g l\n"   % (p.x, h - p.y)
-    p = (r.br + (r.bl - r.br) * 0.5) * im
-    ap += "%g %g l\n"   % (p.x, h - p.y)
-    ap += "%g w\n" % w
-    ap += scol + fcol + "b\nQ\n"
-    return ap
-
-def _le_square(annot, p1, p2, lr):
-    """Make stream commands for square line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    shift = 1.25             # 2*shift*width = length of square edge
-    d = w * shift
-    M = R - (w, 0) if lr else L + (w, 0)
-    r = Rect(M, M) + (-d, -d, d, d)         # the square
-# the square makes line longer by (2*shift - 1)*width
-    p = r.tl * im
-    ap = "q\n%g %g m\n" % (p.x, h - p.y)
-    p = r.tr * im
-    ap += "%g %g l\n"   % (p.x, h - p.y)
-    p = r.br * im
-    ap += "%g %g l\n"   % (p.x, h - p.y)
-    p = r.bl * im
-    ap += "%g %g l\n"   % (p.x, h - p.y)
-    ap += "%g w\n" % w
-    ap += scol + fcol + "b\nQ\n"
-    return ap
-
-def _le_circle(annot, p1, p2, lr):
-    """Make stream commands for circle line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    shift = 1.50             # 2*shift*width = length of square edge
-    d = w * shift
-    M = R - (w, 0) if lr else L + (w, 0)
-    r = Rect(M, M) + (-d, -d, d, d)         # the square
-    ap = "q\n" + _oval_string(h, r.tl * im, r.tr * im, r.br * im, r.bl * im)
-    ap += "%g w\n" % w
-    ap += scol + fcol + "b\nQ\n"
-    return ap
-
-def _le_butt(annot, p1, p2, lr):
-    """Make stream commands for butt line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    M = R if lr else L
-    top = (M + (0, -2 * w)) * im
-    bot = (M + (0, 2 * w)) * im
-    ap = "\nq\n%g %g m\n" % (top.x, h - top.y)
-    ap += "%g %g l\n" % (bot.x, h - bot.y)
-    ap += "%g w\n" % w
-    ap += scol + "s\nQ\n"
-    return ap
-
-def _le_slash(annot, p1, p2, lr):
-    """Make stream commands for slash line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    rw = 1.1547 * w * 0.5         # makes rect diagonal a 30 deg inclination
-    M = R if lr else L
-    r = Rect(M.x - rw, M.y - 2 * w, M.x + rw, M.y + 2 * w)
-    top = r.tl * im
-    bot = r.br * im
-    ap = "\nq\n%g %g m\n" % (top.x, h - top.y)
-    ap += "%g %g l\n" % (bot.x, h - bot.y)
-    ap += "%g w\n" % w
-    ap += scol + "s\nQ\n"
-    return ap
-
-def _le_openarrow(annot, p1, p2, lr):
-    """Make stream commands for open arrow line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    p2 = R + (1.5 * w, 0) if lr else L - (1.5 * w, 0)
-    p1 = p2 + (-3 * w, -1.5 * w) if lr else p2 + (3 * w, -1.5 * w)
-    p3 = p2 + (-3 * w, 1.5 * w) if lr else p2 + (3 * w, 1.5 * w)
-    p1 *= im
-    p2 *= im
-    p3 *= im
-    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
-    ap += "%g %g l\n" % (p2.x, h - p2.y)
-    ap += "%g %g l\n" % (p3.x, h - p3.y)
-    ap += "%g w\n" % w
-    ap += scol + "S\nQ\n"
-    return ap
-
-def _le_closedarrow(annot, p1, p2, lr):
-    """Make stream commands for closed arrow line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    p2 = R + (1.5 * w, 0) if lr else L - (1.5 * w, 0)
-    p1 = p2 + (-3 * w, -1.5 * w) if lr else p2 + (3 * w, -1.5 * w)
-    p3 = p2 + (-3 * w, 1.5 * w) if lr else p2 + (3 * w, 1.5 * w)
-    p1 *= im
-    p2 *= im
-    p3 *= im
-    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
-    ap += "%g %g l\n" % (p2.x, h - p2.y)
-    ap += "%g %g l\n" % (p3.x, h - p3.y)
-    ap += "%g w\n" % w
-    ap += scol + fcol + "b\nQ\n"
-    return ap
-
-def _le_ropenarrow(annot, p1, p2, lr):
-    """Make stream commands for right open arrow line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    p2 = R - (0.5 * w, 0) if lr else L + (0.5 * w, 0)
-    p1 = p2 + (3 * w, -1.5 * w) if lr else p2 + (-3 * w, -1.5 * w)
-    p3 = p2 + (3 * w, 1.5 * w) if lr else p2 + (-3 * w, 1.5 * w)
-    p1 *= im
-    p2 *= im
-    p3 *= im
-    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
-    ap += "%g %g l\n" % (p2.x, h - p2.y)
-    ap += "%g %g l\n" % (p3.x, h - p3.y)
-    ap += "%g w\n" % w
-    ap += scol + fcol + "S\nQ\n"
-    return ap
-
-def _le_rclosedarrow(annot, p1, p2, lr):
-    """Make stream commands for right closed arrow line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    p2 = R - (3.0 * w, 0) if lr else L + (3.0 * w, 0)
-    p1 = p2 + (3 * w, -1.5 * w) if lr else p2 + (-3 * w, -1.5 * w)
-    p3 = p2 + (3 * w, 1.5 * w) if lr else p2 + (-3 * w, 1.5 * w)
-    p1 *= im
-    p2 *= im
-    p3 *= im
-    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
-    ap += "%g %g l\n" % (p2.x, h - p2.y)
-    ap += "%g %g l\n" % (p3.x, h - p3.y)
-    ap += "%g w\n" % w
-    ap += scol + fcol + "b\nQ\n"
-    return ap
-
-def _make_line_AP(annot, nv = None, r0 = None):
-    """ Create the /AP stream for 'Line', 'PolyLine' and 'Polygon' annotations.
-    """
-    w = annot.border["width"]          # get line width
-    sc = annot.colors["stroke"]        # get stroke color
-    fc = annot.colors["fill"]          # get fill color
-    ca = annot.opacity                 # get opacity value
-    Alp0 = "/Alp0 gs\n" if ca >= 0 else ""
-    vert = nv if nv else annot.vertices # get list of points
-    rn = r0 if r0 else annot.rect
-    h = rn.height                      # annot rectangle height
-    r = Rect(0, 0, rn.width, h)        # this is the /BBox of the /AP
-    x0 = rn.x0                         # annot rect origin x
-    y0 = rn.y0                         # annot rect origin y
-    scol = "%g %g %g RG\n" % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG\n"
-    fcol = "%g %g %g rg\n" % (fc[0], fc[1], fc[2]) if fc else ""
-
-    dt = annot.border.get("dashes")    # get annot dashes
-    dtab = []
-    if dt:
-        dtab = ["[", "]0 d\n"]
-        for n in dt:
-            dtab[0] += "%i " % n
-    dtab = "".join(dtab)               # dashes command
-
-# start /AP string with a goto command
-    ap = "q\n%s%g %g m\n" % (Alp0, vert[0][0] - x0, h - (vert[0][1] - y0))
-
-# add line commands for all subsequent points
-    for v in vert[1:]:
-        ap += "%g %g l\n" % (v[0] - x0, h - (v[1] - y0))
-
-# add color triples and other stuff commands
-    ap += scol + fcol + dtab + "%g w 1 J 1 j\n" % w
-
-# add stroke / fill & stroke command depending on type
-    if fcol and annot.type[0] == ANNOT_POLYGON:
-        ap += "b"
-    else:
-        ap += "S"
-    ap += "\nQ\n"
-
-# function names for creating line end symbols
-    _le_func = (None, _le_square, _le_circle, _le_diamond, _le_openarrow,
-                _le_closedarrow, _le_butt, _le_ropenarrow,
-                _le_rclosedarrow, _le_slash)
-    valid_range = range(1, len(_le_func))
-
-    le_left, le_right = annot.lineEnds # get line end symbol numbers
-
-    if le_left in valid_range:         # uses points 1 and 2
-        func = _le_func[le_left]       # function for left symbol
-        ap += func(annot, Point(vert[0]), Point(vert[1]), False)
-
-    if le_right in valid_range:        # uses last and second to last points
-        func = _le_func[le_right]      # function for right symbol
-        ap += func(annot, Point(vert[-2]), Point(vert[-1]), True)
-
-    return ap
-
-def _upd_my_AP(annot):
-    """Update /AP stream for annotation types we are handling.
-    """
-    if annot.type[0] not in range(2, 8):    # not our business
-        return
-
-# this is the /AP rect for circle or square
-    r = Rect(0, 0, annot.rect.width, annot.rect.height)
-
-    if annot.type[0] == ANNOT_CIRCLE:
-        ap = _make_circle_AP(annot)    # stream for circle annot
-        annot._checkAP(r, ap)
-        return
-
-    if annot.type[0] == ANNOT_SQUARE:
-        ap = _make_rect_AP(annot)      # stream for square annot
-        annot._checkAP(r, ap)
-        return
-
-#--------------------------------------------------------------------------
-# we have one of the line annotations
-#--------------------------------------------------------------------------
-
-# first calculate the rect that contains all the points, including small
-# extra rects around first and last point for any line symbols.
-    w = 3 * annot.border["width"]      # 3 times the line width
-    ov = annot.vertices                # get all the points
-    rect = Rect(Point(ov[0]), Point(ov[0])) + (-w, -w, w, w)
-    for v in ov[1:-1]:                 # include remaining points
-        rect |= v
-    rect |= Rect(Point(ov[-1]), Point(ov[-1])) + (-w, -w, w, w)
-
-    annot._setRect(rect)               # set this as annot rect
-    r = Rect(0, 0, rect.width, rect.height) # derive the /AP rect
-
-    ap = _make_line_AP(annot)          # make the /AP stream
-    annot._checkAP(r, ap)              # create or update /AP object
-    return
 
 class Document(_object):
     """open() - new empty PDF
@@ -1071,9 +1604,7 @@ open(filename, filetype='type') - from file"""
             self.openErrCode = self._getGCTXerrcode()
             self.openErrMsg  = self._getGCTXerrmsg()
             self.thisown = True
-            tools = Tools()
-            self._graft_id = tools.gen_id()
-            tools = None
+            self._graft_id = TOOLS.gen_id()
             if self.needsPass:
                 self.isEncrypted = 1
             else: # we won't init until doc is decrypted
@@ -1199,9 +1730,12 @@ open(filename, filetype='type') - from file"""
 
 
     def convertToPDF(self, from_page=0, to_page=-1, rotate=0):
-        """Convert document to PDF selecting copy range and optional rotation. Output bytes object."""
-        if self.isClosed or self.isEncrypted:
-            raise ValueError("operation illegal for closed / encrypted doc")
+        """Convert document to PDF selecting page range and optional rotation. Output bytes object."""
+
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+        if platform_bitness != "64bit":
+            raise ValueError("currently supported on 64bit systems only")
 
         return _fitz.Document_convertToPDF(self, from_page, to_page, rotate)
 
@@ -1301,6 +1835,24 @@ open(filename, filetype='type') - from file"""
 
     @property
 
+    def _hasXrefStream(self):
+        """_hasXrefStream(self) -> PyObject *"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document__hasXrefStream(self)
+
+    @property
+
+    def _hasXrefOldStyle(self):
+        """_hasXrefOldStyle(self) -> PyObject *"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document__hasXrefOldStyle(self)
+
+    @property
+
     def isDirty(self):
         """isDirty(self) -> PyObject *"""
         if self.isClosed:
@@ -1319,12 +1871,12 @@ open(filename, filetype='type') - from file"""
         return _fitz.Document__getGCTXerrmsg(self)
 
 
-    def authenticate(self, arg2):
+    def authenticate(self, password):
         """Decrypt document with a password."""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
-        val = _fitz.Document_authenticate(self, arg2)
+        val = _fitz.Document_authenticate(self, password)
 
         if val: # the doc is decrypted successfully and we init the outline
             self.isEncrypted = 0
@@ -1335,8 +1887,8 @@ open(filename, filetype='type') - from file"""
         return val
 
 
-    def save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0, pretty=0):
-        """save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0, pretty=0) -> PyObject *"""
+    def save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0, pretty=0, decrypt=1):
+        """save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0, pretty=0, decrypt=1) -> PyObject *"""
 
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
@@ -1347,21 +1899,27 @@ open(filename, filetype='type') - from file"""
         else:
             raise TypeError("filename must be a string")
         if filename == self.name and not incremental:
-            raise ValueError("save to original requires incremental")
-        if incremental and (self.name != filename or self.streamlen > 0):
-            raise ValueError("incremental save needs original file")
+            raise ValueError("save to original must be incremental")
+        if self.pageCount < 1:
+            raise ValueError("cannot save with zero pages")
+        if incremental:
+            if self.name != filename or self.streamlen > 0:
+                raise ValueError("incremental needs original file")
 
 
-        return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear, pretty)
+        return _fitz.Document_save(self, filename, garbage, clean, deflate, incremental, ascii, expand, linear, pretty, decrypt)
 
 
-    def write(self, garbage=0, clean=0, deflate=0, ascii=0, expand=0, linear=0, pretty=0):
+    def write(self, garbage=0, clean=0, deflate=0, ascii=0, expand=0, linear=0, pretty=0, decrypt=1):
         """Write document to a bytes object."""
 
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
+        if self.pageCount < 1:
+            raise ValueError("cannot write with zero pages")
 
-        return _fitz.Document_write(self, garbage, clean, deflate, ascii, expand, linear, pretty)
+
+        return _fitz.Document_write(self, garbage, clean, deflate, ascii, expand, linear, pretty, decrypt)
 
 
     def insertPDF(self, docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=1):
@@ -1752,21 +2310,18 @@ class Page(_object):
     __del__ = lambda self: None
 
     def bound(self):
-        """bound(self) -> Rect"""
+        """bound(self) -> PyObject *"""
         CheckParent(self)
 
         val = _fitz.Page_bound(self)
-
-        if val:
-            val.thisown = True
-
+        val = Rect(val)
 
         return val
 
     rect = property(bound, doc="page rectangle")
 
     def run(self, dw, m):
-        """run(self, dw, m) -> int"""
+        """run(self, dw, m) -> PyObject *"""
         CheckParent(self)
 
         return _fitz.Page_run(self, dw, m)
@@ -1790,18 +2345,6 @@ class Page(_object):
         val.parent = weakref.proxy(self)
         self._annot_refs[id(val)] = val
 
-        if val.type[0] == ANNOT_SQUARE:
-            ap = _make_rect_AP(val)
-        elif val.type[0] == ANNOT_CIRCLE:
-            ap = _make_circle_AP(val)
-        elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
-            ap = _make_line_AP(val)
-        else:
-            return val
-        r = Rect(0, 0, val.rect.width, val.rect.height)
-        val._checkAP(r, ap)
-
-
         return val
 
 
@@ -1819,8 +2362,36 @@ class Page(_object):
         return val
 
 
+    def addInkAnnot(self, list):
+        """Add a 'handwriting' as a list of list of point-likes. Each sublist forms an independent stroke."""
+        CheckParent(self)
+
+        val = _fitz.Page_addInkAnnot(self, list)
+
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
+
+        return val
+
+
+    def addStampAnnot(self, rect, stamp=0):
+        """Add a 'rubber stamp' in a rectangle."""
+        CheckParent(self)
+
+        val = _fitz.Page_addStampAnnot(self, rect, stamp)
+
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
+
+        return val
+
+
     def addFileAnnot(self, point, buffer, filename, ufilename=None, desc=None):
-        """Add a 'FileAttachment' annotation."""
+        """Add a 'FileAttachment' annotation at location 'point'."""
         CheckParent(self)
 
         val = _fitz.Page_addFileAnnot(self, point, buffer, filename, ufilename, desc)
@@ -1834,7 +2405,7 @@ class Page(_object):
 
 
     def addStrikeoutAnnot(self, rect):
-        """Strike out content in a rectangle."""
+        """Strike out content in a rectangle or quadrilateral."""
         CheckParent(self)
 
         val = _fitz.Page_addStrikeoutAnnot(self, rect)
@@ -1848,7 +2419,7 @@ class Page(_object):
 
 
     def addUnderlineAnnot(self, rect):
-        """Underline content in a rectangle."""
+        """Underline content in a rectangle or quadrilateral."""
         CheckParent(self)
 
         val = _fitz.Page_addUnderlineAnnot(self, rect)
@@ -1861,8 +2432,22 @@ class Page(_object):
         return val
 
 
+    def addSquigglyAnnot(self, rect):
+        """Wavy underline content in a rectangle or quadrilateral."""
+        CheckParent(self)
+
+        val = _fitz.Page_addSquigglyAnnot(self, rect)
+
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
+
+        return val
+
+
     def addHighlightAnnot(self, rect):
-        """Highlight content in a rectangle."""
+        """Highlight content in a rectangle or quadrilateral."""
         CheckParent(self)
 
         val = _fitz.Page_addHighlightAnnot(self, rect)
@@ -1886,18 +2471,6 @@ class Page(_object):
         val.parent = weakref.proxy(self)
         self._annot_refs[id(val)] = val
 
-        if val.type[0] == ANNOT_SQUARE:
-            ap = _make_rect_AP(val)
-        elif val.type[0] == ANNOT_CIRCLE:
-            ap = _make_circle_AP(val)
-        elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
-            ap = _make_line_AP(val)
-        else:
-            return val
-        r = Rect(0, 0, val.rect.width, val.rect.height)
-        val._checkAP(r, ap)
-
-
         return val
 
 
@@ -1911,18 +2484,6 @@ class Page(_object):
         val.thisown = True
         val.parent = weakref.proxy(self)
         self._annot_refs[id(val)] = val
-
-        if val.type[0] == ANNOT_SQUARE:
-            ap = _make_rect_AP(val)
-        elif val.type[0] == ANNOT_CIRCLE:
-            ap = _make_circle_AP(val)
-        elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
-            ap = _make_line_AP(val)
-        else:
-            return val
-        r = Rect(0, 0, val.rect.width, val.rect.height)
-        val._checkAP(r, ap)
-
 
         return val
 
@@ -1938,18 +2499,6 @@ class Page(_object):
         val.parent = weakref.proxy(self)
         self._annot_refs[id(val)] = val
 
-        if val.type[0] == ANNOT_SQUARE:
-            ap = _make_rect_AP(val)
-        elif val.type[0] == ANNOT_CIRCLE:
-            ap = _make_circle_AP(val)
-        elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
-            ap = _make_line_AP(val)
-        else:
-            return val
-        r = Rect(0, 0, val.rect.width, val.rect.height)
-        val._checkAP(r, ap)
-
-
         return val
 
 
@@ -1964,26 +2513,14 @@ class Page(_object):
         val.parent = weakref.proxy(self)
         self._annot_refs[id(val)] = val
 
-        if val.type[0] == ANNOT_SQUARE:
-            ap = _make_rect_AP(val)
-        elif val.type[0] == ANNOT_CIRCLE:
-            ap = _make_circle_AP(val)
-        elif val.type[0] in (ANNOT_LINE, ANNOT_POLYLINE, ANNOT_POLYGON):
-            ap = _make_line_AP(val)
-        else:
-            return val
-        r = Rect(0, 0, val.rect.width, val.rect.height)
-        val._checkAP(r, ap)
-
-
         return val
 
 
-    def addFreetextAnnot(self, pos, text, fontsize=11, color=None):
-        """Add a 'FreeText' annotation at position 'point'."""
+    def addFreetextAnnot(self, rect, text, fontsize=12, fontname=None, color=None, rotate=0):
+        """Add a 'FreeText' annotation in rectangle 'rect'."""
         CheckParent(self)
 
-        val = _fitz.Page_addFreetextAnnot(self, pos, text, fontsize, color)
+        val = _fitz.Page_addFreetextAnnot(self, rect, text, fontsize, fontname, color, rotate)
 
         if not val: return
         val.thisown = True
@@ -2054,8 +2591,8 @@ class Page(_object):
         return _fitz.Page_getDisplayList(self)
 
 
-    def setCropBox(self, rect=None):
-        """setCropBox(self, rect=None) -> PyObject *"""
+    def setCropBox(self, rect):
+        """setCropBox(self, rect) -> PyObject *"""
         CheckParent(self)
 
         return _fitz.Page_setCropBox(self, rect)
@@ -2066,10 +2603,16 @@ class Page(_object):
         CheckParent(self)
 
         val = _fitz.Page_loadLinks(self)
+
         if val:
             val.thisown = True
             val.parent = weakref.proxy(self) # owning page object
             self._annot_refs[id(val)] = val
+            if self.parent.isPDF:
+                val.xref = self._getLinkXrefs()[0]
+            else:
+                val.xref = 0
+
 
         return val
 
@@ -2128,7 +2671,8 @@ class Page(_object):
 
         val = _fitz.Page_MediaBoxSize(self)
 
-        if val == Point(0,0):
+        val = Point(val)
+        if not bool(val):
             r = self.rect
             val = Point(r.width, r.height)
 
@@ -2141,7 +2685,10 @@ class Page(_object):
         """Retrieve position of /CropBox. Return (0,0) for non-PDF, or no /CropBox."""
         CheckParent(self)
 
-        return _fitz.Page_CropBoxPosition(self)
+        val = _fitz.Page_CropBoxPosition(self)
+        val = Point(val)
+
+        return val
 
     @property
 
@@ -2278,7 +2825,8 @@ class Page(_object):
                 annot._erase()
         self._annot_refs.clear()
 
-    def _getXref(self):
+    @property
+    def xref(self):
         """Return PDF XREF number of page."""
         CheckParent(self)
         return self.parent._getPageXref(self.number)[0]
@@ -2321,284 +2869,6 @@ class Page(_object):
 
 Page_swigregister = _fitz.Page_swigregister
 Page_swigregister(Page)
-
-
-def _fz_transform_rect(rect, transform):
-    """_fz_transform_rect(rect, transform) -> Rect"""
-    return _fitz._fz_transform_rect(rect, transform)
-class Rect(_object):
-    """Rect() - all zeros
-Rect(x0, y0, x1, y1)
-Rect(top-left, x1, y1)
-Rect(x0, y0, bottom-right)
-Rect(top-left, bottom-right)
-Rect(Rect or IRect) - new copy
-Rect(sequence) - from 'sequence'"""
-
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Rect, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, Rect, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["x0"] = _fitz.Rect_x0_set
-    __swig_getmethods__["x0"] = _fitz.Rect_x0_get
-    if _newclass:
-        x0 = _swig_property(_fitz.Rect_x0_get, _fitz.Rect_x0_set)
-    __swig_setmethods__["y0"] = _fitz.Rect_y0_set
-    __swig_getmethods__["y0"] = _fitz.Rect_y0_get
-    if _newclass:
-        y0 = _swig_property(_fitz.Rect_y0_get, _fitz.Rect_y0_set)
-    __swig_setmethods__["x1"] = _fitz.Rect_x1_set
-    __swig_getmethods__["x1"] = _fitz.Rect_x1_get
-    if _newclass:
-        x1 = _swig_property(_fitz.Rect_x1_get, _fitz.Rect_x1_set)
-    __swig_setmethods__["y1"] = _fitz.Rect_y1_set
-    __swig_getmethods__["y1"] = _fitz.Rect_y1_get
-    if _newclass:
-        y1 = _swig_property(_fitz.Rect_y1_get, _fitz.Rect_y1_set)
-    __swig_destroy__ = _fitz.delete_Rect
-    __del__ = lambda self: None
-
-    def __init__(self, *args):
-        """
-        __init__(self) -> Rect
-        __init__(self, s) -> Rect
-        __init__(self, lt, rb) -> Rect
-        __init__(self, x0, y0, rb) -> Rect
-        __init__(self, lt, x1, y1) -> Rect
-        __init__(self, x0, y0, x1, y1) -> Rect
-        __init__(self, list) -> Rect
-        """
-        this = _fitz.new_Rect(*args)
-        try:
-            self.this.append(this)
-        except __builtin__.Exception:
-            self.this = this
-
-    def round(self):
-        """Create enclosing 'IRect'"""
-        val = _fitz.Rect_round(self)
-        val.thisown = True
-
-        return val
-
-
-    def includePoint(self, p):
-        """Enlarge to include a 'Point' p"""
-        return _fitz.Rect_includePoint(self, p)
-
-
-    def intersect(self, r):
-        """Shrink to intersection with another 'Rect' r"""
-        return _fitz.Rect_intersect(self, r)
-
-
-    def includeRect(self, r):
-        """Enlarge to include another 'Rect' r"""
-        return _fitz.Rect_includeRect(self, r)
-
-
-    def normalize(self):
-        """Make rectangle finite"""
-        return _fitz.Rect_normalize(self)
-
-
-    def contains(self, *args):
-        """Check if containing a 'Point' or another rect"""
-        return _fitz.Rect_contains(self, *args)
-
-    @property
-
-    def isEmpty(self):
-        """isEmpty(self) -> PyObject *"""
-        return _fitz.Rect_isEmpty(self)
-
-    @property
-
-    def isInfinite(self):
-        """isInfinite(self) -> PyObject *"""
-        return _fitz.Rect_isInfinite(self)
-
-
-    def transform(self, m):
-        """Transform rectangle with Matrix m."""
-        _fitz._fz_transform_rect(self, m)
-        return self
-
-    @property
-    def top_left(self):
-        """Return the rectangle's top-left point."""
-        return Point(self.x0, self.y0)
-
-    @property
-    def top_right(self):
-        """Return the rectangle's top-right point."""
-        return Point(self.x1, self.y0)
-
-    @property
-    def bottom_left(self):
-        """Return the rectangle's bottom-left point."""
-        return Point(self.x0, self.y1)
-
-    @property
-    def bottom_right(self):
-        """Return the rectangle's bottom-right point."""
-        return Point(self.x1, self.y1)
-
-    def __getitem__(self, i):
-        return (self.x0, self.y0, self.x1, self.y1)[i]
-
-    def __setitem__(self, i, v):
-        if   i == 0: self.x0 = v
-        elif i == 1: self.y0 = v
-        elif i == 2: self.x1 = v
-        elif i == 3: self.y1 = v
-        else:
-            raise IndexError("index out of range")
-        return
-
-    def __len__(self):
-        return 4
-
-    def __repr__(self):
-        return "fitz.Rect" + str((self.x0, self.y0, self.x1, self.y1))
-
-    irect = property(round)
-    width = property(lambda self: self.x1-self.x0)
-    height = property(lambda self: self.y1-self.y0)
-    tl = top_left
-    tr = top_right
-    br = bottom_right
-    bl = bottom_left
-
-Rect_swigregister = _fitz.Rect_swigregister
-Rect_swigregister(Rect)
-
-class IRect(_object):
-    """IRect() - all zeros
-IRect(x0, y0, x1, y1)
-IRect(Rect or IRect) - new copy
-IRect(sequence) - from 'sequence'"""
-
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, IRect, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, IRect, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["x0"] = _fitz.IRect_x0_set
-    __swig_getmethods__["x0"] = _fitz.IRect_x0_get
-    if _newclass:
-        x0 = _swig_property(_fitz.IRect_x0_get, _fitz.IRect_x0_set)
-    __swig_setmethods__["y0"] = _fitz.IRect_y0_set
-    __swig_getmethods__["y0"] = _fitz.IRect_y0_get
-    if _newclass:
-        y0 = _swig_property(_fitz.IRect_y0_get, _fitz.IRect_y0_set)
-    __swig_setmethods__["x1"] = _fitz.IRect_x1_set
-    __swig_getmethods__["x1"] = _fitz.IRect_x1_get
-    if _newclass:
-        x1 = _swig_property(_fitz.IRect_x1_get, _fitz.IRect_x1_set)
-    __swig_setmethods__["y1"] = _fitz.IRect_y1_set
-    __swig_getmethods__["y1"] = _fitz.IRect_y1_get
-    if _newclass:
-        y1 = _swig_property(_fitz.IRect_y1_get, _fitz.IRect_y1_set)
-    __swig_destroy__ = _fitz.delete_IRect
-    __del__ = lambda self: None
-
-    def __init__(self, *args):
-        """
-        __init__(self) -> IRect
-        __init__(self, s) -> IRect
-        __init__(self, x0, y0, x1, y1) -> IRect
-        __init__(self, list) -> IRect
-        """
-        this = _fitz.new_IRect(*args)
-        try:
-            self.this.append(this)
-        except __builtin__.Exception:
-            self.this = this
-    @property
-
-    def isEmpty(self):
-        """isEmpty(self) -> PyObject *"""
-        return _fitz.IRect_isEmpty(self)
-
-    @property
-
-    def isInfinite(self):
-        """isInfinite(self) -> PyObject *"""
-        return _fitz.IRect_isInfinite(self)
-
-
-    def normalize(self):
-        """Make rectangle finite"""
-        return _fitz.IRect_normalize(self)
-
-
-    def contains(self, *args):
-        """Check if containing a 'Point' or another rect"""
-        return _fitz.IRect_contains(self, *args)
-
-
-    def translate(self, xoff, yoff):
-        """translate(self, xoff, yoff) -> IRect"""
-        return _fitz.IRect_translate(self, xoff, yoff)
-
-
-    def intersect(self, ir):
-        """intersect(self, ir) -> IRect"""
-        return _fitz.IRect_intersect(self, ir)
-
-
-    def getRect(self):
-        return Rect(self.x0, self.y0, self.x1, self.y1)
-
-    rect = property(getRect)
-
-    @property
-    def top_left(self):
-        return Point(self.x0, self.y0)
-
-    @property
-    def top_right(self):
-        return Point(self.x1, self.y0)
-
-    @property
-    def bottom_left(self):
-        return Point(self.x0, self.y1)
-
-    @property
-    def bottom_right(self):
-        return Point(self.x1, self.y1)
-
-    def __getitem__(self, i):
-        return (self.x0, self.y0, self.x1, self.y1)[i]
-
-    def __setitem__(self, i, v):
-        if   i == 0: self.x0 = v
-        elif i == 1: self.y0 = v
-        elif i == 2: self.x1 = v
-        elif i == 3: self.y1 = v
-        else:
-            raise IndexError("index out of range")
-        return
-
-    def __len__(self):
-        return 4
-
-    def __repr__(self):
-        if not type(self) is IRect: return
-        return "fitz.IRect" + str((self.x0, self.y0, self.x1, self.y1))
-
-    width = property(lambda self: self.x1-self.x0)
-    height = property(lambda self: self.y1-self.y0)
-    tl = top_left
-    tr = top_right
-    br = bottom_right
-    bl = bottom_left
-
-
-IRect_swigregister = _fitz.IRect_swigregister
-IRect_swigregister(IRect)
 
 class Pixmap(_object):
     """Pixmap(Colorspace, width, height, samples, alpha)
@@ -2716,8 +2986,11 @@ Pixmap(Document, xref) - from a PDF image"""
     @property
 
     def irect(self):
-        """irect(self) -> IRect"""
-        return _fitz.Pixmap_irect(self)
+        """irect(self) -> PyObject *"""
+        val = _fitz.Pixmap_irect(self)
+        val = IRect(val)
+
+        return val
 
     @property
 
@@ -2851,124 +3124,6 @@ class Device(_object):
 Device_swigregister = _fitz.Device_swigregister
 Device_swigregister(Device)
 
-
-def _fz_pre_scale(m, sx, sy):
-    """_fz_pre_scale(m, sx, sy) -> Matrix"""
-    return _fitz._fz_pre_scale(m, sx, sy)
-
-def _fz_pre_shear(m, sx, sy):
-    """_fz_pre_shear(m, sx, sy) -> Matrix"""
-    return _fitz._fz_pre_shear(m, sx, sy)
-
-def _fz_pre_rotate(m, degree):
-    """_fz_pre_rotate(m, degree) -> Matrix"""
-    return _fitz._fz_pre_rotate(m, degree)
-class Matrix(_object):
-    """Matrix() - all zeros
-Matrix(a, b, c, d, e, f)
-Matrix(zoom-x, zoom-y) - zoom
-Matrix(shear-x, shear-y, 1) - shear
-Matrix(degree) - rotate
-Matrix(Matrix) - new copy
-Matrix(sequence) - from 'sequence'"""
-
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Matrix, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, Matrix, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["a"] = _fitz.Matrix_a_set
-    __swig_getmethods__["a"] = _fitz.Matrix_a_get
-    if _newclass:
-        a = _swig_property(_fitz.Matrix_a_get, _fitz.Matrix_a_set)
-    __swig_setmethods__["b"] = _fitz.Matrix_b_set
-    __swig_getmethods__["b"] = _fitz.Matrix_b_get
-    if _newclass:
-        b = _swig_property(_fitz.Matrix_b_get, _fitz.Matrix_b_set)
-    __swig_setmethods__["c"] = _fitz.Matrix_c_set
-    __swig_getmethods__["c"] = _fitz.Matrix_c_get
-    if _newclass:
-        c = _swig_property(_fitz.Matrix_c_get, _fitz.Matrix_c_set)
-    __swig_setmethods__["d"] = _fitz.Matrix_d_set
-    __swig_getmethods__["d"] = _fitz.Matrix_d_get
-    if _newclass:
-        d = _swig_property(_fitz.Matrix_d_get, _fitz.Matrix_d_set)
-    __swig_setmethods__["e"] = _fitz.Matrix_e_set
-    __swig_getmethods__["e"] = _fitz.Matrix_e_get
-    if _newclass:
-        e = _swig_property(_fitz.Matrix_e_get, _fitz.Matrix_e_set)
-    __swig_setmethods__["f"] = _fitz.Matrix_f_set
-    __swig_getmethods__["f"] = _fitz.Matrix_f_get
-    if _newclass:
-        f = _swig_property(_fitz.Matrix_f_get, _fitz.Matrix_f_set)
-    __swig_destroy__ = _fitz.delete_Matrix
-    __del__ = lambda self: None
-
-    def __init__(self, *args):
-        """
-        __init__(self) -> Matrix
-        __init__(self, n) -> Matrix
-        __init__(self, sx, sy, shear=0) -> Matrix
-        __init__(self, r, s, t, u, v, w) -> Matrix
-        __init__(self, degree) -> Matrix
-        __init__(self, list) -> Matrix
-        """
-        this = _fitz.new_Matrix(*args)
-        try:
-            self.this.append(this)
-        except __builtin__.Exception:
-            self.this = this
-
-    def invert(self, m):
-        """invert(self, m) -> int"""
-        return _fitz.Matrix_invert(self, m)
-
-
-    def preTranslate(self, sx, sy):
-        """preTranslate(self, sx, sy) -> Matrix"""
-        return _fitz.Matrix_preTranslate(self, sx, sy)
-
-
-    def concat(self, m1, m2):
-        """concat(self, m1, m2) -> Matrix"""
-        return _fitz.Matrix_concat(self, m1, m2)
-
-
-    def preScale(self, sx, sy):
-        """preScale(Matrix self, float sx, float sy) -> Matrix self updated"""
-        _fitz._fz_pre_scale(self, sx, sy)
-        return self
-    def preShear(self, sx, sy):
-        """preShear(Matrix self, float sx, float sy) -> Matrix self updated"""
-        _fitz._fz_pre_shear(self, sx, sy)
-        return self
-    def preRotate(self, degree):
-        """preRotate(Matrix self, float degree) -> Matrix self updated"""
-        _fitz._fz_pre_rotate(self, degree)
-        return self
-    def __getitem__(self, i):
-        return (self.a, self.b, self.c, self.d, self.e, self.f)[i]
-
-    def __setitem__(self, i, v):
-        if   i == 0: self.a = v
-        elif i == 1: self.b = v
-        elif i == 2: self.c = v
-        elif i == 3: self.d = v
-        elif i == 4: self.e = v
-        elif i == 5: self.f = v
-        else:
-            raise IndexError("index out of range")
-        return
-
-    def __len__(self):
-        return 6
-    def __repr__(self):
-        return "fitz.Matrix(%s, %s, %s, %s, %s, %s)" % (self.a, self.b, self.c, self.d, self.e, self.f)
-
-
-Matrix_swigregister = _fitz.Matrix_swigregister
-Matrix_swigregister(Matrix)
-
 class Outline(_object):
     """Proxy of C fz_outline_s struct."""
 
@@ -3027,109 +3182,6 @@ class Outline(_object):
     __del__ = lambda self: None
 Outline_swigregister = _fitz.Outline_swigregister
 Outline_swigregister(Outline)
-
-
-def _fz_transform_point(point, transform):
-    """_fz_transform_point(point, transform) -> Point"""
-    return _fitz._fz_transform_point(point, transform)
-class Point(_object):
-    """Point() - all zeros
-Point(x, y)
-Point(Point) - new copy
-Point(sequence) - from 'sequence'"""
-
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Point, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, Point, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["x"] = _fitz.Point_x_set
-    __swig_getmethods__["x"] = _fitz.Point_x_get
-    if _newclass:
-        x = _swig_property(_fitz.Point_x_get, _fitz.Point_x_set)
-    __swig_setmethods__["y"] = _fitz.Point_y_set
-    __swig_getmethods__["y"] = _fitz.Point_y_get
-    if _newclass:
-        y = _swig_property(_fitz.Point_y_get, _fitz.Point_y_set)
-
-    def __init__(self, *args):
-        """
-        __init__(self) -> Point
-        __init__(self, q) -> Point
-        __init__(self, x, y) -> Point
-        __init__(self, list) -> Point
-        """
-        this = _fitz.new_Point(*args)
-        try:
-            self.this.append(this)
-        except __builtin__.Exception:
-            self.this = this
-
-    def distance_to(self, *args):
-        """Return the distance to a rectangle or another point."""
-        assert len(args) > 0, "at least one parameter must be given"
-        x = args[0]
-        if len(args) > 1:
-            unit = args[1]
-        else:
-            unit = "px"
-        u = {"px": (1.,1.), "in": (1.,72.), "cm": (2.54, 72.), "mm": (25.4, 72.)}
-        f = u[unit][0] / u[unit][1]
-        if type(x) is Point:
-            return abs(self - x) * f
-
-    # from here on, x is a rectangle
-    # as a safeguard, make a finite copy of it
-        r = Rect(x.top_left, x.top_left)
-        r = r | x.bottom_right
-        if self in r:
-            return 0.0
-        if self.x > r.x1:
-            if self.y >= r.y1:
-                return self.distance_to(r.bottom_right, unit)
-            elif self.y <= r.y0:
-                return self.distance_to(r.top_right, unit)
-            else:
-                return (self.x - r.x1) * f
-        elif r.x0 <= self.x <= r.x1:
-            if self.y >= r.y1:
-                return (self.y - r.y1) * f
-            else:
-                return (r.y0 - self.y) * f
-        else:
-            if self.y >= r.y1:
-                return self.distance_to(r.bottom_left, unit)
-            elif self.y <= r.y0:
-                return self.distance_to(r.top_left, unit)
-            else:
-                return (r.x0 - self.x) * f
-
-    def transform(self, m):
-        _fitz._fz_transform_point(self, m)
-        return self
-
-    def __setitem__(self, i, v):
-        if i == 0:
-            self.x = v
-        elif i == 1:
-            self.y = v
-        else:
-            raise IndexError("index out of range")
-        return
-
-    def __getitem__(self, i):
-        return (self.x, self.y)[i]
-
-    def __len__(self):
-        return 2
-
-    def __repr__(self):
-        return "fitz.Point" + str((self.x, self.y))
-
-    __swig_destroy__ = _fitz.delete_Point
-    __del__ = lambda self: None
-Point_swigregister = _fitz.Point_swigregister
-Point_swigregister(Point)
 
 ANNOT_TEXT = _fitz.ANNOT_TEXT
 ANNOT_LINK = _fitz.ANNOT_LINK
@@ -3227,79 +3279,31 @@ class Annot(_object):
         """Rectangle containing the annot"""
         CheckParent(self)
 
-        return _fitz.Annot_rect(self)
+        val = _fitz.Annot_rect(self)
+        val = Rect(val)
 
+        return val
 
-    def _getXref(self):
-        """Xref number of annotation"""
-        CheckParent(self)
+    @property
 
-        return _fitz.Annot__getXref(self)
+    def xref(self):
+        """xref(self) -> int"""
+        return _fitz.Annot_xref(self)
 
 
     def _getAP(self):
         """Get contents source of a PDF annot"""
-        CheckParent(self)
-
         return _fitz.Annot__getAP(self)
 
 
-    def _setAP(self, ap):
+    def _setAP(self, ap, rect=0):
         """Update contents source of a PDF annot"""
-        CheckParent(self)
-
-        return _fitz.Annot__setAP(self, ap)
-
-
-    def _checkAP(self, rect, c):
-        """Check and update /AP object of annot"""
-        CheckParent(self)
-
-        return _fitz.Annot__checkAP(self, rect, c)
-
-
-    def _setRect(self, rect):
-        """_setRect(self, rect)"""
-        return _fitz.Annot__setRect(self, rect)
+        return _fitz.Annot__setAP(self, ap, rect)
 
 
     def setRect(self, rect):
-        """Change the annot's rectangle."""
-        CheckParent(self)
-        if rect.isEmpty or rect.isInfinite:
-            raise ValueError("Rect must be finite and not empty.")
-    # only handle Circle, Square, Line, PolyLine and Polygon here
-        if self.type[0] not in range(2, 8):
-            self._setRect(rect)
-            return
-
-        if self.type[0] == ANNOT_CIRCLE:
-            self._setRect(rect)
-            ap = _make_circle_AP(self)
-            self._checkAP(Rect(0, 0, rect.width, rect.height), ap)
-            return
-
-        if self.type[0] == ANNOT_SQUARE:
-            self._setRect(rect)
-            ap = _make_rect_AP(self)
-            self._checkAP(Rect(0, 0, rect.width, rect.height), ap)
-            return
-
-        orect = self.rect
-        m = Matrix(rect.width / orect.width, rect.height / orect.height)
-
-    # now transform the points of the annot
-        ov = self.vertices
-        nv = [(Point(v) - orect.tl) * m + rect.tl for v in ov] # new points
-        r0 = Rect(nv[0], nv[0])              # recalculate new rectangle
-        for v in nv[1:]:
-            r0 |= v                          # enveloping all points
-        w = self.border["width"] * 3         # allow for add'l space
-        r0 += (-w, -w, w, w)                 # for line end symbols
-        self._setRect(r0)                    # this is the final rect
-        self._setVertices(nv)                # put the points in annot
-        ap = _make_line_AP(self, nv, r0)
-        self._checkAP(Rect(0, 0, r0.width, r0.height), ap)
+        """setRect(self, rect)"""
+        return _fitz.Annot_setRect(self, rect)
 
     @property
 
@@ -3308,13 +3312,6 @@ class Annot(_object):
         CheckParent(self)
 
         return _fitz.Annot_vertices(self)
-
-
-    def _setVertices(self, vertices):
-        """Change the annot's vertices. Only for 'Line', 'PolyLine' and 'Polygon' types."""
-        CheckParent(self)
-
-        return _fitz.Annot__setVertices(self, vertices)
 
     @property
 
@@ -3325,11 +3322,156 @@ class Annot(_object):
         return _fitz.Annot_colors(self)
 
 
-    def updateAppearance(self):
+    def update(self, fontsize=0.0, text_color=None, border_color=None, fill_color=None, rotate=-1):
         """Update the appearance of an annotation."""
-        CheckParent(self)
 
-        return _fitz.Annot_updateAppearance(self)
+        if self.type[0] == ANNOT_WIDGET:
+            print("Use updateWidget method for form fields.")
+            return False
+
+        val = _fitz.Annot_update(self, fontsize, text_color, border_color, fill_color, rotate)
+
+        """
+        The following code fixes shortcomings of MuPDF's "pdf_update_annot"
+        function. Currently these are:
+        1. Opacity (all annots). MuPDF ignores this proprty. This requires
+           to add an ExtGState (extended graphics state) object in the
+           C code as well.
+        2. Dashing (all annots). MuPDF ignores this proprty.
+        3. Colors and font size for FreeText annotations.
+        4. Line end icons also for POLYGON and POLY_LINE annotations.
+           MuPDF only honors them for LINE annotations.
+        5. Always perform a "clean" for the annot, because MuPDF does not
+           enclose their syntax in a string pair "q ... Q", which may cause
+           Adobe and other readers not to display the annot.
+
+        """
+        if not val is True:  # skip if something went wrong
+            return val
+
+        def color_string(cs, code):
+            """Return valid PDF color operator for a given color sequence.
+            """
+            if cs is None: return ""
+            if hasattr(cs, "__float__") or len(cs) == 1:
+                app = " g\n" if code == "f" else " G\n"
+            elif len(cs) == 3:
+                app = " rg\n" if code == "f" else " RG\n"
+            else:
+                app = " k\n" if code == "f" else " K\n"
+            if hasattr(cs, "__len__"):
+                col = " ".join(map(str, cs)) + app
+            else:
+                col = "%g" % cs + app
+            return bytes(col, "utf8") if str is not bytes else col
+
+        type   = self.type[0]               # get the annot type
+        dt     = self.border["dashes"]      # get the dashes spec
+        bwidth = self.border["width"]       # get border line width
+        stroke = self.colors["stroke"]      # get the stroke color
+        fill   = self.colors["fill"]        # get the fill color
+        rect   = None                       # used if we change the rect here
+        bfill  = color_string(fill, "f")
+
+        line_end_le, line_end_ri = 0, 0     # line end codes
+        if self.lineEnds:
+            line_end_le, line_end_ri = self.lineEnds
+
+        ap     = self._getAP()              # get the annot operator source
+        ap_updated = False                  # assume we did nothing
+
+        if type == ANNOT_FREETEXT:
+            CheckColor(fill_color)
+            CheckColor(border_color)
+            CheckColor(text_color)
+
+            ap_tab = ap.splitlines()        # split AP stream into lines
+            idx_BT = ap_tab.index(b"BT")    # line no. of text start
+        # to avoid effort, we rely on a fixed format of this
+        # annot type: line 0 = fill color, line 5 border color, etc.
+            if fill_color is not None:
+                ap_tab[0] = color_string(fill_color, "f")
+                ap_updated = True
+
+            if idx_BT == 7:
+                if bwidth > 0:
+                    if border_color is not None:
+                        ap_tab[4] = color_string(border_color, "s")
+                        ap_updated = True
+                else: # for zero border width suppress border
+                    ap_tab[3] = b"0 w"
+                    ap_tab[4] = ap_tab[5] = ap_tab[6] = b""
+                    ap_updated = True
+
+            if text_color is not None:
+                ap_tab[idx_BT + 1] = color_string(text_color, "f")
+                ap_updated = True
+
+            if fontsize > 0.0:
+                x = ap_tab[idx_BT + 2].split()
+                x[1] = b"%g" % fontsize
+                ap_tab[idx_BT + 2] = b" ".join(x)
+                ap_updated = True
+
+            if ap_updated:
+                ap = b"\n".join(ap_tab)         # updated AP stream
+
+        if bfill != "":
+            if type == ANNOT_POLYGON:
+                ap = ap[:-1] + bfill + b"b" # close, fill, and stroke
+                ap_updated = True
+            elif type == ANNOT_POLYLINE:
+                ap = ap[:-1] + bfill + b"B" # fill and stroke
+                ap_updated = True
+
+        # Dashes not handled by MuPDF, so we do it here.
+        if dt:
+            dash = "[" + " ".join(map(str, dt)) + "] d\n"
+            ap = dash.encode("utf-8") + ap
+        # reset dashing - only applies for LINE annots with line ends given
+            ap = ap.replace(b"\nS\n", b"\nS\n[] d\n", 1)
+            ap_updated = True
+
+        # Opacity not handled by MuPDF, so we do it here. The /ExtGState object
+        # "Alp0" referenced here has already been added by our C code.
+        if 0 <= self.opacity < 1:
+            ap = b"/Alp0 gs\n" + ap
+            ap_updated = True
+
+        if line_end_le + line_end_ri > 0 and type in (ANNOT_POLYGON, ANNOT_POLYLINE):
+            le_funcs = (None, TOOLS._le_square, TOOLS._le_circle,
+                        TOOLS._le_diamond, TOOLS._le_openarrow,
+                        TOOLS._le_closedarrow, TOOLS._le_butt,
+                        TOOLS._le_ropenarrow, TOOLS._le_rclosedarrow,
+                        TOOLS._le_slash)
+            le_funcs_range = range(1, len(le_funcs))
+            d = 4 * max(1, self.border["width"])
+            rect = self.rect + (-d, -d, d, d)
+            ap_updated = True
+            points = self.vertices
+            ap = b"q\n" + ap + b"\nQ\n"
+            if line_end_le in le_funcs_range:
+                p1 = Point(points[0])
+                p2 = Point(points[1])
+                left = le_funcs[line_end_le](self, p1, p2, False)
+                ap += bytes(left, "utf8") if str is not bytes else left
+            if line_end_ri in le_funcs_range:
+                p1 = Point(points[-2])
+                p2 = Point(points[-1])
+                left = le_funcs[line_end_ri](self, p1, p2, True)
+                ap += bytes(left, "utf8") if str is not bytes else left
+
+        if ap_updated:
+            if rect:                        # rect modified here?
+                self.setRect(rect)
+                self._setAP(ap, rect = 1)
+            else:
+                self._setAP(ap, rect = 0)
+
+        # always perform a clean to wrap stream by "q" / "Q"
+        self._cleanContents()
+
+        return val
 
 
     def setColors(self, colors):
@@ -3339,21 +3481,7 @@ class Annot(_object):
         """
         CheckParent(self)
 
-        val = _fitz.Annot_setColors(self, colors)
-
-        if self.type[0] not in range(2, 8):
-            return
-        r = Rect(0, 0, self.rect.width, self.rect.height)
-        if self.type[0] == ANNOT_CIRCLE:
-            ap = _make_circle_AP(self)
-        elif self.type[0] == ANNOT_SQUARE:
-            ap = _make_rect_AP(self)
-        else:
-            ap = _make_line_AP(self)
-        self._checkAP(r, ap)
-
-
-        return val
+        return _fitz.Annot_setColors(self, colors)
 
     @property
 
@@ -3368,18 +3496,7 @@ class Annot(_object):
         """setLineEnds(self, start, end)"""
         CheckParent(self)
 
-        val = _fitz.Annot_setLineEnds(self, start, end)
-
-        if self.type[0] not in range(2, 8):
-            return
-        if self.type[0] in (ANNOT_CIRCLE, ANNOT_SQUARE):
-            return
-        r = Rect(0, 0, self.rect.width, self.rect.height)
-        ap = _make_line_AP(self)
-        self._checkAP(r, ap)
-
-
-        return val
+        return _fitz.Annot_setLineEnds(self, start, end)
 
     @property
 
@@ -3402,10 +3519,7 @@ class Annot(_object):
         """setOpacity(self, opacity)"""
         CheckParent(self)
 
-        val = _fitz.Annot_setOpacity(self, opacity)
-        _upd_my_AP(self)
-
-        return val
+        return _fitz.Annot_setOpacity(self, opacity)
 
     @property
 
@@ -3488,10 +3602,7 @@ class Annot(_object):
         """setBorder(self, border) -> PyObject *"""
         CheckParent(self)
 
-        val = _fitz.Annot_setBorder(self, border)
-        _upd_my_AP(self)
-
-        return val
+        return _fitz.Annot_setBorder(self, border)
 
     @property
 
@@ -3634,6 +3745,41 @@ class Link(_object):
     __repr__ = _swig_repr
     __swig_destroy__ = _fitz.delete_Link
     __del__ = lambda self: None
+
+    def _border(self, doc, xref):
+        """_border(self, doc, xref) -> PyObject *"""
+        return _fitz.Link__border(self, doc, xref)
+
+
+    def _setBorder(self, border, doc, xref):
+        """_setBorder(self, border, doc, xref) -> PyObject *"""
+        return _fitz.Link__setBorder(self, border, doc, xref)
+
+
+    def _colors(self, doc, xref):
+        """_colors(self, doc, xref) -> PyObject *"""
+        return _fitz.Link__colors(self, doc, xref)
+
+
+    def _setColors(self, colors, doc, xref):
+        """_setColors(self, colors, doc, xref) -> PyObject *"""
+        return _fitz.Link__setColors(self, colors, doc, xref)
+
+
+    @property
+    def border(self):
+        return self._border(self.parent.parent.this, self.xref)
+
+    def setBorder(self, border):
+        return self._setBorder(border, self.parent.parent.this, self.xref)
+
+    @property
+    def colors(self):
+        return self._colors(self.parent.parent.this, self.xref)
+
+    def setColors(self, colors):
+        return self._setColors(colors, self.parent.parent.this, self.xref)
+
     @property
 
     def uri(self):
@@ -3679,10 +3825,13 @@ class Link(_object):
     @property
 
     def rect(self):
-        """rect(self) -> Rect"""
+        """rect(self) -> PyObject *"""
         CheckParent(self)
 
-        return _fitz.Link_rect(self)
+        val = _fitz.Link_rect(self)
+        val = Rect(val)
+
+        return val
 
     @property
 
@@ -3691,10 +3840,18 @@ class Link(_object):
         CheckParent(self)
 
         val = _fitz.Link_next(self)
+
         if val:
             val.thisown = True
-            val.parent = self.parent # copy owning page object from previous annot
+            val.parent = self.parent # copy owning page from prev link
             val.parent._annot_refs[id(val)] = val
+            if self.xref > 0: # prev link has an xref
+                link_xrefs = self.parent._getLinkXrefs()
+                idx = link_xrefs.index(self.xref)
+                val.xref = link_xrefs[idx + 1]
+            else:
+                val.xref = 0
+
 
         return val
 
@@ -3748,8 +3905,11 @@ class DisplayList(_object):
     @property
 
     def rect(self):
-        """rect(self) -> Rect"""
-        return _fitz.DisplayList_rect(self)
+        """rect(self) -> PyObject *"""
+        val = _fitz.DisplayList_rect(self)
+        val = Rect(val)
+
+        return val
 
 
     def getPixmap(self, matrix=None, colorspace=None, alpha=0, clip=None):
@@ -3788,15 +3948,20 @@ class TextPage(_object):
     __swig_destroy__ = _fitz.delete_TextPage
     __del__ = lambda self: None
 
-    def search(self, needle, hit_max=16):
-        """search(self, needle, hit_max=16) -> PyObject *"""
-        val = _fitz.TextPage_search(self, needle, hit_max)
+    def search(self, needle, hit_max=16, quads=0):
+        """search(self, needle, hit_max=16, quads=0) -> PyObject *"""
+        val = _fitz.TextPage_search(self, needle, hit_max, quads)
 
-        if val:
-            nval = []
-            for r in val:
-                nval.append(Rect(r))
-            val = nval
+        if len(val) == 0:
+            return val
+        nval = []
+        for v in val:
+            q = Quad(v)
+            if not quads:
+                nval.append(q.rect)
+            else:
+                nval.append(q)
+        val = nval
 
 
         return val
@@ -3820,12 +3985,17 @@ class TextPage(_object):
             return val
         import base64, json
 
-        def convertb64(s):
-            if str is bytes:
-                return base64.b64encode(s)
-            return base64.b64encode(s).decode()
+        class b64encode(json.JSONEncoder):
+            def default(self,s):
+                if str is not bytes and type(s) is bytes:
+                    return base64.b64encode(s).decode()
+                if type(s) is bytearray:
+                    if str is bytes:
+                        return base64.b64encode(s)
+                    else:
+                        return base64.b64encode(s).decode()
 
-        val = json.dumps(val, separators=(",", ":"), default=convertb64)
+        val = json.dumps(val, separators=(",", ":"), cls=b64encode, indent=1)
 
 
         return val
@@ -3895,7 +4065,7 @@ class Tools(_object):
     __repr__ = _swig_repr
 
     def gen_id(self):
-        """Return a globally unique integer."""
+        """Return a unique integer."""
         return _fitz.Tools_gen_id(self)
 
 
@@ -3930,6 +4100,249 @@ class Tools(_object):
     def glyph_cache_empty(self):
         """Empty the glyph cache."""
         return _fitz.Tools_glyph_cache_empty(self)
+
+
+    def transform_rect(self, rect, matrix):
+        """transform_rect(self, rect, matrix) -> PyObject *"""
+        return _fitz.Tools_transform_rect(self, rect, matrix)
+
+
+    def invert_matrix(self, matrix):
+        """invert_matrix(self, matrix) -> PyObject *"""
+        return _fitz.Tools_invert_matrix(self, matrix)
+
+
+
+    def _hor_matrix(self, C, P):
+        """Given two points C, P calculate matrix that rotates and translates the vector C -> P such that C is mapped to Point(0, 0), and P to some point on the x axis
+        """
+        S = (P - C).unit                        # unit vector C -> P
+        return Matrix(1, 0, 0, 1, -C.x, -C.y) * Matrix(S.x, -S.y, S.y, S.x, 0, 0)
+
+
+    def _le_annot_parms(self, annot, p1, p2):
+        """Get common parameters for making line end symbols.
+        """
+        w = annot.border["width"]          # line width
+        sc = annot.colors["stroke"]        # stroke color
+        if not sc: sc = (0,0,0)
+        scol = " ".join(map(str, sc)) + " RG\n"
+        fc = annot.colors["fill"]          # fill color
+        if not fc: fc = (0,0,0)
+        fcol = " ".join(map(str, fc)) + " rg\n"
+        nr = annot.rect
+        h = nr.y1
+        np1 = p1                   # point coord relative to annot rect
+        np2 = p2                   # point coord relative to annot rect
+        m = self._hor_matrix(np1, np2)        # matrix makes the line horizontal
+        im = ~m                            # inverted matrix
+        L = np1 * m                        # converted start (left) point
+        R = np2 * m                        # converted end (right) point
+        if 0 <= annot.opacity < 1:
+            opacity = "/Alp0 gs\n"
+        else:
+            opacity = ""
+        return m, im, L, R, w, h, scol, fcol, opacity
+
+
+    def _oval_string(self, h, p1, p2, p3, p4):
+        """Return /AP string defining an oval within a 4-polygon provided as points
+        """
+        def bezier(p, q, r):
+            f = "%g %g %g %g %g %g c\n"
+            return f % (p.x, p.y, q.x, q.y, r.x, r.y)
+
+        kappa = 0.55228474983              # magic number
+        ml = p1 + (p4 - p1) * 0.5          # middle points ...
+        mo = p1 + (p2 - p1) * 0.5          # for each ...
+        mr = p2 + (p3 - p2) * 0.5          # polygon ...
+        mu = p4 + (p3 - p4) * 0.5          # side
+        ol1 = ml + (p1 - ml) * kappa       # the 8 bezier
+        ol2 = mo + (p1 - mo) * kappa       # helper points
+        or1 = mo + (p2 - mo) * kappa
+        or2 = mr + (p2 - mr) * kappa
+        ur1 = mr + (p3 - mr) * kappa
+        ur2 = mu + (p3 - mu) * kappa
+        ul1 = mu + (p4 - mu) * kappa
+        ul2 = ml + (p4 - ml) * kappa
+    # now draw, starting from middle point of left side
+        ap = "%g %g m\n" % (ml.x, ml.y)
+        ap += bezier(ol1, ol2, mo)
+        ap += bezier(or1, or2, mr)
+        ap += bezier(ur1, ur2, mu)
+        ap += bezier(ul1, ul2, ml)
+        return ap
+
+
+    def _le_diamond(self, annot, p1, p2, lr):
+        """Make stream commands for diamond line end symbol. "lr" denotes left (False) or right point.
+        """
+        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        shift = 2.5             # 2*shift*width = length of square edge
+        d = shift * max(1, w)
+        M = R - (d/2., 0) if lr else L + (d/2., 0)
+        r = Rect(M, M) + (-d, -d, d, d)         # the square
+    # the square makes line longer by (2*shift - 1)*width
+        p = (r.tl + (r.bl - r.tl) * 0.5) * im
+        ap = "q\n%s%g %g m\n" % (opacity, p.x, p.y)
+        p = (r.tl + (r.tr - r.tl) * 0.5) * im
+        ap += "%g %g l\n"   % (p.x, p.y)
+        p = (r.tr + (r.br - r.tr) * 0.5) * im
+        ap += "%g %g l\n"   % (p.x, p.y)
+        p = (r.br + (r.bl - r.br) * 0.5) * im
+        ap += "%g %g l\n"   % (p.x, p.y)
+        ap += "%g w\n" % w
+        ap += scol + fcol + "b\nQ\n"
+        return ap
+
+
+    def _le_square(self, annot, p1, p2, lr):
+        """Make stream commands for square line end symbol. "lr" denotes left (False) or right point.
+        """
+        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        shift = 2.5             # 2*shift*width = length of square edge
+        d = shift * max(1, w)
+        M = R - (d/2., 0) if lr else L + (d/2., 0)
+        r = Rect(M, M) + (-d, -d, d, d)         # the square
+    # the square makes line longer by (2*shift - 1)*width
+        p = r.tl * im
+        ap = "q\n%s%g %g m\n" % (opacity, p.x, p.y)
+        p = r.tr * im
+        ap += "%g %g l\n"   % (p.x, p.y)
+        p = r.br * im
+        ap += "%g %g l\n"   % (p.x, p.y)
+        p = r.bl * im
+        ap += "%g %g l\n"   % (p.x, p.y)
+        ap += "%g w\n" % w
+        ap += scol + fcol + "b\nQ\n"
+        return ap
+
+
+    def _le_circle(self, annot, p1, p2, lr):
+        """Make stream commands for circle line end symbol. "lr" denotes left (False) or right point.
+        """
+        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        shift = 2.5             # 2*shift*width = length of square edge
+        d = shift * max(1, w)
+        M = R - (d/2., 0) if lr else L + (d/2., 0)
+        r = Rect(M, M) + (-d, -d, d, d)         # the square
+        ap = "q\n" + opacity + self._oval_string(h, r.tl * im, r.tr * im, r.br * im, r.bl * im)
+        ap += "%g w\n" % w
+        ap += scol + fcol + "b\nQ\n"
+        return ap
+
+
+    def _le_butt(self, annot, p1, p2, lr):
+        """Make stream commands for butt line end symbol. "lr" denotes left (False) or right point.
+        """
+        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        shift = 3
+        d = shift * max(1, w)
+        M = R if lr else L
+        top = (M + (0, -d/2.)) * im
+        bot = (M + (0, d/2.)) * im
+        ap = "\nq\n%s%g %g m\n" % (opacity, top.x, top.y)
+        ap += "%g %g l\n" % (bot.x, bot.y)
+        ap += "%g w\n" % w
+        ap += scol + "s\nQ\n"
+        return ap
+
+
+    def _le_slash(self, annot, p1, p2, lr):
+        """Make stream commands for slash line end symbol. "lr" denotes left (False) or right point.
+        """
+        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        rw = 1.1547 * max(1, w) * 1.0         # makes rect diagonal a 30 deg inclination
+        M = R if lr else L
+        r = Rect(M.x - rw, M.y - 2 * w, M.x + rw, M.y + 2 * w)
+        top = r.tl * im
+        bot = r.br * im
+        ap = "\nq\n%s%g %g m\n" % (opacity, top.x, top.y)
+        ap += "%g %g l\n" % (bot.x, bot.y)
+        ap += "%g w\n" % w
+        ap += scol + "s\nQ\n"
+        return ap
+
+
+    def _le_openarrow(self, annot, p1, p2, lr):
+        """Make stream commands for open arrow line end symbol. "lr" denotes left (False) or right point.
+        """
+        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        shift = 2.5
+        d = shift * max(1, w)
+        p2 = R + (d/2., 0) if lr else L - (d/2., 0)
+        p1 = p2 + (-2*d, -d) if lr else p2 + (2*d, -d)
+        p3 = p2 + (-2*d, d) if lr else p2 + (2*d, d)
+        p1 *= im
+        p2 *= im
+        p3 *= im
+        ap = "\nq\n%s%g %g m\n" % (opacity, p1.x, p1.y)
+        ap += "%g %g l\n" % (p2.x, p2.y)
+        ap += "%g %g l\n" % (p3.x, p3.y)
+        ap += "%g w\n" % w
+        ap += scol + "S\nQ\n"
+        return ap
+
+
+    def _le_closedarrow(self, annot, p1, p2, lr):
+        """Make stream commands for closed arrow line end symbol. "lr" denotes left (False) or right point.
+        """
+        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        shift = 2.5
+        d = shift * max(1, w)
+        p2 = R + (d/2., 0) if lr else L - (d/2., 0)
+        p1 = p2 + (-2*d, -d) if lr else p2 + (2*d, -d)
+        p3 = p2 + (-2*d, d) if lr else p2 + (2*d, d)
+        p1 *= im
+        p2 *= im
+        p3 *= im
+        ap = "\nq\n%s%g %g m\n" % (opacity, p1.x, p1.y)
+        ap += "%g %g l\n" % (p2.x, p2.y)
+        ap += "%g %g l\n" % (p3.x, p3.y)
+        ap += "%g w\n" % w
+        ap += scol + fcol + "b\nQ\n"
+        return ap
+
+
+    def _le_ropenarrow(self, annot, p1, p2, lr):
+        """Make stream commands for right open arrow line end symbol. "lr" denotes left (False) or right point.
+        """
+        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        shift = 2.5
+        d = shift * max(1, w)
+        p2 = R - (d/3., 0) if lr else L + (d/3., 0)
+        p1 = p2 + (2*d, -d) if lr else p2 + (-2*d, -d)
+        p3 = p2 + (2*d, d) if lr else p2 + (-2*d, d)
+        p1 *= im
+        p2 *= im
+        p3 *= im
+        ap = "\nq\n%s%g %g m\n" % (opacity, p1.x, p1.y)
+        ap += "%g %g l\n" % (p2.x, p2.y)
+        ap += "%g %g l\n" % (p3.x, p3.y)
+        ap += "%g w\n" % w
+        ap += scol + fcol + "S\nQ\n"
+        return ap
+
+
+    def _le_rclosedarrow(self, annot, p1, p2, lr):
+        """Make stream commands for right closed arrow line end symbol. "lr" denotes left (False) or right point.
+        """
+        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        shift = 2.5
+        d = shift * max(1, w)
+        p2 = R - (2*d, 0) if lr else L + (2*d, 0)
+        p1 = p2 + (2*d, -d) if lr else p2 + (-2*d, -d)
+        p3 = p2 + (2*d, d) if lr else p2 + (-2*d, d)
+        p1 *= im
+        p2 *= im
+        p3 *= im
+        ap = "\nq\n%s%g %g m\n" % (opacity, p1.x, p1.y)
+        ap += "%g %g l\n" % (p2.x, p2.y)
+        ap += "%g %g l\n" % (p3.x, p3.y)
+        ap += "%g w\n" % w
+        ap += scol + fcol + "b\nQ\n"
+        return ap
+
 
 
     def __init__(self):

@@ -6,19 +6,19 @@
 pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_document *pdfsrc, int pno, fz_rect *mediabox, fz_rect *cropbox, int xref, pdf_graft_map *gmap)
 {
     fz_buffer *nres = NULL, *res = NULL;
-    pdf_obj *xobj1, *contents, *resources, *o, *spageref;
+    pdf_obj *xobj1, *contents = NULL, *resources = NULL, *o, *spageref;
     int i;
     fz_try(ctx)
     {
         if (pno < 0 || pno >= pdf_count_pages(ctx, pdfsrc))
             THROWMSG("invalid page number(s)");
         spageref = pdf_lookup_page_obj(ctx, pdfsrc, pno);
-        pdf_obj *mb = pdf_dict_get(ctx, spageref, PDF_NAME_MediaBox);
+        pdf_obj *mb = pdf_dict_get(ctx, spageref, PDF_NAME(MediaBox));
         if (mb)
-            pdf_to_rect(ctx, mb, mediabox);
+            *mediabox = pdf_to_rect(ctx, mb);
         else 
-            pdf_bound_page(ctx, pdf_load_page(ctx, pdfsrc, pno), mediabox);
-        o = pdf_dict_get(ctx, spageref, PDF_NAME_CropBox);
+            *mediabox = pdf_bound_page(ctx, pdf_load_page(ctx, pdfsrc, pno));
+        o = pdf_dict_get(ctx, spageref, PDF_NAME(CropBox));
         if (!o)
         {
             cropbox->x0 = mediabox->x0;
@@ -27,7 +27,7 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
             cropbox->y1 = mediabox->y1;
         }
         else
-            pdf_to_rect(ctx, o, cropbox);
+            *cropbox = pdf_to_rect(ctx, o);
 
         if (xref > 0)        // we can reuse an XObject!
         {
@@ -38,14 +38,14 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
         else                 // need to create new XObject
         {
             // Deep-copy resources object of source page
-            o = pdf_dict_get(ctx, spageref, PDF_NAME_Resources);
+            o = pdf_dict_get(ctx, spageref, PDF_NAME(Resources));
             if (gmap)        // use graftmap when possible
                 resources = pdf_graft_mapped_object(ctx, gmap, o);
             else
                 resources = pdf_graft_object(ctx, pdfout, o);
             
             // get spgage contents source; combine when several objects
-            contents = pdf_dict_get(ctx, spageref, PDF_NAME_Contents);
+            contents = pdf_dict_get(ctx, spageref, PDF_NAME(Contents));
             if (pdf_is_array(ctx, contents))     // more than one!
             {
                 res = fz_new_buffer(ctx, 1024);
@@ -64,13 +64,13 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
             //-------------------------------------------------------------
             // create XObject representing the source page
             //-------------------------------------------------------------
-            xobj1 = pdf_new_xobject(ctx, pdfout, mediabox, &fz_identity);
+            xobj1 = pdf_new_xobject(ctx, pdfout, *mediabox, fz_identity, NULL, res);
             // store spage contents
             JM_update_stream(ctx, pdfout, xobj1, res);
             fz_drop_buffer(ctx, res);
 
             // store spage resources
-            pdf_dict_put_drop(ctx, xobj1, PDF_NAME_Resources, resources);
+            pdf_dict_put_drop(ctx, xobj1, PDF_NAME(Resources), resources);
         }
     }
     fz_catch(ctx) fz_rethrow(ctx);
@@ -85,7 +85,7 @@ void JM_insert_contents(fz_context *ctx, pdf_document *pdf,
 {
     fz_try(ctx)
     {
-        pdf_obj *contents = pdf_dict_get(ctx, pageref, PDF_NAME_Contents);
+        pdf_obj *contents = pdf_dict_get(ctx, pageref, PDF_NAME(Contents));
         pdf_obj *newconts = pdf_add_stream(ctx, pdf, newcont, NULL, 0);
         if (pdf_is_array(ctx, contents))
         {
@@ -107,7 +107,7 @@ void JM_insert_contents(fz_context *ctx, pdf_document *pdf,
                 pdf_array_push_drop(ctx, carr, newconts);
                 pdf_array_push(ctx, carr, contents);
             }
-            pdf_dict_put_drop(ctx, pageref, PDF_NAME_Contents, carr);
+            pdf_dict_put_drop(ctx, pageref, PDF_NAME(Contents), carr);
         }
     }
     fz_catch(ctx) fz_rethrow(ctx);
@@ -122,7 +122,7 @@ void JM_extend_contents(fz_context *ctx, pdf_document *pdfout,
 {
     int i;
     fz_buffer *oldcont = NULL, *endcont = NULL;
-    pdf_obj *contents = pdf_dict_get(ctx, pageref, PDF_NAME_Contents);
+    pdf_obj *contents = pdf_dict_get(ctx, pageref, PDF_NAME(Contents));
     fz_try(ctx)
     {
         if (pdf_is_array(ctx, contents))     // multiple contents objects!
@@ -161,50 +161,5 @@ void JM_extend_contents(fz_context *ctx, pdf_document *pdfout,
     return;
 }
 -----------------------------------------------------------------------------*/
-//-----------------------------------------------------------------------------
-// Create / check AP object for the annotation
-// Always reset /BBOX to rect and /Matrix to the identity matrix.
-//-----------------------------------------------------------------------------
-void JM_make_ap_object(fz_context *ctx, fz_annot *fzannot, fz_rect *rect, char *c)
-{
-    pdf_annot *annot = pdf_annot_from_fz_annot(ctx, fzannot);
-    pdf_document *pdf = annot->page->doc;
-    pdf_obj *xobj, *ca = NULL, *extgstate = NULL;
-    fz_buffer *contbuffer = NULL;
-    fz_try(ctx)
-    {
-        xobj = pdf_dict_getl(ctx, annot->obj, PDF_NAME_AP, PDF_NAME_N, NULL);
-        if (xobj)
-        {
-            pdf_dict_put_rect(ctx, xobj, PDF_NAME_BBox, rect);
-            pdf_dict_put_matrix(ctx, xobj, PDF_NAME_Matrix, &fz_identity);
-        }
-        else
-            xobj = pdf_new_xobject(ctx, pdf, rect, &fz_identity);
-
-        ca = pdf_dict_get(ctx, annot->obj, PDF_NAME_CA);
-        if (ca)
-        {
-            pdf_obj *fcao = pdf_new_real(ctx, pdf, pdf_to_real(ctx, ca));
-            pdf_obj *alp0 = pdf_new_dict(ctx, pdf, 2);
-            pdf_dict_put(ctx, alp0, PDF_NAME_CA, fcao);
-            pdf_dict_put(ctx, alp0, PDF_NAME_ca, fcao);
-            pdf_obj *extg = pdf_new_dict(ctx, pdf, 1);
-            pdf_dict_puts_drop(ctx, extg, "Alp0", alp0);
-            pdf_dict_putl_drop(ctx, xobj, extg, PDF_NAME_Resources, PDF_NAME_ExtGState, NULL);
-        }
-
-        contbuffer = fz_new_buffer_from_copied_data(ctx, c, strlen(c));
-        JM_update_stream(ctx, pdf, xobj, contbuffer);
-        pdf_dict_putl_drop(ctx, annot->obj, xobj, PDF_NAME_AP, PDF_NAME_N, NULL);
-        annot->ap = NULL;
-    }
-    fz_always(ctx)
-    {
-        fz_drop_buffer(ctx, contbuffer);
-    }
-    fz_catch(ctx) fz_rethrow(ctx);
-    return;
-}
 
 %}

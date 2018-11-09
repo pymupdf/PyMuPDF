@@ -8,9 +8,9 @@ cache:
   - "$HOME/Library/Caches/Homebrew"
 env:
   global:
-  - MUPDF='https://mupdf.com/downloads/mupdf-1.13.0-source.tar.gz'
+  - MUPDF='https://mupdf.com/downloads/mupdf-1.14.0-source.tar.gz'
   - COPYFILE_DISABLE=1
-  - TWINE_USERNAME=rk700
+  - TWINE_USERNAME=JorjMcKie
 matrix:
   include:
   - os: linux
@@ -41,7 +41,6 @@ install:
 - "$PIP install cibuildwheel==0.9.3"
 - mkdir mupdf && wget -q $MUPDF -O - | tar zx -C mupdf --strip-components=1
 - cp fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
-- cp fitz/_pdf-op-filter.c mupdf/source/pdf/pdf-op-filter.c
 script:
 - export CIBW_ENVIRONMENT='CFLAGS="-fPIC -std=gnu99"'
 - export CIBW_SKIP="cp33-* *i686"
@@ -58,4 +57,4 @@ deploy:
   repo: JorjMcKie/PyMuPDF-wheels
   target-branch: $TRAVIS_OS_NAME
   on:
-    repo: rk700/PyMuPDF
+    repo: JorjMcKie/py-mupdf
