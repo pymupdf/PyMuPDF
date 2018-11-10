@@ -8,7 +8,7 @@ cache:
   - "$HOME/Library/Caches/Homebrew"
 env:
   global:
-  - MUPDF='https://drive.google.com/open?id=1qxq9zTc71623nwdHwEXzT8iJf8yRBMdD'
+  - MUPDF='https://1drv.ms/u/s!AlPFk20A2s6dd2adaCEifxV8XsI'
   - COPYFILE_DISABLE=1
   - TWINE_USERNAME=JorjMcKie
 matrix:
