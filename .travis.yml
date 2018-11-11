@@ -8,7 +8,7 @@ cache:
   - "$HOME/Library/Caches/Homebrew"
 env:
   global:
-  - MUPDF='https://github.com/JorjMcKie/mupdf-copy/blob/master/mupdf.zip'
+  - MUPDF='https://mupdf.com/downloads/mupdf-1.14.0-source.tar.gz'
   - COPYFILE_DISABLE=1
 matrix:
   include:
@@ -38,8 +38,9 @@ matrix:
     - export CIBW_ENVIRONMENT='CFLAGS=-fPIC'
 install:
 - "$PIP install cibuildwheel==0.10.0"
-- wget -v $MUPDF -O mupdf.zip
-- gzip -dr mupdf.zip
+- wget -v $MUPDF -O mupdf-1.14.0-source.tar.gz
+- tar -zxf mupdf-1.14.0-source.tar.gz
+- mv mupdf-1.14.0-source mupdf
 - cp fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
 script:
 - export CIBW_ENVIRONMENT='CFLAGS="-fPIC -std=gnu99"'
