@@ -8,7 +8,7 @@ cache:
   - "$HOME/Library/Caches/Homebrew"
 env:
   global:
-  - MUPDF='https://mupdf.com/downloads/mupdf-1.14.0-source.tar.gz'
+  - MUPDF='https://github.com/JorjMcKie/mupdf-copy/blob/master/mupdf-1.14.0-source.tar.gz'
   - COPYFILE_DISABLE=1
 matrix:
   include:
