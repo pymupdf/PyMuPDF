@@ -39,7 +39,7 @@ matrix:
 install:
 - "$PIP install cibuildwheel==0.10.0"
 - wget -v $MUPDF -O mupdf-1.14.0-source.tar.gz
-- tar -zxf mupdf-1.14.0-source.tar.gz
+- tar -zxfv mupdf-1.14.0-source.tar.gz
 - mv mupdf-1.14.0-source mupdf
 - cp fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
 script:
