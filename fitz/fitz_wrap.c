@@ -3036,6 +3036,7 @@ static swig_module_info swig_module = {swig_types, 13, 0, 0, 0, 0};
 
 #define SWIG_FILE_WITH_INIT
 #define SWIG_PYTHON_2_UNICODE
+#define JM_EPS 1E-5
 
 // memory allocation macros
 #define JM_MEMORY 1
@@ -3104,22 +3105,22 @@ struct DeviceWrapper {
 int JM_is_valid_quad(fz_quad q)
 {
     fz_point b = fz_normalize_vector(fz_make_point(q.ur.x - q.ul.x, q.ur.y - q.ul.y));
-    if ((fabs(b.x) + fabs(b.y)) <= FLT_EPSILON) return 0;  // empty quad!
+    if ((fabs(b.x) + fabs(b.y)) <= JM_EPS) return 0;  // empty quad!
 
     fz_point c = fz_normalize_vector(fz_make_point(q.ll.x - q.ul.x, q.ll.y - q.ul.y));
-    if ((fabs(c.x) + fabs(c.y)) <= FLT_EPSILON) return 0;  // empty quad!
+    if ((fabs(c.x) + fabs(c.y)) <= JM_EPS) return 0;  // empty quad!
 
-    if (fabs(b.x * c.x + b.y * c.y) > FLT_EPSILON)
+    if (fabs(b.x * c.x + b.y * c.y) > JM_EPS)
         return 0;                                // angle at UL != 90 deg
 
     b = fz_normalize_vector(fz_make_point(q.ur.x - q.lr.x, q.ur.y - q.lr.y));
     c = fz_normalize_vector(fz_make_point(q.ll.x - q.lr.x, q.ll.y - q.lr.y));
-    if (fabs(b.x * c.x + b.y * c.y) > FLT_EPSILON)
+    if (fabs(b.x * c.x + b.y * c.y) > JM_EPS)
         return 0;                                // angle at LR != 90 deg
 
     b = fz_normalize_vector(fz_make_point(q.ul.x - q.ll.x, q.ul.y - q.ll.y));
     c = fz_normalize_vector(fz_make_point(q.lr.x - q.ll.x, q.lr.y - q.ll.y));
-    if (fabs(b.x * c.x + b.y * c.y) > FLT_EPSILON)
+    if (fabs(b.x * c.x + b.y * c.y) > JM_EPS)
         return 0;                                // angle at LL != 90 deg
     return 1;
 }
@@ -7611,8 +7612,8 @@ fz_rect JM_char_bbox(fz_stext_line *line, fz_stext_char *ch)
     fz_rect r = fz_rect_from_quad(ch->quad);
     if (!fz_is_empty_rect(r)) return r;
     // we need to correct erroneous font!
-    if ((r.y1 - r.y0) <= FLT_EPSILON) r.y0 = r.y1 - ch->size;
-    if ((r.x1 - r.x0) <= FLT_EPSILON) r.x0 = r.x1 - ch->size;
+    if ((r.y1 - r.y0) <= JM_EPS) r.y0 = r.y1 - ch->size;
+    if ((r.x1 - r.x0) <= JM_EPS) r.x0 = r.x1 - ch->size;
     return r;
 }
 
@@ -13337,7 +13338,7 @@ SWIGINTERN PyObject *Tools_invert_matrix(struct Tools *self,PyObject *matrix){
             fz_matrix src = JM_matrix_from_py(matrix);
             float a = src.a;
             float det = a * src.d - src.b * src.c;
-            if (det < -FLT_EPSILON || det > FLT_EPSILON)
+            if (det < -JM_EPS || det > JM_EPS)
             {
                 fz_matrix dst;
                 float rdet = 1 / det;

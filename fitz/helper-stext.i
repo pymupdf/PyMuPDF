@@ -61,8 +61,8 @@ fz_rect JM_char_bbox(fz_stext_line *line, fz_stext_char *ch)
     fz_rect r = fz_rect_from_quad(ch->quad);
     if (!fz_is_empty_rect(r)) return r;
     // we need to correct erroneous font!
-    if ((r.y1 - r.y0) <= FLT_EPSILON) r.y0 = r.y1 - ch->size;
-    if ((r.x1 - r.x0) <= FLT_EPSILON) r.x0 = r.x1 - ch->size;
+    if ((r.y1 - r.y0) <= JM_EPS) r.y0 = r.y1 - ch->size;
+    if ((r.x1 - r.x0) <= JM_EPS) r.x0 = r.x1 - ch->size;
     return r;
 }
 

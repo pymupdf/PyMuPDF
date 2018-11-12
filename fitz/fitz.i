@@ -64,6 +64,7 @@
 
 #define SWIG_FILE_WITH_INIT
 #define SWIG_PYTHON_2_UNICODE
+#define JM_EPS 1E-5
 
 // memory allocation macros
 #define JM_MEMORY 1
@@ -6011,7 +6012,7 @@ struct Tools
             fz_matrix src = JM_matrix_from_py(matrix);
             float a = src.a;
             float det = a * src.d - src.b * src.c;
-            if (det < -FLT_EPSILON || det > FLT_EPSILON)
+            if (det < -JM_EPS || det > JM_EPS)
             {
                 fz_matrix dst;
                 float rdet = 1 / det;

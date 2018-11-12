@@ -10,22 +10,22 @@
 int JM_is_valid_quad(fz_quad q)
 {
     fz_point b = fz_normalize_vector(fz_make_point(q.ur.x - q.ul.x, q.ur.y - q.ul.y));
-    if ((fabs(b.x) + fabs(b.y)) <= FLT_EPSILON) return 0;  // empty quad!
+    if ((fabs(b.x) + fabs(b.y)) <= JM_EPS) return 0;  // empty quad!
 
     fz_point c = fz_normalize_vector(fz_make_point(q.ll.x - q.ul.x, q.ll.y - q.ul.y));
-    if ((fabs(c.x) + fabs(c.y)) <= FLT_EPSILON) return 0;  // empty quad!
+    if ((fabs(c.x) + fabs(c.y)) <= JM_EPS) return 0;  // empty quad!
 
-    if (fabs(b.x * c.x + b.y * c.y) > FLT_EPSILON)
+    if (fabs(b.x * c.x + b.y * c.y) > JM_EPS)
         return 0;                                // angle at UL != 90 deg
 
     b = fz_normalize_vector(fz_make_point(q.ur.x - q.lr.x, q.ur.y - q.lr.y));
     c = fz_normalize_vector(fz_make_point(q.ll.x - q.lr.x, q.ll.y - q.lr.y));
-    if (fabs(b.x * c.x + b.y * c.y) > FLT_EPSILON)
+    if (fabs(b.x * c.x + b.y * c.y) > JM_EPS)
         return 0;                                // angle at LR != 90 deg
 
     b = fz_normalize_vector(fz_make_point(q.ul.x - q.ll.x, q.ul.y - q.ll.y));
     c = fz_normalize_vector(fz_make_point(q.lr.x - q.ll.x, q.lr.y - q.ll.y));
-    if (fabs(b.x * c.x + b.y * c.y) > FLT_EPSILON)
+    if (fabs(b.x * c.x + b.y * c.y) > JM_EPS)
         return 0;                                // angle at LL != 90 deg
     return 1;
 }
