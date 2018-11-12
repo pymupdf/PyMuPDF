@@ -38,7 +38,7 @@ matrix:
     - export CIBW_ENVIRONMENT='CFLAGS=-fPIC'
 install:
 - "$PIP install cibuildwheel==0.10.0"
-- git clone --depth=50 --branch=master https://github.com/JorjMcKie/mupdf.git JorjMcKie/mupdf
+- git clone --depth=50 --branch=master https://github.com/JorjMcKie/mupdf.git mupdf
 - cp fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
 script:
 - export CIBW_ENVIRONMENT='CFLAGS="-fPIC -std=gnu99"'
