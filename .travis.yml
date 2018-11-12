@@ -8,7 +8,7 @@ cache:
   - "$HOME/Library/Caches/Homebrew"
 env:
   global:
-  - MUPDF='https://github.com/JorjMcKie/mupdf-copy/blob/master/mupdf-1.14.0-source.tar.gz'
+  - MUPDF='https://github.com/JorjMcKie/mupdf/blob/master/mupdf.tar.gz'
   - COPYFILE_DISABLE=1
 matrix:
   include:
@@ -21,7 +21,7 @@ matrix:
     before_script:
     - export CIBW_BEFORE_BUILD="yum install -y zlib-devel && cd mupdf && make HAVE_X11=no
       HAVE_GLFW=no HAVE_GLUT=no prefix=/usr/local install && cd .."
-    - export CIBW_ENVIRONMENT='CFLAGS="-fPIC -std=gnu99"'
+    - export CIBW_ENVIRONMENT='CFLAGS="-fPIC"'
   - os: osx
     osx_image: xcode8.3
     language: generic
@@ -38,10 +38,12 @@ matrix:
     - export CIBW_ENVIRONMENT='CFLAGS=-fPIC'
 install:
 - "$PIP install cibuildwheel==0.10.0"
-- git clone --depth=50 --branch=master https://github.com/JorjMcKie/mupdf.git mupdf
+- wget -q $MUPDF -O mupdf.tar.gz
+- mkdir mupdf
+- tar -xzf mupdf.tar.gz mupdf
 - cp fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
 script:
-- export CIBW_ENVIRONMENT='CFLAGS="-fPIC -std=gnu99"'
+- export CIBW_ENVIRONMENT='CFLAGS="-fPIC"'
 - export CIBW_SKIP="cp33-* *i686"
 - export CIBW_TEST_COMMAND="python -c 'import fitz'"
 - cibuildwheel --output-dir wheelhouse

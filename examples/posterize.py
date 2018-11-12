@@ -10,7 +10,8 @@ python posterize.py input.pdf
 
 Result
 -------
-A file "poster-input.pdf" with 4 output pages for every input page.
+The file "poster-input.pdf" with 4 output pages for every input page:
+top-lef, top-right, bottom-left, bottom-right part on separate pages.
 
 Notes
 -----
@@ -51,7 +52,7 @@ for spage in src:                           # for each page in input
         xref = page.showPDFpage(page.rect,  # fill all new page with the image
                                 src,        # input document
                                 spage.number, # input page number
-                                subrect = rx, # which part to use of input page
+                                clip = rx,  # which part to use of input page
                                 reuse_xref = xref) # copy input page once only
                                 
 # that's it, save output file
