@@ -41,7 +41,6 @@ install:
 - mkdir mupdf && wget -q $MUPDF -O - | tar zx -C mupdf --strip-components=1
 - cp fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
 script:
-- export CIBW_ENVIRONMENT='CFLAGS="-fPIC -std=gnu99"'
 - export CIBW_SKIP="cp33-* *i686"
 - export CIBW_TEST_COMMAND="python -c 'import fitz'"
 - cibuildwheel --output-dir wheelhouse
