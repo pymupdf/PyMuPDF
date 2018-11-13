@@ -8,7 +8,7 @@ cache:
   - "$HOME/Library/Caches/Homebrew"
 env:
   global:
-  - MUPDF='https://ftp.osuosl.org/pub/blfs/conglomeration/mupdf/mupdf-1.14.0-source.tar.gz'
+  - MUPDF='https://mupdf.com/downloads/archive/mupdf-1.14.0-source.tar.gz'
   - COPYFILE_DISABLE=1
 matrix:
   include:
@@ -41,7 +41,7 @@ install:
 - mkdir mupdf && wget -q $MUPDF -O - | tar zx -C mupdf --strip-components=1
 - cp fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
 script:
-- export CIBW_ENVIRONMENT='CFLAGS="-fPIC -std=gnu99"'
+- export CIBW_ENVIRONMENT='CFLAGS="-fPIC"'
 - export CIBW_SKIP="cp33-* *i686"
 - export CIBW_TEST_COMMAND="python -c 'import fitz'"
 - cibuildwheel --output-dir wheelhouse

@@ -10,10 +10,10 @@ if sys.platform.startswith('linux'):
                                      '/usr/local/include/mupdf',
                                      '/usr/local/thirdparty/zlib',
                                     ],
-                       #library_dirs=['<mupdf_and_3rd_party_libraries_dir>'],
+                       #library_dirs=['/usr/local/lib'],
                        libraries=[
                            'mupdf',
-                           'mupdfthird',
+                           'mupdf-third',
                            # 'jbig2dec', 'openjp2', 'jpeg', 'freetype',
                            # 'crypto', #openssl is required by mupdf on archlinux
                            ], # the libraries to link with
@@ -24,7 +24,7 @@ elif sys.platform.startswith(('darwin', 'freebsd')):
                        # this are directories containing mupdf's and zlib's header files
                        include_dirs=['/usr/local/include/mupdf', '/usr/local/include'],
                        library_dirs=['/usr/local/lib'],
-                       libraries=['mupdf', 'mupdfthird']
+                       libraries=['mupdf', 'mupdf-third']
                       )
 
 else:
