@@ -10882,12 +10882,15 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addInkAnnot(struct fz_page_s *self,PyObj
             pdf_annot *annot = NULL;
             PyObject *p = NULL, *sublist = NULL;
             pdf_obj *inklist = NULL, *stroke = NULL;
-            double x, y;
+            double x, y, height;
+            fz_rect prect;
             fz_var(annot);
             fz_try(gctx)
             {
                 assert_PDF(page);
                 if (!PySequence_Check(list)) THROWMSG("arg must be a sequence");
+                prect = pdf_bound_page(gctx, page);
+                height = prect.y1 - prect.y0;
                 annot = pdf_create_annot(gctx, page, PDF_ANNOT_INK);
                 Py_ssize_t i, j, n0 = PySequence_Size(list), n1;
                 inklist = pdf_new_array(gctx, annot->page->doc, n0);
@@ -10909,7 +10912,7 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addInkAnnot(struct fz_page_s *self,PyObj
                             THROWMSG("invalid point coordinate");
                         Py_CLEAR(p);
                         pdf_array_push_real(gctx, stroke, x);
-                        pdf_array_push_real(gctx, stroke, y);
+                        pdf_array_push_real(gctx, stroke, height - y);
                     }
                     pdf_array_push_drop(gctx, inklist, stroke);
                     stroke = NULL;
@@ -12226,6 +12229,8 @@ SWIGINTERN PyObject *fz_annot_s_vertices(struct fz_annot_s *self){
             pdf_obj *il_o = pdf_dict_get(gctx, annot->obj, PDF_NAME(InkList));
             if (!il_o) return NONE;                   // no inkList
             res = PyList_New(0);                      // create result list
+            fz_rect prect = pdf_bound_page(gctx, annot->page);
+            double h = prect.y1 - prect.y0;
             n = pdf_array_len(gctx, il_o);
             for (i = 0; i < n; i++)
             {
@@ -12236,8 +12241,7 @@ SWIGINTERN PyObject *fz_annot_s_vertices(struct fz_annot_s *self){
                 {
                     point.x = pdf_to_real(gctx, pdf_array_get(gctx, o, j));
                     point.y = pdf_to_real(gctx, pdf_array_get(gctx, o, j+1));
-                    fz_transform_point(point, page_ctm);
-                    PyList_Append(list, Py_BuildValue("ff", point.x, point.y));
+                    PyList_Append(list, Py_BuildValue("ff", point.x, h - point.y));
                 }
                 PyList_Append(res, list);
                 Py_CLEAR(list);
