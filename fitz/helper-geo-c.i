@@ -33,7 +33,8 @@ int JM_is_valid_quad(fz_quad q)
 
 //-----------------------------------------------------------------------------
 // PySequence to quad. Default: quad of (0, 0) points.
-// Four floats are treated as rect coordinates.
+// Four floats are treated as coordinates of a rect, and its corners will
+// define the quad.
 //-----------------------------------------------------------------------------
 fz_quad JM_quad_from_py(PyObject *r)
 {

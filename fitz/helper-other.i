@@ -1,25 +1,4 @@
 %{
-/*-----------------------------------------------------------------------------
-// redirect stdout/stderr
-// *** currently deactivated due to missing MuPDF support ***
--------------------------------------------------------------------------------
-static void
-JM_write_stdout(fz_context *ctx, void *opaque, const void *buffer, size_t count)
-{
-    PyList_Append(fitz_stdout, PyBytes_FromStringAndSize((char *) buffer, (Py_ssize_t) count));
-}
-
-static void
-JM_write_stderr(fz_context *ctx, void *opaque, const void *buffer, size_t count)
-{
-    PyList_Append(fitz_stderr, PyBytes_FromStringAndSize((char *) buffer, (Py_ssize_t) count));
-}
-
-fz_output *JM_fitz_stdout;
-
-fz_output *JM_fitz_stderr;
------------------------------------------------------------------------------*/
-
 // a simple tracer
 void JM_TRACE(const char *id)
 {
@@ -761,4 +740,36 @@ struct fz_store_s
 	int defer_reap_count;
 	int needs_reaping;
 };
+
+//-----------------------------------------------------------------------------
+// START redirect stdout/stderr
+//-----------------------------------------------------------------------------
+static void
+JM_write_stdout(fz_context *ctx, void *opaque, const void *buffer, size_t count)
+{
+    if (!buffer || !count) return;
+    PyObject *c = Py_BuildValue("s#", (char *) buffer, (int) count);
+    char *text = JM_Python_str_AsChar(c);
+    PySys_WriteStdout("%s", text);
+    JM_Python_str_DelForPy3(text);
+    Py_DECREF(c);
+}
+
+static void
+JM_write_stderr(fz_context *ctx, void *opaque, const void *buffer, size_t count)
+{
+    if (!buffer || !count) return;
+    PyObject *c = Py_BuildValue("s#", (char *) buffer, (int) count);
+    char *text = JM_Python_str_AsChar(c);
+    PySys_WriteStderr("%s", text);
+    JM_Python_str_DelForPy3(text);
+    Py_DECREF(c);
+}
+
+fz_output *JM_fitz_stdout;
+fz_output *JM_fitz_stderr;
+//-----------------------------------------------------------------------------
+// STOP redirect stdout/stderr
+//-----------------------------------------------------------------------------
+
 %}

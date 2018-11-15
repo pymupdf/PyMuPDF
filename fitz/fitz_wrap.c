@@ -3128,7 +3128,8 @@ int JM_is_valid_quad(fz_quad q)
 
 //-----------------------------------------------------------------------------
 // PySequence to quad. Default: quad of (0, 0) points.
-// Four floats are treated as rect coordinates.
+// Four floats are treated as coordinates of a rect, and its corners will
+// define the quad.
 //-----------------------------------------------------------------------------
 fz_quad JM_quad_from_py(PyObject *r)
 {
@@ -3339,27 +3340,6 @@ PyObject *JM_py_from_matrix(fz_matrix m)
 }
 
 
-
-/*-----------------------------------------------------------------------------
-// redirect stdout/stderr
-// *** currently deactivated due to missing MuPDF support ***
--------------------------------------------------------------------------------
-static void
-JM_write_stdout(fz_context *ctx, void *opaque, const void *buffer, size_t count)
-{
-    PyList_Append(fitz_stdout, PyBytes_FromStringAndSize((char *) buffer, (Py_ssize_t) count));
-}
-
-static void
-JM_write_stderr(fz_context *ctx, void *opaque, const void *buffer, size_t count)
-{
-    PyList_Append(fitz_stderr, PyBytes_FromStringAndSize((char *) buffer, (Py_ssize_t) count));
-}
-
-fz_output *JM_fitz_stdout;
-
-fz_output *JM_fitz_stderr;
------------------------------------------------------------------------------*/
 
 // a simple tracer
 void JM_TRACE(const char *id)
@@ -4102,6 +4082,38 @@ struct fz_store_s
 	int defer_reap_count;
 	int needs_reaping;
 };
+
+//-----------------------------------------------------------------------------
+// START redirect stdout/stderr
+//-----------------------------------------------------------------------------
+static void
+JM_write_stdout(fz_context *ctx, void *opaque, const void *buffer, size_t count)
+{
+    if (!buffer || !count) return;
+    PyObject *c = Py_BuildValue("s#", (char *) buffer, (int) count);
+    char *text = JM_Python_str_AsChar(c);
+    PySys_WriteStdout("%s", text);
+    JM_Python_str_DelForPy3(text);
+    Py_DECREF(c);
+}
+
+static void
+JM_write_stderr(fz_context *ctx, void *opaque, const void *buffer, size_t count)
+{
+    if (!buffer || !count) return;
+    PyObject *c = Py_BuildValue("s#", (char *) buffer, (int) count);
+    char *text = JM_Python_str_AsChar(c);
+    PySys_WriteStderr("%s", text);
+    JM_Python_str_DelForPy3(text);
+    Py_DECREF(c);
+}
+
+fz_output *JM_fitz_stdout;
+fz_output *JM_fitz_stderr;
+//-----------------------------------------------------------------------------
+// STOP redirect stdout/stderr
+//-----------------------------------------------------------------------------
+
 
 
 void pdf_dict_put_val_null(fz_context *ctx, pdf_obj *obj, int idx);
@@ -11343,8 +11355,8 @@ SWIGINTERN PyObject *fz_page_s__getLinkXrefs(struct fz_page_s *self){
             pdf_obj *annots, *annots_arr, *link, *obj;
             int i, lcount;
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
-            if (!page) return NONE;         // None for non-PDF
             PyObject *linkxrefs = PyList_New(0);
+            if (!page) return linkxrefs;         // empty list for non-PDF
             annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
             if (!annots) return linkxrefs;
             if (pdf_is_indirect(gctx, annots))
@@ -22089,11 +22101,9 @@ SWIG_init(void) {
   }
   fz_register_document_handlers(gctx);
   
-  /*-----------------------------------------------------------------------------
-  // redirect stdout/stderr
-  // *** currently deactivated due to missing MuPDF support ***
-  fitz_stdout = PyList_New(0);
-  fitz_stderr = PyList_New(0);
+  //-----------------------------------------------------------------------------
+  // START redirect stdout/stderr
+  //-----------------------------------------------------------------------------
   
   JM_fitz_stdout = fz_new_output(gctx, 0, JM_fitz_stdout, JM_write_stdout, NULL, NULL);
   
@@ -22105,12 +22115,13 @@ SWIG_init(void) {
   
   if (JM_fitz_stderr && JM_fitz_stdout)
   {
-      fz_write_printf(gctx, fz_stdout(gctx), "first message on stdout");
-      fz_write_printf(gctx, fz_stderr(gctx), "first message on stderr");
+    ;
   }
   else
-      PySys_WriteStdout("error redefining stdout/stderr!\n");
-  -----------------------------------------------------------------------------*/
+  PySys_WriteStdout("error redefining stdout/stderr!\n");
+  //-----------------------------------------------------------------------------
+  // STOP redirect stdout/stderr
+  //-----------------------------------------------------------------------------
   
   SWIG_Python_SetConstant(d, "CS_RGB",SWIG_From_int((int)(1)));
   SWIG_Python_SetConstant(d, "CS_GRAY",SWIG_From_int((int)(2)));

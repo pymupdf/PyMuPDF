@@ -106,8 +106,8 @@ del platform
 
 VersionFitz = "1.14.0"
 VersionBind = "1.14.0"
-VersionDate = "2018-11-14 12:32:27"
-version = (VersionBind, VersionFitz, "20181114123227")
+VersionDate = "2018-11-15 05:11:14"
+version = (VersionBind, VersionFitz, "20181115051114")
 
 
 class Matrix():
@@ -1731,11 +1731,8 @@ open(filename, filetype='type') - from file"""
 
     def convertToPDF(self, from_page=0, to_page=-1, rotate=0):
         """Convert document to PDF selecting page range and optional rotation. Output bytes object."""
-
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
-        if platform_bitness != "64bit":
-            raise ValueError("currently supported on 64bit systems only")
+        if self.isClosed or self.isEncrypted:
+            raise ValueError("operation illegal for closed / encrypted doc")
 
         return _fitz.Document_convertToPDF(self, from_page, to_page, rotate)
 

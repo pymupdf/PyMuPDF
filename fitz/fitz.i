@@ -130,11 +130,9 @@ char *JM_Python_str_AsChar(PyObject *str);
     }
     fz_register_document_handlers(gctx);
 
-/*-----------------------------------------------------------------------------
-// redirect stdout/stderr
-// *** currently deactivated due to missing MuPDF support ***
-fitz_stdout = PyList_New(0);
-fitz_stderr = PyList_New(0);
+//-----------------------------------------------------------------------------
+// START redirect stdout/stderr
+//-----------------------------------------------------------------------------
 
 JM_fitz_stdout = fz_new_output(gctx, 0, JM_fitz_stdout, JM_write_stdout, NULL, NULL);
 
@@ -145,13 +143,12 @@ JM_fitz_stderr = fz_new_output(gctx, 0, JM_fitz_stderr, JM_write_stderr, NULL, N
 fz_set_stderr(gctx, JM_fitz_stderr);
 
 if (JM_fitz_stderr && JM_fitz_stdout)
-{
-    fz_write_printf(gctx, fz_stdout(gctx), "first message on stdout");
-    fz_write_printf(gctx, fz_stderr(gctx), "first message on stderr");
-}
+    {;}
 else
     PySys_WriteStdout("error redefining stdout/stderr!\n");
------------------------------------------------------------------------------*/
+//-----------------------------------------------------------------------------
+// STOP redirect stdout/stderr
+//-----------------------------------------------------------------------------
 %}
 
 %header %{
@@ -630,11 +627,6 @@ struct fz_document_s
 
         FITZEXCEPTION(convertToPDF, !result)
         CLOSECHECK(convertToPDF)
-        %pythonprepend convertToPDF %{
-        if self.isClosed:
-            raise ValueError("operation illegal for closed doc")
-        if platform_bitness != "64bit":
-            raise ValueError("currently supported on 64bit systems only")%}
         %feature("autodoc","Convert document to PDF selecting page range and optional rotation. Output bytes object.") convertToPDF;
         PyObject *convertToPDF(int from_page=0, int to_page=-1, int rotate=0)
         {
@@ -2799,8 +2791,8 @@ fannot._erase()
             pdf_obj *annots, *annots_arr, *link, *obj;
             int i, lcount;
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            if (!page) return NONE;         // None for non-PDF
             PyObject *linkxrefs = PyList_New(0);
+            if (!page) return linkxrefs;         // empty list for non-PDF
             annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
             if (!annots) return linkxrefs;
             if (pdf_is_indirect(gctx, annots))
