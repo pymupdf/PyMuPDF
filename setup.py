@@ -22,7 +22,9 @@ elif sys.platform.startswith(('darwin', 'freebsd')):
     module = Extension('fitz._fitz', # name of the module
                        ['fitz/fitz_wrap.c'], # C source file
                        # this are directories containing mupdf's and zlib's header files
-                       include_dirs=['/usr/local/include/mupdf', '/usr/local/include'],
+                       include_dirs=['/usr/local/include/mupdf',
+                                     '/usr/local/include',
+                                     '/usr/local/thirdparty/zlib'],
                        library_dirs=['/usr/local/lib'],
                        libraries=['mupdf', 'mupdfthird']
                       )
