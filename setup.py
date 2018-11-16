@@ -10,10 +10,10 @@ if sys.platform.startswith('linux'):
                                      '/usr/local/include/mupdf',
                                      '/usr/local/thirdparty/zlib',
                                     ],
-                       #library_dirs=['<mupdf_and_3rd_party_libraries_dir>'],
+                       #library_dirs=['/usr/local/lib'],
                        libraries=[
                            'mupdf',
-                           'mupdfthird',
+                           'mupdf-third',
                            # 'jbig2dec', 'openjp2', 'jpeg', 'freetype',
                            # 'crypto', #openssl is required by mupdf on archlinux
                            ], # the libraries to link with
@@ -26,7 +26,7 @@ elif sys.platform.startswith(('darwin', 'freebsd')):
                                      '/usr/local/include',
                                      '/usr/local/thirdparty/zlib'],
                        library_dirs=['/usr/local/lib'],
-                       libraries=['mupdf', 'mupdfthird']
+                       libraries=['mupdf', 'mupdf-third']
                       )
 
 else:
@@ -52,7 +52,7 @@ else:
                        sources=['./fitz/fitz_wrap.c',])
 
 setup(name = 'PyMuPDF',
-      version = "1.13.20",
+      version = "1.14.0",
       description = 'Python bindings for the PDF rendering library MuPDF',
       classifiers = ['Development Status :: 5 - Production/Stable',
                      'Environment :: Console',

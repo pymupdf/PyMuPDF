@@ -15,18 +15,17 @@ PyObject *JM_pushbtn_state(fz_context *ctx, pdf_annot *annot)
 //-----------------------------------------------------------------------------
 PyObject *JM_checkbox_state(fz_context *ctx, pdf_annot *annot)
 {
-    pdf_document *pdf = pdf_get_bound_document(ctx, annot->obj);
-    pdf_obj *leafv  = pdf_get_inheritable(ctx, pdf, annot->obj, PDF_NAME_V);
-    pdf_obj *leafas = pdf_get_inheritable(ctx, pdf, annot->obj, PDF_NAME_AS);
+    pdf_obj *leafv  = pdf_dict_get_inheritable(ctx, annot->obj, PDF_NAME(V));
+    pdf_obj *leafas = pdf_dict_get_inheritable(ctx, annot->obj, PDF_NAME(AS));
     if (!leafv) Py_RETURN_FALSE;
-    if (leafv  == PDF_NAME_Off) Py_RETURN_FALSE;
-    if (leafv == pdf_new_name(ctx, NULL, "Yes"))
+    if (leafv  == PDF_NAME(Off)) Py_RETURN_FALSE;
+    if (leafv == pdf_new_name(ctx, "Yes"))
         Py_RETURN_TRUE;
     if (pdf_is_string(ctx, leafv) && !strcmp(pdf_to_str_buf(ctx, leafv), "Off"))
         Py_RETURN_FALSE;
     if (pdf_is_string(ctx, leafv) && !strcmp(pdf_to_str_buf(ctx, leafv), "Yes"))
         Py_RETURN_TRUE;
-    if (leafas && leafas == PDF_NAME_Off) Py_RETURN_FALSE;
+    if (leafas && leafas == PDF_NAME(Off)) Py_RETURN_FALSE;
     Py_RETURN_TRUE;
 }
 
@@ -56,9 +55,9 @@ PyObject *JM_listbox_value(fz_context *ctx, pdf_annot *annot)
 {
     int i = 0, n = 0;
     // may be single value or array
-    pdf_obj *optarr = pdf_dict_get(ctx, annot->obj, PDF_NAME_V);
+    pdf_obj *optarr = pdf_dict_get(ctx, annot->obj, PDF_NAME(V));
     if (pdf_is_string(ctx, optarr))         // a single string
-        return PyString_FromString(pdf_to_utf8(ctx, optarr));
+        return PyString_FromString(pdf_to_text_string(ctx, optarr));
 
     // value is an array (may have len 0)
     n = pdf_array_len(ctx, optarr);
@@ -71,7 +70,7 @@ PyObject *JM_listbox_value(fz_context *ctx, pdf_annot *annot)
         pdf_obj *elem = pdf_array_get(ctx, optarr, i);
         if (pdf_is_array(ctx, elem))
             elem = pdf_array_get(ctx, elem, 1);
-        PyList_Append(liste, PyString_FromString(pdf_to_utf8(ctx, elem)));
+        PyList_Append(liste, PyString_FromString(pdf_to_text_string(ctx, elem)));
     }
     return liste;
 }
@@ -97,7 +96,7 @@ PyObject *JM_choice_options(fz_context *ctx, pdf_annot *annot)
     int n = pdf_choice_widget_options(ctx, pdf, (pdf_widget *) annot, 0, NULL);
     if (n == 0) return NONE;                     // wrong widget type
 
-    pdf_obj *optarr = pdf_dict_get(ctx, annot->obj, PDF_NAME_Opt);
+    pdf_obj *optarr = pdf_dict_get(ctx, annot->obj, PDF_NAME(Opt));
     int i, m;
     PyObject *liste = PyList_New(0);
 
@@ -107,12 +106,12 @@ PyObject *JM_choice_options(fz_context *ctx, pdf_annot *annot)
         if (m == 2)
         {
             PyList_Append(liste, Py_BuildValue("ss",
-            pdf_to_utf8(ctx, pdf_array_get(ctx, pdf_array_get(ctx, optarr, i), 0)),
-            pdf_to_utf8(ctx, pdf_array_get(ctx, pdf_array_get(ctx, optarr, i), 1))));
+            pdf_to_text_string(ctx, pdf_array_get(ctx, pdf_array_get(ctx, optarr, i), 0)),
+            pdf_to_text_string(ctx, pdf_array_get(ctx, pdf_array_get(ctx, optarr, i), 1))));
         }
         else
         {
-            PyList_Append(liste, PyString_FromString(pdf_to_utf8(ctx, pdf_array_get(ctx, optarr, i))));
+            PyList_Append(liste, PyString_FromString(pdf_to_text_string(ctx, pdf_array_get(ctx, optarr, i))));
         }
     }
     return liste;
@@ -133,7 +132,7 @@ void JM_set_choice_options(fz_context *ctx, pdf_annot *annot, PyObject *liste)
         JM_Python_str_DelForPy3(opt);
     }
 
-    pdf_dict_put(ctx, annot->obj, PDF_NAME_Opt, optarr);
+    pdf_dict_put(ctx, annot->obj, PDF_NAME(Opt), optarr);
 
     return;
 }
@@ -157,18 +156,18 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // ensure a font resources dict /DR --- -----------------------------------
     pdf_obj *dr = pdf_dict_getl(ctx, pdf_trailer(ctx, pdf),
-                           PDF_NAME_Root, PDF_NAME_AcroForm, PDF_NAME_DR, NULL);
+                           PDF_NAME(Root), PDF_NAME(AcroForm), PDF_NAME(DR), NULL);
     // new /DR using the object prepared in xref
     if (!dr)
     {
         pdf_obj *form = pdf_dict_getl(ctx, pdf_trailer(ctx, pdf),
-                                        PDF_NAME_Root, PDF_NAME_AcroForm, NULL);
+                                        PDF_NAME(Root), PDF_NAME(AcroForm), NULL);
         int xref = (int) PyInt_AsLong(PyObject_GetAttrString(Widget,
                                                                    "_dr_xref"));
         pdf_obj *f = pdf_new_indirect(ctx, pdf, xref, 0);
         dr = pdf_new_dict(ctx, pdf, 1);
-        pdf_dict_put(ctx, dr, PDF_NAME_Font, f);
-        pdf_dict_put_drop(ctx, form, PDF_NAME_DR, dr);
+        pdf_dict_put(ctx, dr, PDF_NAME(Font), f);
+        pdf_dict_put_drop(ctx, form, PDF_NAME(DR), dr);
         JM_PyErr_Clear;
     }
 
@@ -180,7 +179,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     rect.y1 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 3));
     Py_CLEAR(value);
     JM_PyErr_Clear;
-    pdf_set_annot_rect(ctx, annot, &rect);    // set the rect
+    pdf_set_annot_rect(ctx, annot, rect);    // set the rect
 
     // fill color -------------------------------------------------------------
     value = PyObject_GetAttrString(Widget, "fill_color");
@@ -206,8 +205,8 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         for (i = 0; i < n; i++)
             pdf_array_push_int(ctx, dashes,
                                     PyInt_AsLong(PySequence_GetItem(value, i)));
-        pdf_dict_putl_drop(ctx, annot->obj, dashes, PDF_NAME_BS,
-                                                              PDF_NAME_D, NULL);
+        pdf_dict_putl_drop(ctx, annot->obj, dashes, PDF_NAME(BS),
+                                                              PDF_NAME(D), NULL);
     }
     Py_CLEAR(value);
     JM_PyErr_Clear;
@@ -221,8 +220,8 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         for (i = 0; i < n; i++)
             pdf_array_push_real(ctx, border_col,
                                 PyFloat_AsDouble(PySequence_GetItem(value, i)));
-        pdf_dict_putl_drop(ctx, annot->obj, border_col, PDF_NAME_MK,
-                                                             PDF_NAME_BC, NULL);
+        pdf_dict_putl_drop(ctx, annot->obj, border_col, PDF_NAME(MK),
+                                                             PDF_NAME(BC), NULL);
     }
     Py_CLEAR(value);
     JM_PyErr_Clear;
@@ -240,7 +239,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         int text_maxlen = (int) PyInt_AsLong(PyObject_GetAttrString(Widget,
                                                                "text_maxlen"));
         if (text_maxlen)
-            pdf_dict_put_int(ctx, annot->obj, PDF_NAME_MaxLen, text_maxlen);
+            pdf_dict_put_int(ctx, annot->obj, PDF_NAME(MaxLen), text_maxlen);
         JM_PyErr_Clear;
     }
     
@@ -257,20 +256,20 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     // border style -----------------------------------------------------------
     pdf_obj *val = JM_get_border_style(ctx,
                                 PyObject_GetAttrString(Widget, "border_style"));
-    pdf_dict_putl_drop(ctx, annot->obj, val, PDF_NAME_BS, PDF_NAME_S, NULL);
+    pdf_dict_putl_drop(ctx, annot->obj, val, PDF_NAME(BS), PDF_NAME(S), NULL);
 
     // border width -----------------------------------------------------------
     float border_width = (float) PyFloat_AsDouble(PyObject_GetAttrString(Widget,
                                                                "border_width"));
-    pdf_dict_putl_drop(ctx, annot->obj, pdf_new_real(ctx, pdf,
-                                  border_width), PDF_NAME_BS, PDF_NAME_W, NULL);
+    pdf_dict_putl_drop(ctx, annot->obj, pdf_new_real(ctx, border_width),
+                       PDF_NAME(BS), PDF_NAME(W), NULL);
     JM_PyErr_Clear;
 
     // /DA string -------------------------------------------------------------
     char *da = JM_Python_str_AsChar(PyObject_GetAttrString(Widget, "_text_da"));
     if (da)
     {
-        pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME_DA, da);
+        pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME(DA), da);
         JM_Python_str_DelForPy3(da);
         pdf_dict_dels(ctx, annot->obj, "DS");  // unsupported
         pdf_dict_dels(ctx, annot->obj, "RC");  // unsupported
@@ -290,7 +289,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         }
         JM_PyErr_Clear;
     }
-    pdf_dict_put_int(ctx, annot->obj, PDF_NAME_Ff, Ff);
+    pdf_dict_put_int(ctx, annot->obj, PDF_NAME(Ff), Ff);
 
     // button caption ---------------------------------------------------------
     if (field_type == PDF_WIDGET_TYPE_RADIOBUTTON ||
@@ -301,8 +300,8 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
                                                              "button_caption"));
         if (ca)
         {
-            pdf_dict_putl(ctx, annot->obj, pdf_new_text_string(ctx, NULL, ca),
-                                                PDF_NAME_MK, PDF_NAME_CA, NULL);
+            pdf_dict_putl(ctx, annot->obj, pdf_new_text_string(ctx, ca),
+                          PDF_NAME(MK), PDF_NAME(CA), NULL);
             JM_Python_str_DelForPy3(ca);
         }
         JM_PyErr_Clear;
@@ -322,12 +321,12 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         if (PyObject_RichCompareBool(value, Py_True, Py_EQ))
         {
             result = pdf_field_set_value(ctx, pdf, annot->obj, "Yes");
-            pdf_dict_put_name(ctx, annot->obj, PDF_NAME_V, "Yes");
+            pdf_dict_put_name(ctx, annot->obj, PDF_NAME(V), "Yes");
         }
         else
         {
             result = pdf_field_set_value(ctx, pdf, annot->obj, "Off");
-            pdf_dict_put(ctx, annot->obj, PDF_NAME_V, PDF_NAME_Off);
+            pdf_dict_put(ctx, annot->obj, PDF_NAME(V), PDF_NAME(Off));
         }
         break;
     default:

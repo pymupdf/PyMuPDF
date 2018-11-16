@@ -5,6 +5,13 @@ void JM_TRACE(const char *id)
     PySys_WriteStdout("%s\n", id);
 }
 
+// put warnings on Python-stdout
+void JM_Warning(const char *id)
+{
+    PySys_WriteStdout("warning: %s\n", id);
+}
+
+#if JM_MEMORY == 1
 //-----------------------------------------------------------------------------
 // The following 3 functions replace MuPDF standard memory allocation.
 // This will ensure, that MuPDF memory handling becomes part of Python's
@@ -12,18 +19,11 @@ void JM_TRACE(const char *id)
 //-----------------------------------------------------------------------------
 static void *JM_Py_Malloc(void *opaque, size_t size)
 {
-    //void *p = PyMem_Malloc(size);
-    //PySys_WriteStdout("%p alloc %u\n", p, size);
-    //return p;
     return PyMem_Malloc(size);
 }
 
 static void *JM_Py_Realloc(void *opaque, void *old, size_t size)
 {
-    //void *p = PyMem_Realloc(old, size);
-    //if (old) PySys_WriteStdout("%p free\n", old);
-    //PySys_WriteStdout("%p alloc %u\n", p, size);
-    //return p;
     return PyMem_Realloc(old, size);
 }
 
@@ -39,8 +39,9 @@ const fz_alloc_context JM_Alloc_Context =
 	JM_Py_Realloc,
 	JM_PY_Free
 };
+#endif
 
-
+// return Python bools for a given integer
 PyObject *JM_BOOL(int v)
 {
     if (v == 0)
@@ -110,7 +111,6 @@ PyObject *JM_fitz_config()
     PyDict_SetItemString(dict, "svg", JM_BOOL(FZ_ENABLE_SVG));
     PyDict_SetItemString(dict, "cbz", JM_BOOL(FZ_ENABLE_CBZ));
     PyDict_SetItemString(dict, "img", JM_BOOL(FZ_ENABLE_IMG));
-    PyDict_SetItemString(dict, "tiff", JM_BOOL(FZ_ENABLE_TIFF));
     PyDict_SetItemString(dict, "html", JM_BOOL(FZ_ENABLE_HTML));
     PyDict_SetItemString(dict, "epub", JM_BOOL(FZ_ENABLE_EPUB));
     PyDict_SetItemString(dict, "gprf", JM_BOOL(FZ_ENABLE_GPRF));
@@ -131,20 +131,90 @@ PyObject *JM_fitz_config()
 }
 
 //----------------------------------------------------------------------------
-// Return a Python bytes object for an fz_buffer
+// Update a color float array with values from a Python sequence.
+// Any error condition is treated as a no-op.
+//----------------------------------------------------------------------------
+void JM_color_FromSequence(PyObject *color, int *n, float col[4])
+{
+    if (!color) return;
+    if (PyFloat_Check(color)) // maybe just a single float
+    {
+        float c = (float) PyFloat_AsDouble(color);
+        if (!INRANGE(c, 0.0f, 1.0f)) return;
+        col[0] = c;
+        *n = 1;
+        return;
+    }
+    if (!PySequence_Check(color)) return;
+    int len = PySequence_Size(color), i;
+    if (!INRANGE(len, 1, 4) || len == 2) return;
+
+    float mcol[4] = {0,0,0,0}; // local color storage
+    for (i = 0; i < len; i++)
+    {
+        mcol[i] = (float) PyFloat_AsDouble(PySequence_GetItem(color, i));
+        if (PyErr_Occurred())
+        {
+            PyErr_Clear(); // reset Py error indicator
+            return;
+        }
+        if (!INRANGE(mcol[i], 0.0f, 1.0f)) return;
+    }
+
+    *n = len;
+    for (i = 0; i < len; i++)
+        col[i] = mcol[i];
+    return;
+}
+
+//----------------------------------------------------------------------------
+// Turn fz_buffer into a Python bytes object
 //----------------------------------------------------------------------------
 PyObject *JM_BinFromBuffer(fz_context *ctx, fz_buffer *buffer)
 {
-    PyObject *bytes = NULL;
+    PyObject *bytes = PyBytes_FromString("");
     char *c = NULL;
     if (buffer)
     {
         size_t len = fz_buffer_storage(gctx, buffer, &c);
         bytes = PyBytes_FromStringAndSize(c, (Py_ssize_t) len);
     }
-    else
+    return bytes;
+}
+
+//----------------------------------------------------------------------------
+// Turn fz_buffer into a Python bytearray object
+//----------------------------------------------------------------------------
+PyObject *JM_BArrayFromBuffer(fz_context *ctx, fz_buffer *buffer)
+{
+    PyObject *bytes = PyByteArray_FromObject(Py_BuildValue("s", ""));
+    char *c = NULL;
+    if (buffer)
     {
-        bytes = PyBytes_FromString("");
+        size_t len = fz_buffer_storage(ctx, buffer, &c);
+        bytes = PyByteArray_FromStringAndSize(c, (Py_ssize_t) len);
+    }
+    return bytes;
+}
+
+//----------------------------------------------------------------------------
+// Turn fz_buffer to a base64 encoded bytes object
+//----------------------------------------------------------------------------
+PyObject *JM_B64FromBuffer(fz_context *ctx, fz_buffer *buffer)
+{
+    PyObject *bytes = PyBytes_FromString("");
+    char *c = NULL;
+    char *b64 = NULL;
+    if (buffer)
+    {
+        size_t len = fz_buffer_storage(ctx, buffer, &c);
+        fz_buffer *res = fz_new_buffer(ctx, len);
+        fz_output *out = fz_new_output_with_buffer(ctx, res);
+        fz_write_base64(ctx, out, (const unsigned char *) c, (int) len, 0);
+        size_t nlen = fz_buffer_storage(ctx, res, &b64);
+        bytes = PyBytes_FromStringAndSize(b64, (Py_ssize_t) nlen);
+        fz_drop_buffer(ctx, res);
+        fz_drop_output(ctx, out);
     }
     return bytes;
 }
@@ -182,7 +252,7 @@ fz_buffer *JM_deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 
 //----------------------------------------------------------------------------
 // update a stream object
-// compress stream where beneficial
+// compress stream when beneficial
 //----------------------------------------------------------------------------
 void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffer *buffer)
 {
@@ -198,7 +268,7 @@ void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffe
     }
     if (nlen < len)     // was it worth the effort?
     {
-        pdf_dict_put(ctx, obj, PDF_NAME_Filter, PDF_NAME_FlateDecode);
+        pdf_dict_put(ctx, obj, PDF_NAME(Filter), PDF_NAME(FlateDecode));
         pdf_update_stream(ctx, doc, obj, nres, 1);
     }
     else
@@ -213,21 +283,22 @@ void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffe
 // of only the 'clip' part of the displaylist rectangle
 //-----------------------------------------------------------------------------
 fz_pixmap *
-JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_matrix *ctm, fz_colorspace *cs, int alpha, const fz_rect *clip)
+JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, PyObject *ctm, fz_colorspace *cs, int alpha, PyObject *clip)
 {
-    fz_rect rect;
-    fz_irect irect;
+    fz_rect rect = fz_bound_display_list(ctx, list);
+    fz_matrix matrix = JM_matrix_from_py(ctm);
     fz_pixmap *pix = NULL;
     fz_var(pix);
     fz_device *dev = NULL;
     fz_var(dev);
     fz_separations *seps = NULL;
-    fz_bound_display_list(ctx, list, &rect);
-    if (clip) fz_intersect_rect(&rect, clip);
-    fz_transform_rect(&rect, ctm);
-    fz_round_rect(&irect, &rect);
+    fz_rect rclip = JM_rect_from_py(clip);
+    rect = fz_intersect_rect(rect, rclip);  // no-op if clip is not given
 
-    pix = fz_new_pixmap_with_bbox(ctx, cs, &irect, seps, alpha);
+    rect = fz_transform_rect(rect, matrix);
+    fz_irect irect = fz_round_rect(rect);
+
+    pix = fz_new_pixmap_with_bbox(ctx, cs, irect, seps, alpha);
     if (alpha)
         fz_clear_pixmap(ctx, pix);
     else
@@ -235,11 +306,17 @@ JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, const fz_mat
 
     fz_try(ctx)
     {
-        if (clip)
-            dev = fz_new_draw_device_with_bbox(ctx, ctm, pix, &irect);
+        if (!fz_is_infinite_rect(rclip))
+        {
+            dev = fz_new_draw_device_with_bbox(ctx, matrix, pix, &irect);
+            fz_run_display_list(ctx, list, dev, fz_identity, rclip, NULL);
+        }
         else
-            dev = fz_new_draw_device(ctx, ctm, pix);
-        fz_run_display_list(ctx, list, dev, &fz_identity, clip, NULL);
+        {
+            dev = fz_new_draw_device(ctx, matrix, pix);
+            fz_run_display_list(ctx, list, dev, fz_identity, fz_infinite_rect, NULL);
+        }
+
         fz_close_device(ctx, dev);
     }
     fz_always(ctx)
@@ -295,6 +372,7 @@ size_t JM_CharFromBytesOrArray(PyObject *stream, char **data)
 
 //----------------------------------------------------------------------------
 // Return fz_buffer from a PyBytes or PyByteArray object
+// Attention: must be freed by caller!
 //----------------------------------------------------------------------------
 fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
 {
@@ -363,9 +441,9 @@ void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, i
     pdf_obj *obj = NULL, *ref = NULL, *subt = NULL;
 
     // list of object types (per page) we want to copy
-    pdf_obj *known_page_objs[] = {PDF_NAME_Contents, PDF_NAME_Resources,
-        PDF_NAME_MediaBox, PDF_NAME_CropBox, PDF_NAME_BleedBox, PDF_NAME_Annots,
-        PDF_NAME_TrimBox, PDF_NAME_ArtBox, PDF_NAME_Rotate, PDF_NAME_UserUnit};
+    pdf_obj *known_page_objs[] = {PDF_NAME(Contents), PDF_NAME(Resources),
+        PDF_NAME(MediaBox), PDF_NAME(CropBox), PDF_NAME(BleedBox), PDF_NAME(Annots),
+        PDF_NAME(TrimBox), PDF_NAME(ArtBox), PDF_NAME(Rotate), PDF_NAME(UserUnit)};
     int n = nelem(known_page_objs);                   // number of list elements
     int i;
     int num, j;
@@ -378,7 +456,7 @@ void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, i
         pdf_flatten_inheritable_page_items(ctx, pageref);
         // make a new page
         page_dict = pdf_new_dict(ctx, doc_des, 4);
-        pdf_dict_put_drop(ctx, page_dict, PDF_NAME_Type, PDF_NAME_Page);
+        pdf_dict_put_drop(ctx, page_dict, PDF_NAME(Type), PDF_NAME(Page));
 
         // copy objects of source page into it
         for (i = 0; i < n; i++)
@@ -388,12 +466,12 @@ void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, i
                 pdf_dict_put_drop(ctx, page_dict, known_page_objs[i], pdf_graft_mapped_object(ctx, graft_map, obj));
             }
         // remove any links from annots array
-        pdf_obj *annots = pdf_dict_get(ctx, page_dict, PDF_NAME_Annots);
+        pdf_obj *annots = pdf_dict_get(ctx, page_dict, PDF_NAME(Annots));
         int len = pdf_array_len(ctx, annots);
         for (j = 0; j < len; j++)
         {
             pdf_obj *o = pdf_array_get(ctx, annots, j);
-            if (!pdf_name_eq(ctx, pdf_dict_get(ctx, o, PDF_NAME_Subtype), PDF_NAME_Link))
+            if (!pdf_name_eq(ctx, pdf_dict_get(ctx, o, PDF_NAME(Subtype)), PDF_NAME(Link)))
                 continue;
             // remove the link annotation
             pdf_array_delete(ctx, annots, j);
@@ -403,8 +481,8 @@ void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, i
         // rotate the page as requested
         if (rotate != -1)
             {
-            pdf_obj *rotateobj = pdf_new_int(ctx, doc_des, rotate);
-            pdf_dict_put_drop(ctx, page_dict, PDF_NAME_Rotate, rotateobj);
+            pdf_obj *rotateobj = pdf_new_int(ctx, (int64_t) rotate);
+            pdf_dict_put_drop(ctx, page_dict, PDF_NAME(Rotate), rotateobj);
             }
         // Now add the page dictionary to dest PDF
         obj = pdf_add_object_drop(ctx, doc_des, page_dict);
@@ -462,49 +540,25 @@ void merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, 
 }
 
 //----------------------------------------------------------------------------
-// Fills table 'res' with outline xref numbers
-// 'res' must be a correctly pre-allocated table of integers
-// 'obj' must be the first OL item
-// returns (int) number of filled-in outline item xref numbers.
+// Return list of outline xref numbers. Recursive function. Arguments:
+// 'obj' first OL item
+// 'xrefs' empty Python list
 //----------------------------------------------------------------------------
-int fillOLNumbers(fz_context *ctx, int *res, pdf_obj *obj, int oc, int argc)
-{
-    int onum;
-    pdf_obj *first, *parent, *thisobj;
-    if (!obj) return oc;
-    if (oc >= argc) return oc;
-    thisobj = obj;
-    while (thisobj) {
-        onum = pdf_to_num(ctx, thisobj);
-        res[oc] = onum;
-        oc += 1;
-        first = pdf_dict_get(ctx, thisobj, PDF_NAME_First);   /* try go down */
-        if (first) oc = fillOLNumbers(ctx, res, first, oc, argc);   /* recurse     */
-        thisobj = pdf_dict_get(ctx, thisobj, PDF_NAME_Next);  /* try go next */
-        parent = pdf_dict_get(ctx, thisobj, PDF_NAME_Parent); /* get parent  */
-        if (!thisobj) thisobj = parent;         /* goto parent if no next obj */
-    }
-    return oc;
-}
-
-//----------------------------------------------------------------------------
-// Returns number of outlines
-// 'obj' must be first OL item
-//----------------------------------------------------------------------------
-int countOutlines(fz_context *ctx, pdf_obj *obj, int oc)
+PyObject *JM_outline_xrefs(fz_context *ctx, pdf_obj *obj, PyObject *xrefs)
 {
     pdf_obj *first, *parent, *thisobj;
-    if (!obj) return oc;
+    if (!obj) return xrefs;
     thisobj = obj;
-    while (thisobj) {
-        oc += 1;
-        first = pdf_dict_get(ctx, thisobj, PDF_NAME_First);   /* try go down */
-        if (first) oc = countOutlines(ctx, first, oc);
-        thisobj = pdf_dict_get(ctx, thisobj, PDF_NAME_Next);  /* try go next */
-        parent = pdf_dict_get(ctx, thisobj, PDF_NAME_Parent); /* get parent  */
+    while (thisobj)
+    {
+        PyList_Append(xrefs, Py_BuildValue("i", pdf_to_num(ctx, thisobj)));
+        first = pdf_dict_get(ctx, thisobj, PDF_NAME(First));   // try go down
+        if (first) xrefs = JM_outline_xrefs(ctx, first, xrefs);
+        thisobj = pdf_dict_get(ctx, thisobj, PDF_NAME(Next));  // try go next
+        parent = pdf_dict_get(ctx, thisobj, PDF_NAME(Parent)); // get parent
         if (!thisobj) thisobj = parent;      /* goto parent if no next exists */
     }
-    return oc;
+    return xrefs;
 }
 
 //-----------------------------------------------------------------------------
@@ -516,14 +570,14 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int xref)
     pdf_obj *o, *obj = NULL, *desft, *stream = NULL;
     char *ext = "";
     o = pdf_load_object(ctx, doc, xref);
-    desft = pdf_dict_get(ctx, o, PDF_NAME_DescendantFonts);
+    desft = pdf_dict_get(ctx, o, PDF_NAME(DescendantFonts));
     if (desft)
     {
         obj = pdf_resolve_indirect(ctx, pdf_array_get(ctx, desft, 0));
-        obj = pdf_dict_get(ctx, obj, PDF_NAME_FontDescriptor);
+        obj = pdf_dict_get(ctx, obj, PDF_NAME(FontDescriptor));
     }
     else
-        obj = pdf_dict_get(ctx, o, PDF_NAME_FontDescriptor);
+        obj = pdf_dict_get(ctx, o, PDF_NAME(FontDescriptor));
 
     if (!obj)
     {
@@ -534,29 +588,29 @@ fz_buffer *fontbuffer(fz_context *ctx, pdf_document *doc, int xref)
     pdf_drop_obj(ctx, o);
     o = obj;
 
-    obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile);
+    obj = pdf_dict_get(ctx, o, PDF_NAME(FontFile));
     if (obj) stream = obj;             // ext = "pfa"
 
-    obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile2);
+    obj = pdf_dict_get(ctx, o, PDF_NAME(FontFile2));
     if (obj) stream = obj;             // ext = "ttf"
 
-    obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile3);
+    obj = pdf_dict_get(ctx, o, PDF_NAME(FontFile3));
     if (obj)
     {
         stream = obj;
 
-        obj = pdf_dict_get(ctx, obj, PDF_NAME_Subtype);
+        obj = pdf_dict_get(ctx, obj, PDF_NAME(Subtype));
         if (obj && !pdf_is_name(ctx, obj))
         {
             PySys_WriteStdout("invalid font descriptor subtype");
             return NULL;
         }
 
-        if (pdf_name_eq(ctx, obj, PDF_NAME_Type1C))
+        if (pdf_name_eq(ctx, obj, PDF_NAME(Type1C)))
             ext = "cff";
-        else if (pdf_name_eq(ctx, obj, PDF_NAME_CIDFontType0C))
+        else if (pdf_name_eq(ctx, obj, PDF_NAME(CIDFontType0C)))
             ext = "cid";
-        else if (pdf_name_eq(ctx, obj, PDF_NAME_OpenType))
+        else if (pdf_name_eq(ctx, obj, PDF_NAME(OpenType)))
             ext = "otf";
         else
             PySys_WriteStdout("warning: unhandled font type '%s'", pdf_to_name(ctx, obj));
@@ -579,46 +633,73 @@ char *fontextension(fz_context *ctx, pdf_document *doc, int xref)
     if (xref < 1) return "n/a";
     pdf_obj *o, *obj = NULL, *desft;
     o = pdf_load_object(ctx, doc, xref);
-    desft = pdf_dict_get(ctx, o, PDF_NAME_DescendantFonts);
+    desft = pdf_dict_get(ctx, o, PDF_NAME(DescendantFonts));
     if (desft)
     {
         obj = pdf_resolve_indirect(ctx, pdf_array_get(ctx, desft, 0));
-        obj = pdf_dict_get(ctx, obj, PDF_NAME_FontDescriptor);
+        obj = pdf_dict_get(ctx, obj, PDF_NAME(FontDescriptor));
     }
     else
-        obj = pdf_dict_get(ctx, o, PDF_NAME_FontDescriptor);
+        obj = pdf_dict_get(ctx, o, PDF_NAME(FontDescriptor));
 
     pdf_drop_obj(ctx, o);
     if (!obj) return "n/a";           // this is a base-14 font
 
     o = obj;                           // we have the FontDescriptor
 
-    obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile);
+    obj = pdf_dict_get(ctx, o, PDF_NAME(FontFile));
     if (obj) return "pfa";
 
-    obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile2);
+    obj = pdf_dict_get(ctx, o, PDF_NAME(FontFile2));
     if (obj) return "ttf";
 
-    obj = pdf_dict_get(ctx, o, PDF_NAME_FontFile3);
+    obj = pdf_dict_get(ctx, o, PDF_NAME(FontFile3));
     if (obj)
     {
-        obj = pdf_dict_get(ctx, obj, PDF_NAME_Subtype);
+        obj = pdf_dict_get(ctx, obj, PDF_NAME(Subtype));
         if (obj && !pdf_is_name(ctx, obj))
         {
             PySys_WriteStdout("invalid font descriptor subtype");
             return "n/a";
         }
-        if (pdf_name_eq(ctx, obj, PDF_NAME_Type1C))
+        if (pdf_name_eq(ctx, obj, PDF_NAME(Type1C)))
             return "cff";
-        else if (pdf_name_eq(ctx, obj, PDF_NAME_CIDFontType0C))
+        else if (pdf_name_eq(ctx, obj, PDF_NAME(CIDFontType0C)))
             return "cid";
-        else if (pdf_name_eq(ctx, obj, PDF_NAME_OpenType))
+        else if (pdf_name_eq(ctx, obj, PDF_NAME(OpenType)))
             return "otf";
         else
             PySys_WriteStdout("unhandled font type '%s'", pdf_to_name(ctx, obj));
     }
 
     return "n/a";
+}
+
+//-----------------------------------------------------------------------------
+// create PDF object from given string (new in v1.14.0: MuPDF dropped it)
+//-----------------------------------------------------------------------------
+pdf_obj *JM_pdf_obj_from_str(fz_context *ctx, pdf_document *doc, char *src)
+{
+    pdf_obj *result = NULL;
+    pdf_lexbuf lexbuf;
+    fz_stream *stream = fz_open_memory(ctx, (unsigned char *)src, strlen(src));
+
+    pdf_lexbuf_init(ctx, &lexbuf, PDF_LEXBUF_SMALL);
+
+    fz_try(ctx)
+        result = pdf_parse_stm_obj(ctx, doc, stream, &lexbuf);
+
+    fz_always(ctx)
+    {
+        pdf_lexbuf_fin(ctx, &lexbuf);
+        fz_drop_stream(ctx, stream);
+    }
+
+    fz_catch(ctx)
+        fz_rethrow(ctx);
+
+    return result;
+
 }
 
 //-----------------------------------------------------------------------------
@@ -659,5 +740,39 @@ struct fz_store_s
 	int defer_reap_count;
 	int needs_reaping;
 };
+
+//-----------------------------------------------------------------------------
+// START redirect stdout/stderr
+//-----------------------------------------------------------------------------
+PyObject *JM_error_log;
+PyObject *JM_output_log;
+
+static void
+JM_write_stdout(fz_context *ctx, void *opaque, const void *buffer, size_t count)
+{
+    if (!buffer || !count) return;
+    PyObject *c = Py_BuildValue("s#", (const char *) buffer, (Py_ssize_t) count);
+    if (!c || c == NONE) return;
+    PyList_Append(JM_output_log, c);
+    Py_CLEAR(c);
+    return;
+}
+
+static void
+JM_write_stderr(fz_context *ctx, void *opaque, const void *buffer, size_t count)
+{
+    if (!buffer || !count) return;
+    PyObject *c = Py_BuildValue("s#", (const char *) buffer, (Py_ssize_t) count);
+    if (!c || c == NONE) return;
+    PyList_Append(JM_error_log, c);
+    Py_CLEAR(c);
+    return;
+}
+
+fz_output *JM_fitz_stdout;
+fz_output *JM_fitz_stderr;
+//-----------------------------------------------------------------------------
+// STOP redirect stdout/stderr
+//-----------------------------------------------------------------------------
 
 %}

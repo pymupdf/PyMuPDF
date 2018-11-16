@@ -10,7 +10,8 @@ python posterize.py input.pdf
 
 Result
 -------
-A file "poster-input.pdf" with 4 output pages for every input page.
+The file "poster-input.pdf" with 4 output pages for every input page:
+top-lef, top-right, bottom-left, bottom-right part on separate pages.
 
 Notes
 -----

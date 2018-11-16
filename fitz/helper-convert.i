@@ -27,13 +27,13 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
         fz_try(ctx)
         {
             page = fz_load_page(ctx, doc, i);
-            fz_bound_page(ctx, page, &mediabox);
-            dev = pdf_page_write(ctx, pdfout, &mediabox, &resources, &contents);
-            fz_run_page(ctx, page, dev, &fz_identity, NULL);
+            mediabox = fz_bound_page(ctx, page);
+            dev = pdf_page_write(ctx, pdfout, mediabox, &resources, &contents);
+            fz_run_page(ctx, page, dev, fz_identity, NULL);
             fz_close_device(ctx, dev);
             fz_drop_device(ctx, dev);
             dev = NULL;
-            pdf_obj *page_obj = pdf_add_page(ctx, pdfout, &mediabox, rotate, resources, contents);
+            pdf_obj *page_obj = pdf_add_page(ctx, pdfout, mediabox, rotate, resources, contents);
             pdf_insert_page(ctx, pdfout, -1, page_obj);
             pdf_drop_obj(ctx, page_obj);
         }

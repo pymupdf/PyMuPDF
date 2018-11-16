@@ -8,9 +8,8 @@ cache:
   - "$HOME/Library/Caches/Homebrew"
 env:
   global:
-  - MUPDF='https://mupdf.com/downloads/mupdf-1.13.0-source.tar.gz'
+  - MUPDF='https://mupdf.com/downloads/archive/mupdf-1.14.0-source.tar.gz'
   - COPYFILE_DISABLE=1
-  - TWINE_USERNAME=rk700
 matrix:
   include:
   - os: linux
@@ -42,19 +41,17 @@ install:
 - mkdir mupdf && wget -q $MUPDF -O - | tar zx -C mupdf --strip-components=1
 - cp fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
 script:
-- export CIBW_ENVIRONMENT='CFLAGS="-fPIC -std=gnu99"'
 - export CIBW_SKIP="cp33-* *i686"
 - export CIBW_TEST_COMMAND="python -c 'import fitz'"
 - cibuildwheel --output-dir wheelhouse
 
 deploy:
   provider: pages
-  github_token:
-    secure: aZCfaInTGLFs2Ik60w61g/wK7IR4sxK035H+YiKvIrwyufUVuafFlRlG9FLsxrhgYlh7KalNJciD9kdYCgQ3qt21lud9CviBgwNdFGF8LoUhzflr+MzOP51ESnHMgN3t51lN7Ui2RrFlsbST34O28tq8vyPitDS3AMXeuUSZzx8GpsFr/5wRvikd0q1QxF+KkeTp0iVRu4woV0LUNnDylEHRmHdvObuIXkQJunvsXW/Zpxzk8rREdW1/4mBqWV2H8ywk5nptgHfwcjmrpoPHrJOkgXYkXkONzXdC0OuL5SSHLFF4NPNNVdf6Rz4RoGsozI5rDvJ1lEEijz+1sEIQAvghprv9LgiSKs4ECnGtk6J65NCf1KT+3Sj7zcl9C7MmOdJFgnIeWGj5a34i+lGIph30ji3MiBwTnApMyaWHxF6+qshkmN5E+m4Y8XHVAS8gR3EEvLwPR15wmfRATHE2uc1y7p6yNeR95wS5xFqsrXjyZY0/9Ht29JQh/R1NZdLVNJD0/1hcaEhwMSTa1YGmDrUh+wGNjRlPgzS/y3nKG9vwFyPcO8sWaFVMBz1VyqT2ZYQq8Qg2Wtg3r0TvqntwN2ois9KRsr+j8yKGEXkTwZoi/6uL7sjl/NHUL5ps37s1h8GRMdhtQ4dz1s2x+E8kj5cZFGopFybAp44jmdz80wo=
+  github_token: $GITHUB_TOKEN
   keep-history: false
   skip_cleanup: true
   local-dir: wheelhouse
   repo: JorjMcKie/PyMuPDF-wheels
   target-branch: $TRAVIS_OS_NAME
   on:
-    repo: rk700/PyMuPDF
+    repo: JorjMcKie/py-mupdf

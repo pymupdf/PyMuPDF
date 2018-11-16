@@ -35,6 +35,24 @@ TEXT_PRESERVE_WHITESPACE = 2
 TEXT_PRESERVE_IMAGES     = 4
 
 #------------------------------------------------------------------------------
+# Stamp annotation icon numbers
+#------------------------------------------------------------------------------
+STAMP_Approved            = 0
+STAMP_AsIs                = 1
+STAMP_Confidential        = 2
+STAMP_Departmental        = 3
+STAMP_Experimental        = 4
+STAMP_Expired             = 5
+STAMP_Final               = 6
+STAMP_ForComment          = 7
+STAMP_ForPublicRelease    = 8
+STAMP_NotApproved         = 9
+STAMP_NotForPublicRelease = 10
+STAMP_Sold                = 11
+STAMP_TopSecret           = 12
+STAMP_Draft               = 13
+
+#------------------------------------------------------------------------------
 # Base 14 font names
 #------------------------------------------------------------------------------
 
@@ -48,7 +66,7 @@ Base14_fontnames = ("Courier", "Courier-Oblique", "Courier-Bold",
 # Emulate old linkDest class
 #------------------------------------------------------------------------------
 class linkDest():
-    '''link or outline destination details'''
+    """link or outline destination details"""
     def __init__(self, obj, rlink):
         isExt = obj.isExternal
         isInt = not isExt
@@ -263,18 +281,18 @@ def CheckParent(o):
 
 def CheckColor(c):
     if c is not None:
-        if type(c) not in (list, tuple) or len(c) != 3 or \
+        if type(c) not in (list, tuple) or len(c) not in (1, 3, 4) or \
             min(c) < 0 or max(c) > 1:
-            raise ValueError("need 3 color components in range 0 to 1")
+            raise ValueError("need 1, 3 or 4 color components in range 0 to 1")
 
 def CheckMorph(o):
     if not bool(o): return False
     if not (type(o) in (list, tuple) and len(o) == 2):
         raise ValueError("morph must be a sequence of length 2")
     if not (type(o[0]) == Point and issubclass(type(o[1]), Matrix)):
-        raise ValueError("invalid morph parameter")
+        raise ValueError("invalid morph parm 0")
     if not o[1].e == o[1].f == 0:
-        raise ValueError("invalid morph parameter")
+        raise ValueError("invalid morph parm 1")
     return True
     
 def CheckFont(page, fontname):
@@ -377,386 +395,4 @@ def ConversionTrailer(i):
     
     return r
 
-#------------------------------------------------------------------------------
-# 
-#------------------------------------------------------------------------------
-def _hor_matrix(C, P):
-    """Given two points C, P calculate matrix that rotates the line C -> P parallel to the x-axis.
-    """
-    S = P - C                               # vector C -> P
-    try:
-        alfa = math.asin(abs(S.y) / abs(S)) # absolute angle from horizontal
-    except ZeroDivisionError:
-        print("points are too close:")
-        return Matrix()
-    if S.x < 0:                             # make arcsin result unique
-        if S.y <= 0:                        # bottom-left
-            alfa = -(math.pi - alfa)
-        else:                               # top-left
-            alfa = math.pi - alfa
-    else:
-        if S.y >= 0:                        # top-right
-            pass
-        else:                               # bottom-right
-            alfa = - alfa
-    ca = math.cos(alfa)
-    sa = math.sin(alfa)
-    m = Matrix(ca, -sa, sa, ca, -C.x, -C.y)
-    return m
-
-def _make_rect_AP(annot):
-    """ Create /AP stream for rectangle annotation.
-    """
-    w = annot.border["width"]          # get line width
-    sc = annot.colors["stroke"]        # get stroke color
-    fc = annot.colors["fill"]          # get fill color
-    ca = annot.opacity                 # get opacity value
-    Alp0 = "/Alp0 gs\n" if ca >= 0 else ""
-    scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
-    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else ""
-    dt = annot.border.get("dashes")    # get annot dashes
-    dtab = []
-    if dt:
-        dtab = ["[", "]0 d"]
-        for n in dt:
-            dtab[0] += "%i " % n
-    dtab = "".join(dtab)               # make dashes command
-    r = annot.rect                     # annot rectangle
-    r1 = r2 = w/2.                     # rect starts bottom-left here
-    r3 = r.width - w                   # rect width reduced by line width
-    r4 = r.height - w                  # rect height reduced by line with
-    ap = "q\n%s%g %g %g %g re %g w 1 J 1 j\n" % (Alp0, r1, r2, r3, r4, w)
-    ap += scol + fcol + dtab           # appearance stream so far
-    if fcol:                           # have fill color?
-        ap += "\nb\nQ\n"
-    else:
-        ap += "\ns\nQ\n"
-    return ap
-
-def _le_annot_parms(annot, p1, p2):
-    """Get common parameters for making line end symbols.
-    """
-    w = annot.border["width"]          # line width
-    sc = annot.colors["stroke"]        # stroke color
-    scol = "%g %g %g RG\n" % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG\n"
-    fc = annot.colors["fill"]          # fill color
-    fcol = "%g %g %g rg\n" % (fc[0], fc[1], fc[2]) if fc else "1 1 1 rg\n"
-    delta = Point(annot.rect.x0, annot.rect.y0)
-    nr = annot.rect - Rect(delta, delta)
-    h = nr.height
-    np1 = p1 - delta                   # point coord relative to annot rect
-    np2 = p2 - delta                   # point coord relative to annot rect
-    m = _hor_matrix(np1, np2)          # matrix makes the line horizontal
-    im = ~m                            # inverted matrix
-    L = np1 * m                        # converted start (left) point
-    R = np2 * m                        # converted end (right) point
-    return m, im, L, R, w, h, scol, fcol
-
-def _make_circle_AP(annot):
-    """Create /AP stream for circle annotation
-    """
-    sc = annot.colors["stroke"]        # stroke color
-    scol = "%g %g %g RG " % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG "
-    fc = annot.colors["fill"]          # fill color
-    ca = annot.opacity                 # get opacity value
-    Alp0 = "/Alp0 gs\n" if ca >= 0 else ""
-    fcol = "%g %g %g rg " % (fc[0], fc[1], fc[2]) if fc else ""
-    dt = annot.border.get("dashes")    # get annot dashes
-    dtab = []
-    if dt:
-        dtab = ["[", "]0 d\n"]
-        for n in dt:
-            dtab[0] += "%i " % n
-    dtab = "".join(dtab)               # the dashes command
-    lw = annot.border["width"]         # line width
-    lw2 = lw / 2.
-    h = annot.rect.height
-    r = Rect(lw2, lw2, annot.rect.width - lw2, h - lw2)
-
-    ap = "q\n" + Alp0 + _oval_string(h, r.tl, r.tr, r.br, r.bl)
-    ap += "%g w 1 J 1 j\n" % lw
-    ap += scol + fcol + dtab           # ap stream so far
-    if fcol:                           # have fill color?
-        ap += "\nb\nQ\n"
-    else:
-        ap += "\ns\nQ\n"
-    return ap
-
-def _oval_string(h, p1, p2, p3, p4):
-    """Return /AP string defining an oval within a 4-polygon provided as points
-    """
-    def bezier(p, q, r):
-        f = "%g %g %g %g %g %g c\n"
-        return f % (p.x, h - p.y, q.x, h - q.y, r.x, h - r.y)
-
-    kappa = 0.55228474983              # magic number
-    ml = p1 + (p4 - p1) * 0.5          # middle points ...
-    mo = p1 + (p2 - p1) * 0.5          # for each ...
-    mr = p2 + (p3 - p2) * 0.5          # polygon ...
-    mu = p4 + (p3 - p4) * 0.5          # edge
-    ol1 = ml + (p1 - ml) * kappa       # the 8 bezier
-    ol2 = mo + (p1 - mo) * kappa       # helper points
-    or1 = mo + (p2 - mo) * kappa
-    or2 = mr + (p2 - mr) * kappa
-    ur1 = mr + (p3 - mr) * kappa
-    ur2 = mu + (p3 - mu) * kappa
-    ul1 = mu + (p4 - mu) * kappa
-    ul2 = ml + (p4 - ml) * kappa
-    # now draw, starting from middle point of left edge
-    ap = "%g %g m\n" % (ml.x, h - ml.y)
-    ap += bezier(ol1, ol2, mo)
-    ap += bezier(or1, or2, mr)
-    ap += bezier(ur1, ur2, mu)
-    ap += bezier(ul1, ul2, ml)
-    return ap
-
-def _le_diamond(annot, p1, p2, lr):
-    """Make stream commands for diamond line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    shift = 1.75             # 2*shift*width = length of square edge
-    d = w * shift
-    M = R - (w, 0) if lr else L + (w, 0)
-    r = Rect(M, M) + (-d, -d, d, d)         # the square
-    # the square makes line longer by (2*shift - 1)*width
-    p = (r.tl + (r.bl - r.tl) * 0.5) * im
-    ap = "q\n%g %g m\n" % (p.x, h - p.y)
-    p = (r.tl + (r.tr - r.tl) * 0.5) * im
-    ap += "%g %g l\n"   % (p.x, h - p.y)
-    p = (r.tr + (r.br - r.tr) * 0.5) * im
-    ap += "%g %g l\n"   % (p.x, h - p.y)
-    p = (r.br + (r.bl - r.br) * 0.5) * im
-    ap += "%g %g l\n"   % (p.x, h - p.y)
-    ap += "%g w\n" % w
-    ap += scol + fcol + "b\nQ\n"
-    return ap
-
-def _le_square(annot, p1, p2, lr):
-    """Make stream commands for square line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    shift = 1.25             # 2*shift*width = length of square edge
-    d = w * shift
-    M = R - (w, 0) if lr else L + (w, 0)
-    r = Rect(M, M) + (-d, -d, d, d)         # the square
-    # the square makes line longer by (2*shift - 1)*width
-    p = r.tl * im
-    ap = "q\n%g %g m\n" % (p.x, h - p.y)
-    p = r.tr * im
-    ap += "%g %g l\n"   % (p.x, h - p.y)
-    p = r.br * im
-    ap += "%g %g l\n"   % (p.x, h - p.y)
-    p = r.bl * im
-    ap += "%g %g l\n"   % (p.x, h - p.y)
-    ap += "%g w\n" % w
-    ap += scol + fcol + "b\nQ\n"
-    return ap
-
-def _le_circle(annot, p1, p2, lr):
-    """Make stream commands for circle line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    shift = 1.50             # 2*shift*width = length of square edge
-    d = w * shift
-    M = R - (w, 0) if lr else L + (w, 0)
-    r = Rect(M, M) + (-d, -d, d, d)         # the square
-    ap = "q\n" + _oval_string(h, r.tl * im, r.tr * im, r.br * im, r.bl * im)
-    ap += "%g w\n" % w
-    ap += scol + fcol + "b\nQ\n"
-    return ap
-    
-def _le_butt(annot, p1, p2, lr):
-    """Make stream commands for butt line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    M = R if lr else L
-    top = (M + (0, -2 * w)) * im
-    bot = (M + (0, 2 * w)) * im
-    ap = "\nq\n%g %g m\n" % (top.x, h - top.y)
-    ap += "%g %g l\n" % (bot.x, h - bot.y)
-    ap += "%g w\n" % w
-    ap += scol + "s\nQ\n"
-    return ap
-    
-def _le_slash(annot, p1, p2, lr):
-    """Make stream commands for slash line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    rw = 1.1547 * w * 0.5         # makes rect diagonal a 30 deg inclination
-    M = R if lr else L
-    r = Rect(M.x - rw, M.y - 2 * w, M.x + rw, M.y + 2 * w)
-    top = r.tl * im
-    bot = r.br * im
-    ap = "\nq\n%g %g m\n" % (top.x, h - top.y)
-    ap += "%g %g l\n" % (bot.x, h - bot.y)
-    ap += "%g w\n" % w
-    ap += scol + "s\nQ\n"
-    return ap
-
-def _le_openarrow(annot, p1, p2, lr):
-    """Make stream commands for open arrow line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    p2 = R + (1.5 * w, 0) if lr else L - (1.5 * w, 0)
-    p1 = p2 + (-3 * w, -1.5 * w) if lr else p2 + (3 * w, -1.5 * w)
-    p3 = p2 + (-3 * w, 1.5 * w) if lr else p2 + (3 * w, 1.5 * w)
-    p1 *= im
-    p2 *= im
-    p3 *= im
-    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
-    ap += "%g %g l\n" % (p2.x, h - p2.y)
-    ap += "%g %g l\n" % (p3.x, h - p3.y)
-    ap += "%g w\n" % w
-    ap += scol + "S\nQ\n"
-    return ap
-    
-def _le_closedarrow(annot, p1, p2, lr):
-    """Make stream commands for closed arrow line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    p2 = R + (1.5 * w, 0) if lr else L - (1.5 * w, 0)
-    p1 = p2 + (-3 * w, -1.5 * w) if lr else p2 + (3 * w, -1.5 * w)
-    p3 = p2 + (-3 * w, 1.5 * w) if lr else p2 + (3 * w, 1.5 * w)
-    p1 *= im
-    p2 *= im
-    p3 *= im
-    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
-    ap += "%g %g l\n" % (p2.x, h - p2.y)
-    ap += "%g %g l\n" % (p3.x, h - p3.y)
-    ap += "%g w\n" % w
-    ap += scol + fcol + "b\nQ\n"
-    return ap
-    
-def _le_ropenarrow(annot, p1, p2, lr):
-    """Make stream commands for right open arrow line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    p2 = R - (0.5 * w, 0) if lr else L + (0.5 * w, 0)
-    p1 = p2 + (3 * w, -1.5 * w) if lr else p2 + (-3 * w, -1.5 * w)
-    p3 = p2 + (3 * w, 1.5 * w) if lr else p2 + (-3 * w, 1.5 * w)
-    p1 *= im
-    p2 *= im
-    p3 *= im
-    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
-    ap += "%g %g l\n" % (p2.x, h - p2.y)
-    ap += "%g %g l\n" % (p3.x, h - p3.y)
-    ap += "%g w\n" % w
-    ap += scol + fcol + "S\nQ\n"
-    return ap
-    
-def _le_rclosedarrow(annot, p1, p2, lr):
-    """Make stream commands for right closed arrow line end symbol. "lr" denotes left (False) or right point.
-    """
-    m, im, L, R, w, h, scol, fcol = _le_annot_parms(annot, p1, p2)
-    p2 = R - (3.0 * w, 0) if lr else L + (3.0 * w, 0)
-    p1 = p2 + (3 * w, -1.5 * w) if lr else p2 + (-3 * w, -1.5 * w)
-    p3 = p2 + (3 * w, 1.5 * w) if lr else p2 + (-3 * w, 1.5 * w)
-    p1 *= im
-    p2 *= im
-    p3 *= im
-    ap = "\nq\n%g %g m\n" % (p1.x, h - p1.y)
-    ap += "%g %g l\n" % (p2.x, h - p2.y)
-    ap += "%g %g l\n" % (p3.x, h - p3.y)
-    ap += "%g w\n" % w
-    ap += scol + fcol + "b\nQ\n"
-    return ap
-
-def _make_line_AP(annot, nv = None, r0 = None):
-    """ Create the /AP stream for 'Line', 'PolyLine' and 'Polygon' annotations.
-    """
-    w = annot.border["width"]          # get line width
-    sc = annot.colors["stroke"]        # get stroke color
-    fc = annot.colors["fill"]          # get fill color
-    ca = annot.opacity                 # get opacity value
-    Alp0 = "/Alp0 gs\n" if ca >= 0 else ""
-    vert = nv if nv else annot.vertices # get list of points
-    rn = r0 if r0 else annot.rect
-    h = rn.height                      # annot rectangle height
-    r = Rect(0, 0, rn.width, h)        # this is the /BBox of the /AP
-    x0 = rn.x0                         # annot rect origin x
-    y0 = rn.y0                         # annot rect origin y
-    scol = "%g %g %g RG\n" % (sc[0], sc[1], sc[2]) if sc else "0 0 0 RG\n"
-    fcol = "%g %g %g rg\n" % (fc[0], fc[1], fc[2]) if fc else ""
-
-    dt = annot.border.get("dashes")    # get annot dashes
-    dtab = []
-    if dt:
-        dtab = ["[", "]0 d\n"]
-        for n in dt:
-            dtab[0] += "%i " % n
-    dtab = "".join(dtab)               # dashes command
-
-    # start /AP string with a goto command
-    ap = "q\n%s%g %g m\n" % (Alp0, vert[0][0] - x0, h - (vert[0][1] - y0))
-
-    # add line commands for all subsequent points
-    for v in vert[1:]:
-        ap += "%g %g l\n" % (v[0] - x0, h - (v[1] - y0))
-
-    # add color triples and other stuff commands
-    ap += scol + fcol + dtab + "%g w 1 J 1 j\n" % w
-
-    # add stroke / fill & stroke command depending on type
-    if fcol and annot.type[0] == ANNOT_POLYGON:
-        ap += "b"
-    else:
-        ap += "S"
-    ap += "\nQ\n"
-
-    # function names for creating line end symbols
-    _le_func = (None, _le_square, _le_circle, _le_diamond, _le_openarrow,
-                _le_closedarrow, _le_butt, _le_ropenarrow,
-                _le_rclosedarrow, _le_slash)
-    valid_range = range(1, len(_le_func))
-
-    le_left, le_right = annot.lineEnds # get line end symbol numbers
-
-    if le_left in valid_range:         # uses points 1 and 2
-        func = _le_func[le_left]       # function for left symbol
-        ap += func(annot, Point(vert[0]), Point(vert[1]), False)
-
-    if le_right in valid_range:        # uses last and second to last points
-        func = _le_func[le_right]      # function for right symbol
-        ap += func(annot, Point(vert[-2]), Point(vert[-1]), True)
-
-    return ap
-
-def _upd_my_AP(annot):
-    """Update /AP stream for annotation types we are handling.
-    """
-    if annot.type[0] not in range(2, 8):    # not our business
-        return
-
-    # this is the /AP rect for circle or square
-    r = Rect(0, 0, annot.rect.width, annot.rect.height)
-
-    if annot.type[0] == ANNOT_CIRCLE:
-        ap = _make_circle_AP(annot)    # stream for circle annot
-        annot._checkAP(r, ap)
-        return
-
-    if annot.type[0] == ANNOT_SQUARE:
-        ap = _make_rect_AP(annot)      # stream for square annot
-        annot._checkAP(r, ap)
-        return
-
-    #--------------------------------------------------------------------------
-    # we have one of the line annotations
-    #--------------------------------------------------------------------------
-
-    # first calculate the rect that contains all the points, including small
-    # extra rects around first and last point for any line symbols.
-    w = 3 * annot.border["width"]      # 3 times the line width
-    ov = annot.vertices                # get all the points
-    rect = Rect(Point(ov[0]), Point(ov[0])) + (-w, -w, w, w)
-    for v in ov[1:-1]:                 # include remaining points
-        rect |= v
-    rect |= Rect(Point(ov[-1]), Point(ov[-1])) + (-w, -w, w, w)
-
-    annot._setRect(rect)               # set this as annot rect
-    r = Rect(0, 0, rect.width, rect.height) # derive the /AP rect
-
-    ap = _make_line_AP(annot)          # make the /AP stream
-    annot._checkAP(r, ap)              # create or update /AP object
-    return
 %}

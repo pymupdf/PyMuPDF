@@ -34,7 +34,7 @@ int JM_find_embedded(fz_context *ctx, PyObject *id, pdf_document *pdf)
     if (!name || strlen(name) == 0) return -1;
     for (i = 0; i < count; i++)
     {
-        tname = pdf_to_utf8(ctx, pdf_portfolio_entry_name(ctx, pdf, i));
+        tname = (char *) pdf_to_text_string(ctx, pdf_portfolio_entry_name(ctx, pdf, i));
         if (!strcmp(tname, name))
         {
             JM_Python_str_DelForPy3(name);
@@ -52,14 +52,14 @@ pdf_obj *JM_embedded_names(fz_context *ctx, pdf_document *pdf)
 {
     pdf_obj *names = NULL, *kids = NULL, *o = NULL;
     int i, n;
-    names = pdf_dict_getl(ctx, pdf_trailer(ctx, pdf), PDF_NAME_Root,                                         PDF_NAME_Names, PDF_NAME_EmbeddedFiles,
-                         PDF_NAME_Names, NULL);
+    names = pdf_dict_getl(ctx, pdf_trailer(ctx, pdf), PDF_NAME(Root),                                         PDF_NAME(Names), PDF_NAME(EmbeddedFiles),
+                         PDF_NAME(Names), NULL);
     if (names) return names;
     
     // not found, therefore a /Kids object contains the /Names
-    kids = pdf_dict_getl(ctx, pdf_trailer(ctx, pdf), PDF_NAME_Root,
-                         PDF_NAME_Names, PDF_NAME_EmbeddedFiles,
-                        PDF_NAME_Kids, NULL);
+    kids = pdf_dict_getl(ctx, pdf_trailer(ctx, pdf), PDF_NAME(Root),
+                         PDF_NAME(Names), PDF_NAME(EmbeddedFiles),
+                        PDF_NAME(Kids), NULL);
     //-------------------------------------------------------------------------
     // 'kids' is an array of indirect references pointing to dictionaries.
     // Only /Limits and /Names can occur in those dictionaries
@@ -71,7 +71,7 @@ pdf_obj *JM_embedded_names(fz_context *ctx, pdf_document *pdf)
     for (i = 0; i < n; i++)
     {
         o = pdf_resolve_indirect(ctx, pdf_array_get(ctx, kids, i));
-        names = pdf_dict_get(ctx, o, PDF_NAME_Names);
+        names = pdf_dict_get(ctx, o, PDF_NAME(Names));
         if (names) return names;
     }
     return NULL;             // should never execute
@@ -85,23 +85,23 @@ pdf_obj *JM_embedded_names(fz_context *ctx, pdf_document *pdf)
 //-----------------------------------------------------------------------------
 void JM_embedded_clean(fz_context *ctx, pdf_document *pdf)
 {
-    pdf_obj *root = pdf_dict_get(ctx, pdf_trailer(ctx, pdf), PDF_NAME_Root);
+    pdf_obj *root = pdf_dict_get(ctx, pdf_trailer(ctx, pdf), PDF_NAME(Root));
 
     // remove any empty /Collection entry
-    pdf_obj *coll = pdf_dict_get(ctx, root, PDF_NAME_Collection);
+    pdf_obj *coll = pdf_dict_get(ctx, root, PDF_NAME(Collection));
     if (coll && pdf_dict_len(ctx, coll) == 0)
-        pdf_dict_del(ctx, root, PDF_NAME_Collection);
+        pdf_dict_del(ctx, root, PDF_NAME(Collection));
     
     if (!pdf_count_portfolio_entries(ctx, pdf))
         return;
 
-    pdf_obj *efiles = pdf_dict_getl(ctx, root, PDF_NAME_Names,
-                                    PDF_NAME_EmbeddedFiles, NULL);
+    pdf_obj *efiles = pdf_dict_getl(ctx, root, PDF_NAME(Names),
+                                    PDF_NAME(EmbeddedFiles), NULL);
     if (efiles)         // we have embedded files
     {   // make sure they are displayed
-        pdf_dict_put_name(ctx, root, PDF_NAME_PageMode, "UseAttachments");
+        pdf_dict_put_name(ctx, root, PDF_NAME(PageMode), "UseAttachments");
         // remove the limits entry: seems to be a MuPDF bug
-        pdf_dict_del(ctx, efiles, PDF_NAME_Limits);
+        pdf_dict_del(ctx, efiles, PDF_NAME(Limits));
     }
 
     return;
@@ -122,24 +122,24 @@ pdf_obj *JM_embed_file(fz_context *ctx, pdf_document *pdf, fz_buffer *buf,
     fz_try(ctx)
     {
         val = pdf_new_dict(ctx, pdf, 6);
-        pdf_dict_put_dict(ctx, val, PDF_NAME_CI, 4);
-        ef = pdf_dict_put_dict(ctx, val, PDF_NAME_EF, 4);
-        pdf_dict_put_text_string(ctx, val, PDF_NAME_F, filename);
-        pdf_dict_put_text_string(ctx, val, PDF_NAME_UF, filename);
-        pdf_dict_put_text_string(ctx, val, PDF_NAME_Desc, desc);
-        pdf_dict_put(ctx, val, PDF_NAME_Type, PDF_NAME_Filespec);
+        pdf_dict_put_dict(ctx, val, PDF_NAME(CI), 4);
+        ef = pdf_dict_put_dict(ctx, val, PDF_NAME(EF), 4);
+        pdf_dict_put_text_string(ctx, val, PDF_NAME(F), filename);
+        pdf_dict_put_text_string(ctx, val, PDF_NAME(UF), filename);
+        pdf_dict_put_text_string(ctx, val, PDF_NAME(Desc), desc);
+        pdf_dict_put(ctx, val, PDF_NAME(Type), PDF_NAME(Filespec));
         tbuf = fz_new_buffer(ctx, strlen(filename)+1);
         fz_append_string(ctx, tbuf, filename);
         fz_terminate_buffer(ctx, tbuf);
-        pdf_dict_put_drop(ctx, ef, PDF_NAME_F,
+        pdf_dict_put_drop(ctx, ef, PDF_NAME(F),
                          (f = pdf_add_stream(ctx, pdf, tbuf, NULL, 0)));
         fz_drop_buffer(ctx, tbuf);
         JM_update_stream(ctx, pdf, f, buf);
         len = fz_buffer_storage(ctx, buf, NULL);
-        pdf_dict_put_int(ctx, f, PDF_NAME_DL, len);
-        pdf_dict_put_int(ctx, f, PDF_NAME_Length, len);
-        params = pdf_dict_put_dict(ctx, f, PDF_NAME_Params, 4);
-        pdf_dict_put_int(ctx, params, PDF_NAME_Size, len);
+        pdf_dict_put_int(ctx, f, PDF_NAME(DL), len);
+        pdf_dict_put_int(ctx, f, PDF_NAME(Length), len);
+        params = pdf_dict_put_dict(ctx, f, PDF_NAME(Params), 4);
+        pdf_dict_put_int(ctx, params, PDF_NAME(Size), len);
     }
     fz_always(ctx)
     {
