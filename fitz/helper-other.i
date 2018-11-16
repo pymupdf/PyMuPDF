@@ -744,26 +744,29 @@ struct fz_store_s
 //-----------------------------------------------------------------------------
 // START redirect stdout/stderr
 //-----------------------------------------------------------------------------
+PyObject *JM_error_log;
+PyObject *JM_output_log;
+
 static void
 JM_write_stdout(fz_context *ctx, void *opaque, const void *buffer, size_t count)
 {
     if (!buffer || !count) return;
-    PyObject *c = Py_BuildValue("s#", (char *) buffer, (int) count);
-    char *text = JM_Python_str_AsChar(c);
-    PySys_WriteStdout("%s", text);
-    JM_Python_str_DelForPy3(text);
-    Py_DECREF(c);
+    PyObject *c = Py_BuildValue("s#", (const char *) buffer, (Py_ssize_t) count);
+    if (!c || c == NONE) return;
+    PyList_Append(JM_output_log, c);
+    Py_CLEAR(c);
+    return;
 }
 
 static void
 JM_write_stderr(fz_context *ctx, void *opaque, const void *buffer, size_t count)
 {
     if (!buffer || !count) return;
-    PyObject *c = Py_BuildValue("s#", (char *) buffer, (int) count);
-    char *text = JM_Python_str_AsChar(c);
-    PySys_WriteStderr("%s", text);
-    JM_Python_str_DelForPy3(text);
-    Py_DECREF(c);
+    PyObject *c = Py_BuildValue("s#", (const char *) buffer, (Py_ssize_t) count);
+    if (!c || c == NONE) return;
+    PyList_Append(JM_error_log, c);
+    Py_CLEAR(c);
+    return;
 }
 
 fz_output *JM_fitz_stdout;

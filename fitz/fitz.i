@@ -145,7 +145,11 @@ fz_set_stderr(gctx, JM_fitz_stderr);
 if (JM_fitz_stderr && JM_fitz_stdout)
     {;}
 else
-    PySys_WriteStdout("error redefining stdout/stderr!\n");
+    PySys_WriteStdout("error redirecting stdout/stderr!\n");
+
+JM_error_log  = PyList_New(0);
+JM_output_log = PyList_New(0);
+
 //-----------------------------------------------------------------------------
 // STOP redirect stdout/stderr
 //-----------------------------------------------------------------------------
@@ -5987,15 +5991,23 @@ struct Tools
             return JM_fitz_config();
         }
 
-        void _store_debug()
-        {
-            fz_debug_store(gctx);
-        }
-
         %feature("autodoc","Empty the glyph cache.") glyph_cache_empty;
         void glyph_cache_empty()
         {
             fz_purge_glyph_cache(gctx);
+        }
+
+        %pythoncode%{@property%}
+        PyObject *fitz_stderr()
+        {
+            return PyUnicode_Join(Py_BuildValue("s", ""), JM_error_log);
+        }
+
+        %feature("autodoc","Empty fitz error log.") empty_error_log;
+        void fitz_stderr_reset()
+        {
+            Py_CLEAR(JM_error_log);
+            JM_error_log  = PyList_New(0);
         }
 
         PyObject *transform_rect(PyObject *rect, PyObject *matrix)

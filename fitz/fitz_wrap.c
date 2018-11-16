@@ -4086,26 +4086,29 @@ struct fz_store_s
 //-----------------------------------------------------------------------------
 // START redirect stdout/stderr
 //-----------------------------------------------------------------------------
+PyObject *JM_error_log;
+PyObject *JM_output_log;
+
 static void
 JM_write_stdout(fz_context *ctx, void *opaque, const void *buffer, size_t count)
 {
     if (!buffer || !count) return;
-    PyObject *c = Py_BuildValue("s#", (char *) buffer, (int) count);
-    char *text = JM_Python_str_AsChar(c);
-    PySys_WriteStdout("%s", text);
-    JM_Python_str_DelForPy3(text);
-    Py_DECREF(c);
+    PyObject *c = Py_BuildValue("s#", (const char *) buffer, (Py_ssize_t) count);
+    if (!c || c == NONE) return;
+    PyList_Append(JM_output_log, c);
+    Py_CLEAR(c);
+    return;
 }
 
 static void
 JM_write_stderr(fz_context *ctx, void *opaque, const void *buffer, size_t count)
 {
     if (!buffer || !count) return;
-    PyObject *c = Py_BuildValue("s#", (char *) buffer, (int) count);
-    char *text = JM_Python_str_AsChar(c);
-    PySys_WriteStderr("%s", text);
-    JM_Python_str_DelForPy3(text);
-    Py_DECREF(c);
+    PyObject *c = Py_BuildValue("s#", (const char *) buffer, (Py_ssize_t) count);
+    if (!c || c == NONE) return;
+    PyList_Append(JM_error_log, c);
+    Py_CLEAR(c);
+    return;
 }
 
 fz_output *JM_fitz_stdout;
@@ -13341,11 +13344,15 @@ SWIGINTERN size_t Tools_store_maxsize(struct Tools *self){
 SWIGINTERN PyObject *Tools_fitz_config(struct Tools *self){
             return JM_fitz_config();
         }
-SWIGINTERN void Tools__store_debug(struct Tools *self){
-            fz_debug_store(gctx);
-        }
 SWIGINTERN void Tools_glyph_cache_empty(struct Tools *self){
             fz_purge_glyph_cache(gctx);
+        }
+SWIGINTERN PyObject *Tools_fitz_stderr(struct Tools *self){
+            return PyUnicode_Join(Py_BuildValue("s", ""), JM_error_log);
+        }
+SWIGINTERN void Tools_fitz_stderr_reset(struct Tools *self){
+            Py_CLEAR(JM_error_log);
+            JM_error_log  = PyList_New(0);
         }
 SWIGINTERN PyObject *Tools_transform_rect(struct Tools *self,PyObject *rect,PyObject *matrix){
             return JM_py_from_rect(fz_transform_rect(JM_rect_from_py(rect), JM_matrix_from_py(matrix)));
@@ -20956,27 +20963,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Tools__store_debug(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct Tools *arg1 = (struct Tools *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:Tools__store_debug",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Tools, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Tools__store_debug" "', argument " "1"" of type '" "struct Tools *""'"); 
-  }
-  arg1 = (struct Tools *)(argp1);
-  Tools__store_debug(arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_Tools_glyph_cache_empty(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct Tools *arg1 = (struct Tools *) 0 ;
@@ -20991,6 +20977,49 @@ SWIGINTERN PyObject *_wrap_Tools_glyph_cache_empty(PyObject *SWIGUNUSEDPARM(self
   }
   arg1 = (struct Tools *)(argp1);
   Tools_glyph_cache_empty(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Tools_fitz_stderr(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct Tools *arg1 = (struct Tools *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Tools_fitz_stderr",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Tools, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Tools_fitz_stderr" "', argument " "1"" of type '" "struct Tools *""'"); 
+  }
+  arg1 = (struct Tools *)(argp1);
+  result = (PyObject *)Tools_fitz_stderr(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Tools_fitz_stderr_reset(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct Tools *arg1 = (struct Tools *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Tools_fitz_stderr_reset",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Tools, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Tools_fitz_stderr_reset" "', argument " "1"" of type '" "struct Tools *""'"); 
+  }
+  arg1 = (struct Tools *)(argp1);
+  Tools_fitz_stderr_reset(arg1);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -21323,8 +21352,9 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Tools_store_size", _wrap_Tools_store_size, METH_VARARGS, (char *)"Current store size."},
 	 { (char *)"Tools_store_maxsize", _wrap_Tools_store_maxsize, METH_VARARGS, (char *)"Maximum store size."},
 	 { (char *)"Tools_fitz_config", _wrap_Tools_fitz_config, METH_VARARGS, (char *)"Show configuration data."},
-	 { (char *)"Tools__store_debug", _wrap_Tools__store_debug, METH_VARARGS, (char *)"Tools__store_debug(self)"},
 	 { (char *)"Tools_glyph_cache_empty", _wrap_Tools_glyph_cache_empty, METH_VARARGS, (char *)"Empty the glyph cache."},
+	 { (char *)"Tools_fitz_stderr", _wrap_Tools_fitz_stderr, METH_VARARGS, (char *)"Tools_fitz_stderr(self) -> PyObject *"},
+	 { (char *)"Tools_fitz_stderr_reset", _wrap_Tools_fitz_stderr_reset, METH_VARARGS, (char *)"Tools_fitz_stderr_reset(self)"},
 	 { (char *)"Tools_transform_rect", _wrap_Tools_transform_rect, METH_VARARGS, (char *)"Tools_transform_rect(self, rect, matrix) -> PyObject *"},
 	 { (char *)"Tools_invert_matrix", _wrap_Tools_invert_matrix, METH_VARARGS, (char *)"Tools_invert_matrix(self, matrix) -> PyObject *"},
 	 { (char *)"new_Tools", _wrap_new_Tools, METH_VARARGS, (char *)"new_Tools() -> Tools"},
@@ -22118,7 +22148,11 @@ SWIG_init(void) {
     ;
   }
   else
-  PySys_WriteStdout("error redefining stdout/stderr!\n");
+  PySys_WriteStdout("error redirecting stdout/stderr!\n");
+  
+  JM_error_log  = PyList_New(0);
+  JM_output_log = PyList_New(0);
+  
   //-----------------------------------------------------------------------------
   // STOP redirect stdout/stderr
   //-----------------------------------------------------------------------------

@@ -106,8 +106,8 @@ del platform
 
 VersionFitz = "1.14.0"
 VersionBind = "1.14.0"
-VersionDate = "2018-11-15 05:11:14"
-version = (VersionBind, VersionFitz, "20181115051114")
+VersionDate = "2018-11-16 05:14:22"
+version = (VersionBind, VersionFitz, "20181116051422")
 
 
 class Matrix():
@@ -4089,14 +4089,20 @@ class Tools(_object):
         return _fitz.Tools_fitz_config(self)
 
 
-    def _store_debug(self):
-        """_store_debug(self)"""
-        return _fitz.Tools__store_debug(self)
-
-
     def glyph_cache_empty(self):
         """Empty the glyph cache."""
         return _fitz.Tools_glyph_cache_empty(self)
+
+    @property
+
+    def fitz_stderr(self):
+        """fitz_stderr(self) -> PyObject *"""
+        return _fitz.Tools_fitz_stderr(self)
+
+
+    def fitz_stderr_reset(self):
+        """fitz_stderr_reset(self)"""
+        return _fitz.Tools_fitz_stderr_reset(self)
 
 
     def transform_rect(self, rect, matrix):
