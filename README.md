@@ -1,4 +1,4 @@
-# PyMuPDF 1.14.0
+# PyMuPDF 1.14.1
 
 ![logo](https://github.com/rk700/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
@@ -14,7 +14,7 @@ On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![](https://
 
 # Introduction
 
-This is **version 1.14.0 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.14.0](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
+This is **version 1.14.1 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.14.x](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -30,9 +30,15 @@ The platform tag for Mac OSX is `macosx_10_6_intel`.
 
 The platform tag for Linux is `manylinux1_x86_64`, which makes these wheels usable on Debian, Ubuntu and most other variations.
 
-On other operating systems you need to generate PyMuPDF yourself. Before you can do this, you must download and generate MuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures for achieving this.
+On other operating systems you need to generate PyMuPDF yourself. And of course you can choose to do so for a wheel-supported platform, too. Before you can do this, you must download and generate MuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures for achieving this. Please observe the following general steps:
 
-Be sure to download the official MuPDF source release from [here](https://mupdf.com/downloads). Do **not use** MuPDF's [GitHub repo](https://github.com/ArtifexSoftware/mupdf). It contains their current **development source**, which is **not compatible** with this PyMuPDF version most of the time.
+* Be sure to download the official MuPDF source release from [here](https://mupdf.com/downloads/archive). Do **not use** MuPDF's [GitHub repo](https://github.com/ArtifexSoftware/mupdf). It contains their current **development source**, which is **not compatible** with this PyMuPDF version most of the time.
+
+* The repo's `fitz` folder contains a few files whose names start with an underscore `"_"`. These files contain configuration data and hotfixes. Each one must be copy-renamed to its correct target location of the MuPDF source that you have downloaded, **before you generate MuPDF**. Currently, these files are:
+  - fitz configuration file `_mupdf_config.h` copy-replace to: `mupdf/include/fitz/config.h`. It contains configuration data like e.g. which fonts to support.
+  - fitz error module `_error.c`, copy-replace to: `mupdf/source/fitz/error.c`. It redirects MuPDF warnings and errors so they can be intercepted by PyMuPDF.
+  - PDF device module `_pdf-device.c` copy-replace to: `mupdf/source/pdf/pdf-device.c`. It fixes a bug which caused method `Document.convertToPDF()` to bring down the interpeter.
+  - Now MuPDF can generated.
 
 Once this is done, adjust directories in ``setup.py`` and run ``python setup.py install``.
 

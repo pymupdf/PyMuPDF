@@ -52,7 +52,7 @@ else:
                        sources=['./fitz/fitz_wrap.c',])
 
 setup(name = 'PyMuPDF',
-      version = "1.14.0",
+      version = "1.14.1",
       description = 'Python bindings for the PDF rendering library MuPDF',
       classifiers = ['Development Status :: 5 - Production/Stable',
                      'Environment :: Console',
