@@ -96,6 +96,7 @@ except __builtin__.Exception:
     _newclass = 0
 
 
+import os
 import weakref
 from binascii import hexlify
 import math
@@ -105,9 +106,9 @@ del platform
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.0"
-VersionDate = "2018-11-16 05:14:22"
-version = (VersionBind, VersionFitz, "20181116051422")
+VersionBind = "1.14.1"
+VersionDate = "2018-11-18 17:07:00"
+version = (VersionBind, VersionFitz, "20181118170700")
 
 
 class Matrix():
@@ -1572,18 +1573,27 @@ open(filename, filetype='type') - from file"""
     def __init__(self, filename=None, stream=None, filetype=None, rect=None, width=0, height=0, fontsize=11):
         """__init__(self, filename=None, stream=None, filetype=None, rect=None, width=0, height=0, fontsize=11) -> Document"""
 
-        if not filename or type(filename) == str:
+        if not filename or type(filename) is str:
             pass
-        elif type(filename) == unicode:
-            filename = filename.encode('utf8')
         else:
-            raise TypeError("filename must be string or None")
-        self.name = filename if filename else ""
+            if str is bytes:                 # Python 2
+                if type(filename) is unicode:
+                    filename = filename.encode("utf8")
+            else:
+                filename = str(filename)     # should take care of pathlib
+
         self.streamlen = len(stream) if stream else 0
-        if stream and not (filename or filetype):
-            raise ValueError("filetype missing with stream specified")
-        if stream and type(stream) not in (bytes, bytearray):
-            raise ValueError("stream must be bytes or bytearray")
+
+        self.name = ""
+        if filename and self.streamlen == 0:
+            self.name = filename
+
+        if self.streamlen > 0:
+            if not (filename or filetype):
+                raise ValueError("filetype missing with stream specified")
+            if type(stream) not in (bytes, bytearray):
+                raise ValueError("stream must be bytes or bytearray")
+
         self.isClosed    = False
         self.isEncrypted = 0
         self.metadata    = None
@@ -4095,14 +4105,30 @@ class Tools(_object):
 
     @property
 
+    def fitz_stdout(self):
+        """fitz_stdout(self) -> char *"""
+        return _fitz.Tools_fitz_stdout(self)
+
+
+    def fitz_stdout_reset(self):
+        """fitz_stdout_reset(self)"""
+        return _fitz.Tools_fitz_stdout_reset(self)
+
+    @property
+
     def fitz_stderr(self):
-        """fitz_stderr(self) -> PyObject *"""
+        """fitz_stderr(self) -> char *"""
         return _fitz.Tools_fitz_stderr(self)
 
 
     def fitz_stderr_reset(self):
         """fitz_stderr_reset(self)"""
         return _fitz.Tools_fitz_stderr_reset(self)
+
+
+    def mupdf_version(self):
+        """mupdf_version(self) -> char *"""
+        return _fitz.Tools_mupdf_version(self)
 
 
     def transform_rect(self, rect, matrix):

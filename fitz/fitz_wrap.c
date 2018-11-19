@@ -3141,16 +3141,16 @@ fz_quad JM_quad_from_py(PyObject *r)
     if (!r || !PySequence_Check(r) || PySequence_Size(r) != 4)
         return q;
 
-    double x0 = PyFloat_AsDouble(PySequence_GetItem(r, 0));
+    double x0 = PyFloat_AsDouble(PySequence_ITEM(r, 0));
     if (!PyErr_Occurred())             // assume case 1: a rect is given
     {
-        double y0 = PyFloat_AsDouble(PySequence_GetItem(r, 1));
+        double y0 = PyFloat_AsDouble(PySequence_ITEM(r, 1));
         if (PyErr_Occurred()) goto return_simple;
 
-        double x1 = PyFloat_AsDouble(PySequence_GetItem(r, 2));
+        double x1 = PyFloat_AsDouble(PySequence_ITEM(r, 2));
         if (PyErr_Occurred()) goto return_simple;
 
-        double y1 = PyFloat_AsDouble(PySequence_GetItem(r, 3));
+        double y1 = PyFloat_AsDouble(PySequence_ITEM(r, 3));
         if (PyErr_Occurred()) goto return_simple;
 
         q.ul = fz_make_point(x0, y0);
@@ -3166,16 +3166,16 @@ fz_quad JM_quad_from_py(PyObject *r)
     PyErr_Clear();
     for (i = 0; i < 4; i++)
     {
-        PyObject *o = PySequence_GetItem(r, i);
+        PyObject *o = PySequence_ITEM(r, i);
         p[i].x = p[i].y = 0;
         if (!PySequence_Check(o) || PySequence_Size(o) != 2)
             goto weiter;
 
-        p[i].x = PyFloat_AsDouble(PySequence_GetItem(o, 0));
+        p[i].x = PyFloat_AsDouble(PySequence_ITEM(o, 0));
         if (PyErr_Occurred())
             p[i].x = 0;
 
-        p[i].y = PyFloat_AsDouble(PySequence_GetItem(o, 1));
+        p[i].y = PyFloat_AsDouble(PySequence_ITEM(o, 1));
         if (PyErr_Occurred())
             p[i].y = 0;
 
@@ -3198,16 +3198,16 @@ fz_rect JM_rect_from_py(PyObject *r)
     if (!r || !PySequence_Check(r) || PySequence_Size(r) != 4)
         return fz_infinite_rect;
 
-    double x0 = PyFloat_AsDouble(PySequence_GetItem(r, 0));
+    double x0 = PyFloat_AsDouble(PySequence_ITEM(r, 0));
     if (PyErr_Occurred()) goto return_empty;
 
-    double y0 = PyFloat_AsDouble(PySequence_GetItem(r, 1));
+    double y0 = PyFloat_AsDouble(PySequence_ITEM(r, 1));
     if (PyErr_Occurred()) goto return_empty;
 
-    double x1 = PyFloat_AsDouble(PySequence_GetItem(r, 2));
+    double x1 = PyFloat_AsDouble(PySequence_ITEM(r, 2));
     if (PyErr_Occurred()) goto return_empty;
 
-    double y1 = PyFloat_AsDouble(PySequence_GetItem(r, 3));
+    double y1 = PyFloat_AsDouble(PySequence_ITEM(r, 3));
     if (PyErr_Occurred()) goto return_empty;
 
     return fz_make_rect((float) x0, (float) y0, (float) x1, (float) y1);
@@ -3233,16 +3233,16 @@ fz_irect JM_irect_from_py(PyObject *r)
     if (!r || !PySequence_Check(r) || PySequence_Size(r) != 4)
         return fz_infinite_irect;
 
-    long x0 = PyLong_AsLong(PySequence_GetItem(r, 0));
+    long x0 = PyLong_AsLong(PySequence_ITEM(r, 0));
     if (PyErr_Occurred()) goto return_empty;
 
-    long y0 = PyLong_AsLong(PySequence_GetItem(r, 1));
+    long y0 = PyLong_AsLong(PySequence_ITEM(r, 1));
     if (PyErr_Occurred()) goto return_empty;
 
-    long x1 = PyLong_AsLong(PySequence_GetItem(r, 2));
+    long x1 = PyLong_AsLong(PySequence_ITEM(r, 2));
     if (PyErr_Occurred()) goto return_empty;
 
-    long y1 = PyLong_AsLong(PySequence_GetItem(r, 3));
+    long y1 = PyLong_AsLong(PySequence_ITEM(r, 3));
     if (PyErr_Occurred()) goto return_empty;
 
     return fz_make_irect((int) x0, (int) y0, (int) x1, (int) y1);
@@ -3270,10 +3270,10 @@ fz_point JM_point_from_py(PyObject *p)
     if (!p || !PySequence_Check(p) || PySequence_Size(p) != 2)
         return p0;
 
-    double x = PyFloat_AsDouble(PySequence_GetItem(p, 0));
+    double x = PyFloat_AsDouble(PySequence_ITEM(p, 0));
     if (PyErr_Occurred()) goto zero_point;
 
-    double y = PyFloat_AsDouble(PySequence_GetItem(p, 1));
+    double y = PyFloat_AsDouble(PySequence_ITEM(p, 1));
     if (PyErr_Occurred()) goto zero_point;
 
     return fz_make_point((float) x, (float) y);
@@ -3301,22 +3301,22 @@ fz_matrix JM_matrix_from_py(PyObject *m)
     if (!m || !PySequence_Check(m) || PySequence_Size(m) != 6)
         return m0;
 
-    double a = PyFloat_AsDouble(PySequence_GetItem(m, 0));
+    double a = PyFloat_AsDouble(PySequence_ITEM(m, 0));
     if (PyErr_Occurred()) goto fertig;
 
-    double b = PyFloat_AsDouble(PySequence_GetItem(m, 1));
+    double b = PyFloat_AsDouble(PySequence_ITEM(m, 1));
     if (PyErr_Occurred()) goto fertig;
 
-    double c = PyFloat_AsDouble(PySequence_GetItem(m, 2));
+    double c = PyFloat_AsDouble(PySequence_ITEM(m, 2));
     if (PyErr_Occurred()) goto fertig;
 
-    double d = PyFloat_AsDouble(PySequence_GetItem(m, 3));
+    double d = PyFloat_AsDouble(PySequence_ITEM(m, 3));
     if (PyErr_Occurred()) goto fertig;
 
-    double e = PyFloat_AsDouble(PySequence_GetItem(m, 4));
+    double e = PyFloat_AsDouble(PySequence_ITEM(m, 4));
     if (PyErr_Occurred()) goto fertig;
 
-    double f = PyFloat_AsDouble(PySequence_GetItem(m, 5));
+    double f = PyFloat_AsDouble(PySequence_ITEM(m, 5));
     if (PyErr_Occurred()) goto fertig;
 
     m0.a = a;
@@ -3494,7 +3494,7 @@ void JM_color_FromSequence(PyObject *color, int *n, float col[4])
     float mcol[4] = {0,0,0,0}; // local color storage
     for (i = 0; i < len; i++)
     {
-        mcol[i] = (float) PyFloat_AsDouble(PySequence_GetItem(color, i));
+        mcol[i] = (float) PyFloat_AsDouble(PySequence_ITEM(color, i));
         if (PyErr_Occurred())
         {
             PyErr_Clear(); // reset Py error indicator
@@ -4093,9 +4093,9 @@ static void
 JM_write_stdout(fz_context *ctx, void *opaque, const void *buffer, size_t count)
 {
     if (!buffer || !count) return;
-    PyObject *c = Py_BuildValue("s#", (const char *) buffer, (Py_ssize_t) count);
+    PyObject *c = PyByteArray_FromStringAndSize((const char *)buffer, (Py_ssize_t) count);
     if (!c || c == NONE) return;
-    PyList_Append(JM_output_log, c);
+    JM_output_log = PySequence_InPlaceConcat(JM_output_log, c);
     Py_CLEAR(c);
     return;
 }
@@ -4104,9 +4104,9 @@ static void
 JM_write_stderr(fz_context *ctx, void *opaque, const void *buffer, size_t count)
 {
     if (!buffer || !count) return;
-    PyObject *c = Py_BuildValue("s#", (const char *) buffer, (Py_ssize_t) count);
+    PyObject *c = PyByteArray_FromStringAndSize((const char *)buffer, (Py_ssize_t) count);
     if (!c || c == NONE) return;
-    PyList_Append(JM_error_log, c);
+    JM_error_log = PySequence_InPlaceConcat(JM_error_log, c);
     Py_CLEAR(c);
     return;
 }
@@ -7377,8 +7377,8 @@ struct fz_annot_s *JM_AnnotMultiline(fz_context *ctx, pdf_page *page, PyObject *
             PyObject *p = PySequence_ITEM(points, i);
             if (!PySequence_Check(p) || PySequence_Size(p) != 2)
                 THROWMSG("invalid points list");
-            point.x = (float) PyFloat_AsDouble(PySequence_GetItem(p, 0));
-            point.y = (float) PyFloat_AsDouble(PySequence_GetItem(p, 1));
+            point.x = (float) PyFloat_AsDouble(PySequence_ITEM(p, 0));
+            point.y = (float) PyFloat_AsDouble(PySequence_ITEM(p, 1));
             Py_CLEAR(p);
             pdf_add_annot_vertex(ctx, annot, point);
             if (i == 0)
@@ -7508,7 +7508,7 @@ PyObject *JM_annot_set_border(fz_context *ctx, PyObject *border, pdf_document *d
         pdf_obj *darr = pdf_new_array(ctx, doc, n);
         for (i = 0; i < n; i++)
         {
-            d = (int) PyInt_AsLong(PySequence_GetItem(ndashes, i));
+            d = (int) PyInt_AsLong(PySequence_ITEM(ndashes, i));
             pdf_array_push_int(ctx, darr, (int64_t) d);
         }
         pdf_dict_putl_drop(ctx, annot_obj, darr, PDF_NAME(BS), PDF_NAME(D), NULL);
@@ -8022,7 +8022,7 @@ void JM_set_choice_options(fz_context *ctx, pdf_annot *annot, PyObject *liste)
     pdf_obj *optarr = pdf_new_array(ctx, pdf, n);
     for (i = 0; i < n; i++)
     {
-        opt = JM_Python_str_AsChar(PySequence_GetItem(liste, i));
+        opt = JM_Python_str_AsChar(PySequence_ITEM(liste, i));
         pdf_array_push_text_string(ctx, optarr, (const char *) opt);
         JM_Python_str_DelForPy3(opt);
     }
@@ -8043,7 +8043,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 {
     pdf_document *pdf = annot->page->doc;
     pdf_page *page = annot->page;
-    fz_rect rect = {0,0,0,0};
+    fz_rect rect;
     pdf_obj *fill_col = NULL, *text_col = NULL, *border_col = NULL;
     pdf_obj *dashes = NULL;
     Py_ssize_t i, n = 0;
@@ -8068,12 +8068,8 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // rectangle --------------------------------------------------------------
     value = PyObject_GetAttrString(Widget, "rect");
-    rect.x0 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 0));
-    rect.y0 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 1));
-    rect.x1 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 2));
-    rect.y1 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 3));
+    rect = JM_rect_from_py(value);
     Py_CLEAR(value);
-    JM_PyErr_Clear;
     pdf_set_annot_rect(ctx, annot, rect);    // set the rect
 
     // fill color -------------------------------------------------------------
@@ -8084,7 +8080,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         fill_col = pdf_new_array(ctx, pdf, n);
         for (i = 0; i < n; i++)
             pdf_array_push_real(ctx, fill_col,
-                                PyFloat_AsDouble(PySequence_GetItem(value, i)));
+                                PyFloat_AsDouble(PySequence_ITEM(value, i)));
         pdf_field_set_fill_color(ctx, pdf, annot->obj, fill_col);
         pdf_drop_obj(ctx, fill_col);
     }
@@ -8099,7 +8095,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         dashes = pdf_new_array(ctx, pdf, n);
         for (i = 0; i < n; i++)
             pdf_array_push_int(ctx, dashes,
-                                    PyInt_AsLong(PySequence_GetItem(value, i)));
+                                    PyInt_AsLong(PySequence_ITEM(value, i)));
         pdf_dict_putl_drop(ctx, annot->obj, dashes, PDF_NAME(BS),
                                                               PDF_NAME(D), NULL);
     }
@@ -8114,7 +8110,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         border_col = pdf_new_array(ctx, pdf, n);
         for (i = 0; i < n; i++)
             pdf_array_push_real(ctx, border_col,
-                                PyFloat_AsDouble(PySequence_GetItem(value, i)));
+                                PyFloat_AsDouble(PySequence_ITEM(value, i)));
         pdf_dict_putl_drop(ctx, annot->obj, border_col, PDF_NAME(MK),
                                                              PDF_NAME(BC), NULL);
     }
@@ -8615,7 +8611,7 @@ void retainpages(fz_context *ctx, globals *glo, PyObject *liste)
     {
         for (page = 0; page < argc; page++)
             {
-                i = (int) PyInt_AsLong(PySequence_GetItem(liste, page));
+                i = (int) PyInt_AsLong(PySequence_ITEM(liste, page));
                 if (i < 0 || i >= pagecount)
                     THROWMSG("invalid page number(s)");
                 retainpage(ctx, doc, pages, kids, i);
@@ -10911,18 +10907,18 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addInkAnnot(struct fz_page_s *self,PyObj
                 inklist = pdf_new_array(gctx, annot->page->doc, n0);
                 for (j = 0; j < n0; j++)
                 {
-                    sublist = PySequence_GetItem(list, j);
+                    sublist = PySequence_ITEM(list, j);
                     n1 = PySequence_Size(sublist);
                     stroke = pdf_new_array(gctx, annot->page->doc, 2 * n1);
                     for (i = 0; i < n1; i++)
                     {
-                        p = PySequence_GetItem(sublist, i);
+                        p = PySequence_ITEM(sublist, i);
                         if (!PySequence_Check(p) || PySequence_Size(p) != 2)
                             THROWMSG("3rd level entries must be pairs of floats");
-                        x = PyFloat_AsDouble(PySequence_GetItem(p, 0));
+                        x = PyFloat_AsDouble(PySequence_ITEM(p, 0));
                         if (PyErr_Occurred())
                             THROWMSG("invalid point coordinate");
-                        y = PyFloat_AsDouble(PySequence_GetItem(p, 1));
+                        y = PyFloat_AsDouble(PySequence_ITEM(p, 1));
                         if (PyErr_Occurred())
                             THROWMSG("invalid point coordinate");
                         Py_CLEAR(p);
@@ -12332,7 +12328,7 @@ SWIGINTERN void fz_annot_s_setColors(struct fz_annot_s *self,PyObject *colors){
             if (n>0)
             {
                 for (i=0; i<n; i++)
-                    col[i] = (float) PyFloat_AsDouble(PySequence_GetItem(ccol, i));
+                    col[i] = (float) PyFloat_AsDouble(PySequence_ITEM(ccol, i));
                 fz_try(gctx)
                     pdf_set_annot_color(gctx, annot, n, col);
                 fz_catch(gctx)
@@ -12350,7 +12346,7 @@ SWIGINTERN void fz_annot_s_setColors(struct fz_annot_s *self,PyObject *colors){
                     return;
                 }
                 for (i=0; i<n; i++)
-                    col[i] = (float) PyFloat_AsDouble(PySequence_GetItem(icol, i));
+                    col[i] = (float) PyFloat_AsDouble(PySequence_ITEM(icol, i));
                 fz_try(gctx)
                     pdf_set_annot_interior_color(gctx, annot, n, col);
                 fz_catch(gctx)
@@ -13347,12 +13343,22 @@ SWIGINTERN PyObject *Tools_fitz_config(struct Tools *self){
 SWIGINTERN void Tools_glyph_cache_empty(struct Tools *self){
             fz_purge_glyph_cache(gctx);
         }
-SWIGINTERN PyObject *Tools_fitz_stderr(struct Tools *self){
-            return PyUnicode_Join(Py_BuildValue("s", ""), JM_error_log);
+SWIGINTERN char *Tools_fitz_stdout(struct Tools *self){
+            return PyByteArray_AS_STRING(JM_output_log);
+        }
+SWIGINTERN void Tools_fitz_stdout_reset(struct Tools *self){
+            Py_CLEAR(JM_output_log);
+            JM_output_log = PyByteArray_FromStringAndSize("", 0);
+        }
+SWIGINTERN char *Tools_fitz_stderr(struct Tools *self){
+            return PyByteArray_AS_STRING(JM_error_log);
         }
 SWIGINTERN void Tools_fitz_stderr_reset(struct Tools *self){
             Py_CLEAR(JM_error_log);
-            JM_error_log  = PyList_New(0);
+            JM_error_log  = PyByteArray_FromStringAndSize("", 0);
+        }
+SWIGINTERN char *Tools_mupdf_version(struct Tools *self){
+            return FZ_VERSION;
         }
 SWIGINTERN PyObject *Tools_transform_rect(struct Tools *self,PyObject *rect,PyObject *matrix){
             return JM_py_from_rect(fz_transform_rect(JM_rect_from_py(rect), JM_matrix_from_py(matrix)));
@@ -20984,13 +20990,56 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Tools_fitz_stdout(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct Tools *arg1 = (struct Tools *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Tools_fitz_stdout",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Tools, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Tools_fitz_stdout" "', argument " "1"" of type '" "struct Tools *""'"); 
+  }
+  arg1 = (struct Tools *)(argp1);
+  result = (char *)Tools_fitz_stdout(arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Tools_fitz_stdout_reset(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct Tools *arg1 = (struct Tools *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Tools_fitz_stdout_reset",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Tools, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Tools_fitz_stdout_reset" "', argument " "1"" of type '" "struct Tools *""'"); 
+  }
+  arg1 = (struct Tools *)(argp1);
+  Tools_fitz_stdout_reset(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Tools_fitz_stderr(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct Tools *arg1 = (struct Tools *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  PyObject *result = 0 ;
+  char *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:Tools_fitz_stderr",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Tools, 0 |  0 );
@@ -20998,8 +21047,8 @@ SWIGINTERN PyObject *_wrap_Tools_fitz_stderr(PyObject *SWIGUNUSEDPARM(self), PyO
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Tools_fitz_stderr" "', argument " "1"" of type '" "struct Tools *""'"); 
   }
   arg1 = (struct Tools *)(argp1);
-  result = (PyObject *)Tools_fitz_stderr(arg1);
-  resultobj = result;
+  result = (char *)Tools_fitz_stderr(arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
   return resultobj;
 fail:
   return NULL;
@@ -21021,6 +21070,28 @@ SWIGINTERN PyObject *_wrap_Tools_fitz_stderr_reset(PyObject *SWIGUNUSEDPARM(self
   arg1 = (struct Tools *)(argp1);
   Tools_fitz_stderr_reset(arg1);
   resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Tools_mupdf_version(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct Tools *arg1 = (struct Tools *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Tools_mupdf_version",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Tools, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Tools_mupdf_version" "', argument " "1"" of type '" "struct Tools *""'"); 
+  }
+  arg1 = (struct Tools *)(argp1);
+  result = (char *)Tools_mupdf_version(arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
   return resultobj;
 fail:
   return NULL;
@@ -21353,8 +21424,11 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Tools_store_maxsize", _wrap_Tools_store_maxsize, METH_VARARGS, (char *)"Maximum store size."},
 	 { (char *)"Tools_fitz_config", _wrap_Tools_fitz_config, METH_VARARGS, (char *)"Show configuration data."},
 	 { (char *)"Tools_glyph_cache_empty", _wrap_Tools_glyph_cache_empty, METH_VARARGS, (char *)"Empty the glyph cache."},
-	 { (char *)"Tools_fitz_stderr", _wrap_Tools_fitz_stderr, METH_VARARGS, (char *)"Tools_fitz_stderr(self) -> PyObject *"},
+	 { (char *)"Tools_fitz_stdout", _wrap_Tools_fitz_stdout, METH_VARARGS, (char *)"Tools_fitz_stdout(self) -> char *"},
+	 { (char *)"Tools_fitz_stdout_reset", _wrap_Tools_fitz_stdout_reset, METH_VARARGS, (char *)"Tools_fitz_stdout_reset(self)"},
+	 { (char *)"Tools_fitz_stderr", _wrap_Tools_fitz_stderr, METH_VARARGS, (char *)"Tools_fitz_stderr(self) -> char *"},
 	 { (char *)"Tools_fitz_stderr_reset", _wrap_Tools_fitz_stderr_reset, METH_VARARGS, (char *)"Tools_fitz_stderr_reset(self)"},
+	 { (char *)"Tools_mupdf_version", _wrap_Tools_mupdf_version, METH_VARARGS, (char *)"Tools_mupdf_version(self) -> char *"},
 	 { (char *)"Tools_transform_rect", _wrap_Tools_transform_rect, METH_VARARGS, (char *)"Tools_transform_rect(self, rect, matrix) -> PyObject *"},
 	 { (char *)"Tools_invert_matrix", _wrap_Tools_invert_matrix, METH_VARARGS, (char *)"Tools_invert_matrix(self, matrix) -> PyObject *"},
 	 { (char *)"new_Tools", _wrap_new_Tools, METH_VARARGS, (char *)"new_Tools() -> Tools"},
@@ -22148,10 +22222,10 @@ SWIG_init(void) {
     ;
   }
   else
-  PySys_WriteStdout("error redirecting stdout/stderr!\n");
+  PySys_WriteStderr("error redirecting stdout/stderr!\n");
   
-  JM_error_log  = PyList_New(0);
-  JM_output_log = PyList_New(0);
+  JM_error_log  = PyByteArray_FromStringAndSize("", 0);
+  JM_output_log = PyByteArray_FromStringAndSize("", 0);
   
   //-----------------------------------------------------------------------------
   // STOP redirect stdout/stderr

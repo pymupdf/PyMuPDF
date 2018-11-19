@@ -152,7 +152,7 @@ void JM_color_FromSequence(PyObject *color, int *n, float col[4])
     float mcol[4] = {0,0,0,0}; // local color storage
     for (i = 0; i < len; i++)
     {
-        mcol[i] = (float) PyFloat_AsDouble(PySequence_GetItem(color, i));
+        mcol[i] = (float) PyFloat_AsDouble(PySequence_ITEM(color, i));
         if (PyErr_Occurred())
         {
             PyErr_Clear(); // reset Py error indicator
@@ -751,9 +751,9 @@ static void
 JM_write_stdout(fz_context *ctx, void *opaque, const void *buffer, size_t count)
 {
     if (!buffer || !count) return;
-    PyObject *c = Py_BuildValue("s#", (const char *) buffer, (Py_ssize_t) count);
+    PyObject *c = PyByteArray_FromStringAndSize((const char *)buffer, (Py_ssize_t) count);
     if (!c || c == NONE) return;
-    PyList_Append(JM_output_log, c);
+    JM_output_log = PySequence_InPlaceConcat(JM_output_log, c);
     Py_CLEAR(c);
     return;
 }
@@ -762,9 +762,9 @@ static void
 JM_write_stderr(fz_context *ctx, void *opaque, const void *buffer, size_t count)
 {
     if (!buffer || !count) return;
-    PyObject *c = Py_BuildValue("s#", (const char *) buffer, (Py_ssize_t) count);
+    PyObject *c = PyByteArray_FromStringAndSize((const char *)buffer, (Py_ssize_t) count);
     if (!c || c == NONE) return;
-    PyList_Append(JM_error_log, c);
+    JM_error_log = PySequence_InPlaceConcat(JM_error_log, c);
     Py_CLEAR(c);
     return;
 }

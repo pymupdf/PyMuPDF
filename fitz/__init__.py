@@ -13,6 +13,9 @@ csCMYK        = fitz.csCMYK
 TOOLS         = fitz.Tools()
 fitz.TOOLS    = TOOLS
 
+if fitz.VersionFitz != fitz.TOOLS.mupdf_version():
+    raise ValueError("MuPDF library mismatch %s <> %s" % (fitz.VersionFitz, fitz.TOOLS.mupdf_version()))
+
 import fitz.utils
 
 # copy functions to their respective fitz classes

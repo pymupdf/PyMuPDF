@@ -170,10 +170,10 @@ def getPixmap(page, matrix = None, colorspace = csRGB, clip = None,
     assert cs.n in (1,3,4), "unsupported colorspace"
 
     dl = page.getDisplayList()               # create DisplayList
-    if type(clip) is IRect:
-        scissor = clip.rect
+    if clip:
+        scissor = Rect(clip)
     else:
-        scissor = clip
+        scissor = None
     pix = dl.getPixmap(matrix = matrix,
                        colorspace = cs,
                        alpha = alpha,
@@ -877,12 +877,12 @@ def drawLine(page, p1, p2, color = (0, 0, 0), dashes = None,
     """Draw a line from point p1 to point p2.
     """
     img = page.newShape()
-    img.drawLine(p1, p2)
+    img.drawLine(Point(p1), Point(p2))
     img.finish(color = color, dashes = dashes, width = width, closePath = False,
                roundCap = roundCap, morph = morph)
     img.commit(overlay)
 
-    return p2
+    return Point(p2)
 
 #-------------------------------------------------------------------------------
 # Page.drawSquiggle
@@ -892,12 +892,12 @@ def drawSquiggle(page, p1, p2, breadth = 2, color = (0, 0, 0), dashes = None,
     """Draw a squiggly line from point p1 to point p2.
     """
     img = page.newShape()
-    img.drawSquiggle(p1, p2, breadth = breadth)
+    img.drawSquiggle(Point(p1), Point(p2), breadth = breadth)
     img.finish(color = color, dashes = dashes, width = width, closePath = False,
                roundCap = roundCap, morph = morph)
     img.commit(overlay)
 
-    return p2
+    return point(p2)
 
 #-------------------------------------------------------------------------------
 # Page.drawZigzag
@@ -907,12 +907,12 @@ def drawZigzag(page, p1, p2, breadth = 2, color = (0, 0, 0), dashes = None,
     """Draw a zigzag line from point p1 to point p2.
     """
     img = page.newShape()
-    img.drawZigzag(p1, p2, breadth = breadth)
+    img.drawZigzag(Point(p1), Point(p2), breadth = breadth)
     img.finish(color = color, dashes = dashes, width = width, closePath = False,
                roundCap = roundCap, morph = morph)
     img.commit(overlay)
 
-    return p2
+    return Point(p2)
 
 #-------------------------------------------------------------------------------
 # Page.drawRect
@@ -922,7 +922,7 @@ def drawRect(page, rect, color = (0, 0, 0), fill = None, dashes = None,
     """Draw a rectangle.
     """
     img = page.newShape()
-    Q = img.drawRect(rect)
+    Q = img.drawRect(Rect(rect))
     img.finish(color = color, fill = fill, dashes = dashes, width = width,
                    roundCap = roundCap, morph = morph)
     img.commit(overlay)
@@ -954,7 +954,7 @@ def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
     """Draw a circle given its center and radius.
     """
     img = page.newShape()
-    Q = img.drawCircle(center, radius)
+    Q = img.drawCircle(Point(center), radius)
     img.finish(color = color, fill = fill, dashes = dashes, width = width,
                roundCap = roundCap, morph = morph)
     img.commit(overlay)
@@ -969,7 +969,7 @@ def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = None,
     """Draw an oval given its containing rectangle.
     """
     img = page.newShape()
-    Q = img.drawOval(rect)
+    Q = img.drawOval(Rect(rect))
     img.finish(color = color, fill = fill, dashes = dashes, width = width,
                roundCap = roundCap, morph = morph)
     img.commit(overlay)
@@ -985,7 +985,7 @@ def drawCurve(page, p1, p2, p3, color = (0, 0, 0), fill = None, dashes = None,
     """Draw a special Bezier curve from p1 to p3, generating control points on lines p1 to p2 and p2 to p3.
     """
     img = page.newShape()
-    Q = img.drawCurve(p1, p2, p3)
+    Q = img.drawCurve(Point(p1), Point(p2), Point(p3))
     img.finish(color = color, fill = fill, dashes = dashes, width = width,
                roundCap = roundCap, morph = morph, closePath = closePath)
     img.commit(overlay)
@@ -1002,7 +1002,7 @@ def drawBezier(page, p1, p2, p3, p4, color = (0, 0, 0), fill = None,
     """Draw a general cubic Bezier curve from p1 to p4 using control points p2 and p3.
     """
     img = page.newShape()
-    Q = img.drawBezier(p1, p2, p3, p4)
+    Q = img.drawBezier(Point(p1), Point(p2), Point(p3), Point(p4))
     img.finish(color = color, fill = fill, dashes = dashes, width = width,
                roundCap = roundCap, morph = morph, closePath = closePath)
     img.commit(overlay)
@@ -1022,7 +1022,7 @@ def drawSector(page, center, point, beta, color = (0, 0, 0), fill = None,
     fullSector - connect arc ends with center
     """
     img = page.newShape()
-    Q = img.drawSector(center, point, beta, fullSector = fullSector)
+    Q = img.drawSector(Point(center), Point(point), beta, fullSector = fullSector)
     img.finish(color = color, fill = fill, dashes = dashes, width = width,
                roundCap = roundCap, morph = morph, closePath = closePath)
     img.commit(overlay)
@@ -1707,9 +1707,8 @@ class Shape():
         This uses the arcus sine function and resolves its inherent ambiguity by
         looking up in which quadrant vector S = P - C is located.
         """
-        S = P - C                               # vector 'C' -> 'P'
-        rad = abs(S)                            # distance of C to P
-        alfa = math.asin(abs(S.y) / rad)        # absolute angle from horizontal
+        S = Point(P - C).unit                   # unit vector 'C' -> 'P'
+        alfa = math.asin(abs(S.y))              # absolute angle from horizontal
         if S.x < 0:                             # make arcsin result unique
             if S.y <= 0:                        # bottom-left
                 alfa = -(math.pi - alfa)
@@ -1739,13 +1738,13 @@ class Shape():
     
     def updateRect(self, x):
         if self.rect is None:
-            if type(x) is Point:
+            if len(x) == 2:
                 self.rect = Rect(x, x)
             else:
-                self.rect = x
+                self.rect = Rect(x)
 
         else:
-            if type(x) is Point:
+            if len(x) == 2:
                 self.rect.x0 = min(self.rect.x0, x.x)
                 self.rect.y0 = min(self.rect.y0, x.y)
                 self.rect.x1 = max(self.rect.x1, x.x)
@@ -1776,39 +1775,41 @@ class Shape():
         """
         for i, p in enumerate(points):
             if i == 0:
-                if not (self.lastPoint == p):
-                    self.contents += "%g %g m\n" % (p.x + self.x,
-                                                    self.height - p.y - self.y)
-                    self.lastPoint = p
+                if not (self.lastPoint == Point(p)):
+                    self.contents += "%g %g m\n" % (p[0] + self.x,
+                                                    self.height - p[1] - self.y)
+                    self.lastPoint = Point(p)
             else:
-                self.contents += "%g %g l\n" % (p.x + self.x,
-                                                self.height - p.y - self.y)
+                self.contents += "%g %g l\n" % (p[0] + self.x,
+                                                self.height - p[1] - self.y)
             self.updateRect(p)
-        self.lastPoint = points[-1]
+        self.lastPoint = Point(points[-1])
         return self.lastPoint
 
     def drawBezier(self, p1, p2, p3, p4):
         """Draw a standard cubic Bezier curve.
         """
-        if not (self.lastPoint == p1):
-            self.contents += "%g %g m\n" % (p1.x + self.x,
-                                            self.height - p1.y - self.y)
-        self.contents += "%g %g %g %g %g %g c\n" % (p2.x + self.x,
-                                                    self.height - p2.y - self.y,
-                                                    p3.x + self.x,
-                                                    self.height - p3.y - self.y,
-                                                    p4.x + self.x,
-                                                    self.height - p4.y - self.y)
+        if not (self.lastPoint == Point(p1)):
+            self.contents += "%g %g m\n" % (p1[0] + self.x,
+                                            self.height - p1[1] - self.y)
+        self.contents += "%g %g %g %g %g %g c\n" % (p2[0] + self.x,
+                                                    self.height - p2[1] - self.y,
+                                                    p3[0] + self.x,
+                                                    self.height - p3[1] - self.y,
+                                                    p4[0] + self.x,
+                                                    self.height - p4[1] - self.y)
         self.updateRect(p1)
         self.updateRect(p2)
         self.updateRect(p3)
         self.updateRect(p4)
-        self.lastPoint = p4
+        self.lastPoint = Point(p4)
         return self.lastPoint
 
     def drawOval(self, rect):
         """Draw an ellipse inside a rectangle.
         """
+        if type(rect) is not Rect: 
+            rect = Rect(rect)
         if rect.isEmpty or rect.isInfinite:
             raise ValueError("rectangle must be finite and not empty")
         mt = rect.tl + (rect.tr - rect.tl)*0.5
@@ -1830,6 +1831,8 @@ class Shape():
         """Draw a circle given its center and radius.
         """
         assert radius > 1e-5, "radius must be postive"
+        if type(center) is not Point: 
+            center = Point(center)
         p1 = center - (radius, 0)
         return self.drawSector(center, p1, 360, fullSector = False)
 
@@ -1837,6 +1840,9 @@ class Shape():
         """Draw a curve between points using one control point.
         """
         kappa = 0.55228474983
+        if type(p1) is not Point: p1 = Point(p1)
+        if type(p2) is not Point: p2 = Point(p2)
+        if type(p3) is not Point: p3 = Point(p3)
         k1 = p1 + (p2 - p1) * kappa
         k2 = p3 + (p2 - p3) * kappa
         return self.drawBezier(p1, k1, k2, p3)
@@ -1844,6 +1850,8 @@ class Shape():
     def drawSector(self, center, point, beta, fullSector = True):
         """Draw a circle sector.
         """
+        if type(center) is not Point: center = Point(center)
+        if type(point) is not Point: point = Point(point)
         h = self.height
         l3 = "%g %g m\n"
         l4 = "%g %g %g %g %g %g c\n"
@@ -1908,7 +1916,7 @@ class Shape():
     def drawRect(self, rect):
         """Draw a rectangle.
         """
-        r = +rect
+        r = Rect(rect)
         self.contents += "%g %g %g %g re\n" % (r.x0 + self.x,
                                                self.height - r.y1 - self.y,
                                                r.width, r.height)
@@ -1919,6 +1927,8 @@ class Shape():
     def drawZigzag(self, p1, p2, breadth = 2):
         """Draw a zig-zagged line from p1 to p2.
         """
+        p1 = Point(p1)
+        p2 = Point(p2)
         S = p2 - p1                             # vector start - end
         rad = abs(S)                            # distance of points
         cnt = 4 * int(round(rad / (4 * breadth), 0)) # always take full phases
@@ -1948,6 +1958,8 @@ class Shape():
     def drawSquiggle(self, p1, p2, breadth = 2):
         """Draw a squiggly line from p1 to p2.
         """
+        p1 = Point(p1)
+        p2 = Point(p2)
         S = p2 - p1                             # vector start - end
         rad = abs(S)                            # distance of points
         cnt = 4 * int(round(rad / (4 * breadth), 0)) # always take full phases
@@ -2000,10 +2012,11 @@ class Shape():
             text = buffer.splitlines()
         else:
             text = buffer
-            
+
         if not len(text) > 0:
             return 0
-        
+
+        point = Point(point)
         maxcode = max([ord(c) for c in "\n".join(text)])
         # ensure valid 'fontname'
         xref = 0                            # xref of font object
@@ -2135,6 +2148,7 @@ class Shape():
         morph - morph box with  a matrix and a pivotal point
         Returns: unused or deficit rectangle area (float)
         """
+        rect = Rect(rect)
         if rect.isEmpty or rect.isInfinite:
             raise ValueError("text box must be finite and not empty")
         CheckColor(color)
