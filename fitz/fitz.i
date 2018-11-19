@@ -145,10 +145,10 @@ fz_set_stderr(gctx, JM_fitz_stderr);
 if (JM_fitz_stderr && JM_fitz_stdout)
     {;}
 else
-    PySys_WriteStdout("error redirecting stdout/stderr!\n");
+    PySys_WriteStderr("error redirecting stdout/stderr!\n");
 
-JM_error_log  = PyList_New(0);
-JM_output_log = PyList_New(0);
+JM_error_log  = PyByteArray_FromStringAndSize("", 0);
+JM_output_log = PyByteArray_FromStringAndSize("", 0);
 
 //-----------------------------------------------------------------------------
 // STOP redirect stdout/stderr
@@ -172,6 +172,7 @@ struct DeviceWrapper {
 // include version information and several other helpers
 //-----------------------------------------------------------------------------
 %pythoncode %{
+import os
 import weakref
 from binascii import hexlify
 import math
@@ -211,18 +212,27 @@ struct fz_document_s
         FITZEXCEPTION(fz_document_s, !result)
 
         %pythonprepend fz_document_s %{
-            if not filename or type(filename) == str:
+            if not filename or type(filename) is str:
                 pass
-            elif type(filename) == unicode:
-                filename = filename.encode('utf8')
             else:
-                raise TypeError("filename must be string or None")
-            self.name = filename if filename else ""
+                if str is bytes:                 # Python 2
+                    if type(filename) is unicode:
+                        filename = filename.encode("utf8")
+                else:
+                    filename = str(filename)     # should take care of pathlib
+
             self.streamlen = len(stream) if stream else 0
-            if stream and not (filename or filetype):
-                raise ValueError("filetype missing with stream specified")
-            if stream and type(stream) not in (bytes, bytearray):
-                raise ValueError("stream must be bytes or bytearray")
+
+            self.name = ""
+            if filename and self.streamlen == 0:
+                self.name = filename
+
+            if self.streamlen > 0:
+                if not (filename or filetype):
+                    raise ValueError("filetype missing with stream specified")
+                if type(stream) not in (bytes, bytearray):
+                    raise ValueError("stream must be bytes or bytearray")
+
             self.isClosed    = False
             self.isEncrypted = 0
             self.metadata    = None
@@ -2102,18 +2112,18 @@ struct fz_page_s {
                 inklist = pdf_new_array(gctx, annot->page->doc, n0);
                 for (j = 0; j < n0; j++)
                 {
-                    sublist = PySequence_GetItem(list, j);
+                    sublist = PySequence_ITEM(list, j);
                     n1 = PySequence_Size(sublist);
                     stroke = pdf_new_array(gctx, annot->page->doc, 2 * n1);
                     for (i = 0; i < n1; i++)
                     {
-                        p = PySequence_GetItem(sublist, i);
+                        p = PySequence_ITEM(sublist, i);
                         if (!PySequence_Check(p) || PySequence_Size(p) != 2)
                             THROWMSG("3rd level entries must be pairs of floats");
-                        x = PyFloat_AsDouble(PySequence_GetItem(p, 0));
+                        x = PyFloat_AsDouble(PySequence_ITEM(p, 0));
                         if (PyErr_Occurred())
                             THROWMSG("invalid point coordinate");
-                        y = PyFloat_AsDouble(PySequence_GetItem(p, 1));
+                        y = PyFloat_AsDouble(PySequence_ITEM(p, 1));
                         if (PyErr_Occurred())
                             THROWMSG("invalid point coordinate");
                         Py_CLEAR(p);
@@ -4559,7 +4569,7 @@ struct fz_annot_s
             if (n>0)
             {
                 for (i=0; i<n; i++)
-                    col[i] = (float) PyFloat_AsDouble(PySequence_GetItem(ccol, i));
+                    col[i] = (float) PyFloat_AsDouble(PySequence_ITEM(ccol, i));
                 fz_try(gctx)
                     pdf_set_annot_color(gctx, annot, n, col);
                 fz_catch(gctx)
@@ -4577,7 +4587,7 @@ struct fz_annot_s
                     return;
                 }
                 for (i=0; i<n; i++)
-                    col[i] = (float) PyFloat_AsDouble(PySequence_GetItem(icol, i));
+                    col[i] = (float) PyFloat_AsDouble(PySequence_ITEM(icol, i));
                 fz_try(gctx)
                     pdf_set_annot_interior_color(gctx, annot, n, col);
                 fz_catch(gctx)
@@ -5998,16 +6008,34 @@ struct Tools
         }
 
         %pythoncode%{@property%}
-        PyObject *fitz_stderr()
+        char *fitz_stdout()
         {
-            return PyUnicode_Join(Py_BuildValue("s", ""), JM_error_log);
+            return PyByteArray_AS_STRING(JM_output_log);
+        }
+
+        %feature("autodoc","Empty fitz output log.") empty_error_log;
+        void fitz_stdout_reset()
+        {
+            Py_CLEAR(JM_output_log);
+            JM_output_log = PyByteArray_FromStringAndSize("", 0);
+        }
+
+        %pythoncode%{@property%}
+        char *fitz_stderr()
+        {
+            return PyByteArray_AS_STRING(JM_error_log);
         }
 
         %feature("autodoc","Empty fitz error log.") empty_error_log;
         void fitz_stderr_reset()
         {
             Py_CLEAR(JM_error_log);
-            JM_error_log  = PyList_New(0);
+            JM_error_log  = PyByteArray_FromStringAndSize("", 0);
+        }
+
+        char *mupdf_version()
+        {
+            return FZ_VERSION;
         }
 
         PyObject *transform_rect(PyObject *rect, PyObject *matrix)

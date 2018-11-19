@@ -276,8 +276,8 @@ struct fz_annot_s *JM_AnnotMultiline(fz_context *ctx, pdf_page *page, PyObject *
             PyObject *p = PySequence_ITEM(points, i);
             if (!PySequence_Check(p) || PySequence_Size(p) != 2)
                 THROWMSG("invalid points list");
-            point.x = (float) PyFloat_AsDouble(PySequence_GetItem(p, 0));
-            point.y = (float) PyFloat_AsDouble(PySequence_GetItem(p, 1));
+            point.x = (float) PyFloat_AsDouble(PySequence_ITEM(p, 0));
+            point.y = (float) PyFloat_AsDouble(PySequence_ITEM(p, 1));
             Py_CLEAR(p);
             pdf_add_annot_vertex(ctx, annot, point);
             if (i == 0)
@@ -407,7 +407,7 @@ PyObject *JM_annot_set_border(fz_context *ctx, PyObject *border, pdf_document *d
         pdf_obj *darr = pdf_new_array(ctx, doc, n);
         for (i = 0; i < n; i++)
         {
-            d = (int) PyInt_AsLong(PySequence_GetItem(ndashes, i));
+            d = (int) PyInt_AsLong(PySequence_ITEM(ndashes, i));
             pdf_array_push_int(ctx, darr, (int64_t) d);
         }
         pdf_dict_putl_drop(ctx, annot_obj, darr, PDF_NAME(BS), PDF_NAME(D), NULL);

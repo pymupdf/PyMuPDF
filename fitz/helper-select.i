@@ -224,7 +224,7 @@ void retainpages(fz_context *ctx, globals *glo, PyObject *liste)
     {
         for (page = 0; page < argc; page++)
             {
-                i = (int) PyInt_AsLong(PySequence_GetItem(liste, page));
+                i = (int) PyInt_AsLong(PySequence_ITEM(liste, page));
                 if (i < 0 || i >= pagecount)
                     THROWMSG("invalid page number(s)");
                 retainpage(ctx, doc, pages, kids, i);

@@ -127,7 +127,7 @@ void JM_set_choice_options(fz_context *ctx, pdf_annot *annot, PyObject *liste)
     pdf_obj *optarr = pdf_new_array(ctx, pdf, n);
     for (i = 0; i < n; i++)
     {
-        opt = JM_Python_str_AsChar(PySequence_GetItem(liste, i));
+        opt = JM_Python_str_AsChar(PySequence_ITEM(liste, i));
         pdf_array_push_text_string(ctx, optarr, (const char *) opt);
         JM_Python_str_DelForPy3(opt);
     }
@@ -148,7 +148,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 {
     pdf_document *pdf = annot->page->doc;
     pdf_page *page = annot->page;
-    fz_rect rect = {0,0,0,0};
+    fz_rect rect;
     pdf_obj *fill_col = NULL, *text_col = NULL, *border_col = NULL;
     pdf_obj *dashes = NULL;
     Py_ssize_t i, n = 0;
@@ -173,12 +173,8 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // rectangle --------------------------------------------------------------
     value = PyObject_GetAttrString(Widget, "rect");
-    rect.x0 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 0));
-    rect.y0 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 1));
-    rect.x1 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 2));
-    rect.y1 = (float) PyFloat_AsDouble(PySequence_GetItem(value, 3));
+    rect = JM_rect_from_py(value);
     Py_CLEAR(value);
-    JM_PyErr_Clear;
     pdf_set_annot_rect(ctx, annot, rect);    // set the rect
 
     // fill color -------------------------------------------------------------
@@ -189,7 +185,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         fill_col = pdf_new_array(ctx, pdf, n);
         for (i = 0; i < n; i++)
             pdf_array_push_real(ctx, fill_col,
-                                PyFloat_AsDouble(PySequence_GetItem(value, i)));
+                                PyFloat_AsDouble(PySequence_ITEM(value, i)));
         pdf_field_set_fill_color(ctx, pdf, annot->obj, fill_col);
         pdf_drop_obj(ctx, fill_col);
     }
@@ -204,7 +200,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         dashes = pdf_new_array(ctx, pdf, n);
         for (i = 0; i < n; i++)
             pdf_array_push_int(ctx, dashes,
-                                    PyInt_AsLong(PySequence_GetItem(value, i)));
+                                    PyInt_AsLong(PySequence_ITEM(value, i)));
         pdf_dict_putl_drop(ctx, annot->obj, dashes, PDF_NAME(BS),
                                                               PDF_NAME(D), NULL);
     }
@@ -219,7 +215,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         border_col = pdf_new_array(ctx, pdf, n);
         for (i = 0; i < n; i++)
             pdf_array_push_real(ctx, border_col,
-                                PyFloat_AsDouble(PySequence_GetItem(value, i)));
+                                PyFloat_AsDouble(PySequence_ITEM(value, i)));
         pdf_dict_putl_drop(ctx, annot->obj, border_col, PDF_NAME(MK),
                                                              PDF_NAME(BC), NULL);
     }
