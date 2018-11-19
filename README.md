@@ -38,7 +38,7 @@ On other operating systems you need to generate PyMuPDF yourself. And of course 
   - fitz configuration file `_mupdf_config.h` copy-replace to: `mupdf/include/fitz/config.h`. It contains configuration data like e.g. which fonts to support.
   - fitz error module `_error.c`, copy-replace to: `mupdf/source/fitz/error.c`. It redirects MuPDF warnings and errors so they can be intercepted by PyMuPDF.
   - PDF device module `_pdf-device.c` copy-replace to: `mupdf/source/pdf/pdf-device.c`. It fixes a bug which caused method `Document.convertToPDF()` to bring down the interpeter.
-  - Now MuPDF can generated.
+  - Now MuPDF can be generated.
 
 Once this is done, adjust directories in ``setup.py`` and run ``python setup.py install``.
 
