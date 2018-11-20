@@ -107,8 +107,8 @@ del platform
 
 VersionFitz = "1.14.0"
 VersionBind = "1.14.1"
-VersionDate = "2018-11-18 17:07:00"
-version = (VersionBind, VersionFitz, "20181118170700")
+VersionDate = "2018-11-19 19:53:56"
+version = (VersionBind, VersionFitz, "20181119195356")
 
 
 class Matrix():
@@ -246,7 +246,12 @@ class Matrix():
         dst.d = one[2] * two[1] + one[3] * two[3]
         dst.e = one[4] * two[0] + one[5] * two[2] + two[4]
         dst.f = one[4] * two[1] + one[5] * two[3] + two[5]
-        self = dst
+        self.a = dst.a
+        self.b = dst.b
+        self.c = dst.c
+        self.d = dst.d
+        self.e = dst.e
+        self.f = dst.f
         return self
 
     def __getitem__(self, i):
