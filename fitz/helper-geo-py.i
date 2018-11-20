@@ -134,7 +134,12 @@ class Matrix():
         dst.d = one[2] * two[1] + one[3] * two[3]
         dst.e = one[4] * two[0] + one[5] * two[2] + two[4]
         dst.f = one[4] * two[1] + one[5] * two[3] + two[5]
-        self = dst
+        self.a = dst.a
+        self.b = dst.b
+        self.c = dst.c
+        self.d = dst.d
+        self.e = dst.e
+        self.f = dst.f
         return self
 
     def __getitem__(self, i):
