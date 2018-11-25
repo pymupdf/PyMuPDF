@@ -1759,6 +1759,8 @@ class Shape():
     def drawLine(self, p1, p2):
         """Draw a line between two points.
         """
+        p1 = Point(p1)
+        p2 = Point(p2)
         if not (self.lastPoint == p1):
             self.contents += "%g %g m\n" % (p1.x + self.x,
                                             self.height - p1.y - self.y)
@@ -1789,6 +1791,10 @@ class Shape():
     def drawBezier(self, p1, p2, p3, p4):
         """Draw a standard cubic Bezier curve.
         """
+        p1 = Point(p1)
+        p2 = Point(p2)
+        p3 = Point(p3)
+        p4 = Point(p4)
         if not (self.lastPoint == Point(p1)):
             self.contents += "%g %g m\n" % (p1[0] + self.x,
                                             self.height - p1[1] - self.y)
@@ -1802,14 +1808,13 @@ class Shape():
         self.updateRect(p2)
         self.updateRect(p3)
         self.updateRect(p4)
-        self.lastPoint = Point(p4)
+        self.lastPoint = p4
         return self.lastPoint
 
     def drawOval(self, rect):
         """Draw an ellipse inside a rectangle.
         """
-        if type(rect) is not Rect: 
-            rect = Rect(rect)
+        rect = Rect(rect)
         if rect.isEmpty or rect.isInfinite:
             raise ValueError("rectangle must be finite and not empty")
         mt = rect.tl + (rect.tr - rect.tl)*0.5
@@ -1831,8 +1836,7 @@ class Shape():
         """Draw a circle given its center and radius.
         """
         assert radius > 1e-5, "radius must be postive"
-        if type(center) is not Point: 
-            center = Point(center)
+        center = Point(center)
         p1 = center - (radius, 0)
         return self.drawSector(center, p1, 360, fullSector = False)
 
@@ -1840,9 +1844,9 @@ class Shape():
         """Draw a curve between points using one control point.
         """
         kappa = 0.55228474983
-        if type(p1) is not Point: p1 = Point(p1)
-        if type(p2) is not Point: p2 = Point(p2)
-        if type(p3) is not Point: p3 = Point(p3)
+        p1 = Point(p1)
+        p2 = Point(p2)
+        p3 = Point(p3)
         k1 = p1 + (p2 - p1) * kappa
         k2 = p3 + (p2 - p3) * kappa
         return self.drawBezier(p1, k1, k2, p3)
@@ -1850,8 +1854,8 @@ class Shape():
     def drawSector(self, center, point, beta, fullSector = True):
         """Draw a circle sector.
         """
-        if type(center) is not Point: center = Point(center)
-        if type(point) is not Point: point = Point(point)
+        center = Point(center)
+        point = Point(point)
         h = self.height
         l3 = "%g %g m\n"
         l4 = "%g %g %g %g %g %g c\n"
@@ -2415,17 +2419,12 @@ class Shape():
 
         if str is not bytes:                # bytes object needed in Python 3
             self.totalcont = bytes(self.totalcont, "utf-8")
-        
-        if overlay:                         # last one if foreground
-            xref = self.page._getContents()[-1]
-            cont = self.doc._getXrefStream(xref)
-            cont += self.totalcont          # append our stuff
-        else:                               # first one if background
-            xref = self.page._getContents()[0]
-            cont = self.doc._getXrefStream(xref)
-            cont = self.totalcont + cont    # prepend our stuff
 
-        self.doc._updateStream(xref, cont)  # replace the PDF stream
+        # make /Contents object with dummy stream
+        xref = TOOLS._insert_contents(self.page, b" ", overlay)
+        # update it with potential compression
+        self.doc._updateStream(xref, self.totalcont)
+
         self.lastPoint = None               # clean up ...
         self.rect      = None               #
         self.contents  = ""                 # for possible ...

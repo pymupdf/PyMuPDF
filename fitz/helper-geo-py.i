@@ -48,16 +48,17 @@ class Matrix():
         current one. Else return 1 and do nothing.
         """
         if src is None:
-            src = self
-        dst = TOOLS.invert_matrix(src)
-        if min(dst) >= max(dst):
+            dst = TOOLS._invert_matrix(self)
+        else:
+            dst = TOOLS._invert_matrix(src)
+        if dst[0] == 1:
             return 1
-        self.a = dst[0]
-        self.b = dst[1]
-        self.c = dst[2]
-        self.d = dst[3]
-        self.e = dst[4]
-        self.f = dst[5]
+        self.a = dst[1][0]
+        self.b = dst[1][1]
+        self.c = dst[1][2]
+        self.d = dst[1][3]
+        self.e = dst[1][4]
+        self.f = dst[1][5]
         return 0
 
     def preTranslate(self, tx, ty):
@@ -184,9 +185,9 @@ class Matrix():
         if hasattr(m, "__float__"):
             return Matrix(self.a * 1./m, self.b * 1./m, self.c * 1./m,
                           self.d * 1./m, self.e * 1./m, self.f * 1./m)
-        m1 = TOOLS.invert_matrix(m)
-        if min(m1) >= max(m1):
-            raise ZeroDivisionError("op2 is not invertible")
+        m1 = TOOLS._invert_matrix(m)[1]
+        if not m1:
+            raise ZeroDivisionError("matrix not invertible")
         return self.concat(self, m1)
     __div__ = __truediv__
 
@@ -211,10 +212,10 @@ class Matrix():
         return Matrix(-self.a, -self.b, -self.c, -self.d, -self.e, -self.f)
 
     def __bool__(self):
-        return max(self) > 0 or min(self) < 0
+        return not (max(self) == min(self) == 0)
 
     def __nonzero__(self):
-        return max(self) > 0 or min(self) < 0
+        return not (max(self) == min(self) == 0)
 
     def __eq__(self, m):
         if not hasattr(m, "__len__"):
@@ -372,10 +373,10 @@ class Point():
         return Point(-self.x, -self.y)
 
     def __bool__(self):
-        return max(self) > 0 or min(self) < 0
+        return not (max(self) == min(self) == 0)
 
     def __nonzero__(self):
-        return max(self) > 0 or min(self) < 0
+        return not (max(self) == min(self) == 0)
 
     def __eq__(self, p):
         if not hasattr(p, "__len__"):
@@ -404,9 +405,9 @@ class Point():
     def __truediv__(self, m):
         if hasattr(m, "__float__"):
             return Point(self.x * 1./m, self.y * 1./m)
-        m1 = TOOLS.invert_matrix(m)
-        if min(m1) >= max(m1):
-            raise ZeroDivisionError("op2 is not invertible")
+        m1 = TOOLS._invert_matrix(m)[1]
+        if not m1:
+            raise ZeroDivisionError("matrix not invertible")
         p = Point(self)
         return p.transform(m1)
 
@@ -508,9 +509,8 @@ class Rect():
         return Quad(self.tl, self.tr, self.bl, self.br)
 
     def round(self):
-        r = Rect(self).normalize()
-        ir = IRect(math.floor(r.x0), math.floor(r.y0), math.ceil(r.x1), math.ceil(r.y1))
-        return ir
+        return IRect(min(self.x0, self.x1), min(self.y0, self.y1),
+                     max(self.x0, self.x1), max(self.y0, self.y1))
 
     irect = property(round)
 
@@ -519,45 +519,30 @@ class Rect():
 
     def includePoint(self, p):
         """Extend rectangle to include point p."""
-        x0 = min(self.x0, self.x1, p[0])
-        x1 = max(self.x0, self.x1, p[0])
-        y0 = min(self.y0, self.y1, p[1])
-        y1 = max(self.y0, self.y1, p[1])
-        self.x0 = x0
-        self.y0 = y0
-        self.x1 = x1
-        self.y1 = y1
+        r0 = TOOLS._include_point_in_rect(self, p);
+        self.x0 = r0[0]
+        self.y0 = r0[1]
+        self.x1 = r0[2]
+        self.y1 = r0[3]
         return self
 
     def includeRect(self, r):
         """Extend rectangle to include rectangle r."""
-        x0 = min(self.x0, self.x1, r[0], r[2])
-        x1 = max(self.x0, self.x1, r[0], r[2])
-        y0 = min(self.y0, self.y1, r[1], r[3])
-        y1 = max(self.y0, self.y1, r[1], r[3])
-        self.x0 = x0
-        self.y0 = y0
-        self.x1 = x1
-        self.y1 = y1
+        r0 = TOOLS._union_rect(self, r)
+        self.x0 = r0[0]
+        self.y0 = r0[1]
+        self.x1 = r0[2]
+        self.y1 = r0[3]
         return self
 
     def intersect(self, r):
-        """Restrict rectangle to common area with rectangle r."""
-        if self.isEmpty: return Rect()
-        r1 = Rect(r)
-        if r1.isEmpty: return Rect()
-        if r1.isInfinite: return self
-        if self.isInfinite: return r1
-        x0 = max(self.x0, r1.x0)
-        x1 = min(self.x1, r1.x1)
-        y0 = max(self.y0, r1.y0)
-        y1 = min(self.y1, r1.y1)
-        if x1 < x0 or y1 < y0:
-            self = Rect()
-        else:
-            self = Rect(x0, y0, x1, y1)
+        """Restrict self to common area with rectangle r."""
+        r0 = TOOLS._intersect_rect(self, r);
+        self.x0 = r0[0]
+        self.y0 = r0[1]
+        self.x1 = r0[2]
+        self.y1 = r0[3]
         return self
-
 
     def __getitem__(self, i):
         return (self.x0, self.y0, self.x1, self.y1)[i]
@@ -584,10 +569,10 @@ class Rect():
         return Rect(-self.x0, -self.y0, -self.x1, -self.y1)
 
     def __bool__(self):
-        return max(self) > 0 or min(self) < 0
+        return not (max(self) == min(self) == 0)
 
     def __nonzero__(self):
-        return max(self) > 0 or min(self) < 0
+        return not (max(self) == min(self) == 0)
 
     def __eq__(self, p):
         if not hasattr(p, "__len__"):
@@ -613,7 +598,11 @@ class Rect():
 
     def transform(self, m):
         """Replace rectangle with its transformation by matrix m."""
-        self = Rect(TOOLS.transform_rect(self, m))
+        r0 = TOOLS._transform_rect(self, m)
+        self.x0 = r0[0]
+        self.y0 = r0[1]
+        self.x1 = r0[2]
+        self.y1 = r0[3]
         return self
 
     def __mul__(self, m):
@@ -626,9 +615,9 @@ class Rect():
     def __truediv__(self, m):
         if hasattr(m, "__float__"):
             return Rect(self.x0 * 1./m, self.y0 * 1./m, self.x1 * 1./m, self.y1 * 1./m)
-        im = TOOLS.invert_matrix(m)
-        if min(im) >= max(im):
-            raise ZeroDivisionError("op2 is not invertible")
+        im = TOOLS._invert_matrix(m)[1]
+        if not im:
+            raise ZeroDivisionError("matrix not invertible")
         r = Rect(self)
         r = r.transform(im)
         return r
@@ -691,10 +680,10 @@ class IRect(Rect):
     """IRect() - all zeros\nIRect(x0, y0, x1, y1)\nIRect(Rect or IRect) - new copy\nIRect(sequence) - from 'sequence'"""
     def __init__(self, *args):
         Rect.__init__(self, *args)
-        self.x0 = math.floor(self.x0)
-        self.y0 = math.floor(self.y0)
-        self.x1 = math.ceil(self.x1)
-        self.y1 = math.ceil(self.y1)
+        self.x0 = math.floor(self.x0 + 0.001)
+        self.y0 = math.floor(self.y0 + 0.001)
+        self.x1 = math.ceil(self.x1 - 0.001)
+        self.y1 = math.ceil(self.y1 - 0.001)
         return None
 
     @property
@@ -788,6 +777,9 @@ class Quad():
 
     @property
     def isRectangular(self):
+        """Check if quad is rectangular.
+        """
+        # if any two of the 4 corners are equal return false
         upper = (self.ur - self.ul).unit
         if not bool(upper):
             return False
@@ -801,13 +793,19 @@ class Quad():
         if not bool(lower):
             return False
         eps = 1e-5
-
+        # we now have 4 sides of length 1. If 3 of them have 90 deg angles,
+        # then it is a rectangle -- we check via scalar product == 0
         return abs(sum(map(lambda x,y: x*y, upper, right))) <= eps and \
                abs(sum(map(lambda x,y: x*y, upper, left))) <= eps and \
                abs(sum(map(lambda x,y: x*y, left, lower))) <= eps
 
     @property
     def isEmpty(self):
+        """Check if quad is empty retangle. If rectangular, we are done (not empty).
+        But all 4 points may still be on one line. We check this out here.
+        In that case all 3 lines connecting corners to ul will have same angle with
+        x-axis.
+        """
         if self.isRectangular:
             return False
         eps = 1e-5
@@ -881,13 +879,13 @@ class Quad():
         return r
 
     def __truediv__(self, m):
-        r = Quad(self)
         if hasattr(m, "__float__"):
             im = 1. / m
         else:
-            im = TOOLS.invert_matrix(m)
-            if min(im) >= max(im):
-                raise ZeroDivisionError("op2 is not invertible")
+            im = TOOLS._invert_matrix(m)[1]
+            if not im:
+                raise ZeroDivisionError("matrix not invertible")
+        r = Quad(self)
         r = r.transform(im)
         return r
 
