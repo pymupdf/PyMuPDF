@@ -790,7 +790,7 @@ def insertLink(page, lnk, mark = True):
 # Page.insertTextbox
 #-------------------------------------------------------------------------------
 def insertTextbox(page, rect, buffer,
-                  fontname = "Helvetica",
+                  fontname = "helv",
                   fontfile = None,
                   idx = 0,
                   set_simple = 0,
@@ -837,7 +837,7 @@ def insertTextbox(page, rect, buffer,
 #------------------------------------------------------------------------------
 def insertText(page, point, text,
                fontsize = 11,
-               fontname = "Helvetica",
+               fontname = "helv",
                fontfile = None,
                idx = 0,
                set_simple = 0,
@@ -1663,7 +1663,7 @@ def getCharWidths(doc, xref, limit = 256, idx = 0):
         glyphs = None
         fontdict = {"name": name, "type": stype, "ext": ext}
         if ext == "":
-            raise ValueError("xref is no valid font")
+            raise ValueError("xref is not a font")
         if stype in ("Type1", "MMType1", "TrueType"):
             simple = True
         else:
@@ -1687,7 +1687,10 @@ def getCharWidths(doc, xref, limit = 256, idx = 0):
     if mylimit <= oldlimit:
         return glyphs
     
-    new_glyphs = doc._getCharWidths(xref, mylimit, idx)
+    new_glyphs = doc._getCharWidths(xref, fontdict["name"],
+                                    fontdict["ext"],
+                                    fontdict["ordering"],
+                                    mylimit, idx)
     glyphs = new_glyphs
     fontdict["glyphs"] = glyphs
     fontinfo[1] = fontdict
@@ -2001,7 +2004,7 @@ class Shape():
 #==============================================================================
     def insertText(self, point, buffer,
                    fontsize = 11,
-                   fontname = "Helvetica",
+                   fontname = "helv",
                    fontfile = None,
                    idx = 0,
                    set_simple = 0,
@@ -2027,7 +2030,7 @@ class Shape():
         fname = fontname
         f = None
         if not fname:
-            fname = "Helvetica"
+            fname = "helv"
         if fname[0] == "/":
             fname = fname[1:]
             f = CheckFont(self.page, fname)
@@ -2043,7 +2046,7 @@ class Shape():
         basename, ext, stype, _ = self.doc.extractFont(xref, info_only = True)
         simple = True if stype in ("Type1", "TrueType", "MMType1") else False
         # decide how text is presented to PDF:
-        # simple fonts: use the chars directly in PDF text-showing operators
+        # simple fonts: use the chars directly in PDF operators
         # cid fonts: use glyph number of each character
         glyphs = None
         if not simple:
@@ -2135,7 +2138,7 @@ class Shape():
 #==============================================================================
 # Shape.insertTextbox
 #==============================================================================
-    def insertTextbox(self, rect, buffer, fontname = "Helvetica", fontfile = None,
+    def insertTextbox(self, rect, buffer, fontname = "helv", fontfile = None,
                       fontsize = 11, idx = 0, set_simple = 0,
                       color = (0,0,0), expandtabs = 1,
                       align = 0, rotate = 0, morph = None):
@@ -2174,7 +2177,7 @@ class Shape():
         fname = fontname
         f = None
         if not fname:
-            fname = "Helvetica"
+            fname = "helv"
         if fname[0] == "/":
             fname = fname[1:]
             f = CheckFont(self.page, fname)

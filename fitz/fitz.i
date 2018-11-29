@@ -1166,7 +1166,8 @@ if links:
         FITZEXCEPTION(_getCharWidths, !result)
         CLOSECHECK(_getCharWidths)
         %feature("autodoc","Return list of glyphs and glyph widths of a font.") _getCharWidths;
-        PyObject *_getCharWidths(int xref, int limit, int idx = 0)
+        PyObject *_getCharWidths(int xref, char *bfname, char *ext,
+                                 int ordering, int limit, int idx = 0)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
             PyObject *wlist = NULL;
@@ -1174,49 +1175,45 @@ if links:
             mylimit = limit;
             if (mylimit < 256) mylimit = 256;
             int cwlen = 0;
+            int lang = 0;
             const char *data;
-            int size;
-            fz_font *font = NULL;
+            int size, index;
+            fz_font *font = NULL, *fb_font= NULL;
             fz_buffer *buf = NULL;
-            pdf_obj *basefont = NULL;
-            const char *bfname = NULL;
+
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                if (xref < 1) THROWMSG("xref must at least 1");
-                pdf_obj *o = pdf_load_object(gctx, pdf, xref);
-                if (pdf_is_dict(gctx, o))
+                if (ordering >= 0)
                 {
-                    basefont = pdf_dict_get(gctx, o, PDF_NAME(BaseFont));
-                    if (pdf_is_name(gctx, basefont))
-                    {
-                        bfname = (char *) pdf_to_name(gctx, basefont);
-                        data = fz_lookup_base14_font(gctx, bfname, &size);
-                        if (data)
-                        {
-                            font = fz_new_font_from_memory(gctx, bfname, data, size, 0, 0);
-                        }
-                        else
-                        {
-                            buf = fontbuffer(gctx, pdf, xref);
-                            if (!buf) THROWMSG("xref is not a supported font");
-                            font = fz_new_font_from_buffer(gctx, NULL, buf, idx, 0);
-                        }
-                    }
+                    data = fz_lookup_cjk_font(gctx, ordering, &size, &index);
+                    font = fz_new_font_from_memory(gctx, NULL, data, size, index, 0);
+                    goto weiter;
                 }
-                else
+                data = fz_lookup_base14_font(gctx, bfname, &size);
+                if (data)
                 {
-                    buf = fontbuffer(gctx, pdf, xref);
-                    if (!buf) THROWMSG("xref is not a supported font");
-                    font = fz_new_font_from_buffer(gctx, NULL, buf, idx, 0);
+                    font = fz_new_font_from_memory(gctx, bfname, data, size, 0, 0);
+                    goto weiter;
                 }
+                buf = fontbuffer(gctx, pdf, xref);
+                if (!buf) THROWMSG("xref is not a supported font");
+                font = fz_new_font_from_buffer(gctx, NULL, buf, idx, 0);
+
+                weiter:;
                 wlist = PyList_New(0);
+                float adv;
                 for (i = 0; i < mylimit; i++)
                 {
                     glyph = fz_encode_character(gctx, font, i);
+                    adv = fz_advance_glyph(gctx, font, glyph, 0);
+                    if (ordering >= 0)
+                        glyph = i;
+
+
                     if (glyph > 0)
                     {
-                        PyList_Append(wlist, Py_BuildValue("(i, f)", glyph, fz_advance_glyph(gctx, font, glyph, 0)));
+                        PyList_Append(wlist, Py_BuildValue("(i, f)", glyph, adv));
                     }
                     else
                     {
@@ -3163,106 +3160,160 @@ fannot._erase()
         //---------------------------------------------------------------------
         // insert font
         //---------------------------------------------------------------------
-        FITZEXCEPTION(insertFont, !result)
-        %pythonprepend insertFont %{
-        if not self.parent:
-            raise ValueError("orphaned object: parent is None")
+        %pythoncode
+%{
+def insertFont(self, fontname=None, fontfile=None, fontbuffer=None,
+               set_simple=False, idx=0, wmode=0, style=0, encoding=0):
+    if not self.parent:
+        raise ValueError("orphaned object: parent is None")
+    f = CheckFont(self, fontname)
+    if f is not None:         # drop out if fontname already in page list
+        return f[0]
+    bfname = ""
+
+    if not fontname:
+        fontname = "helv"
+
+    if fontname.lower() in Base14_fontdict.keys():
+        bfname = Base14_fontdict[fontname.lower()]
+
+    serif = 0
+    CJK_number = -1
+    CJK_list_n = ["china-t", "china-s", "japan", "korea"]
+    CJK_list_s = ["china-ts", "china-ss", "japan-s", "korea-s"]
+    if fontname in CJK_list_n:
+        CJK_number = CJK_list.index(fontname)
+        serif = 0
+
+    if fontname in CJK_list_s:
+        CJK_number = CJK_list_s.index(fontname)
+        serif = 1
+
+    val = self._insertFont(fontname, bfname, fontfile, fontbuffer, set_simple, idx,
+                           wmode, style, serif, encoding, CJK_number)
+
+    if val:
+        xref = val[0]
         f = CheckFont(self, fontname)
-        if f is not None:         # drop out if fontname already in page list
-            return f[0]
-        if not fontname:
-            fontname = "Helvetica"
-        if xref > 0:
-            _, _, _, fontbuffer = self.parent.extractFont(xref)
-            if not fontbuffer:
-                raise ValueError("xref is no valid font")
-        %}
-        %pythonappend insertFont %{
-        if val:
-            xref = val[0]
-            f = CheckFont(self, fontname)
-            if f is not None:
-                val[1]["type"] = f[2]       # put /Subtype in font info
-                val[1]["glyphs"] = None
-            doc = self.parent               # now add to document font info
-            fi = CheckFontInfo(doc, xref)
-            if fi is None:                  # look if we are already present
-                doc.FontInfos.append(val)   # no: add me to document object
-            return xref
-        %}
-        PyObject *insertFont(const char *fontname = NULL, const char *fontfile = NULL, PyObject *fontbuffer = NULL, int xref = 0, int set_simple = 0, int idx = 0)
+        if f is not None:
+            val[1]["type"] = f[2]       # put /Subtype in font info
+            val[1]["glyphs"] = None
+        doc = self.parent               # now add to document font info
+        fi = CheckFontInfo(doc, xref)
+        if fi is None:                  # look if we are already present
+            doc.FontInfos.append(val)   # no: add me to document object
+        return xref
+%}
+
+        FITZEXCEPTION(_insertFont, !result)
+        PyObject *_insertFont(const char *fontname, const char *bfname,
+                             const char *fontfile,
+                             PyObject *fontbuffer,
+                             int set_simple, int idx,
+                             int wmode, int style, int serif,
+                             int encoding, int ordering)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_document *pdf;
             pdf_obj *resources, *fonts, *font_obj;
             fz_font *font;
             const char *data = NULL;
-            int size, ixref = 0;
-            PyObject *info;
+            int size, ixref = 0, index = 0, simple = 0;
+            PyObject *info, *value;
+            PyObject *exto = NULL;
             fz_try(gctx)
             {
                 assert_PDF(page);
                 pdf = page->doc;
-                // get objects "Resources", "Resources/Font"
+                // get the objects /Resources, /Resources/Font
                 resources = pdf_dict_get(gctx, page->obj, PDF_NAME(Resources));
                 fonts = pdf_dict_get(gctx, resources, PDF_NAME(Font));
-                int simple = 0;
                 if (!fonts)       // page has no fonts yet
-                    fonts = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
-                
-                data = fz_lookup_base14_font(gctx, fontname, &size);
-                if (data)              // base 14 font found
                 {
-                    font = fz_new_font_from_memory(gctx, fontname, data, size, 0, 0);
-                    font_obj = pdf_add_simple_font(gctx, pdf, font, PDF_SIMPLE_ENCODING_LATIN);
-                    simple = 1;
+                    fonts = pdf_new_dict(gctx, pdf, 10);
+                    pdf_dict_put_drop(gctx, resources, PDF_NAME(Font), fonts);
                 }
-                else
+
+                //-------------------------------------------------------------
+                // check for CJK font
+                //-------------------------------------------------------------
+                if (ordering > -1)
                 {
-                    if (!fontfile && !fontbuffer) THROWMSG("unknown PDF Base 14 font");
-                    if (fontfile)
+                    data = fz_lookup_cjk_font(gctx, ordering, &size, &index);
+                    if (data)
                     {
-                        font = fz_new_font_from_file(gctx, NULL, fontfile, idx, 0);
-                    }
-                    else
-                    {
-                        if (!PyBytes_Check(fontbuffer)) THROWMSG("fontbuffer must be bytes");
-                        data = PyBytes_AsString(fontbuffer);
-                        size = PyBytes_Size(fontbuffer);
-                        font = fz_new_font_from_memory(gctx, NULL, data, size, idx, 0);
-                    }
-                    if (set_simple == 0)
-                    {
-                        font_obj = pdf_add_cid_font(gctx, pdf, font);
+                        font = fz_new_font_from_memory(gctx, NULL, data, size, index, 0);
+                        font_obj = pdf_add_cjk_font(gctx, pdf, font, ordering, wmode, serif);
+                        exto = Py_BuildValue("s", "n/a");
                         simple = 0;
-                    }
-                    else
-                    {
-                        font_obj = pdf_add_simple_font(gctx, pdf, font, PDF_SIMPLE_ENCODING_LATIN);
-                        simple = 2;
+                        goto weiter;
                     }
                 }
-                ixref = pdf_to_num(gctx, font_obj);
-                PyObject *name = PyString_FromString(fz_font_name(gctx, font));
-                PyObject *exto;
-                if (simple != 1)
-                    exto = PyString_FromString(fontextension(gctx, pdf, ixref));
+
+                //-------------------------------------------------------------
+                // check for PDF Base-14 font
+                //-------------------------------------------------------------
+                data = fz_lookup_base14_font(gctx, bfname, &size);
+                if (data)
+                {
+                    font = fz_new_font_from_memory(gctx, bfname, data, size, 0, 0);
+                    font_obj = pdf_add_simple_font(gctx, pdf, font, encoding);
+                    exto = Py_BuildValue("s", "n/a");
+                    simple = 1;
+                    goto weiter;
+                }
+
+                if (!fontfile && !fontbuffer) THROWMSG("unknown Base-14 or CJK font");
+                if (fontfile)
+                    font = fz_new_font_from_file(gctx, NULL, fontfile, idx, 0);
                 else
-                    exto = PyString_FromString("n/a");
-                PyObject *simpleo = JM_BOOL(simple);
-                PyObject *idxo = PyInt_FromLong((long) idx);
-                info = PyDict_New();
-                PyDict_SetItemString(info, "name", name);
-                PyDict_SetItemString(info, "simple", simpleo);
-                PyDict_SetItemString(info, "ext", exto);
-                fz_drop_font(gctx, font);
+                {
+                    if (!PyBytes_Check(fontbuffer)) THROWMSG("fontbuffer must be bytes");
+                    data = PyBytes_AsString(fontbuffer);
+                    size = PyBytes_Size(fontbuffer);
+                    font = fz_new_font_from_memory(gctx, NULL, data, size, idx, 0);
+                }
+                if (set_simple == 0)
+                {
+                    font_obj = pdf_add_cid_font(gctx, pdf, font);
+                    simple = 0;
+                }
+                else
+                {
+                    font_obj = pdf_add_simple_font(gctx, pdf, font, encoding);
+                    simple = 2;
+                }
+                
+                weiter: ;
+                ixref = pdf_to_num(gctx, font_obj);
+
+                PyObject *name = Py_BuildValue("s", pdf_to_name(gctx,
+                            pdf_dict_get(gctx, font_obj, PDF_NAME(BaseFont))));
+
+                PyObject *subt = Py_BuildValue("s", pdf_to_name(gctx,
+                            pdf_dict_get(gctx, font_obj, PDF_NAME(Subtype))));
+
+                if (!exto)
+                    exto = Py_BuildValue("s", fontextension(gctx, pdf, ixref));
+
+                value = Py_BuildValue("[i, {s:O, s:O, s:O, s:O, s:i}]",
+                                      ixref,
+                                      "name", name,
+                                      "type", subt,
+                                      "ext", exto,
+                                      "simple", JM_BOOL(simple),
+                                      "ordering", ordering);
+                Py_CLEAR(exto);
+                Py_CLEAR(name);
+
                 // resources and fonts objects will contain named reference to font
                 pdf_dict_puts(gctx, fonts, fontname, font_obj);
-                pdf_dict_put(gctx, resources, PDF_NAME(Font), fonts);
+                pdf_drop_obj(gctx, font_obj);
+                fz_drop_font(gctx, font);
             }
             fz_catch(gctx) return NULL;
             pdf->dirty = 1;
-            return Py_BuildValue("[i, O]", ixref, info);
+            return value;
         }
 
         //---------------------------------------------------------------------

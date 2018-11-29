@@ -389,11 +389,15 @@ class Point():
     def __add__(self, p):
         if hasattr(p, "__float__"):
             return Point(self.x + p, self.y + p)
+        if len(p) != 2:
+            raise ValueError("require point-like object")
         return Point(self.x + p[0], self.y + p[1])
 
     def __sub__(self, p):
         if hasattr(p, "__float__"):
             return Point(self.x - p, self.y - p)
+        if len(p) != 2:
+            raise ValueError("require point-like object")
         return Point(self.x - p[0], self.y - p[1])
 
     def __mul__(self, m):
@@ -588,12 +592,16 @@ class Rect():
         if hasattr(p, "__float__"):
             r = Rect(self.x0 + p, self.y0 + p, self.x1 + p, self.y1 + p)
         else:
+            if len(p) != 4:
+                raise ValueError("require rect-like object")
             r = Rect(self.x0 + p[0], self.y0 + p[1], self.x1 + p[2], self.y1 + p[3])
         return r
 
     def __sub__(self, p):
         if hasattr(p, "__float__"):
             return Rect(self.x0 - p, self.y0 - p, self.x1 - p, self.y1 - p)
+        if len(p) != 4:
+            raise ValueError("require rect-like object")
         return Rect(self.x0 - p[0], self.y0 - p[1], self.x1 - p[2], self.y1 - p[3])
 
     def transform(self, m):

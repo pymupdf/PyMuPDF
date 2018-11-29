@@ -106,9 +106,9 @@ del platform
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.2"
-VersionDate = "2018-11-25 10:19:28"
-version = (VersionBind, VersionFitz, "20181125101928")
+VersionBind = "1.14.3"
+VersionDate = "2018-11-29 05:23:32"
+version = (VersionBind, VersionFitz, "20181129052332")
 
 
 class Matrix():
@@ -501,11 +501,15 @@ class Point():
     def __add__(self, p):
         if hasattr(p, "__float__"):
             return Point(self.x + p, self.y + p)
+        if len(p) != 2:
+            raise ValueError("require point-like object")
         return Point(self.x + p[0], self.y + p[1])
 
     def __sub__(self, p):
         if hasattr(p, "__float__"):
             return Point(self.x - p, self.y - p)
+        if len(p) != 2:
+            raise ValueError("require point-like object")
         return Point(self.x - p[0], self.y - p[1])
 
     def __mul__(self, m):
@@ -700,12 +704,16 @@ class Rect():
         if hasattr(p, "__float__"):
             r = Rect(self.x0 + p, self.y0 + p, self.x1 + p, self.y1 + p)
         else:
+            if len(p) != 4:
+                raise ValueError("require rect-like object")
             r = Rect(self.x0 + p[0], self.y0 + p[1], self.x1 + p[2], self.y1 + p[3])
         return r
 
     def __sub__(self, p):
         if hasattr(p, "__float__"):
             return Rect(self.x0 - p, self.y0 - p, self.x1 - p, self.y1 - p)
+        if len(p) != 4:
+            raise ValueError("require rect-like object")
         return Rect(self.x0 - p[0], self.y0 - p[1], self.x1 - p[2], self.y1 - p[3])
 
     def transform(self, m):
@@ -1226,6 +1234,24 @@ Base14_fontnames = ("Courier", "Courier-Oblique", "Courier-Bold",
     "Times-Roman", "Times-Italic", "Times-Bold",
     "Times-BoldItalic", "Symbol", "ZapfDingbats")
 
+Base14_fontdict = {}
+for f in Base14_fontnames:
+    Base14_fontdict[f.lower()] = f
+Base14_fontdict["helv"] = "Helvetica"
+Base14_fontdict["heit"] = "Helvetica-Oblique"
+Base14_fontdict["hebo"] = "Helvetica-Bold"
+Base14_fontdict["hebi"] = "Helvetica-BoldOblique"
+Base14_fontdict["cour"] = "Courier"
+Base14_fontdict["coit"] = "Courier-Oblique"
+Base14_fontdict["cobo"] = "Courier-Bold"
+Base14_fontdict["cobi"] = "Courier-BoldOblique"
+Base14_fontdict["tiro"] = "Times-Roman"
+Base14_fontdict["tibo"] = "Times-Bold"
+Base14_fontdict["tiit"] = "Times-Italic"
+Base14_fontdict["tibi"] = "Times-BoldItalic"
+Base14_fontdict["symb"] = "Symbol"
+Base14_fontdict["zadb"] = "ZapfDingbats"
+
 #------------------------------------------------------------------------------
 # Emulate old linkDest class
 #------------------------------------------------------------------------------
@@ -1361,8 +1387,10 @@ def getTJstr(text, glyphs):
     if glyphs is None:            # this is a simple font
         otxt = "".join([hex(ord(c))[2:].rjust(2, "0") if ord(c)<256 else "3f" for c in text])
         return "[<" + otxt + ">]"
+
 # this is not a simple font -> take the glyphs of a character
     otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(4, "0") for c in text])
+
     return "[<" + otxt + ">]"
 
 '''
@@ -2006,12 +2034,12 @@ open(filename, filetype='type') - from file"""
         return _fitz.Document_permissions(self)
 
 
-    def _getCharWidths(self, xref, limit, idx=0):
+    def _getCharWidths(self, xref, bfname, ext, ordering, limit, idx=0):
         """Return list of glyphs and glyph widths of a font."""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
 
-        return _fitz.Document__getCharWidths(self, xref, limit, idx)
+        return _fitz.Document__getCharWidths(self, xref, bfname, ext, ordering, limit, idx)
 
 
     def _getPageObjNumber(self, pno):
@@ -2763,23 +2791,34 @@ class Page(_object):
         return _fitz.Page_insertImage(self, rect, filename, pixmap, stream, overlay, _imgname)
 
 
-    def insertFont(self, fontname=None, fontfile=None, fontbuffer=None, xref=0, set_simple=0, idx=0):
-        """insertFont(self, fontname=None, fontfile=None, fontbuffer=None, xref=0, set_simple=0, idx=0) -> PyObject *"""
-
+    def insertFont(self, fontname=None, fontfile=None, fontbuffer=None,
+                   set_simple=False, idx=0, wmode=0, style=0, encoding=0):
         if not self.parent:
             raise ValueError("orphaned object: parent is None")
         f = CheckFont(self, fontname)
         if f is not None:         # drop out if fontname already in page list
             return f[0]
+        bfname = ""
+
         if not fontname:
-            fontname = "Helvetica"
-        if xref > 0:
-            _, _, _, fontbuffer = self.parent.extractFont(xref)
-            if not fontbuffer:
-                raise ValueError("xref is no valid font")
+            fontname = "helv"
 
+        if fontname.lower() in Base14_fontdict.keys():
+            bfname = Base14_fontdict[fontname.lower()]
 
-        val = _fitz.Page_insertFont(self, fontname, fontfile, fontbuffer, xref, set_simple, idx)
+        CJK_number = -1
+        CJK_list_n = ["china-t", "china-s", "japan", "korea"]
+        CJK_list_s = ["china-ts", "china-ss", "japan-s", "korea-s"]
+        if fontname in CJK_list_n:
+            CJK_number = CJK_list.index(fontname)
+            serif = 0
+
+        if fontname in CJK_list_s:
+            CJK_number = CJK_list_s.index(fontname)
+            serif = 1
+
+        val = self._insertFont(fontname, bfname, fontfile, fontbuffer, set_simple, idx,
+                               wmode, style, serif, encoding, CJK_number)
 
         if val:
             xref = val[0]
@@ -2794,7 +2833,9 @@ class Page(_object):
             return xref
 
 
-        return val
+    def _insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, style, serif, encoding, ordering):
+        """_insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, style, serif, encoding, ordering) -> PyObject *"""
+        return _fitz.Page__insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, style, serif, encoding, ordering)
 
 
     def _getContents(self):

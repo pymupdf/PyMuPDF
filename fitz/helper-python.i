@@ -62,6 +62,24 @@ Base14_fontnames = ("Courier", "Courier-Oblique", "Courier-Bold",
     "Times-Roman", "Times-Italic", "Times-Bold",
     "Times-BoldItalic", "Symbol", "ZapfDingbats")
 
+Base14_fontdict = {}
+for f in Base14_fontnames:
+    Base14_fontdict[f.lower()] = f
+Base14_fontdict["helv"] = "Helvetica"
+Base14_fontdict["heit"] = "Helvetica-Oblique"
+Base14_fontdict["hebo"] = "Helvetica-Bold"
+Base14_fontdict["hebi"] = "Helvetica-BoldOblique"
+Base14_fontdict["cour"] = "Courier"
+Base14_fontdict["coit"] = "Courier-Oblique"
+Base14_fontdict["cobo"] = "Courier-Bold"
+Base14_fontdict["cobi"] = "Courier-BoldOblique"
+Base14_fontdict["tiro"] = "Times-Roman"
+Base14_fontdict["tibo"] = "Times-Bold"
+Base14_fontdict["tiit"] = "Times-Italic"
+Base14_fontdict["tibi"] = "Times-BoldItalic"
+Base14_fontdict["symb"] = "Symbol"
+Base14_fontdict["zadb"] = "ZapfDingbats"
+
 #------------------------------------------------------------------------------
 # Emulate old linkDest class
 #------------------------------------------------------------------------------
@@ -197,8 +215,10 @@ def getTJstr(text, glyphs):
     if glyphs is None:            # this is a simple font
         otxt = "".join([hex(ord(c))[2:].rjust(2, "0") if ord(c)<256 else "3f" for c in text])
         return "[<" + otxt + ">]"
+
     # this is not a simple font -> take the glyphs of a character
     otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(4, "0") for c in text])
+
     return "[<" + otxt + ">]"
 
 '''
