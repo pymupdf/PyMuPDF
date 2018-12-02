@@ -11667,12 +11667,12 @@ SWIGINTERN PyObject *fz_page_s_insertImage(struct fz_page_s *self,PyObject *rect
             pdf->dirty = 1;
             return NONE;
         }
-SWIGINTERN PyObject *fz_page_s__insertFont(struct fz_page_s *self,char const *fontname,char const *bfname,char const *fontfile,PyObject *fontbuffer,int set_simple,int idx,int wmode,int style,int serif,int encoding,int ordering){
+SWIGINTERN PyObject *fz_page_s__insertFont(struct fz_page_s *self,char *fontname,char *bfname,char *fontfile,PyObject *fontbuffer,int set_simple,int idx,int wmode,int serif,int encoding,int ordering){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
             pdf_document *pdf;
             pdf_obj *resources, *fonts, *font_obj;
             fz_font *font;
-            const char *data = NULL;
+            char *data = NULL;
             int size, ixref = 0, index = 0, simple = 0;
             PyObject *info, *value;
             PyObject *exto = NULL;
@@ -11692,23 +11692,20 @@ SWIGINTERN PyObject *fz_page_s__insertFont(struct fz_page_s *self,char const *fo
                 //-------------------------------------------------------------
                 // check for CJK font
                 //-------------------------------------------------------------
-                if (ordering > -1)
+                if (ordering > -1) data = fz_lookup_cjk_font(gctx, ordering, &size, &index);
+                if (data)
                 {
-                    data = fz_lookup_cjk_font(gctx, ordering, &size, &index);
-                    if (data)
-                    {
-                        font = fz_new_font_from_memory(gctx, NULL, data, size, index, 0);
-                        font_obj = pdf_add_cjk_font(gctx, pdf, font, ordering, wmode, serif);
-                        exto = Py_BuildValue("s", "n/a");
-                        simple = 0;
-                        goto weiter;
-                    }
+                    font = fz_new_font_from_memory(gctx, NULL, data, size, index, 0);
+                    font_obj = pdf_add_cjk_font(gctx, pdf, font, ordering, wmode, serif);
+                    exto = Py_BuildValue("s", "n/a");
+                    simple = 0;
+                    goto weiter;
                 }
 
                 //-------------------------------------------------------------
                 // check for PDF Base-14 font
                 //-------------------------------------------------------------
-                data = fz_lookup_base14_font(gctx, bfname, &size);
+                if (bfname) data = fz_lookup_base14_font(gctx, bfname, &size);
                 if (data)
                 {
                     font = fz_new_font_from_memory(gctx, bfname, data, size, 0, 0);
@@ -11718,17 +11715,16 @@ SWIGINTERN PyObject *fz_page_s__insertFont(struct fz_page_s *self,char const *fo
                     goto weiter;
                 }
 
-                if (!fontfile && !fontbuffer) THROWMSG("unknown Base-14 or CJK font");
                 if (fontfile)
                     font = fz_new_font_from_file(gctx, NULL, fontfile, idx, 0);
                 else
                 {
-                    if (!PyBytes_Check(fontbuffer)) THROWMSG("fontbuffer must be bytes");
-                    data = PyBytes_AsString(fontbuffer);
-                    size = PyBytes_Size(fontbuffer);
+                    size = (int) JM_CharFromBytesOrArray(fontbuffer, &data);
+                    if (!size) THROWMSG("one of fontfile, fontbuffer must be given");
                     font = fz_new_font_from_memory(gctx, NULL, data, size, idx, 0);
                 }
-                if (set_simple == 0)
+
+                if (!set_simple)
                 {
                     font_obj = pdf_add_cid_font(gctx, pdf, font);
                     simple = 0;
@@ -11738,7 +11734,7 @@ SWIGINTERN PyObject *fz_page_s__insertFont(struct fz_page_s *self,char const *fo
                     font_obj = pdf_add_simple_font(gctx, pdf, font, encoding);
                     simple = 2;
                 }
-                
+
                 weiter: ;
                 ixref = pdf_to_num(gctx, font_obj);
 
@@ -11753,13 +11749,14 @@ SWIGINTERN PyObject *fz_page_s__insertFont(struct fz_page_s *self,char const *fo
 
                 value = Py_BuildValue("[i, {s:O, s:O, s:O, s:O, s:i}]",
                                       ixref,
-                                      "name", name,
-                                      "type", subt,
-                                      "ext", exto,
-                                      "simple", JM_BOOL(simple),
-                                      "ordering", ordering);
+                                      "name", name,        // base font name
+                                      "type", subt,        // subtype
+                                      "ext", exto,         // file extension
+                                      "simple", JM_BOOL(simple), // simple font?
+                                      "ordering", ordering); // CJK font?
                 Py_CLEAR(exto);
                 Py_CLEAR(name);
+                Py_CLEAR(subt);
 
                 // resources and fonts objects will contain named reference to font
                 pdf_dict_puts(gctx, fonts, fontname, font_obj);
@@ -17043,7 +17040,6 @@ SWIGINTERN PyObject *_wrap_Page__insertFont(PyObject *SWIGUNUSEDPARM(self), PyOb
   int arg9 ;
   int arg10 ;
   int arg11 ;
-  int arg12 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res2 ;
@@ -17067,8 +17063,6 @@ SWIGINTERN PyObject *_wrap_Page__insertFont(PyObject *SWIGUNUSEDPARM(self), PyOb
   int ecode10 = 0 ;
   int val11 ;
   int ecode11 = 0 ;
-  int val12 ;
-  int ecode12 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -17080,10 +17074,9 @@ SWIGINTERN PyObject *_wrap_Page__insertFont(PyObject *SWIGUNUSEDPARM(self), PyOb
   PyObject * obj8 = 0 ;
   PyObject * obj9 = 0 ;
   PyObject * obj10 = 0 ;
-  PyObject * obj11 = 0 ;
   PyObject *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOO:Page__insertFont",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOO:Page__insertFont",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page__insertFont" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
@@ -17091,17 +17084,17 @@ SWIGINTERN PyObject *_wrap_Page__insertFont(PyObject *SWIGUNUSEDPARM(self), PyOb
   arg1 = (struct fz_page_s *)(argp1);
   res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Page__insertFont" "', argument " "2"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Page__insertFont" "', argument " "2"" of type '" "char *""'");
   }
   arg2 = (char *)(buf2);
   res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Page__insertFont" "', argument " "3"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Page__insertFont" "', argument " "3"" of type '" "char *""'");
   }
   arg3 = (char *)(buf3);
   res4 = SWIG_AsCharPtrAndSize(obj3, &buf4, NULL, &alloc4);
   if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "Page__insertFont" "', argument " "4"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "Page__insertFont" "', argument " "4"" of type '" "char *""'");
   }
   arg4 = (char *)(buf4);
   arg5 = obj4;
@@ -17135,13 +17128,8 @@ SWIGINTERN PyObject *_wrap_Page__insertFont(PyObject *SWIGUNUSEDPARM(self), PyOb
     SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "Page__insertFont" "', argument " "11"" of type '" "int""'");
   } 
   arg11 = (int)(val11);
-  ecode12 = SWIG_AsVal_int(obj11, &val12);
-  if (!SWIG_IsOK(ecode12)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "Page__insertFont" "', argument " "12"" of type '" "int""'");
-  } 
-  arg12 = (int)(val12);
   {
-    result = (PyObject *)fz_page_s__insertFont(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12);
+    result = (PyObject *)fz_page_s__insertFont(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11);
     if(!result)
     {
       PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
@@ -21490,7 +21478,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Page__cleanContents", _wrap_Page__cleanContents, METH_VARARGS, (char *)"Page__cleanContents(self) -> PyObject *"},
 	 { (char *)"Page__showPDFpage", _wrap_Page__showPDFpage, METH_VARARGS, (char *)"Page__showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportion=1, reuse_xref=0, clip=None, graftmap=None, _imgname=None) -> PyObject *"},
 	 { (char *)"Page_insertImage", _wrap_Page_insertImage, METH_VARARGS, (char *)"Insert a new image into a rectangle."},
-	 { (char *)"Page__insertFont", _wrap_Page__insertFont, METH_VARARGS, (char *)"Page__insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, style, serif, encoding, ordering) -> PyObject *"},
+	 { (char *)"Page__insertFont", _wrap_Page__insertFont, METH_VARARGS, (char *)"Page__insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, serif, encoding, ordering) -> PyObject *"},
 	 { (char *)"Page__getContents", _wrap_Page__getContents, METH_VARARGS, (char *)"Page__getContents(self) -> PyObject *"},
 	 { (char *)"Page__setContents", _wrap_Page__setContents, METH_VARARGS, (char *)"Set the /Contents object in page definition"},
 	 { (char *)"Page_swigregister", Page_swigregister, METH_VARARGS, NULL},

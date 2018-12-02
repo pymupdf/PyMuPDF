@@ -3162,62 +3162,80 @@ fannot._erase()
         //---------------------------------------------------------------------
         %pythoncode
 %{
-def insertFont(self, fontname=None, fontfile=None, fontbuffer=None,
-               set_simple=False, idx=0, wmode=0, style=0, encoding=0):
-    if not self.parent:
+def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
+               set_simple=False, wmode=0, encoding=0):
+    doc = self.parent
+    if not doc:
         raise ValueError("orphaned object: parent is None")
-    f = CheckFont(self, fontname)
-    if f is not None:         # drop out if fontname already in page list
-        return f[0]
-    bfname = ""
+    idx = 0
 
-    if not fontname:
-        fontname = "helv"
+    if fontname.startswith("/"):
+        fontname = fontname[1:]
 
-    if fontname.lower() in Base14_fontdict.keys():
-        bfname = Base14_fontdict[fontname.lower()]
+    font = CheckFont(self, fontname)
+    if font is not None:                    # font already in font list of page
+        xref = font[0]                      # this is the xref
+        if CheckFontInfo(doc, xref):        # also in our document font list?
+            return xref                     # yes: we are done
+        # need to build the doc FontInfo entry - done via getCharWidths
+        doc.getCharWidths(xref)
+        return xref
+
+    #--------------------------------------------------------------------------
+    # the font is not present for this page
+    #--------------------------------------------------------------------------
+
+    bfname = Base14_fontdict.get(fontname.lower(), None) # BaseFont if Base-14 font
 
     serif = 0
     CJK_number = -1
     CJK_list_n = ["china-t", "china-s", "japan", "korea"]
     CJK_list_s = ["china-ts", "china-ss", "japan-s", "korea-s"]
-    if fontname in CJK_list_n:
-        CJK_number = CJK_list.index(fontname)
+
+    try:
+        CJK_number = CJK_list_n.index(fontname)
         serif = 0
+    except:
+        pass
 
-    if fontname in CJK_list_s:
-        CJK_number = CJK_list_s.index(fontname)
-        serif = 1
+    if CJK_number < 0:
+        try:
+            CJK_number = CJK_list_s.index(fontname)
+            serif = 1
+        except:
+            pass
 
+    # install the font for the page
     val = self._insertFont(fontname, bfname, fontfile, fontbuffer, set_simple, idx,
-                           wmode, style, serif, encoding, CJK_number)
+                           wmode, serif, encoding, CJK_number)
 
-    if val:
-        xref = val[0]
-        f = CheckFont(self, fontname)
-        if f is not None:
-            val[1]["type"] = f[2]       # put /Subtype in font info
-            val[1]["glyphs"] = None
-        doc = self.parent               # now add to document font info
-        fi = CheckFontInfo(doc, xref)
-        if fi is None:                  # look if we are already present
-            doc.FontInfos.append(val)   # no: add me to document object
-        return xref
+    if not val:                   # did not work, error return
+        return val
+
+    xref = val[0]                 # xref of installed font
+
+    if CheckFontInfo(doc, xref):  # check again: document already has this font
+        return xref               # we are done
+
+    # need to create document font info
+    doc.getCharWidths(xref)
+    return xref
+
 %}
 
         FITZEXCEPTION(_insertFont, !result)
-        PyObject *_insertFont(const char *fontname, const char *bfname,
-                             const char *fontfile,
+        PyObject *_insertFont(char *fontname, char *bfname,
+                             char *fontfile,
                              PyObject *fontbuffer,
                              int set_simple, int idx,
-                             int wmode, int style, int serif,
+                             int wmode, int serif,
                              int encoding, int ordering)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_document *pdf;
             pdf_obj *resources, *fonts, *font_obj;
             fz_font *font;
-            const char *data = NULL;
+            char *data = NULL;
             int size, ixref = 0, index = 0, simple = 0;
             PyObject *info, *value;
             PyObject *exto = NULL;
@@ -3237,23 +3255,20 @@ def insertFont(self, fontname=None, fontfile=None, fontbuffer=None,
                 //-------------------------------------------------------------
                 // check for CJK font
                 //-------------------------------------------------------------
-                if (ordering > -1)
+                if (ordering > -1) data = fz_lookup_cjk_font(gctx, ordering, &size, &index);
+                if (data)
                 {
-                    data = fz_lookup_cjk_font(gctx, ordering, &size, &index);
-                    if (data)
-                    {
-                        font = fz_new_font_from_memory(gctx, NULL, data, size, index, 0);
-                        font_obj = pdf_add_cjk_font(gctx, pdf, font, ordering, wmode, serif);
-                        exto = Py_BuildValue("s", "n/a");
-                        simple = 0;
-                        goto weiter;
-                    }
+                    font = fz_new_font_from_memory(gctx, NULL, data, size, index, 0);
+                    font_obj = pdf_add_cjk_font(gctx, pdf, font, ordering, wmode, serif);
+                    exto = Py_BuildValue("s", "n/a");
+                    simple = 0;
+                    goto weiter;
                 }
 
                 //-------------------------------------------------------------
                 // check for PDF Base-14 font
                 //-------------------------------------------------------------
-                data = fz_lookup_base14_font(gctx, bfname, &size);
+                if (bfname) data = fz_lookup_base14_font(gctx, bfname, &size);
                 if (data)
                 {
                     font = fz_new_font_from_memory(gctx, bfname, data, size, 0, 0);
@@ -3263,17 +3278,16 @@ def insertFont(self, fontname=None, fontfile=None, fontbuffer=None,
                     goto weiter;
                 }
 
-                if (!fontfile && !fontbuffer) THROWMSG("unknown Base-14 or CJK font");
                 if (fontfile)
                     font = fz_new_font_from_file(gctx, NULL, fontfile, idx, 0);
                 else
                 {
-                    if (!PyBytes_Check(fontbuffer)) THROWMSG("fontbuffer must be bytes");
-                    data = PyBytes_AsString(fontbuffer);
-                    size = PyBytes_Size(fontbuffer);
+                    size = (int) JM_CharFromBytesOrArray(fontbuffer, &data);
+                    if (!size) THROWMSG("one of fontfile, fontbuffer must be given");
                     font = fz_new_font_from_memory(gctx, NULL, data, size, idx, 0);
                 }
-                if (set_simple == 0)
+
+                if (!set_simple)
                 {
                     font_obj = pdf_add_cid_font(gctx, pdf, font);
                     simple = 0;
@@ -3283,7 +3297,7 @@ def insertFont(self, fontname=None, fontfile=None, fontbuffer=None,
                     font_obj = pdf_add_simple_font(gctx, pdf, font, encoding);
                     simple = 2;
                 }
-                
+
                 weiter: ;
                 ixref = pdf_to_num(gctx, font_obj);
 
@@ -3298,13 +3312,14 @@ def insertFont(self, fontname=None, fontfile=None, fontbuffer=None,
 
                 value = Py_BuildValue("[i, {s:O, s:O, s:O, s:O, s:i}]",
                                       ixref,
-                                      "name", name,
-                                      "type", subt,
-                                      "ext", exto,
-                                      "simple", JM_BOOL(simple),
-                                      "ordering", ordering);
+                                      "name", name,        // base font name
+                                      "type", subt,        // subtype
+                                      "ext", exto,         // file extension
+                                      "simple", JM_BOOL(simple), // simple font?
+                                      "ordering", ordering); // CJK font?
                 Py_CLEAR(exto);
                 Py_CLEAR(name);
+                Py_CLEAR(subt);
 
                 // resources and fonts objects will contain named reference to font
                 pdf_dict_puts(gctx, fonts, fontname, font_obj);

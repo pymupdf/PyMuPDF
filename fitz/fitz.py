@@ -107,8 +107,8 @@ del platform
 
 VersionFitz = "1.14.0"
 VersionBind = "1.14.3"
-VersionDate = "2018-11-29 05:23:32"
-version = (VersionBind, VersionFitz, "20181129052332")
+VersionDate = "2018-12-01 18:33:20"
+version = (VersionBind, VersionFitz, "20181201183320")
 
 
 class Matrix():
@@ -1225,9 +1225,8 @@ STAMP_TopSecret           = 12
 STAMP_Draft               = 13
 
 #------------------------------------------------------------------------------
-# Base 14 font names
+# Base 14 font names and dictionary
 #------------------------------------------------------------------------------
-
 Base14_fontnames = ("Courier", "Courier-Oblique", "Courier-Bold",
     "Courier-BoldOblique", "Helvetica", "Helvetica-Oblique",
     "Helvetica-Bold", "Helvetica-BoldOblique",
@@ -1253,8 +1252,115 @@ Base14_fontdict["symb"] = "Symbol"
 Base14_fontdict["zadb"] = "ZapfDingbats"
 
 #------------------------------------------------------------------------------
-# Emulate old linkDest class
+# Glyph list for the built-in font 'ZapfDingbats'
 #------------------------------------------------------------------------------
+zapf_glyphs = (
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (33, 0.974), (34, 0.961), (35, 0.974),
+ (36, 0.98), (37, 0.719), (38, 0.789), (39, 0.79), (40, 0.791), (41, 0.69),
+ (42, 0.96), (43, 0.939), (44, 0.549), (45, 0.855), (46, 0.911), (47, 0.933),
+ (48, 0.911), (49, 0.945), (50, 0.974), (51, 0.755), (52, 0.846), (53, 0.762),
+ (54, 0.761), (55, 0.571), (56, 0.677), (57, 0.763), (58, 0.76), (59, 0.759),
+ (60, 0.754), (61, 0.494), (62, 0.552), (63, 0.537), (64, 0.577), (65, 0.692),
+ (66, 0.786), (67, 0.788), (68, 0.788), (69, 0.79), (70, 0.793), (71, 0.794),
+ (72, 0.816), (73, 0.823), (74, 0.789), (75, 0.841), (76, 0.823), (77, 0.833),
+ (78, 0.816), (79, 0.831), (80, 0.923), (81, 0.744), (82, 0.723), (83, 0.749),
+ (84, 0.79), (85, 0.792), (86, 0.695), (87, 0.776), (88, 0.768), (89, 0.792),
+ (90, 0.759), (91, 0.707), (92, 0.708), (93, 0.682), (94, 0.701), (95, 0.826),
+ (96, 0.815), (97, 0.789), (98, 0.789), (99, 0.707), (100, 0.687), (101, 0.696),
+ (102, 0.689), (103, 0.786), (104, 0.787), (105, 0.713), (106, 0.791),
+ (107, 0.785), (108, 0.791), (109, 0.873), (110, 0.761), (111, 0.762),
+ (112, 0.762), (113, 0.759), (114, 0.759), (115, 0.892), (116, 0.892),
+ (117, 0.788), (118, 0.784), (119, 0.438), (120, 0.138), (121, 0.277),
+ (122, 0.415), (123, 0.392), (124, 0.392), (125, 0.668), (126, 0.668),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (161, 0.732), (162, 0.544),
+ (163, 0.544), (164, 0.91), (165, 0.667), (166, 0.76), (167, 0.76),
+ (168, 0.776), (169, 0.595), (170, 0.694), (171, 0.626), (172, 0.788),
+ (173, 0.788), (174, 0.788), (175, 0.788), (176, 0.788), (177, 0.788),
+ (178, 0.788), (179, 0.788), (180, 0.788), (181, 0.788), (182, 0.788),
+ (183, 0.788), (184, 0.788), (185, 0.788), (186, 0.788), (187, 0.788),
+ (188, 0.788), (189, 0.788), (190, 0.788), (191, 0.788), (192, 0.788),
+ (193, 0.788), (194, 0.788), (195, 0.788), (196, 0.788), (197, 0.788),
+ (198, 0.788), (199, 0.788), (200, 0.788), (201, 0.788), (202, 0.788),
+ (203, 0.788), (204, 0.788), (205, 0.788), (206, 0.788), (207, 0.788),
+ (208, 0.788), (209, 0.788), (210, 0.788), (211, 0.788), (212, 0.894),
+ (213, 0.838), (214, 1.016), (215, 0.458), (216, 0.748), (217, 0.924),
+ (218, 0.748), (219, 0.918), (220, 0.927), (221, 0.928), (222, 0.928),
+ (223, 0.834), (224, 0.873), (225, 0.828), (226, 0.924), (227, 0.924),
+ (228, 0.917), (229, 0.93), (230, 0.931), (231, 0.463), (232, 0.883),
+ (233, 0.836), (234, 0.836), (235, 0.867), (236, 0.867), (237, 0.696),
+ (238, 0.696), (239, 0.874), (32, 0.278), (241, 0.874), (242, 0.76),
+ (243, 0.946), (244, 0.771), (245, 0.865), (246, 0.771), (247, 0.888),
+ (248, 0.967), (249, 0.888), (250, 0.831), (251, 0.873), (252, 0.927),
+ (253, 0.97), (32, 0.278), (32, 0.278)
+ )
+
+#------------------------------------------------------------------------------
+# Glyph list for the built-in font 'Symbol'
+#------------------------------------------------------------------------------
+symbol_glyphs = (
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (32, 0.25), (33, 0.333), (34, 0.713),
+ (35, 0.5), (36, 0.549), (37, 0.833), (38, 0.778), (39, 0.439),
+ (40, 0.333), (41, 0.333), (42, 0.5), (43, 0.549), (44, 0.25), (45, 0.549),
+ (46, 0.25), (47, 0.278), (48, 0.5), (49, 0.5), (50, 0.5), (51, 0.5),
+ (52, 0.5), (53, 0.5), (54, 0.5), (55, 0.5), (56, 0.5), (57, 0.5),
+ (58, 0.278), (59, 0.278), (60, 0.549), (61, 0.549), (62, 0.549),
+ (63, 0.444), (64, 0.549), (65, 0.722), (66, 0.667), (67, 0.722),
+ (68, 0.612), (69, 0.611), (70, 0.763), (71, 0.603), (72, 0.722),
+ (73, 0.333), (74, 0.631), (75, 0.722), (76, 0.686), (77, 0.889),
+ (78, 0.722), (79, 0.722), (80, 0.768), (81, 0.741), (82, 0.556),
+ (83, 0.592), (84, 0.611), (85, 0.69), (86, 0.439), (87, 0.768),
+ (88, 0.645), (89, 0.795), (90, 0.611), (91, 0.333), (92, 0.863),
+ (93, 0.333), (94, 0.658), (95, 0.5), (96, 0.5), (97, 0.631), (98, 0.549),
+ (99, 0.549), (100, 0.494), (101, 0.439), (102, 0.521), (103, 0.411),
+ (104, 0.603), (105, 0.329), (106, 0.603), (107, 0.549), (108, 0.549),
+ (109, 0.576), (110, 0.521), (111, 0.549), (112, 0.549), (113, 0.521),
+ (114, 0.549), (115, 0.603), (116, 0.439), (117, 0.576), (118, 0.713),
+ (119, 0.686), (120, 0.493), (121, 0.686), (122, 0.494), (123, 0.48),
+ (124, 0.2), (125, 0.48), (126, 0.549), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (160, 0.25), (161, 0.62), (162, 0.247), (163, 0.549),
+ (164, 0.167), (165, 0.713), (166, 0.5), (167, 0.753), (168, 0.753),
+ (169, 0.753), (170, 0.753), (171, 1.042), (172, 0.713), (173, 0.603),
+ (174, 0.987), (175, 0.603), (176, 0.4), (177, 0.549), (178, 0.411),
+ (179, 0.549), (180, 0.549), (181, 0.576), (182, 0.494), (183, 0.46),
+ (184, 0.549), (185, 0.549), (186, 0.549), (187, 0.549), (188, 1),
+ (189, 0.603), (190, 1), (191, 0.658), (192, 0.823), (193, 0.686),
+ (194, 0.795), (195, 0.987), (196, 0.768), (197, 0.768), (198, 0.823),
+ (199, 0.768), (200, 0.768), (201, 0.713), (202, 0.713), (203, 0.713),
+ (204, 0.713), (205, 0.713), (206, 0.713), (207, 0.713), (208, 0.768),
+ (209, 0.713), (210, 0.79), (211, 0.79), (212, 0.89), (213, 0.823),
+ (214, 0.549), (215, 0.549), (216, 0.713), (217, 0.603), (218, 0.603),
+ (219, 1.042), (220, 0.987), (221, 0.603), (222, 0.987), (223, 0.603),
+ (224, 0.494), (225, 0.329), (226, 0.79), (227, 0.79), (228, 0.786),
+ (229, 0.713), (230, 0.384), (231, 0.384), (232, 0.384), (233, 0.384),
+ (234, 0.384), (235, 0.384), (236, 0.494), (237, 0.494), (238, 0.494),
+ (239, 0.494), (63, 0.444), (241, 0.329), (242, 0.274), (243, 0.686),
+ (244, 0.686), (245, 0.686), (246, 0.384), (247, 0.549), (248, 0.384),
+ (249, 0.384), (250, 0.384), (251, 0.384), (252, 0.494), (253, 0.494),
+ (254, 0.494), (63, 0.444)
+ )
+
 class linkDest():
     """link or outline destination details"""
     def __init__(self, obj, rlink):
@@ -1372,24 +1478,34 @@ def getPDFstr(x):
 
     return "(" + r + ")"
 
-#------------------------------------------------------------------------------
-# Return a PDF string suitable for the TJ operator enclosed in "[]" brackets.
-# The input string is converted to either 2 or 4 hex digits per character.
-# If no glyphs are supplied, then a simple font is assumed and each character
-# taken directly.
-# Otherwise a char's glyph is taken and 4 hex digits per char are put out.
-#------------------------------------------------------------------------------
-def getTJstr(text, glyphs):
+def getTJstr(text, glyphs, simple, ordering):
+    """Return a PDF string enclosed in [] brackets, suitable for the PDF TJ
+    operator.
+    The input string is converted to either 2 or 4 hex digits per character.
+    * simple:
+       - no glyphs: 2-chars, use char codes as the glyph
+       - glyphs: 2-chars, use glyphs instead of char codes (Symbol, ZapfDingbats)
+    * not simple:
+       - ordering < 0: 4-chars, use glyphs not char codes
+       - ordering >=0: a CJK font! 4 chars, use char codes as glyphs
+"""
     if text.startswith("[<") and text.endswith(">]"): # already done
         return text
+
     if not bool(text):
         return "[<>]"
-    if glyphs is None:            # this is a simple font
-        otxt = "".join([hex(ord(c))[2:].rjust(2, "0") if ord(c)<256 else "3f" for c in text])
+
+    if simple:
+        if glyphs is None:             # simple and not Symbol / ZapfDingbats
+            otxt = "".join([hex(ord(c))[2:].rjust(2, "0") if ord(c)<256 else "3f" for c in text])
+        else:                          # Symbol or ZapfDingbats
+            otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(2, "0") for c in text])
         return "[<" + otxt + ">]"
 
-# this is not a simple font -> take the glyphs of a character
-    otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(4, "0") for c in text])
+    if ordering < 0:                   # not a CJK font: use the glyphs
+        otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(4, "0") for c in text])
+    else:                              # CJK: use char codes, no glyphs
+        otxt = "".join([hex(ord(c))[2:].rjust(4, "0") for c in text])
 
     return "[<" + otxt + ">]"
 
@@ -1490,23 +1606,18 @@ def CheckMorph(o):
 def CheckFont(page, fontname):
     """Return an entry in the page's font list if reference name matches.
     """
-    fl = page.getFontList()
-    refname = None
-    for f in fl:
+    for f in page.getFontList():
         if f[4] == fontname:
-            refname = f
-            break
-    return refname
+            return f
+    return None
 
 def CheckFontInfo(doc, xref):
     """Return a font info if present in the document.
     """
-    fi = None
     for f in doc.FontInfos:
         if xref == f[0]:
-            fi = f
-            break
-    return fi
+            return f
+    return None
 
 def UpdateFontInfo(doc, info):
     xref = info[0]
@@ -2791,51 +2902,70 @@ class Page(_object):
         return _fitz.Page_insertImage(self, rect, filename, pixmap, stream, overlay, _imgname)
 
 
-    def insertFont(self, fontname=None, fontfile=None, fontbuffer=None,
-                   set_simple=False, idx=0, wmode=0, style=0, encoding=0):
-        if not self.parent:
+    def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
+                   set_simple=False, wmode=0, encoding=0):
+        doc = self.parent
+        if not doc:
             raise ValueError("orphaned object: parent is None")
-        f = CheckFont(self, fontname)
-        if f is not None:         # drop out if fontname already in page list
-            return f[0]
-        bfname = ""
+        idx = 0
 
-        if not fontname:
-            fontname = "helv"
+        if fontname.startswith("/"):
+            fontname = fontname[1:]
 
-        if fontname.lower() in Base14_fontdict.keys():
-            bfname = Base14_fontdict[fontname.lower()]
+        font = CheckFont(self, fontname)
+        if font is not None:                    # font already in font list of page
+            xref = font[0]                      # this is the xref
+            if CheckFontInfo(doc, xref):        # also in our document font list?
+                return xref                     # yes: we are done
+    # need to build the doc FontInfo entry - done via getCharWidths
+            doc.getCharWidths(xref)
+            return xref
 
+    #--------------------------------------------------------------------------
+    # the font is not present for this page
+    #--------------------------------------------------------------------------
+
+        bfname = Base14_fontdict.get(fontname.lower(), None) # BaseFont if Base-14 font
+
+        serif = 0
         CJK_number = -1
         CJK_list_n = ["china-t", "china-s", "japan", "korea"]
         CJK_list_s = ["china-ts", "china-ss", "japan-s", "korea-s"]
-        if fontname in CJK_list_n:
-            CJK_number = CJK_list.index(fontname)
+
+        try:
+            CJK_number = CJK_list_n.index(fontname)
             serif = 0
+        except:
+            pass
 
-        if fontname in CJK_list_s:
-            CJK_number = CJK_list_s.index(fontname)
-            serif = 1
+        if CJK_number < 0:
+            try:
+                CJK_number = CJK_list_s.index(fontname)
+                serif = 1
+            except:
+                pass
 
+    # install the font for the page
         val = self._insertFont(fontname, bfname, fontfile, fontbuffer, set_simple, idx,
-                               wmode, style, serif, encoding, CJK_number)
+                               wmode, serif, encoding, CJK_number)
 
-        if val:
-            xref = val[0]
-            f = CheckFont(self, fontname)
-            if f is not None:
-                val[1]["type"] = f[2]       # put /Subtype in font info
-                val[1]["glyphs"] = None
-            doc = self.parent               # now add to document font info
-            fi = CheckFontInfo(doc, xref)
-            if fi is None:                  # look if we are already present
-                doc.FontInfos.append(val)   # no: add me to document object
-            return xref
+        if not val:                   # did not work, error return
+            return val
+
+        xref = val[0]                 # xref of installed font
+
+        if CheckFontInfo(doc, xref):  # check again: document already has this font
+            return xref               # we are done
+
+    # need to create document font info
+        doc.getCharWidths(xref)
+        return xref
 
 
-    def _insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, style, serif, encoding, ordering):
-        """_insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, style, serif, encoding, ordering) -> PyObject *"""
-        return _fitz.Page__insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, style, serif, encoding, ordering)
+
+    def _insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, serif, encoding, ordering):
+        """_insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, serif, encoding, ordering) -> PyObject *"""
+        return _fitz.Page__insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, serif, encoding, ordering)
 
 
     def _getContents(self):

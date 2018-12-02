@@ -792,7 +792,6 @@ def insertLink(page, lnk, mark = True):
 def insertTextbox(page, rect, buffer,
                   fontname = "helv",
                   fontfile = None,
-                  idx = 0,
                   set_simple = 0,
                   fontsize = 11,
                   color = (0,0,0),
@@ -821,7 +820,6 @@ def insertTextbox(page, rect, buffer,
                            fontsize = fontsize,
                            fontname = fontname,
                            fontfile = fontfile,
-                           idx = idx,
                            set_simple = set_simple,
                            color = color,
                            expandtabs = expandtabs,
@@ -839,7 +837,6 @@ def insertText(page, point, text,
                fontsize = 11,
                fontname = "helv",
                fontfile = None,
-               idx = 0,
                set_simple = 0,
                color = (0,0,0),
                rotate = 0,
@@ -851,7 +848,6 @@ def insertText(page, point, text,
                         fontsize = fontsize,
                         fontname = fontname,
                         fontfile = fontfile,
-                        idx = idx,
                         set_simple = set_simple,
                         color = color,
                         rotate = rotate,
@@ -1657,25 +1653,60 @@ def getColorHSV(name):
 # Document.getCharWidths
 #------------------------------------------------------------------------------
 def getCharWidths(doc, xref, limit = 256, idx = 0):
+    """Get list of glyph information of a font, which must be provided by its
+    XREF number. If we already dealt with the font, it will be recorded in
+    doc.FontInfos. Otherwise we insert an entry there.
+    Finally we return the glyphs for the font. This is a list of (glyph, width)
+    where glyph is an integer controlling the char appearance, and width is a
+    float controlling the char's spacing: width * fontsize is the actual space.
+    For 'simple' fonts, glyph == ord(char) will usually be true.
+    Exceptions are 'Symbol' and 'ZapfDingbats'. We are providing data for these
+    directly here.
+    """
     fontinfo = CheckFontInfo(doc, xref)
-    if fontinfo is None:
+    if fontinfo is None:               # not recorded yet: create it
         name, ext, stype, _ = doc.extractFont(xref, info_only = True)
-        glyphs = None
         fontdict = {"name": name, "type": stype, "ext": ext}
+
         if ext == "":
             raise ValueError("xref is not a font")
+
+        # check for 'simple' fonts
         if stype in ("Type1", "MMType1", "TrueType"):
             simple = True
         else:
             simple = False
+
+        # check for CJK fonts
+        if name in ("Fangti", "Ming"):
+            ordering = 0
+        elif name in ("Heiti", "Song"):
+            ordering = 1
+        elif name in ("Gothic", "Mincho"):
+            ordering = 2
+        elif name in ("Dotum", "Batang"):
+            ordering = 3
+        else:
+            ordering = -1
+
         fontdict["simple"] = simple
-        fontdict["glyphs"] = None
+
+        if name == "ZapfDingbats":
+            glyphs = zapf_glyphs
+        elif name == "Symbol":
+            glyphs = symbol_glyphs
+        else:
+            glyphs = None
+
+        fontdict["glyphs"] = glyphs
+        fontdict["ordering"] = ordering
         fontinfo = [xref, fontdict]
         doc.FontInfos.append(fontinfo)
     else:
         fontdict = fontinfo[1]
         glyphs = fontdict["glyphs"]
         simple = fontdict["simple"]
+        ordering = fontdict["ordering"]
 
     if glyphs is None:
         oldlimit = 0
@@ -1686,15 +1717,19 @@ def getCharWidths(doc, xref, limit = 256, idx = 0):
     
     if mylimit <= oldlimit:
         return glyphs
-    
-    new_glyphs = doc._getCharWidths(xref, fontdict["name"],
+
+    if ordering < 0:              # not a CJK font
+        glyphs = doc._getCharWidths(xref, fontdict["name"],
                                     fontdict["ext"],
                                     fontdict["ordering"],
                                     mylimit, idx)
-    glyphs = new_glyphs
+    else:                         # CJK fonts use char codes and width = 1
+        glyphs = None
+
     fontdict["glyphs"] = glyphs
     fontinfo[1] = fontdict
     UpdateFontInfo(doc, fontinfo)
+
     return glyphs
 
 #------------------------------------------------------------------------------
@@ -2006,13 +2041,12 @@ class Shape():
                    fontsize = 11,
                    fontname = "helv",
                    fontfile = None,
-                   idx = 0,
                    set_simple = 0,
                    color = (0,0,0),
                    rotate = 0,
                    morph = None):
         
-        # ensure 'text' is a list of strings worth dealing with
+        # ensure 'text' is a list of strings, worth dealing with
         if not bool(buffer): return 0
         
         if type(buffer) not in (list, tuple):
@@ -2024,37 +2058,30 @@ class Shape():
             return 0
 
         point = Point(point)
-        maxcode = max([ord(c) for c in "\n".join(text)])
+        maxcode = max([ord(c) for c in " ".join(text)])
+
         # ensure valid 'fontname'
-        xref = 0                            # xref of font object
         fname = fontname
-        f = None
-        if not fname:
-            fname = "helv"
         if fname[0] == "/":
             fname = fname[1:]
-            f = CheckFont(self.page, fname)
-        
-        if f is not None:
-            xref = f[0]
-        else:
-            xref = self.page.insertFont(fontname = fname, fontfile = fontfile,
-                                        set_simple = set_simple, idx = idx)
-            f = CheckFont(self.page, fname)
 
-        assert xref > 0, "invalid fontname"
-        basename, ext, stype, _ = self.doc.extractFont(xref, info_only = True)
-        simple = True if stype in ("Type1", "TrueType", "MMType1") else False
-        # decide how text is presented to PDF:
-        # simple fonts: use the chars directly in PDF operators
-        # cid fonts: use glyph number of each character
-        glyphs = None
-        if not simple:
-            glyphs = self.doc.getCharWidths(xref, limit = maxcode+1)
-        
+        xref = self.page.insertFont(fontname = fname, fontfile = fontfile,
+                                        set_simple = set_simple)
+        fontinfo = CheckFontInfo(self.doc, xref)
+
+        fontdict = fontinfo[1]
+        ordering = fontdict["ordering"]
+        simple = fontdict["simple"]
+        glyphs = fontdict["glyphs"]
+        bfname = fontdict["name"]
+
         tab = []
         for t in text:
-            tab.append(getTJstr(t, glyphs))
+            if simple and bfname not in ("Symbol", "ZapfDingbats"):
+                g = None
+            else:
+                g = glyphs
+            tab.append(getTJstr(t, g, simple, ordering))
         text = tab
 
         CheckColor(color)
@@ -2139,7 +2166,7 @@ class Shape():
 # Shape.insertTextbox
 #==============================================================================
     def insertTextbox(self, rect, buffer, fontname = "helv", fontfile = None,
-                      fontsize = 11, idx = 0, set_simple = 0,
+                      fontsize = 11, set_simple = 0,
                       color = (0,0,0), expandtabs = 1,
                       align = 0, rotate = 0, morph = None):
         """Insert text into a given rectangle. Arguments:
@@ -2173,27 +2200,20 @@ class Shape():
         cmm90 = "0 -1 1 0 0 0 cm\n"   # rotates clockwise
         cm180 = "-1 0 0 -1 0 0 cm\n"  # rotates by 180 deg.
         height = self.height
-        xref = 0                            # xref of font object
-        fname = fontname
-        f = None
-        if not fname:
-            fname = "helv"
-        if fname[0] == "/":
-            fname = fname[1:]
-            f = CheckFont(self.page, fname)
-            if f is None:
-                raise ValueError("invalid font reference " + fname)
-        
-        if f is not None:
-            xref = f[0]
-        else:
-            xref = self.page.insertFont(fontname = fname, fontfile = fontfile,
-                                        set_simple = set_simple, idx = idx)
-            f = CheckFont(self.page, fname)
 
-        assert xref > 0, "invalid fontname"
-        basename, ext, stype, _ = self.doc.extractFont(xref, info_only = True)
-        simple = True if stype in ("Type1", "TrueType", "MMType1") else False
+        fname = fontname
+        if fname.startswith("/"):
+            fname = fname[1:]
+
+        xref = self.page.insertFont(fontname = fname, fontfile = fontfile,
+                                        set_simple = set_simple)
+        fontinfo = CheckFontInfo(self.doc, xref)
+
+        fontdict = fontinfo[1]
+        ordering = fontdict["ordering"]
+        simple = fontdict["simple"]
+        glyphs = fontdict["glyphs"]
+        bfname = fontdict["name"]
 
         # create a list from buffer, split into its lines
         if type(buffer) in (list, tuple):
@@ -2208,17 +2228,29 @@ class Shape():
 
         t0 = t0.splitlines()
         
-        widthtab = self.doc.getCharWidths(xref, maxcode + 1)
-        
+        glyphs = self.doc.getCharWidths(xref, maxcode + 1)
+        if simple and bfname not in ("Symbol", "ZapfDingbats"):
+            tj_glyphs = None
+        else:
+            tj_glyphs = glyphs
+
+
         #----------------------------------------------------------------------
         # calculate pixel length of a string
         #----------------------------------------------------------------------
         def pixlen(x):
             """Calculate pixel length of x."""
-            return sum([widthtab[ord(c)][1] for c in x]) * fontsize
+            if ordering < 0:
+                return sum([glyphs[ord(c)][1] for c in x]) * fontsize
+            else:
+                return len(x) * fontsize
         #----------------------------------------------------------------------
 
-        blen = widthtab[32][1] * fontsize       # pixel size of space character
+        if ordering < 0:
+            blen = glyphs[32][1] * fontsize       # pixel size of space character
+        else:
+            blen = fontsize
+
         text = ""                               # output buffer
         lheight = fontsize * 1.2                # line height
         if CheckMorph(morph):
@@ -2270,10 +2302,6 @@ class Shape():
         # line loop
         #=======================================================================
         just_tab = []                           # 'justify' indicators per line
-        if simple:
-            glyphs = None
-        else:
-            glyphs = widthtab                   # indicator for getTJstr()!
         
         for i, line in enumerate(t0):
             line_t = line.expandtabs(expandtabs).split(" ")  # split into words
@@ -2364,7 +2392,7 @@ class Shape():
                 left = -pnt.x - self.x
                 top  = -height + pnt.y + self.y
             nres += templ % (left, top, fname, fontsize,
-                             spacing, red, green, blue, getTJstr(t, glyphs))
+                             spacing, red, green, blue, getTJstr(t, tj_glyphs, simple, ordering))
         nres += "ET Q\n"
         
         self.totalcont += nres
