@@ -106,9 +106,9 @@ del platform
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.2"
-VersionDate = "2018-11-20 06:27:22"
-version = (VersionBind, VersionFitz, "20181120062722")
+VersionBind = "1.14.3"
+VersionDate = "2018-12-01 18:33:20"
+version = (VersionBind, VersionFitz, "20181201183320")
 
 
 class Matrix():
@@ -160,16 +160,17 @@ class Matrix():
         current one. Else return 1 and do nothing.
         """
         if src is None:
-            src = self
-        dst = TOOLS.invert_matrix(src)
-        if min(dst) >= max(dst):
+            dst = TOOLS._invert_matrix(self)
+        else:
+            dst = TOOLS._invert_matrix(src)
+        if dst[0] == 1:
             return 1
-        self.a = dst[0]
-        self.b = dst[1]
-        self.c = dst[2]
-        self.d = dst[3]
-        self.e = dst[4]
-        self.f = dst[5]
+        self.a = dst[1][0]
+        self.b = dst[1][1]
+        self.c = dst[1][2]
+        self.d = dst[1][3]
+        self.e = dst[1][4]
+        self.f = dst[1][5]
         return 0
 
     def preTranslate(self, tx, ty):
@@ -296,9 +297,9 @@ class Matrix():
         if hasattr(m, "__float__"):
             return Matrix(self.a * 1./m, self.b * 1./m, self.c * 1./m,
                           self.d * 1./m, self.e * 1./m, self.f * 1./m)
-        m1 = TOOLS.invert_matrix(m)
-        if min(m1) >= max(m1):
-            raise ZeroDivisionError("op2 is not invertible")
+        m1 = TOOLS._invert_matrix(m)[1]
+        if not m1:
+            raise ZeroDivisionError("matrix not invertible")
         return self.concat(self, m1)
     __div__ = __truediv__
 
@@ -323,10 +324,10 @@ class Matrix():
         return Matrix(-self.a, -self.b, -self.c, -self.d, -self.e, -self.f)
 
     def __bool__(self):
-        return max(self) > 0 or min(self) < 0
+        return not (max(self) == min(self) == 0)
 
     def __nonzero__(self):
-        return max(self) > 0 or min(self) < 0
+        return not (max(self) == min(self) == 0)
 
     def __eq__(self, m):
         if not hasattr(m, "__len__"):
@@ -484,10 +485,10 @@ class Point():
         return Point(-self.x, -self.y)
 
     def __bool__(self):
-        return max(self) > 0 or min(self) < 0
+        return not (max(self) == min(self) == 0)
 
     def __nonzero__(self):
-        return max(self) > 0 or min(self) < 0
+        return not (max(self) == min(self) == 0)
 
     def __eq__(self, p):
         if not hasattr(p, "__len__"):
@@ -500,11 +501,15 @@ class Point():
     def __add__(self, p):
         if hasattr(p, "__float__"):
             return Point(self.x + p, self.y + p)
+        if len(p) != 2:
+            raise ValueError("require point-like object")
         return Point(self.x + p[0], self.y + p[1])
 
     def __sub__(self, p):
         if hasattr(p, "__float__"):
             return Point(self.x - p, self.y - p)
+        if len(p) != 2:
+            raise ValueError("require point-like object")
         return Point(self.x - p[0], self.y - p[1])
 
     def __mul__(self, m):
@@ -516,9 +521,9 @@ class Point():
     def __truediv__(self, m):
         if hasattr(m, "__float__"):
             return Point(self.x * 1./m, self.y * 1./m)
-        m1 = TOOLS.invert_matrix(m)
-        if min(m1) >= max(m1):
-            raise ZeroDivisionError("op2 is not invertible")
+        m1 = TOOLS._invert_matrix(m)[1]
+        if not m1:
+            raise ZeroDivisionError("matrix not invertible")
         p = Point(self)
         return p.transform(m1)
 
@@ -620,9 +625,8 @@ class Rect():
         return Quad(self.tl, self.tr, self.bl, self.br)
 
     def round(self):
-        r = Rect(self).normalize()
-        ir = IRect(math.floor(r.x0), math.floor(r.y0), math.ceil(r.x1), math.ceil(r.y1))
-        return ir
+        return IRect(min(self.x0, self.x1), min(self.y0, self.y1),
+                     max(self.x0, self.x1), max(self.y0, self.y1))
 
     irect = property(round)
 
@@ -631,45 +635,30 @@ class Rect():
 
     def includePoint(self, p):
         """Extend rectangle to include point p."""
-        x0 = min(self.x0, self.x1, p[0])
-        x1 = max(self.x0, self.x1, p[0])
-        y0 = min(self.y0, self.y1, p[1])
-        y1 = max(self.y0, self.y1, p[1])
-        self.x0 = x0
-        self.y0 = y0
-        self.x1 = x1
-        self.y1 = y1
+        r0 = TOOLS._include_point_in_rect(self, p);
+        self.x0 = r0[0]
+        self.y0 = r0[1]
+        self.x1 = r0[2]
+        self.y1 = r0[3]
         return self
 
     def includeRect(self, r):
         """Extend rectangle to include rectangle r."""
-        x0 = min(self.x0, self.x1, r[0], r[2])
-        x1 = max(self.x0, self.x1, r[0], r[2])
-        y0 = min(self.y0, self.y1, r[1], r[3])
-        y1 = max(self.y0, self.y1, r[1], r[3])
-        self.x0 = x0
-        self.y0 = y0
-        self.x1 = x1
-        self.y1 = y1
+        r0 = TOOLS._union_rect(self, r)
+        self.x0 = r0[0]
+        self.y0 = r0[1]
+        self.x1 = r0[2]
+        self.y1 = r0[3]
         return self
 
     def intersect(self, r):
-        """Restrict rectangle to common area with rectangle r."""
-        if self.isEmpty: return Rect()
-        r1 = Rect(r)
-        if r1.isEmpty: return Rect()
-        if r1.isInfinite: return self
-        if self.isInfinite: return r1
-        x0 = max(self.x0, r1.x0)
-        x1 = min(self.x1, r1.x1)
-        y0 = max(self.y0, r1.y0)
-        y1 = min(self.y1, r1.y1)
-        if x1 < x0 or y1 < y0:
-            self = Rect()
-        else:
-            self = Rect(x0, y0, x1, y1)
+        """Restrict self to common area with rectangle r."""
+        r0 = TOOLS._intersect_rect(self, r);
+        self.x0 = r0[0]
+        self.y0 = r0[1]
+        self.x1 = r0[2]
+        self.y1 = r0[3]
         return self
-
 
     def __getitem__(self, i):
         return (self.x0, self.y0, self.x1, self.y1)[i]
@@ -696,10 +685,10 @@ class Rect():
         return Rect(-self.x0, -self.y0, -self.x1, -self.y1)
 
     def __bool__(self):
-        return max(self) > 0 or min(self) < 0
+        return not (max(self) == min(self) == 0)
 
     def __nonzero__(self):
-        return max(self) > 0 or min(self) < 0
+        return not (max(self) == min(self) == 0)
 
     def __eq__(self, p):
         if not hasattr(p, "__len__"):
@@ -715,17 +704,25 @@ class Rect():
         if hasattr(p, "__float__"):
             r = Rect(self.x0 + p, self.y0 + p, self.x1 + p, self.y1 + p)
         else:
+            if len(p) != 4:
+                raise ValueError("require rect-like object")
             r = Rect(self.x0 + p[0], self.y0 + p[1], self.x1 + p[2], self.y1 + p[3])
         return r
 
     def __sub__(self, p):
         if hasattr(p, "__float__"):
             return Rect(self.x0 - p, self.y0 - p, self.x1 - p, self.y1 - p)
+        if len(p) != 4:
+            raise ValueError("require rect-like object")
         return Rect(self.x0 - p[0], self.y0 - p[1], self.x1 - p[2], self.y1 - p[3])
 
     def transform(self, m):
         """Replace rectangle with its transformation by matrix m."""
-        self = Rect(TOOLS.transform_rect(self, m))
+        r0 = TOOLS._transform_rect(self, m)
+        self.x0 = r0[0]
+        self.y0 = r0[1]
+        self.x1 = r0[2]
+        self.y1 = r0[3]
         return self
 
     def __mul__(self, m):
@@ -738,9 +735,9 @@ class Rect():
     def __truediv__(self, m):
         if hasattr(m, "__float__"):
             return Rect(self.x0 * 1./m, self.y0 * 1./m, self.x1 * 1./m, self.y1 * 1./m)
-        im = TOOLS.invert_matrix(m)
-        if min(im) >= max(im):
-            raise ZeroDivisionError("op2 is not invertible")
+        im = TOOLS._invert_matrix(m)[1]
+        if not im:
+            raise ZeroDivisionError("matrix not invertible")
         r = Rect(self)
         r = r.transform(im)
         return r
@@ -803,10 +800,10 @@ class IRect(Rect):
     """IRect() - all zeros\nIRect(x0, y0, x1, y1)\nIRect(Rect or IRect) - new copy\nIRect(sequence) - from 'sequence'"""
     def __init__(self, *args):
         Rect.__init__(self, *args)
-        self.x0 = math.floor(self.x0)
-        self.y0 = math.floor(self.y0)
-        self.x1 = math.ceil(self.x1)
-        self.y1 = math.ceil(self.y1)
+        self.x0 = math.floor(self.x0 + 0.001)
+        self.y0 = math.floor(self.y0 + 0.001)
+        self.x1 = math.ceil(self.x1 - 0.001)
+        self.y1 = math.ceil(self.y1 - 0.001)
         return None
 
     @property
@@ -900,6 +897,9 @@ class Quad():
 
     @property
     def isRectangular(self):
+        """Check if quad is rectangular.
+        """
+# if any two of the 4 corners are equal return false
         upper = (self.ur - self.ul).unit
         if not bool(upper):
             return False
@@ -913,13 +913,19 @@ class Quad():
         if not bool(lower):
             return False
         eps = 1e-5
-
+# we now have 4 sides of length 1. If 3 of them have 90 deg angles,
+# then it is a rectangle -- we check via scalar product == 0
         return abs(sum(map(lambda x,y: x*y, upper, right))) <= eps and \
                abs(sum(map(lambda x,y: x*y, upper, left))) <= eps and \
                abs(sum(map(lambda x,y: x*y, left, lower))) <= eps
 
     @property
     def isEmpty(self):
+        """Check if quad is empty retangle. If rectangular, we are done (not empty).
+        But all 4 points may still be on one line. We check this out here.
+        In that case all 3 lines connecting corners to ul will have same angle with
+        x-axis.
+        """
         if self.isRectangular:
             return False
         eps = 1e-5
@@ -993,13 +999,13 @@ class Quad():
         return r
 
     def __truediv__(self, m):
-        r = Quad(self)
         if hasattr(m, "__float__"):
             im = 1. / m
         else:
-            im = TOOLS.invert_matrix(m)
-            if min(im) >= max(im):
-                raise ZeroDivisionError("op2 is not invertible")
+            im = TOOLS._invert_matrix(m)[1]
+            if not im:
+                raise ZeroDivisionError("matrix not invertible")
+        r = Quad(self)
         r = r.transform(im)
         return r
 
@@ -1219,18 +1225,142 @@ STAMP_TopSecret           = 12
 STAMP_Draft               = 13
 
 #------------------------------------------------------------------------------
-# Base 14 font names
+# Base 14 font names and dictionary
 #------------------------------------------------------------------------------
-
 Base14_fontnames = ("Courier", "Courier-Oblique", "Courier-Bold",
     "Courier-BoldOblique", "Helvetica", "Helvetica-Oblique",
     "Helvetica-Bold", "Helvetica-BoldOblique",
     "Times-Roman", "Times-Italic", "Times-Bold",
     "Times-BoldItalic", "Symbol", "ZapfDingbats")
 
+Base14_fontdict = {}
+for f in Base14_fontnames:
+    Base14_fontdict[f.lower()] = f
+Base14_fontdict["helv"] = "Helvetica"
+Base14_fontdict["heit"] = "Helvetica-Oblique"
+Base14_fontdict["hebo"] = "Helvetica-Bold"
+Base14_fontdict["hebi"] = "Helvetica-BoldOblique"
+Base14_fontdict["cour"] = "Courier"
+Base14_fontdict["coit"] = "Courier-Oblique"
+Base14_fontdict["cobo"] = "Courier-Bold"
+Base14_fontdict["cobi"] = "Courier-BoldOblique"
+Base14_fontdict["tiro"] = "Times-Roman"
+Base14_fontdict["tibo"] = "Times-Bold"
+Base14_fontdict["tiit"] = "Times-Italic"
+Base14_fontdict["tibi"] = "Times-BoldItalic"
+Base14_fontdict["symb"] = "Symbol"
+Base14_fontdict["zadb"] = "ZapfDingbats"
+
 #------------------------------------------------------------------------------
-# Emulate old linkDest class
+# Glyph list for the built-in font 'ZapfDingbats'
 #------------------------------------------------------------------------------
+zapf_glyphs = (
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (33, 0.974), (34, 0.961), (35, 0.974),
+ (36, 0.98), (37, 0.719), (38, 0.789), (39, 0.79), (40, 0.791), (41, 0.69),
+ (42, 0.96), (43, 0.939), (44, 0.549), (45, 0.855), (46, 0.911), (47, 0.933),
+ (48, 0.911), (49, 0.945), (50, 0.974), (51, 0.755), (52, 0.846), (53, 0.762),
+ (54, 0.761), (55, 0.571), (56, 0.677), (57, 0.763), (58, 0.76), (59, 0.759),
+ (60, 0.754), (61, 0.494), (62, 0.552), (63, 0.537), (64, 0.577), (65, 0.692),
+ (66, 0.786), (67, 0.788), (68, 0.788), (69, 0.79), (70, 0.793), (71, 0.794),
+ (72, 0.816), (73, 0.823), (74, 0.789), (75, 0.841), (76, 0.823), (77, 0.833),
+ (78, 0.816), (79, 0.831), (80, 0.923), (81, 0.744), (82, 0.723), (83, 0.749),
+ (84, 0.79), (85, 0.792), (86, 0.695), (87, 0.776), (88, 0.768), (89, 0.792),
+ (90, 0.759), (91, 0.707), (92, 0.708), (93, 0.682), (94, 0.701), (95, 0.826),
+ (96, 0.815), (97, 0.789), (98, 0.789), (99, 0.707), (100, 0.687), (101, 0.696),
+ (102, 0.689), (103, 0.786), (104, 0.787), (105, 0.713), (106, 0.791),
+ (107, 0.785), (108, 0.791), (109, 0.873), (110, 0.761), (111, 0.762),
+ (112, 0.762), (113, 0.759), (114, 0.759), (115, 0.892), (116, 0.892),
+ (117, 0.788), (118, 0.784), (119, 0.438), (120, 0.138), (121, 0.277),
+ (122, 0.415), (123, 0.392), (124, 0.392), (125, 0.668), (126, 0.668),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
+ (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (161, 0.732), (162, 0.544),
+ (163, 0.544), (164, 0.91), (165, 0.667), (166, 0.76), (167, 0.76),
+ (168, 0.776), (169, 0.595), (170, 0.694), (171, 0.626), (172, 0.788),
+ (173, 0.788), (174, 0.788), (175, 0.788), (176, 0.788), (177, 0.788),
+ (178, 0.788), (179, 0.788), (180, 0.788), (181, 0.788), (182, 0.788),
+ (183, 0.788), (184, 0.788), (185, 0.788), (186, 0.788), (187, 0.788),
+ (188, 0.788), (189, 0.788), (190, 0.788), (191, 0.788), (192, 0.788),
+ (193, 0.788), (194, 0.788), (195, 0.788), (196, 0.788), (197, 0.788),
+ (198, 0.788), (199, 0.788), (200, 0.788), (201, 0.788), (202, 0.788),
+ (203, 0.788), (204, 0.788), (205, 0.788), (206, 0.788), (207, 0.788),
+ (208, 0.788), (209, 0.788), (210, 0.788), (211, 0.788), (212, 0.894),
+ (213, 0.838), (214, 1.016), (215, 0.458), (216, 0.748), (217, 0.924),
+ (218, 0.748), (219, 0.918), (220, 0.927), (221, 0.928), (222, 0.928),
+ (223, 0.834), (224, 0.873), (225, 0.828), (226, 0.924), (227, 0.924),
+ (228, 0.917), (229, 0.93), (230, 0.931), (231, 0.463), (232, 0.883),
+ (233, 0.836), (234, 0.836), (235, 0.867), (236, 0.867), (237, 0.696),
+ (238, 0.696), (239, 0.874), (32, 0.278), (241, 0.874), (242, 0.76),
+ (243, 0.946), (244, 0.771), (245, 0.865), (246, 0.771), (247, 0.888),
+ (248, 0.967), (249, 0.888), (250, 0.831), (251, 0.873), (252, 0.927),
+ (253, 0.97), (32, 0.278), (32, 0.278)
+ )
+
+#------------------------------------------------------------------------------
+# Glyph list for the built-in font 'Symbol'
+#------------------------------------------------------------------------------
+symbol_glyphs = (
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (32, 0.25), (33, 0.333), (34, 0.713),
+ (35, 0.5), (36, 0.549), (37, 0.833), (38, 0.778), (39, 0.439),
+ (40, 0.333), (41, 0.333), (42, 0.5), (43, 0.549), (44, 0.25), (45, 0.549),
+ (46, 0.25), (47, 0.278), (48, 0.5), (49, 0.5), (50, 0.5), (51, 0.5),
+ (52, 0.5), (53, 0.5), (54, 0.5), (55, 0.5), (56, 0.5), (57, 0.5),
+ (58, 0.278), (59, 0.278), (60, 0.549), (61, 0.549), (62, 0.549),
+ (63, 0.444), (64, 0.549), (65, 0.722), (66, 0.667), (67, 0.722),
+ (68, 0.612), (69, 0.611), (70, 0.763), (71, 0.603), (72, 0.722),
+ (73, 0.333), (74, 0.631), (75, 0.722), (76, 0.686), (77, 0.889),
+ (78, 0.722), (79, 0.722), (80, 0.768), (81, 0.741), (82, 0.556),
+ (83, 0.592), (84, 0.611), (85, 0.69), (86, 0.439), (87, 0.768),
+ (88, 0.645), (89, 0.795), (90, 0.611), (91, 0.333), (92, 0.863),
+ (93, 0.333), (94, 0.658), (95, 0.5), (96, 0.5), (97, 0.631), (98, 0.549),
+ (99, 0.549), (100, 0.494), (101, 0.439), (102, 0.521), (103, 0.411),
+ (104, 0.603), (105, 0.329), (106, 0.603), (107, 0.549), (108, 0.549),
+ (109, 0.576), (110, 0.521), (111, 0.549), (112, 0.549), (113, 0.521),
+ (114, 0.549), (115, 0.603), (116, 0.439), (117, 0.576), (118, 0.713),
+ (119, 0.686), (120, 0.493), (121, 0.686), (122, 0.494), (123, 0.48),
+ (124, 0.2), (125, 0.48), (126, 0.549), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
+ (63, 0.444), (160, 0.25), (161, 0.62), (162, 0.247), (163, 0.549),
+ (164, 0.167), (165, 0.713), (166, 0.5), (167, 0.753), (168, 0.753),
+ (169, 0.753), (170, 0.753), (171, 1.042), (172, 0.713), (173, 0.603),
+ (174, 0.987), (175, 0.603), (176, 0.4), (177, 0.549), (178, 0.411),
+ (179, 0.549), (180, 0.549), (181, 0.576), (182, 0.494), (183, 0.46),
+ (184, 0.549), (185, 0.549), (186, 0.549), (187, 0.549), (188, 1),
+ (189, 0.603), (190, 1), (191, 0.658), (192, 0.823), (193, 0.686),
+ (194, 0.795), (195, 0.987), (196, 0.768), (197, 0.768), (198, 0.823),
+ (199, 0.768), (200, 0.768), (201, 0.713), (202, 0.713), (203, 0.713),
+ (204, 0.713), (205, 0.713), (206, 0.713), (207, 0.713), (208, 0.768),
+ (209, 0.713), (210, 0.79), (211, 0.79), (212, 0.89), (213, 0.823),
+ (214, 0.549), (215, 0.549), (216, 0.713), (217, 0.603), (218, 0.603),
+ (219, 1.042), (220, 0.987), (221, 0.603), (222, 0.987), (223, 0.603),
+ (224, 0.494), (225, 0.329), (226, 0.79), (227, 0.79), (228, 0.786),
+ (229, 0.713), (230, 0.384), (231, 0.384), (232, 0.384), (233, 0.384),
+ (234, 0.384), (235, 0.384), (236, 0.494), (237, 0.494), (238, 0.494),
+ (239, 0.494), (63, 0.444), (241, 0.329), (242, 0.274), (243, 0.686),
+ (244, 0.686), (245, 0.686), (246, 0.384), (247, 0.549), (248, 0.384),
+ (249, 0.384), (250, 0.384), (251, 0.384), (252, 0.494), (253, 0.494),
+ (254, 0.494), (63, 0.444)
+ )
+
 class linkDest():
     """link or outline destination details"""
     def __init__(self, obj, rlink):
@@ -1348,23 +1478,35 @@ def getPDFstr(x):
 
     return "(" + r + ")"
 
-#------------------------------------------------------------------------------
-# Return a PDF string suitable for the TJ operator enclosed in "[]" brackets.
-# The input string is converted to either 2 or 4 hex digits per character.
-# If no glyphs are supplied, then a simple font is assumed and each character
-# taken directly.
-# Otherwise a char's glyph is taken and 4 hex digits per char are put out.
-#------------------------------------------------------------------------------
-def getTJstr(text, glyphs):
+def getTJstr(text, glyphs, simple, ordering):
+    """Return a PDF string enclosed in [] brackets, suitable for the PDF TJ
+    operator.
+    The input string is converted to either 2 or 4 hex digits per character.
+    * simple:
+       - no glyphs: 2-chars, use char codes as the glyph
+       - glyphs: 2-chars, use glyphs instead of char codes (Symbol, ZapfDingbats)
+    * not simple:
+       - ordering < 0: 4-chars, use glyphs not char codes
+       - ordering >=0: a CJK font! 4 chars, use char codes as glyphs
+"""
     if text.startswith("[<") and text.endswith(">]"): # already done
         return text
+
     if not bool(text):
         return "[<>]"
-    if glyphs is None:            # this is a simple font
-        otxt = "".join([hex(ord(c))[2:].rjust(2, "0") if ord(c)<256 else "3f" for c in text])
+
+    if simple:
+        if glyphs is None:             # simple and not Symbol / ZapfDingbats
+            otxt = "".join([hex(ord(c))[2:].rjust(2, "0") if ord(c)<256 else "3f" for c in text])
+        else:                          # Symbol or ZapfDingbats
+            otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(2, "0") for c in text])
         return "[<" + otxt + ">]"
-# this is not a simple font -> take the glyphs of a character
-    otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(4, "0") for c in text])
+
+    if ordering < 0:                   # not a CJK font: use the glyphs
+        otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(4, "0") for c in text])
+    else:                              # CJK: use char codes, no glyphs
+        otxt = "".join([hex(ord(c))[2:].rjust(4, "0") for c in text])
+
     return "[<" + otxt + ">]"
 
 '''
@@ -1464,23 +1606,18 @@ def CheckMorph(o):
 def CheckFont(page, fontname):
     """Return an entry in the page's font list if reference name matches.
     """
-    fl = page.getFontList()
-    refname = None
-    for f in fl:
+    for f in page.getFontList():
         if f[4] == fontname:
-            refname = f
-            break
-    return refname
+            return f
+    return None
 
 def CheckFontInfo(doc, xref):
     """Return a font info if present in the document.
     """
-    fi = None
     for f in doc.FontInfos:
         if xref == f[0]:
-            fi = f
-            break
-    return fi
+            return f
+    return None
 
 def UpdateFontInfo(doc, info):
     xref = info[0]
@@ -1754,7 +1891,7 @@ open(filename, filetype='type') - from file"""
     @property
 
     def pageCount(self):
-        """pageCount(self) -> int"""
+        """pageCount(self) -> PyObject *"""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
@@ -1771,7 +1908,7 @@ open(filename, filetype='type') - from file"""
     @property
 
     def needsPass(self):
-        """needsPass(self) -> int"""
+        """needsPass(self) -> PyObject *"""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
@@ -1779,12 +1916,12 @@ open(filename, filetype='type') - from file"""
 
 
     def resolveLink(self, uri=None):
-        """resolveLink(self, uri=None) -> PyObject *"""
+        """Calculate internal link destination."""
         return _fitz.Document_resolveLink(self, uri)
 
 
     def layout(self, rect=None, width=0, height=0, fontsize=11):
-        """layout(self, rect=None, width=0, height=0, fontsize=11) -> PyObject *"""
+        """Re-layout a reflowable document."""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
 
@@ -1797,7 +1934,7 @@ open(filename, filetype='type') - from file"""
 
 
     def makeBookmark(self, pno=0):
-        """makeBookmark(self, pno=0) -> PyObject *"""
+        """Make page bookmark in a reflowable document."""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
 
@@ -1805,7 +1942,7 @@ open(filename, filetype='type') - from file"""
 
 
     def findBookmark(self, bookmark):
-        """findBookmark(self, bookmark) -> int"""
+        """Find page number after layouting a document."""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
 
@@ -1822,7 +1959,7 @@ open(filename, filetype='type') - from file"""
 
 
     def _deleteObject(self, xref):
-        """Delete the object given by its xref"""
+        """Delete an object given its xref."""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
@@ -1830,11 +1967,19 @@ open(filename, filetype='type') - from file"""
 
 
     def _getPDFroot(self):
-        """PDF catalog xref number"""
+        """Get XREF number of PDF catalog."""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getPDFroot(self)
+
+
+    def _getPDFfileid(self):
+        """Return PDF file /ID strings (hexadecimal)."""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document__getPDFfileid(self)
 
     @property
 
@@ -1874,12 +2019,12 @@ open(filename, filetype='type') - from file"""
 
 
     def _getGCTXerrcode(self):
-        """_getGCTXerrcode(self) -> int"""
+        """Retrieve last MuPDF error code."""
         return _fitz.Document__getGCTXerrcode(self)
 
 
     def _getGCTXerrmsg(self):
-        """_getGCTXerrmsg(self) -> char const *"""
+        """Retrieve last MuPDF error message."""
         return _fitz.Document__getGCTXerrmsg(self)
 
 
@@ -2000,12 +2145,12 @@ open(filename, filetype='type') - from file"""
         return _fitz.Document_permissions(self)
 
 
-    def _getCharWidths(self, xref, limit, idx=0):
+    def _getCharWidths(self, xref, bfname, ext, ordering, limit, idx=0):
         """Return list of glyphs and glyph widths of a font."""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
 
-        return _fitz.Document__getCharWidths(self, xref, limit, idx)
+        return _fitz.Document__getCharWidths(self, xref, bfname, ext, ordering, limit, idx)
 
 
     def _getPageObjNumber(self, pno):
@@ -2041,7 +2186,7 @@ open(filename, filetype='type') - from file"""
 
 
     def extractImage(self, xref=0):
-        """Extract image an xref points to."""
+        """Extract image which 'xref' is pointing to."""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
 
@@ -2086,7 +2231,7 @@ open(filename, filetype='type') - from file"""
 
 
     def _getOLRootNumber(self):
-        """_getOLRootNumber(self) -> int"""
+        """_getOLRootNumber(self) -> PyObject *"""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
 
@@ -2094,7 +2239,7 @@ open(filename, filetype='type') - from file"""
 
 
     def _getNewXref(self):
-        """_getNewXref(self) -> int"""
+        """_getNewXref(self) -> PyObject *"""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
 
@@ -2102,7 +2247,7 @@ open(filename, filetype='type') - from file"""
 
 
     def _getXrefLength(self):
-        """_getXrefLength(self) -> int"""
+        """_getXrefLength(self) -> PyObject *"""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
@@ -2110,7 +2255,7 @@ open(filename, filetype='type') - from file"""
 
 
     def _getXmlMetadataXref(self):
-        """_getXmlMetadataXref(self) -> int"""
+        """_getXmlMetadataXref(self) -> PyObject *"""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
@@ -2125,14 +2270,13 @@ open(filename, filetype='type') - from file"""
         return _fitz.Document__delXmlMetadata(self)
 
 
-    def _getObjectString(self, xref):
-        """_getObjectString(self, xref) -> char const *"""
+    def _getXrefString(self, xref):
+        """_getXrefString(self, xref) -> PyObject *"""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
-        return _fitz.Document__getObjectString(self, xref)
+        return _fitz.Document__getXrefString(self, xref)
 
-    _getXrefString = _getObjectString
 
     def _getXrefStream(self, xref):
         """_getXrefStream(self, xref) -> PyObject *"""
@@ -2738,7 +2882,7 @@ class Page(_object):
 
 
     def _showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportion=1, reuse_xref=0, clip=None, graftmap=None, _imgname=None):
-        """_showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportion=1, reuse_xref=0, clip=None, graftmap=None, _imgname=None) -> int"""
+        """_showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportion=1, reuse_xref=0, clip=None, graftmap=None, _imgname=None) -> PyObject *"""
         return _fitz.Page__showPDFpage(self, rect, docsrc, pno, overlay, keep_proportion, reuse_xref, clip, graftmap, _imgname)
 
 
@@ -2758,38 +2902,70 @@ class Page(_object):
         return _fitz.Page_insertImage(self, rect, filename, pixmap, stream, overlay, _imgname)
 
 
-    def insertFont(self, fontname=None, fontfile=None, fontbuffer=None, xref=0, set_simple=0, idx=0):
-        """insertFont(self, fontname=None, fontfile=None, fontbuffer=None, xref=0, set_simple=0, idx=0) -> PyObject *"""
-
-        if not self.parent:
+    def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
+                   set_simple=False, wmode=0, encoding=0):
+        doc = self.parent
+        if not doc:
             raise ValueError("orphaned object: parent is None")
-        f = CheckFont(self, fontname)
-        if f is not None:         # drop out if fontname already in page list
-            return f[0]
-        if not fontname:
-            fontname = "Helvetica"
-        if xref > 0:
-            _, _, _, fontbuffer = self.parent.extractFont(xref)
-            if not fontbuffer:
-                raise ValueError("xref is no valid font")
+        idx = 0
 
+        if fontname.startswith("/"):
+            fontname = fontname[1:]
 
-        val = _fitz.Page_insertFont(self, fontname, fontfile, fontbuffer, xref, set_simple, idx)
-
-        if val:
-            xref = val[0]
-            f = CheckFont(self, fontname)
-            if f is not None:
-                val[1]["type"] = f[2]       # put /Subtype in font info
-                val[1]["glyphs"] = None
-            doc = self.parent               # now add to document font info
-            fi = CheckFontInfo(doc, xref)
-            if fi is None:                  # look if we are already present
-                doc.FontInfos.append(val)   # no: add me to document object
+        font = CheckFont(self, fontname)
+        if font is not None:                    # font already in font list of page
+            xref = font[0]                      # this is the xref
+            if CheckFontInfo(doc, xref):        # also in our document font list?
+                return xref                     # yes: we are done
+    # need to build the doc FontInfo entry - done via getCharWidths
+            doc.getCharWidths(xref)
             return xref
 
+    #--------------------------------------------------------------------------
+    # the font is not present for this page
+    #--------------------------------------------------------------------------
 
-        return val
+        bfname = Base14_fontdict.get(fontname.lower(), None) # BaseFont if Base-14 font
+
+        serif = 0
+        CJK_number = -1
+        CJK_list_n = ["china-t", "china-s", "japan", "korea"]
+        CJK_list_s = ["china-ts", "china-ss", "japan-s", "korea-s"]
+
+        try:
+            CJK_number = CJK_list_n.index(fontname)
+            serif = 0
+        except:
+            pass
+
+        if CJK_number < 0:
+            try:
+                CJK_number = CJK_list_s.index(fontname)
+                serif = 1
+            except:
+                pass
+
+    # install the font for the page
+        val = self._insertFont(fontname, bfname, fontfile, fontbuffer, set_simple, idx,
+                               wmode, serif, encoding, CJK_number)
+
+        if not val:                   # did not work, error return
+            return val
+
+        xref = val[0]                 # xref of installed font
+
+        if CheckFontInfo(doc, xref):  # check again: document already has this font
+            return xref               # we are done
+
+    # need to create document font info
+        doc.getCharWidths(xref)
+        return xref
+
+
+
+    def _insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, serif, encoding, ordering):
+        """_insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, serif, encoding, ordering) -> PyObject *"""
+        return _fitz.Page__insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, serif, encoding, ordering)
 
 
     def _getContents(self):
@@ -3085,12 +3261,12 @@ class Colorspace(_object):
     @property
 
     def n(self):
-        """n(self) -> int"""
+        """n(self) -> PyObject *"""
         return _fitz.Colorspace_n(self)
 
 
     def _name(self):
-        """_name(self) -> char const *"""
+        """_name(self) -> PyObject *"""
         return _fitz.Colorspace__name(self)
 
 
@@ -3165,14 +3341,14 @@ class Outline(_object):
     @property
 
     def uri(self):
-        """uri(self) -> char *"""
+        """uri(self) -> PyObject *"""
         val = _fitz.Outline_uri(self)
 
-        if not val:
-            return ""
-
-        nval = "".join([c for c in val if 32 <= ord(c) <= 127])
-        val = nval
+        if val:
+            nval = "".join([c for c in val if 32 <= ord(c) <= 127])
+            val = nval
+        else:
+            val = ""
 
 
         return val
@@ -3180,7 +3356,7 @@ class Outline(_object):
     @property
 
     def isExternal(self):
-        """isExternal(self) -> int"""
+        """isExternal(self) -> PyObject *"""
         return _fitz.Outline_isExternal(self)
 
     isOpen = is_open
@@ -3299,7 +3475,7 @@ class Annot(_object):
     @property
 
     def xref(self):
-        """xref(self) -> int"""
+        """xref(self) -> PyObject *"""
         return _fitz.Annot_xref(self)
 
 
@@ -3521,7 +3697,7 @@ class Annot(_object):
     @property
 
     def opacity(self):
-        """opacity(self) -> float"""
+        """opacity(self) -> PyObject *"""
         CheckParent(self)
 
         return _fitz.Annot_opacity(self)
@@ -3795,15 +3971,16 @@ class Link(_object):
     @property
 
     def uri(self):
-        """uri(self) -> char *"""
+        """uri(self) -> PyObject *"""
         CheckParent(self)
 
         val = _fitz.Link_uri(self)
 
         if not val:
-            return ""
-        nval = "".join([c for c in val if 32 <= ord(c) <= 127])
-        val = nval
+            val = ""
+        else:
+            nval = "".join([c for c in val if 32 <= ord(c) <= 127])
+            val = nval
 
 
         return val
@@ -3811,7 +3988,7 @@ class Link(_object):
     @property
 
     def isExternal(self):
-        """isExternal(self) -> int"""
+        """isExternal(self) -> PyObject *"""
         CheckParent(self)
 
         return _fitz.Link_isExternal(self)
@@ -3911,7 +4088,7 @@ class DisplayList(_object):
             self.this = this
 
     def run(self, dw, m, area):
-        """run(self, dw, m, area) -> int"""
+        """run(self, dw, m, area) -> PyObject *"""
         return _fitz.DisplayList_run(self, dw, m, area)
 
     @property
@@ -4077,7 +4254,7 @@ class Tools(_object):
     __repr__ = _swig_repr
 
     def gen_id(self):
-        """Return a unique integer."""
+        """Return a unique positive integer."""
         return _fitz.Tools_gen_id(self)
 
 
@@ -4108,42 +4285,62 @@ class Tools(_object):
         """Empty the glyph cache."""
         return _fitz.Tools_glyph_cache_empty(self)
 
+
+    def _insert_contents(self, fzpage, newcont, overlay):
+        """_insert_contents(self, fzpage, newcont, overlay) -> PyObject *"""
+        return _fitz.Tools__insert_contents(self, fzpage, newcont, overlay)
+
     @property
 
     def fitz_stdout(self):
-        """fitz_stdout(self) -> char *"""
+        """fitz_stdout(self) -> PyObject *"""
         return _fitz.Tools_fitz_stdout(self)
 
 
     def fitz_stdout_reset(self):
-        """fitz_stdout_reset(self)"""
+        """Empty fitz output log."""
         return _fitz.Tools_fitz_stdout_reset(self)
 
     @property
 
     def fitz_stderr(self):
-        """fitz_stderr(self) -> char *"""
+        """fitz_stderr(self) -> PyObject *"""
         return _fitz.Tools_fitz_stderr(self)
 
 
     def fitz_stderr_reset(self):
-        """fitz_stderr_reset(self)"""
+        """Empty fitz error log."""
         return _fitz.Tools_fitz_stderr_reset(self)
 
 
     def mupdf_version(self):
-        """mupdf_version(self) -> char *"""
+        """Return compiled MuPDF version."""
         return _fitz.Tools_mupdf_version(self)
 
 
-    def transform_rect(self, rect, matrix):
-        """transform_rect(self, rect, matrix) -> PyObject *"""
-        return _fitz.Tools_transform_rect(self, rect, matrix)
+    def _transform_rect(self, rect, matrix):
+        """Transform rectangle with matrix."""
+        return _fitz.Tools__transform_rect(self, rect, matrix)
 
 
-    def invert_matrix(self, matrix):
-        """invert_matrix(self, matrix) -> PyObject *"""
-        return _fitz.Tools_invert_matrix(self, matrix)
+    def _intersect_rect(self, r1, r2):
+        """Intersect two rectangles."""
+        return _fitz.Tools__intersect_rect(self, r1, r2)
+
+
+    def _include_point_in_rect(self, r, p):
+        """Include point in a rect."""
+        return _fitz.Tools__include_point_in_rect(self, r, p)
+
+
+    def _union_rect(self, r1, r2):
+        """Replace r1 with smallest rect containing both."""
+        return _fitz.Tools__union_rect(self, r1, r2)
+
+
+    def _invert_matrix(self, matrix):
+        """Invert a matrix."""
+        return _fitz.Tools__invert_matrix(self, matrix)
 
 
 

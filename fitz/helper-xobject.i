@@ -79,22 +79,27 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
 
 //-----------------------------------------------------------------------------
 // Insert a buffer as a new separate /Contents object of a page.
+// 1. Create a new stream object from buffer 'newcont'
+// 2. If /Contents already is an array, then just prepend or append this object
+// 3. Create new array and put old content obj and new obj into it
 //-----------------------------------------------------------------------------
-void JM_insert_contents(fz_context *ctx, pdf_document *pdf,
+int JM_insert_contents(fz_context *ctx, pdf_document *pdf,
                         pdf_obj *pageref, fz_buffer *newcont, int overlay)
 {
+    int xref = 0;
     fz_try(ctx)
     {
         pdf_obj *contents = pdf_dict_get(ctx, pageref, PDF_NAME(Contents));
         pdf_obj *newconts = pdf_add_stream(ctx, pdf, newcont, NULL, 0);
+        xref = pdf_to_num(ctx, newconts);
         if (pdf_is_array(ctx, contents))
         {
-            if (overlay)
+            if (overlay)               // append new object
                 pdf_array_push_drop(ctx, contents, newconts);
-            else
+            else                       // prepend new object
                 pdf_array_insert_drop(ctx, contents, newconts, 0);
         }
-        else 
+        else                           // make new array
         {
             pdf_obj *carr = pdf_new_array(ctx, pdf, 2);
             if (overlay)
@@ -111,7 +116,7 @@ void JM_insert_contents(fz_context *ctx, pdf_document *pdf,
         }
     }
     fz_catch(ctx) fz_rethrow(ctx);
-    return;
+    return xref;
 }
 /*-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

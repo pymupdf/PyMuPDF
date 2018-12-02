@@ -10,6 +10,7 @@ csRGB         = fitz.csRGB
 csGRAY        = fitz.csGRAY
 csCMYK        = fitz.csCMYK
 
+# create the TOOLS object
 TOOLS         = fitz.Tools()
 fitz.TOOLS    = TOOLS
 
