@@ -91,7 +91,7 @@ smasks = [] # stores xrefs of /SMask objects
 #------------------------------------------------------------------------------
 for i in range(1, lenXREF):            # scan through all objects
     try:
-        text = doc._getObjectString(i) # PDF object definition string
+        text = doc._getXrefString(i) # PDF object definition string
     except:
         print("xref %i " % i + doc._getGCTXerrmsg())
         continue                       # skip the error
