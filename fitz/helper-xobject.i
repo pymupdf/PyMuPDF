@@ -13,12 +13,12 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
         if (pno < 0 || pno >= pdf_count_pages(ctx, pdfsrc))
             THROWMSG("invalid page number(s)");
         spageref = pdf_lookup_page_obj(ctx, pdfsrc, pno);
-        pdf_obj *mb = pdf_dict_get(ctx, spageref, PDF_NAME(MediaBox));
+        pdf_obj *mb = pdf_dict_get_inheritable(ctx, spageref, PDF_NAME(MediaBox));
         if (mb)
             *mediabox = pdf_to_rect(ctx, mb);
         else 
             *mediabox = pdf_bound_page(ctx, pdf_load_page(ctx, pdfsrc, pno));
-        o = pdf_dict_get(ctx, spageref, PDF_NAME(CropBox));
+        o = pdf_dict_get_inheritable(ctx, spageref, PDF_NAME(CropBox));
         if (!o)
         {
             cropbox->x0 = mediabox->x0;
@@ -101,16 +101,16 @@ int JM_insert_contents(fz_context *ctx, pdf_document *pdf,
         }
         else                           // make new array
         {
-            pdf_obj *carr = pdf_new_array(ctx, pdf, 2);
+            pdf_obj *carr = pdf_new_array(ctx, pdf, 5);
             if (overlay)
             {
-                pdf_array_push(ctx, carr, contents);
+                if (contents) pdf_array_push(ctx, carr, contents);
                 pdf_array_push_drop(ctx, carr, newconts);
             }
             else 
             {
                 pdf_array_push_drop(ctx, carr, newconts);
-                pdf_array_push(ctx, carr, contents);
+                if (contents) pdf_array_push(ctx, carr, contents);
             }
             pdf_dict_put_drop(ctx, pageref, PDF_NAME(Contents), carr);
         }

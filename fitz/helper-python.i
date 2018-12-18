@@ -284,11 +284,11 @@ def getPDFstr(x):
         # require full unicode: make a UTF-16BE hex string with BOM "feff"
         r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
         # r is 'bytes', so convert to 'str' if Python 3
-        t = r if str is bytes else r.decode()
+        t = r if fitz_py2 else r.decode()
         return "<" + t + ">"                         # brackets indicate hex
     
     s = x.replace("\x00", " ")
-    if str is bytes:
+    if fitz_py2:
         if type(s) is str:
             s = unicode(s, "utf-8", "replace")
 
@@ -425,9 +425,9 @@ def CheckMorph(o):
     if not bool(o): return False
     if not (type(o) in (list, tuple) and len(o) == 2):
         raise ValueError("morph must be a sequence of length 2")
-    if not (type(o[0]) == Point and issubclass(type(o[1]), Matrix)):
+    if not (len(o[0]) == 2 and len(o[1]) == 6):
         raise ValueError("invalid morph parm 0")
-    if not o[1].e == o[1].f == 0:
+    if not o[1][4] == o[1][5] == 0:
         raise ValueError("invalid morph parm 1")
     return True
     
