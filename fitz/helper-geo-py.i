@@ -18,8 +18,8 @@ class Matrix():
         if len(args) == 1:                       # either an angle or a sequ
             if hasattr(args[0], "__float__"):
                 theta = args[0] * math.pi / 180.0
-                c = math.cos(theta)
-                s = math.sin(theta)
+                c = round(math.cos(theta), 10)
+                s = round(math.sin(theta), 10)
                 self.a = self.d = c
                 self.b = s
                 self.c = -s
@@ -128,19 +128,13 @@ class Matrix():
 
     def concat(self, one, two):
         """Multiply two matrices and replace current one."""
-        dst = Matrix()
-        dst.a = one[0] * two[0] + one[1] * two[2]
-        dst.b = one[0] * two[1] + one[1] * two[3]
-        dst.c = one[2] * two[0] + one[3] * two[2]
-        dst.d = one[2] * two[1] + one[3] * two[3]
-        dst.e = one[4] * two[0] + one[5] * two[2] + two[4]
-        dst.f = one[4] * two[1] + one[5] * two[3] + two[5]
-        self.a = dst.a
-        self.b = dst.b
-        self.c = dst.c
-        self.d = dst.d
-        self.e = dst.e
-        self.f = dst.f
+        dst = TOOLS._concat_matrix(one, two)
+        self.a = dst[0]
+        self.b = dst[1]
+        self.c = dst[2]
+        self.d = dst[3]
+        self.e = dst[4]
+        self.f = dst[5]
         return self
 
     def __getitem__(self, i):
@@ -173,13 +167,7 @@ class Matrix():
         if hasattr(m, "__float__"):
             return Matrix(self.a * m, self.b * m, self.c * m,
                           self.d * m, self.e * m, self.f * m)
-        a = self.a * m[0] + self.b * m[2]
-        b = self.a * m[1] + self.b * m[3]
-        c = self.c * m[0] + self.d * m[2]
-        d = self.c * m[1] + self.d * m[3]
-        e = self.e * m[0] + self.f * m[2] + m[4]
-        f = self.e * m[1] + self.f * m[3] + m[5]
-        return Matrix(a, b, c, d, e, f)
+        return self.concat(self, m)
 
     def __truediv__(self, m):
         if hasattr(m, "__float__"):

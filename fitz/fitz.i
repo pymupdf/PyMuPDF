@@ -176,9 +176,8 @@ import os
 import weakref
 from binascii import hexlify
 import math
-import platform
-platform_bitness = platform.architecture()[0]
-del platform
+
+fitz_py2 = str is bytes           # if true, this is Python 2
 %}
 %include version.i
 %include helper-geo-c.i
@@ -215,7 +214,7 @@ struct fz_document_s
             if not filename or type(filename) is str:
                 pass
             else:
-                if str is bytes:                 # Python 2
+                if fitz_py2:                 # Python 2
                     if type(filename) is unicode:
                         filename = filename.encode("utf8")
                 else:
@@ -1239,18 +1238,20 @@ if links:
         {
             int pageCount = fz_count_pages(gctx, $self);
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            fz_try(gctx)
-            {
-                if (pno >= pageCount) THROWMSG("invalid page number(s)");
-                assert_PDF(pdf);
-            }
-            fz_catch(gctx) return NULL;
             int n = pno;
             while (n < 0) n += pageCount;
-            pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, n);
-            long objnum = (long) pdf_to_num(gctx, pageref);
-            long objgen = (long) pdf_to_gen(gctx, pageref);
-            return Py_BuildValue("(l, l)", objnum, objgen);
+            pdf_obj *pageref = NULL;
+            fz_var(pageref);
+            fz_try(gctx)
+            {
+                if (n >= pageCount) THROWMSG("invalid page number(s)");
+                assert_PDF(pdf);
+                pageref = pdf_lookup_page_obj(gctx, pdf, n);
+            }
+            fz_catch(gctx) return NULL;
+
+            return Py_BuildValue("ii", pdf_to_num(gctx, pageref),
+                                       pdf_to_gen(gctx, pageref));
         }
 
         FITZEXCEPTION(_getPageInfo, !result)
@@ -2127,6 +2128,8 @@ struct fz_page_s {
                 pdf_set_text_annot_position(gctx, annot, pos);
                 pdf_set_annot_contents(gctx, annot, text);
                 pdf_set_annot_icon_name(gctx, annot, "Note");
+                float col[3] = {0.9f, 0.9f, 0.0f};
+                pdf_set_annot_color(gctx, annot, 3, col);
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) return NULL;
@@ -2144,15 +2147,16 @@ struct fz_page_s {
             pdf_annot *annot = NULL;
             PyObject *p = NULL, *sublist = NULL;
             pdf_obj *inklist = NULL, *stroke = NULL;
-            double x, y, height;
-            fz_rect prect;
+            fz_matrix ctm, inv_ctm;
+            double x, y;
+            fz_point point;
             fz_var(annot);
             fz_try(gctx)
             {
                 assert_PDF(page);
                 if (!PySequence_Check(list)) THROWMSG("arg must be a sequence");
-                prect = pdf_bound_page(gctx, page);
-                height = prect.y1 - prect.y0;
+                pdf_page_transform(gctx, page, NULL, &ctm);
+                inv_ctm = fz_invert_matrix(ctm);
                 annot = pdf_create_annot(gctx, page, PDF_ANNOT_INK);
                 Py_ssize_t i, j, n0 = PySequence_Size(list), n1;
                 inklist = pdf_new_array(gctx, annot->page->doc, n0);
@@ -2173,8 +2177,9 @@ struct fz_page_s {
                         if (PyErr_Occurred())
                             THROWMSG("invalid point coordinate");
                         Py_CLEAR(p);
-                        pdf_array_push_real(gctx, stroke, x);
-                        pdf_array_push_real(gctx, stroke, height - y);
+                        point = fz_transform_point(fz_make_point(x, y), inv_ctm);
+                        pdf_array_push_real(gctx, stroke, point.x);
+                        pdf_array_push_real(gctx, stroke, point.y);
                     }
                     pdf_array_push_drop(gctx, inklist, stroke);
                     stroke = NULL;
@@ -2260,6 +2265,8 @@ struct fz_page_s {
                                              filename, uf, d);
                 pdf_dict_put(gctx, annot->obj, PDF_NAME(FS), val);
                 pdf_dict_put_text_string(gctx, annot->obj, PDF_NAME(Contents), filename);
+                float col[3] = {0.9f, 0.9f, 0.0f};
+                pdf_set_annot_color(gctx, annot, 3, col);
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) return NULL;
@@ -2561,7 +2568,7 @@ struct fz_page_s {
             {
                 assert_PDF(page);
                 fz_rect mediabox = pdf_bound_page(gctx, page);
-                pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME(MediaBox));
+                pdf_obj *o = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(MediaBox));
                 if (o) mediabox = pdf_to_rect(gctx, o);
                 fz_rect cropbox = fz_empty_rect;
                 fz_rect r = JM_rect_from_py(rect);
@@ -2707,7 +2714,7 @@ fannot._erase()
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             if (!page) return p;
             fz_rect r = fz_empty_rect;
-            pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME(MediaBox));
+            pdf_obj *o = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(MediaBox));
             if (!o) return p;
 
             r = pdf_to_rect(gctx, o);
@@ -2726,7 +2733,7 @@ fannot._erase()
             PyObject *p = JM_py_from_point(fz_make_point(0, 0));
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             if (!page) return p;                 // not a PDF
-            pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME(CropBox));
+            pdf_obj *o = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(CropBox));
             if (!o) return p;                    // no CropBox specified
             fz_rect cbox = pdf_to_rect(gctx, o);
             return JM_py_from_point(fz_make_point(cbox.x0, cbox.y0));;
@@ -2742,9 +2749,7 @@ fannot._erase()
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             if (!page) return -1;
-            pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME(Rotate));
-            if (!o) return 0;
-            return pdf_to_int(gctx, o);
+            return pdf_to_int(gctx, pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(Rotate)));
         }
 
         /*********************************************************************/
@@ -2759,7 +2764,7 @@ fannot._erase()
             {
                 pdf_page *page = pdf_page_from_fz_page(gctx, $self);
                 assert_PDF(page);
-                if (rot % 90) THROWMSG("rotate not 90 * int");
+                if (rot % 90) THROWMSG("rotation not multiple of 90");
                 pdf_dict_put_int(gctx, page->obj, PDF_NAME(Rotate), (int64_t) rot);
                 page->doc->dirty = 1;
             }
@@ -2937,7 +2942,7 @@ fannot._erase()
                 fz_matrix mat = fz_identity;
                 fz_rect prect = fz_bound_page(gctx, $self);
                 fz_rect r = fz_empty_rect;
-                o = pdf_dict_get(gctx, tpageref, PDF_NAME(CropBox));
+                o = pdf_dict_get_inheritable(gctx, tpageref, PDF_NAME(CropBox));
 
                 if (o)
                 {
@@ -2945,7 +2950,7 @@ fannot._erase()
                     prect.x0 = r.x0;
                     prect.y0 = r.y0;
                 }
-                o = pdf_dict_get(gctx, tpageref, PDF_NAME(MediaBox));
+                o = pdf_dict_get_inheritable(gctx, tpageref, PDF_NAME(MediaBox));
                 
                 if (o)
                 {
@@ -2995,7 +3000,7 @@ fannot._erase()
                 if (!subres)           // has no XObject dict yet: create one
                 {
                     subres = pdf_new_dict(gctx, pdfout, 10);
-                    pdf_dict_put(gctx, resources, PDF_NAME(XObject), subres);
+                    pdf_dict_putl(gctx, tpageref, subres, PDF_NAME(Resources), PDF_NAME(XObject), NULL);
                 }
 
                 pdf_dict_puts(gctx, subres, _imgname, xobj2);
@@ -3042,7 +3047,7 @@ fannot._erase()
             pdf_obj *resources, *subres, *ref;
             fz_buffer *res = NULL, *nres = NULL,  *imgbuf = NULL;
 
-            unsigned char *streamdata = NULL;
+            char *streamdata = NULL;
             size_t streamlen = JM_CharFromBytesOrArray(stream, &streamdata);
 
             const char *template = "\nq %g 0 0 %g %g %g cm /%s Do Q ";
@@ -3067,14 +3072,14 @@ fannot._erase()
                 fz_rect prect = fz_bound_page(gctx, $self); // page rectangle
                 
                 fz_rect r = fz_empty_rect;           // modify where necessary
-                pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME(CropBox));
+                pdf_obj *o = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(CropBox));
                 if (o)
                 {   // set top-left of page rect to new values
                     r = pdf_to_rect(gctx, o);
                     prect.x0 = r.x0;
                     prect.y0 = r.y0;
                 }
-                o = pdf_dict_get(gctx, page->obj, PDF_NAME(MediaBox));
+                o = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(MediaBox));
                 if (o)
                 {   // set bottom-right to new values
                     r = pdf_to_rect(gctx, o);
@@ -3095,7 +3100,7 @@ fannot._erase()
                 if (!subres)           // has no XObject yet, create one
                 {
                     subres = pdf_new_dict(gctx, pdf, 10);
-                    pdf_dict_put_drop(gctx, resources, PDF_NAME(XObject), subres);
+                    pdf_dict_putl_drop(gctx, page->obj, subres, PDF_NAME(Resources), PDF_NAME(XObject), NULL);
                 }
 
                 // create the image
@@ -3235,9 +3240,9 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             pdf_document *pdf;
             pdf_obj *resources, *fonts, *font_obj;
             fz_font *font;
-            char *data = NULL;
+            const char *data = NULL;
             int size, ixref = 0, index = 0, simple = 0;
-            PyObject *info, *value;
+            PyObject *value;
             PyObject *exto = NULL;
             fz_try(gctx)
             {
@@ -3249,7 +3254,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
                 if (!fonts)       // page has no fonts yet
                 {
                     fonts = pdf_new_dict(gctx, pdf, 10);
-                    pdf_dict_put_drop(gctx, resources, PDF_NAME(Font), fonts);
+                    pdf_dict_putl_drop(gctx, page->obj, fonts, PDF_NAME(Resources), PDF_NAME(Font), NULL);
                 }
 
                 //-------------------------------------------------------------
@@ -3332,10 +3337,26 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         }
 
         //---------------------------------------------------------------------
+        // Get page transformation matrix
+        //---------------------------------------------------------------------
+        PARENTCHECK(_getTransformation)
+        %pythonappend _getTransformation %{val = Matrix(val)%}
+        PyObject *_getTransformation()
+        {
+            fz_matrix ctm = fz_identity;
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            if (!page) return JM_py_from_matrix(ctm);
+            fz_try(gctx) pdf_page_transform(gctx, page, NULL, &ctm);
+            fz_catch(gctx) {;}
+            return JM_py_from_matrix(ctm);
+        }
+
+        //---------------------------------------------------------------------
         // Get list of contents objects
         //---------------------------------------------------------------------
         FITZEXCEPTION(_getContents, !result)
         PARENTCHECK(_getContents)
+        %feature("autodoc","Return list of /Contents objects as xref integers.") _getContents;
         PyObject *_getContents()
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
@@ -3344,10 +3365,10 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             int i, xref;
             fz_try(gctx)
             {
-                assert_PDF(page);
-                list = PyList_New(0);
+                assert_PDF(page);           // only works for PDF
                 contents = pdf_dict_get(gctx, page->obj, PDF_NAME(Contents));
-                if (pdf_is_array(gctx, contents))
+                list = PyList_New(0);       // init an empty list
+                if (pdf_is_array(gctx, contents))     // may be several
                 {   for (i=0; i < pdf_array_len(gctx, contents); i++)
                     {
                         icont = pdf_array_get(gctx, contents, i);
@@ -3355,7 +3376,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
                         PyList_Append(list,  Py_BuildValue("i", xref));
                     }
                 }
-                else
+                else if (contents)          // at most 1 object there
                 {
                     xref = pdf_to_num(gctx, contents);
                     PyList_Append(list, Py_BuildValue("i", xref));
@@ -3366,7 +3387,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         }
 
         //---------------------------------------------------------------------
-        // Set /Contents of a page to object given by xref
+        // Set given object to be the /Contents of a page
         //---------------------------------------------------------------------
         FITZEXCEPTION(_setContents, !result)
         PARENTCHECK(_setContents)
@@ -3378,12 +3399,15 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             
             fz_try(gctx)
             {
-                assert_PDF(page);
+                assert_PDF(page);           // only works for PDF
+
                 if (!INRANGE(xref, 1, pdf_xref_len(gctx, page->doc) - 1))
                     THROWMSG("xref out of range");
+
                 contents = pdf_new_indirect(gctx, page->doc, xref, 0);
                 if (!pdf_is_stream(gctx, contents))
                     THROWMSG("xref is not a stream");
+
                 pdf_dict_put_drop(gctx, page->obj, PDF_NAME(Contents), contents);
             }
             fz_catch(gctx) return NULL;
@@ -4389,58 +4413,37 @@ struct fz_annot_s
         %pythoncode %{@property%}
         PyObject *vertices()
         {
-            PyObject *res, *list;
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, $self);
             if (!annot) return NONE;                  // not a PDF!
-
+            PyObject *res = NONE;
+            pdf_obj *o;
             //----------------------------------------------------------------
             // The following objects occur in different annotation types.
             // So we are sure that o != NULL occurs at most once.
             // Every pair of floats is one point, that needs to be separately
-            // transformed with the page's transformation matrix.
+            // transformed with the page transformation matrix.
             //----------------------------------------------------------------
-            pdf_obj *o = pdf_dict_get(gctx, annot->obj, PDF_NAME(Vertices));
+            o = pdf_dict_get(gctx, annot->obj, PDF_NAME(Vertices));
             if (!o) o = pdf_dict_get(gctx, annot->obj, PDF_NAME(L));
             if (!o) o = pdf_dict_get(gctx, annot->obj, PDF_NAME(QuadPoints));
             if (!o) o = pdf_dict_gets(gctx, annot->obj, "CL");
-            int i, j, n;
-            fz_point point;            // point object to work with
-            fz_matrix page_ctm;        // page transformation matrix
-            pdf_page_transform(gctx, annot->page, NULL, &page_ctm);
+            if (!o) o = pdf_dict_get(gctx, annot->obj, PDF_NAME(InkList));
 
-            if (o)                     // anything found yet?
+            if (o)                          // anything found yet?
             {
-                res = PyList_New(0);   // create Python list
+                int i, j, n;
+                fz_point point;             // point object to work with
+                fz_matrix page_ctm;         // page transformation matrix
+                pdf_page_transform(gctx, annot->page, NULL, &page_ctm);
+                res = PyList_New(0);        // create Python list
                 n = pdf_array_len(gctx, o);
                 for (i = 0; i < n; i += 2)
                 {
                     point.x = pdf_to_real(gctx, pdf_array_get(gctx, o, i));
                     point.y = pdf_to_real(gctx, pdf_array_get(gctx, o, i+1));
-                    fz_transform_point(point, page_ctm);
+                    point = fz_transform_point(point, page_ctm);
                     PyList_Append(res, Py_BuildValue("ff", point.x, point.y));
                 }
-                return res;
-            }
-            // nothing found so far - maybe an Ink annotation?
-            pdf_obj *il_o = pdf_dict_get(gctx, annot->obj, PDF_NAME(InkList));
-            if (!il_o) return NONE;                   // no inkList
-            res = PyList_New(0);                      // create result list
-            fz_rect prect = pdf_bound_page(gctx, annot->page);
-            double h = prect.y1 - prect.y0;
-            n = pdf_array_len(gctx, il_o);
-            for (i = 0; i < n; i++)
-            {
-                list = PyList_New(0);
-                o = pdf_array_get(gctx, il_o, i);
-                int m = pdf_array_len(gctx, o);
-                for (j = 0; j < m; j += 2)
-                {
-                    point.x = pdf_to_real(gctx, pdf_array_get(gctx, o, j));
-                    point.y = pdf_to_real(gctx, pdf_array_get(gctx, o, j+1));
-                    PyList_Append(list, Py_BuildValue("ff", point.x, h - point.y));
-                }
-                PyList_Append(res, list);
-                Py_CLEAR(list);
             }
             return res;
         }
@@ -4500,7 +4503,7 @@ struct fz_annot_s
                 col = " ".join(map(str, cs)) + app
             else:
                 col = "%g" % cs + app
-            return bytes(col, "utf8") if str is not bytes else col
+            return bytes(col, "utf8") if not fitz_py2 else col
 
         type   = self.type[0]               # get the annot type
         dt     = self.border["dashes"]      # get the dashes spec
@@ -4509,6 +4512,8 @@ struct fz_annot_s
         fill   = self.colors["fill"]        # get the fill color
         rect   = None                       # used if we change the rect here
         bfill  = color_string(fill, "f")
+        p_ctm  = self.parent._getTransformation() # page transformation matrix
+        imat   = ~p_ctm                     # inverse page transf. matrix
         
         line_end_le, line_end_ri = 0, 0     # line end codes
         if self.lineEnds:
@@ -4575,7 +4580,11 @@ struct fz_annot_s
             ap = b"/Alp0 gs\n" + ap
             ap_updated = True
 
-        if line_end_le + line_end_ri > 0 and type in (ANNOT_POLYGON, ANNOT_POLYLINE):
+        #----------------------------------------------------------------------
+        # the following handles line end symbols for 'Polygon' and 'Polyline
+        #----------------------------------------------------------------------
+        if max(line_end_le, line_end_ri) > 0 and type in (ANNOT_POLYGON, ANNOT_POLYLINE):
+
             le_funcs = (None, TOOLS._le_square, TOOLS._le_circle,
                         TOOLS._le_diamond, TOOLS._le_openarrow,
                         TOOLS._le_closedarrow, TOOLS._le_butt,
@@ -4588,15 +4597,15 @@ struct fz_annot_s
             points = self.vertices
             ap = b"q\n" + ap + b"\nQ\n"
             if line_end_le in le_funcs_range:
-                p1 = Point(points[0])
-                p2 = Point(points[1])
+                p1 = Point(points[0]) * imat
+                p2 = Point(points[1]) * imat
                 left = le_funcs[line_end_le](self, p1, p2, False)
-                ap += bytes(left, "utf8") if str is not bytes else left
+                ap += bytes(left, "utf8") if not fitz_py2 else left
             if line_end_ri in le_funcs_range:
-                p1 = Point(points[-2])
-                p2 = Point(points[-1])
+                p1 = Point(points[-2]) * imat
+                p2 = Point(points[-1]) * imat
                 left = le_funcs[line_end_ri](self, p1, p2, True)
-                ap += bytes(left, "utf8") if str is not bytes else left
+                ap += bytes(left, "utf8") if not fitz_py2 else left
 
         if ap_updated:
             if rect:                        # rect modified here?
@@ -5950,10 +5959,10 @@ struct fz_stext_page_s {
 
             class b64encode(json.JSONEncoder):
                 def default(self,s):
-                    if str is not bytes and type(s) is bytes:
+                    if not fitz_py2 and type(s) is bytes:
                         return base64.b64encode(s).decode()
                     if type(s) is bytearray:
-                        if str is bytes:
+                        if fitz_py2:
                             return base64.b64encode(s)
                         else:
                             return base64.b64encode(s).decode()
@@ -6137,6 +6146,7 @@ struct Tools
                 assert_PDF(page);
                 contbuf = JM_BufferFromBytes(gctx, newcont);
                 xref = JM_insert_contents(gctx, page->doc, page->obj, contbuf, overlay);
+                page->doc->dirty = 1;
             }
             fz_always(gctx) fz_drop_buffer(gctx, contbuf);
             fz_catch(gctx) return NULL;
@@ -6202,6 +6212,13 @@ struct Tools
                                                  JM_rect_from_py(r2)));
         }
 
+        %feature("autodoc","Concatenate matrices m1, m2.") _concat_matrix;
+        PyObject *_concat_matrix(PyObject *m1, PyObject *m2)
+        {
+            return JM_py_from_matrix(fz_concat(JM_matrix_from_py(m1),
+                                                 JM_matrix_from_py(m2)));
+        }
+
         %feature("autodoc","Invert a matrix.") _invert_matrix;
         PyObject *_invert_matrix(PyObject *matrix)
         {
@@ -6231,7 +6248,6 @@ def _hor_matrix(self, C, P):
     S = (P - C).unit                        # unit vector C -> P
     return Matrix(1, 0, 0, 1, -C.x, -C.y) * Matrix(S.x, -S.y, S.y, S.x, 0, 0)
 
-
 def _le_annot_parms(self, annot, p1, p2):
     """Get common parameters for making line end symbols.
     """
@@ -6243,7 +6259,6 @@ def _le_annot_parms(self, annot, p1, p2):
     if not fc: fc = (0,0,0)
     fcol = " ".join(map(str, fc)) + " rg\n"
     nr = annot.rect
-    h = nr.y1
     np1 = p1                   # point coord relative to annot rect
     np2 = p2                   # point coord relative to annot rect
     m = self._hor_matrix(np1, np2)        # matrix makes the line horizontal
@@ -6254,10 +6269,9 @@ def _le_annot_parms(self, annot, p1, p2):
         opacity = "/Alp0 gs\n"
     else:
         opacity = ""
-    return m, im, L, R, w, h, scol, fcol, opacity
+    return m, im, L, R, w, scol, fcol, opacity
 
-
-def _oval_string(self, h, p1, p2, p3, p4):
+def _oval_string(self, p1, p2, p3, p4):
     """Return /AP string defining an oval within a 4-polygon provided as points
     """
     def bezier(p, q, r):
@@ -6285,11 +6299,10 @@ def _oval_string(self, h, p1, p2, p3, p4):
     ap += bezier(ul1, ul2, ml)
     return ap
 
-
 def _le_diamond(self, annot, p1, p2, lr):
     """Make stream commands for diamond line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
     shift = 2.5             # 2*shift*width = length of square edge
     d = shift * max(1, w)
     M = R - (d/2., 0) if lr else L + (d/2., 0)
@@ -6307,11 +6320,10 @@ def _le_diamond(self, annot, p1, p2, lr):
     ap += scol + fcol + "b\nQ\n"
     return ap
 
-
 def _le_square(self, annot, p1, p2, lr):
     """Make stream commands for square line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
     shift = 2.5             # 2*shift*width = length of square edge
     d = shift * max(1, w)
     M = R - (d/2., 0) if lr else L + (d/2., 0)
@@ -6329,25 +6341,23 @@ def _le_square(self, annot, p1, p2, lr):
     ap += scol + fcol + "b\nQ\n"
     return ap
 
-
 def _le_circle(self, annot, p1, p2, lr):
     """Make stream commands for circle line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
     shift = 2.5             # 2*shift*width = length of square edge
     d = shift * max(1, w)
     M = R - (d/2., 0) if lr else L + (d/2., 0)
     r = Rect(M, M) + (-d, -d, d, d)         # the square
-    ap = "q\n" + opacity + self._oval_string(h, r.tl * im, r.tr * im, r.br * im, r.bl * im)
+    ap = "q\n" + opacity + self._oval_string(r.tl * im, r.tr * im, r.br * im, r.bl * im)
     ap += "%g w\n" % w
     ap += scol + fcol + "b\nQ\n"
     return ap
-    
 
 def _le_butt(self, annot, p1, p2, lr):
     """Make stream commands for butt line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
     shift = 3
     d = shift * max(1, w)
     M = R if lr else L
@@ -6358,12 +6368,11 @@ def _le_butt(self, annot, p1, p2, lr):
     ap += "%g w\n" % w
     ap += scol + "s\nQ\n"
     return ap
-    
 
 def _le_slash(self, annot, p1, p2, lr):
     """Make stream commands for slash line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
     rw = 1.1547 * max(1, w) * 1.0         # makes rect diagonal a 30 deg inclination
     M = R if lr else L
     r = Rect(M.x - rw, M.y - 2 * w, M.x + rw, M.y + 2 * w)
@@ -6375,11 +6384,10 @@ def _le_slash(self, annot, p1, p2, lr):
     ap += scol + "s\nQ\n"
     return ap
 
-
 def _le_openarrow(self, annot, p1, p2, lr):
     """Make stream commands for open arrow line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
     shift = 2.5
     d = shift * max(1, w)
     p2 = R + (d/2., 0) if lr else L - (d/2., 0)
@@ -6394,12 +6402,11 @@ def _le_openarrow(self, annot, p1, p2, lr):
     ap += "%g w\n" % w
     ap += scol + "S\nQ\n"
     return ap
-    
 
 def _le_closedarrow(self, annot, p1, p2, lr):
     """Make stream commands for closed arrow line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
     shift = 2.5
     d = shift * max(1, w)
     p2 = R + (d/2., 0) if lr else L - (d/2., 0)
@@ -6414,12 +6421,11 @@ def _le_closedarrow(self, annot, p1, p2, lr):
     ap += "%g w\n" % w
     ap += scol + fcol + "b\nQ\n"
     return ap
-    
 
 def _le_ropenarrow(self, annot, p1, p2, lr):
     """Make stream commands for right open arrow line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
     shift = 2.5
     d = shift * max(1, w)
     p2 = R - (d/3., 0) if lr else L + (d/3., 0)
@@ -6434,12 +6440,11 @@ def _le_ropenarrow(self, annot, p1, p2, lr):
     ap += "%g w\n" % w
     ap += scol + fcol + "S\nQ\n"
     return ap
-    
 
 def _le_rclosedarrow(self, annot, p1, p2, lr):
     """Make stream commands for right closed arrow line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
     shift = 2.5
     d = shift * max(1, w)
     p2 = R - (2*d, 0) if lr else L + (2*d, 0)
@@ -6454,7 +6459,6 @@ def _le_rclosedarrow(self, annot, p1, p2, lr):
     ap += "%g w\n" % w
     ap += scol + fcol + "b\nQ\n"
     return ap
-
         %}
     }
 };

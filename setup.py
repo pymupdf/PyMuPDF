@@ -68,7 +68,7 @@ for l in pkg_tab:
 long_desc = "\n".join(long_dtab)
 
 setup(name = 'PyMuPDF',
-      version = "1.14.3",
+      version = "1.14.4",
       description = 'Python bindings for the PDF rendering library MuPDF',
       long_description = long_desc,
       classifiers = classifier,

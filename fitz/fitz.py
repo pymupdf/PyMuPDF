@@ -100,15 +100,14 @@ import os
 import weakref
 from binascii import hexlify
 import math
-import platform
-platform_bitness = platform.architecture()[0]
-del platform
+
+fitz_py2 = str is bytes           # if true, this is Python 2
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.3"
-VersionDate = "2018-12-01 18:33:20"
-version = (VersionBind, VersionFitz, "20181201183320")
+VersionBind = "1.14.4"
+VersionDate = "2018-12-18 08:56:44"
+version = (VersionBind, VersionFitz, "20181218085644")
 
 
 class Matrix():
@@ -130,8 +129,8 @@ class Matrix():
         if len(args) == 1:                       # either an angle or a sequ
             if hasattr(args[0], "__float__"):
                 theta = args[0] * math.pi / 180.0
-                c = math.cos(theta)
-                s = math.sin(theta)
+                c = round(math.cos(theta), 10)
+                s = round(math.sin(theta), 10)
                 self.a = self.d = c
                 self.b = s
                 self.c = -s
@@ -240,19 +239,13 @@ class Matrix():
 
     def concat(self, one, two):
         """Multiply two matrices and replace current one."""
-        dst = Matrix()
-        dst.a = one[0] * two[0] + one[1] * two[2]
-        dst.b = one[0] * two[1] + one[1] * two[3]
-        dst.c = one[2] * two[0] + one[3] * two[2]
-        dst.d = one[2] * two[1] + one[3] * two[3]
-        dst.e = one[4] * two[0] + one[5] * two[2] + two[4]
-        dst.f = one[4] * two[1] + one[5] * two[3] + two[5]
-        self.a = dst.a
-        self.b = dst.b
-        self.c = dst.c
-        self.d = dst.d
-        self.e = dst.e
-        self.f = dst.f
+        dst = TOOLS._concat_matrix(one, two)
+        self.a = dst[0]
+        self.b = dst[1]
+        self.c = dst[2]
+        self.d = dst[3]
+        self.e = dst[4]
+        self.f = dst[5]
         return self
 
     def __getitem__(self, i):
@@ -285,13 +278,7 @@ class Matrix():
         if hasattr(m, "__float__"):
             return Matrix(self.a * m, self.b * m, self.c * m,
                           self.d * m, self.e * m, self.f * m)
-        a = self.a * m[0] + self.b * m[2]
-        b = self.a * m[1] + self.b * m[3]
-        c = self.c * m[0] + self.d * m[2]
-        d = self.c * m[1] + self.d * m[3]
-        e = self.e * m[0] + self.f * m[2] + m[4]
-        f = self.e * m[1] + self.f * m[3] + m[5]
-        return Matrix(a, b, c, d, e, f)
+        return self.concat(self, m)
 
     def __truediv__(self, m):
         if hasattr(m, "__float__"):
@@ -1456,11 +1443,11 @@ def getPDFstr(x):
 # require full unicode: make a UTF-16BE hex string with BOM "feff"
         r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
 # r is 'bytes', so convert to 'str' if Python 3
-        t = r if str is bytes else r.decode()
+        t = r if fitz_py2 else r.decode()
         return "<" + t + ">"                         # brackets indicate hex
 
     s = x.replace("\x00", " ")
-    if str is bytes:
+    if fitz_py2:
         if type(s) is str:
             s = unicode(s, "utf-8", "replace")
 
@@ -1597,9 +1584,9 @@ def CheckMorph(o):
     if not bool(o): return False
     if not (type(o) in (list, tuple) and len(o) == 2):
         raise ValueError("morph must be a sequence of length 2")
-    if not (type(o[0]) == Point and issubclass(type(o[1]), Matrix)):
+    if not (len(o[0]) == 2 and len(o[1]) == 6):
         raise ValueError("invalid morph parm 0")
-    if not o[1].e == o[1].f == 0:
+    if not o[1][4] == o[1][5] == 0:
         raise ValueError("invalid morph parm 1")
     return True
 
@@ -1718,7 +1705,7 @@ open(filename, filetype='type') - from file"""
         if not filename or type(filename) is str:
             pass
         else:
-            if str is bytes:                 # Python 2
+            if fitz_py2:                 # Python 2
                 if type(filename) is unicode:
                     filename = filename.encode("utf8")
             else:
@@ -2968,8 +2955,18 @@ class Page(_object):
         return _fitz.Page__insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, serif, encoding, ordering)
 
 
+    def _getTransformation(self):
+        """_getTransformation(self) -> PyObject *"""
+        CheckParent(self)
+
+        val = _fitz.Page__getTransformation(self)
+        val = Matrix(val)
+
+        return val
+
+
     def _getContents(self):
-        """_getContents(self) -> PyObject *"""
+        """Return list of /Contents objects as xref integers."""
         CheckParent(self)
 
         return _fitz.Page__getContents(self)
@@ -3551,7 +3548,7 @@ class Annot(_object):
                 col = " ".join(map(str, cs)) + app
             else:
                 col = "%g" % cs + app
-            return bytes(col, "utf8") if str is not bytes else col
+            return bytes(col, "utf8") if not fitz_py2 else col
 
         type   = self.type[0]               # get the annot type
         dt     = self.border["dashes"]      # get the dashes spec
@@ -3560,6 +3557,8 @@ class Annot(_object):
         fill   = self.colors["fill"]        # get the fill color
         rect   = None                       # used if we change the rect here
         bfill  = color_string(fill, "f")
+        p_ctm  = self.parent._getTransformation() # page transformation matrix
+        imat   = ~p_ctm                     # inverse page transf. matrix
 
         line_end_le, line_end_ri = 0, 0     # line end codes
         if self.lineEnds:
@@ -3626,7 +3625,11 @@ class Annot(_object):
             ap = b"/Alp0 gs\n" + ap
             ap_updated = True
 
-        if line_end_le + line_end_ri > 0 and type in (ANNOT_POLYGON, ANNOT_POLYLINE):
+        #----------------------------------------------------------------------
+        # the following handles line end symbols for 'Polygon' and 'Polyline
+        #----------------------------------------------------------------------
+        if max(line_end_le, line_end_ri) > 0 and type in (ANNOT_POLYGON, ANNOT_POLYLINE):
+
             le_funcs = (None, TOOLS._le_square, TOOLS._le_circle,
                         TOOLS._le_diamond, TOOLS._le_openarrow,
                         TOOLS._le_closedarrow, TOOLS._le_butt,
@@ -3639,15 +3642,15 @@ class Annot(_object):
             points = self.vertices
             ap = b"q\n" + ap + b"\nQ\n"
             if line_end_le in le_funcs_range:
-                p1 = Point(points[0])
-                p2 = Point(points[1])
+                p1 = Point(points[0]) * imat
+                p2 = Point(points[1]) * imat
                 left = le_funcs[line_end_le](self, p1, p2, False)
-                ap += bytes(left, "utf8") if str is not bytes else left
+                ap += bytes(left, "utf8") if not fitz_py2 else left
             if line_end_ri in le_funcs_range:
-                p1 = Point(points[-2])
-                p2 = Point(points[-1])
+                p1 = Point(points[-2]) * imat
+                p2 = Point(points[-1]) * imat
                 left = le_funcs[line_end_ri](self, p1, p2, True)
-                ap += bytes(left, "utf8") if str is not bytes else left
+                ap += bytes(left, "utf8") if not fitz_py2 else left
 
         if ap_updated:
             if rect:                        # rect modified here?
@@ -4176,10 +4179,10 @@ class TextPage(_object):
 
         class b64encode(json.JSONEncoder):
             def default(self,s):
-                if str is not bytes and type(s) is bytes:
+                if not fitz_py2 and type(s) is bytes:
                     return base64.b64encode(s).decode()
                 if type(s) is bytearray:
-                    if str is bytes:
+                    if fitz_py2:
                         return base64.b64encode(s)
                     else:
                         return base64.b64encode(s).decode()
@@ -4338,6 +4341,11 @@ class Tools(_object):
         return _fitz.Tools__union_rect(self, r1, r2)
 
 
+    def _concat_matrix(self, m1, m2):
+        """Concatenate matrices m1, m2."""
+        return _fitz.Tools__concat_matrix(self, m1, m2)
+
+
     def _invert_matrix(self, matrix):
         """Invert a matrix."""
         return _fitz.Tools__invert_matrix(self, matrix)
@@ -4350,7 +4358,6 @@ class Tools(_object):
         S = (P - C).unit                        # unit vector C -> P
         return Matrix(1, 0, 0, 1, -C.x, -C.y) * Matrix(S.x, -S.y, S.y, S.x, 0, 0)
 
-
     def _le_annot_parms(self, annot, p1, p2):
         """Get common parameters for making line end symbols.
         """
@@ -4362,7 +4369,6 @@ class Tools(_object):
         if not fc: fc = (0,0,0)
         fcol = " ".join(map(str, fc)) + " rg\n"
         nr = annot.rect
-        h = nr.y1
         np1 = p1                   # point coord relative to annot rect
         np2 = p2                   # point coord relative to annot rect
         m = self._hor_matrix(np1, np2)        # matrix makes the line horizontal
@@ -4373,10 +4379,9 @@ class Tools(_object):
             opacity = "/Alp0 gs\n"
         else:
             opacity = ""
-        return m, im, L, R, w, h, scol, fcol, opacity
+        return m, im, L, R, w, scol, fcol, opacity
 
-
-    def _oval_string(self, h, p1, p2, p3, p4):
+    def _oval_string(self, p1, p2, p3, p4):
         """Return /AP string defining an oval within a 4-polygon provided as points
         """
         def bezier(p, q, r):
@@ -4404,11 +4409,10 @@ class Tools(_object):
         ap += bezier(ul1, ul2, ml)
         return ap
 
-
     def _le_diamond(self, annot, p1, p2, lr):
         """Make stream commands for diamond line end symbol. "lr" denotes left (False) or right point.
         """
-        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
         shift = 2.5             # 2*shift*width = length of square edge
         d = shift * max(1, w)
         M = R - (d/2., 0) if lr else L + (d/2., 0)
@@ -4426,11 +4430,10 @@ class Tools(_object):
         ap += scol + fcol + "b\nQ\n"
         return ap
 
-
     def _le_square(self, annot, p1, p2, lr):
         """Make stream commands for square line end symbol. "lr" denotes left (False) or right point.
         """
-        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
         shift = 2.5             # 2*shift*width = length of square edge
         d = shift * max(1, w)
         M = R - (d/2., 0) if lr else L + (d/2., 0)
@@ -4448,25 +4451,23 @@ class Tools(_object):
         ap += scol + fcol + "b\nQ\n"
         return ap
 
-
     def _le_circle(self, annot, p1, p2, lr):
         """Make stream commands for circle line end symbol. "lr" denotes left (False) or right point.
         """
-        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
         shift = 2.5             # 2*shift*width = length of square edge
         d = shift * max(1, w)
         M = R - (d/2., 0) if lr else L + (d/2., 0)
         r = Rect(M, M) + (-d, -d, d, d)         # the square
-        ap = "q\n" + opacity + self._oval_string(h, r.tl * im, r.tr * im, r.br * im, r.bl * im)
+        ap = "q\n" + opacity + self._oval_string(r.tl * im, r.tr * im, r.br * im, r.bl * im)
         ap += "%g w\n" % w
         ap += scol + fcol + "b\nQ\n"
         return ap
 
-
     def _le_butt(self, annot, p1, p2, lr):
         """Make stream commands for butt line end symbol. "lr" denotes left (False) or right point.
         """
-        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
         shift = 3
         d = shift * max(1, w)
         M = R if lr else L
@@ -4478,11 +4479,10 @@ class Tools(_object):
         ap += scol + "s\nQ\n"
         return ap
 
-
     def _le_slash(self, annot, p1, p2, lr):
         """Make stream commands for slash line end symbol. "lr" denotes left (False) or right point.
         """
-        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
         rw = 1.1547 * max(1, w) * 1.0         # makes rect diagonal a 30 deg inclination
         M = R if lr else L
         r = Rect(M.x - rw, M.y - 2 * w, M.x + rw, M.y + 2 * w)
@@ -4494,11 +4494,10 @@ class Tools(_object):
         ap += scol + "s\nQ\n"
         return ap
 
-
     def _le_openarrow(self, annot, p1, p2, lr):
         """Make stream commands for open arrow line end symbol. "lr" denotes left (False) or right point.
         """
-        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
         shift = 2.5
         d = shift * max(1, w)
         p2 = R + (d/2., 0) if lr else L - (d/2., 0)
@@ -4514,11 +4513,10 @@ class Tools(_object):
         ap += scol + "S\nQ\n"
         return ap
 
-
     def _le_closedarrow(self, annot, p1, p2, lr):
         """Make stream commands for closed arrow line end symbol. "lr" denotes left (False) or right point.
         """
-        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
         shift = 2.5
         d = shift * max(1, w)
         p2 = R + (d/2., 0) if lr else L - (d/2., 0)
@@ -4534,11 +4532,10 @@ class Tools(_object):
         ap += scol + fcol + "b\nQ\n"
         return ap
 
-
     def _le_ropenarrow(self, annot, p1, p2, lr):
         """Make stream commands for right open arrow line end symbol. "lr" denotes left (False) or right point.
         """
-        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
         shift = 2.5
         d = shift * max(1, w)
         p2 = R - (d/3., 0) if lr else L + (d/3., 0)
@@ -4554,11 +4551,10 @@ class Tools(_object):
         ap += scol + fcol + "S\nQ\n"
         return ap
 
-
     def _le_rclosedarrow(self, annot, p1, p2, lr):
         """Make stream commands for right closed arrow line end symbol. "lr" denotes left (False) or right point.
         """
-        m, im, L, R, w, h, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+        m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
         shift = 2.5
         d = shift * max(1, w)
         p2 = R - (2*d, 0) if lr else L + (2*d, 0)
@@ -4573,7 +4569,6 @@ class Tools(_object):
         ap += "%g w\n" % w
         ap += scol + fcol + "b\nQ\n"
         return ap
-
 
 
     def __init__(self):

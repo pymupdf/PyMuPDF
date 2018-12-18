@@ -8723,12 +8723,12 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
         if (pno < 0 || pno >= pdf_count_pages(ctx, pdfsrc))
             THROWMSG("invalid page number(s)");
         spageref = pdf_lookup_page_obj(ctx, pdfsrc, pno);
-        pdf_obj *mb = pdf_dict_get(ctx, spageref, PDF_NAME(MediaBox));
+        pdf_obj *mb = pdf_dict_get_inheritable(ctx, spageref, PDF_NAME(MediaBox));
         if (mb)
             *mediabox = pdf_to_rect(ctx, mb);
         else 
             *mediabox = pdf_bound_page(ctx, pdf_load_page(ctx, pdfsrc, pno));
-        o = pdf_dict_get(ctx, spageref, PDF_NAME(CropBox));
+        o = pdf_dict_get_inheritable(ctx, spageref, PDF_NAME(CropBox));
         if (!o)
         {
             cropbox->x0 = mediabox->x0;
@@ -8811,16 +8811,16 @@ int JM_insert_contents(fz_context *ctx, pdf_document *pdf,
         }
         else                           // make new array
         {
-            pdf_obj *carr = pdf_new_array(ctx, pdf, 2);
+            pdf_obj *carr = pdf_new_array(ctx, pdf, 5);
             if (overlay)
             {
-                pdf_array_push(ctx, carr, contents);
+                if (contents) pdf_array_push(ctx, carr, contents);
                 pdf_array_push_drop(ctx, carr, newconts);
             }
             else 
             {
                 pdf_array_push_drop(ctx, carr, newconts);
-                pdf_array_push(ctx, carr, contents);
+                if (contents) pdf_array_push(ctx, carr, contents);
             }
             pdf_dict_put_drop(ctx, pageref, PDF_NAME(Contents), carr);
         }
@@ -10341,18 +10341,20 @@ SWIGINTERN PyObject *fz_document_s__getCharWidths(struct fz_document_s *self,int
 SWIGINTERN PyObject *fz_document_s__getPageObjNumber(struct fz_document_s *self,int pno){
             int pageCount = fz_count_pages(gctx, self);
             pdf_document *pdf = pdf_specifics(gctx, self);
-            fz_try(gctx)
-            {
-                if (pno >= pageCount) THROWMSG("invalid page number(s)");
-                assert_PDF(pdf);
-            }
-            fz_catch(gctx) return NULL;
             int n = pno;
             while (n < 0) n += pageCount;
-            pdf_obj *pageref = pdf_lookup_page_obj(gctx, pdf, n);
-            long objnum = (long) pdf_to_num(gctx, pageref);
-            long objgen = (long) pdf_to_gen(gctx, pageref);
-            return Py_BuildValue("(l, l)", objnum, objgen);
+            pdf_obj *pageref = NULL;
+            fz_var(pageref);
+            fz_try(gctx)
+            {
+                if (n >= pageCount) THROWMSG("invalid page number(s)");
+                assert_PDF(pdf);
+                pageref = pdf_lookup_page_obj(gctx, pdf, n);
+            }
+            fz_catch(gctx) return NULL;
+
+            return Py_BuildValue("ii", pdf_to_num(gctx, pageref),
+                                       pdf_to_gen(gctx, pageref));
         }
 SWIGINTERN PyObject *fz_document_s__getPageInfo(struct fz_document_s *self,int pno,int what){
             pdf_document *pdf = pdf_specifics(gctx, self);
@@ -10921,6 +10923,8 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addTextAnnot(struct fz_page_s *self,PyOb
                 pdf_set_text_annot_position(gctx, annot, pos);
                 pdf_set_annot_contents(gctx, annot, text);
                 pdf_set_annot_icon_name(gctx, annot, "Note");
+                float col[3] = {0.9f, 0.9f, 0.0f};
+                pdf_set_annot_color(gctx, annot, 3, col);
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) return NULL;
@@ -10932,15 +10936,16 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addInkAnnot(struct fz_page_s *self,PyObj
             pdf_annot *annot = NULL;
             PyObject *p = NULL, *sublist = NULL;
             pdf_obj *inklist = NULL, *stroke = NULL;
-            double x, y, height;
-            fz_rect prect;
+            fz_matrix ctm, inv_ctm;
+            double x, y;
+            fz_point point;
             fz_var(annot);
             fz_try(gctx)
             {
                 assert_PDF(page);
                 if (!PySequence_Check(list)) THROWMSG("arg must be a sequence");
-                prect = pdf_bound_page(gctx, page);
-                height = prect.y1 - prect.y0;
+                pdf_page_transform(gctx, page, NULL, &ctm);
+                inv_ctm = fz_invert_matrix(ctm);
                 annot = pdf_create_annot(gctx, page, PDF_ANNOT_INK);
                 Py_ssize_t i, j, n0 = PySequence_Size(list), n1;
                 inklist = pdf_new_array(gctx, annot->page->doc, n0);
@@ -10961,8 +10966,9 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addInkAnnot(struct fz_page_s *self,PyObj
                         if (PyErr_Occurred())
                             THROWMSG("invalid point coordinate");
                         Py_CLEAR(p);
-                        pdf_array_push_real(gctx, stroke, x);
-                        pdf_array_push_real(gctx, stroke, height - y);
+                        point = fz_transform_point(fz_make_point(x, y), inv_ctm);
+                        pdf_array_push_real(gctx, stroke, point.x);
+                        pdf_array_push_real(gctx, stroke, point.y);
                     }
                     pdf_array_push_drop(gctx, inklist, stroke);
                     stroke = NULL;
@@ -11036,6 +11042,8 @@ SWIGINTERN struct fz_annot_s *fz_page_s_addFileAnnot(struct fz_page_s *self,PyOb
                                              filename, uf, d);
                 pdf_dict_put(gctx, annot->obj, PDF_NAME(FS), val);
                 pdf_dict_put_text_string(gctx, annot->obj, PDF_NAME(Contents), filename);
+                float col[3] = {0.9f, 0.9f, 0.0f};
+                pdf_set_annot_color(gctx, annot, 3, col);
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) return NULL;
@@ -11216,7 +11224,7 @@ SWIGINTERN PyObject *fz_page_s_setCropBox(struct fz_page_s *self,PyObject *rect)
             {
                 assert_PDF(page);
                 fz_rect mediabox = pdf_bound_page(gctx, page);
-                pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME(MediaBox));
+                pdf_obj *o = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(MediaBox));
                 if (o) mediabox = pdf_to_rect(gctx, o);
                 fz_rect cropbox = fz_empty_rect;
                 fz_rect r = JM_rect_from_py(rect);
@@ -11288,7 +11296,7 @@ SWIGINTERN PyObject *fz_page_s_MediaBoxSize(struct fz_page_s *self){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
             if (!page) return p;
             fz_rect r = fz_empty_rect;
-            pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME(MediaBox));
+            pdf_obj *o = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(MediaBox));
             if (!o) return p;
 
             r = pdf_to_rect(gctx, o);
@@ -11298,7 +11306,7 @@ SWIGINTERN PyObject *fz_page_s_CropBoxPosition(struct fz_page_s *self){
             PyObject *p = JM_py_from_point(fz_make_point(0, 0));
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
             if (!page) return p;                 // not a PDF
-            pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME(CropBox));
+            pdf_obj *o = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(CropBox));
             if (!o) return p;                    // no CropBox specified
             fz_rect cbox = pdf_to_rect(gctx, o);
             return JM_py_from_point(fz_make_point(cbox.x0, cbox.y0));;
@@ -11306,16 +11314,14 @@ SWIGINTERN PyObject *fz_page_s_CropBoxPosition(struct fz_page_s *self){
 SWIGINTERN int fz_page_s_rotation(struct fz_page_s *self){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
             if (!page) return -1;
-            pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME(Rotate));
-            if (!o) return 0;
-            return pdf_to_int(gctx, o);
+            return pdf_to_int(gctx, pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(Rotate)));
         }
 SWIGINTERN PyObject *fz_page_s_setRotation(struct fz_page_s *self,int rot){
             fz_try(gctx)
             {
                 pdf_page *page = pdf_page_from_fz_page(gctx, self);
                 assert_PDF(page);
-                if (rot % 90) THROWMSG("rotate not 90 * int");
+                if (rot % 90) THROWMSG("rotation not multiple of 90");
                 pdf_dict_put_int(gctx, page->obj, PDF_NAME(Rotate), (int64_t) rot);
                 page->doc->dirty = 1;
             }
@@ -11466,7 +11472,7 @@ SWIGINTERN PyObject *fz_page_s__showPDFpage(struct fz_page_s *self,PyObject *rec
                 fz_matrix mat = fz_identity;
                 fz_rect prect = fz_bound_page(gctx, self);
                 fz_rect r = fz_empty_rect;
-                o = pdf_dict_get(gctx, tpageref, PDF_NAME(CropBox));
+                o = pdf_dict_get_inheritable(gctx, tpageref, PDF_NAME(CropBox));
 
                 if (o)
                 {
@@ -11474,7 +11480,7 @@ SWIGINTERN PyObject *fz_page_s__showPDFpage(struct fz_page_s *self,PyObject *rec
                     prect.x0 = r.x0;
                     prect.y0 = r.y0;
                 }
-                o = pdf_dict_get(gctx, tpageref, PDF_NAME(MediaBox));
+                o = pdf_dict_get_inheritable(gctx, tpageref, PDF_NAME(MediaBox));
                 
                 if (o)
                 {
@@ -11524,7 +11530,7 @@ SWIGINTERN PyObject *fz_page_s__showPDFpage(struct fz_page_s *self,PyObject *rec
                 if (!subres)           // has no XObject dict yet: create one
                 {
                     subres = pdf_new_dict(gctx, pdfout, 10);
-                    pdf_dict_put(gctx, resources, PDF_NAME(XObject), subres);
+                    pdf_dict_putl(gctx, tpageref, subres, PDF_NAME(Resources), PDF_NAME(XObject), NULL);
                 }
 
                 pdf_dict_puts(gctx, subres, _imgname, xobj2);
@@ -11553,7 +11559,7 @@ SWIGINTERN PyObject *fz_page_s_insertImage(struct fz_page_s *self,PyObject *rect
             pdf_obj *resources, *subres, *ref;
             fz_buffer *res = NULL, *nres = NULL,  *imgbuf = NULL;
 
-            unsigned char *streamdata = NULL;
+            char *streamdata = NULL;
             size_t streamlen = JM_CharFromBytesOrArray(stream, &streamdata);
 
             const char *template = "\nq %g 0 0 %g %g %g cm /%s Do Q ";
@@ -11578,14 +11584,14 @@ SWIGINTERN PyObject *fz_page_s_insertImage(struct fz_page_s *self,PyObject *rect
                 fz_rect prect = fz_bound_page(gctx, self); // page rectangle
                 
                 fz_rect r = fz_empty_rect;           // modify where necessary
-                pdf_obj *o = pdf_dict_get(gctx, page->obj, PDF_NAME(CropBox));
+                pdf_obj *o = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(CropBox));
                 if (o)
                 {   // set top-left of page rect to new values
                     r = pdf_to_rect(gctx, o);
                     prect.x0 = r.x0;
                     prect.y0 = r.y0;
                 }
-                o = pdf_dict_get(gctx, page->obj, PDF_NAME(MediaBox));
+                o = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(MediaBox));
                 if (o)
                 {   // set bottom-right to new values
                     r = pdf_to_rect(gctx, o);
@@ -11606,7 +11612,7 @@ SWIGINTERN PyObject *fz_page_s_insertImage(struct fz_page_s *self,PyObject *rect
                 if (!subres)           // has no XObject yet, create one
                 {
                     subres = pdf_new_dict(gctx, pdf, 10);
-                    pdf_dict_put_drop(gctx, resources, PDF_NAME(XObject), subres);
+                    pdf_dict_putl_drop(gctx, page->obj, subres, PDF_NAME(Resources), PDF_NAME(XObject), NULL);
                 }
 
                 // create the image
@@ -11672,9 +11678,9 @@ SWIGINTERN PyObject *fz_page_s__insertFont(struct fz_page_s *self,char *fontname
             pdf_document *pdf;
             pdf_obj *resources, *fonts, *font_obj;
             fz_font *font;
-            char *data = NULL;
+            const char *data = NULL;
             int size, ixref = 0, index = 0, simple = 0;
-            PyObject *info, *value;
+            PyObject *value;
             PyObject *exto = NULL;
             fz_try(gctx)
             {
@@ -11686,7 +11692,7 @@ SWIGINTERN PyObject *fz_page_s__insertFont(struct fz_page_s *self,char *fontname
                 if (!fonts)       // page has no fonts yet
                 {
                     fonts = pdf_new_dict(gctx, pdf, 10);
-                    pdf_dict_put_drop(gctx, resources, PDF_NAME(Font), fonts);
+                    pdf_dict_putl_drop(gctx, page->obj, fonts, PDF_NAME(Resources), PDF_NAME(Font), NULL);
                 }
 
                 //-------------------------------------------------------------
@@ -11767,6 +11773,14 @@ SWIGINTERN PyObject *fz_page_s__insertFont(struct fz_page_s *self,char *fontname
             pdf->dirty = 1;
             return value;
         }
+SWIGINTERN PyObject *fz_page_s__getTransformation(struct fz_page_s *self){
+            fz_matrix ctm = fz_identity;
+            pdf_page *page = pdf_page_from_fz_page(gctx, self);
+            if (!page) return JM_py_from_matrix(ctm);
+            fz_try(gctx) pdf_page_transform(gctx, page, NULL, &ctm);
+            fz_catch(gctx) {;}
+            return JM_py_from_matrix(ctm);
+        }
 SWIGINTERN PyObject *fz_page_s__getContents(struct fz_page_s *self){
             pdf_page *page = pdf_page_from_fz_page(gctx, self);
             PyObject *list = NULL;
@@ -11774,10 +11788,10 @@ SWIGINTERN PyObject *fz_page_s__getContents(struct fz_page_s *self){
             int i, xref;
             fz_try(gctx)
             {
-                assert_PDF(page);
-                list = PyList_New(0);
+                assert_PDF(page);           // only works for PDF
                 contents = pdf_dict_get(gctx, page->obj, PDF_NAME(Contents));
-                if (pdf_is_array(gctx, contents))
+                list = PyList_New(0);       // init an empty list
+                if (pdf_is_array(gctx, contents))     // may be several
                 {   for (i=0; i < pdf_array_len(gctx, contents); i++)
                     {
                         icont = pdf_array_get(gctx, contents, i);
@@ -11785,7 +11799,7 @@ SWIGINTERN PyObject *fz_page_s__getContents(struct fz_page_s *self){
                         PyList_Append(list,  Py_BuildValue("i", xref));
                     }
                 }
-                else
+                else if (contents)          // at most 1 object there
                 {
                     xref = pdf_to_num(gctx, contents);
                     PyList_Append(list, Py_BuildValue("i", xref));
@@ -11800,12 +11814,15 @@ SWIGINTERN PyObject *fz_page_s__setContents(struct fz_page_s *self,int xref){
             
             fz_try(gctx)
             {
-                assert_PDF(page);
+                assert_PDF(page);           // only works for PDF
+
                 if (!INRANGE(xref, 1, pdf_xref_len(gctx, page->doc) - 1))
                     THROWMSG("xref out of range");
+
                 contents = pdf_new_indirect(gctx, page->doc, xref, 0);
                 if (!pdf_is_stream(gctx, contents))
                     THROWMSG("xref is not a stream");
+
                 pdf_dict_put_drop(gctx, page->obj, PDF_NAME(Contents), contents);
             }
             fz_catch(gctx) return NULL;
@@ -12270,58 +12287,37 @@ SWIGINTERN void fz_annot_s_setRect(struct fz_annot_s *self,PyObject *rect){
             return;
         }
 SWIGINTERN PyObject *fz_annot_s_vertices(struct fz_annot_s *self){
-            PyObject *res, *list;
             pdf_annot *annot = pdf_annot_from_fz_annot(gctx, self);
             if (!annot) return NONE;                  // not a PDF!
-
+            PyObject *res = NONE;
+            pdf_obj *o;
             //----------------------------------------------------------------
             // The following objects occur in different annotation types.
             // So we are sure that o != NULL occurs at most once.
             // Every pair of floats is one point, that needs to be separately
-            // transformed with the page's transformation matrix.
+            // transformed with the page transformation matrix.
             //----------------------------------------------------------------
-            pdf_obj *o = pdf_dict_get(gctx, annot->obj, PDF_NAME(Vertices));
+            o = pdf_dict_get(gctx, annot->obj, PDF_NAME(Vertices));
             if (!o) o = pdf_dict_get(gctx, annot->obj, PDF_NAME(L));
             if (!o) o = pdf_dict_get(gctx, annot->obj, PDF_NAME(QuadPoints));
             if (!o) o = pdf_dict_gets(gctx, annot->obj, "CL");
-            int i, j, n;
-            fz_point point;            // point object to work with
-            fz_matrix page_ctm;        // page transformation matrix
-            pdf_page_transform(gctx, annot->page, NULL, &page_ctm);
+            if (!o) o = pdf_dict_get(gctx, annot->obj, PDF_NAME(InkList));
 
-            if (o)                     // anything found yet?
+            if (o)                          // anything found yet?
             {
-                res = PyList_New(0);   // create Python list
+                int i, j, n;
+                fz_point point;             // point object to work with
+                fz_matrix page_ctm;         // page transformation matrix
+                pdf_page_transform(gctx, annot->page, NULL, &page_ctm);
+                res = PyList_New(0);        // create Python list
                 n = pdf_array_len(gctx, o);
                 for (i = 0; i < n; i += 2)
                 {
                     point.x = pdf_to_real(gctx, pdf_array_get(gctx, o, i));
                     point.y = pdf_to_real(gctx, pdf_array_get(gctx, o, i+1));
-                    fz_transform_point(point, page_ctm);
+                    point = fz_transform_point(point, page_ctm);
                     PyList_Append(res, Py_BuildValue("ff", point.x, point.y));
                 }
-                return res;
-            }
-            // nothing found so far - maybe an Ink annotation?
-            pdf_obj *il_o = pdf_dict_get(gctx, annot->obj, PDF_NAME(InkList));
-            if (!il_o) return NONE;                   // no inkList
-            res = PyList_New(0);                      // create result list
-            fz_rect prect = pdf_bound_page(gctx, annot->page);
-            double h = prect.y1 - prect.y0;
-            n = pdf_array_len(gctx, il_o);
-            for (i = 0; i < n; i++)
-            {
-                list = PyList_New(0);
-                o = pdf_array_get(gctx, il_o, i);
-                int m = pdf_array_len(gctx, o);
-                for (j = 0; j < m; j += 2)
-                {
-                    point.x = pdf_to_real(gctx, pdf_array_get(gctx, o, j));
-                    point.y = pdf_to_real(gctx, pdf_array_get(gctx, o, j+1));
-                    PyList_Append(list, Py_BuildValue("ff", point.x, h - point.y));
-                }
-                PyList_Append(res, list);
-                Py_CLEAR(list);
             }
             return res;
         }
@@ -13310,6 +13306,7 @@ SWIGINTERN PyObject *Tools__insert_contents(struct Tools *self,struct fz_page_s 
                 assert_PDF(page);
                 contbuf = JM_BufferFromBytes(gctx, newcont);
                 xref = JM_insert_contents(gctx, page->doc, page->obj, contbuf, overlay);
+                page->doc->dirty = 1;
             }
             fz_always(gctx) fz_drop_buffer(gctx, contbuf);
             fz_catch(gctx) return NULL;
@@ -13346,6 +13343,10 @@ SWIGINTERN PyObject *Tools__include_point_in_rect(struct Tools *self,PyObject *r
 SWIGINTERN PyObject *Tools__union_rect(struct Tools *self,PyObject *r1,PyObject *r2){
             return JM_py_from_rect(fz_union_rect(JM_rect_from_py(r1),
                                                  JM_rect_from_py(r2)));
+        }
+SWIGINTERN PyObject *Tools__concat_matrix(struct Tools *self,PyObject *m1,PyObject *m2){
+            return JM_py_from_matrix(fz_concat(JM_matrix_from_py(m1),
+                                                 JM_matrix_from_py(m2)));
         }
 SWIGINTERN PyObject *Tools__invert_matrix(struct Tools *self,PyObject *matrix){
             fz_matrix src = JM_matrix_from_py(matrix);
@@ -17145,6 +17146,28 @@ fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Page__getTransformation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_page_s *arg1 = (struct fz_page_s *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Page__getTransformation",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page__getTransformation" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
+  }
+  arg1 = (struct fz_page_s *)(argp1);
+  result = (PyObject *)fz_page_s__getTransformation(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
   return NULL;
 }
 
@@ -21319,6 +21342,34 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Tools__concat_matrix(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct Tools *arg1 = (struct Tools *) 0 ;
+  PyObject *arg2 = (PyObject *) 0 ;
+  PyObject *arg3 = (PyObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Tools__concat_matrix",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Tools, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Tools__concat_matrix" "', argument " "1"" of type '" "struct Tools *""'"); 
+  }
+  arg1 = (struct Tools *)(argp1);
+  arg2 = obj1;
+  arg3 = obj2;
+  result = (PyObject *)Tools__concat_matrix(arg1,arg2,arg3);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Tools__invert_matrix(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct Tools *arg1 = (struct Tools *) 0 ;
@@ -21479,7 +21530,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Page__showPDFpage", _wrap_Page__showPDFpage, METH_VARARGS, (char *)"Page__showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportion=1, reuse_xref=0, clip=None, graftmap=None, _imgname=None) -> PyObject *"},
 	 { (char *)"Page_insertImage", _wrap_Page_insertImage, METH_VARARGS, (char *)"Insert a new image into a rectangle."},
 	 { (char *)"Page__insertFont", _wrap_Page__insertFont, METH_VARARGS, (char *)"Page__insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, serif, encoding, ordering) -> PyObject *"},
-	 { (char *)"Page__getContents", _wrap_Page__getContents, METH_VARARGS, (char *)"Page__getContents(self) -> PyObject *"},
+	 { (char *)"Page__getTransformation", _wrap_Page__getTransformation, METH_VARARGS, (char *)"Page__getTransformation(self) -> PyObject *"},
+	 { (char *)"Page__getContents", _wrap_Page__getContents, METH_VARARGS, (char *)"Return list of /Contents objects as xref integers."},
 	 { (char *)"Page__setContents", _wrap_Page__setContents, METH_VARARGS, (char *)"Set the /Contents object in page definition"},
 	 { (char *)"Page_swigregister", Page_swigregister, METH_VARARGS, NULL},
 	 { (char *)"Pixmap_x_set", _wrap_Pixmap_x_set, METH_VARARGS, (char *)"Pixmap_x_set(self, x)"},
@@ -21628,6 +21680,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Tools__intersect_rect", _wrap_Tools__intersect_rect, METH_VARARGS, (char *)"Intersect two rectangles."},
 	 { (char *)"Tools__include_point_in_rect", _wrap_Tools__include_point_in_rect, METH_VARARGS, (char *)"Include point in a rect."},
 	 { (char *)"Tools__union_rect", _wrap_Tools__union_rect, METH_VARARGS, (char *)"Replace r1 with smallest rect containing both."},
+	 { (char *)"Tools__concat_matrix", _wrap_Tools__concat_matrix, METH_VARARGS, (char *)"Concatenate matrices m1, m2."},
 	 { (char *)"Tools__invert_matrix", _wrap_Tools__invert_matrix, METH_VARARGS, (char *)"Invert a matrix."},
 	 { (char *)"new_Tools", _wrap_new_Tools, METH_VARARGS, (char *)"new_Tools() -> Tools"},
 	 { (char *)"delete_Tools", _wrap_delete_Tools, METH_VARARGS, (char *)"delete_Tools(self)"},

@@ -1765,14 +1765,17 @@ class Shape():
         self.doc       = page.parent
         if not self.doc.isPDF:
             raise ValueError("not a PDF")
-        self.height    = page.MediaBoxSize.y
-        self.width     = page.MediaBoxSize.x
-        self.x         = page.CropBoxPosition.x
-        self.y         = page.CropBoxPosition.y
-        self.contents  = ""
-        self.totalcont = ""
-        self.lastPoint = None
-        self.rect      = None
+        self.height     = page.MediaBoxSize.y
+        self.width      = page.MediaBoxSize.x
+        self.x          = page.CropBoxPosition.x
+        self.y          = page.CropBoxPosition.y
+        self.p_trans    = page._getTransformation() # page transformation matr
+        self.p_invtrans = ~self.p_trans             # inverted transf. matrix
+        self.draw_cont  = ""
+        self.text_cont  = ""
+        self.totalcont  = ""
+        self.lastPoint  = None
+        self.rect       = None
     
     def updateRect(self, x):
         if self.rect is None:
@@ -1800,10 +1803,10 @@ class Shape():
         p1 = Point(p1)
         p2 = Point(p2)
         if not (self.lastPoint == p1):
-            self.contents += "%g %g m\n" % (p1.x + self.x,
+            self.draw_cont += "%g %g m\n" % (p1.x + self.x,
                                             self.height - p1.y - self.y)
             self.lastPoint = p1
-        self.contents += "%g %g l\n" % (p2.x + self.x,
+        self.draw_cont += "%g %g l\n" % (p2.x + self.x,
                                         self.height - p2.y - self.y)
         self.updateRect(p1)
         self.updateRect(p2)
@@ -1816,11 +1819,11 @@ class Shape():
         for i, p in enumerate(points):
             if i == 0:
                 if not (self.lastPoint == Point(p)):
-                    self.contents += "%g %g m\n" % (p[0] + self.x,
+                    self.draw_cont += "%g %g m\n" % (p[0] + self.x,
                                                     self.height - p[1] - self.y)
                     self.lastPoint = Point(p)
             else:
-                self.contents += "%g %g l\n" % (p[0] + self.x,
+                self.draw_cont += "%g %g l\n" % (p[0] + self.x,
                                                 self.height - p[1] - self.y)
             self.updateRect(p)
         self.lastPoint = Point(points[-1])
@@ -1834,9 +1837,9 @@ class Shape():
         p3 = Point(p3)
         p4 = Point(p4)
         if not (self.lastPoint == Point(p1)):
-            self.contents += "%g %g m\n" % (p1[0] + self.x,
+            self.draw_cont += "%g %g m\n" % (p1[0] + self.x,
                                             self.height - p1[1] - self.y)
-        self.contents += "%g %g %g %g %g %g c\n" % (p2[0] + self.x,
+        self.draw_cont += "%g %g %g %g %g %g c\n" % (p2[0] + self.x,
                                                     self.height - p2[1] - self.y,
                                                     p3[0] + self.x,
                                                     self.height - p3[1] - self.y,
@@ -1860,7 +1863,7 @@ class Shape():
         mb = rect.bl + (rect.br - rect.bl)*0.5
         ml = rect.tl + (rect.bl - rect.tl)*0.5
         if not (self.lastPoint == ml):
-            self.contents += "%g %g m\n" % (ml.x + self.x, self.height - ml.y - self.y)
+            self.draw_cont += "%g %g m\n" % (ml.x + self.x, self.height - ml.y - self.y)
             self.lastPoint = ml
         self.drawCurve(ml, rect.bl, mb)
         self.drawCurve(mb, rect.br, mr)
@@ -1905,14 +1908,14 @@ class Shape():
         while abs(betar) > 2 * math.pi:
             betar += w360                       # bring angle below 360 degrees
         if not (self.lastPoint == point):
-            self.contents += l3 % (point.x + self.x, h - point.y - self.y)
+            self.draw_cont += l3 % (point.x + self.x, h - point.y - self.y)
             self.lastPoint = point
         Q = Point(0, 0)                    # just make sure it exists
         C = center
         P = point
         S = P - C                               # vector 'center' -> 'point'
         rad = abs(S)                            # circle radius
-        assert rad > 1e-7, "radius must be positive"
+        assert rad > 1e-5, "radius must be positive"
         alfa = self.horizontal_angle(center, point)
         while abs(betar) > abs(w90):            # draw 90 degree arcs
             q1 = C.x + math.cos(alfa + w90) * rad
@@ -1925,7 +1928,7 @@ class Shape():
             kappa = kappah * abs(P - Q)
             cp1 = P + (R - P) * kappa           # control point 1
             cp2 = Q + (R - Q) * kappa           # control point 2
-            self.contents += l4 % (cp1.x + self.x, h - cp1.y - self.y,
+            self.draw_cont += l4 % (cp1.x + self.x, h - cp1.y - self.y,
                                    cp2.x + self.x, h - cp2.y - self.y,
                                    Q.x + self.x, h - Q.y - self.y) # draw
             betar -= w90                        # reduce parm angle by 90 deg
@@ -1945,13 +1948,13 @@ class Shape():
             kappa = kappah * abs(P - Q) / (1 - math.cos(betar))
             cp1 = P + (R - P) * kappa           # control point 1
             cp2 = Q + (R - Q) * kappa           # control point 2
-            self.contents += l4 % (cp1.x + self.x, h - cp1.y - self.y,
+            self.draw_cont += l4 % (cp1.x + self.x, h - cp1.y - self.y,
                                    cp2.x + self.x, h - cp2.y - self.y,
                                    Q.x + self.x, h - Q.y -self.y) # draw
         if fullSector:
-            self.contents += l3 % (point.x + self.x, h - point.y - self.y)
-            self.contents += l5 % (center.x + self.x, h - center.y - self.y)
-            self.contents += l5 % (Q.x + self.x, h - Q.y - self.y)
+            self.draw_cont += l3 % (point.x + self.x, h - point.y - self.y)
+            self.draw_cont += l5 % (center.x + self.x, h - center.y - self.y)
+            self.draw_cont += l5 % (Q.x + self.x, h - Q.y - self.y)
         self.lastPoint = Q
         return self.lastPoint
     
@@ -1959,7 +1962,7 @@ class Shape():
         """Draw a rectangle.
         """
         r = Rect(rect)
-        self.contents += "%g %g %g %g re\n" % (r.x0 + self.x,
+        self.draw_cont += "%g %g %g %g re\n" % (r.x0 + self.x,
                                                self.height - r.y1 - self.y,
                                                r.width, r.height)
         self.updateRect(r)
@@ -2058,7 +2061,10 @@ class Shape():
             return 0
 
         point = Point(point)
-        maxcode = max([ord(c) for c in " ".join(text)])
+        try:
+            maxcode = max([ord(c) for c in " ".join(text)])
+        except:
+            return 0
 
         # ensure valid 'fontname'
         fname = fontname
@@ -2091,7 +2097,7 @@ class Shape():
         while rot < 0: rot += 360
         rot = rot % 360               # text rotate = 0, 90, 270, 180
         red, green, blue = color if color else (0,0,0)
-        templ1 = "\nn q BT\n%s1 0 0 1 %g %g Tm /%s %g Tf %g %g %g rg "
+        templ1 = "\nq BT\n%s1 0 0 1 %g %g Tm /%s %g Tf %g %g %g rg "
         templ2 = "TJ\n0 -%g TD\n"
         cmp90 = "0 1 -1 0 0 0 cm\n"   # rotates 90 deg counter-clockwise
         cmm90 = "0 -1 1 0 0 0 cm\n"   # rotates 90 deg clockwise
@@ -2105,7 +2111,7 @@ class Shape():
             m1 = Matrix(1, 0, 0, 1, morph[0].x + self.x,
                              height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
-            cm = "%g %g %g %g %g %g cm\n" % tuple(mat)
+            cm = "%g %g %g %g %g %g cm\n" % tuple(map(lambda x: round(x, 5), mat))
         else:
             cm = ""
         top = height - point.y - self.y # start of 1st char
@@ -2153,13 +2159,13 @@ class Shape():
             space -= lheight
             nlines += 1
     
-        nres += "\nET Q\n"
+        nres += " ET Q\n"
     
     # =========================================================================
     #   end of text insertion
     # =========================================================================
         # update the /Contents object
-        self.totalcont += nres
+        self.text_cont += nres
         return nlines
     
 #==============================================================================
@@ -2257,7 +2263,7 @@ class Shape():
             m1 = Matrix(1, 0, 0, 1, morph[0].x + self.x,
                              self.height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
-            cm = "%g %g %g %g %g %g cm\n" % tuple(mat)
+            cm = "%g %g %g %g %g %g cm\n" % tuple(map(lambda x: round(x, 5), mat))
         else:
             cm = ""
         
@@ -2356,7 +2362,7 @@ class Shape():
         more = abs(more)
         if more < 1e-5:
             more = 0                            # don't bother with epsilons
-        nres = "\nn q BT\n" + cm                # initialize output buffer
+        nres = "\nq BT\n" + cm                # initialize output buffer
         templ = "1 0 0 1 %g %g Tm /%s %g Tf %g Tw %g %g %g rg %sTJ\n"
         # center, right, justify: output each line with its own specifics
         spacing = 0
@@ -2395,7 +2401,7 @@ class Shape():
                              spacing, red, green, blue, getTJstr(t, tj_glyphs, simple, ordering))
         nres += "ET Q\n"
         
-        self.totalcont += nres
+        self.text_cont += nres
         self.updateRect(rect)
         return more
     
@@ -2409,46 +2415,51 @@ class Shape():
                    closePath = True):
         """Finish this drawing segment by applying stroke and fill colors, dashes, line style and width, or morphing. Also determines whether any open path should be closed by a connecting line to its start point.
         """
-        if self.contents == "":             # treat empty contents as no-op
+        if self.draw_cont == "":            # treat empty contents as no-op
             return
-        CheckColor(color)
-        CheckColor(fill)
-        self.contents += "%g w\n%i J\n%i j\n" % (width, roundCap,
+
+        CheckColor(color)                   # ensure proper colors
+        CheckColor(fill)                    # ensure proper colors
+
+        self.draw_cont += "%g w\n%i J\n%i j\n" % (width, roundCap,
                                                  roundCap)
+
         if dashes is not None and len(dashes) > 0:
-            self.contents += "%s d\n" % dashes
+            self.draw_cont += "%s d\n" % dashes
+
         if closePath:
-            self.contents += "h\n"
-        self.contents += "%g %g %g RG\n" % color
+            self.draw_cont += "h\n"
+            self.lastPoint = None
+
+        self.draw_cont += "%g %g %g RG\n" % color
+
         if fill is not None:
-            self.contents += "%g %g %g rg\n" % fill
+            self.draw_cont += "%g %g %g rg\n" % fill
             if not even_odd:
-                self.contents += "B\n"
+                self.draw_cont += "B\n"
             else:
-                self.contents += "B*\n"
+                self.draw_cont += "B*\n"
         else:
-            self.contents += "S\n"
-        self.totalcont += "\nn q\n"
+            self.draw_cont += "S\n"
+
         if CheckMorph(morph):
             m1 = Matrix(1, 0, 0, 1, morph[0].x + self.x,
                              self.height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
-            self.totalcont += "%g %g %g %g %g %g cm\n" % tuple(mat)
-        self.totalcont += self.contents + "Q\n"
-        self.contents = ""
+            self.draw_cont = "%g %g %g %g %g %g cm\n" % tuple(map(lambda x: round(x, 5), mat)) + self.draw_cont
+
+        self.totalcont += "\nq\n" + self.draw_cont + "Q\n"
+        self.draw_cont = ""
         self.lastPoint = None
         return
 
     def commit(self, overlay = True):
-        """Update the page's /Contents object with Shape data. The argument controls, whether data appear in foreground (True, default) or background.
+        """Update the page's /Contents object with Shape data. The argument controls whether data appear in foreground (default) or background.
         """
-        CheckParent(self.page)         # doc may have died meanwhile
-        if self.totalcont == "":
-            return
-        if not self.totalcont.endswith("Q\n"):
-            raise ValueError("finish method missing")
+        CheckParent(self.page)              # doc may have died meanwhile
+        self.totalcont += self.text_cont
 
-        if str is not bytes:                # bytes object needed in Python 3
+        if not fitz_py2:                    # need bytes if Python > 2
             self.totalcont = bytes(self.totalcont, "utf-8")
 
         # make /Contents object with dummy stream
@@ -2456,8 +2467,9 @@ class Shape():
         # update it with potential compression
         self.doc._updateStream(xref, self.totalcont)
 
-        self.lastPoint = None               # clean up ...
-        self.rect      = None               #
-        self.contents  = ""                 # for possible ...
-        self.totalcont = ""                 # re-use
+        self.lastPoint  = None         # clean up ...
+        self.rect       = None         #
+        self.draw_cont  = ""           # for possible ...
+        self.text_cont  = ""           # ...
+        self.totalcont  = ""           # re-use
         return
