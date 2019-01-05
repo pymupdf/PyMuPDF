@@ -3867,10 +3867,10 @@ struct fz_pixmap_s
         }
 
         //----------------------------------------------------------------------
-        // getPNGData
+        // Pixmap._getImageData
         //----------------------------------------------------------------------
-        FITZEXCEPTION(getPNGData, !result)
-        PyObject *getPNGData(int savealpha=-1)
+        FITZEXCEPTION(_getImageData, !result)
+        PyObject *_getImageData(int format, int savealpha=-1)
         {
             struct fz_buffer_s *res = NULL;
             fz_output *out = NULL;
@@ -3879,7 +3879,27 @@ struct fz_pixmap_s
             fz_try(gctx) {
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
-                fz_write_pixmap_as_png(gctx, out, $self);
+                switch(format)
+                {
+                    case(1):
+                        fz_write_pixmap_as_png(gctx, out, $self);
+                        break;
+                    case(2):
+                        fz_write_pixmap_as_pnm(gctx, out, $self);
+                        break;
+                    case(3):
+                        fz_write_pixmap_as_pam(gctx, out, $self);
+                        break;
+                    case(4):
+                        fz_write_pixmap_as_tga(gctx, out, $self);
+                        break;
+                    case(5):
+                        fz_write_pixmap_as_psd(gctx, out, $self);
+                        break;
+                    default:
+                        fz_write_pixmap_as_png(gctx, out, $self);
+                        break;
+                }
                 r = JM_BinFromBuffer(gctx, res);
             }
             fz_always(gctx)
@@ -3890,6 +3910,19 @@ struct fz_pixmap_s
             fz_catch(gctx) return NULL;
             return r;
         }
+
+        %pythoncode %{
+def getImageData(self, output="png"):
+    valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2, 
+                     "pam": 3, "tga": 4, "psd": 5}
+    idx = valid_formats.get(output.lower(), 1)
+    return self._getImageData(idx)
+
+def getPNGdata(self):
+    return self._getImageData(1)
+def getPNGData(self, savealpha=-1):
+    return self._getImageData(1)
+        %}
 
         //----------------------------------------------------------------------
         // _writeIMG
@@ -3913,14 +3946,26 @@ struct fz_pixmap_s
                     case(4):
                         fz_save_pixmap_as_tga(gctx, $self, filename);
                         break;
+                    case(5):
+                        fz_save_pixmap_as_psd(gctx, $self, filename);
+                        break;
+                    default:
+                        fz_save_pixmap_as_png(gctx, $self, filename);
+                        break;
                 }
             }
             fz_catch(gctx) return NULL;
             return NONE;
         }
         %pythoncode %{
-        def writePNG(self, filename, savealpha = -1):
-            return self._writeIMG(filename, 1, savealpha)
+def writeImage(self, filename, output="png"):
+    valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2, 
+                     "pam": 3, "tga": 4, "psd": 5}
+    idx = valid_formats.get(output.lower(), 1)
+    return self._writeIMG(filename, idx)
+
+def writePNG(self, filename, savealpha = -1):
+    return self._writeIMG(filename, 1, savealpha)
         %}
         //----------------------------------------------------------------------
         // invertIRect
@@ -3951,6 +3996,15 @@ struct fz_pixmap_s
         %pythoncode %{
             width  = w
             height = h
+
+            def pixel(self, x, y):
+                """Return a tuple representing one pixel. Item values are integers in range
+                0 to 255. Last item is the alpha value if Pixmap.alpha is true.
+                """
+                if x not in range(self.width) or y not in range(self.height):
+                    raise IndexError("coordinates outside image")
+                i = self.stride * y + self.n * x
+                return tuple(self.samples[i: i + self.n])
 
             def __len__(self):
                 return self.size

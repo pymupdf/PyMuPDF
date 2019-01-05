@@ -1,6 +1,9 @@
 from __future__ import absolute_import
 from fitz.fitz import *
-from fitz import _fitz
+try:
+    from fitz import _fitz
+except:
+    pass
 
 # define the supported colorspaces for convenience
 fitz.csRGB    = fitz.Colorspace(fitz.CS_RGB)
@@ -45,6 +48,7 @@ fitz.Page.drawLine           = fitz.utils.drawLine
 fitz.Page.drawOval           = fitz.utils.drawOval
 fitz.Page.drawPolyline       = fitz.utils.drawPolyline
 fitz.Page.drawRect           = fitz.utils.drawRect
+fitz.Page.drawQuad           = fitz.utils.drawQuad
 fitz.Page.drawSector         = fitz.utils.drawSector
 fitz.Page.drawSquiggle       = fitz.utils.drawSquiggle
 fitz.Page.drawZigzag         = fitz.utils.drawZigzag
@@ -60,11 +64,6 @@ fitz.Page.searchFor          = fitz.utils.searchFor
 fitz.Page.showPDFpage        = fitz.utils.showPDFpage
 fitz.Page.updateLink         = fitz.utils.updateLink
 fitz.Page.newShape           = lambda x: fitz.utils.Shape(x)
-
-#------------------------------------------------------------------------------
-# Pixmap
-#------------------------------------------------------------------------------
-fitz.Pixmap.writeImage      = fitz.utils.writeImage
 
 #------------------------------------------------------------------------------
 # Rect

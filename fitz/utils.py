@@ -15,7 +15,7 @@ def showPDFpage(page, rect, src, pno, overlay = True, keep_proportion = True,
     # list of existing /Form /XObjects
     xobjlist = doc._getPageInfo(page.number, 3)
     ilst = [i[1] for i in xobjlist]
-    # create a new name not in that list
+    # create a name that is not in this list
     n = "fzFrm"
     i = 0
     _imgname = n + "0"
@@ -317,49 +317,6 @@ def getRectArea(*args):
     u = {"px": (1,1), "in": (1.,72.), "cm": (2.54, 72.), "mm": (25.4, 72.)}
     f = (u[unit][0] / u[unit][1])**2
     return f * rect.width * rect.height
-
-#def writeImage(filename, output = "png"):
-def writeImage(*arg, **kw):
-    '''Save pixmap to file.\nfilename: image filename\noutput: requested output format (png, pam, pnm or tga).'''
-    pix = arg[0]
-    filename = arg[1]
-    if "output" in kw:
-        output = kw["output"]
-    else:
-        output = "png"
-
-    c_output = 0
-    if output == "png":
-        c_output = 1
-        if not filename.lower().endswith(".png"):
-            raise ValueError("require .png extension")
-        if pix.colorspace.n > 3:
-            raise ValueError(pix.colorspace.name + " not supported for png")
-    elif output == "tga":
-        c_output = 4
-        if not filename.lower().endswith(".tga"):
-            raise ValueError("require .tga extension")
-        if pix.colorspace.n > 3:
-            raise ValueError(pix.colorspace.name + " not supported for tga")
-    elif output == "pam":
-        c_output = 3
-        if not filename.lower().endswith(".pam"):
-            raise ValueError("require .pam extension")
-    elif output == "pnm":
-        c_output = 2
-        if pix.colorspace.n > 3:
-            raise ValueError(pix.colorspace.name + " not supported for pnm")
-        if pix.n <= 2:
-            if not filename.lower().endswith((".pnm", ".pgm")):
-                raise ValueError("colorspace requires pnm or pgm extensions")
-        elif not filename.lower().endswith((".pnm", "ppm")):
-            raise ValueError("colorspace requires pnm or ppm extensions")
-    else:
-        raise ValueError("invalid output parameter")
-
-    rc = pix._writeIMG(filename, c_output)
-
-    return rc
 
 #==============================================================================
 # Document method Set Metadata
@@ -873,12 +830,12 @@ def drawLine(page, p1, p2, color = (0, 0, 0), dashes = None,
     """Draw a line from point p1 to point p2.
     """
     img = page.newShape()
-    img.drawLine(Point(p1), Point(p2))
+    p = img.drawLine(Point(p1), Point(p2))
     img.finish(color = color, dashes = dashes, width = width, closePath = False,
                roundCap = roundCap, morph = morph)
     img.commit(overlay)
 
-    return Point(p2)
+    return p
 
 #-------------------------------------------------------------------------------
 # Page.drawSquiggle
@@ -888,12 +845,12 @@ def drawSquiggle(page, p1, p2, breadth = 2, color = (0, 0, 0), dashes = None,
     """Draw a squiggly line from point p1 to point p2.
     """
     img = page.newShape()
-    img.drawSquiggle(Point(p1), Point(p2), breadth = breadth)
+    p = img.drawSquiggle(Point(p1), Point(p2), breadth = breadth)
     img.finish(color = color, dashes = dashes, width = width, closePath = False,
                roundCap = roundCap, morph = morph)
     img.commit(overlay)
 
-    return point(p2)
+    return p
 
 #-------------------------------------------------------------------------------
 # Page.drawZigzag
@@ -903,12 +860,12 @@ def drawZigzag(page, p1, p2, breadth = 2, color = (0, 0, 0), dashes = None,
     """Draw a zigzag line from point p1 to point p2.
     """
     img = page.newShape()
-    img.drawZigzag(Point(p1), Point(p2), breadth = breadth)
+    p = img.drawZigzag(Point(p1), Point(p2), breadth = breadth)
     img.finish(color = color, dashes = dashes, width = width, closePath = False,
                roundCap = roundCap, morph = morph)
     img.commit(overlay)
 
-    return Point(p2)
+    return p
 
 #-------------------------------------------------------------------------------
 # Page.drawRect
@@ -919,6 +876,21 @@ def drawRect(page, rect, color = (0, 0, 0), fill = None, dashes = None,
     """
     img = page.newShape()
     Q = img.drawRect(Rect(rect))
+    img.finish(color = color, fill = fill, dashes = dashes, width = width,
+                   roundCap = roundCap, morph = morph)
+    img.commit(overlay)
+
+    return Q
+
+#-------------------------------------------------------------------------------
+# Page.drawQuad
+#-------------------------------------------------------------------------------
+def drawQuad(page, quad, color = (0, 0, 0), fill = None, dashes = None,
+             width = 1, roundCap = True, morph = None, overlay = True):
+    """Draw a quadrilateral.
+    """
+    img = page.newShape()
+    Q = img.drawQuad(Quad(quad))
     img.finish(color = color, fill = fill, dashes = dashes, width = width,
                    roundCap = roundCap, morph = morph)
     img.commit(overlay)
@@ -962,10 +934,10 @@ def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
 def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = None,
              morph = None,
              width = 1, roundCap = True, overlay = True):
-    """Draw an oval given its containing rectangle.
+    """Draw an oval given its containing rectangle or quad.
     """
     img = page.newShape()
-    Q = img.drawOval(Rect(rect))
+    Q = img.drawOval(rect)
     img.finish(color = color, fill = fill, dashes = dashes, width = width,
                roundCap = roundCap, morph = morph)
     img.commit(overlay)
@@ -1769,8 +1741,8 @@ class Shape():
         self.width      = page.MediaBoxSize.x
         self.x          = page.CropBoxPosition.x
         self.y          = page.CropBoxPosition.y
-        self.p_trans    = page._getTransformation() # page transformation matr
-        self.p_invtrans = ~self.p_trans             # inverted transf. matrix
+        self.pctm       = page._getTransformation()   # page transf. matrix
+        self.ipctm      = ~self.pctm                  # inverted transf. matrix
         self.draw_cont  = ""
         self.text_cont  = ""
         self.totalcont  = ""
@@ -1795,7 +1767,6 @@ class Shape():
                 self.rect.y0 = min(self.rect.y0, x.y0)
                 self.rect.x1 = max(self.rect.x1, x.x1)
                 self.rect.y1 = max(self.rect.y1, x.y1)
-            
 
     def drawLine(self, p1, p2):
         """Draw a line between two points.
@@ -1803,12 +1774,11 @@ class Shape():
         p1 = Point(p1)
         p2 = Point(p2)
         if not (self.lastPoint == p1):
-            self.draw_cont += "%g %g m\n" % (p1.x + self.x,
-                                            self.height - p1.y - self.y)
+            self.draw_cont += "%g %g m\n" % tuple(p1 * self.ipctm)
             self.lastPoint = p1
-        self.draw_cont += "%g %g l\n" % (p2.x + self.x,
-                                        self.height - p2.y - self.y)
-        self.updateRect(p1)
+            self.updateRect(p1)
+
+        self.draw_cont += "%g %g l\n" % tuple(p2 * self.ipctm)
         self.updateRect(p2)
         self.lastPoint = p2
         return self.lastPoint
@@ -1819,13 +1789,12 @@ class Shape():
         for i, p in enumerate(points):
             if i == 0:
                 if not (self.lastPoint == Point(p)):
-                    self.draw_cont += "%g %g m\n" % (p[0] + self.x,
-                                                    self.height - p[1] - self.y)
+                    self.draw_cont += "%g %g m\n" % tuple(Point(p) * self.ipctm)
                     self.lastPoint = Point(p)
             else:
-                self.draw_cont += "%g %g l\n" % (p[0] + self.x,
-                                                self.height - p[1] - self.y)
+                self.draw_cont += "%g %g l\n" % tuple(Point(p) * self.ipctm)
             self.updateRect(p)
+
         self.lastPoint = Point(points[-1])
         return self.lastPoint
 
@@ -1836,15 +1805,11 @@ class Shape():
         p2 = Point(p2)
         p3 = Point(p3)
         p4 = Point(p4)
-        if not (self.lastPoint == Point(p1)):
-            self.draw_cont += "%g %g m\n" % (p1[0] + self.x,
-                                            self.height - p1[1] - self.y)
-        self.draw_cont += "%g %g %g %g %g %g c\n" % (p2[0] + self.x,
-                                                    self.height - p2[1] - self.y,
-                                                    p3[0] + self.x,
-                                                    self.height - p3[1] - self.y,
-                                                    p4[0] + self.x,
-                                                    self.height - p4[1] - self.y)
+        if not (self.lastPoint == p1):
+            self.draw_cont += "%g %g m\n" % tuple(p1 * self.ipctm)
+        self.draw_cont += "%g %g %g %g %g %g c\n" % tuple(list(p2 * self.ipctm) + \
+                                                          list(p3 * self.ipctm) + \
+                                                          list(p4 * self.ipctm))
         self.updateRect(p1)
         self.updateRect(p2)
         self.updateRect(p3)
@@ -1852,24 +1817,28 @@ class Shape():
         self.lastPoint = p4
         return self.lastPoint
 
-    def drawOval(self, rect):
-        """Draw an ellipse inside a rectangle.
+    def drawOval(self, tetra):
+        """Draw an ellipse inside a tetrapod.
         """
-        rect = Rect(rect)
-        if rect.isEmpty or rect.isInfinite:
-            raise ValueError("rectangle must be finite and not empty")
-        mt = rect.tl + (rect.tr - rect.tl)*0.5
-        mr = rect.tr + (rect.br - rect.tr)*0.5
-        mb = rect.bl + (rect.br - rect.bl)*0.5
-        ml = rect.tl + (rect.bl - rect.tl)*0.5
+        if len(tetra) != 4:
+            raise ValueError("invalid arg length")
+        if hasattr(tetra[0], "__float__"):
+            q = Rect(tetra).quad
+        else:
+            q = Quad(tetra)
+
+        mt = q.ul + (q.ur - q.ul) * 0.5
+        mr = q.ur + (q.lr - q.ur) * 0.5
+        mb = q.ll + (q.lr - q.ll) * 0.5
+        ml = q.ul + (q.ll - q.ul) * 0.5
         if not (self.lastPoint == ml):
-            self.draw_cont += "%g %g m\n" % (ml.x + self.x, self.height - ml.y - self.y)
+            self.draw_cont += "%g %g m\n" % tuple(ml * self.ipctm)
             self.lastPoint = ml
-        self.drawCurve(ml, rect.bl, mb)
-        self.drawCurve(mb, rect.br, mr)
-        self.drawCurve(mr, rect.tr, mt)
-        self.drawCurve(mt, rect.tl, ml)
-        self.updateRect(rect)
+        self.drawCurve(ml, q.ll, mb)
+        self.drawCurve(mb, q.lr, mr)
+        self.drawCurve(mr, q.ur, mt)
+        self.drawCurve(mt, q.ul, ml)
+        self.updateRect(q.rect)
         self.lastPoint = ml
         return self.lastPoint
     
@@ -1908,14 +1877,17 @@ class Shape():
         while abs(betar) > 2 * math.pi:
             betar += w360                       # bring angle below 360 degrees
         if not (self.lastPoint == point):
-            self.draw_cont += l3 % (point.x + self.x, h - point.y - self.y)
+            self.draw_cont += l3 % tuple(point * self.ipctm)
             self.lastPoint = point
         Q = Point(0, 0)                    # just make sure it exists
         C = center
         P = point
         S = P - C                               # vector 'center' -> 'point'
         rad = abs(S)                            # circle radius
-        assert rad > 1e-5, "radius must be positive"
+
+        if not rad > 1e-5:
+            raise ValueError("radius must be positive")
+
         alfa = self.horizontal_angle(center, point)
         while abs(betar) > abs(w90):            # draw 90 degree arcs
             q1 = C.x + math.cos(alfa + w90) * rad
@@ -1928,9 +1900,10 @@ class Shape():
             kappa = kappah * abs(P - Q)
             cp1 = P + (R - P) * kappa           # control point 1
             cp2 = Q + (R - Q) * kappa           # control point 2
-            self.draw_cont += l4 % (cp1.x + self.x, h - cp1.y - self.y,
-                                   cp2.x + self.x, h - cp2.y - self.y,
-                                   Q.x + self.x, h - Q.y - self.y) # draw
+            self.draw_cont += l4 % tuple(list(cp1 * self.ipctm) + \
+                                         list(cp2 * self.ipctm) + \
+                                         list(Q * self.ipctm))
+
             betar -= w90                        # reduce parm angle by 90 deg
             alfa  += w90                        # advance start angle by 90 deg
             P = Q                               # advance to arc end point
@@ -1948,13 +1921,13 @@ class Shape():
             kappa = kappah * abs(P - Q) / (1 - math.cos(betar))
             cp1 = P + (R - P) * kappa           # control point 1
             cp2 = Q + (R - Q) * kappa           # control point 2
-            self.draw_cont += l4 % (cp1.x + self.x, h - cp1.y - self.y,
-                                   cp2.x + self.x, h - cp2.y - self.y,
-                                   Q.x + self.x, h - Q.y -self.y) # draw
+            self.draw_cont += l4 % tuple(list(cp1 * self.ipctm) + \
+                                         list(cp2 * self.ipctm) + \
+                                         list(Q * self.ipctm))
         if fullSector:
-            self.draw_cont += l3 % (point.x + self.x, h - point.y - self.y)
-            self.draw_cont += l5 % (center.x + self.x, h - center.y - self.y)
-            self.draw_cont += l5 % (Q.x + self.x, h - Q.y - self.y)
+            self.draw_cont += l3 % tuple(point * self.ipctm)
+            self.draw_cont += l5 % tuple(center * self.ipctm)
+            self.draw_cont += l5 % tuple(Q * self.ipctm)
         self.lastPoint = Q
         return self.lastPoint
     
@@ -1962,12 +1935,17 @@ class Shape():
         """Draw a rectangle.
         """
         r = Rect(rect)
-        self.draw_cont += "%g %g %g %g re\n" % (r.x0 + self.x,
-                                               self.height - r.y1 - self.y,
-                                               r.width, r.height)
+        self.draw_cont += "%g %g %g %g re\n" % tuple(list(r.bl * self.ipctm) + \
+                                               [r.width, r.height])
         self.updateRect(r)
         self.lastPoint = r.tl
-        return r.tl
+        return self.lastPoint
+
+    def drawQuad(self, quad):
+        """Draw a Quad.
+        """
+        q = Quad(quad)
+        return self.drawPolyline([q.ul, q.ll, q.lr, q.ur, q.ul])
 
     def drawZigzag(self, p1, p2, breadth = 2):
         """Draw a zig-zagged line from p1 to p2.
@@ -1980,9 +1958,8 @@ class Shape():
         if cnt < 4:
             raise ValueError("points too close")
         mb = rad / cnt                          # revised breadth
-        alfa = self.horizontal_angle(p1, p2)    # angle with x-axis
-        calfa = math.cos(alfa)                  # need these ...
-        salfa = math.sin(alfa)                  # ... values later
+        matrix = TOOLS._hor_matrix(p1, p2)      # normalize line to x-axis
+        i_mat  = ~matrix                        # get original position
         points = []                             # stores edges
         for i in range (1, cnt):                
             if i % 4 == 1:                      # point "above" connection
@@ -1991,12 +1968,7 @@ class Shape():
                 p = Point(i, 1) * mb
             else:                               # ignore others
                 continue
-            r = abs(p)                          
-            p /= r                              # now p = (cos, sin)
-            # this is the point rotated by alfa
-            np = Point((p.x + self.x) * calfa - (p.y + self.y) * salfa,
-                            (p.y + self.y) * calfa + (p.x + self.x) * salfa) * r
-            points.append(p1 + np)
+            points.append(p * i_mat)
         self.drawPolyline([p1] + points + [p2])  # add start and end points
         return p2
         
@@ -2011,24 +1983,20 @@ class Shape():
         if cnt < 4:
             raise ValueError("points too close")
         mb = rad / cnt                          # revised breadth
-        alfa = self.horizontal_angle(p1, p2)    # angle with x-axis
+        matrix = TOOLS._hor_matrix(p1, p2)      # normalize line to x-axis
+        i_mat  = ~matrix                        # get original position
         k = 2.4142135623765633                  # y of drawCurve helper point
-        calfa = math.cos(alfa)                  # need these ...
-        salfa = math.sin(alfa)                  # ... values later
+
         points = []                             # stores edges
         for i in range (1, cnt):                
             if i % 4 == 1:                      # point "above" connection
                 p = Point(i, -k) * mb
             elif i % 4 == 3:                    # point "below" connection
                 p = Point(i, k) * mb
-            else:                               # else on connection
+            else:                               # else on connection line
                 p = Point(i, 0) * mb
-            r = abs(p)                          
-            p /= r                              # now p = (cos, sin)
-            # this is the point rotated by alfa
-            np = Point((p.x + self.x) * calfa - (p.y + self.y) * salfa,
-                            (p.y + self.y) * calfa + (p.x + self.x) * salfa) * r
-            points.append(p1 + np)
+            points.append(p * i_mat)
+
         points = [p1] + points + [p2]
         cnt = len(points)
         i = 0

@@ -105,9 +105,9 @@ fitz_py2 = str is bytes           # if true, this is Python 2
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.4"
-VersionDate = "2018-12-18 08:56:44"
-version = (VersionBind, VersionFitz, "20181218085644")
+VersionBind = "1.14.5"
+VersionDate = "2019-01-04 10:29:25"
+version = (VersionBind, VersionFitz, "20190104102925")
 
 
 class Matrix():
@@ -164,12 +164,7 @@ class Matrix():
             dst = TOOLS._invert_matrix(src)
         if dst[0] == 1:
             return 1
-        self.a = dst[1][0]
-        self.b = dst[1][1]
-        self.c = dst[1][2]
-        self.d = dst[1][3]
-        self.e = dst[1][4]
-        self.f = dst[1][5]
+        self.a, self.b, self.c, self.d, self.e, self.f = dst[1]
         return 0
 
     def preTranslate(self, tx, ty):
@@ -239,13 +234,7 @@ class Matrix():
 
     def concat(self, one, two):
         """Multiply two matrices and replace current one."""
-        dst = TOOLS._concat_matrix(one, two)
-        self.a = dst[0]
-        self.b = dst[1]
-        self.c = dst[2]
-        self.d = dst[3]
-        self.e = dst[4]
-        self.f = dst[5]
+        self.a, self.b, self.c, self.d, self.e, self.f = TOOLS._concat_matrix(one, two)
         return self
 
     def __getitem__(self, i):
@@ -386,7 +375,7 @@ class Point():
         raise ValueError("illegal Point constructor")
 
     def transform(self, m):
-        """Replace point by its transformation with matrix m."""
+        """Replace point by its transformation with matrix-like m."""
         x = self.x
         self.x = x * m[0] + self.y * m[2] + m[4]
         self.y = x * m[1] + self.y * m[3] + m[5]
@@ -622,29 +611,22 @@ class Rect():
 
     def includePoint(self, p):
         """Extend rectangle to include point p."""
-        r0 = TOOLS._include_point_in_rect(self, p);
-        self.x0 = r0[0]
-        self.y0 = r0[1]
-        self.x1 = r0[2]
-        self.y1 = r0[3]
+        self.x0, self.y0, self.x1, self.y1 = TOOLS._include_point_in_rect(self, p)
         return self
 
     def includeRect(self, r):
         """Extend rectangle to include rectangle r."""
-        r0 = TOOLS._union_rect(self, r)
-        self.x0 = r0[0]
-        self.y0 = r0[1]
-        self.x1 = r0[2]
-        self.y1 = r0[3]
+        self.x0, self.y0, self.x1, self.y1 = TOOLS._union_rect(self, r)
         return self
 
     def intersect(self, r):
         """Restrict self to common area with rectangle r."""
-        r0 = TOOLS._intersect_rect(self, r);
-        self.x0 = r0[0]
-        self.y0 = r0[1]
-        self.x1 = r0[2]
-        self.y1 = r0[3]
+        self.x0, self.y0, self.x1, self.y1 = TOOLS._intersect_rect(self, r)
+        return self
+
+    def transform(self, m):
+        """Replace rectangle with its transformation by matrix m."""
+        self.x0, self.y0, self.x1, self.y1 = TOOLS._transform_rect(self, m)
         return self
 
     def __getitem__(self, i):
@@ -702,15 +684,6 @@ class Rect():
         if len(p) != 4:
             raise ValueError("require rect-like object")
         return Rect(self.x0 - p[0], self.y0 - p[1], self.x1 - p[2], self.y1 - p[3])
-
-    def transform(self, m):
-        """Replace rectangle with its transformation by matrix m."""
-        r0 = TOOLS._transform_rect(self, m)
-        self.x0 = r0[0]
-        self.y0 = r0[1]
-        self.x1 = r0[2]
-        self.y1 = r0[3]
-        return self
 
     def __mul__(self, m):
         if hasattr(m, "__float__"):
@@ -3189,15 +3162,33 @@ Pixmap(Document, xref) - from a PDF image"""
         return _fitz.Pixmap_setAlpha(self, alphavalues)
 
 
+    def _getImageData(self, format, savealpha=-1):
+        """_getImageData(self, format, savealpha=-1) -> PyObject *"""
+        return _fitz.Pixmap__getImageData(self, format, savealpha)
+
+
+    def getImageData(self, output="png"):
+        valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2, 
+                         "pam": 3, "tga": 4, "psd": 5}
+        idx = valid_formats.get(output.lower(), 1)
+        return self._getImageData(idx)
+
+    def getPNGdata(self):
+        return self._getImageData(1)
     def getPNGData(self, savealpha=-1):
-        """getPNGData(self, savealpha=-1) -> PyObject *"""
-        return _fitz.Pixmap_getPNGData(self, savealpha)
+        return self._getImageData(1)
 
 
     def _writeIMG(self, filename, format, savealpha=-1):
         """_writeIMG(self, filename, format, savealpha=-1) -> PyObject *"""
         return _fitz.Pixmap__writeIMG(self, filename, format, savealpha)
 
+
+    def writeImage(self, filename, output="png"):
+        valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2, 
+                         "pam": 3, "tga": 4, "psd": 5}
+        idx = valid_formats.get(output.lower(), 1)
+        return self._writeIMG(filename, idx)
 
     def writePNG(self, filename, savealpha = -1):
         return self._writeIMG(filename, 1, savealpha)
@@ -3216,6 +3207,15 @@ Pixmap(Document, xref) - from a PDF image"""
 
     width  = w
     height = h
+
+    def pixel(self, x, y):
+        """Return a tuple representing one pixel. Item values are integers in range
+        0 to 255. Last item is the alpha value if Pixmap.alpha is true.
+        """
+        if x not in range(self.width) or y not in range(self.height):
+            raise IndexError("coordinates outside image")
+        i = self.stride * y + self.n * x
+        return tuple(self.samples[i: i + self.n])
 
     def __len__(self):
         return self.size
