@@ -53,12 +53,7 @@ class Matrix():
             dst = TOOLS._invert_matrix(src)
         if dst[0] == 1:
             return 1
-        self.a = dst[1][0]
-        self.b = dst[1][1]
-        self.c = dst[1][2]
-        self.d = dst[1][3]
-        self.e = dst[1][4]
-        self.f = dst[1][5]
+        self.a, self.b, self.c, self.d, self.e, self.f = dst[1]
         return 0
 
     def preTranslate(self, tx, ty):
@@ -128,13 +123,7 @@ class Matrix():
 
     def concat(self, one, two):
         """Multiply two matrices and replace current one."""
-        dst = TOOLS._concat_matrix(one, two)
-        self.a = dst[0]
-        self.b = dst[1]
-        self.c = dst[2]
-        self.d = dst[3]
-        self.e = dst[4]
-        self.f = dst[5]
+        self.a, self.b, self.c, self.d, self.e, self.f = TOOLS._concat_matrix(one, two)
         return self
 
     def __getitem__(self, i):
@@ -275,7 +264,7 @@ class Point():
         raise ValueError("illegal Point constructor")
 
     def transform(self, m):
-        """Replace point by its transformation with matrix m."""
+        """Replace point by its transformation with matrix-like m."""
         x = self.x
         self.x = x * m[0] + self.y * m[2] + m[4]
         self.y = x * m[1] + self.y * m[3] + m[5]
@@ -511,29 +500,22 @@ class Rect():
 
     def includePoint(self, p):
         """Extend rectangle to include point p."""
-        r0 = TOOLS._include_point_in_rect(self, p);
-        self.x0 = r0[0]
-        self.y0 = r0[1]
-        self.x1 = r0[2]
-        self.y1 = r0[3]
+        self.x0, self.y0, self.x1, self.y1 = TOOLS._include_point_in_rect(self, p)
         return self
 
     def includeRect(self, r):
         """Extend rectangle to include rectangle r."""
-        r0 = TOOLS._union_rect(self, r)
-        self.x0 = r0[0]
-        self.y0 = r0[1]
-        self.x1 = r0[2]
-        self.y1 = r0[3]
+        self.x0, self.y0, self.x1, self.y1 = TOOLS._union_rect(self, r)
         return self
 
     def intersect(self, r):
         """Restrict self to common area with rectangle r."""
-        r0 = TOOLS._intersect_rect(self, r);
-        self.x0 = r0[0]
-        self.y0 = r0[1]
-        self.x1 = r0[2]
-        self.y1 = r0[3]
+        self.x0, self.y0, self.x1, self.y1 = TOOLS._intersect_rect(self, r)
+        return self
+
+    def transform(self, m):
+        """Replace rectangle with its transformation by matrix m."""
+        self.x0, self.y0, self.x1, self.y1 = TOOLS._transform_rect(self, m)
         return self
 
     def __getitem__(self, i):
@@ -591,15 +573,6 @@ class Rect():
         if len(p) != 4:
             raise ValueError("require rect-like object")
         return Rect(self.x0 - p[0], self.y0 - p[1], self.x1 - p[2], self.y1 - p[3])
-
-    def transform(self, m):
-        """Replace rectangle with its transformation by matrix m."""
-        r0 = TOOLS._transform_rect(self, m)
-        self.x0 = r0[0]
-        self.y0 = r0[1]
-        self.x1 = r0[2]
-        self.y1 = r0[3]
-        return self
 
     def __mul__(self, m):
         if hasattr(m, "__float__"):

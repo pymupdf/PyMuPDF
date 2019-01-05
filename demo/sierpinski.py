@@ -49,7 +49,7 @@ def punch(pm, x00, y00, x03, y03):
 d = 3 ** 6                               # 729
 # create a quadratic pixmap with origin (0,0), where width = height = d should
 # be a power of 3
-t0 = time.clock()
+t0 = time.perf_counter()
 ir = fitz.IRect(0, 0, d, d)
 pm = fitz.Pixmap(fitz.csGRAY, ir, 0)
 # fill image area with "black" and then optionally tint and gamma it
@@ -58,8 +58,8 @@ pm.clearWith(0)
 # pm.gammaWith(0.5)                   # lighten it up
 # now punch holes into it, down to 1 pixel granularity
 punch(pm, 0, 0, d, d)
-t1 = time.clock()
+t1 = time.perf_counter()
 pm.writePNG(png_name)
-t2 = time.clock()
+t2 = time.perf_counter()
 print("%f sec to create fitz img" % (t1 - t0))
 print("%f sec to save fitz img" % (t2 - t1))
