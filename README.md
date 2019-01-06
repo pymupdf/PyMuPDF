@@ -69,6 +69,8 @@ Other features include embedding vector images (SVG, PDF) such as logos or water
 
 You can now also create and update Form PDFs and form fields with support for text, checkbox, listbox and combobox widgets.
 
+To some degree, PyMuPDF can also be used as a converter for image files: it supports a broad range of input formats and can produce **PNG**, **Portable Anymap** (PNM, etc.), **Adobe Postscript** and **Adobe Photoshop** documents, making the use of other graphics packages obselete in many cases. Interfacing with PIL/Pillow is easily possible as well.
+
 Have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) (which contain complete, working programs), and the **recipes** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar, which contains more than a dozen of guides in How-To-style.
 
 Our documentation, written using Sphinx, is available in various formats from the following sources. It currently is a combination of a reference guide and a user manual. For a quick start to using PyMuPDF look at the [tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial/) and the [recipes](https://pymupdf.readthedocs.io/en/latest/faq/) chapters.
