@@ -134,21 +134,18 @@ char *JM_Python_str_AsChar(PyObject *str);
 // START redirect stdout/stderr
 //-----------------------------------------------------------------------------
 
-JM_fitz_stdout = fz_new_output(gctx, 0, JM_fitz_stdout, JM_write_stdout, NULL, NULL);
-
+JM_output_log = PyByteArray_FromStringAndSize("", 0);
+fz_output *JM_fitz_stdout = JM_OutFromBarray(gctx, JM_output_log);
 fz_set_stdout(gctx, JM_fitz_stdout);
 
-JM_fitz_stderr = fz_new_output(gctx, 0, JM_fitz_stderr, JM_write_stderr, NULL, NULL);
-
+JM_error_log  = PyByteArray_FromStringAndSize("", 0);
+fz_output *JM_fitz_stderr = JM_OutFromBarray(gctx, JM_error_log);
 fz_set_stderr(gctx, JM_fitz_stderr);
 
 if (JM_fitz_stderr && JM_fitz_stdout)
     {;}
 else
     PySys_WriteStderr("error redirecting stdout/stderr!\n");
-
-JM_error_log  = PyByteArray_FromStringAndSize("", 0);
-JM_output_log = PyByteArray_FromStringAndSize("", 0);
 
 //-----------------------------------------------------------------------------
 // STOP redirect stdout/stderr
@@ -182,6 +179,7 @@ fitz_py2 = str is bytes           # if true, this is Python 2
 %include version.i
 %include helper-geo-c.i
 %include helper-other.i
+%include helper-out-barray.i
 %include helper-write-c.i
 %include helper-geo-py.i
 %include helper-annot.i
@@ -957,9 +955,9 @@ struct fz_document_s
         PyObject *write(int garbage=0, int clean=0, int deflate=0,
                         int ascii=0, int expand=0, int linear=0, int pretty = 0, int decrypt = 1)
         {
-            PyObject *r;
-            struct fz_buffer_s *res = NULL;
+            PyObject *r = NULL;
             fz_output *out = NULL;
+            fz_buffer *res = NULL;
             int errors = 0;
             pdf_write_options opts = { 0 };
             opts.do_incremental     = 0;
@@ -977,25 +975,28 @@ struct fz_document_s
             opts.errors = &errors;
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_var(out);
-            fz_var(res);
+            fz_var(r);
             fz_try(gctx)
             {
                 assert_PDF(pdf);
                 if (fz_count_pages(gctx, $self) < 1)
                     THROWMSG("cannot save with zero pages");
                 JM_embedded_clean(gctx, pdf);
-                res = fz_new_buffer(gctx, 1024);
+                res = fz_new_buffer(gctx, 8192);
                 out = fz_new_output_with_buffer(gctx, res);
                 JM_write_document(gctx, pdf, out, &opts, decrypt);
-                pdf->dirty = 0;
                 r = JM_BinFromBuffer(gctx, res);
+                pdf->dirty = 0;
             }
             fz_always(gctx)
+                {
+                    fz_drop_buffer(gctx, res);
+                    fz_drop_output(gctx, out);
+                }
+            fz_catch(gctx)
             {
-                fz_drop_output(gctx, out);
-                fz_drop_buffer(gctx, res);
+                return NULL;
             }
-            fz_catch(gctx) return NULL;
             return r;
         }
 
@@ -3787,6 +3788,251 @@ struct fz_pixmap_s
         }
 
         //----------------------------------------------------------------------
+        // set alpha values
+        //----------------------------------------------------------------------
+        FITZEXCEPTION(setAlpha, !result)
+        PyObject *setAlpha(PyObject *alphavalues=NULL)
+        {
+            fz_try(gctx)
+            {
+                if ($self->alpha == 0) THROWMSG("pixmap has no alpha");
+                int n = fz_pixmap_colorants(gctx, $self);
+                int w = fz_pixmap_width(gctx, $self);
+                int h = fz_pixmap_height(gctx, $self);
+                int balen = w * h * (n+1);
+                unsigned char *data = NULL;
+                int data_len = 0;
+                if (alphavalues)
+                {
+                    data_len = (int) JM_CharFromBytesOrArray(alphavalues, &data);
+                    if (data_len && data_len < w * h)
+                        THROWMSG("not enough alpha values");
+                }
+                int i = 0, k = 0;
+                while (i < balen)
+                {
+                    if (data_len) $self->samples[i+n] = data[k];
+                    else          $self->samples[i+n] = 255;
+                    i += n+1;
+                    k += 1;
+                }
+            }
+            fz_catch(gctx) return NULL;
+            return NONE;
+        }
+
+        //----------------------------------------------------------------------
+        // Pixmap._getImageData
+        //----------------------------------------------------------------------
+        FITZEXCEPTION(_getImageData, !result)
+        PyObject *_getImageData(int format)
+        {
+            fz_output *out = NULL;
+            fz_buffer *res = NULL;
+            // the following will be returned:
+            PyObject *barray = NULL;
+            fz_try(gctx)
+            {
+                size_t size = fz_pixmap_stride(gctx, $self) * $self->h;
+                res = fz_new_buffer(gctx, size);
+                out = fz_new_output_with_buffer(gctx, res);
+                out->seek = JM_SeekDummy;        // ignore seek calls
+                switch(format)
+                {
+                    case(1):
+                        fz_write_pixmap_as_png(gctx, out, $self);
+                        break;
+                    case(2):
+                        fz_write_pixmap_as_pnm(gctx, out, $self);
+                        break;
+                    case(3):
+                        fz_write_pixmap_as_pam(gctx, out, $self);
+                        break;
+                    case(4):
+                        fz_write_pixmap_as_tga(gctx, out, $self);
+                        break;
+                    case(5):           // Adobe Photoshop Document
+                        fz_write_pixmap_as_psd(gctx, out, $self);
+                        break;
+                    case(6):           // Postscript format
+                        fz_write_pixmap_as_ps(gctx, out, $self);
+                        break;
+                    default:
+                        fz_write_pixmap_as_png(gctx, out, $self);
+                        break;
+                }
+                barray = JM_BinFromBuffer(gctx, res);
+            }
+            fz_always(gctx)
+            {
+                fz_drop_output(gctx, out);
+                fz_drop_buffer(gctx, res);
+            }
+
+            fz_catch(gctx)
+            {
+                return NULL;
+            }
+            return barray;
+        }
+
+        %pythoncode %{
+def getImageData(self, output="png"):
+    valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2,
+                     "pam": 3, "tga": 4, "tpic": 4,
+                     "psd": 5, "ps": 6}
+    idx = valid_formats.get(output.lower(), 1)
+    if self.alpha and idx in (2, 6):
+        raise ValueError("'%s' cannot have alpha" % output)
+    if self.colorspace and self.colorspace.n > 3 and idx in (1, 2, 4):
+        raise ValueError("unsupported colorspace for '%s'" % output)
+    return self._getImageData(idx)
+
+def getPNGdata(self):
+    return self._getImageData(1)
+
+def getPNGData(self):
+    return self._getImageData(1)
+        %}
+
+        //----------------------------------------------------------------------
+        // _writeIMG
+        //----------------------------------------------------------------------
+        FITZEXCEPTION(_writeIMG, !result)
+        PyObject *_writeIMG(char *filename, int format)
+        {
+            fz_try(gctx) {
+                switch(format)
+                {
+                    case(1):
+                        fz_save_pixmap_as_png(gctx, $self, filename);
+                        break;
+                    case(2):
+                        fz_save_pixmap_as_pnm(gctx, $self, filename);
+                        break;
+                    case(3):
+                        fz_save_pixmap_as_pam(gctx, $self, filename);
+                        break;
+                    case(4):
+                        fz_save_pixmap_as_tga(gctx, $self, filename);
+                        break;
+                    case(5): // Adobe Photoshop Document
+                        fz_save_pixmap_as_psd(gctx, $self, filename);
+                        break;
+                    case(6): // Postscript
+                        fz_save_pixmap_as_ps(gctx, $self, filename, 0);
+                        break;
+                    default:
+                        fz_save_pixmap_as_png(gctx, $self, filename);
+                        break;
+                }
+            }
+            fz_catch(gctx) return NULL;
+            return NONE;
+        }
+        %pythoncode %{
+def writeImage(self, filename, output=None):
+    valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2,
+                     "pam": 3, "tga": 4, "tpic": 4,
+                     "psd": 5, "ps": 6}
+    if output is None:
+        _, ext = os.path.splitext(filename)
+        output = ext[1:]
+
+    idx = valid_formats.get(output.lower(), 1)
+
+    if self.alpha and idx in (2, 6):
+        raise ValueError("'%s' cannot have alpha" % output)
+    if self.colorspace and self.colorspace.n > 3 and idx in (1, 2, 4):
+        raise ValueError("unsupported colorspace for '%s'" % output)
+
+    return self._writeIMG(filename, idx)
+
+def writePNG(self, filename, savealpha = -1):
+    return self._writeIMG(filename, 1)
+
+        %}
+        //----------------------------------------------------------------------
+        // invertIRect
+        //----------------------------------------------------------------------
+        void invertIRect(PyObject *irect = NULL)
+        {
+            if (!fz_pixmap_colorspace(gctx, $self))
+                {
+                    JM_Warning("ignored for stencil pixmap");
+                    return;
+                }
+
+            fz_irect r = JM_irect_from_py(irect);
+            if (!fz_is_infinite_irect(r))
+                fz_invert_pixmap_rect(gctx, $self, r);
+            else
+                fz_invert_pixmap(gctx, $self);
+        }
+
+        //----------------------------------------------------------------------
+        // get one pixel as a list 
+        //----------------------------------------------------------------------
+        FITZEXCEPTION(pixel, !result)
+        %feature("autodoc","Return the pixel at (x,y) as a list. Last item is the alpha if Pixmap.alpha is true.") pixel;
+        PyObject *pixel(int x, int y)
+        {
+            PyObject *p = NULL;
+            fz_try(gctx)
+            {
+                if (!INRANGE(x, 0, $self->w - 1) || !INRANGE(y, 0, $self->h - 1))
+                    THROWMSG("coordinates outside image");
+                int n = $self->n;
+                int stride = fz_pixmap_stride(gctx, $self);
+                int j, i = stride * y + n * x;
+                p = PyList_New(n);
+                for (j=0; j < n; j++)
+                {
+                    PyList_SetItem(p, j, Py_BuildValue("i", $self->samples[i + j]));
+                }
+            }
+            fz_catch(gctx) return NULL;
+            return p;
+        }
+
+        //----------------------------------------------------------------------
+        // Set one pixel given as a sequence 
+        //----------------------------------------------------------------------
+        FITZEXCEPTION(setPixel, !result)
+        %feature("autodoc","Set the pixel at (x,y) to the integers in sequence 'value'.") setPixel;
+        PyObject *setPixel(int x, int y, PyObject *value)
+        {
+            fz_try(gctx)
+            {
+                if (!INRANGE(x, 0, $self->w - 1) || !INRANGE(y, 0, $self->h - 1))
+                    THROWMSG("coordinates outside image");
+                int n = $self->n;
+                if (!PySequence_Check(value) || PySequence_Size(value) != n)
+                    THROWMSG("bad pixel value");
+                int i, j;
+                unsigned char c[5];
+                for (j = 0; j < n; j++)
+                {
+                    i = (int) PyInt_AsLong(PySequence_ITEM(value, j));
+                    if (!INRANGE(i, 0, 255)) THROWMSG("bad pixel component");
+                    c[j] = (unsigned char) i;
+                }
+                int stride = fz_pixmap_stride(gctx, $self);
+                i = stride * y + n * x;
+                for (j = 0; j < n; j++)
+                {
+                    $self->samples[i + j] = c[j];
+                }
+            }
+            fz_catch(gctx)
+            {
+                PyErr_Clear();
+                return NULL;
+            }
+            return NONE;
+        }
+
+        //----------------------------------------------------------------------
         // get length of one image row
         //----------------------------------------------------------------------
         %pythoncode %{@property%}
@@ -3833,159 +4079,6 @@ struct fz_pixmap_s
         }
 
         //----------------------------------------------------------------------
-        // set alpha values
-        //----------------------------------------------------------------------
-        FITZEXCEPTION(setAlpha, !result)
-        PyObject *setAlpha(PyObject *alphavalues=NULL)
-        {
-            fz_try(gctx)
-            {
-                if ($self->alpha == 0) THROWMSG("pixmap has no alpha");
-                int n = fz_pixmap_colorants(gctx, $self);
-                int w = fz_pixmap_width(gctx, $self);
-                int h = fz_pixmap_height(gctx, $self);
-                int balen = w * h * (n+1);
-                unsigned char *data = NULL;
-                int data_len = 0;
-                if (alphavalues)
-                {
-                    data_len = (int) JM_CharFromBytesOrArray(alphavalues, &data);
-                    if (data_len && data_len < w * h)
-                        THROWMSG("not enough alpha values");
-                }
-                int i = 0, k = 0;
-                while (i < balen)
-                {
-                    if (data_len) $self->samples[i+n] = data[k];
-                    else          $self->samples[i+n] = 255;
-                    i += n+1;
-                    k += 1;
-                }
-            }
-            fz_catch(gctx) return NULL;
-            return NONE;
-        }
-
-        //----------------------------------------------------------------------
-        // Pixmap._getImageData
-        //----------------------------------------------------------------------
-        FITZEXCEPTION(_getImageData, !result)
-        PyObject *_getImageData(int format, int savealpha=-1)
-        {
-            struct fz_buffer_s *res = NULL;
-            fz_output *out = NULL;
-            PyObject *r;
-            if (savealpha != -1) JM_Warning("ignoring savealpha");
-            fz_try(gctx) {
-                res = fz_new_buffer(gctx, 1024);
-                out = fz_new_output_with_buffer(gctx, res);
-                switch(format)
-                {
-                    case(1):
-                        fz_write_pixmap_as_png(gctx, out, $self);
-                        break;
-                    case(2):
-                        fz_write_pixmap_as_pnm(gctx, out, $self);
-                        break;
-                    case(3):
-                        fz_write_pixmap_as_pam(gctx, out, $self);
-                        break;
-                    case(4):
-                        fz_write_pixmap_as_tga(gctx, out, $self);
-                        break;
-                    case(5):
-                        fz_write_pixmap_as_psd(gctx, out, $self);
-                        break;
-                    default:
-                        fz_write_pixmap_as_png(gctx, out, $self);
-                        break;
-                }
-                r = JM_BinFromBuffer(gctx, res);
-            }
-            fz_always(gctx)
-            {
-                fz_drop_output(gctx, out);
-                fz_drop_buffer(gctx, res);
-            }
-            fz_catch(gctx) return NULL;
-            return r;
-        }
-
-        %pythoncode %{
-def getImageData(self, output="png"):
-    valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2, 
-                     "pam": 3, "tga": 4, "psd": 5}
-    idx = valid_formats.get(output.lower(), 1)
-    return self._getImageData(idx)
-
-def getPNGdata(self):
-    return self._getImageData(1)
-def getPNGData(self, savealpha=-1):
-    return self._getImageData(1)
-        %}
-
-        //----------------------------------------------------------------------
-        // _writeIMG
-        //----------------------------------------------------------------------
-        FITZEXCEPTION(_writeIMG, !result)
-        PyObject *_writeIMG(char *filename, int format, int savealpha=-1)
-        {
-            if (savealpha != -1) JM_Warning("ignoring savealpha");
-            fz_try(gctx) {
-                switch(format)
-                {
-                    case(1):
-                        fz_save_pixmap_as_png(gctx, $self, filename);
-                        break;
-                    case(2):
-                        fz_save_pixmap_as_pnm(gctx, $self, filename);
-                        break;
-                    case(3):
-                        fz_save_pixmap_as_pam(gctx, $self, filename);
-                        break;
-                    case(4):
-                        fz_save_pixmap_as_tga(gctx, $self, filename);
-                        break;
-                    case(5):
-                        fz_save_pixmap_as_psd(gctx, $self, filename);
-                        break;
-                    default:
-                        fz_save_pixmap_as_png(gctx, $self, filename);
-                        break;
-                }
-            }
-            fz_catch(gctx) return NULL;
-            return NONE;
-        }
-        %pythoncode %{
-def writeImage(self, filename, output="png"):
-    valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2, 
-                     "pam": 3, "tga": 4, "psd": 5}
-    idx = valid_formats.get(output.lower(), 1)
-    return self._writeIMG(filename, idx)
-
-def writePNG(self, filename, savealpha = -1):
-    return self._writeIMG(filename, 1, savealpha)
-        %}
-        //----------------------------------------------------------------------
-        // invertIRect
-        //----------------------------------------------------------------------
-        void invertIRect(PyObject *irect = NULL)
-        {
-            if (!fz_pixmap_colorspace(gctx, $self))
-                {
-                    JM_Warning("ignored for stencil pixmap");
-                    return;
-                }
-
-            fz_irect r = JM_irect_from_py(irect);
-            if (!fz_is_infinite_irect(r))
-                fz_invert_pixmap_rect(gctx, $self, r);
-            else
-                fz_invert_pixmap(gctx, $self);
-        }
-
-        //----------------------------------------------------------------------
         // samples
         //----------------------------------------------------------------------
         %pythoncode %{@property%}
@@ -3993,18 +4086,10 @@ def writePNG(self, filename, savealpha = -1):
         {
             return PyBytes_FromStringAndSize((const char *)$self->samples, (Py_ssize_t) ($self->w)*($self->h)*($self->n));
         }
+
         %pythoncode %{
             width  = w
             height = h
-
-            def pixel(self, x, y):
-                """Return a tuple representing one pixel. Item values are integers in range
-                0 to 255. Last item is the alpha value if Pixmap.alpha is true.
-                """
-                if x not in range(self.width) or y not in range(self.height):
-                    raise IndexError("coordinates outside image")
-                i = self.stride * y + self.n * x
-                return tuple(self.samples[i: i + self.n])
 
             def __len__(self):
                 return self.size
@@ -4478,27 +4563,32 @@ struct fz_annot_s
             // transformed with the page transformation matrix.
             //----------------------------------------------------------------
             o = pdf_dict_get(gctx, annot->obj, PDF_NAME(Vertices));
-            if (!o) o = pdf_dict_get(gctx, annot->obj, PDF_NAME(L));
-            if (!o) o = pdf_dict_get(gctx, annot->obj, PDF_NAME(QuadPoints));
-            if (!o) o = pdf_dict_gets(gctx, annot->obj, "CL");
-            if (!o) o = pdf_dict_get(gctx, annot->obj, PDF_NAME(InkList));
+            if (o) goto weiter;
+            o = pdf_dict_get(gctx, annot->obj, PDF_NAME(L));
+            if (o) goto weiter;
+            o = pdf_dict_get(gctx, annot->obj, PDF_NAME(QuadPoints));
+            if (o) goto weiter;
+            o = pdf_dict_gets(gctx, annot->obj, "CL");
+            if (o) goto weiter;
+            o = pdf_dict_get(gctx, annot->obj, PDF_NAME(InkList));
+            if (o) goto weiter;
+            return res;
 
-            if (o)                          // anything found yet?
+            weiter:;
+            int i, n;
+            fz_point point;             // point object to work with
+            fz_matrix page_ctm;         // page transformation matrix
+            pdf_page_transform(gctx, annot->page, NULL, &page_ctm);
+            res = PyList_New(0);        // create Python list
+            n = pdf_array_len(gctx, o);
+            for (i = 0; i < n; i += 2)
             {
-                int i, j, n;
-                fz_point point;             // point object to work with
-                fz_matrix page_ctm;         // page transformation matrix
-                pdf_page_transform(gctx, annot->page, NULL, &page_ctm);
-                res = PyList_New(0);        // create Python list
-                n = pdf_array_len(gctx, o);
-                for (i = 0; i < n; i += 2)
-                {
-                    point.x = pdf_to_real(gctx, pdf_array_get(gctx, o, i));
-                    point.y = pdf_to_real(gctx, pdf_array_get(gctx, o, i+1));
-                    point = fz_transform_point(point, page_ctm);
-                    PyList_Append(res, Py_BuildValue("ff", point.x, point.y));
-                }
+                point.x = pdf_to_real(gctx, pdf_array_get(gctx, o, i));
+                point.y = pdf_to_real(gctx, pdf_array_get(gctx, o, i+1));
+                point = fz_transform_point(point, page_ctm);
+                PyList_Append(res, Py_BuildValue("ff", point.x, point.y));
             }
+
             return res;
         }
 
@@ -4583,10 +4673,13 @@ struct fz_annot_s
 
             ap_tab = ap.splitlines()        # split AP stream into lines
             idx_BT = ap_tab.index(b"BT")    # line no. of text start
-            # to avoid effort, we rely on a fixed format of this
-            # annot type: line 0 = fill color, line 5 border color, etc.
+            # to avoid effort, we rely on a fixed format generated by MuPDF for
+            # this annot type: line 0 = fill color, line 5 border color, etc.
             if fill_color is not None:
                 ap_tab[0] = color_string(fill_color, "f")
+                ap_updated = True
+            else:
+                ap_tab[0] = ap_tab[1] = ap_tab[2] = b""
                 ap_updated = True
 
             if idx_BT == 7:
@@ -6294,6 +6387,24 @@ struct Tools
             }
             return Py_BuildValue("(i, ())", 1);
         }
+
+        %feature("autodoc","Measure length of a string for a Base14 font.") measure_string;
+        float measure_string(const char *text, const char *fontname, float fontsize)
+        {
+            fz_font *font = fz_new_base14_font(gctx, fontname);
+            float w = 0;
+            while (*text)
+            {
+                int c, g;
+                text += fz_chartorune(&c, text);
+                c = pdf_winansi_from_unicode(c);
+                if (c < 0) c = 0xB7;
+                g = fz_encode_character(gctx, font, c);
+                w += fz_advance_glyph(gctx, font, g, 0);
+            }
+            return w * fontsize;
+        }
+
         %pythoncode %{
 
 def _hor_matrix(self, C, P):

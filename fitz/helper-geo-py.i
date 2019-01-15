@@ -6,7 +6,7 @@ class Matrix():
             self.a = self.b = self.c = self.d = self.e = self.f = 0.0
             return None
         if len(args) > 6:
-            raise ValueError("illegal sequ. length")
+            raise ValueError("bad sequ. length")
         if len(args) == 6:                       # 6 numbers
             self.a = float(args[0])
             self.b = float(args[1])
@@ -123,6 +123,8 @@ class Matrix():
 
     def concat(self, one, two):
         """Multiply two matrices and replace current one."""
+        if not len(one) == len(Two) == 6:
+            raise ValueError("bad sequ. length")
         self.a, self.b, self.c, self.d, self.e, self.f = TOOLS._concat_matrix(one, two)
         return self
 
@@ -172,6 +174,8 @@ class Matrix():
         if hasattr(m, "__float__"):
             return Matrix(self.a + m, self.b + m, self.c + m,
                           self.d + m, self.e + m, self.f + m)
+        if len(m) != 6:
+            raise ValueError("bad sequ. length")
         return Matrix(self.a + m[0], self.b + m[1], self.c + m[2],
                           self.d + m[3], self.e + m[4], self.f + m[5])
 
@@ -179,6 +183,8 @@ class Matrix():
         if hasattr(m, "__float__"):
             return Matrix(self.a - m, self.b - m, self.c - m,
                           self.d - m, self.e - m, self.f - m)
+        if len(m) != 6:
+            raise ValueError("bad sequ. length")
         return Matrix(self.a - m[0], self.b - m[1], self.c - m[2],
                           self.d - m[3], self.e - m[4], self.f - m[5])
 
@@ -247,7 +253,7 @@ class Point():
             return None
 
         if len(args) > 2:
-            raise ValueError("illegal sequ. length")
+            raise ValueError("bad sequ. length")
         if len(args) == 2:
             self.x = float(args[0])
             self.y = float(args[1])
@@ -255,16 +261,18 @@ class Point():
         if len(args) == 1:
             l = args[0]
             if hasattr(l, "__getitem__") is False:
-                raise ValueError("illegal Point constructor")
+                raise ValueError("bad Point constructor")
             if len(l) != 2:
-                raise ValueError("illegal sequ. length")
+                raise ValueError("bad sequ. length")
             self.x = float(l[0])
             self.y = float(l[1])
             return None
-        raise ValueError("illegal Point constructor")
+        raise ValueError("bad Point constructor")
 
     def transform(self, m):
         """Replace point by its transformation with matrix-like m."""
+        if len(m) != 6:
+            raise ValueError("bad sequ. length")
         x = self.x
         self.x = x * m[0] + self.y * m[2] + m[4]
         self.y = x * m[1] + self.y * m[3] + m[5]
@@ -367,14 +375,14 @@ class Point():
         if hasattr(p, "__float__"):
             return Point(self.x + p, self.y + p)
         if len(p) != 2:
-            raise ValueError("require point-like object")
+            raise ValueError("bad sequ. length")
         return Point(self.x + p[0], self.y + p[1])
 
     def __sub__(self, p):
         if hasattr(p, "__float__"):
             return Point(self.x - p, self.y - p)
         if len(p) != 2:
-            raise ValueError("require point-like object")
+            raise ValueError("bad sequ. length")
         return Point(self.x - p[0], self.y - p[1])
 
     def __mul__(self, m):
@@ -405,7 +413,7 @@ class Rect():
             return None
 
         if len(args) > 4:
-            raise ValueError("invalid sequ. length")
+            raise ValueError("bad sequ. length")
         if len(args) == 4:
             self.x0 = float(args[0])
             self.y0 = float(args[1])
@@ -415,9 +423,9 @@ class Rect():
         if len(args) == 1:
             l = args[0]
             if hasattr(l, "__getitem__") is False:
-                raise ValueError("invalid Rect constructor")
+                raise ValueError("bad Rect constructor")
             if len(l) != 4:
-                raise ValueError("invalid sequ. length")
+                raise ValueError("bad sequ. length")
             self.x0 = float(l[0])
             self.y0 = float(l[1])
             self.x1 = float(l[2])
@@ -444,7 +452,7 @@ class Rect():
             self.x1 = float(a1)
             self.y1 = float(a2)
             return None
-        raise ValueError("invalid Rect constructor")
+        raise ValueError("bad Rect constructor")
 
     def normalize(self):
         """Replace rectangle with its finite version."""
@@ -500,21 +508,29 @@ class Rect():
 
     def includePoint(self, p):
         """Extend rectangle to include point p."""
+        if not len(p) == 2:
+            raise ValueError("bad sequ. length")
         self.x0, self.y0, self.x1, self.y1 = TOOLS._include_point_in_rect(self, p)
         return self
 
     def includeRect(self, r):
         """Extend rectangle to include rectangle r."""
+        if not len(r) == 4:
+            raise ValueError("bad sequ. length")
         self.x0, self.y0, self.x1, self.y1 = TOOLS._union_rect(self, r)
         return self
 
     def intersect(self, r):
         """Restrict self to common area with rectangle r."""
+        if not len(r) == 4:
+            raise ValueError("bad sequ. length")
         self.x0, self.y0, self.x1, self.y1 = TOOLS._intersect_rect(self, r)
         return self
 
     def transform(self, m):
         """Replace rectangle with its transformation by matrix m."""
+        if not len(m) == 6:
+            raise ValueError("bad sequ. length")
         self.x0, self.y0, self.x1, self.y1 = TOOLS._transform_rect(self, m)
         return self
 
@@ -563,7 +579,7 @@ class Rect():
             r = Rect(self.x0 + p, self.y0 + p, self.x1 + p, self.y1 + p)
         else:
             if len(p) != 4:
-                raise ValueError("require rect-like object")
+                raise ValueError("bad sequ. length")
             r = Rect(self.x0 + p[0], self.y0 + p[1], self.x1 + p[2], self.y1 + p[3])
         return r
 
@@ -571,7 +587,7 @@ class Rect():
         if hasattr(p, "__float__"):
             return Rect(self.x0 - p, self.y0 - p, self.x1 - p, self.y1 - p)
         if len(p) != 4:
-            raise ValueError("require rect-like object")
+            raise ValueError("bad sequ. length")
         return Rect(self.x0 - p[0], self.y0 - p[1], self.x1 - p[2], self.y1 - p[3])
 
     def __mul__(self, m):
@@ -615,18 +631,18 @@ class Rect():
 
     def __or__(self, x):
         if not hasattr(x, "__len__"):
-            raise ValueError("op2 is an unsupported type")
+            raise ValueError("bad operand 2")
 
         r = Rect(self)
         if len(x) == 2:
             return r.includePoint(x)
         if len(x) == 4:
             return r.includeRect(x)
-        raise ValueError("op2 is an unsupported type")
+        raise ValueError("bad operand 2")
 
     def __and__(self, x):
         if not hasattr(x, "__len__"):
-            raise ValueError("op2 is an unsupported type")
+            raise ValueError("bad operand 2")
 
         r1 = Rect(x)
         r = Rect(self)
@@ -724,7 +740,7 @@ class Quad():
             return None
 
         if len(args) > 4:
-            raise ValueError("invalid sequ. length")
+            raise ValueError("bad sequ. length")
         if len(args) == 4:
             self.ul = Point(args[0])
             self.ur = Point(args[1])
@@ -734,15 +750,15 @@ class Quad():
         if len(args) == 1:
             l = args[0]
             if hasattr(l, "__getitem__") is False:
-                raise ValueError("invalid Quad constructor")
+                raise ValueError("bad Quad constructor")
             if len(l) != 4:
-                raise ValueError("invalid sequ. length")
+                raise ValueError("bad sequ. length")
             self.ul = Point(l[0])
             self.ur = Point(l[1])
             self.ll = Point(l[2])
             self.lr = Point(l[3])
             return None
-        raise ValueError("invalid Quad constructor")
+        raise ValueError("bad Quad constructor")
 
     @property
     def isRectangular(self):
@@ -836,6 +852,8 @@ class Quad():
 
     def transform(self, m):
         """Replace quad by its transformation with matrix m."""
+        if len(m) != 6:
+            raise ValueError("bad sequ. length")
         self.ul *= m
         self.ur *= m
         self.ll *= m
