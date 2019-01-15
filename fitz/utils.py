@@ -2036,7 +2036,7 @@ class Shape():
 
         # ensure valid 'fontname'
         fname = fontname
-        if fname[0] == "/":
+        if fname.startswith("/"):
             fname = fname[1:]
 
         xref = self.page.insertFont(fontname = fname, fontfile = fontfile,

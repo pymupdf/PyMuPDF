@@ -1,9 +1,5 @@
 from __future__ import absolute_import
 from fitz.fitz import *
-try:
-    from fitz import _fitz
-except:
-    pass
 
 # define the supported colorspaces for convenience
 fitz.csRGB    = fitz.Colorspace(fitz.CS_RGB)

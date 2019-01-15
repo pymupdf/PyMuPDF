@@ -49,9 +49,8 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
             fz_rethrow(ctx);
         }
     }
-    // PDF created - now write it to Python bytes
-    PyObject *r;
-    fz_buffer *res = NULL;
+    // PDF created - now write it to Python bytearray
+    PyObject *r = NULL;
     fz_output *out = NULL;
     // prepare write options structure
     int errors = 0;
@@ -71,17 +70,16 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
     opts.errors = &errors;
     fz_try(ctx)
     {
-        res = fz_new_buffer(ctx, 1024);
-        out = fz_new_output_with_buffer(ctx, res);
+        r = PyByteArray_FromStringAndSize("", 0);
+        out = JM_OutFromBarray(gctx, r);
         pdf_write_document(ctx, pdfout, out, &opts);
-        r = JM_BinFromBuffer(ctx, res);
     }
-    fz_always(ctx)
+    fz_always(ctx) fz_drop_output(ctx, out);
+    fz_catch(ctx)
     {
-        fz_drop_output(ctx, out);
-        fz_drop_buffer(ctx, res);
+        Py_CLEAR(r);
+        fz_rethrow(ctx);
     }
-    fz_catch(ctx) fz_rethrow(ctx);
     return r;
 }
 %}

@@ -79,6 +79,31 @@ Base14_fontdict["tibi"] = "Times-BoldItalic"
 Base14_fontdict["symb"] = "Symbol"
 Base14_fontdict["zadb"] = "ZapfDingbats"
 
+def getTextlen(text, fontname="helv", fontsize=12):
+    fontname = fontname.lower()
+    basename = Base14_fontdict.get(fontname, None)
+
+    glyphs = None
+    if basename == "Symbol":
+        glyphs = symbol_glyphs
+    if basename == "ZapfDingbats":
+        glyphs = zapf_glyphs
+    if glyphs is not None:
+        w = sum([glyphs[ord(c)][1] for c in text if ord(c) < 256])
+        return w * fontsize
+
+    if fontname in Base14_fontdict.keys():
+        return TOOLS.measure_string(text, Base14_fontdict[fontname], fontsize)
+
+    if fontname in ["china-t", "china-s",
+                    "china-ts", "china-ss",
+                    "japan", "japan-s",
+                    "korea", "korea-s"]:
+        return len(text) * fontsize
+
+    raise ValueError("Font '%s' is unsupported" % fontname)
+
+
 #------------------------------------------------------------------------------
 # Glyph list for the built-in font 'ZapfDingbats'
 #------------------------------------------------------------------------------
@@ -436,6 +461,8 @@ def CheckFont(page, fontname):
     """
     for f in page.getFontList():
         if f[4] == fontname:
+            return f
+        if f[3].lower() == fontname.lower():
             return f
     return None
 

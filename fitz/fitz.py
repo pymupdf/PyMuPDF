@@ -105,9 +105,9 @@ fitz_py2 = str is bytes           # if true, this is Python 2
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.5"
-VersionDate = "2019-01-04 10:29:25"
-version = (VersionBind, VersionFitz, "20190104102925")
+VersionBind = "1.14.6"
+VersionDate = "2019-01-14 06:46:06"
+version = (VersionBind, VersionFitz, "20190114064606")
 
 
 class Matrix():
@@ -117,7 +117,7 @@ class Matrix():
             self.a = self.b = self.c = self.d = self.e = self.f = 0.0
             return None
         if len(args) > 6:
-            raise ValueError("illegal sequ. length")
+            raise ValueError("bad sequ. length")
         if len(args) == 6:                       # 6 numbers
             self.a = float(args[0])
             self.b = float(args[1])
@@ -234,6 +234,8 @@ class Matrix():
 
     def concat(self, one, two):
         """Multiply two matrices and replace current one."""
+        if not len(one) == len(Two) == 6:
+            raise ValueError("bad sequ. length")
         self.a, self.b, self.c, self.d, self.e, self.f = TOOLS._concat_matrix(one, two)
         return self
 
@@ -283,6 +285,8 @@ class Matrix():
         if hasattr(m, "__float__"):
             return Matrix(self.a + m, self.b + m, self.c + m,
                           self.d + m, self.e + m, self.f + m)
+        if len(m) != 6:
+            raise ValueError("bad sequ. length")
         return Matrix(self.a + m[0], self.b + m[1], self.c + m[2],
                           self.d + m[3], self.e + m[4], self.f + m[5])
 
@@ -290,6 +294,8 @@ class Matrix():
         if hasattr(m, "__float__"):
             return Matrix(self.a - m, self.b - m, self.c - m,
                           self.d - m, self.e - m, self.f - m)
+        if len(m) != 6:
+            raise ValueError("bad sequ. length")
         return Matrix(self.a - m[0], self.b - m[1], self.c - m[2],
                           self.d - m[3], self.e - m[4], self.f - m[5])
 
@@ -358,7 +364,7 @@ class Point():
             return None
 
         if len(args) > 2:
-            raise ValueError("illegal sequ. length")
+            raise ValueError("bad sequ. length")
         if len(args) == 2:
             self.x = float(args[0])
             self.y = float(args[1])
@@ -366,16 +372,18 @@ class Point():
         if len(args) == 1:
             l = args[0]
             if hasattr(l, "__getitem__") is False:
-                raise ValueError("illegal Point constructor")
+                raise ValueError("bad Point constructor")
             if len(l) != 2:
-                raise ValueError("illegal sequ. length")
+                raise ValueError("bad sequ. length")
             self.x = float(l[0])
             self.y = float(l[1])
             return None
-        raise ValueError("illegal Point constructor")
+        raise ValueError("bad Point constructor")
 
     def transform(self, m):
         """Replace point by its transformation with matrix-like m."""
+        if len(m) != 6:
+            raise ValueError("bad sequ. length")
         x = self.x
         self.x = x * m[0] + self.y * m[2] + m[4]
         self.y = x * m[1] + self.y * m[3] + m[5]
@@ -478,14 +486,14 @@ class Point():
         if hasattr(p, "__float__"):
             return Point(self.x + p, self.y + p)
         if len(p) != 2:
-            raise ValueError("require point-like object")
+            raise ValueError("bad sequ. length")
         return Point(self.x + p[0], self.y + p[1])
 
     def __sub__(self, p):
         if hasattr(p, "__float__"):
             return Point(self.x - p, self.y - p)
         if len(p) != 2:
-            raise ValueError("require point-like object")
+            raise ValueError("bad sequ. length")
         return Point(self.x - p[0], self.y - p[1])
 
     def __mul__(self, m):
@@ -516,7 +524,7 @@ class Rect():
             return None
 
         if len(args) > 4:
-            raise ValueError("invalid sequ. length")
+            raise ValueError("bad sequ. length")
         if len(args) == 4:
             self.x0 = float(args[0])
             self.y0 = float(args[1])
@@ -526,9 +534,9 @@ class Rect():
         if len(args) == 1:
             l = args[0]
             if hasattr(l, "__getitem__") is False:
-                raise ValueError("invalid Rect constructor")
+                raise ValueError("bad Rect constructor")
             if len(l) != 4:
-                raise ValueError("invalid sequ. length")
+                raise ValueError("bad sequ. length")
             self.x0 = float(l[0])
             self.y0 = float(l[1])
             self.x1 = float(l[2])
@@ -555,7 +563,7 @@ class Rect():
             self.x1 = float(a1)
             self.y1 = float(a2)
             return None
-        raise ValueError("invalid Rect constructor")
+        raise ValueError("bad Rect constructor")
 
     def normalize(self):
         """Replace rectangle with its finite version."""
@@ -611,21 +619,29 @@ class Rect():
 
     def includePoint(self, p):
         """Extend rectangle to include point p."""
+        if not len(p) == 2:
+            raise ValueError("bad sequ. length")
         self.x0, self.y0, self.x1, self.y1 = TOOLS._include_point_in_rect(self, p)
         return self
 
     def includeRect(self, r):
         """Extend rectangle to include rectangle r."""
+        if not len(r) == 4:
+            raise ValueError("bad sequ. length")
         self.x0, self.y0, self.x1, self.y1 = TOOLS._union_rect(self, r)
         return self
 
     def intersect(self, r):
         """Restrict self to common area with rectangle r."""
+        if not len(r) == 4:
+            raise ValueError("bad sequ. length")
         self.x0, self.y0, self.x1, self.y1 = TOOLS._intersect_rect(self, r)
         return self
 
     def transform(self, m):
         """Replace rectangle with its transformation by matrix m."""
+        if not len(m) == 6:
+            raise ValueError("bad sequ. length")
         self.x0, self.y0, self.x1, self.y1 = TOOLS._transform_rect(self, m)
         return self
 
@@ -674,7 +690,7 @@ class Rect():
             r = Rect(self.x0 + p, self.y0 + p, self.x1 + p, self.y1 + p)
         else:
             if len(p) != 4:
-                raise ValueError("require rect-like object")
+                raise ValueError("bad sequ. length")
             r = Rect(self.x0 + p[0], self.y0 + p[1], self.x1 + p[2], self.y1 + p[3])
         return r
 
@@ -682,7 +698,7 @@ class Rect():
         if hasattr(p, "__float__"):
             return Rect(self.x0 - p, self.y0 - p, self.x1 - p, self.y1 - p)
         if len(p) != 4:
-            raise ValueError("require rect-like object")
+            raise ValueError("bad sequ. length")
         return Rect(self.x0 - p[0], self.y0 - p[1], self.x1 - p[2], self.y1 - p[3])
 
     def __mul__(self, m):
@@ -726,18 +742,18 @@ class Rect():
 
     def __or__(self, x):
         if not hasattr(x, "__len__"):
-            raise ValueError("op2 is an unsupported type")
+            raise ValueError("bad operand 2")
 
         r = Rect(self)
         if len(x) == 2:
             return r.includePoint(x)
         if len(x) == 4:
             return r.includeRect(x)
-        raise ValueError("op2 is an unsupported type")
+        raise ValueError("bad operand 2")
 
     def __and__(self, x):
         if not hasattr(x, "__len__"):
-            raise ValueError("op2 is an unsupported type")
+            raise ValueError("bad operand 2")
 
         r1 = Rect(x)
         r = Rect(self)
@@ -835,7 +851,7 @@ class Quad():
             return None
 
         if len(args) > 4:
-            raise ValueError("invalid sequ. length")
+            raise ValueError("bad sequ. length")
         if len(args) == 4:
             self.ul = Point(args[0])
             self.ur = Point(args[1])
@@ -845,15 +861,15 @@ class Quad():
         if len(args) == 1:
             l = args[0]
             if hasattr(l, "__getitem__") is False:
-                raise ValueError("invalid Quad constructor")
+                raise ValueError("bad Quad constructor")
             if len(l) != 4:
-                raise ValueError("invalid sequ. length")
+                raise ValueError("bad sequ. length")
             self.ul = Point(l[0])
             self.ur = Point(l[1])
             self.ll = Point(l[2])
             self.lr = Point(l[3])
             return None
-        raise ValueError("invalid Quad constructor")
+        raise ValueError("bad Quad constructor")
 
     @property
     def isRectangular(self):
@@ -947,6 +963,8 @@ class Quad():
 
     def transform(self, m):
         """Replace quad by its transformation with matrix m."""
+        if len(m) != 6:
+            raise ValueError("bad sequ. length")
         self.ul *= m
         self.ur *= m
         self.ll *= m
@@ -1210,6 +1228,31 @@ Base14_fontdict["tiit"] = "Times-Italic"
 Base14_fontdict["tibi"] = "Times-BoldItalic"
 Base14_fontdict["symb"] = "Symbol"
 Base14_fontdict["zadb"] = "ZapfDingbats"
+
+def getTextlen(text, fontname="helv", fontsize=12):
+    fontname = fontname.lower()
+    basename = Base14_fontdict.get(fontname, None)
+
+    glyphs = None
+    if basename == "Symbol":
+        glyphs = symbol_glyphs
+    if basename == "ZapfDingbats":
+        glyphs = zapf_glyphs
+    if glyphs is not None:
+        w = sum([glyphs[ord(c)][1] for c in text if ord(c) < 256])
+        return w * fontsize
+
+    if fontname in Base14_fontdict.keys():
+        return TOOLS.measure_string(text, Base14_fontdict[fontname], fontsize)
+
+    if fontname in ["china-t", "china-s",
+                    "china-ts", "china-ss",
+                    "japan", "japan-s",
+                    "korea", "korea-s"]:
+        return len(text) * fontsize
+
+    raise ValueError("Font '%s' is unsupported" % fontname)
+
 
 #------------------------------------------------------------------------------
 # Glyph list for the built-in font 'ZapfDingbats'
@@ -1568,6 +1611,8 @@ def CheckFont(page, fontname):
     """
     for f in page.getFontList():
         if f[4] == fontname:
+            return f
+        if f[3].lower() == fontname.lower():
             return f
     return None
 
@@ -3123,6 +3168,76 @@ Pixmap(Document, xref) - from a PDF image"""
         """copyPixmap(self, src, bbox) -> PyObject *"""
         return _fitz.Pixmap_copyPixmap(self, src, bbox)
 
+
+    def setAlpha(self, alphavalues=None):
+        """setAlpha(self, alphavalues=None) -> PyObject *"""
+        return _fitz.Pixmap_setAlpha(self, alphavalues)
+
+
+    def _getImageData(self, format):
+        """_getImageData(self, format) -> PyObject *"""
+        return _fitz.Pixmap__getImageData(self, format)
+
+
+    def getImageData(self, output="png"):
+        valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2,
+                         "pam": 3, "tga": 4, "tpic": 4,
+                         "psd": 5, "ps": 6}
+        idx = valid_formats.get(output.lower(), 1)
+        if self.alpha and idx in (2, 6):
+            raise ValueError("'%s' cannot have alpha" % output)
+        if self.colorspace and self.colorspace.n > 3 and idx in (1, 2, 4):
+            raise ValueError("unsupported colorspace for '%s'" % output)
+        return self._getImageData(idx)
+
+    def getPNGdata(self):
+        return self._getImageData(1)
+
+    def getPNGData(self):
+        return self._getImageData(1)
+
+
+    def _writeIMG(self, filename, format):
+        """_writeIMG(self, filename, format) -> PyObject *"""
+        return _fitz.Pixmap__writeIMG(self, filename, format)
+
+
+    def writeImage(self, filename, output=None):
+        valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2,
+                         "pam": 3, "tga": 4, "tpic": 4,
+                         "psd": 5, "ps": 6}
+        if output is None:
+            _, ext = os.path.splitext(filename)
+            output = ext[1:]
+
+        idx = valid_formats.get(output.lower(), 1)
+
+        if self.alpha and idx in (2, 6):
+            raise ValueError("'%s' cannot have alpha" % output)
+        if self.colorspace and self.colorspace.n > 3 and idx in (1, 2, 4):
+            raise ValueError("unsupported colorspace for '%s'" % output)
+
+        return self._writeIMG(filename, idx)
+
+    def writePNG(self, filename, savealpha = -1):
+        return self._writeIMG(filename, 1)
+
+
+
+    def invertIRect(self, irect=None):
+        """invertIRect(self, irect=None)"""
+        return _fitz.Pixmap_invertIRect(self, irect)
+
+
+    def pixel(self, x, y):
+        """Return the pixel at (x,y) as a list. Last item is the alpha if Pixmap.alpha is true."""
+        return _fitz.Pixmap_pixel(self, x, y)
+
+
+    def setPixel(self, x, y, value):
+        """Set the pixel at (x,y) to the integers in sequence 'value'."""
+        return _fitz.Pixmap_setPixel(self, x, y, value)
+
     @property
 
     def stride(self):
@@ -3156,48 +3271,6 @@ Pixmap(Document, xref) - from a PDF image"""
         """size(self) -> int"""
         return _fitz.Pixmap_size(self)
 
-
-    def setAlpha(self, alphavalues=None):
-        """setAlpha(self, alphavalues=None) -> PyObject *"""
-        return _fitz.Pixmap_setAlpha(self, alphavalues)
-
-
-    def _getImageData(self, format, savealpha=-1):
-        """_getImageData(self, format, savealpha=-1) -> PyObject *"""
-        return _fitz.Pixmap__getImageData(self, format, savealpha)
-
-
-    def getImageData(self, output="png"):
-        valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2, 
-                         "pam": 3, "tga": 4, "psd": 5}
-        idx = valid_formats.get(output.lower(), 1)
-        return self._getImageData(idx)
-
-    def getPNGdata(self):
-        return self._getImageData(1)
-    def getPNGData(self, savealpha=-1):
-        return self._getImageData(1)
-
-
-    def _writeIMG(self, filename, format, savealpha=-1):
-        """_writeIMG(self, filename, format, savealpha=-1) -> PyObject *"""
-        return _fitz.Pixmap__writeIMG(self, filename, format, savealpha)
-
-
-    def writeImage(self, filename, output="png"):
-        valid_formats = {"png": 1, "pnm": 2, "pgm": 2, "ppm": 2, "pbm": 2, 
-                         "pam": 3, "tga": 4, "psd": 5}
-        idx = valid_formats.get(output.lower(), 1)
-        return self._writeIMG(filename, idx)
-
-    def writePNG(self, filename, savealpha = -1):
-        return self._writeIMG(filename, 1, savealpha)
-
-
-    def invertIRect(self, irect=None):
-        """invertIRect(self, irect=None)"""
-        return _fitz.Pixmap_invertIRect(self, irect)
-
     @property
 
     def samples(self):
@@ -3207,15 +3280,6 @@ Pixmap(Document, xref) - from a PDF image"""
 
     width  = w
     height = h
-
-    def pixel(self, x, y):
-        """Return a tuple representing one pixel. Item values are integers in range
-        0 to 255. Last item is the alpha value if Pixmap.alpha is true.
-        """
-        if x not in range(self.width) or y not in range(self.height):
-            raise IndexError("coordinates outside image")
-        i = self.stride * y + self.n * x
-        return tuple(self.samples[i: i + self.n])
 
     def __len__(self):
         return self.size
@@ -3574,10 +3638,13 @@ class Annot(_object):
 
             ap_tab = ap.splitlines()        # split AP stream into lines
             idx_BT = ap_tab.index(b"BT")    # line no. of text start
-        # to avoid effort, we rely on a fixed format of this
-        # annot type: line 0 = fill color, line 5 border color, etc.
+        # to avoid effort, we rely on a fixed format generated by MuPDF for
+        # this annot type: line 0 = fill color, line 5 border color, etc.
             if fill_color is not None:
                 ap_tab[0] = color_string(fill_color, "f")
+                ap_updated = True
+            else:
+                ap_tab[0] = ap_tab[1] = ap_tab[2] = b""
                 ap_updated = True
 
             if idx_BT == 7:
@@ -4349,6 +4416,11 @@ class Tools(_object):
     def _invert_matrix(self, matrix):
         """Invert a matrix."""
         return _fitz.Tools__invert_matrix(self, matrix)
+
+
+    def measure_string(self, text, fontname, fontsize):
+        """Measure length of a string for a Base14 font."""
+        return _fitz.Tools_measure_string(self, text, fontname, fontsize)
 
 
 

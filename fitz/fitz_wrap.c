@@ -4083,40 +4083,46 @@ struct fz_store_s
 	int needs_reaping;
 };
 
+
+
 //-----------------------------------------------------------------------------
-// START redirect stdout/stderr
+// Create an fz_output which writes to a Python ByteArray
 //-----------------------------------------------------------------------------
-PyObject *JM_error_log;
 PyObject *JM_output_log;
+PyObject *JM_error_log;
 
 static void
-JM_write_stdout(fz_context *ctx, void *opaque, const void *buffer, size_t count)
+JM_WriteBarray(fz_context *ctx, PyObject *barray, const void *buffer, size_t count)
 {
-    if (!buffer || !count) return;
+    if (!buffer || count < 1) return;
     PyObject *c = PyByteArray_FromStringAndSize((const char *)buffer, (Py_ssize_t) count);
     if (!c || c == NONE) return;
-    JM_output_log = PySequence_InPlaceConcat(JM_output_log, c);
-    Py_CLEAR(c);
+    PyObject *old = barray;                 // save for Py_DECREFing
+    barray = PySequence_InPlaceConcat(barray, c);
+    Py_DECREF(c);
+    Py_DECREF(old);
     return;
 }
 
 static void
-JM_write_stderr(fz_context *ctx, void *opaque, const void *buffer, size_t count)
-{
-    if (!buffer || !count) return;
-    PyObject *c = PyByteArray_FromStringAndSize((const char *)buffer, (Py_ssize_t) count);
-    if (!c || c == NONE) return;
-    JM_error_log = PySequence_InPlaceConcat(JM_error_log, c);
-    Py_CLEAR(c);
+JM_SeekDummy(fz_context *ctx, void *opaque, int64_t off, int whence)
+{   // ignore seeks
     return;
 }
 
-fz_output *JM_fitz_stdout;
-fz_output *JM_fitz_stderr;
-//-----------------------------------------------------------------------------
-// STOP redirect stdout/stderr
-//-----------------------------------------------------------------------------
+static int64_t
+JM_TellBarray(fz_context *ctx, PyObject *barray)
+{
+    return (int64_t) PyByteArray_Size(barray);
+}
 
+fz_output *JM_OutFromBarray(fz_context *ctx, PyObject *barray)
+{
+    fz_output *out = fz_new_output(ctx, 0, barray, JM_WriteBarray, NULL, NULL);
+    out->seek = JM_SeekDummy;
+    out->tell = JM_TellBarray;
+    return out;
+}
 
 
 void pdf_dict_put_val_null(fz_context *ctx, pdf_obj *obj, int idx);
@@ -9175,9 +9181,8 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
             fz_rethrow(ctx);
         }
     }
-    // PDF created - now write it to Python bytes
-    PyObject *r;
-    fz_buffer *res = NULL;
+    // PDF created - now write it to Python bytearray
+    PyObject *r = NULL;
     fz_output *out = NULL;
     // prepare write options structure
     int errors = 0;
@@ -9197,17 +9202,16 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
     opts.errors = &errors;
     fz_try(ctx)
     {
-        res = fz_new_buffer(ctx, 1024);
-        out = fz_new_output_with_buffer(ctx, res);
+        r = PyByteArray_FromStringAndSize("", 0);
+        out = JM_OutFromBarray(gctx, r);
         pdf_write_document(ctx, pdfout, out, &opts);
-        r = JM_BinFromBuffer(ctx, res);
     }
-    fz_always(ctx)
+    fz_always(ctx) fz_drop_output(ctx, out);
+    fz_catch(ctx)
     {
-        fz_drop_output(ctx, out);
-        fz_drop_buffer(ctx, res);
+        Py_CLEAR(r);
+        fz_rethrow(ctx);
     }
-    fz_catch(ctx) fz_rethrow(ctx);
     return r;
 }
 
@@ -10135,9 +10139,9 @@ SWIGINTERN PyObject *fz_document_s_save(struct fz_document_s *self,char *filenam
             return NONE;
         }
 SWIGINTERN PyObject *fz_document_s_write(struct fz_document_s *self,int garbage,int clean,int deflate,int ascii,int expand,int linear,int pretty,int decrypt){
-            PyObject *r;
-            struct fz_buffer_s *res = NULL;
+            PyObject *r = NULL;
             fz_output *out = NULL;
+            fz_buffer *res = NULL;
             int errors = 0;
             pdf_write_options opts = { 0 };
             opts.do_incremental     = 0;
@@ -10155,25 +10159,28 @@ SWIGINTERN PyObject *fz_document_s_write(struct fz_document_s *self,int garbage,
             opts.errors = &errors;
             pdf_document *pdf = pdf_specifics(gctx, self);
             fz_var(out);
-            fz_var(res);
+            fz_var(r);
             fz_try(gctx)
             {
                 assert_PDF(pdf);
                 if (fz_count_pages(gctx, self) < 1)
                     THROWMSG("cannot save with zero pages");
                 JM_embedded_clean(gctx, pdf);
-                res = fz_new_buffer(gctx, 1024);
+                res = fz_new_buffer(gctx, 8192);
                 out = fz_new_output_with_buffer(gctx, res);
                 JM_write_document(gctx, pdf, out, &opts, decrypt);
-                pdf->dirty = 0;
                 r = JM_BinFromBuffer(gctx, res);
+                pdf->dirty = 0;
             }
             fz_always(gctx)
+                {
+                    fz_drop_buffer(gctx, res);
+                    fz_drop_output(gctx, out);
+                }
+            fz_catch(gctx)
             {
-                fz_drop_output(gctx, out);
-                fz_drop_buffer(gctx, res);
+                return NULL;
             }
-            fz_catch(gctx) return NULL;
             return r;
         }
 SWIGINTERN PyObject *fz_document_s_insertPDF(struct fz_document_s *self,struct fz_document_s *docsrc,int from_page,int to_page,int start_at,int rotate,int links){
@@ -12030,21 +12037,6 @@ SWIGINTERN PyObject *fz_pixmap_s_copyPixmap(struct fz_pixmap_s *self,struct fz_p
             fz_catch(gctx) return NULL;
             return NONE;
         }
-SWIGINTERN int fz_pixmap_s_stride(struct fz_pixmap_s *self){
-            return fz_pixmap_stride(gctx, self);
-        }
-SWIGINTERN int fz_pixmap_s_alpha(struct fz_pixmap_s *self){
-            return self->alpha;
-        }
-SWIGINTERN struct fz_colorspace_s *fz_pixmap_s_colorspace(struct fz_pixmap_s *self){
-            return fz_pixmap_colorspace(gctx, self);
-        }
-SWIGINTERN PyObject *fz_pixmap_s_irect(struct fz_pixmap_s *self){
-            return JM_py_from_irect(fz_pixmap_bbox(gctx, self));
-        }
-SWIGINTERN int fz_pixmap_s_size(struct fz_pixmap_s *self){
-            return (int) fz_pixmap_size(gctx, self);
-        }
 SWIGINTERN PyObject *fz_pixmap_s_setAlpha(struct fz_pixmap_s *self,PyObject *alphavalues){
             fz_try(gctx)
             {
@@ -12073,14 +12065,17 @@ SWIGINTERN PyObject *fz_pixmap_s_setAlpha(struct fz_pixmap_s *self,PyObject *alp
             fz_catch(gctx) return NULL;
             return NONE;
         }
-SWIGINTERN PyObject *fz_pixmap_s__getImageData(struct fz_pixmap_s *self,int format,int savealpha){
-            struct fz_buffer_s *res = NULL;
+SWIGINTERN PyObject *fz_pixmap_s__getImageData(struct fz_pixmap_s *self,int format){
             fz_output *out = NULL;
-            PyObject *r;
-            if (savealpha != -1) JM_Warning("ignoring savealpha");
-            fz_try(gctx) {
-                res = fz_new_buffer(gctx, 1024);
+            fz_buffer *res = NULL;
+            // the following will be returned:
+            PyObject *barray = NULL;
+            fz_try(gctx)
+            {
+                size_t size = fz_pixmap_stride(gctx, self) * self->h;
+                res = fz_new_buffer(gctx, size);
                 out = fz_new_output_with_buffer(gctx, res);
+                out->seek = JM_SeekDummy;        // ignore seek calls
                 switch(format)
                 {
                     case(1):
@@ -12095,25 +12090,31 @@ SWIGINTERN PyObject *fz_pixmap_s__getImageData(struct fz_pixmap_s *self,int form
                     case(4):
                         fz_write_pixmap_as_tga(gctx, out, self);
                         break;
-                    case(5):
+                    case(5):           // Adobe Photoshop Document
                         fz_write_pixmap_as_psd(gctx, out, self);
+                        break;
+                    case(6):           // Postscript format
+                        fz_write_pixmap_as_ps(gctx, out, self);
                         break;
                     default:
                         fz_write_pixmap_as_png(gctx, out, self);
                         break;
                 }
-                r = JM_BinFromBuffer(gctx, res);
+                barray = JM_BinFromBuffer(gctx, res);
             }
             fz_always(gctx)
             {
                 fz_drop_output(gctx, out);
                 fz_drop_buffer(gctx, res);
             }
-            fz_catch(gctx) return NULL;
-            return r;
+
+            fz_catch(gctx)
+            {
+                return NULL;
+            }
+            return barray;
         }
-SWIGINTERN PyObject *fz_pixmap_s__writeIMG(struct fz_pixmap_s *self,char *filename,int format,int savealpha){
-            if (savealpha != -1) JM_Warning("ignoring savealpha");
+SWIGINTERN PyObject *fz_pixmap_s__writeIMG(struct fz_pixmap_s *self,char *filename,int format){
             fz_try(gctx) {
                 switch(format)
                 {
@@ -12129,8 +12130,11 @@ SWIGINTERN PyObject *fz_pixmap_s__writeIMG(struct fz_pixmap_s *self,char *filena
                     case(4):
                         fz_save_pixmap_as_tga(gctx, self, filename);
                         break;
-                    case(5):
+                    case(5): // Adobe Photoshop Document
                         fz_save_pixmap_as_psd(gctx, self, filename);
+                        break;
+                    case(6): // Postscript
+                        fz_save_pixmap_as_ps(gctx, self, filename, 0);
                         break;
                     default:
                         fz_save_pixmap_as_png(gctx, self, filename);
@@ -12152,6 +12156,69 @@ SWIGINTERN void fz_pixmap_s_invertIRect(struct fz_pixmap_s *self,PyObject *irect
                 fz_invert_pixmap_rect(gctx, self, r);
             else
                 fz_invert_pixmap(gctx, self);
+        }
+SWIGINTERN PyObject *fz_pixmap_s_pixel(struct fz_pixmap_s *self,int x,int y){
+            PyObject *p = NULL;
+            fz_try(gctx)
+            {
+                if (!INRANGE(x, 0, self->w - 1) || !INRANGE(y, 0, self->h - 1))
+                    THROWMSG("coordinates outside image");
+                int n = self->n;
+                int stride = fz_pixmap_stride(gctx, self);
+                int j, i = stride * y + n * x;
+                p = PyList_New(n);
+                for (j=0; j < n; j++)
+                {
+                    PyList_SetItem(p, j, Py_BuildValue("i", self->samples[i + j]));
+                }
+            }
+            fz_catch(gctx) return NULL;
+            return p;
+        }
+SWIGINTERN PyObject *fz_pixmap_s_setPixel(struct fz_pixmap_s *self,int x,int y,PyObject *value){
+            fz_try(gctx)
+            {
+                if (!INRANGE(x, 0, self->w - 1) || !INRANGE(y, 0, self->h - 1))
+                    THROWMSG("coordinates outside image");
+                int n = self->n;
+                if (!PySequence_Check(value) || PySequence_Size(value) != n)
+                    THROWMSG("bad pixel value");
+                int i, j;
+                unsigned char c[5];
+                for (j = 0; j < n; j++)
+                {
+                    i = (int) PyInt_AsLong(PySequence_ITEM(value, j));
+                    if (!INRANGE(i, 0, 255)) THROWMSG("bad pixel component");
+                    c[j] = (unsigned char) i;
+                }
+                int stride = fz_pixmap_stride(gctx, self);
+                i = stride * y + n * x;
+                for (j = 0; j < n; j++)
+                {
+                    self->samples[i + j] = c[j];
+                }
+            }
+            fz_catch(gctx)
+            {
+                PyErr_Clear();
+                return NULL;
+            }
+            return NONE;
+        }
+SWIGINTERN int fz_pixmap_s_stride(struct fz_pixmap_s *self){
+            return fz_pixmap_stride(gctx, self);
+        }
+SWIGINTERN int fz_pixmap_s_alpha(struct fz_pixmap_s *self){
+            return self->alpha;
+        }
+SWIGINTERN struct fz_colorspace_s *fz_pixmap_s_colorspace(struct fz_pixmap_s *self){
+            return fz_pixmap_colorspace(gctx, self);
+        }
+SWIGINTERN PyObject *fz_pixmap_s_irect(struct fz_pixmap_s *self){
+            return JM_py_from_irect(fz_pixmap_bbox(gctx, self));
+        }
+SWIGINTERN int fz_pixmap_s_size(struct fz_pixmap_s *self){
+            return (int) fz_pixmap_size(gctx, self);
         }
 SWIGINTERN PyObject *fz_pixmap_s_samples(struct fz_pixmap_s *self){
             return PyBytes_FromStringAndSize((const char *)self->samples, (Py_ssize_t) (self->w)*(self->h)*(self->n));
@@ -12324,27 +12391,32 @@ SWIGINTERN PyObject *fz_annot_s_vertices(struct fz_annot_s *self){
             // transformed with the page transformation matrix.
             //----------------------------------------------------------------
             o = pdf_dict_get(gctx, annot->obj, PDF_NAME(Vertices));
-            if (!o) o = pdf_dict_get(gctx, annot->obj, PDF_NAME(L));
-            if (!o) o = pdf_dict_get(gctx, annot->obj, PDF_NAME(QuadPoints));
-            if (!o) o = pdf_dict_gets(gctx, annot->obj, "CL");
-            if (!o) o = pdf_dict_get(gctx, annot->obj, PDF_NAME(InkList));
+            if (o) goto weiter;
+            o = pdf_dict_get(gctx, annot->obj, PDF_NAME(L));
+            if (o) goto weiter;
+            o = pdf_dict_get(gctx, annot->obj, PDF_NAME(QuadPoints));
+            if (o) goto weiter;
+            o = pdf_dict_gets(gctx, annot->obj, "CL");
+            if (o) goto weiter;
+            o = pdf_dict_get(gctx, annot->obj, PDF_NAME(InkList));
+            if (o) goto weiter;
+            return res;
 
-            if (o)                          // anything found yet?
+            weiter:;
+            int i, n;
+            fz_point point;             // point object to work with
+            fz_matrix page_ctm;         // page transformation matrix
+            pdf_page_transform(gctx, annot->page, NULL, &page_ctm);
+            res = PyList_New(0);        // create Python list
+            n = pdf_array_len(gctx, o);
+            for (i = 0; i < n; i += 2)
             {
-                int i, j, n;
-                fz_point point;             // point object to work with
-                fz_matrix page_ctm;         // page transformation matrix
-                pdf_page_transform(gctx, annot->page, NULL, &page_ctm);
-                res = PyList_New(0);        // create Python list
-                n = pdf_array_len(gctx, o);
-                for (i = 0; i < n; i += 2)
-                {
-                    point.x = pdf_to_real(gctx, pdf_array_get(gctx, o, i));
-                    point.y = pdf_to_real(gctx, pdf_array_get(gctx, o, i+1));
-                    point = fz_transform_point(point, page_ctm);
-                    PyList_Append(res, Py_BuildValue("ff", point.x, point.y));
-                }
+                point.x = pdf_to_real(gctx, pdf_array_get(gctx, o, i));
+                point.y = pdf_to_real(gctx, pdf_array_get(gctx, o, i+1));
+                point = fz_transform_point(point, page_ctm);
+                PyList_Append(res, Py_BuildValue("ff", point.x, point.y));
             }
+
             return res;
         }
 SWIGINTERN PyObject *fz_annot_s_colors(struct fz_annot_s *self){
@@ -13393,6 +13465,30 @@ SWIGINTERN PyObject *Tools__invert_matrix(struct Tools *self,PyObject *matrix){
             }
             return Py_BuildValue("(i, ())", 1);
         }
+SWIGINTERN float Tools_measure_string(struct Tools *self,char const *text,char const *fontname,float fontsize){
+            fz_font *font = fz_new_base14_font(gctx, fontname);
+            float w = 0;
+            while (*text)
+            {
+                int c, g;
+                text += fz_chartorune(&c, text);
+                c = pdf_winansi_from_unicode(c);
+                if (c < 0) c = 0xB7;
+                g = fz_encode_character(gctx, font, c);
+                w += fz_advance_glyph(gctx, font, g, 0);
+            }
+            return w * fontsize;
+        }
+
+  #define SWIG_From_double   PyFloat_FromDouble 
+
+
+SWIGINTERNINLINE PyObject *
+SWIG_From_float  (float value)
+{    
+  return SWIG_From_double  (value);
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -18455,6 +18551,251 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Pixmap_setAlpha(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  PyObject *arg2 = (PyObject *) NULL ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O|O:Pixmap_setAlpha",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_setAlpha" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  if (obj1) {
+    arg2 = obj1;
+  }
+  {
+    result = (PyObject *)fz_pixmap_s_setAlpha(arg1,arg2);
+    if(!result)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pixmap__getImageData(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Pixmap__getImageData",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap__getImageData" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Pixmap__getImageData" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  {
+    result = (PyObject *)fz_pixmap_s__getImageData(arg1,arg2);
+    if(!result)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pixmap__writeIMG(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Pixmap__writeIMG",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap__writeIMG" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Pixmap__writeIMG" "', argument " "2"" of type '" "char *""'");
+  }
+  arg2 = (char *)(buf2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Pixmap__writeIMG" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = (int)(val3);
+  {
+    result = (PyObject *)fz_pixmap_s__writeIMG(arg1,arg2,arg3);
+    if(!result)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = result;
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pixmap_invertIRect(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  PyObject *arg2 = (PyObject *) NULL ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O|O:Pixmap_invertIRect",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_invertIRect" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  if (obj1) {
+    arg2 = obj1;
+  }
+  fz_pixmap_s_invertIRect(arg1,arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pixmap_pixel(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Pixmap_pixel",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_pixel" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Pixmap_pixel" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Pixmap_pixel" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = (int)(val3);
+  {
+    result = (PyObject *)fz_pixmap_s_pixel(arg1,arg2,arg3);
+    if(!result)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pixmap_setPixel(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  PyObject *arg4 = (PyObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:Pixmap_setPixel",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_setPixel" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Pixmap_setPixel" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Pixmap_setPixel" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = (int)(val3);
+  arg4 = obj3;
+  {
+    result = (PyObject *)fz_pixmap_s_setPixel(arg1,arg2,arg3,arg4);
+    if(!result)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Pixmap_stride(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
@@ -18559,176 +18900,6 @@ SWIGINTERN PyObject *_wrap_Pixmap_size(PyObject *SWIGUNUSEDPARM(self), PyObject 
   arg1 = (struct fz_pixmap_s *)(argp1);
   result = (int)fz_pixmap_s_size(arg1);
   resultobj = SWIG_From_int((int)(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Pixmap_setAlpha(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
-  PyObject *arg2 = (PyObject *) NULL ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O|O:Pixmap_setAlpha",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_setAlpha" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
-  }
-  arg1 = (struct fz_pixmap_s *)(argp1);
-  if (obj1) {
-    arg2 = obj1;
-  }
-  {
-    result = (PyObject *)fz_pixmap_s_setAlpha(arg1,arg2);
-    if(!result)
-    {
-      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
-      return NULL;
-    }
-  }
-  resultobj = result;
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Pixmap__getImageData(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
-  int arg2 ;
-  int arg3 = (int) -1 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  int val3 ;
-  int ecode3 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO|O:Pixmap__getImageData",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap__getImageData" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
-  }
-  arg1 = (struct fz_pixmap_s *)(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Pixmap__getImageData" "', argument " "2"" of type '" "int""'");
-  } 
-  arg2 = (int)(val2);
-  if (obj2) {
-    ecode3 = SWIG_AsVal_int(obj2, &val3);
-    if (!SWIG_IsOK(ecode3)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Pixmap__getImageData" "', argument " "3"" of type '" "int""'");
-    } 
-    arg3 = (int)(val3);
-  }
-  {
-    result = (PyObject *)fz_pixmap_s__getImageData(arg1,arg2,arg3);
-    if(!result)
-    {
-      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
-      return NULL;
-    }
-  }
-  resultobj = result;
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Pixmap__writeIMG(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
-  char *arg2 = (char *) 0 ;
-  int arg3 ;
-  int arg4 = (int) -1 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
-  int val3 ;
-  int ecode3 = 0 ;
-  int val4 ;
-  int ecode4 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO|O:Pixmap__writeIMG",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap__writeIMG" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
-  }
-  arg1 = (struct fz_pixmap_s *)(argp1);
-  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Pixmap__writeIMG" "', argument " "2"" of type '" "char *""'");
-  }
-  arg2 = (char *)(buf2);
-  ecode3 = SWIG_AsVal_int(obj2, &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Pixmap__writeIMG" "', argument " "3"" of type '" "int""'");
-  } 
-  arg3 = (int)(val3);
-  if (obj3) {
-    ecode4 = SWIG_AsVal_int(obj3, &val4);
-    if (!SWIG_IsOK(ecode4)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "Pixmap__writeIMG" "', argument " "4"" of type '" "int""'");
-    } 
-    arg4 = (int)(val4);
-  }
-  {
-    result = (PyObject *)fz_pixmap_s__writeIMG(arg1,arg2,arg3,arg4);
-    if(!result)
-    {
-      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
-      return NULL;
-    }
-  }
-  resultobj = result;
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  return resultobj;
-fail:
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Pixmap_invertIRect(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
-  PyObject *arg2 = (PyObject *) NULL ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O|O:Pixmap_invertIRect",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_invertIRect" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
-  }
-  arg1 = (struct fz_pixmap_s *)(argp1);
-  if (obj1) {
-    arg2 = obj1;
-  }
-  fz_pixmap_s_invertIRect(arg1,arg2);
-  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -21430,6 +21601,61 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Tools_measure_string(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct Tools *arg1 = (struct Tools *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  float arg4 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  float val4 ;
+  int ecode4 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  float result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:Tools_measure_string",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Tools, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Tools_measure_string" "', argument " "1"" of type '" "struct Tools *""'"); 
+  }
+  arg1 = (struct Tools *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Tools_measure_string" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Tools_measure_string" "', argument " "3"" of type '" "char const *""'");
+  }
+  arg3 = (char *)(buf3);
+  ecode4 = SWIG_AsVal_float(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "Tools_measure_string" "', argument " "4"" of type '" "float""'");
+  } 
+  arg4 = (float)(val4);
+  result = (float)Tools_measure_string(arg1,(char const *)arg2,(char const *)arg3,arg4);
+  resultobj = SWIG_From_float((float)(result));
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_Tools(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct Tools *result = 0 ;
@@ -21603,15 +21829,17 @@ static PyMethodDef SwigMethods[] = {
 		"Pixmap_clearWith(self, value, bbox)\n"
 		""},
 	 { (char *)"Pixmap_copyPixmap", _wrap_Pixmap_copyPixmap, METH_VARARGS, (char *)"Pixmap_copyPixmap(self, src, bbox) -> PyObject *"},
+	 { (char *)"Pixmap_setAlpha", _wrap_Pixmap_setAlpha, METH_VARARGS, (char *)"Pixmap_setAlpha(self, alphavalues=None) -> PyObject *"},
+	 { (char *)"Pixmap__getImageData", _wrap_Pixmap__getImageData, METH_VARARGS, (char *)"Pixmap__getImageData(self, format) -> PyObject *"},
+	 { (char *)"Pixmap__writeIMG", _wrap_Pixmap__writeIMG, METH_VARARGS, (char *)"Pixmap__writeIMG(self, filename, format) -> PyObject *"},
+	 { (char *)"Pixmap_invertIRect", _wrap_Pixmap_invertIRect, METH_VARARGS, (char *)"Pixmap_invertIRect(self, irect=None)"},
+	 { (char *)"Pixmap_pixel", _wrap_Pixmap_pixel, METH_VARARGS, (char *)"Return the pixel at (x,y) as a list. Last item is the alpha if Pixmap.alpha is true."},
+	 { (char *)"Pixmap_setPixel", _wrap_Pixmap_setPixel, METH_VARARGS, (char *)"Set the pixel at (x,y) to the integers in sequence 'value'."},
 	 { (char *)"Pixmap_stride", _wrap_Pixmap_stride, METH_VARARGS, (char *)"Pixmap_stride(self) -> int"},
 	 { (char *)"Pixmap_alpha", _wrap_Pixmap_alpha, METH_VARARGS, (char *)"Pixmap_alpha(self) -> int"},
 	 { (char *)"Pixmap_colorspace", _wrap_Pixmap_colorspace, METH_VARARGS, (char *)"Pixmap_colorspace(self) -> Colorspace"},
 	 { (char *)"Pixmap_irect", _wrap_Pixmap_irect, METH_VARARGS, (char *)"Pixmap_irect(self) -> PyObject *"},
 	 { (char *)"Pixmap_size", _wrap_Pixmap_size, METH_VARARGS, (char *)"Pixmap_size(self) -> int"},
-	 { (char *)"Pixmap_setAlpha", _wrap_Pixmap_setAlpha, METH_VARARGS, (char *)"Pixmap_setAlpha(self, alphavalues=None) -> PyObject *"},
-	 { (char *)"Pixmap__getImageData", _wrap_Pixmap__getImageData, METH_VARARGS, (char *)"Pixmap__getImageData(self, format, savealpha=-1) -> PyObject *"},
-	 { (char *)"Pixmap__writeIMG", _wrap_Pixmap__writeIMG, METH_VARARGS, (char *)"Pixmap__writeIMG(self, filename, format, savealpha=-1) -> PyObject *"},
-	 { (char *)"Pixmap_invertIRect", _wrap_Pixmap_invertIRect, METH_VARARGS, (char *)"Pixmap_invertIRect(self, irect=None)"},
 	 { (char *)"Pixmap_samples", _wrap_Pixmap_samples, METH_VARARGS, (char *)"Pixmap_samples(self) -> PyObject *"},
 	 { (char *)"Pixmap_swigregister", Pixmap_swigregister, METH_VARARGS, NULL},
 	 { (char *)"delete_Colorspace", _wrap_delete_Colorspace, METH_VARARGS, (char *)"delete_Colorspace(self)"},
@@ -21717,6 +21945,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Tools__union_rect", _wrap_Tools__union_rect, METH_VARARGS, (char *)"Replace r1 with smallest rect containing both."},
 	 { (char *)"Tools__concat_matrix", _wrap_Tools__concat_matrix, METH_VARARGS, (char *)"Concatenate matrices m1, m2."},
 	 { (char *)"Tools__invert_matrix", _wrap_Tools__invert_matrix, METH_VARARGS, (char *)"Invert a matrix."},
+	 { (char *)"Tools_measure_string", _wrap_Tools_measure_string, METH_VARARGS, (char *)"Measure length of a string for a Base14 font."},
 	 { (char *)"new_Tools", _wrap_new_Tools, METH_VARARGS, (char *)"new_Tools() -> Tools"},
 	 { (char *)"delete_Tools", _wrap_delete_Tools, METH_VARARGS, (char *)"delete_Tools(self)"},
 	 { (char *)"Tools_swigregister", Tools_swigregister, METH_VARARGS, NULL},
@@ -22495,12 +22724,12 @@ SWIG_init(void) {
   // START redirect stdout/stderr
   //-----------------------------------------------------------------------------
   
-  JM_fitz_stdout = fz_new_output(gctx, 0, JM_fitz_stdout, JM_write_stdout, NULL, NULL);
-  
+  JM_output_log = PyByteArray_FromStringAndSize("", 0);
+  fz_output *JM_fitz_stdout = JM_OutFromBarray(gctx, JM_output_log);
   fz_set_stdout(gctx, JM_fitz_stdout);
   
-  JM_fitz_stderr = fz_new_output(gctx, 0, JM_fitz_stderr, JM_write_stderr, NULL, NULL);
-  
+  JM_error_log  = PyByteArray_FromStringAndSize("", 0);
+  fz_output *JM_fitz_stderr = JM_OutFromBarray(gctx, JM_error_log);
   fz_set_stderr(gctx, JM_fitz_stderr);
   
   if (JM_fitz_stderr && JM_fitz_stdout)
@@ -22509,9 +22738,6 @@ SWIG_init(void) {
   }
   else
   PySys_WriteStderr("error redirecting stdout/stderr!\n");
-  
-  JM_error_log  = PyByteArray_FromStringAndSize("", 0);
-  JM_output_log = PyByteArray_FromStringAndSize("", 0);
   
   //-----------------------------------------------------------------------------
   // STOP redirect stdout/stderr

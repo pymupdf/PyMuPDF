@@ -741,38 +741,4 @@ struct fz_store_s
 	int needs_reaping;
 };
 
-//-----------------------------------------------------------------------------
-// START redirect stdout/stderr
-//-----------------------------------------------------------------------------
-PyObject *JM_error_log;
-PyObject *JM_output_log;
-
-static void
-JM_write_stdout(fz_context *ctx, void *opaque, const void *buffer, size_t count)
-{
-    if (!buffer || !count) return;
-    PyObject *c = PyByteArray_FromStringAndSize((const char *)buffer, (Py_ssize_t) count);
-    if (!c || c == NONE) return;
-    JM_output_log = PySequence_InPlaceConcat(JM_output_log, c);
-    Py_CLEAR(c);
-    return;
-}
-
-static void
-JM_write_stderr(fz_context *ctx, void *opaque, const void *buffer, size_t count)
-{
-    if (!buffer || !count) return;
-    PyObject *c = PyByteArray_FromStringAndSize((const char *)buffer, (Py_ssize_t) count);
-    if (!c || c == NONE) return;
-    JM_error_log = PySequence_InPlaceConcat(JM_error_log, c);
-    Py_CLEAR(c);
-    return;
-}
-
-fz_output *JM_fitz_stdout;
-fz_output *JM_fitz_stderr;
-//-----------------------------------------------------------------------------
-// STOP redirect stdout/stderr
-//-----------------------------------------------------------------------------
-
 %}
