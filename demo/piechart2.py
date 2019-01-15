@@ -7,14 +7,17 @@ import sys
 #==============================================================================
 from fitz.utils import getColor        # for getting RGB colors by name
 doc = fitz.open()                      # new empty PDF
-doc.insertPage()                       # creates an ISO-A4 page
-page = doc[-1]                         # this is the page
-img = page.newShape()
+page = doc.newPage()                   # creates an ISO-A4 page
+
+img = page.newShape()                  # start a Shape (canvas) for the page
+
 # title of the page
 title = "Sitzverteilung nach der Bundestagswahl 2013"
+
 # pie chart center and point of 1st data pie
 center = fitz.Point(200, 250)
 point  = fitz.Point(100, 250)          # will cycle through table data
+
 # this is the radius
 radius = abs(point - center)
 

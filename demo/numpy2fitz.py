@@ -1,7 +1,7 @@
-#! /usr/bin/python
 from __future__ import print_function
 import numpy as np
 import PIL
+from PIL import Image
 import fitz
 import sys, time
 print("Python:", sys.version)
@@ -24,7 +24,7 @@ Changes
 
 '''
 height = 2048            # choose whatever you want here; image will consist
-width  = 1024            # of 256 x 256 sized tiles, each colored as follows
+width  = 2028            # of 256 x 256 sized tiles, each colored as follows
 
 image = np.ndarray((height, width, 3), dtype=np.uint8)
 
@@ -42,10 +42,10 @@ pix = fitz.Pixmap(fitz.csRGB, width, height, samples, 0)
 pix.writePNG("numpy2fitz.png")
 ttab.append((time.perf_counter(), "fitz"))
 
-pix = PIL.Image.frombuffer("RGB", [width, height], samples,
+pix = Image.frombuffer("RGB", [width, height], samples,
                        "raw", "RGB", 0, 1)
 pix.save("numpy2PIL.png")
 ttab.append((time.perf_counter(), "PIL"))
 
 for i, t in enumerate(ttab):
-    if i > 0: print(t[0] - ttab[i-1][0], t[1])
+    if i > 0: print("storing with %s: %g sec." % (t[1], t[0] - ttab[i-1][0]))
