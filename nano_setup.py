@@ -6,11 +6,11 @@ if sys.platform.startswith('linux'):
     module = Extension('fitz._fitz', # name of the module
                        ['fitz/fitz_wrap.c'], # C source file
                        include_dirs=[  # we need the path of the MuPDF and zlib headers
-                                     '/usr/include/mupdf',
-                                     '/usr/local/include/mupdf',
-                                     '/usr/local/thirdparty/zlib',
+                                     '/data/include/mupdf',
+                                     '/data/local/include/mupdf',
+                                     '/data/local/thirdparty/zlib',
                                     ],
-                       #library_dirs=['<mupdf_and_3rd_party_libraries_dir>'],
+                       #library_dirs=['/usr/local/lib'],
                        libraries=[
                            'mupdf',
                            'mupdf-third',
@@ -22,15 +22,10 @@ elif sys.platform.startswith(('darwin', 'freebsd')):
     module = Extension('fitz._fitz', # name of the module
                        ['fitz/fitz_wrap.c'], # C source file
                        # this are directories containing mupdf's and zlib's header files
-                       include_dirs=['/usr/local/include/mupdf', '/usr/local/include'],
-                       # libraries should already be linked here by brew
-                       library_dirs=['/usr/local/lib'],
-                       #library_dirs=['/usr/local/Cellar/mupdf-tools/1.8/lib/',
-                                    #'/usr/local/Cellar/openssl/1.0.2g/lib/',
-                                    #'/usr/local/Cellar/jpeg/8d/lib/',
-                                    #'/usr/local/Cellar/freetype/2.6.3/lib/',
-                                    #'/usr/local/Cellar/jbig2dec/0.12/lib/'
-                           #],
+                       include_dirs=['/data/local/include/mupdf',
+                                     '/data/local/include',
+                                     '/udatasr/local/thirdparty/zlib'],
+                       library_dirs=['/data/local/lib'],
                        libraries=['mupdf', 'mupdf-third']
                       )
 
@@ -56,22 +51,21 @@ else:
                        #library_dirs=['./mupdf/platform/win32/x64/Release'],
                        sources=['./fitz/fitz_wrap.c',])
 
-pkg_tab = open("PKG-INFO").read().split("\n")
-long_dtab = []
-classifier = []
-for l in pkg_tab:
-    if l.startswith("Classifier: "):
-        classifier.append(l[12:])
-        continue
-    if l.startswith(" "):
-        long_dtab.append(l.strip())
-long_desc = "\n".join(long_dtab)
-
 setup(name = 'PyMuPDF',
-      version = "1.14.6",
+      version = "1.14.3",
       description = 'Python bindings for the PDF rendering library MuPDF',
-      long_description = long_desc,
-      classifiers = classifier,
+      classifiers = ['Development Status :: 5 - Production/Stable',
+                     'Environment :: Console',
+                     'Intended Audience :: Developers',
+                     'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+                     'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
+                     'Operating System :: Microsoft :: Windows',
+                     'Operating System :: POSIX :: Linux',
+                     'Operating System :: MacOS',
+                     'Programming Language :: C',
+                     'Programming Language :: Python :: 2.7',
+                     'Programming Language :: Python :: 3',
+                     'Topic :: Utilities'],
       url = 'https://github.com/rk700/PyMuPDF',
       author = 'Ruikai Liu, Jorj McKie',
       author_email = 'lrk700@gmail.com',
