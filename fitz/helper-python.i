@@ -352,7 +352,7 @@ def getTJstr(text, glyphs, simple, ordering):
         if glyphs is None:             # simple and not Symbol / ZapfDingbats
             otxt = "".join([hex(ord(c))[2:].rjust(2, "0") if ord(c)<256 else "3f" for c in text])
         else:                          # Symbol or ZapfDingbats
-            otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(2, "0") for c in text])
+            otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(2, "0") if ord(c)<256 else "20" for c in text])
         return "[<" + otxt + ">]"
 
     if ordering < 0:                   # not a CJK font: use the glyphs

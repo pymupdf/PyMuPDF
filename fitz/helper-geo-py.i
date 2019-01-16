@@ -123,7 +123,7 @@ class Matrix():
 
     def concat(self, one, two):
         """Multiply two matrices and replace current one."""
-        if not len(one) == len(Two) == 6:
+        if not len(one) == len(two) == 6:
             raise ValueError("bad sequ. length")
         self.a, self.b, self.c, self.d, self.e, self.f = TOOLS._concat_matrix(one, two)
         return self
