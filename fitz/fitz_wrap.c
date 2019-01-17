@@ -13438,6 +13438,9 @@ SWIGINTERN PyObject *Tools__include_point_in_rect(struct Tools *self,PyObject *r
             return JM_py_from_rect(fz_include_point_in_rect(JM_rect_from_py(r),
                                                      JM_point_from_py(p)));
         }
+SWIGINTERN PyObject *Tools__transform_point(struct Tools *self,PyObject *point,PyObject *matrix){
+            return JM_py_from_point(fz_transform_point(JM_point_from_py(point), JM_matrix_from_py(matrix)));
+        }
 SWIGINTERN PyObject *Tools__union_rect(struct Tools *self,PyObject *r1,PyObject *r2){
             return JM_py_from_rect(fz_union_rect(JM_rect_from_py(r1),
                                                  JM_rect_from_py(r2)));
@@ -13465,14 +13468,22 @@ SWIGINTERN PyObject *Tools__invert_matrix(struct Tools *self,PyObject *matrix){
             }
             return Py_BuildValue("(i, ())", 1);
         }
-SWIGINTERN float Tools_measure_string(struct Tools *self,char const *text,char const *fontname,float fontsize){
+SWIGINTERN float Tools_measure_string(struct Tools *self,char const *text,char const *fontname,float fontsize,int encoding){
             fz_font *font = fz_new_base14_font(gctx, fontname);
             float w = 0;
             while (*text)
             {
                 int c, g;
                 text += fz_chartorune(&c, text);
-                c = pdf_winansi_from_unicode(c);
+                switch (encoding)
+                {
+                    case PDF_SIMPLE_ENCODING_GREEK:
+                        c = pdf_greek_from_unicode(c); break;
+                    case PDF_SIMPLE_ENCODING_CYRILLIC:
+                        c = pdf_cyrillic_from_unicode(c); break;
+                    default:
+                        c = pdf_winansi_from_unicode(c); break;
+                }
                 if (c < 0) c = 0xB7;
                 g = fz_encode_character(gctx, font, c);
                 w += fz_advance_glyph(gctx, font, g, 0);
@@ -21520,6 +21531,34 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Tools__transform_point(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct Tools *arg1 = (struct Tools *) 0 ;
+  PyObject *arg2 = (PyObject *) 0 ;
+  PyObject *arg3 = (PyObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Tools__transform_point",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Tools, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Tools__transform_point" "', argument " "1"" of type '" "struct Tools *""'"); 
+  }
+  arg1 = (struct Tools *)(argp1);
+  arg2 = obj1;
+  arg3 = obj2;
+  result = (PyObject *)Tools__transform_point(arg1,arg2,arg3);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Tools__union_rect(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct Tools *arg1 = (struct Tools *) 0 ;
@@ -21607,6 +21646,7 @@ SWIGINTERN PyObject *_wrap_Tools_measure_string(PyObject *SWIGUNUSEDPARM(self), 
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
   float arg4 ;
+  int arg5 = (int) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res2 ;
@@ -21617,13 +21657,16 @@ SWIGINTERN PyObject *_wrap_Tools_measure_string(PyObject *SWIGUNUSEDPARM(self), 
   int alloc3 = 0 ;
   float val4 ;
   int ecode4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
   float result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:Tools_measure_string",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOO|O:Tools_measure_string",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Tools, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Tools_measure_string" "', argument " "1"" of type '" "struct Tools *""'"); 
@@ -21644,7 +21687,14 @@ SWIGINTERN PyObject *_wrap_Tools_measure_string(PyObject *SWIGUNUSEDPARM(self), 
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "Tools_measure_string" "', argument " "4"" of type '" "float""'");
   } 
   arg4 = (float)(val4);
-  result = (float)Tools_measure_string(arg1,(char const *)arg2,(char const *)arg3,arg4);
+  if (obj4) {
+    ecode5 = SWIG_AsVal_int(obj4, &val5);
+    if (!SWIG_IsOK(ecode5)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "Tools_measure_string" "', argument " "5"" of type '" "int""'");
+    } 
+    arg5 = (int)(val5);
+  }
+  result = (float)Tools_measure_string(arg1,(char const *)arg2,(char const *)arg3,arg4,arg5);
   resultobj = SWIG_From_float((float)(result));
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
@@ -21942,6 +21992,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Tools__transform_rect", _wrap_Tools__transform_rect, METH_VARARGS, (char *)"Transform rectangle with matrix."},
 	 { (char *)"Tools__intersect_rect", _wrap_Tools__intersect_rect, METH_VARARGS, (char *)"Intersect two rectangles."},
 	 { (char *)"Tools__include_point_in_rect", _wrap_Tools__include_point_in_rect, METH_VARARGS, (char *)"Include point in a rect."},
+	 { (char *)"Tools__transform_point", _wrap_Tools__transform_point, METH_VARARGS, (char *)"Transform point with matrix."},
 	 { (char *)"Tools__union_rect", _wrap_Tools__union_rect, METH_VARARGS, (char *)"Replace r1 with smallest rect containing both."},
 	 { (char *)"Tools__concat_matrix", _wrap_Tools__concat_matrix, METH_VARARGS, (char *)"Concatenate matrices m1, m2."},
 	 { (char *)"Tools__invert_matrix", _wrap_Tools__invert_matrix, METH_VARARGS, (char *)"Invert a matrix."},

@@ -6352,6 +6352,12 @@ struct Tools
                                                      JM_point_from_py(p)));
         }
 
+        %feature("autodoc","Transform point with matrix.") _transform_point;
+        PyObject *_transform_point(PyObject *point, PyObject *matrix)
+        {
+            return JM_py_from_point(fz_transform_point(JM_point_from_py(point), JM_matrix_from_py(matrix)));
+        }
+
         %feature("autodoc","Replace r1 with smallest rect containing both.") _union_rect;
         PyObject *_union_rect(PyObject *r1, PyObject *r2)
         {
@@ -6389,7 +6395,8 @@ struct Tools
         }
 
         %feature("autodoc","Measure length of a string for a Base14 font.") measure_string;
-        float measure_string(const char *text, const char *fontname, float fontsize)
+        float measure_string(const char *text, const char *fontname, float fontsize,
+                             int encoding = 0)
         {
             fz_font *font = fz_new_base14_font(gctx, fontname);
             float w = 0;
@@ -6397,7 +6404,15 @@ struct Tools
             {
                 int c, g;
                 text += fz_chartorune(&c, text);
-                c = pdf_winansi_from_unicode(c);
+                switch (encoding)
+                {
+                    case PDF_SIMPLE_ENCODING_GREEK:
+                        c = pdf_greek_from_unicode(c); break;
+                    case PDF_SIMPLE_ENCODING_CYRILLIC:
+                        c = pdf_cyrillic_from_unicode(c); break;
+                    default:
+                        c = pdf_winansi_from_unicode(c); break;
+                }
                 if (c < 0) c = 0xB7;
                 g = fz_encode_character(gctx, font, c);
                 w += fz_advance_glyph(gctx, font, g, 0);
@@ -6440,7 +6455,7 @@ def _oval_string(self, p1, p2, p3, p4):
     """Return /AP string defining an oval within a 4-polygon provided as points
     """
     def bezier(p, q, r):
-        f = "%g %g %g %g %g %g c\n"
+        f = "%f %f %f %f %f %f c\n"
         return f % (p.x, p.y, q.x, q.y, r.x, r.y)
 
     kappa = 0.55228474983              # magic number
@@ -6457,7 +6472,7 @@ def _oval_string(self, p1, p2, p3, p4):
     ul1 = mu + (p4 - mu) * kappa
     ul2 = ml + (p4 - ml) * kappa
     # now draw, starting from middle point of left side
-    ap = "%g %g m\n" % (ml.x, ml.y)
+    ap = "%f %f m\n" % (ml.x, ml.y)
     ap += bezier(ol1, ol2, mo)
     ap += bezier(or1, or2, mr)
     ap += bezier(ur1, ur2, mu)
@@ -6474,13 +6489,13 @@ def _le_diamond(self, annot, p1, p2, lr):
     r = Rect(M, M) + (-d, -d, d, d)         # the square
     # the square makes line longer by (2*shift - 1)*width
     p = (r.tl + (r.bl - r.tl) * 0.5) * im
-    ap = "q\n%s%g %g m\n" % (opacity, p.x, p.y)
+    ap = "q\n%s%f %f m\n" % (opacity, p.x, p.y)
     p = (r.tl + (r.tr - r.tl) * 0.5) * im
-    ap += "%g %g l\n"   % (p.x, p.y)
+    ap += "%f %f l\n"   % (p.x, p.y)
     p = (r.tr + (r.br - r.tr) * 0.5) * im
-    ap += "%g %g l\n"   % (p.x, p.y)
+    ap += "%f %f l\n"   % (p.x, p.y)
     p = (r.br + (r.bl - r.br) * 0.5) * im
-    ap += "%g %g l\n"   % (p.x, p.y)
+    ap += "%f %f l\n"   % (p.x, p.y)
     ap += "%g w\n" % w
     ap += scol + fcol + "b\nQ\n"
     return ap
@@ -6495,13 +6510,13 @@ def _le_square(self, annot, p1, p2, lr):
     r = Rect(M, M) + (-d, -d, d, d)         # the square
     # the square makes line longer by (2*shift - 1)*width
     p = r.tl * im
-    ap = "q\n%s%g %g m\n" % (opacity, p.x, p.y)
+    ap = "q\n%s%f %f m\n" % (opacity, p.x, p.y)
     p = r.tr * im
-    ap += "%g %g l\n"   % (p.x, p.y)
+    ap += "%f %f l\n"   % (p.x, p.y)
     p = r.br * im
-    ap += "%g %g l\n"   % (p.x, p.y)
+    ap += "%f %f l\n"   % (p.x, p.y)
     p = r.bl * im
-    ap += "%g %g l\n"   % (p.x, p.y)
+    ap += "%f %f l\n"   % (p.x, p.y)
     ap += "%g w\n" % w
     ap += scol + fcol + "b\nQ\n"
     return ap
@@ -6528,8 +6543,8 @@ def _le_butt(self, annot, p1, p2, lr):
     M = R if lr else L
     top = (M + (0, -d/2.)) * im
     bot = (M + (0, d/2.)) * im
-    ap = "\nq\n%s%g %g m\n" % (opacity, top.x, top.y)
-    ap += "%g %g l\n" % (bot.x, bot.y)
+    ap = "\nq\n%s%f %f m\n" % (opacity, top.x, top.y)
+    ap += "%f %f l\n" % (bot.x, bot.y)
     ap += "%g w\n" % w
     ap += scol + "s\nQ\n"
     return ap
@@ -6543,8 +6558,8 @@ def _le_slash(self, annot, p1, p2, lr):
     r = Rect(M.x - rw, M.y - 2 * w, M.x + rw, M.y + 2 * w)
     top = r.tl * im
     bot = r.br * im
-    ap = "\nq\n%s%g %g m\n" % (opacity, top.x, top.y)
-    ap += "%g %g l\n" % (bot.x, bot.y)
+    ap = "\nq\n%s%f %f m\n" % (opacity, top.x, top.y)
+    ap += "%f %f l\n" % (bot.x, bot.y)
     ap += "%g w\n" % w
     ap += scol + "s\nQ\n"
     return ap
@@ -6561,9 +6576,9 @@ def _le_openarrow(self, annot, p1, p2, lr):
     p1 *= im
     p2 *= im
     p3 *= im
-    ap = "\nq\n%s%g %g m\n" % (opacity, p1.x, p1.y)
-    ap += "%g %g l\n" % (p2.x, p2.y)
-    ap += "%g %g l\n" % (p3.x, p3.y)
+    ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
+    ap += "%f %f l\n" % (p2.x, p2.y)
+    ap += "%f %f l\n" % (p3.x, p3.y)
     ap += "%g w\n" % w
     ap += scol + "S\nQ\n"
     return ap
@@ -6580,9 +6595,9 @@ def _le_closedarrow(self, annot, p1, p2, lr):
     p1 *= im
     p2 *= im
     p3 *= im
-    ap = "\nq\n%s%g %g m\n" % (opacity, p1.x, p1.y)
-    ap += "%g %g l\n" % (p2.x, p2.y)
-    ap += "%g %g l\n" % (p3.x, p3.y)
+    ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
+    ap += "%f %f l\n" % (p2.x, p2.y)
+    ap += "%f %f l\n" % (p3.x, p3.y)
     ap += "%g w\n" % w
     ap += scol + fcol + "b\nQ\n"
     return ap
@@ -6599,9 +6614,9 @@ def _le_ropenarrow(self, annot, p1, p2, lr):
     p1 *= im
     p2 *= im
     p3 *= im
-    ap = "\nq\n%s%g %g m\n" % (opacity, p1.x, p1.y)
-    ap += "%g %g l\n" % (p2.x, p2.y)
-    ap += "%g %g l\n" % (p3.x, p3.y)
+    ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
+    ap += "%f %f l\n" % (p2.x, p2.y)
+    ap += "%f %f l\n" % (p3.x, p3.y)
     ap += "%g w\n" % w
     ap += scol + fcol + "S\nQ\n"
     return ap
@@ -6618,9 +6633,9 @@ def _le_rclosedarrow(self, annot, p1, p2, lr):
     p1 *= im
     p2 *= im
     p3 *= im
-    ap = "\nq\n%s%g %g m\n" % (opacity, p1.x, p1.y)
-    ap += "%g %g l\n" % (p2.x, p2.y)
-    ap += "%g %g l\n" % (p3.x, p3.y)
+    ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
+    ap += "%f %f l\n" % (p2.x, p2.y)
+    ap += "%f %f l\n" % (p3.x, p3.y)
     ap += "%g w\n" % w
     ap += scol + fcol + "b\nQ\n"
     return ap
