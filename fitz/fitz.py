@@ -105,9 +105,9 @@ fitz_py2 = str is bytes           # if true, this is Python 2
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.6"
-VersionDate = "2019-01-14 06:46:06"
-version = (VersionBind, VersionFitz, "20190114064606")
+VersionBind = "1.14.7"
+VersionDate = "2019-01-17 16:53:54"
+version = (VersionBind, VersionFitz, "20190117165354")
 
 
 class Matrix():
@@ -129,8 +129,8 @@ class Matrix():
         if len(args) == 1:                       # either an angle or a sequ
             if hasattr(args[0], "__float__"):
                 theta = args[0] * math.pi / 180.0
-                c = round(math.cos(theta), 10)
-                s = round(math.sin(theta), 10)
+                c = math.cos(theta)
+                s = math.sin(theta)
                 self.a = self.d = c
                 self.b = s
                 self.c = -s
@@ -234,7 +234,7 @@ class Matrix():
 
     def concat(self, one, two):
         """Multiply two matrices and replace current one."""
-        if not len(one) == len(Two) == 6:
+        if not len(one) == len(two) == 6:
             raise ValueError("bad sequ. length")
         self.a, self.b, self.c, self.d, self.e, self.f = TOOLS._concat_matrix(one, two)
         return self
@@ -384,9 +384,7 @@ class Point():
         """Replace point by its transformation with matrix-like m."""
         if len(m) != 6:
             raise ValueError("bad sequ. length")
-        x = self.x
-        self.x = x * m[0] + self.y * m[2] + m[4]
-        self.y = x * m[1] + self.y * m[3] + m[5]
+        self.x, self.y = TOOLS._transform_point(self, m)
         return self
 
     @property
@@ -1185,6 +1183,12 @@ TEXT_PRESERVE_WHITESPACE = 2
 TEXT_PRESERVE_IMAGES     = 4
 
 #------------------------------------------------------------------------------
+# Simple text encoding options
+#------------------------------------------------------------------------------
+TEXT_ENCODING_LATIN    = 0
+TEXT_ENCODING_GREEK    = 1
+TEXT_ENCODING_CYRILLIC = 2
+#------------------------------------------------------------------------------
 # Stamp annotation icon numbers
 #------------------------------------------------------------------------------
 STAMP_Approved            = 0
@@ -1229,7 +1233,13 @@ Base14_fontdict["tibi"] = "Times-BoldItalic"
 Base14_fontdict["symb"] = "Symbol"
 Base14_fontdict["zadb"] = "ZapfDingbats"
 
-def getTextlen(text, fontname="helv", fontsize=12):
+def getTextlength(text, fontname="helv", fontsize=11, encoding=0):
+    """Calculate length of a string for a given built-in font.
+    :arg str fontname: name of the font.
+    :arg float fontsize: size of font in points.
+    :arg int encoding: encoding to use (0=Latin, 1=Greek, 2=Cyrillic).
+    :returns: (float) length of text.
+    """
     fontname = fontname.lower()
     basename = Base14_fontdict.get(fontname, None)
 
@@ -1239,11 +1249,11 @@ def getTextlen(text, fontname="helv", fontsize=12):
     if basename == "ZapfDingbats":
         glyphs = zapf_glyphs
     if glyphs is not None:
-        w = sum([glyphs[ord(c)][1] for c in text if ord(c) < 256])
+        w = sum([glyphs[ord(c)][1] if ord(c)<256 else glyphs[183][1] for c in text])
         return w * fontsize
 
     if fontname in Base14_fontdict.keys():
-        return TOOLS.measure_string(text, Base14_fontdict[fontname], fontsize)
+        return TOOLS.measure_string(text, Base14_fontdict[fontname], fontsize, encoding)
 
     if fontname in ["china-t", "china-s",
                     "china-ts", "china-ss",
@@ -1258,12 +1268,12 @@ def getTextlen(text, fontname="helv", fontsize=12):
 # Glyph list for the built-in font 'ZapfDingbats'
 #------------------------------------------------------------------------------
 zapf_glyphs = (
- (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
- (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
- (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
- (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
- (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
- (32, 0.278), (32, 0.278), (32, 0.278), (33, 0.974), (34, 0.961), (35, 0.974),
+ (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788),
+ (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788),
+ (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788),
+ (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788),
+ (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788),
+ (183, 0.788), (183, 0.788), (32, 0.278), (33, 0.974), (34, 0.961), (35, 0.974),
  (36, 0.98), (37, 0.719), (38, 0.789), (39, 0.79), (40, 0.791), (41, 0.69),
  (42, 0.96), (43, 0.939), (44, 0.549), (45, 0.855), (46, 0.911), (47, 0.933),
  (48, 0.911), (49, 0.945), (50, 0.974), (51, 0.755), (52, 0.846), (53, 0.762),
@@ -1280,12 +1290,12 @@ zapf_glyphs = (
  (112, 0.762), (113, 0.759), (114, 0.759), (115, 0.892), (116, 0.892),
  (117, 0.788), (118, 0.784), (119, 0.438), (120, 0.138), (121, 0.277),
  (122, 0.415), (123, 0.392), (124, 0.392), (125, 0.668), (126, 0.668),
- (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
- (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
- (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
- (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
- (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278),
- (32, 0.278), (32, 0.278), (32, 0.278), (32, 0.278), (161, 0.732), (162, 0.544),
+ (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788),
+ (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788),
+ (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788),
+ (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788),
+ (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788),
+ (183, 0.788), (183, 0.788), (183, 0.788), (183, 0.788), (161, 0.732), (162, 0.544),
  (163, 0.544), (164, 0.91), (165, 0.667), (166, 0.76), (167, 0.76),
  (168, 0.776), (169, 0.595), (170, 0.694), (171, 0.626), (172, 0.788),
  (173, 0.788), (174, 0.788), (175, 0.788), (176, 0.788), (177, 0.788),
@@ -1301,23 +1311,23 @@ zapf_glyphs = (
  (223, 0.834), (224, 0.873), (225, 0.828), (226, 0.924), (227, 0.924),
  (228, 0.917), (229, 0.93), (230, 0.931), (231, 0.463), (232, 0.883),
  (233, 0.836), (234, 0.836), (235, 0.867), (236, 0.867), (237, 0.696),
- (238, 0.696), (239, 0.874), (32, 0.278), (241, 0.874), (242, 0.76),
+ (238, 0.696), (239, 0.874), (183, 0.788), (241, 0.874), (242, 0.76),
  (243, 0.946), (244, 0.771), (245, 0.865), (246, 0.771), (247, 0.888),
  (248, 0.967), (249, 0.888), (250, 0.831), (251, 0.873), (252, 0.927),
- (253, 0.97), (32, 0.278), (32, 0.278)
+ (253, 0.97), (183, 0.788), (183, 0.788)
  )
 
 #------------------------------------------------------------------------------
 # Glyph list for the built-in font 'Symbol'
 #------------------------------------------------------------------------------
 symbol_glyphs = (
- (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
- (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
- (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
- (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
- (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
- (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
- (63, 0.444), (63, 0.444), (32, 0.25), (33, 0.333), (34, 0.713),
+ (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46),
+ (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46),
+ (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46),
+ (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46),
+ (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46),
+ (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46),
+ (183, 0.46), (183, 0.46), (32, 0.25), (33, 0.333), (34, 0.713),
  (35, 0.5), (36, 0.549), (37, 0.833), (38, 0.778), (39, 0.439),
  (40, 0.333), (41, 0.333), (42, 0.5), (43, 0.549), (44, 0.25), (45, 0.549),
  (46, 0.25), (47, 0.278), (48, 0.5), (49, 0.5), (50, 0.5), (51, 0.5),
@@ -1335,14 +1345,14 @@ symbol_glyphs = (
  (109, 0.576), (110, 0.521), (111, 0.549), (112, 0.549), (113, 0.521),
  (114, 0.549), (115, 0.603), (116, 0.439), (117, 0.576), (118, 0.713),
  (119, 0.686), (120, 0.493), (121, 0.686), (122, 0.494), (123, 0.48),
- (124, 0.2), (125, 0.48), (126, 0.549), (63, 0.444), (63, 0.444),
- (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
- (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
- (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
- (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
- (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
- (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444), (63, 0.444),
- (63, 0.444), (160, 0.25), (161, 0.62), (162, 0.247), (163, 0.549),
+ (124, 0.2), (125, 0.48), (126, 0.549), (183, 0.46), (183, 0.46),
+ (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46),
+ (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46),
+ (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46),
+ (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46),
+ (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46),
+ (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46), (183, 0.46),
+ (183, 0.46), (160, 0.25), (161, 0.62), (162, 0.247), (163, 0.549),
  (164, 0.167), (165, 0.713), (166, 0.5), (167, 0.753), (168, 0.753),
  (169, 0.753), (170, 0.753), (171, 1.042), (172, 0.713), (173, 0.603),
  (174, 0.987), (175, 0.603), (176, 0.4), (177, 0.549), (178, 0.411),
@@ -1358,10 +1368,10 @@ symbol_glyphs = (
  (224, 0.494), (225, 0.329), (226, 0.79), (227, 0.79), (228, 0.786),
  (229, 0.713), (230, 0.384), (231, 0.384), (232, 0.384), (233, 0.384),
  (234, 0.384), (235, 0.384), (236, 0.494), (237, 0.494), (238, 0.494),
- (239, 0.494), (63, 0.444), (241, 0.329), (242, 0.274), (243, 0.686),
+ (239, 0.494), (183, 0.46), (241, 0.329), (242, 0.274), (243, 0.686),
  (244, 0.686), (245, 0.686), (246, 0.384), (247, 0.549), (248, 0.384),
  (249, 0.384), (250, 0.384), (251, 0.384), (252, 0.494), (253, 0.494),
- (254, 0.494), (63, 0.444)
+ (254, 0.494), (183, 0.46)
  )
 
 class linkDest():
@@ -1500,9 +1510,9 @@ def getTJstr(text, glyphs, simple, ordering):
 
     if simple:
         if glyphs is None:             # simple and not Symbol / ZapfDingbats
-            otxt = "".join([hex(ord(c))[2:].rjust(2, "0") if ord(c)<256 else "3f" for c in text])
+            otxt = "".join([hex(ord(c))[2:].rjust(2, "0") if ord(c)<256 else "b7" for c in text])
         else:                          # Symbol or ZapfDingbats
-            otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(2, "0") for c in text])
+            otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(2, "0") if ord(c)<256 else "b7" for c in text])
         return "[<" + otxt + ">]"
 
     if ordering < 0:                   # not a CJK font: use the glyphs
@@ -4403,6 +4413,11 @@ class Tools(_object):
         return _fitz.Tools__include_point_in_rect(self, r, p)
 
 
+    def _transform_point(self, point, matrix):
+        """Transform point with matrix."""
+        return _fitz.Tools__transform_point(self, point, matrix)
+
+
     def _union_rect(self, r1, r2):
         """Replace r1 with smallest rect containing both."""
         return _fitz.Tools__union_rect(self, r1, r2)
@@ -4418,9 +4433,9 @@ class Tools(_object):
         return _fitz.Tools__invert_matrix(self, matrix)
 
 
-    def measure_string(self, text, fontname, fontsize):
+    def measure_string(self, text, fontname, fontsize, encoding=0):
         """Measure length of a string for a Base14 font."""
-        return _fitz.Tools_measure_string(self, text, fontname, fontsize)
+        return _fitz.Tools_measure_string(self, text, fontname, fontsize, encoding)
 
 
 
@@ -4457,7 +4472,7 @@ class Tools(_object):
         """Return /AP string defining an oval within a 4-polygon provided as points
         """
         def bezier(p, q, r):
-            f = "%g %g %g %g %g %g c\n"
+            f = "%f %f %f %f %f %f c\n"
             return f % (p.x, p.y, q.x, q.y, r.x, r.y)
 
         kappa = 0.55228474983              # magic number
@@ -4474,7 +4489,7 @@ class Tools(_object):
         ul1 = mu + (p4 - mu) * kappa
         ul2 = ml + (p4 - ml) * kappa
     # now draw, starting from middle point of left side
-        ap = "%g %g m\n" % (ml.x, ml.y)
+        ap = "%f %f m\n" % (ml.x, ml.y)
         ap += bezier(ol1, ol2, mo)
         ap += bezier(or1, or2, mr)
         ap += bezier(ur1, ur2, mu)
@@ -4491,13 +4506,13 @@ class Tools(_object):
         r = Rect(M, M) + (-d, -d, d, d)         # the square
     # the square makes line longer by (2*shift - 1)*width
         p = (r.tl + (r.bl - r.tl) * 0.5) * im
-        ap = "q\n%s%g %g m\n" % (opacity, p.x, p.y)
+        ap = "q\n%s%f %f m\n" % (opacity, p.x, p.y)
         p = (r.tl + (r.tr - r.tl) * 0.5) * im
-        ap += "%g %g l\n"   % (p.x, p.y)
+        ap += "%f %f l\n"   % (p.x, p.y)
         p = (r.tr + (r.br - r.tr) * 0.5) * im
-        ap += "%g %g l\n"   % (p.x, p.y)
+        ap += "%f %f l\n"   % (p.x, p.y)
         p = (r.br + (r.bl - r.br) * 0.5) * im
-        ap += "%g %g l\n"   % (p.x, p.y)
+        ap += "%f %f l\n"   % (p.x, p.y)
         ap += "%g w\n" % w
         ap += scol + fcol + "b\nQ\n"
         return ap
@@ -4512,13 +4527,13 @@ class Tools(_object):
         r = Rect(M, M) + (-d, -d, d, d)         # the square
     # the square makes line longer by (2*shift - 1)*width
         p = r.tl * im
-        ap = "q\n%s%g %g m\n" % (opacity, p.x, p.y)
+        ap = "q\n%s%f %f m\n" % (opacity, p.x, p.y)
         p = r.tr * im
-        ap += "%g %g l\n"   % (p.x, p.y)
+        ap += "%f %f l\n"   % (p.x, p.y)
         p = r.br * im
-        ap += "%g %g l\n"   % (p.x, p.y)
+        ap += "%f %f l\n"   % (p.x, p.y)
         p = r.bl * im
-        ap += "%g %g l\n"   % (p.x, p.y)
+        ap += "%f %f l\n"   % (p.x, p.y)
         ap += "%g w\n" % w
         ap += scol + fcol + "b\nQ\n"
         return ap
@@ -4545,8 +4560,8 @@ class Tools(_object):
         M = R if lr else L
         top = (M + (0, -d/2.)) * im
         bot = (M + (0, d/2.)) * im
-        ap = "\nq\n%s%g %g m\n" % (opacity, top.x, top.y)
-        ap += "%g %g l\n" % (bot.x, bot.y)
+        ap = "\nq\n%s%f %f m\n" % (opacity, top.x, top.y)
+        ap += "%f %f l\n" % (bot.x, bot.y)
         ap += "%g w\n" % w
         ap += scol + "s\nQ\n"
         return ap
@@ -4560,8 +4575,8 @@ class Tools(_object):
         r = Rect(M.x - rw, M.y - 2 * w, M.x + rw, M.y + 2 * w)
         top = r.tl * im
         bot = r.br * im
-        ap = "\nq\n%s%g %g m\n" % (opacity, top.x, top.y)
-        ap += "%g %g l\n" % (bot.x, bot.y)
+        ap = "\nq\n%s%f %f m\n" % (opacity, top.x, top.y)
+        ap += "%f %f l\n" % (bot.x, bot.y)
         ap += "%g w\n" % w
         ap += scol + "s\nQ\n"
         return ap
@@ -4578,9 +4593,9 @@ class Tools(_object):
         p1 *= im
         p2 *= im
         p3 *= im
-        ap = "\nq\n%s%g %g m\n" % (opacity, p1.x, p1.y)
-        ap += "%g %g l\n" % (p2.x, p2.y)
-        ap += "%g %g l\n" % (p3.x, p3.y)
+        ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
+        ap += "%f %f l\n" % (p2.x, p2.y)
+        ap += "%f %f l\n" % (p3.x, p3.y)
         ap += "%g w\n" % w
         ap += scol + "S\nQ\n"
         return ap
@@ -4597,9 +4612,9 @@ class Tools(_object):
         p1 *= im
         p2 *= im
         p3 *= im
-        ap = "\nq\n%s%g %g m\n" % (opacity, p1.x, p1.y)
-        ap += "%g %g l\n" % (p2.x, p2.y)
-        ap += "%g %g l\n" % (p3.x, p3.y)
+        ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
+        ap += "%f %f l\n" % (p2.x, p2.y)
+        ap += "%f %f l\n" % (p3.x, p3.y)
         ap += "%g w\n" % w
         ap += scol + fcol + "b\nQ\n"
         return ap
@@ -4616,9 +4631,9 @@ class Tools(_object):
         p1 *= im
         p2 *= im
         p3 *= im
-        ap = "\nq\n%s%g %g m\n" % (opacity, p1.x, p1.y)
-        ap += "%g %g l\n" % (p2.x, p2.y)
-        ap += "%g %g l\n" % (p3.x, p3.y)
+        ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
+        ap += "%f %f l\n" % (p2.x, p2.y)
+        ap += "%f %f l\n" % (p3.x, p3.y)
         ap += "%g w\n" % w
         ap += scol + fcol + "S\nQ\n"
         return ap
@@ -4635,9 +4650,9 @@ class Tools(_object):
         p1 *= im
         p2 *= im
         p3 *= im
-        ap = "\nq\n%s%g %g m\n" % (opacity, p1.x, p1.y)
-        ap += "%g %g l\n" % (p2.x, p2.y)
-        ap += "%g %g l\n" % (p3.x, p3.y)
+        ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
+        ap += "%f %f l\n" % (p2.x, p2.y)
+        ap += "%f %f l\n" % (p3.x, p3.y)
         ap += "%g w\n" % w
         ap += scol + fcol + "b\nQ\n"
         return ap

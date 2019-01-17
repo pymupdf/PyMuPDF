@@ -18,8 +18,8 @@ class Matrix():
         if len(args) == 1:                       # either an angle or a sequ
             if hasattr(args[0], "__float__"):
                 theta = args[0] * math.pi / 180.0
-                c = round(math.cos(theta), 10)
-                s = round(math.sin(theta), 10)
+                c = math.cos(theta)
+                s = math.sin(theta)
                 self.a = self.d = c
                 self.b = s
                 self.c = -s
@@ -123,7 +123,7 @@ class Matrix():
 
     def concat(self, one, two):
         """Multiply two matrices and replace current one."""
-        if not len(one) == len(Two) == 6:
+        if not len(one) == len(two) == 6:
             raise ValueError("bad sequ. length")
         self.a, self.b, self.c, self.d, self.e, self.f = TOOLS._concat_matrix(one, two)
         return self
@@ -273,9 +273,7 @@ class Point():
         """Replace point by its transformation with matrix-like m."""
         if len(m) != 6:
             raise ValueError("bad sequ. length")
-        x = self.x
-        self.x = x * m[0] + self.y * m[2] + m[4]
-        self.y = x * m[1] + self.y * m[3] + m[5]
+        self.x, self.y = TOOLS._transform_point(self, m)
         return self
 
     @property

@@ -13,15 +13,15 @@ if sys.platform.startswith('linux'):
                        #library_dirs=['<mupdf_and_3rd_party_libraries_dir>'],
                        libraries=[
                            'mupdf',
+                           #'crypto', #openssl is required by mupdf on archlinux
+                           #'jbig2dec', 'openjp2', 'jpeg', 'freetype',
                            'mupdf-third',
-                           # 'jbig2dec', 'openjp2', 'jpeg', 'freetype',
-                           # 'crypto', #openssl is required by mupdf on archlinux
                            ], # the libraries to link with
                       )
 elif sys.platform.startswith(('darwin', 'freebsd')):
     module = Extension('fitz._fitz', # name of the module
                        ['fitz/fitz_wrap.c'], # C source file
-                       # this are directories containing mupdf's and zlib's header files
+                       # directories containing mupdf's and zlib's header files
                        include_dirs=['/usr/local/include/mupdf', '/usr/local/include'],
                        # libraries should already be linked here by brew
                        library_dirs=['/usr/local/lib'],
@@ -36,8 +36,7 @@ elif sys.platform.startswith(('darwin', 'freebsd')):
 
 else:
 #===============================================================================
-# This will build / set up PyMuPDF under Windows.
-# For details consult the documentation.
+# Build / set up PyMuPDF under Windows
 #===============================================================================
     module = Extension('fitz._fitz',
                        include_dirs=[ # we need the path of the MuPDF's headers
@@ -68,7 +67,7 @@ for l in pkg_tab:
 long_desc = "\n".join(long_dtab)
 
 setup(name = 'PyMuPDF',
-      version = "1.14.6",
+      version = "1.14.7",
       description = 'Python bindings for the PDF rendering library MuPDF',
       long_description = long_desc,
       classifiers = classifier,

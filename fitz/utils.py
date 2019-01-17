@@ -747,16 +747,17 @@ def insertLink(page, lnk, mark = True):
 # Page.insertTextbox
 #-------------------------------------------------------------------------------
 def insertTextbox(page, rect, buffer,
-                  fontname = "helv",
-                  fontfile = None,
-                  set_simple = 0,
-                  fontsize = 11,
-                  color = (0,0,0),
-                  expandtabs = 1,
-                  align = 0,
-                  rotate = 0,
-                  morph = None,
-                  overlay = True):
+                  fontname="helv",
+                  fontfile=None,
+                  set_simple=0,
+                  encoding=0,
+                  fontsize=11,
+                  color=(0,0,0),
+                  expandtabs=1,
+                  align=0,
+                  rotate=0,
+                  morph=None,
+                  overlay=True):
     """Insert text into a given rectangle.
     Parameters:
     rect - the textbox to fill
@@ -774,15 +775,16 @@ def insertTextbox(page, rect, buffer,
     """
     img = page.newShape()
     rc = img.insertTextbox(rect, buffer,
-                           fontsize = fontsize,
-                           fontname = fontname,
-                           fontfile = fontfile,
-                           set_simple = set_simple,
-                           color = color,
-                           expandtabs = expandtabs,
-                           align = align,
-                           rotate = rotate,
-                           morph = morph)
+                           fontsize=fontsize,
+                           fontname=fontname,
+                           fontfile=fontfile,
+                           set_simple=set_simple,
+                           encoding=encoding,
+                           color=color,
+                           expandtabs=expandtabs,
+                           align=align,
+                           rotate=rotate,
+                           morph=morph)
     if rc >= 0:
         img.commit(overlay)
     return rc
@@ -791,24 +793,26 @@ def insertTextbox(page, rect, buffer,
 # Page.insertText
 #------------------------------------------------------------------------------
 def insertText(page, point, text,
-               fontsize = 11,
-               fontname = "helv",
-               fontfile = None,
-               set_simple = 0,
-               color = (0,0,0),
-               rotate = 0,
-               morph = None,
-               overlay = True):
+               fontsize=11,
+               fontname="helv",
+               fontfile=None,
+               set_simple=0,
+               encoding=0,
+               color=(0,0,0),
+               rotate=0,
+               morph=None,
+               overlay=True):
     
     img = page.newShape()
     rc = img.insertText(point, text,
-                        fontsize = fontsize,
-                        fontname = fontname,
-                        fontfile = fontfile,
-                        set_simple = set_simple,
-                        color = color,
-                        rotate = rotate,
-                        morph = morph)
+                        fontsize=fontsize,
+                        fontname=fontname,
+                        fontfile=fontfile,
+                        set_simple=set_simple,
+                        encoding=encoding,
+                        color=color,
+                        rotate=rotate,
+                        morph=morph)
     if rc >= 0:
         img.commit(overlay)
     return rc
@@ -1774,11 +1778,11 @@ class Shape():
         p1 = Point(p1)
         p2 = Point(p2)
         if not (self.lastPoint == p1):
-            self.draw_cont += "%g %g m\n" % tuple(p1 * self.ipctm)
+            self.draw_cont += "%f %f m\n" % tuple(p1 * self.ipctm)
             self.lastPoint = p1
             self.updateRect(p1)
 
-        self.draw_cont += "%g %g l\n" % tuple(p2 * self.ipctm)
+        self.draw_cont += "%f %f l\n" % tuple(p2 * self.ipctm)
         self.updateRect(p2)
         self.lastPoint = p2
         return self.lastPoint
@@ -1789,10 +1793,10 @@ class Shape():
         for i, p in enumerate(points):
             if i == 0:
                 if not (self.lastPoint == Point(p)):
-                    self.draw_cont += "%g %g m\n" % tuple(Point(p) * self.ipctm)
+                    self.draw_cont += "%f %f m\n" % tuple(Point(p) * self.ipctm)
                     self.lastPoint = Point(p)
             else:
-                self.draw_cont += "%g %g l\n" % tuple(Point(p) * self.ipctm)
+                self.draw_cont += "%f %f l\n" % tuple(Point(p) * self.ipctm)
             self.updateRect(p)
 
         self.lastPoint = Point(points[-1])
@@ -1806,8 +1810,8 @@ class Shape():
         p3 = Point(p3)
         p4 = Point(p4)
         if not (self.lastPoint == p1):
-            self.draw_cont += "%g %g m\n" % tuple(p1 * self.ipctm)
-        self.draw_cont += "%g %g %g %g %g %g c\n" % tuple(list(p2 * self.ipctm) + \
+            self.draw_cont += "%f %f m\n" % tuple(p1 * self.ipctm)
+        self.draw_cont += "%f %f %f %f %f %f c\n" % tuple(list(p2 * self.ipctm) + \
                                                           list(p3 * self.ipctm) + \
                                                           list(p4 * self.ipctm))
         self.updateRect(p1)
@@ -1832,7 +1836,7 @@ class Shape():
         mb = q.ll + (q.lr - q.ll) * 0.5
         ml = q.ul + (q.ll - q.ul) * 0.5
         if not (self.lastPoint == ml):
-            self.draw_cont += "%g %g m\n" % tuple(ml * self.ipctm)
+            self.draw_cont += "%f %f m\n" % tuple(ml * self.ipctm)
             self.lastPoint = ml
         self.drawCurve(ml, q.ll, mb)
         self.drawCurve(mb, q.lr, mr)
@@ -1845,7 +1849,8 @@ class Shape():
     def drawCircle(self, center, radius):
         """Draw a circle given its center and radius.
         """
-        assert radius > 1e-5, "radius must be postive"
+        if not radius > 1e-5:
+            raise ValueError("radius must be postive")
         center = Point(center)
         p1 = center - (radius, 0)
         return self.drawSector(center, p1, 360, fullSector = False)
@@ -1866,10 +1871,9 @@ class Shape():
         """
         center = Point(center)
         point = Point(point)
-        h = self.height
-        l3 = "%g %g m\n"
-        l4 = "%g %g %g %g %g %g c\n"
-        l5 = "%g %g l\n"
+        l3 = "%f %f m\n"
+        l4 = "%f %f %f %f %f %f c\n"
+        l5 = "%f %f l\n"
         betar = math.radians(-beta)
         w360 = math.radians(math.copysign(360, betar)) * (-1)
         w90  = math.radians(math.copysign(90, betar))
@@ -1935,7 +1939,7 @@ class Shape():
         """Draw a rectangle.
         """
         r = Rect(rect)
-        self.draw_cont += "%g %g %g %g re\n" % tuple(list(r.bl * self.ipctm) + \
+        self.draw_cont += "%f %f %f %f re\n" % tuple(list(r.bl * self.ipctm) + \
                                                [r.width, r.height])
         self.updateRect(r)
         self.lastPoint = r.tl
@@ -2009,13 +2013,14 @@ class Shape():
 # Shape.insertText
 #==============================================================================
     def insertText(self, point, buffer,
-                   fontsize = 11,
-                   fontname = "helv",
-                   fontfile = None,
-                   set_simple = 0,
-                   color = (0,0,0),
-                   rotate = 0,
-                   morph = None):
+                   fontsize=11,
+                   fontname="helv",
+                   fontfile=None,
+                   set_simple=0,
+                   encoding=0,
+                   color=(0,0,0),
+                   rotate=0,
+                   morph=None):
         
         # ensure 'text' is a list of strings, worth dealing with
         if not bool(buffer): return 0
@@ -2039,8 +2044,11 @@ class Shape():
         if fname.startswith("/"):
             fname = fname[1:]
 
-        xref = self.page.insertFont(fontname = fname, fontfile = fontfile,
-                                        set_simple = set_simple)
+        xref = self.page.insertFont(fontname=fname,
+                                    fontfile=fontfile,
+                                    encoding=encoding,
+                                    set_simple=set_simple,
+                                   )
         fontinfo = CheckFontInfo(self.doc, xref)
 
         fontdict = fontinfo[1]
@@ -2065,7 +2073,7 @@ class Shape():
         while rot < 0: rot += 360
         rot = rot % 360               # text rotate = 0, 90, 270, 180
         red, green, blue = color if color else (0,0,0)
-        templ1 = "\nq BT\n%s1 0 0 1 %g %g Tm /%s %g Tf %g %g %g rg "
+        templ1 = "\nq BT\n%s1 0 0 1 %f %f Tm /%s %g Tf %g %g %g rg "
         templ2 = "TJ\n0 -%g TD\n"
         cmp90 = "0 1 -1 0 0 0 cm\n"   # rotates 90 deg counter-clockwise
         cmm90 = "0 -1 1 0 0 0 cm\n"   # rotates 90 deg clockwise
@@ -2079,7 +2087,7 @@ class Shape():
             m1 = Matrix(1, 0, 0, 1, morph[0].x + self.x,
                              height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
-            cm = "%g %g %g %g %g %g cm\n" % tuple(map(lambda x: round(x, 5), mat))
+            cm = "%f %f %f %f %f %f cm\n" % tuple(mat)
         else:
             cm = ""
         top = height - point.y - self.y # start of 1st char
@@ -2139,10 +2147,17 @@ class Shape():
 #==============================================================================
 # Shape.insertTextbox
 #==============================================================================
-    def insertTextbox(self, rect, buffer, fontname = "helv", fontfile = None,
-                      fontsize = 11, set_simple = 0,
-                      color = (0,0,0), expandtabs = 1,
-                      align = 0, rotate = 0, morph = None):
+    def insertTextbox(self, rect, buffer,
+                      fontname="helv",
+                      fontfile=None,
+                      fontsize=11,
+                      set_simple=0,
+                      encoding=0,
+                      color=(0,0,0),
+                      expandtabs=1,
+                      align=0,
+                      rotate=0,
+                      morph=None):
         """Insert text into a given rectangle. Arguments:
         rect - the textbox to fill
         buffer - text to be inserted
@@ -2179,8 +2194,11 @@ class Shape():
         if fname.startswith("/"):
             fname = fname[1:]
 
-        xref = self.page.insertFont(fontname = fname, fontfile = fontfile,
-                                        set_simple = set_simple)
+        xref = self.page.insertFont(fontname=fname,
+                                    fontfile=fontfile,
+                                    encoding=encoding,
+                                    set_simple=set_simple,
+                                   )
         fontinfo = CheckFontInfo(self.doc, xref)
 
         fontdict = fontinfo[1]
@@ -2231,7 +2249,7 @@ class Shape():
             m1 = Matrix(1, 0, 0, 1, morph[0].x + self.x,
                              self.height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
-            cm = "%g %g %g %g %g %g cm\n" % tuple(map(lambda x: round(x, 5), mat))
+            cm = "%f %f %f %f %f %f cm\n" % tuple(mat)
         else:
             cm = ""
         
@@ -2331,7 +2349,7 @@ class Shape():
         if more < 1e-5:
             more = 0                            # don't bother with epsilons
         nres = "\nq BT\n" + cm                # initialize output buffer
-        templ = "1 0 0 1 %g %g Tm /%s %g Tf %g Tw %g %g %g rg %sTJ\n"
+        templ = "1 0 0 1 %f %f Tm /%s %g Tf %g Tw %g %g %g rg %sTJ\n"
         # center, right, justify: output each line with its own specifics
         spacing = 0
         text_t = text.splitlines()              # split text in lines again
@@ -2414,7 +2432,7 @@ class Shape():
             m1 = Matrix(1, 0, 0, 1, morph[0].x + self.x,
                              self.height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
-            self.draw_cont = "%g %g %g %g %g %g cm\n" % tuple(map(lambda x: round(x, 5), mat)) + self.draw_cont
+            self.draw_cont = "%f %f %f %f %f %f cm\n" % tuple(mat) + self.draw_cont
 
         self.totalcont += "\nq\n" + self.draw_cont + "Q\n"
         self.draw_cont = ""
