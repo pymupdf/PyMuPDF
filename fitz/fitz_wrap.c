@@ -7106,6 +7106,132 @@ void JM_save_document(fz_context *ctx, pdf_document *doc, const char *filename, 
 }
 
 
+//-----------------------------------------------------------------------------
+// pixmap helper functions
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// Clear a pixmap rectangle - my version also supports non-alpha pixmaps
+//-----------------------------------------------------------------------------
+void
+JM_clear_pixmap_rect_with_value(fz_context *ctx, fz_pixmap *dest, int value, fz_irect b)
+{
+    unsigned char *destp;
+    int x, y, w, k, destspan;
+
+    b = fz_intersect_irect(b, fz_pixmap_bbox(ctx, dest));
+    w = b.x1 - b.x0;
+    y = b.y1 - b.y0;
+    if (w <= 0 || y <= 0)
+        return;
+
+    destspan = dest->stride;
+    destp = dest->samples + (unsigned int)(destspan * (b.y0 - dest->y) + dest->n * (b.x0 - dest->x));
+
+    /* CMYK needs special handling (and potentially any other subtractive colorspaces) */
+    if (fz_colorspace_n(ctx, dest->colorspace) == 4)
+    {
+        value = 255 - value;
+        do
+        {
+            unsigned char *s = destp;
+            for (x = 0; x < w; x++)
+            {
+                *s++ = 0;
+                *s++ = 0;
+                *s++ = 0;
+                *s++ = value;
+                if (dest->alpha) *s++ = 255;
+            }
+            destp += destspan;
+        }
+        while (--y);
+        return;
+    }
+
+    do
+    {
+        unsigned char *s = destp;
+        for (x = 0; x < w; x++)
+        {
+            for (k = 0; k < dest->n - 1; k++)
+                *s++ = value;
+            if (dest->alpha) *s++ = 255;
+            else *s++ = value;
+        }
+        destp += destspan;
+    }
+    while (--y);
+}
+
+//-----------------------------------------------------------------------------
+// fill a rect with a color tuple
+//-----------------------------------------------------------------------------
+void
+JM_fill_pixmap_rect_with_color(fz_context *ctx, fz_pixmap *dest, unsigned char col[5], fz_irect b)
+{
+    unsigned char *destp;
+    int x, y, w, i, destspan;
+
+    b = fz_intersect_irect(b, fz_pixmap_bbox(ctx, dest));
+    w = b.x1 - b.x0;
+    y = b.y1 - b.y0;
+    if (w <= 0 || y <= 0)
+        return;
+
+    destspan = dest->stride;
+    destp = dest->samples + (unsigned int)(destspan * (b.y0 - dest->y) + dest->n * (b.x0 - dest->x));
+
+    do
+    {
+        unsigned char *s = destp;
+        for (x = 0; x < w; x++)
+        {
+            for (i = 0; i < dest->n; i++)
+                *s++ = col[i];
+        }
+        destp += destspan;
+    }
+    while (--y);
+}
+
+//-----------------------------------------------------------------------------
+// invert a rectangle - also supports non-alpha pixmaps
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// fill a rect with a color tuple
+//-----------------------------------------------------------------------------
+void
+JM_invert_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_irect b)
+{
+    unsigned char *destp;
+    int x, y, w, i, destspan;
+
+    b = fz_intersect_irect(b, fz_pixmap_bbox(ctx, dest));
+    w = b.x1 - b.x0;
+    y = b.y1 - b.y0;
+    if (w <= 0 || y <= 0)
+        return;
+
+    destspan = dest->stride;
+    destp = dest->samples + (unsigned int)(destspan * (b.y0 - dest->y) + dest->n * (b.x0 - dest->x));
+    int n0 = dest->n - dest->alpha;
+    do
+    {
+        unsigned char *s = destp;
+        for (x = 0; x < w; x++)
+        {
+            for (i = 0; i < n0; i++)
+                *s++ = 255 - *s;
+            if (dest->alpha) *s++;
+        }
+        destp += destspan;
+    }
+    while (--y);
+}
+
+
+
 //----------------------------------------------------------------------------
 // annotation types
 //----------------------------------------------------------------------------
@@ -7814,18 +7940,17 @@ JM_extract_stext_imageblock_as_dict(fz_context *ctx, fz_stext_block *block)
 {
     fz_image *image = block->u.i.image;
     fz_buffer *buf = NULL, *freebuf = NULL;
+    fz_compressed_buffer *buffer = fz_compressed_image_buffer(ctx, image);
     fz_var(buf);
     fz_var(freebuf);
-    fz_compressed_buffer *buffer = NULL;
     int n = fz_colorspace_n(ctx, image->colorspace);
     int w = image->w;
     int h = image->h;
-    int type = 0;
+    int type = FZ_IMAGE_UNKNOWN;
+    if (buffer) type = buffer->params.type;
     unsigned char ext[5];
     PyObject *bytes = JM_BinFromChar("");
     fz_var(bytes);
-    buffer = fz_compressed_image_buffer(ctx, image);
-    if (buffer) type = buffer->params.type;
     PyObject *dict = PyDict_New();
     PyDict_SetItemString(dict, "type",  PyInt_FromLong(FZ_STEXT_BLOCK_IMAGE));
     PyDict_SetItemString(dict, "bbox",   Py_BuildValue("[ffff]",
@@ -7835,12 +7960,14 @@ JM_extract_stext_imageblock_as_dict(fz_context *ctx, fz_stext_block *block)
     PyDict_SetItemString(dict, "height", PyInt_FromLong((long) h));
     fz_try(ctx)
     {
-        if (image->use_colorkey) type = FZ_IMAGE_UNKNOWN;
-        if (image->use_decode)   type = FZ_IMAGE_UNKNOWN;
-        if (image->mask)         type = FZ_IMAGE_UNKNOWN;
-        if (type < FZ_IMAGE_BMP) type = FZ_IMAGE_UNKNOWN;
-        if (n != 1 && n != 3 && type == FZ_IMAGE_JPEG)
+        if (image->use_colorkey ||
+            image->use_decode ||
+            image->mask ||
+            type < FZ_IMAGE_BMP ||
+            type == FZ_IMAGE_JBIG2 ||
+            n != 1 && n != 3 && type == FZ_IMAGE_JPEG)
             type = FZ_IMAGE_UNKNOWN;
+
         if (type != FZ_IMAGE_UNKNOWN)
         {
             buf = buffer->buffer;
@@ -10480,7 +10607,9 @@ SWIGINTERN PyObject *fz_document_s_extractImage(struct fz_document_s *self,int x
                     cbuf = fz_compressed_image_buffer(gctx, image);
                     type = cbuf == NULL ? FZ_IMAGE_UNKNOWN : cbuf->params.type;
                     // ensure returning a PNG for unsupported images ----------
-                    if (type < FZ_IMAGE_BMP) type = FZ_IMAGE_UNKNOWN;
+                    if (type < FZ_IMAGE_BMP ||
+                        type == FZ_IMAGE_JBIG2)
+                        type = FZ_IMAGE_UNKNOWN;
 
                     pdf_obj *o = pdf_dict_get(gctx, obj, PDF_NAME(SMask));
                     if (o) smask = pdf_to_num(gctx, o);
@@ -12025,7 +12154,7 @@ SWIGINTERN void fz_pixmap_s_clearWith__SWIG_1(struct fz_pixmap_s *self,int value
             fz_clear_pixmap_with_value(gctx, self, value);
         }
 SWIGINTERN void fz_pixmap_s_clearWith__SWIG_2(struct fz_pixmap_s *self,int value,PyObject *bbox){
-            fz_clear_pixmap_rect_with_value(gctx, self, value, JM_irect_from_py(bbox));
+            JM_clear_pixmap_rect_with_value(gctx, self, value, JM_irect_from_py(bbox));
         }
 SWIGINTERN PyObject *fz_pixmap_s_copyPixmap(struct fz_pixmap_s *self,struct fz_pixmap_s *src,PyObject *bbox){
             fz_try(gctx)
@@ -12152,10 +12281,11 @@ SWIGINTERN void fz_pixmap_s_invertIRect(struct fz_pixmap_s *self,PyObject *irect
                 }
 
             fz_irect r = JM_irect_from_py(irect);
-            if (!fz_is_infinite_irect(r))
-                fz_invert_pixmap_rect(gctx, self, r);
-            else
-                fz_invert_pixmap(gctx, self);
+            if (fz_is_infinite_irect(r))
+                r = fz_pixmap_bbox(gctx, self);
+
+            JM_invert_pixmap_rect(gctx, self, r);
+
         }
 SWIGINTERN PyObject *fz_pixmap_s_pixel(struct fz_pixmap_s *self,int x,int y){
             PyObject *p = NULL;
@@ -12197,6 +12327,29 @@ SWIGINTERN PyObject *fz_pixmap_s_setPixel(struct fz_pixmap_s *self,int x,int y,P
                 {
                     self->samples[i + j] = c[j];
                 }
+            }
+            fz_catch(gctx)
+            {
+                PyErr_Clear();
+                return NULL;
+            }
+            return NONE;
+        }
+SWIGINTERN PyObject *fz_pixmap_s_setRect(struct fz_pixmap_s *self,PyObject *irect,PyObject *value){
+            fz_try(gctx)
+            {
+                int n = self->n;
+                if (!PySequence_Check(value) || PySequence_Size(value) != n)
+                    THROWMSG("bad pixel value");
+                int i, j;
+                unsigned char c[5];
+                for (j = 0; j < n; j++)
+                {
+                    i = (int) PyInt_AsLong(PySequence_ITEM(value, j));
+                    if (!INRANGE(i, 0, 255)) THROWMSG("bad pixel component");
+                    c[j] = (unsigned char) i;
+                }
+                JM_fill_pixmap_rect_with_color(gctx, self, c, JM_irect_from_py(irect));
             }
             fz_catch(gctx)
             {
@@ -18807,6 +18960,41 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Pixmap_setRect(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
+  PyObject *arg2 = (PyObject *) 0 ;
+  PyObject *arg3 = (PyObject *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Pixmap_setRect",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_pixmap_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pixmap_setRect" "', argument " "1"" of type '" "struct fz_pixmap_s *""'"); 
+  }
+  arg1 = (struct fz_pixmap_s *)(argp1);
+  arg2 = obj1;
+  arg3 = obj2;
+  {
+    result = (PyObject *)fz_pixmap_s_setRect(arg1,arg2,arg3);
+    if(!result)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Pixmap_stride(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_pixmap_s *arg1 = (struct fz_pixmap_s *) 0 ;
@@ -21885,6 +22073,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Pixmap_invertIRect", _wrap_Pixmap_invertIRect, METH_VARARGS, (char *)"Pixmap_invertIRect(self, irect=None)"},
 	 { (char *)"Pixmap_pixel", _wrap_Pixmap_pixel, METH_VARARGS, (char *)"Return the pixel at (x,y) as a list. Last item is the alpha if Pixmap.alpha is true."},
 	 { (char *)"Pixmap_setPixel", _wrap_Pixmap_setPixel, METH_VARARGS, (char *)"Set the pixel at (x,y) to the integers in sequence 'value'."},
+	 { (char *)"Pixmap_setRect", _wrap_Pixmap_setRect, METH_VARARGS, (char *)"Set a rectangle to the integers in sequence 'value'."},
 	 { (char *)"Pixmap_stride", _wrap_Pixmap_stride, METH_VARARGS, (char *)"Pixmap_stride(self) -> int"},
 	 { (char *)"Pixmap_alpha", _wrap_Pixmap_alpha, METH_VARARGS, (char *)"Pixmap_alpha(self) -> int"},
 	 { (char *)"Pixmap_colorspace", _wrap_Pixmap_colorspace, METH_VARARGS, (char *)"Pixmap_colorspace(self) -> Colorspace"},

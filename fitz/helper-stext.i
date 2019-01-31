@@ -242,18 +242,17 @@ JM_extract_stext_imageblock_as_dict(fz_context *ctx, fz_stext_block *block)
 {
     fz_image *image = block->u.i.image;
     fz_buffer *buf = NULL, *freebuf = NULL;
+    fz_compressed_buffer *buffer = fz_compressed_image_buffer(ctx, image);
     fz_var(buf);
     fz_var(freebuf);
-    fz_compressed_buffer *buffer = NULL;
     int n = fz_colorspace_n(ctx, image->colorspace);
     int w = image->w;
     int h = image->h;
-    int type = 0;
+    int type = FZ_IMAGE_UNKNOWN;
+    if (buffer) type = buffer->params.type;
     unsigned char ext[5];
     PyObject *bytes = JM_BinFromChar("");
     fz_var(bytes);
-    buffer = fz_compressed_image_buffer(ctx, image);
-    if (buffer) type = buffer->params.type;
     PyObject *dict = PyDict_New();
     PyDict_SetItemString(dict, "type",  PyInt_FromLong(FZ_STEXT_BLOCK_IMAGE));
     PyDict_SetItemString(dict, "bbox",   Py_BuildValue("[ffff]",
@@ -263,12 +262,14 @@ JM_extract_stext_imageblock_as_dict(fz_context *ctx, fz_stext_block *block)
     PyDict_SetItemString(dict, "height", PyInt_FromLong((long) h));
     fz_try(ctx)
     {
-        if (image->use_colorkey) type = FZ_IMAGE_UNKNOWN;
-        if (image->use_decode)   type = FZ_IMAGE_UNKNOWN;
-        if (image->mask)         type = FZ_IMAGE_UNKNOWN;
-        if (type < FZ_IMAGE_BMP) type = FZ_IMAGE_UNKNOWN;
-        if (n != 1 && n != 3 && type == FZ_IMAGE_JPEG)
+        if (image->use_colorkey ||
+            image->use_decode ||
+            image->mask ||
+            type < FZ_IMAGE_BMP ||
+            type == FZ_IMAGE_JBIG2 ||
+            n != 1 && n != 3 && type == FZ_IMAGE_JPEG)
             type = FZ_IMAGE_UNKNOWN;
+
         if (type != FZ_IMAGE_UNKNOWN)
         {
             buf = buffer->buffer;

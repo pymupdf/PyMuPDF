@@ -1,4 +1,4 @@
-# PyMuPDF 1.14.7
+# PyMuPDF 1.14.8
 
 ![logo](https://github.com/rk700/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
@@ -14,7 +14,7 @@ On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![](https://
 
 # Introduction
 
-This is **version 1.14.7 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.14.x](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
+This is **version 1.14.8 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.14.x](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -61,21 +61,23 @@ In addition to wheels, this platform offers [pre-generated binaries](https://git
 If you are looking to make your own binary, consult this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Windows-Binaries-Generation). It explains how to use Visual Studio for generating MuPDF in quite some detail.
 
 # Usage and Documentation
-For all document types you can render pages in raster (PNG) or vector (SVG) formats, extract text and access meta information, links, annotations and bookmarks, as well as decrypt the document. For PDF files, most of these objects can also be created, modified or deleted. Plus you can rotate, re-arrange, duplicate, create, or delete pages and join or split documents.
+For all document types you can render pages in raster (PNG) or vector (SVG) formats, extract text and images, and access meta information, links, annotations and bookmarks, as well as decrypt the document.
 
-Specifically for PDF files, PyMuPDF provides update access to low-level structure data, supports handling of embedded files and modification of page contents (like inserting images, fonts, text, annotations and drawings).
+For PDF files, most of these objects can also be created, modified or deleted. Plus you can rotate, re-arrange, duplicate, create, delete and split or join **pages** and you can **join or split PDF** documents.
+
+Specifically for **PDF files**, PyMuPDF also provides update access to **low-level structure** data, supports handling of embedded files and modification of **page contents** (like inserting images, fonts, text, annotations and drawings).
 
 Other features include embedding vector images (SVG, PDF) such as logos or watermarks, "posterizing" a PDF or creating "booklet" and "4-up" versions.
 
-You can now also create and update Form PDFs and form fields with support for text, checkbox, listbox and combobox widgets.
+You can now also create and update **Form PDFs** and **form fields** with support for text, checkbox, listbox and combobox widgets.
 
-To some degree, PyMuPDF can also be used as an [image converter](https://github.com/rk700/PyMuPDF/wiki/How-to-Convert-Images): it can read a broad range of input formats and can produce **Portable Network Graphics (PNG)**, **Portable Anymaps** (PNM, etc.), **Portable Arbitrary Maps (PAM)**, **Targa Image Files (TGA)**, **Adobe Postscript** and **Adobe Photoshop** documents, making the use of other graphics packages obselete in many cases. Interfacing with PIL/Pillow is easy as well.
+To some degree, PyMuPDF can also be used as an [image converter](https://github.com/rk700/PyMuPDF/wiki/How-to-Convert-Images): it can read a broad range of input formats and can produce **Portable Network Graphics (PNG)**, **Portable Anymaps** (**PNM**, etc.), **Portable Arbitrary Maps (PAM)**, **Adobe Postscript** and **Adobe Photoshop** documents, making the use of other graphics packages obselete in many cases. But interfacing with e.g. PIL/Pillow for image input and output is easy as well.
 
 Have a look at the basic [demos](https://github.com/rk700/PyMuPDF/tree/master/demo), the [examples](https://github.com/rk700/PyMuPDF/tree/master/examples) (which contain complete, working programs), and the **recipes** section of our [Wiki](https://github.com/rk700/PyMuPDF/wiki) sidebar, which contains more than a dozen of guides in How-To-style.
 
-Our **documentation**, written using Sphinx, is available in various formats from the following sources. It currently is a combination of a reference guide and a user manual. For a quick start to using PyMuPDF look at the [tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial/) and the [recipes](https://pymupdf.readthedocs.io/en/latest/faq/) chapters.
+Our **documentation**, written using Sphinx, is available in various formats from the following sources. It currently is a combination of a reference guide and a user manual. For a **quick start** look at the [tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial/) and the [recipes](https://pymupdf.readthedocs.io/en/latest/faq/) chapters.
 
-* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/). For **best quality downloads** use the following links.
+* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/). For **best quality downloads** you should however use the following links.
 * zipped [HTML](https://github.com/rk700/PyMuPDF/tree/master/doc/html.zip)
 * [Windows CHM](https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm)
 * [PDF](https://github.com/rk700/PyMuPDF/blob/master/doc/PyMuPDF.pdf)
