@@ -181,6 +181,7 @@ fitz_py2 = str is bytes           # if true, this is Python 2
 %include helper-other.i
 %include helper-out-barray.i
 %include helper-write-c.i
+%include helper-pixmap.i
 %include helper-geo-py.i
 %include helper-annot.i
 %include helper-stext.i
@@ -1391,7 +1392,9 @@ if links:
                     cbuf = fz_compressed_image_buffer(gctx, image);
                     type = cbuf == NULL ? FZ_IMAGE_UNKNOWN : cbuf->params.type;
                     // ensure returning a PNG for unsupported images ----------
-                    if (type < FZ_IMAGE_BMP) type = FZ_IMAGE_UNKNOWN;
+                    if (type < FZ_IMAGE_BMP ||
+                        type == FZ_IMAGE_JBIG2)
+                        type = FZ_IMAGE_UNKNOWN;
 
                     pdf_obj *o = pdf_dict_get(gctx, obj, PDF_NAME(SMask));
                     if (o) smask = pdf_to_num(gctx, o);
@@ -3768,7 +3771,7 @@ struct fz_pixmap_s
         //----------------------------------------------------------------------
         void clearWith(int value, PyObject *bbox)
         {
-            fz_clear_pixmap_rect_with_value(gctx, $self, value, JM_irect_from_py(bbox));
+            JM_clear_pixmap_rect_with_value(gctx, $self, value, JM_irect_from_py(bbox));
         }
 
         //----------------------------------------------------------------------
@@ -3964,10 +3967,11 @@ def writePNG(self, filename, savealpha = -1):
                 }
 
             fz_irect r = JM_irect_from_py(irect);
-            if (!fz_is_infinite_irect(r))
-                fz_invert_pixmap_rect(gctx, $self, r);
-            else
-                fz_invert_pixmap(gctx, $self);
+            if (fz_is_infinite_irect(r))
+                r = fz_pixmap_bbox(gctx, $self);
+
+            JM_invert_pixmap_rect(gctx, $self, r);
+
         }
 
         //----------------------------------------------------------------------
@@ -3996,7 +4000,7 @@ def writePNG(self, filename, savealpha = -1):
         }
 
         //----------------------------------------------------------------------
-        // Set one pixel given as a sequence 
+        // Set one pixel to a given color tuple
         //----------------------------------------------------------------------
         FITZEXCEPTION(setPixel, !result)
         %feature("autodoc","Set the pixel at (x,y) to the integers in sequence 'value'.") setPixel;
@@ -4023,6 +4027,36 @@ def writePNG(self, filename, savealpha = -1):
                 {
                     $self->samples[i + j] = c[j];
                 }
+            }
+            fz_catch(gctx)
+            {
+                PyErr_Clear();
+                return NULL;
+            }
+            return NONE;
+        }
+
+        //----------------------------------------------------------------------
+        // Set a rect to a given color tuple
+        //----------------------------------------------------------------------
+        FITZEXCEPTION(setRect, !result)
+        %feature("autodoc","Set a rectangle to the integers in sequence 'value'.") setRect;
+        PyObject *setRect(PyObject *irect, PyObject *value)
+        {
+            fz_try(gctx)
+            {
+                int n = $self->n;
+                if (!PySequence_Check(value) || PySequence_Size(value) != n)
+                    THROWMSG("bad pixel value");
+                int i, j;
+                unsigned char c[5];
+                for (j = 0; j < n; j++)
+                {
+                    i = (int) PyInt_AsLong(PySequence_ITEM(value, j));
+                    if (!INRANGE(i, 0, 255)) THROWMSG("bad pixel component");
+                    c[j] = (unsigned char) i;
+                }
+                JM_fill_pixmap_rect_with_color(gctx, $self, c, JM_irect_from_py(irect));
             }
             fz_catch(gctx)
             {

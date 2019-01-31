@@ -167,7 +167,8 @@ def getPixmap(page, matrix = None, colorspace = csRGB, clip = None,
             cs = csCMYK
         else:
             cs = csRGB
-    assert cs.n in (1,3,4), "unsupported colorspace"
+    if cs.n not in (1,3,4):
+        raise ValueError("unsupported colorspace")
 
     dl = page.getDisplayList()               # create DisplayList
     if clip:
@@ -731,7 +732,9 @@ def updateLink(page, lnk):
     """ Update a link on the current page. """
     CheckParent(page)
     annot = getLinkText(page, lnk)
-    assert annot != "", "link kind not supported"
+    if annot == "":
+        raise ValueError("link kind not supported")
+
     page.parent._updateObject(lnk["xref"], annot, page = page) 
     return
 
@@ -739,7 +742,9 @@ def insertLink(page, lnk, mark = True):
     """ Insert a new link for the current page. """
     CheckParent(page)
     annot = getLinkText(page, lnk)
-    assert annot != "", "link kind not supported"
+    if annot == "":
+        raise ValueError("link kind not supported")
+
     page._addAnnot_FromString([annot])
     return
 
@@ -2069,7 +2074,9 @@ class Shape():
         CheckColor(color)
         morphing = CheckMorph(morph)
         rot = rotate
-        assert rot % 90 == 0, "rotate not multiple of 90"
+        if rot % 90 != 0:
+            raise ValueError("rotate not multiple of 90")
+
         while rot < 0: rot += 360
         rot = rot % 360               # text rotate = 0, 90, 270, 180
         red, green, blue = color if color else (0,0,0)
@@ -2175,7 +2182,9 @@ class Shape():
         if rect.isEmpty or rect.isInfinite:
             raise ValueError("text box must be finite and not empty")
         CheckColor(color)
-        assert rotate % 90 == 0, "rotate must be multiple of 90"
+        if rotate % 90 != 0:
+            raise ValueError("rotate must be multiple of 90")
+
         rot = rotate
         while rot < 0: rot += 360
         rot = rot % 360

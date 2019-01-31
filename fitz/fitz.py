@@ -105,9 +105,9 @@ fitz_py2 = str is bytes           # if true, this is Python 2
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.7"
-VersionDate = "2019-01-17 16:53:54"
-version = (VersionBind, VersionFitz, "20190117165354")
+VersionBind = "1.14.8"
+VersionDate = "2019-01-30 16:03:25"
+version = (VersionBind, VersionFitz, "20190130160325")
 
 
 class Matrix():
@@ -407,13 +407,16 @@ class Point():
 
     def distance_to(self, *args):
         """Return the distance to a rectangle or another point."""
-        assert len(args) > 0, "at least one parameter must be given"
+        if not len(args) > 0:
+            raise ValueError("at least one parameter must be given")
+
         x = args[0]
         if len(args) > 1:
             unit = args[1]
         else:
             unit = "px"
-        u = {"px": (1.,1.), "in": (1.,72.), "cm": (2.54, 72.), "mm": (25.4, 72.)}
+        u = {"px": (1.,1.), "in": (1.,72.), "cm": (2.54, 72.),
+             "mm": (25.4, 72.)}
         f = u[unit][0] / u[unit][1]
         if type(x) is Point:
             return abs(self - x) * f
@@ -3247,6 +3250,11 @@ Pixmap(Document, xref) - from a PDF image"""
     def setPixel(self, x, y, value):
         """Set the pixel at (x,y) to the integers in sequence 'value'."""
         return _fitz.Pixmap_setPixel(self, x, y, value)
+
+
+    def setRect(self, irect, value):
+        """Set a rectangle to the integers in sequence 'value'."""
+        return _fitz.Pixmap_setRect(self, irect, value)
 
     @property
 
