@@ -36,6 +36,7 @@ matrix:
       prefix=/usr/local install && cd .."
     - export CIBW_ENVIRONMENT='CFLAGS=-fPIC'
 install:
+- sudo "$PIP install --upgrade setuptools"
 - "$PIP install cibuildwheel==0.10.0"
 - mkdir mupdf && wget -q $MUPDF -O - | tar zx -C mupdf --strip-components=1
 - cp fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
