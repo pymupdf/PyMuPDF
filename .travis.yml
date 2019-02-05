@@ -28,7 +28,7 @@ matrix:
     - docker
     env: PIP=pip3
     before_install:
-    - brew update -q
+    - brew update
     - brew outdated python || brew upgrade python
     - sudo mkdir -p /usr/local/man && sudo chmod a+rw /usr/local/man
     before_script:
