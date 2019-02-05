@@ -36,14 +36,13 @@ matrix:
       prefix=/usr/local install && cd .."
     - export CIBW_ENVIRONMENT='CFLAGS=-fPIC'
 install:
-- sudo "$PIP install --upgrade setuptools"
-- "$PIP install cibuildwheel==0.10.0"
+- "$PIP install cibuildwheel==0.10.1"
 - mkdir mupdf && wget -q $MUPDF -O - | tar zx -C mupdf --strip-components=1
 - cp fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
 - cp fitz/_pdf-device.c mupdf/source/pdf/pdf-device.c
 - cp fitz/_error.c mupdf/source/fitz/error.c
 script:
-- export CIBW_SKIP="cp33-* cp34-* *i686"
+- export CIBW_SKIP="cp33-* *i686"
 - export CIBW_TEST_COMMAND="python -c 'import fitz'"
 - cibuildwheel --output-dir wheelhouse
 
