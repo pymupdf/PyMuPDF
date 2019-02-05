@@ -43,7 +43,7 @@ install:
 - cp fitz/_pdf-device.c mupdf/source/pdf/pdf-device.c
 - cp fitz/_error.c mupdf/source/fitz/error.c
 script:
-- export CIBW_SKIP="cp33-* *i686"
+- export CIBW_SKIP="cp33-* cp34-* *i686"
 - export CIBW_TEST_COMMAND="python -c 'import fitz'"
 - cibuildwheel --output-dir wheelhouse
 
