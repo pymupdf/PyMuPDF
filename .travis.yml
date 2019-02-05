@@ -23,13 +23,12 @@ matrix:
       HAVE_GLFW=no HAVE_GLUT=no prefix=/usr/local install && cd .."
     - export CIBW_ENVIRONMENT='CFLAGS="-fPIC -std=gnu99"'
   - os: osx
-    osx_image: xcode8.3
     language: generic
     services:
     - docker
     env: PIP=pip3
     before_install:
-    - brew update -q
+    - brew update
     - brew outdated python || brew upgrade python
     - sudo mkdir -p /usr/local/man && sudo chmod a+rw /usr/local/man
     before_script:
@@ -37,7 +36,7 @@ matrix:
       prefix=/usr/local install && cd .."
     - export CIBW_ENVIRONMENT='CFLAGS=-fPIC'
 install:
-- "$PIP install cibuildwheel==0.10.0"
+- "$PIP install cibuildwheel==0.10.1"
 - mkdir mupdf && wget -q $MUPDF -O - | tar zx -C mupdf --strip-components=1
 - cp fitz/_mupdf_config.h mupdf/include/mupdf/fitz/config.h
 - cp fitz/_pdf-device.c mupdf/source/pdf/pdf-device.c
