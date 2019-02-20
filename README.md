@@ -45,7 +45,7 @@ Once this is done, adjust directories in ``setup.py`` and run ``python setup.py 
 The following sections contain further comments for some platforms.
 
 ## Ubuntu
-Our users (thanks to **@gileadslostson** and **@jbarlow83**!) have documented their MuPDF installation experiences from sources in this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Experience-from-an-Ubuntu-installation).
+Our users (thanks to **@gileadslostson** and **@jbarlow83**!) have documented their MuPDF installation experiences from sources in this [Wiki page](https://github.com/rk700/PyMuPDF/wiki/Ubuntu-Installation-Experience).
 
 ## OSX
 First, install the MuPDF headers and libraries, which are provided by mupdf-tools: ``brew install mupdf-tools``.
