@@ -105,9 +105,9 @@ fitz_py2 = str is bytes           # if true, this is Python 2
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.8"
-VersionDate = "2019-01-30 16:03:25"
-version = (VersionBind, VersionFitz, "20190130160325")
+VersionBind = "1.14.9"
+VersionDate = "2019-03-06 14:13:45"
+version = (VersionBind, VersionFitz, "20190306141345")
 
 
 class Matrix():
@@ -1463,34 +1463,49 @@ def getPDFnow():
 # else a string "<FEFF[hexstring]>" is returned, where [hexstring] is the
 # UTF-16BE encoding of the original.
 #-------------------------------------------------------------------------------
-def getPDFstr(x):
-    if x is None or x == "":
+def getPDFstr(s):
+    if not bool(s):
         return "()"
 
-    utf16 = max(ord(c) for c in x) > 255
-    if utf16:
-# require full unicode: make a UTF-16BE hex string with BOM "feff"
-        r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
-# r is 'bytes', so convert to 'str' if Python 3
+    def make_utf16be(s):
+        r = hexlify(bytearray([254, 255]) + bytearray(s, "UTF-16BE"))
         t = r if fitz_py2 else r.decode()
         return "<" + t + ">"                         # brackets indicate hex
 
-    s = x.replace("\x00", " ")
-    if fitz_py2:
-        if type(s) is str:
-            s = unicode(s, "utf-8", "replace")
 
-# following returns ascii original string with mixed-in 
-# octal numbers \nnn if <= chr(255)
+# following either returns original string with mixed-in 
+# octal numbers \nnn if outside ASCII range, or:
+# exits with utf-16be BOM version of the string
     r = ""
     for c in s:
         oc = ord(c)
-        if oc > 127:
-            r += "\\" + oct(oc)[-3:]
-        else:
+        if oc > 255:                                  # shortcut if beyond code range
+            return make_utf16be(s)
+
+        if oc > 31 and oc < 127:
             if c in ("(", ")", "\\"):
                 r += "\\"
             r += c
+            continue
+
+        if oc > 127:
+            r += "\\" + oct(oc)[-3:]
+            continue
+
+        if oc < 8 or oc > 13 or oc == 11 or c == 127:
+            r += "\\267"   # indicate unsupported char
+            continue
+
+        if oc == 8:
+            r += "\\b"
+        elif oc == 9:
+            r += "\\t"
+        elif oc == 10:
+            r += "\\n"
+        elif oc == 12:
+            r += "\\f"
+        elif oc == 13:
+            r += "\\r"
 
     return "(" + r + ")"
 
@@ -2294,6 +2309,14 @@ open(filename, filetype='type') - from file"""
             raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getXrefString(self, xref)
+
+
+    def _getTrailerString(self):
+        """_getTrailerString(self) -> PyObject *"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document__getTrailerString(self)
 
 
     def _getXrefStream(self, xref):
@@ -3238,7 +3261,7 @@ Pixmap(Document, xref) - from a PDF image"""
 
 
     def invertIRect(self, irect=None):
-        """invertIRect(self, irect=None)"""
+        """invertIRect(self, irect=None) -> PyObject *"""
         return _fitz.Pixmap_invertIRect(self, irect)
 
 
@@ -3247,14 +3270,14 @@ Pixmap(Document, xref) - from a PDF image"""
         return _fitz.Pixmap_pixel(self, x, y)
 
 
-    def setPixel(self, x, y, value):
-        """Set the pixel at (x,y) to the integers in sequence 'value'."""
-        return _fitz.Pixmap_setPixel(self, x, y, value)
+    def setPixel(self, x, y, color):
+        """Set the pixel at (x,y) to the integers in sequence 'color'."""
+        return _fitz.Pixmap_setPixel(self, x, y, color)
 
 
-    def setRect(self, irect, value):
-        """Set a rectangle to the integers in sequence 'value'."""
-        return _fitz.Pixmap_setRect(self, irect, value)
+    def setRect(self, irect, color):
+        """Set a rectangle to the integers in sequence 'color'."""
+        return _fitz.Pixmap_setRect(self, irect, color)
 
     @property
 

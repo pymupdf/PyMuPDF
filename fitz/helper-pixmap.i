@@ -6,7 +6,7 @@
 //-----------------------------------------------------------------------------
 // Clear a pixmap rectangle - my version also supports non-alpha pixmaps
 //-----------------------------------------------------------------------------
-void
+int
 JM_clear_pixmap_rect_with_value(fz_context *ctx, fz_pixmap *dest, int value, fz_irect b)
 {
     unsigned char *destp;
@@ -16,7 +16,7 @@ JM_clear_pixmap_rect_with_value(fz_context *ctx, fz_pixmap *dest, int value, fz_
     w = b.x1 - b.x0;
     y = b.y1 - b.y0;
     if (w <= 0 || y <= 0)
-        return;
+        return 0;
 
     destspan = dest->stride;
     destp = dest->samples + (unsigned int)(destspan * (b.y0 - dest->y) + dest->n * (b.x0 - dest->x));
@@ -39,7 +39,7 @@ JM_clear_pixmap_rect_with_value(fz_context *ctx, fz_pixmap *dest, int value, fz_
             destp += destspan;
         }
         while (--y);
-        return;
+        return 1;
     }
 
     do
@@ -55,12 +55,13 @@ JM_clear_pixmap_rect_with_value(fz_context *ctx, fz_pixmap *dest, int value, fz_
         destp += destspan;
     }
     while (--y);
+    return 1;
 }
 
 //-----------------------------------------------------------------------------
 // fill a rect with a color tuple
 //-----------------------------------------------------------------------------
-void
+int
 JM_fill_pixmap_rect_with_color(fz_context *ctx, fz_pixmap *dest, unsigned char col[5], fz_irect b)
 {
     unsigned char *destp;
@@ -70,7 +71,7 @@ JM_fill_pixmap_rect_with_color(fz_context *ctx, fz_pixmap *dest, unsigned char c
     w = b.x1 - b.x0;
     y = b.y1 - b.y0;
     if (w <= 0 || y <= 0)
-        return;
+        return 0;
 
     destspan = dest->stride;
     destp = dest->samples + (unsigned int)(destspan * (b.y0 - dest->y) + dest->n * (b.x0 - dest->x));
@@ -86,6 +87,7 @@ JM_fill_pixmap_rect_with_color(fz_context *ctx, fz_pixmap *dest, unsigned char c
         destp += destspan;
     }
     while (--y);
+    return 1;
 }
 
 //-----------------------------------------------------------------------------
@@ -94,7 +96,7 @@ JM_fill_pixmap_rect_with_color(fz_context *ctx, fz_pixmap *dest, unsigned char c
 //-----------------------------------------------------------------------------
 // fill a rect with a color tuple
 //-----------------------------------------------------------------------------
-void
+int
 JM_invert_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_irect b)
 {
     unsigned char *destp;
@@ -104,7 +106,7 @@ JM_invert_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_irect b)
     w = b.x1 - b.x0;
     y = b.y1 - b.y0;
     if (w <= 0 || y <= 0)
-        return;
+        return 0;
 
     destspan = dest->stride;
     destp = dest->samples + (unsigned int)(destspan * (b.y0 - dest->y) + dest->n * (b.x0 - dest->x));
@@ -121,6 +123,7 @@ JM_invert_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_irect b)
         destp += destspan;
     }
     while (--y);
+    return 1;
 }
 
 %}

@@ -312,34 +312,49 @@ def getPDFnow():
 # else a string "<FEFF[hexstring]>" is returned, where [hexstring] is the
 # UTF-16BE encoding of the original.
 #-------------------------------------------------------------------------------
-def getPDFstr(x):
-    if x is None or x == "":
+def getPDFstr(s):
+    if not bool(s):
         return "()"
 
-    utf16 = max(ord(c) for c in x) > 255
-    if utf16:
-        # require full unicode: make a UTF-16BE hex string with BOM "feff"
-        r = hexlify(bytearray([254, 255]) + bytearray(x, "UTF-16BE"))
-        # r is 'bytes', so convert to 'str' if Python 3
+    def make_utf16be(s):
+        r = hexlify(bytearray([254, 255]) + bytearray(s, "UTF-16BE"))
         t = r if fitz_py2 else r.decode()
         return "<" + t + ">"                         # brackets indicate hex
-    
-    s = x.replace("\x00", " ")
-    if fitz_py2:
-        if type(s) is str:
-            s = unicode(s, "utf-8", "replace")
 
-    # following returns ascii original string with mixed-in 
-    # octal numbers \nnn if <= chr(255)
+
+    # following either returns original string with mixed-in 
+    # octal numbers \nnn if outside ASCII range, or:
+    # exits with utf-16be BOM version of the string
     r = ""
     for c in s:
         oc = ord(c)
-        if oc > 127:
-            r += "\\" + oct(oc)[-3:]
-        else:
+        if oc > 255:                                  # shortcut if beyond code range
+            return make_utf16be(s)
+
+        if oc > 31 and oc < 127:
             if c in ("(", ")", "\\"):
                 r += "\\"
             r += c
+            continue
+
+        if oc > 127:
+            r += "\\" + oct(oc)[-3:]
+            continue
+
+        if oc < 8 or oc > 13 or oc == 11 or c == 127:
+            r += "\\267"   # indicate unsupported char
+            continue
+
+        if oc == 8:
+            r += "\\b"
+        elif oc == 9:
+            r += "\\t"
+        elif oc == 10:
+            r += "\\n"
+        elif oc == 12:
+            r += "\\f"
+        elif oc == 13:
+            r += "\\r"
 
     return "(" + r + ")"
 
