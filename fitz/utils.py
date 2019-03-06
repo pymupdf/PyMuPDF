@@ -757,10 +757,13 @@ def insertTextbox(page, rect, buffer,
                   set_simple=0,
                   encoding=0,
                   fontsize=11,
-                  color=(0,0,0),
+                  color=None,
+                  fill=None,
                   expandtabs=1,
                   align=0,
                   rotate=0,
+                  render_mode=0,
+                  border_width=1,
                   morph=None,
                   overlay=True):
     """Insert text into a given rectangle.
@@ -786,7 +789,10 @@ def insertTextbox(page, rect, buffer,
                            set_simple=set_simple,
                            encoding=encoding,
                            color=color,
+                           fill=fill,
                            expandtabs=expandtabs,
+                           render_mode=render_mode,
+                           border_width=border_width,
                            align=align,
                            rotate=rotate,
                            morph=morph)
@@ -803,7 +809,10 @@ def insertText(page, point, text,
                fontfile=None,
                set_simple=0,
                encoding=0,
-               color=(0,0,0),
+               color=None,
+               fill=None,
+               border_width=1,
+               render_mode=0,
                rotate=0,
                morph=None,
                overlay=True):
@@ -816,6 +825,9 @@ def insertText(page, point, text,
                         set_simple=set_simple,
                         encoding=encoding,
                         color=color,
+                        fill=fill,
+                        border_width=border_width,
+                        render_mode=render_mode,
                         rotate=rotate,
                         morph=morph)
     if rc >= 0:
@@ -2023,7 +2035,10 @@ class Shape():
                    fontfile=None,
                    set_simple=0,
                    encoding=0,
-                   color=(0,0,0),
+                   color=None,
+                   fill=None,
+                   render_mode=0,
+                   border_width=1,
                    rotate=0,
                    morph=None):
         
@@ -2072,6 +2087,9 @@ class Shape():
         text = tab
 
         CheckColor(color)
+        CheckColor(fill)
+        if fill is None and render_mode == 0:    # ensure fill color when 0 Tr
+            fill = color
         morphing = CheckMorph(morph)
         rot = rotate
         if rot % 90 != 0:
@@ -2079,8 +2097,8 @@ class Shape():
 
         while rot < 0: rot += 360
         rot = rot % 360               # text rotate = 0, 90, 270, 180
-        red, green, blue = color if color else (0,0,0)
-        templ1 = "\nq BT\n%s1 0 0 1 %f %f Tm /%s %g Tf %g %g %g rg "
+
+        templ1 = "\nq BT\n%s1 0 0 1 %f %f Tm /%s %g Tf "
         templ2 = "TJ\n0 -%g TD\n"
         cmp90 = "0 1 -1 0 0 0 cm\n"   # rotates 90 deg counter-clockwise
         cmm90 = "0 -1 1 0 0 0 cm\n"   # rotates 90 deg clockwise
@@ -2125,8 +2143,16 @@ class Shape():
         if headroom < fontsize:       # at least 1 full line space required!
             raise ValueError("text starts outside page")
     
-        nres = templ1 % (cm, left, top, fname, fontsize,
-                         red, green, blue)
+        nres = templ1 % (cm, left, top, fname, fontsize)
+        if render_mode > 0:
+            nres += "%i Tr " % render_mode
+        if border_width != 1:
+            nres += "%g w " % border_width
+        if color is not None:
+            nres += "%g %g %g RG " % tuple(color)
+        if fill is not None:
+            nres += "%g %g %g rg " % tuple(fill)
+
     # =========================================================================
     #   start text insertion
     # =========================================================================
@@ -2160,28 +2186,42 @@ class Shape():
                       fontsize=11,
                       set_simple=0,
                       encoding=0,
-                      color=(0,0,0),
+                      color=None,
+                      fill=None,
                       expandtabs=1,
+                      border_width=1,
                       align=0,
+                      render_mode=0,
                       rotate=0,
                       morph=None):
-        """Insert text into a given rectangle. Arguments:
-        rect - the textbox to fill
-        buffer - text to be inserted
-        fontname - a Base-14 font, font name or '/name'
-        fontfile - name of a font file
-        fontsize - font size
-        color - RGB color triple
-        expandtabs - handles tabulators with string function
-        align - left, center, right, justified
-        rotate - 0, 90, 180, or 270 degrees
-        morph - morph box with  a matrix and a pivotal point
-        Returns: unused or deficit rectangle area (float)
+        """Insert text into a given rectangle.
+
+        Args:
+            rect -- the textbox to fill
+            buffer -- text to be inserted
+            fontname -- a Base-14 font, font name or '/name'
+            fontfile -- name of a font file
+            fontsize -- font size
+            color -- RGB stroke color triple
+            fill -- RGB fill color triple
+            render_mode -- text rendering control
+            border_width -- thickness of glyph borders
+            expandtabs -- handles tabulators with string function
+            align -- left, center, right, justified
+            rotate -- 0, 90, 180, or 270 degrees
+            morph -- morph box with  a matrix and a pivotal point
+        Returns:
+            unused or deficit rectangle area (float)
         """
         rect = Rect(rect)
         if rect.isEmpty or rect.isInfinite:
             raise ValueError("text box must be finite and not empty")
+
         CheckColor(color)
+        CheckColor(fill)
+        if fill is None and render_mode == 0:    # ensure fill color for 0 Tr
+            fill = color
+
         if rotate % 90 != 0:
             raise ValueError("rotate must be multiple of 90")
 
@@ -2192,8 +2232,7 @@ class Shape():
         # is buffer worth of dealing with?
         if not bool(buffer):
             return rect.height if rot in (0, 180) else rect.width
-        
-        red, green, blue = color if color else (0,0,0)
+
         cmp90 = "0 1 -1 0 0 0 cm\n"   # rotates counter-clockwise
         cmm90 = "0 -1 1 0 0 0 cm\n"   # rotates clockwise
         cm180 = "-1 0 0 -1 0 0 cm\n"  # rotates by 180 deg.
@@ -2317,19 +2356,21 @@ class Shape():
                     lbuff += word + " "         # yes, and append word
                     rest -= (pl_w + blen)       # update available line space
                     continue
-                # word won't fit in remaining space - output the line
-                lbuff = lbuff.rstrip() + "\n"   # line full, append line break
-                text += lbuff                   # append to total text
-                pos += lheight * progr          # increase line position
-                just_tab.append(True)           # line is justify candidate
-                lbuff = ""                      # re-init line buffer
+                # word won't fit - output line (if not empty)
+                if len(lbuff) > 0:
+                    lbuff = lbuff.rstrip() + "\n"   # line full, append line break
+                    text += lbuff                   # append to total text
+                    pos += lheight * progr          # increase line position
+                    just_tab.append(True)           # line is justify candidate
+                    lbuff = ""                      # re-init line buffer
                 rest = maxwidth                 # re-init avail. space
                 if pl_w <= maxwidth:            # word shorter than 1 line?
-                    lbuff = word + " "          # start new line with it
+                    lbuff = word + " "          # start the line with it
                     rest = maxwidth - pl_w - blen    # update free space
                     continue
                 # long word: split across multiple lines - char by char ...
-                just_tab[-1] = False            # reset justify indicator
+                if len(just_tab) > 0:
+                    just_tab[-1] = False            # reset justify indicator
                 for c in word:
                     if pixlen(lbuff) <= maxwidth - pixlen(c):
                         lbuff += c
@@ -2358,7 +2399,7 @@ class Shape():
         if more < 1e-5:
             more = 0                            # don't bother with epsilons
         nres = "\nq BT\n" + cm                # initialize output buffer
-        templ = "1 0 0 1 %f %f Tm /%s %g Tf %g Tw %g %g %g rg %sTJ\n"
+        templ = "1 0 0 1 %f %f Tm /%s %g Tf "
         # center, right, justify: output each line with its own specifics
         spacing = 0
         text_t = text.splitlines()              # split text in lines again
@@ -2392,8 +2433,20 @@ class Shape():
             elif rot == 180:
                 left = -pnt.x - self.x
                 top  = -height + pnt.y + self.y
-            nres += templ % (left, top, fname, fontsize,
-                             spacing, red, green, blue, getTJstr(t, tj_glyphs, simple, ordering))
+
+            nres += templ % (left, top, fname, fontsize)
+            if render_mode > 0:
+                nres += "%i Tr " % render_mode
+            if spacing != 0:
+                nres += "%g Tw " % spacing
+            if color is not None:
+                nres += "%g %g %g RG " % tuple(color)
+            if fill is not None:
+                nres += "%g %g %g rg " % tuple(fill)
+            if border_width != 1:
+                nres += "%g w " % border_width
+            nres += "%sTJ\n" % getTJstr(t, tj_glyphs, simple, ordering)
+
         nres += "ET Q\n"
         
         self.text_cont += nres

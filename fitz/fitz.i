@@ -1380,21 +1380,16 @@ if links:
             fz_output *out = NULL;
             fz_var(out);
             fz_compressed_buffer *cbuf = NULL;
-            int type = 0, n = 0, xres = 0, yres = 0;
+            int type = FZ_IMAGE_UNKNOWN, n = 0, xres = 0, yres = 0, is_jpx = 0;
             int smask = 0, width = 0, height = 0;
+            const char *cs_name = NULL;
             fz_try(gctx)
             {
                 obj = pdf_new_indirect(gctx, pdf, xref, 0);
                 pdf_obj *subtype = pdf_dict_get(gctx, obj, PDF_NAME(Subtype));
                 if (pdf_name_eq(gctx, subtype, PDF_NAME(Image)))
                 {
-                    image = pdf_load_image(gctx, pdf, obj);
-                    cbuf = fz_compressed_image_buffer(gctx, image);
-                    type = cbuf == NULL ? FZ_IMAGE_UNKNOWN : cbuf->params.type;
-                    // ensure returning a PNG for unsupported images ----------
-                    if (type < FZ_IMAGE_BMP ||
-                        type == FZ_IMAGE_JBIG2)
-                        type = FZ_IMAGE_UNKNOWN;
+                    is_jpx = pdf_is_jpx_image(gctx, obj); // check JPX image type
 
                     pdf_obj *o = pdf_dict_get(gctx, obj, PDF_NAME(SMask));
                     if (o) smask = pdf_to_num(gctx, o);
@@ -1405,11 +1400,38 @@ if links:
                     o = pdf_dict_get(gctx, obj, PDF_NAME(Height));
                     if (o) height = pdf_to_int(gctx, o);
 
-                    n = fz_colorspace_n(gctx, image->colorspace);
-                    fz_image_resolution(image, &xres, &yres);
+                    if (!is_jpx) // skip image loading for JPX
+                    {
+                        image = pdf_load_image(gctx, pdf, obj);
+
+                        n = fz_colorspace_n(gctx, image->colorspace);
+                        cs_name = fz_colorspace_name(gctx, image->colorspace);
+                        fz_image_resolution(image, &xres, &yres);
+
+                        cbuf = fz_compressed_image_buffer(gctx, image);
+                        if (cbuf)
+                        {
+                            type = cbuf->params.type;
+                            buffer = cbuf->buffer;
+                        }
+                    }
+                    else
+                    {
+                        // handling JPX
+                        buffer = pdf_load_stream(gctx, obj);
+                        freebuf = buffer;   // so it will be dropped!
+                        type = FZ_IMAGE_JPX;
+                        o = pdf_dict_get(gctx, obj, PDF_NAME(ColorSpace));
+                        if (o) cs_name = pdf_to_name(gctx, o);
+                    }
+
+                    // ensure returning a PNG for unsupported images ----------
+                    if (type < FZ_IMAGE_BMP ||
+                        type == FZ_IMAGE_JBIG2)
+                        type = FZ_IMAGE_UNKNOWN;
+
                     if (type != FZ_IMAGE_UNKNOWN)
                     {
-                        buffer = cbuf->buffer;   // we will return this buffer
                         switch(type)
                         {
                             case(FZ_IMAGE_BMP):  strcpy(ext, "bmp");  break;
@@ -1422,7 +1444,7 @@ if links:
                             default:             strcpy(ext, "png");  break;
                         }
                     }
-                    else     // we need a pixmap for making the PNG buffer
+                    else  // need a pixmap to make a PNG buffer
                     {
                         pix = fz_get_pixmap_from_image(gctx, image,
                                                        NULL, NULL, NULL, NULL);
@@ -1445,7 +1467,7 @@ if links:
                         strcpy(ext, "png");
                     }
                     PyObject *bytes = JM_BinFromBuffer(gctx, buffer);
-                    rc = Py_BuildValue("{s:s,s:i,s:i,s:i,s:i,s:i,s:i,s:O}",
+                    rc = Py_BuildValue("{s:s,s:i,s:i,s:i,s:i,s:i,s:i,s:s,s:O}",
                                        "ext", ext,
                                        "smask", smask,
                                        "width", width,
@@ -1453,6 +1475,7 @@ if links:
                                        "colorspace", n,
                                        "xres", xres,
                                        "yres", yres,
+                                       "cs-name", cs_name,
                                        "image", bytes);
                     Py_CLEAR(bytes);
                 }
@@ -1467,7 +1490,9 @@ if links:
                 fz_drop_pixmap(gctx, pix);
                 pdf_drop_obj(gctx, obj);
             }
-            fz_catch(gctx) {;}
+
+            fz_catch(gctx) return NULL;
+
             return rc;
         }
 
@@ -1712,6 +1737,40 @@ if links:
             fz_always(gctx)
             {
                 pdf_drop_obj(gctx, obj);
+                fz_drop_output(gctx, out);
+                fz_drop_buffer(gctx, res);
+            }
+            fz_catch(gctx) return NULL;
+            return text;
+        }
+
+        //---------------------------------------------------------------------
+        // Get String of PDF trailer
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(_getTrailerString, !result)
+        CLOSECHECK0(_getTrailerString)
+        PyObject *_getTrailerString()
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self); // conv doc to pdf
+            if (!pdf) return NONE;
+            pdf_obj *obj = NULL;
+            fz_buffer *res = NULL;
+            fz_output *out = NULL;
+            PyObject *text = NULL;
+            fz_try(gctx)
+            {
+                obj = pdf_trailer(gctx, pdf);
+                if (obj)
+                {
+                    res = fz_new_buffer(gctx, 1024);
+                    out = fz_new_output_with_buffer(gctx, res);
+                    pdf_print_obj(gctx, out, obj, 1);
+                    text = JM_StrFromBuffer(gctx, res);
+                }
+                else text = NONE;
+            }
+            fz_always(gctx)
+            {
                 fz_drop_output(gctx, out);
                 fz_drop_buffer(gctx, res);
             }
@@ -3784,6 +3843,8 @@ struct fz_pixmap_s
             {
                 if (!fz_pixmap_colorspace(gctx, src))
                     THROWMSG("cannot copy pixmap with NULL colorspace");
+                if ($self->alpha != src->alpha)
+                    THROWMSG("source and target alpha must be equal");
                 fz_copy_pixmap_rect(gctx, $self, src, JM_irect_from_py(bbox), NULL);
             }
             fz_catch(gctx) return NULL;
@@ -3958,20 +4019,19 @@ def writePNG(self, filename, savealpha = -1):
         //----------------------------------------------------------------------
         // invertIRect
         //----------------------------------------------------------------------
-        void invertIRect(PyObject *irect = NULL)
+        PyObject *invertIRect(PyObject *irect = NULL)
         {
             if (!fz_pixmap_colorspace(gctx, $self))
                 {
                     JM_Warning("ignored for stencil pixmap");
-                    return;
+                    return JM_BOOL(0);
                 }
 
             fz_irect r = JM_irect_from_py(irect);
             if (fz_is_infinite_irect(r))
                 r = fz_pixmap_bbox(gctx, $self);
 
-            JM_invert_pixmap_rect(gctx, $self, r);
-
+            return JM_BOOL(JM_invert_pixmap_rect(gctx, $self, r));
         }
 
         //----------------------------------------------------------------------
@@ -4003,21 +4063,21 @@ def writePNG(self, filename, savealpha = -1):
         // Set one pixel to a given color tuple
         //----------------------------------------------------------------------
         FITZEXCEPTION(setPixel, !result)
-        %feature("autodoc","Set the pixel at (x,y) to the integers in sequence 'value'.") setPixel;
-        PyObject *setPixel(int x, int y, PyObject *value)
+        %feature("autodoc","Set the pixel at (x,y) to the integers in sequence 'color'.") setPixel;
+        PyObject *setPixel(int x, int y, PyObject *color)
         {
             fz_try(gctx)
             {
                 if (!INRANGE(x, 0, $self->w - 1) || !INRANGE(y, 0, $self->h - 1))
-                    THROWMSG("coordinates outside image");
+                    THROWMSG("outside image");
                 int n = $self->n;
-                if (!PySequence_Check(value) || PySequence_Size(value) != n)
-                    THROWMSG("bad pixel value");
+                if (!PySequence_Check(color) || PySequence_Size(color) != n)
+                    THROWMSG("bad color arg");
                 int i, j;
                 unsigned char c[5];
                 for (j = 0; j < n; j++)
                 {
-                    i = (int) PyInt_AsLong(PySequence_ITEM(value, j));
+                    i = (int) PyInt_AsLong(PySequence_ITEM(color, j));
                     if (!INRANGE(i, 0, 255)) THROWMSG("bad pixel component");
                     c[j] = (unsigned char) i;
                 }
@@ -4040,30 +4100,32 @@ def writePNG(self, filename, savealpha = -1):
         // Set a rect to a given color tuple
         //----------------------------------------------------------------------
         FITZEXCEPTION(setRect, !result)
-        %feature("autodoc","Set a rectangle to the integers in sequence 'value'.") setRect;
-        PyObject *setRect(PyObject *irect, PyObject *value)
+        %feature("autodoc","Set a rectangle to the integers in sequence 'color'.") setRect;
+        PyObject *setRect(PyObject *irect, PyObject *color)
         {
+            PyObject *rc = JM_BOOL(0);
             fz_try(gctx)
             {
                 int n = $self->n;
-                if (!PySequence_Check(value) || PySequence_Size(value) != n)
-                    THROWMSG("bad pixel value");
+                if (!PySequence_Check(color) || PySequence_Size(color) != n)
+                    THROWMSG("bad color arg");
                 int i, j;
                 unsigned char c[5];
                 for (j = 0; j < n; j++)
                 {
-                    i = (int) PyInt_AsLong(PySequence_ITEM(value, j));
-                    if (!INRANGE(i, 0, 255)) THROWMSG("bad pixel component");
+                    i = (int) PyInt_AsLong(PySequence_ITEM(color, j));
+                    if (!INRANGE(i, 0, 255)) THROWMSG("bad color component");
                     c[j] = (unsigned char) i;
                 }
-                JM_fill_pixmap_rect_with_color(gctx, $self, c, JM_irect_from_py(irect));
+                i = JM_fill_pixmap_rect_with_color(gctx, $self, c, JM_irect_from_py(irect));
+                rc = JM_BOOL(i);
             }
             fz_catch(gctx)
             {
                 PyErr_Clear();
                 return NULL;
             }
-            return NONE;
+            return rc;
         }
 
         //----------------------------------------------------------------------
