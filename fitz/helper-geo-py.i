@@ -17,9 +17,9 @@ class Matrix():
             return None
         if len(args) == 1:                       # either an angle or a sequ
             if hasattr(args[0], "__float__"):
-                theta = args[0] * math.pi / 180.0
-                c = math.cos(theta)
-                s = math.sin(theta)
+                theta = math.radians(args[0])
+                c = round(math.cos(theta), 8)
+                s = round(math.sin(theta), 8)
                 self.a = self.d = c
                 self.b = s
                 self.c = -s
@@ -110,8 +110,9 @@ class Matrix():
             self.d = b
 
         else:
-            s = math.sin(theta * math.pi / 180.0)
-            c = math.cos(theta * math.pi / 180.0)
+            rad = math.radians(theta)
+            s = round(math.sin(rad), 8)
+            c = round(math.cos(rad), 8)
             a = self.a
             b = self.b
             self.a = c * a + s * self.c
@@ -158,7 +159,8 @@ class Matrix():
         if hasattr(m, "__float__"):
             return Matrix(self.a * m, self.b * m, self.c * m,
                           self.d * m, self.e * m, self.f * m)
-        return self.concat(self, m)
+        m1 = Matrix(1,1)
+        return m1.concat(self, m)
 
     def __truediv__(self, m):
         if hasattr(m, "__float__"):

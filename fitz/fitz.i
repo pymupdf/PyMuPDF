@@ -1418,7 +1418,7 @@ if links:
                     else
                     {
                         // handling JPX
-                        buffer = pdf_load_stream(gctx, obj);
+                        buffer = pdf_load_stream_number(gctx, pdf, xref);
                         freebuf = buffer;   // so it will be dropped!
                         type = FZ_IMAGE_JPX;
                         o = pdf_dict_get(gctx, obj, PDF_NAME(ColorSpace));
@@ -1837,7 +1837,8 @@ if links:
                 new_obj = JM_pdf_obj_from_str(gctx, pdf, text);
                 pdf_update_object(gctx, pdf, xref, new_obj);
                 pdf_drop_obj(gctx, new_obj);
-                if (page) refresh_link_table(gctx, pdf_page_from_fz_page(gctx, page));
+                if (page)
+                    refresh_link_table(gctx, pdf_page_from_fz_page(gctx, page));
             }
             fz_catch(gctx) return NULL;
             pdf->dirty = 1;
@@ -2965,75 +2966,41 @@ fannot._erase()
         // Show a PDF page
         //---------------------------------------------------------------------
         FITZEXCEPTION(_showPDFpage, !result)
-        PyObject *_showPDFpage(PyObject *rect, struct fz_document_s *docsrc, int pno=0, int overlay=1, int keep_proportion=1, int reuse_xref=0, PyObject *clip = NULL, struct pdf_graft_map_s *graftmap = NULL, char *_imgname = NULL)
+        PyObject *_showPDFpage(PyObject *rect, struct fz_document_s *docsrc, int pno=0, int overlay=1, int keep_proportion=1, PyObject *matrix=NULL, int reuse_xref=0, PyObject *clip = NULL, struct pdf_graft_map_s *graftmap = NULL, char *_imgname = NULL)
         {
             int xref = reuse_xref;
             pdf_obj *xobj1, *xobj2, *resources, *o;
             fz_buffer *res, *nres;
-            fz_rect mediabox;
-            fz_rect cropbox;
+            fz_matrix inv_ctm = fz_identity;
+            fz_rect cropbox = fz_empty_rect;
             fz_rect rrect = JM_rect_from_py(rect);
+            fz_matrix mat = JM_matrix_from_py(matrix);
             fz_try(gctx)
             {
-                pdf_page *tpage = pdf_page_from_fz_page(gctx, $self);
-                assert_PDF(tpage);
                 if (fz_is_infinite_rect(rrect) || fz_is_empty_rect(rrect))
                     THROWMSG("rect must be finite and not empty");
+
+                pdf_page *tpage = pdf_page_from_fz_page(gctx, $self);
                 pdf_obj *tpageref = tpage->obj;
                 pdf_document *pdfout = tpage->doc;    // target PDF
                 pdf_document *pdfsrc = pdf_specifics(gctx, docsrc);
-                assert_PDF(pdfsrc);
 
                 //-------------------------------------------------------------
-                // make XObject of source page and get its xref
+                // make XObject out of the source page pno, get its xref,
+                // mediabox and cropbox.
                 //-------------------------------------------------------------
                 xobj1 = JM_xobject_from_page(gctx, pdfout, pdfsrc, pno,
-                                             &mediabox, &cropbox, xref, graftmap);
+                                             &inv_ctm, &cropbox, xref, graftmap);
                 xref = pdf_to_num(gctx, xobj1);
 
                 //-------------------------------------------------------------
                 // Calculate /Matrix and /BBox of the referencing XObject
                 //-------------------------------------------------------------
                 fz_rect rclip = JM_rect_from_py(clip);
-                if (!fz_is_infinite_rect(rclip))   // set cropbox if clip given
+                if (!fz_is_infinite_rect(rclip))  // set cropbox = clip
                 {
-                    cropbox.x0 = rclip.x0;
-                    cropbox.y0 = mediabox.y1 - rclip.y1;
-                    cropbox.x1 = rclip.x1;
-                    cropbox.y1 = mediabox.y1 - rclip.y0;
+                    cropbox = fz_transform_rect(rclip, inv_ctm);
                 }
-                fz_matrix mat = fz_identity;
-                fz_rect prect = fz_bound_page(gctx, $self);
-                fz_rect r = fz_empty_rect;
-                o = pdf_dict_get_inheritable(gctx, tpageref, PDF_NAME(CropBox));
-
-                if (o)
-                {
-                    r = pdf_to_rect(gctx, o);
-                    prect.x0 = r.x0;
-                    prect.y0 = r.y0;
-                }
-                o = pdf_dict_get_inheritable(gctx, tpageref, PDF_NAME(MediaBox));
-                
-                if (o)
-                {
-                    r = pdf_to_rect(gctx, o);
-                    prect.x1 = r.x1;
-                    prect.y1 = r.y1;
-                }
-                
-                float W = rrect.x1 - rrect.x0;
-                float H = rrect.y1 - rrect.y0;
-                float fw = W / (cropbox.x1 - cropbox.x0);
-                float fh = H / (cropbox.y1 - cropbox.y0);
-                if ((fw < fh) && keep_proportion)     // zoom factors in matrix
-                    fh = fw;
-                float X = rrect.x0 + prect.x0 - fw*cropbox.x0;
-                float Y = prect.y1 - (rrect.y1 + prect.y0 + fh*cropbox.y0);
-                mat.a = fw;
-                mat.d = fh;
-                mat.e = X;
-                mat.f = Y;
 
                 //-------------------------------------------------------------
                 // create referencing XObject (controls actual display)
@@ -3173,7 +3140,7 @@ fannot._erase()
                         image = fz_new_image_from_file(gctx, filename);
                     else
                     {
-                        imgbuf = fz_new_buffer_from_shared_data(gctx,
+                        imgbuf = fz_new_buffer_from_copied_data(gctx,
                                                    streamdata, streamlen);
                         image = fz_new_image_from_buffer(gctx, imgbuf);
                     }
@@ -3219,6 +3186,7 @@ fannot._erase()
                 fz_drop_image(gctx, mask);
                 fz_drop_pixmap(gctx, pix);
                 fz_drop_pixmap(gctx, pm);
+                fz_drop_buffer(gctx, imgbuf);
             }
             fz_catch(gctx) return NULL;
             pdf->dirty = 1;

@@ -87,10 +87,13 @@ Base14_fontdict["zadb"] = "ZapfDingbats"
 
 def getTextlength(text, fontname="helv", fontsize=11, encoding=0):
     """Calculate length of a string for a given built-in font.
-    :arg str fontname: name of the font.
-    :arg float fontsize: size of font in points.
-    :arg int encoding: encoding to use (0=Latin, 1=Greek, 2=Cyrillic).
-    :returns: (float) length of text.
+
+    Args:
+        fontname: name of the font.
+        fontsize: size of font in points.
+        encoding: encoding to use (0=Latin, 1=Greek, 2=Cyrillic).
+    Returns:
+        (float) length of text.
     """
     fontname = fontname.lower()
     basename = Base14_fontdict.get(fontname, None)
