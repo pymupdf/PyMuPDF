@@ -1,20 +1,96 @@
 from fitz import *
 import math
-'''
+"""
 The following is a collection of functions to extend PyMupdf.
-'''
+"""
 #==============================================================================
 # A function for displaying other PDF pages
 #==============================================================================
-def showPDFpage(page, rect, src, pno, overlay = True, keep_proportion = True,
-    reuse_xref=0, clip = None):
+def showPDFpage(page,
+                rect,
+                src,
+                pno,
+                overlay=True,
+                keep_proportion=True,
+                rotate=0,
+                reuse_xref=0,
+                clip = None,
+    ):
     """Show page number 'pno' of PDF 'src' in rectangle 'rect'.
     """
+
+    def calc_matrix(sr, tr, keep=True, rotate=0):
+        """ Calculate the transformation matrix between source and target rect.
+
+        Notes:
+            The result also depends on whether a rotation is requested and the ratio
+            of the edges should be kept constant.
+        Args:
+            sr: source rect in PDF (!) coordinate system
+            tr: target rect in PDF coordinate system
+            keep: whether to keep source ratio of width to height
+            rotate: rotation angle in degrees, one of 0, 90, 180, 270.
+        Returns:
+            Transformation matrix.
+        """
+        if rotate in (0, 180):
+            fw = tr.width / sr.width
+            fh = tr.height / sr.height
+        else:
+            fw = tr.width / sr.height
+            fh = tr.height / sr.width
+    
+        if keep:
+            fw = fh = min(fw, fh)
+        msc = Matrix(fw, 0, 0, fh, 0, 0)
+    
+        if rotate == 0:
+            m0 = Matrix(1, 0, 0, 1, -sr.x0, -sr.y0)
+            m1 = Matrix(1, 0, 0, 1, tr.x0, tr.y0)
+            rot = Matrix(1, 1)
+    
+        if rotate == 180:
+            m0 = Matrix(1, 0, 0, 1, -sr.x0, -sr.y0)
+            m1 = Matrix(1, 0, 0, 1, tr.x1, tr.y1)
+            rot = Matrix(1, 1)
+            msc.a *= -1
+            msc.d *= -1
+    
+        if rotate == 90:
+            m0 = Matrix(1, 0, 0, 1, -sr.x0, -sr.y0)
+            m1 = Matrix(1, 0, 0, 1, tr.x1, tr.y0)
+            rot = Matrix(90)
+    
+        if rotate == 270:
+            m0 = Matrix(1, 0, 0, 1, -sr.x0, -sr.y0)
+            m1 = Matrix(1, 0, 0, 1, tr.x0, tr.y1)
+            rot = Matrix(270)
+    
+        m = m0 * rot * msc * m1
+        return m
+
     CheckParent(page)
     doc = page.parent
+
+    if not doc.isPDF or not src.isPDF:
+        raise ValueError("not a PDF")
+
+    while rotate < 0:
+        rotate += 360
+    while rotate > 360:
+        rotate -= 360
+    if rotate not in (0, 90, 180, 270):
+        raise ValueError("rotate not in (0, 90, 180, 270)")
+
+    tar_rect = rect * ~page._getTransformation()
+    src_rect = src[pno].rect if not clip else clip
+    src_rect = src_rect * ~src[pno]._getTransformation()
+    matrix = calc_matrix(src_rect, tar_rect, keep=keep_proportion, rotate=rotate)
+
     # list of existing /Form /XObjects
     xobjlist = doc._getPageInfo(page.number, 3)
     ilst = [i[1] for i in xobjlist]
+
     # create a name that is not in this list
     n = "fzFrm"
     i = 0
@@ -34,20 +110,28 @@ def showPDFpage(page, rect, src, pno, overlay = True, keep_proportion = True,
         gmap = Graftmap(doc)
         doc.Graftmaps[isrc] = gmap
 
-    return page._showPDFpage(rect, src, pno, overlay = overlay,
-                             keep_proportion = keep_proportion,
-                             reuse_xref = reuse_xref, clip = clip,
-                             graftmap = gmap, _imgname = _imgname)
+    return page._showPDFpage(rect, src, pno,
+            overlay=overlay,
+            keep_proportion=keep_proportion,
+            matrix=matrix,
+            reuse_xref=reuse_xref,
+            clip=clip,
+            graftmap=gmap,
+            _imgname=_imgname)
 
 #==============================================================================
 # A function for searching string occurrences on a page.
 #==============================================================================
 def searchFor(page, text, hit_max = 16, quads = False):
-    '''Search for a string on a page. Parameters:
-    text: string to be searched for
-    hit_max: maximum hits
-    Returns a list of rectangles, each containing an occurrence.
-    '''
+    """ Search for a string on a page.
+
+    Args:
+        text: string to be searched for
+        hit_max: maximum hits
+        quads: return quads instead of rectangles
+    Returns:
+        a list of rectangles or quads, each containing an occurrence.
+    """
     CheckParent(page)
     dl = page.getDisplayList()         # create DisplayList
     tp = dl.getTextPage()              # create TextPage
@@ -61,7 +145,17 @@ def searchFor(page, text, hit_max = 16, quads = False):
 # A function for searching string occurrences on a page.
 #==============================================================================
 def searchPageFor(doc, pno, text, hit_max=16, quads=False):
-    """Search for a string on a page. Parameters:\npno: integer page number\ntext: string to be searched for\nhit_max: maximum hits.\nReturns a list of rectangles or quads, each of which surrounds a found occurrence."""
+    """ Search for a string on a page.
+
+    Args:
+        pno: page number
+        text: string to be searched for
+        hit_max: maximum hits
+        quads: return quads instead of rectangles
+    Returns:
+        a list of rectangles or quads, each containing an occurrence.
+    """
+
     return doc[pno].searchFor(text, hit_max = hit_max, quads = quads)
     
 #==============================================================================

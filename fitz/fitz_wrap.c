@@ -8849,28 +8849,33 @@ void retainpages(fz_context *ctx, globals *glo, PyObject *liste)
 // Make an XObject from a PDF page
 // For a positive xref assume that that object can be used instead
 //-----------------------------------------------------------------------------
-pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_document *pdfsrc, int pno, fz_rect *mediabox, fz_rect *cropbox, int xref, pdf_graft_map *gmap)
+pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_document *pdfsrc, int pno, fz_matrix *inv_ctm, fz_rect *cropbox, int xref, pdf_graft_map *gmap)
 {
     fz_buffer *nres = NULL, *res = NULL;
     pdf_obj *xobj1, *contents = NULL, *resources = NULL, *o, *spageref;
+    fz_rect mediabox;
+    fz_matrix ctm = fz_identity;
     int i;
     fz_try(ctx)
     {
         if (pno < 0 || pno >= pdf_count_pages(ctx, pdfsrc))
             THROWMSG("invalid page number(s)");
         spageref = pdf_lookup_page_obj(ctx, pdfsrc, pno);
+        pdf_page_transform(ctx, pdf_load_page(ctx, pdfsrc, pno), NULL, &ctm);
+        *inv_ctm = fz_invert_matrix(ctm);
         pdf_obj *mb = pdf_dict_get_inheritable(ctx, spageref, PDF_NAME(MediaBox));
         if (mb)
-            *mediabox = pdf_to_rect(ctx, mb);
+            mediabox = pdf_to_rect(ctx, mb);
         else 
-            *mediabox = pdf_bound_page(ctx, pdf_load_page(ctx, pdfsrc, pno));
+            mediabox = pdf_bound_page(ctx, pdf_load_page(ctx, pdfsrc, pno));
+
         o = pdf_dict_get_inheritable(ctx, spageref, PDF_NAME(CropBox));
         if (!o)
         {
-            cropbox->x0 = mediabox->x0;
-            cropbox->y0 = mediabox->y0;
-            cropbox->x1 = mediabox->x1;
-            cropbox->y1 = mediabox->y1;
+            cropbox->x0 = mediabox.x0;
+            cropbox->y0 = mediabox.y0;
+            cropbox->x1 = mediabox.x1;
+            cropbox->y1 = mediabox.y1;
         }
         else
             *cropbox = pdf_to_rect(ctx, o);
@@ -8910,7 +8915,7 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
             //-------------------------------------------------------------
             // create XObject representing the source page
             //-------------------------------------------------------------
-            xobj1 = pdf_new_xobject(ctx, pdfout, *mediabox, fz_identity, NULL, res);
+            xobj1 = pdf_new_xobject(ctx, pdfout, mediabox, fz_identity, NULL, res);
             // store spage contents
             JM_update_stream(ctx, pdfout, xobj1, res);
             fz_drop_buffer(ctx, res);
@@ -10636,7 +10641,7 @@ SWIGINTERN PyObject *fz_document_s_extractImage(struct fz_document_s *self,int x
                     else
                     {
                         // handling JPX
-                        buffer = pdf_load_stream(gctx, obj);
+                        buffer = pdf_load_stream_number(gctx, pdf, xref);
                         freebuf = buffer;   // so it will be dropped!
                         type = FZ_IMAGE_JPX;
                         o = pdf_dict_get(gctx, obj, PDF_NAME(ColorSpace));
@@ -10964,7 +10969,8 @@ SWIGINTERN PyObject *fz_document_s__updateObject(struct fz_document_s *self,int 
                 new_obj = JM_pdf_obj_from_str(gctx, pdf, text);
                 pdf_update_object(gctx, pdf, xref, new_obj);
                 pdf_drop_obj(gctx, new_obj);
-                if (page) refresh_link_table(gctx, pdf_page_from_fz_page(gctx, page));
+                if (page)
+                    refresh_link_table(gctx, pdf_page_from_fz_page(gctx, page));
             }
             fz_catch(gctx) return NULL;
             pdf->dirty = 1;
@@ -11624,74 +11630,40 @@ SWIGINTERN PyObject *fz_page_s__cleanContents(struct fz_page_s *self){
             page->doc->dirty = 1;
             return NONE;
         }
-SWIGINTERN PyObject *fz_page_s__showPDFpage(struct fz_page_s *self,PyObject *rect,struct fz_document_s *docsrc,int pno,int overlay,int keep_proportion,int reuse_xref,PyObject *clip,struct pdf_graft_map_s *graftmap,char *_imgname){
+SWIGINTERN PyObject *fz_page_s__showPDFpage(struct fz_page_s *self,PyObject *rect,struct fz_document_s *docsrc,int pno,int overlay,int keep_proportion,PyObject *matrix,int reuse_xref,PyObject *clip,struct pdf_graft_map_s *graftmap,char *_imgname){
             int xref = reuse_xref;
             pdf_obj *xobj1, *xobj2, *resources, *o;
             fz_buffer *res, *nres;
-            fz_rect mediabox;
-            fz_rect cropbox;
+            fz_matrix inv_ctm = fz_identity;
+            fz_rect cropbox = fz_empty_rect;
             fz_rect rrect = JM_rect_from_py(rect);
+            fz_matrix mat = JM_matrix_from_py(matrix);
             fz_try(gctx)
             {
-                pdf_page *tpage = pdf_page_from_fz_page(gctx, self);
-                assert_PDF(tpage);
                 if (fz_is_infinite_rect(rrect) || fz_is_empty_rect(rrect))
                     THROWMSG("rect must be finite and not empty");
+
+                pdf_page *tpage = pdf_page_from_fz_page(gctx, self);
                 pdf_obj *tpageref = tpage->obj;
                 pdf_document *pdfout = tpage->doc;    // target PDF
                 pdf_document *pdfsrc = pdf_specifics(gctx, docsrc);
-                assert_PDF(pdfsrc);
 
                 //-------------------------------------------------------------
-                // make XObject of source page and get its xref
+                // make XObject out of the source page pno, get its xref,
+                // mediabox and cropbox.
                 //-------------------------------------------------------------
                 xobj1 = JM_xobject_from_page(gctx, pdfout, pdfsrc, pno,
-                                             &mediabox, &cropbox, xref, graftmap);
+                                             &inv_ctm, &cropbox, xref, graftmap);
                 xref = pdf_to_num(gctx, xobj1);
 
                 //-------------------------------------------------------------
                 // Calculate /Matrix and /BBox of the referencing XObject
                 //-------------------------------------------------------------
                 fz_rect rclip = JM_rect_from_py(clip);
-                if (!fz_is_infinite_rect(rclip))   // set cropbox if clip given
+                if (!fz_is_infinite_rect(rclip))  // set cropbox = clip
                 {
-                    cropbox.x0 = rclip.x0;
-                    cropbox.y0 = mediabox.y1 - rclip.y1;
-                    cropbox.x1 = rclip.x1;
-                    cropbox.y1 = mediabox.y1 - rclip.y0;
+                    cropbox = fz_transform_rect(rclip, inv_ctm);
                 }
-                fz_matrix mat = fz_identity;
-                fz_rect prect = fz_bound_page(gctx, self);
-                fz_rect r = fz_empty_rect;
-                o = pdf_dict_get_inheritable(gctx, tpageref, PDF_NAME(CropBox));
-
-                if (o)
-                {
-                    r = pdf_to_rect(gctx, o);
-                    prect.x0 = r.x0;
-                    prect.y0 = r.y0;
-                }
-                o = pdf_dict_get_inheritable(gctx, tpageref, PDF_NAME(MediaBox));
-                
-                if (o)
-                {
-                    r = pdf_to_rect(gctx, o);
-                    prect.x1 = r.x1;
-                    prect.y1 = r.y1;
-                }
-                
-                float W = rrect.x1 - rrect.x0;
-                float H = rrect.y1 - rrect.y0;
-                float fw = W / (cropbox.x1 - cropbox.x0);
-                float fh = H / (cropbox.y1 - cropbox.y0);
-                if ((fw < fh) && keep_proportion)     // zoom factors in matrix
-                    fh = fw;
-                float X = rrect.x0 + prect.x0 - fw*cropbox.x0;
-                float Y = prect.y1 - (rrect.y1 + prect.y0 + fh*cropbox.y0);
-                mat.a = fw;
-                mat.d = fh;
-                mat.e = X;
-                mat.f = Y;
 
                 //-------------------------------------------------------------
                 // create referencing XObject (controls actual display)
@@ -11813,7 +11785,7 @@ SWIGINTERN PyObject *fz_page_s_insertImage(struct fz_page_s *self,PyObject *rect
                         image = fz_new_image_from_file(gctx, filename);
                     else
                     {
-                        imgbuf = fz_new_buffer_from_shared_data(gctx,
+                        imgbuf = fz_new_buffer_from_copied_data(gctx,
                                                    streamdata, streamlen);
                         image = fz_new_image_from_buffer(gctx, imgbuf);
                     }
@@ -11859,6 +11831,7 @@ SWIGINTERN PyObject *fz_page_s_insertImage(struct fz_page_s *self,PyObject *rect
                 fz_drop_image(gctx, mask);
                 fz_drop_pixmap(gctx, pix);
                 fz_drop_pixmap(gctx, pm);
+                fz_drop_buffer(gctx, imgbuf);
             }
             fz_catch(gctx) return NULL;
             pdf->dirty = 1;
@@ -17207,10 +17180,11 @@ SWIGINTERN PyObject *_wrap_Page__showPDFpage(PyObject *SWIGUNUSEDPARM(self), PyO
   int arg4 = (int) 0 ;
   int arg5 = (int) 1 ;
   int arg6 = (int) 1 ;
-  int arg7 = (int) 0 ;
-  PyObject *arg8 = (PyObject *) NULL ;
-  struct pdf_graft_map_s *arg9 = (struct pdf_graft_map_s *) NULL ;
-  char *arg10 = (char *) NULL ;
+  PyObject *arg7 = (PyObject *) NULL ;
+  int arg8 = (int) 0 ;
+  PyObject *arg9 = (PyObject *) NULL ;
+  struct pdf_graft_map_s *arg10 = (struct pdf_graft_map_s *) NULL ;
+  char *arg11 = (char *) NULL ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp3 = 0 ;
@@ -17221,13 +17195,13 @@ SWIGINTERN PyObject *_wrap_Page__showPDFpage(PyObject *SWIGUNUSEDPARM(self), PyO
   int ecode5 = 0 ;
   int val6 ;
   int ecode6 = 0 ;
-  int val7 ;
-  int ecode7 = 0 ;
-  void *argp9 = 0 ;
-  int res9 = 0 ;
-  int res10 ;
-  char *buf10 = 0 ;
-  int alloc10 = 0 ;
+  int val8 ;
+  int ecode8 = 0 ;
+  void *argp10 = 0 ;
+  int res10 = 0 ;
+  int res11 ;
+  char *buf11 = 0 ;
+  int alloc11 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -17238,9 +17212,10 @@ SWIGINTERN PyObject *_wrap_Page__showPDFpage(PyObject *SWIGUNUSEDPARM(self), PyO
   PyObject * obj7 = 0 ;
   PyObject * obj8 = 0 ;
   PyObject * obj9 = 0 ;
+  PyObject * obj10 = 0 ;
   PyObject *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO|OOOOOOO:Page__showPDFpage",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO|OOOOOOOO:Page__showPDFpage",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_page_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Page__showPDFpage" "', argument " "1"" of type '" "struct fz_page_s *""'"); 
@@ -17274,31 +17249,34 @@ SWIGINTERN PyObject *_wrap_Page__showPDFpage(PyObject *SWIGUNUSEDPARM(self), PyO
     arg6 = (int)(val6);
   }
   if (obj6) {
-    ecode7 = SWIG_AsVal_int(obj6, &val7);
-    if (!SWIG_IsOK(ecode7)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "Page__showPDFpage" "', argument " "7"" of type '" "int""'");
-    } 
-    arg7 = (int)(val7);
+    arg7 = obj6;
   }
   if (obj7) {
-    arg8 = obj7;
+    ecode8 = SWIG_AsVal_int(obj7, &val8);
+    if (!SWIG_IsOK(ecode8)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "Page__showPDFpage" "', argument " "8"" of type '" "int""'");
+    } 
+    arg8 = (int)(val8);
   }
   if (obj8) {
-    res9 = SWIG_ConvertPtr(obj8, &argp9,SWIGTYPE_p_pdf_graft_map_s, 0 |  0 );
-    if (!SWIG_IsOK(res9)) {
-      SWIG_exception_fail(SWIG_ArgError(res9), "in method '" "Page__showPDFpage" "', argument " "9"" of type '" "struct pdf_graft_map_s *""'"); 
-    }
-    arg9 = (struct pdf_graft_map_s *)(argp9);
+    arg9 = obj8;
   }
   if (obj9) {
-    res10 = SWIG_AsCharPtrAndSize(obj9, &buf10, NULL, &alloc10);
+    res10 = SWIG_ConvertPtr(obj9, &argp10,SWIGTYPE_p_pdf_graft_map_s, 0 |  0 );
     if (!SWIG_IsOK(res10)) {
-      SWIG_exception_fail(SWIG_ArgError(res10), "in method '" "Page__showPDFpage" "', argument " "10"" of type '" "char *""'");
+      SWIG_exception_fail(SWIG_ArgError(res10), "in method '" "Page__showPDFpage" "', argument " "10"" of type '" "struct pdf_graft_map_s *""'"); 
     }
-    arg10 = (char *)(buf10);
+    arg10 = (struct pdf_graft_map_s *)(argp10);
+  }
+  if (obj10) {
+    res11 = SWIG_AsCharPtrAndSize(obj10, &buf11, NULL, &alloc11);
+    if (!SWIG_IsOK(res11)) {
+      SWIG_exception_fail(SWIG_ArgError(res11), "in method '" "Page__showPDFpage" "', argument " "11"" of type '" "char *""'");
+    }
+    arg11 = (char *)(buf11);
   }
   {
-    result = (PyObject *)fz_page_s__showPDFpage(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10);
+    result = (PyObject *)fz_page_s__showPDFpage(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11);
     if(!result)
     {
       PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
@@ -17306,10 +17284,10 @@ SWIGINTERN PyObject *_wrap_Page__showPDFpage(PyObject *SWIGUNUSEDPARM(self), PyO
     }
   }
   resultobj = result;
-  if (alloc10 == SWIG_NEWOBJ) free((char*)buf10);
+  if (alloc11 == SWIG_NEWOBJ) free((char*)buf11);
   return resultobj;
 fail:
-  if (alloc10 == SWIG_NEWOBJ) free((char*)buf10);
+  if (alloc11 == SWIG_NEWOBJ) free((char*)buf11);
   return NULL;
 }
 
@@ -22115,7 +22093,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Page__addAnnot_FromString", _wrap_Page__addAnnot_FromString, METH_VARARGS, (char *)"Page__addAnnot_FromString(self, linklist) -> PyObject *"},
 	 { (char *)"Page__getLinkXrefs", _wrap_Page__getLinkXrefs, METH_VARARGS, (char *)"Page__getLinkXrefs(self) -> PyObject *"},
 	 { (char *)"Page__cleanContents", _wrap_Page__cleanContents, METH_VARARGS, (char *)"Page__cleanContents(self) -> PyObject *"},
-	 { (char *)"Page__showPDFpage", _wrap_Page__showPDFpage, METH_VARARGS, (char *)"Page__showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportion=1, reuse_xref=0, clip=None, graftmap=None, _imgname=None) -> PyObject *"},
+	 { (char *)"Page__showPDFpage", _wrap_Page__showPDFpage, METH_VARARGS, (char *)"Page__showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportion=1, matrix=None, reuse_xref=0, clip=None, graftmap=None, _imgname=None) -> PyObject *"},
 	 { (char *)"Page_insertImage", _wrap_Page_insertImage, METH_VARARGS, (char *)"Insert a new image into a rectangle."},
 	 { (char *)"Page__insertFont", _wrap_Page__insertFont, METH_VARARGS, (char *)"Page__insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, serif, encoding, ordering) -> PyObject *"},
 	 { (char *)"Page__getTransformation", _wrap_Page__getTransformation, METH_VARARGS, (char *)"Page__getTransformation(self) -> PyObject *"},

@@ -105,9 +105,9 @@ fitz_py2 = str is bytes           # if true, this is Python 2
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.9"
-VersionDate = "2019-03-06 14:13:45"
-version = (VersionBind, VersionFitz, "20190306141345")
+VersionBind = "1.14.10"
+VersionDate = "2019-03-10 11:59:51"
+version = (VersionBind, VersionFitz, "20190310115951")
 
 
 class Matrix():
@@ -128,9 +128,9 @@ class Matrix():
             return None
         if len(args) == 1:                       # either an angle or a sequ
             if hasattr(args[0], "__float__"):
-                theta = args[0] * math.pi / 180.0
-                c = math.cos(theta)
-                s = math.sin(theta)
+                theta = math.radians(args[0])
+                c = round(math.cos(theta), 8)
+                s = round(math.sin(theta), 8)
                 self.a = self.d = c
                 self.b = s
                 self.c = -s
@@ -221,8 +221,9 @@ class Matrix():
             self.d = b
 
         else:
-            s = math.sin(theta * math.pi / 180.0)
-            c = math.cos(theta * math.pi / 180.0)
+            rad = math.radians(theta)
+            s = round(math.sin(rad), 8)
+            c = round(math.cos(rad), 8)
             a = self.a
             b = self.b
             self.a = c * a + s * self.c
@@ -269,7 +270,8 @@ class Matrix():
         if hasattr(m, "__float__"):
             return Matrix(self.a * m, self.b * m, self.c * m,
                           self.d * m, self.e * m, self.f * m)
-        return self.concat(self, m)
+        m1 = Matrix(1,1)
+        return m1.concat(self, m)
 
     def __truediv__(self, m):
         if hasattr(m, "__float__"):
@@ -1238,10 +1240,13 @@ Base14_fontdict["zadb"] = "ZapfDingbats"
 
 def getTextlength(text, fontname="helv", fontsize=11, encoding=0):
     """Calculate length of a string for a given built-in font.
-    :arg str fontname: name of the font.
-    :arg float fontsize: size of font in points.
-    :arg int encoding: encoding to use (0=Latin, 1=Greek, 2=Cyrillic).
-    :returns: (float) length of text.
+
+    Args:
+        fontname: name of the font.
+        fontsize: size of font in points.
+        encoding: encoding to use (0=Latin, 1=Greek, 2=Cyrillic).
+    Returns:
+        (float) length of text.
     """
     fontname = fontname.lower()
     basename = Base14_fontdict.get(fontname, None)
@@ -2922,9 +2927,9 @@ class Page(_object):
         return _fitz.Page__cleanContents(self)
 
 
-    def _showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportion=1, reuse_xref=0, clip=None, graftmap=None, _imgname=None):
-        """_showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportion=1, reuse_xref=0, clip=None, graftmap=None, _imgname=None) -> PyObject *"""
-        return _fitz.Page__showPDFpage(self, rect, docsrc, pno, overlay, keep_proportion, reuse_xref, clip, graftmap, _imgname)
+    def _showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportion=1, matrix=None, reuse_xref=0, clip=None, graftmap=None, _imgname=None):
+        """_showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportion=1, matrix=None, reuse_xref=0, clip=None, graftmap=None, _imgname=None) -> PyObject *"""
+        return _fitz.Page__showPDFpage(self, rect, docsrc, pno, overlay, keep_proportion, matrix, reuse_xref, clip, graftmap, _imgname)
 
 
     def insertImage(self, rect, filename=None, pixmap=None, stream=None, overlay=1, _imgname=None):
