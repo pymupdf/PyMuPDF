@@ -52,7 +52,7 @@ deploy:
   keep-history: false
   skip_cleanup: true
   local-dir: wheelhouse
-  repo: JorjMcKie/PyMuPDF-wheels
+  repo: pymupdf/PyMuPDF-wheels
   target-branch: $TRAVIS_OS_NAME
   on:
     repo: JorjMcKie/py-mupdf
