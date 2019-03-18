@@ -3,41 +3,20 @@
 // Make an XObject from a PDF page
 // For a positive xref assume that that object can be used instead
 //-----------------------------------------------------------------------------
-pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_document *pdfsrc, int pno, fz_matrix *inv_ctm, fz_rect *cropbox, int xref, pdf_graft_map *gmap)
+pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, fz_page *fsrcpage, int xref, pdf_graft_map *gmap)
 {
     fz_buffer *nres = NULL, *res = NULL;
     pdf_obj *xobj1, *contents = NULL, *resources = NULL, *o, *spageref;
     fz_rect mediabox;
-    fz_matrix ctm = fz_identity;
     int i;
     fz_try(ctx)
     {
-        if (pno < 0 || pno >= pdf_count_pages(ctx, pdfsrc))
-            THROWMSG("invalid page number(s)");
-        spageref = pdf_lookup_page_obj(ctx, pdfsrc, pno);
-        pdf_page_transform(ctx, pdf_load_page(ctx, pdfsrc, pno), NULL, &ctm);
-        *inv_ctm = fz_invert_matrix(ctm);
-        pdf_obj *mb = pdf_dict_get_inheritable(ctx, spageref, PDF_NAME(MediaBox));
-        if (mb)
-            mediabox = pdf_to_rect(ctx, mb);
-        else 
-            mediabox = pdf_bound_page(ctx, pdf_load_page(ctx, pdfsrc, pno));
-
-        o = pdf_dict_get_inheritable(ctx, spageref, PDF_NAME(CropBox));
-        if (!o)
-        {
-            cropbox->x0 = mediabox.x0;
-            cropbox->y0 = mediabox.y0;
-            cropbox->x1 = mediabox.x1;
-            cropbox->y1 = mediabox.y1;
-        }
-        else
-            *cropbox = pdf_to_rect(ctx, o);
+        pdf_page *srcpage = pdf_page_from_fz_page(ctx, fsrcpage);
+        spageref = srcpage->obj;
+        mediabox = pdf_to_rect(ctx, pdf_dict_get_inheritable(ctx, spageref, PDF_NAME(MediaBox)));
 
         if (xref > 0)        // we can reuse an XObject!
         {
-            if (xref >= pdf_xref_len(ctx, pdfout))
-                THROWMSG("xref out of range");
             xobj1 = pdf_new_indirect(ctx, pdfout, xref, 0);
         }
         else                 // need to create new XObject
@@ -49,7 +28,7 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, pdf_documen
             else
                 resources = pdf_graft_object(ctx, pdfout, o);
             
-            // get spgage contents source; combine when several objects
+            // get spgage contents source; combine when several
             contents = pdf_dict_get(ctx, spageref, PDF_NAME(Contents));
             if (pdf_is_array(ctx, contents))     // more than one!
             {

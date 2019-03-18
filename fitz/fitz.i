@@ -6,7 +6,7 @@
 %exception meth
 {
     $action
-    if(cond)
+    if (cond)
     {
         PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
         return NULL;
@@ -239,6 +239,7 @@ struct fz_document_s
             self.openErrMsg  = ''
             self.FontInfos   = []
             self.Graftmaps   = {}
+            self.ShownPages  = {}
             self._page_refs  = weakref.WeakValueDictionary()%}
 
         %pythonappend fz_document_s %{
@@ -327,6 +328,7 @@ struct fz_document_s
             for gmap in self.Graftmaps:
                 self.Graftmaps[gmap] = None
             self.Graftmaps = {}
+            self.ShownPages = {}
         %}
         %pythonappend close %{self.thisown = False%}
         void close()
@@ -1074,10 +1076,10 @@ if links:
         page = self.loadPage(pno)
         val = page.insertText(Point(50, 72), text, fontsize = fontsize,
                               fontname = fontname, fontfile = fontfile,
-                              color = color, idx = idx, set_simple = set_simple)
+                              color = color, set_simple = set_simple)
         %}
         int insertPage(int pno = -1, PyObject *text = NULL, float fontsize = 11,
-                       float width = 595, float height = 842, int idx = 0, 
+                       float width = 595, float height = 842,
                        char *fontname = NULL, char *fontfile = NULL,
                        int set_simple = 0, PyObject *color = NULL)
         {
@@ -2053,6 +2055,7 @@ if links:
                     self.thisown = False
                     self.__swig_destroy__(self)
                 self.Graftmaps = {}
+                self.ShownPages = {}
                 self.stream    = None
                 self._reset_page_refs = DUMMY
                 self.__swig_destroy__ = DUMMY
@@ -2966,53 +2969,37 @@ fannot._erase()
         // Show a PDF page
         //---------------------------------------------------------------------
         FITZEXCEPTION(_showPDFpage, !result)
-        PyObject *_showPDFpage(PyObject *rect, struct fz_document_s *docsrc, int pno=0, int overlay=1, int keep_proportion=1, PyObject *matrix=NULL, int reuse_xref=0, PyObject *clip = NULL, struct pdf_graft_map_s *graftmap = NULL, char *_imgname = NULL)
+        PyObject *_showPDFpage(struct fz_page_s *fz_srcpage, int overlay=1, PyObject *matrix=NULL, int xref=0, PyObject *clip = NULL, struct pdf_graft_map_s *graftmap = NULL, char *_imgname = NULL)
         {
-            int xref = reuse_xref;
-            pdf_obj *xobj1, *xobj2, *resources, *o;
-            fz_buffer *res, *nres;
-            fz_matrix inv_ctm = fz_identity;
-            fz_rect cropbox = fz_empty_rect;
-            fz_rect rrect = JM_rect_from_py(rect);
+            pdf_obj *xobj1, *xobj2, *resources;
+            fz_buffer *res=NULL, *nres=NULL;
+            fz_rect cropbox = JM_rect_from_py(clip);
             fz_matrix mat = JM_matrix_from_py(matrix);
+            int rc_xref = xref;
             fz_try(gctx)
             {
-                if (fz_is_infinite_rect(rrect) || fz_is_empty_rect(rrect))
-                    THROWMSG("rect must be finite and not empty");
-
                 pdf_page *tpage = pdf_page_from_fz_page(gctx, $self);
                 pdf_obj *tpageref = tpage->obj;
                 pdf_document *pdfout = tpage->doc;    // target PDF
-                pdf_document *pdfsrc = pdf_specifics(gctx, docsrc);
 
                 //-------------------------------------------------------------
-                // make XObject out of the source page pno, get its xref,
-                // mediabox and cropbox.
+                // convert the source page to a Form XObject
                 //-------------------------------------------------------------
-                xobj1 = JM_xobject_from_page(gctx, pdfout, pdfsrc, pno,
-                                             &inv_ctm, &cropbox, xref, graftmap);
-                xref = pdf_to_num(gctx, xobj1);
+                xobj1 = JM_xobject_from_page(gctx, pdfout, fz_srcpage,
+                                             xref, graftmap);
+                if (!rc_xref) rc_xref = pdf_to_num(gctx, xobj1);
 
                 //-------------------------------------------------------------
-                // Calculate /Matrix and /BBox of the referencing XObject
+                // create referencing XObject (controls display on target page)
                 //-------------------------------------------------------------
-                fz_rect rclip = JM_rect_from_py(clip);
-                if (!fz_is_infinite_rect(rclip))  // set cropbox = clip
-                {
-                    cropbox = fz_transform_rect(rclip, inv_ctm);
-                }
-
-                //-------------------------------------------------------------
-                // create referencing XObject (controls actual display)
-                //-------------------------------------------------------------
-                // fill reference to xobj1 into its /Resources
+                // fill reference to xobj1 into the /Resources
                 //-------------------------------------------------------------
                 pdf_obj *subres1 = pdf_new_dict(gctx, pdfout, 5);
                 pdf_dict_puts(gctx, subres1, "fullpage", xobj1);
                 pdf_obj *subres  = pdf_new_dict(gctx, pdfout, 5);
                 pdf_dict_put_drop(gctx, subres, PDF_NAME(XObject), subres1);
 
-                res = fz_new_buffer(gctx, 50);
+                res = fz_new_buffer(gctx, 20);
                 fz_append_string(gctx, res, "/fullpage Do");
 
                 xobj2 = pdf_new_xobject(gctx, pdfout, cropbox, mat, subres, res);
@@ -3021,13 +3008,13 @@ fannot._erase()
                 fz_drop_buffer(gctx, res);
 
                 //-------------------------------------------------------------
-                // update target page:
+                // update target page with xobj2:
                 //-------------------------------------------------------------
-                // 1. resources object
+                // 1. insert Xobject in Resources
                 //-------------------------------------------------------------
                 resources = pdf_dict_get(gctx, tpageref, PDF_NAME(Resources));
                 subres = pdf_dict_get(gctx, resources, PDF_NAME(XObject));
-                if (!subres)           // has no XObject dict yet: create one
+                if (!subres)           // has no XObject yet: create one
                 {
                     subres = pdf_new_dict(gctx, pdfout, 10);
                     pdf_dict_putl(gctx, tpageref, subres, PDF_NAME(Resources), PDF_NAME(XObject), NULL);
@@ -3036,7 +3023,7 @@ fannot._erase()
                 pdf_dict_puts(gctx, subres, _imgname, xobj2);
 
                 //-------------------------------------------------------------
-                // 2. contents object
+                // 2. make and insert new Contents object
                 //-------------------------------------------------------------
                 nres = fz_new_buffer(gctx, 50);       // buffer for Do-command
                 fz_append_string(gctx, nres, " q /");    // Do-command
@@ -3047,26 +3034,15 @@ fannot._erase()
                 fz_drop_buffer(gctx, nres);
             }
             fz_catch(gctx) return NULL;
-            return Py_BuildValue("i", xref);
+            return Py_BuildValue("i", rc_xref);
         }
 
         //---------------------------------------------------------------------
         // insert an image
         //---------------------------------------------------------------------
-        FITZEXCEPTION(insertImage, !result)
-        %pythonprepend insertImage %{
-        CheckParent(self)
-        imglst = self.parent.getPageImageList(self.number)
-        ilst = [i[7] for i in imglst]
-        n = "fzImg"
-        i = 0
-        _imgname = n + "0"
-        while _imgname in ilst:
-            i += 1
-            _imgname = n + str(i)%}
-        %feature("autodoc", "Insert a new image into a rectangle.") insertImage;
-        PyObject *insertImage(PyObject *rect, const char *filename=NULL, struct fz_pixmap_s *pixmap = NULL, PyObject *stream = NULL, int overlay = 1,
-        char *_imgname = NULL)
+        FITZEXCEPTION(_insertImage, !result)
+        PyObject *_insertImage(const char *filename=NULL, struct fz_pixmap_s *pixmap=NULL, PyObject *stream=NULL, int overlay=1, PyObject *matrix=NULL,
+        const char *_imgname=NULL)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_document *pdf;
@@ -3076,52 +3052,16 @@ fannot._erase()
             fz_separations *seps = NULL;
             pdf_obj *resources, *subres, *ref;
             fz_buffer *res = NULL, *nres = NULL,  *imgbuf = NULL;
-
+            fz_matrix mat = JM_matrix_from_py(matrix); // pre-calculated
             char *streamdata = NULL;
             size_t streamlen = JM_CharFromBytesOrArray(stream, &streamdata);
 
-            const char *template = "\nq %g 0 0 %g %g %g cm /%s Do Q ";
+            const char *template = " q %g %g %g %g %g %g cm /%s Do Q ";
             char *cont = NULL;
-            Py_ssize_t name_len = 0;
+            
             fz_image *zimg = NULL, *image = NULL;
-            int parm_count = 0;
-            if (filename)      parm_count++;
-            if (pixmap)        parm_count++;
-            if (streamlen > 0) parm_count++;
             fz_try(gctx)
             {
-                assert_PDF(page);
-                if (parm_count != 1)
-                    THROWMSG("need exactly one of filename, pixmap or stream");
-
-                fz_rect rect_py = JM_rect_from_py(rect);
-                if (fz_is_empty_rect(rect_py) || fz_is_infinite_rect(rect_py))
-                    THROWMSG("rect must be finite and not empty");
-
-                // calculate coordinates for image matrix
-                fz_rect prect = fz_bound_page(gctx, $self); // page rectangle
-                
-                fz_rect r = fz_empty_rect;           // modify where necessary
-                pdf_obj *o = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(CropBox));
-                if (o)
-                {   // set top-left of page rect to new values
-                    r = pdf_to_rect(gctx, o);
-                    prect.x0 = r.x0;
-                    prect.y0 = r.y0;
-                }
-                o = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(MediaBox));
-                if (o)
-                {   // set bottom-right to new values
-                    r = pdf_to_rect(gctx, o);
-                    prect.x1 = r.x1;
-                    prect.y1 = r.y1;
-                }
-                // adjust rect.x0, rect.y0 by CropBox start
-                float X = rect_py.x0 + prect.x0;
-                float Y = prect.y1 - (rect_py.y1 + prect.y0);
-                float W = rect_py.x1 - rect_py.x0;
-                float H = rect_py.y1 - rect_py.y0;
-
                 pdf = page->doc;
 
                 // get objects "Resources" & "XObject"
@@ -3136,7 +3076,7 @@ fannot._erase()
                 // create the image
                 if (filename || streamlen > 0)
                 {
-                    if (filename)
+                    if (!streamlen)
                         image = fz_new_image_from_file(gctx, filename);
                     else
                     {
@@ -3144,6 +3084,8 @@ fannot._erase()
                                                    streamdata, streamlen);
                         image = fz_new_image_from_buffer(gctx, imgbuf);
                     }
+
+                    // test alpha channel (would require SMask creation)
                     pix = fz_get_pixmap_from_image(gctx, image, NULL, NULL, 0, 0);
                     if (pix->alpha == 1)
                     {   // have alpha, therefore create a mask
@@ -3157,12 +3099,12 @@ fannot._erase()
                         zimg = NULL;
                     }
                 }
-                if (pixmap)
+                else // pixmap specified
                 {
                     if (pixmap->alpha == 0)
                         image = fz_new_image_from_pixmap(gctx, pixmap, NULL);
                     else
-                    {   // pixmap has alpha, therefore create a mask
+                    {   // pixmap has alpha, therefore create an SMask
                         pm = fz_convert_pixmap(gctx, pixmap, NULL, NULL, NULL, NULL, 1);
                         pm->alpha = 0;
                         pm->colorspace = fz_keep_colorspace(gctx, fz_device_gray(gctx));
@@ -3170,13 +3112,15 @@ fannot._erase()
                         image = fz_new_image_from_pixmap(gctx, pixmap, mask);
                     }
                 }
-                // put image in PDF
+                // image created - now put it in the PDF
                 ref = pdf_add_image(gctx, pdf, image, 0);
                 pdf_dict_puts(gctx, subres, _imgname, ref);  // store ref-name
 
                 // prep contents stream buffer with invoking command
                 nres = fz_new_buffer(gctx, 50);
-                fz_append_printf(gctx, nres, template, W, H, X, Y, _imgname);
+                fz_append_printf(gctx, nres, template,
+                                 mat.a, mat.b, mat.c, mat.d, mat.e, mat.f,
+                                 _imgname);
                 JM_insert_contents(gctx, pdf, page->obj, nres, overlay);
                 fz_drop_buffer(gctx, nres);
             }
@@ -3271,7 +3215,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             pdf_document *pdf;
             pdf_obj *resources, *fonts, *font_obj;
             fz_font *font;
-            const char *data = NULL;
+            char *data = NULL;
             int size, ixref = 0, index = 0, simple = 0;
             PyObject *value;
             PyObject *exto = NULL;
@@ -3689,7 +3633,7 @@ struct fz_pixmap_s
             fz_try(gctx)
             {
                 size = JM_CharFromBytesOrArray(imagedata, &streamdata);
-                if (size < 1) THROWMSG("invalid argument type");
+                if (size < 1) THROWMSG("bad image data");
                 data = fz_new_buffer_from_shared_data(gctx,
                               streamdata, size);
                 img = fz_new_image_from_buffer(gctx, data);
