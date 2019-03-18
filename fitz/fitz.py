@@ -105,9 +105,9 @@ fitz_py2 = str is bytes           # if true, this is Python 2
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.10"
-VersionDate = "2019-03-10 11:59:51"
-version = (VersionBind, VersionFitz, "20190310115951")
+VersionBind = "1.14.11"
+VersionDate = "2019-03-18 08:26:46"
+version = (VersionBind, VersionFitz, "20190318082646")
 
 
 class Matrix():
@@ -1782,6 +1782,7 @@ open(filename, filetype='type') - from file"""
         self.openErrMsg  = ''
         self.FontInfos   = []
         self.Graftmaps   = {}
+        self.ShownPages  = {}
         self._page_refs  = weakref.WeakValueDictionary()
 
         this = _fitz.new_Document(filename, stream, filetype, rect, width, height, fontsize)
@@ -1823,6 +1824,7 @@ open(filename, filetype='type') - from file"""
         for gmap in self.Graftmaps:
             self.Graftmaps[gmap] = None
         self.Graftmaps = {}
+        self.ShownPages = {}
 
 
         val = _fitz.Document_close(self)
@@ -2136,7 +2138,7 @@ open(filename, filetype='type') - from file"""
         return val
 
 
-    def insertPage(self, pno=-1, text=None, fontsize=11, width=595, height=842, idx=0, fontname=None, fontfile=None, set_simple=0, color=None):
+    def insertPage(self, pno=-1, text=None, fontsize=11, width=595, height=842, fontname=None, fontfile=None, set_simple=0, color=None):
         """Insert a new page in front of 'pno'. Use arguments 'width', 'height' to specify a non-default page size, and optionally text insertion arguments."""
 
         if self.isClosed or self.isEncrypted:
@@ -2147,7 +2149,7 @@ open(filename, filetype='type') - from file"""
                 raise ValueError("invalid font reference")
 
 
-        val = _fitz.Document_insertPage(self, pno, text, fontsize, width, height, idx, fontname, fontfile, set_simple, color)
+        val = _fitz.Document_insertPage(self, pno, text, fontsize, width, height, fontname, fontfile, set_simple, color)
 
         if val < 0: return val
         self._reset_page_refs()
@@ -2155,7 +2157,7 @@ open(filename, filetype='type') - from file"""
         page = self.loadPage(pno)
         val = page.insertText(Point(50, 72), text, fontsize = fontsize,
                               fontname = fontname, fontfile = fontfile,
-                              color = color, idx = idx, set_simple = set_simple)
+                              color = color, set_simple = set_simple)
 
 
         return val
@@ -2489,6 +2491,7 @@ open(filename, filetype='type') - from file"""
             self.thisown = False
             self.__swig_destroy__(self)
         self.Graftmaps = {}
+        self.ShownPages = {}
         self.stream    = None
         self._reset_page_refs = DUMMY
         self.__swig_destroy__ = DUMMY
@@ -2927,25 +2930,14 @@ class Page(_object):
         return _fitz.Page__cleanContents(self)
 
 
-    def _showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportion=1, matrix=None, reuse_xref=0, clip=None, graftmap=None, _imgname=None):
-        """_showPDFpage(self, rect, docsrc, pno=0, overlay=1, keep_proportion=1, matrix=None, reuse_xref=0, clip=None, graftmap=None, _imgname=None) -> PyObject *"""
-        return _fitz.Page__showPDFpage(self, rect, docsrc, pno, overlay, keep_proportion, matrix, reuse_xref, clip, graftmap, _imgname)
+    def _showPDFpage(self, fz_srcpage, overlay=1, matrix=None, xref=0, clip=None, graftmap=None, _imgname=None):
+        """_showPDFpage(self, fz_srcpage, overlay=1, matrix=None, xref=0, clip=None, graftmap=None, _imgname=None) -> PyObject *"""
+        return _fitz.Page__showPDFpage(self, fz_srcpage, overlay, matrix, xref, clip, graftmap, _imgname)
 
 
-    def insertImage(self, rect, filename=None, pixmap=None, stream=None, overlay=1, _imgname=None):
-        """Insert a new image into a rectangle."""
-
-        CheckParent(self)
-        imglst = self.parent.getPageImageList(self.number)
-        ilst = [i[7] for i in imglst]
-        n = "fzImg"
-        i = 0
-        _imgname = n + "0"
-        while _imgname in ilst:
-            i += 1
-            _imgname = n + str(i)
-
-        return _fitz.Page_insertImage(self, rect, filename, pixmap, stream, overlay, _imgname)
+    def _insertImage(self, filename=None, pixmap=None, stream=None, overlay=1, matrix=None, _imgname=None):
+        """_insertImage(self, filename=None, pixmap=None, stream=None, overlay=1, matrix=None, _imgname=None) -> PyObject *"""
+        return _fitz.Page__insertImage(self, filename, pixmap, stream, overlay, matrix, _imgname)
 
 
     def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,

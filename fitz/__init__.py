@@ -19,9 +19,9 @@ if fitz.VersionFitz != fitz.TOOLS.mupdf_version():
         % (fitz.VersionFitz, fitz.TOOLS.mupdf_version())
     )
 
-import fitz.utils
 
 # copy functions to their respective fitz classes
+import fitz.utils
 
 # ------------------------------------------------------------------------------
 # Document
@@ -61,6 +61,7 @@ fitz.Page.insertTextbox = fitz.utils.insertTextbox
 fitz.Page.insertText = fitz.utils.insertText
 fitz.Page.searchFor = fitz.utils.searchFor
 fitz.Page.showPDFpage = fitz.utils.showPDFpage
+fitz.Page.insertImage = fitz.utils.insertImage
 fitz.Page.updateLink = fitz.utils.updateLink
 fitz.Page.newShape = lambda x: fitz.utils.Shape(x)
 

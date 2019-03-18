@@ -1,15 +1,15 @@
 from fitz import *
 import math
+import warnings
+warnings.simplefilter("once")
 """
 The following is a collection of functions to extend PyMupdf.
 """
-#==============================================================================
-# A function for displaying other PDF pages
-#==============================================================================
+
 def showPDFpage(page,
                 rect,
                 src,
-                pno,
+                pno=0,
                 overlay=True,
                 keep_proportion=True,
                 rotate=0,
@@ -17,56 +17,53 @@ def showPDFpage(page,
                 clip = None,
     ):
     """Show page number 'pno' of PDF 'src' in rectangle 'rect'.
+
+    Args:
+        rect: (rect-like) where to place the source image
+        src: (document) source PDF
+        pno: (int) source page number
+        overlay: (bool) put in foreground
+        keep_proportion: (bool) do not change width-height-ratio
+        rotate: (int) degrees (multiple of 90)
+        clip: (rect-like) part of source page rectangle
+    Returns:
+        xref of inserted object (for reuse)
     """
 
     def calc_matrix(sr, tr, keep=True, rotate=0):
-        """ Calculate the transformation matrix between source and target rect.
+        """ Calculate transformation matrix from source to target rect.
 
         Notes:
-            The result also depends on whether a rotation is requested and the ratio
-            of the edges should be kept constant.
+            The product of four matrices in this sequence: (1) translate correct
+            source corner to origin, (2) rotate, (3) scale, (4) translate to
+            target's top-left corner.
         Args:
             sr: source rect in PDF (!) coordinate system
             tr: target rect in PDF coordinate system
             keep: whether to keep source ratio of width to height
-            rotate: rotation angle in degrees, one of 0, 90, 180, 270.
+            rotate: rotation angle in degrees
         Returns:
             Transformation matrix.
         """
-        if rotate in (0, 180):
-            fw = tr.width / sr.width
-            fh = tr.height / sr.height
-        else:
-            fw = tr.width / sr.height
-            fh = tr.height / sr.width
-    
+        # calc center point of source rect
+        smp = Point((sr.x1 + sr.x0) / 2., (sr.y1 + sr.y0) / 2.)
+        # calc center point of target rect
+        tmp = Point((tr.x1 + tr.x0) / 2., (tr.y1 + tr.y0) / 2.)
+
+        rot = Matrix(rotate)  # rotation matrix
+
+        # m moves to (0, 0), then rotates
+        m = Matrix(1, 0, 0, 1, -smp.x, -smp.y) * rot
+
+        sr1 = sr * m  # resulting source rect to calculate scale factors
+
+        fw = tr.width / sr1.width  # scale the width
+        fh = tr.height / sr1.height  # scale the height
         if keep:
-            fw = fh = min(fw, fh)
-        msc = Matrix(fw, 0, 0, fh, 0, 0)
-    
-        if rotate == 0:
-            m0 = Matrix(1, 0, 0, 1, -sr.x0, -sr.y0)
-            m1 = Matrix(1, 0, 0, 1, tr.x0, tr.y0)
-            rot = Matrix(1, 1)
-    
-        if rotate == 180:
-            m0 = Matrix(1, 0, 0, 1, -sr.x0, -sr.y0)
-            m1 = Matrix(1, 0, 0, 1, tr.x1, tr.y1)
-            rot = Matrix(1, 1)
-            msc.a *= -1
-            msc.d *= -1
-    
-        if rotate == 90:
-            m0 = Matrix(1, 0, 0, 1, -sr.x0, -sr.y0)
-            m1 = Matrix(1, 0, 0, 1, tr.x1, tr.y0)
-            rot = Matrix(90)
-    
-        if rotate == 270:
-            m0 = Matrix(1, 0, 0, 1, -sr.x0, -sr.y0)
-            m1 = Matrix(1, 0, 0, 1, tr.x0, tr.y1)
-            rot = Matrix(270)
-    
-        m = m0 * rot * msc * m1
+            fw = fh = min(fw, fh)  # take min if keeping aspect ratio
+
+        m *= Matrix(fw, fh)  # concat scale matrix
+        m *= Matrix(1, 0, 0, 1, tmp.x, tmp.y)  # concat move to target center
         return m
 
     CheckParent(page)
@@ -75,23 +72,28 @@ def showPDFpage(page,
     if not doc.isPDF or not src.isPDF:
         raise ValueError("not a PDF")
 
-    while rotate < 0:
-        rotate += 360
-    while rotate > 360:
-        rotate -= 360
-    if rotate not in (0, 90, 180, 270):
-        raise ValueError("rotate not in (0, 90, 180, 270)")
+    rect = page.rect & rect  # intersect with page rectangle
+    if rect.isEmpty or rect.isInfinite:
+        raise ValueError("rect must be finite and not empty")
 
-    tar_rect = rect * ~page._getTransformation()
-    src_rect = src[pno].rect if not clip else clip
-    src_rect = src_rect * ~src[pno]._getTransformation()
+    if reuse_xref > 0:
+        warnings.warn("ignoring 'reuse_xref'", DeprecationWarning)
+
+    src_page = src[pno]  # load ource page
+
+    tar_rect = rect * ~page._getTransformation()  # target rect in PDF coordinates
+
+    src_rect = src_page.rect if not clip else src_page.rect & clip  # source rect
+    if src_rect.isEmpty or src_rect.isInfinite:
+        raise ValueError("clip must be finite and not empty")
+    src_rect = src_rect * ~src_page._getTransformation()  # ... in PDF coord
+
     matrix = calc_matrix(src_rect, tar_rect, keep=keep_proportion, rotate=rotate)
 
     # list of existing /Form /XObjects
-    xobjlist = doc._getPageInfo(page.number, 3)
-    ilst = [i[1] for i in xobjlist]
+    ilst = [i[1] for i in doc._getPageInfo(page.number, 3)]
 
-    # create a name that is not in this list
+    # create a name that is not in that list
     n = "fzFrm"
     i = 0
     _imgname = n + "0"
@@ -110,18 +112,104 @@ def showPDFpage(page,
         gmap = Graftmap(doc)
         doc.Graftmaps[isrc] = gmap
 
-    return page._showPDFpage(rect, src, pno,
-            overlay=overlay,
-            keep_proportion=keep_proportion,
-            matrix=matrix,
-            reuse_xref=reuse_xref,
-            clip=clip,
-            graftmap=gmap,
-            _imgname=_imgname)
+    # take note of generated xref for automatic reuse
+    pno_id = (isrc, pno)          # id of src[pno]
+    xref = doc.ShownPages.get(pno_id, 0)
 
-#==============================================================================
-# A function for searching string occurrences on a page.
-#==============================================================================
+    xref = page._showPDFpage(
+                src_page,
+                overlay=overlay,
+                matrix=matrix,
+                xref=xref,
+                clip=src_rect,
+                graftmap=gmap,
+                _imgname=_imgname,
+            )
+    doc.ShownPages[pno_id] = xref
+
+    return xref
+
+
+def insertImage(page, rect, filename=None, pixmap=None, stream=None, rotate=0,
+                keep_proportion = True,
+                overlay=True):
+    """Insert an image in a rectangle on the current page.
+
+    Notes:
+        Exactly one of filename, pixmap or stream must be provided.
+    Args:
+        rect: (rect-like) where to place the source image
+        filename: (str) name of an image file
+        pixmap: (obj) a Pixmap object
+        stream: (bytes) an image in memory
+        rotate: (int) degrees (multiple of 90)
+        keep_proportion: (bool) whether to maintain aspect ratio
+        overlay: (bool) put in foreground
+    """
+
+    CheckParent(page)
+    doc = page.parent
+    if not doc.isPDF:
+        raise ValueError("not a PDF")
+    if sum([bool(filename), bool(stream), bool(pixmap)]) != 1:
+        raise ValueError("need exactly one of filename, pixmap, stream")
+
+    while rotate < 0:
+        rotate += 360
+    while rotate > 360:
+        rotate -= 360
+    if rotate % 90 != 0:
+        raise ValueError("bad rotate value")
+
+    r = page.rect & rect
+    if r.isEmpty or r.isInfinite:
+        raise ValueError("rect must be finite and not empty")
+
+    clip = r * ~page._getTransformation()  # rect in PDF coordinates
+    
+    rot = Matrix(rotate)
+
+    fw = r.width
+    fh = r.height
+    if keep_proportion:
+        fw = fh = min(fw, fh)
+        my = r.height - max(fw, fh)
+        mx = r.width - max(fw, fh)
+    else:
+        my = mx = 0
+
+    if rotate == 0:
+        m3 = Matrix(fw, fh)
+        m0 = Matrix(1, 0, 0, 1, clip.x0, clip.y0 + my)
+    elif rotate == 180:
+        m3 = Matrix(fw, fh)
+        m0 = Matrix(1, 0, 0, 1, clip.x1 - mx, clip.y1)
+    elif rotate == 90:
+        m3 = Matrix(fh, fw)
+        m0 = Matrix(1, 0, 0, 1, clip.x1 - mx, clip.y0 + my)
+    else:
+        m3 = Matrix(fh, fw)
+        m0 = Matrix(1, 0, 0, 1, clip.x0, clip.y1)
+
+    matrix = m3 * rot * m0
+
+    ilst = [i[7] for i in doc.getPageImageList(page.number)]
+    n = "fzImg"
+    i = 0
+    _imgname = n + "0"
+    while _imgname in ilst:
+        i += 1
+        _imgname = n + str(i)
+
+    page._insertImage(filename=filename,
+            pixmap=pixmap, 
+            stream=stream, 
+            matrix=matrix,
+            overlay=overlay,
+            _imgname=_imgname,
+        )
+
+
 def searchFor(page, text, hit_max = 16, quads = False):
     """ Search for a string on a page.
 
@@ -130,7 +218,7 @@ def searchFor(page, text, hit_max = 16, quads = False):
         hit_max: maximum hits
         quads: return quads instead of rectangles
     Returns:
-        a list of rectangles or quads, each containing an occurrence.
+        a list of rectangles or quads, each containing one occurrence.
     """
     CheckParent(page)
     dl = page.getDisplayList()         # create DisplayList
@@ -141,9 +229,7 @@ def searchFor(page, text, hit_max = 16, quads = False):
     tp = None
     return rlist
 
-#==============================================================================
-# A function for searching string occurrences on a page.
-#==============================================================================
+
 def searchPageFor(doc, pno, text, hit_max=16, quads=False):
     """ Search for a string on a page.
 
@@ -157,13 +243,19 @@ def searchPageFor(doc, pno, text, hit_max=16, quads=False):
     """
 
     return doc[pno].searchFor(text, hit_max = hit_max, quads = quads)
-    
-#==============================================================================
-# A function for extracting a text blocks list
-#==============================================================================
+
+
 def getTextBlocks(page, images=False):
-    """Return the text blocks as a list of concatenated lines with their bbox
-    per block.
+    """Return the text blocks on a page.
+    
+    Notes:
+        Lines in a block are concatenated with line breaks.
+    Args:
+        images: (bool) also return meta data of any images.
+        Image data are never returned with this method.
+    Returns:
+        A list of the blocks. Each item contains the containing rectangle coordinates,
+        text lines, block type and running block number.
     """
     CheckParent(page)
     dl = page.getDisplayList()
@@ -175,10 +267,7 @@ def getTextBlocks(page, images=False):
     del tp
     del dl
     return l
-    
-#==============================================================================
-# A function for extracting a text words list
-#==============================================================================
+
 def getTextWords(page):
     """Return the text words as a list with the bbox for each word.
     """
@@ -189,23 +278,16 @@ def getTextWords(page):
     del dl
     del tp
     return l
-    
-def getTextUWords(page):
-    """Return the text words as a list with the bbox for each word.
-    """
-    CheckParent(page)
-    dl = page.getDisplayList()
-    tp = dl.getTextPage()
-    l = tp._extractUniWords_AsList()
-    del dl
-    del tp
-    return l
-    
-#==============================================================================
-# A function for extracting a page's text.
-#==============================================================================
+
 def getText(page, output = "text"):
-    '''Extract a PDF page's text. Parameters:\noutput option: text, html, dict, json, rawdict, xhtml or xml.\nReturns the output of TextPage methods extractText, extractHTML, extractDICT, extractJSON, extractRAWDICT, extractXHTML or etractXML respectively. Default and misspelling choice is "text".'''
+    """ Extract a document page's text.
+
+    Args:
+        output: (str) text, html, dict, json, rawdict, xhtml or xml.
+
+    Returns:
+        the output of TextPage methods extractText, extractHTML, extractDICT, extractJSON, extractRAWDICT, extractXHTML or etractXML respectively. Default and misspelling choice is "text".
+    """
     CheckParent(page)
     dl = page.getDisplayList()
     # available output types
@@ -225,30 +307,29 @@ def getText(page, output = "text"):
     del tp
     return t
 
-#==============================================================================
-# A function for extracting a page number's text.
-#==============================================================================
-#def getPageText(pno, output = "text"):
-def getPageText(doc, pno, output = "text"):
-    '''Extract a PDF page's text by page number. Parameters:
-    pno: page number
-    output option: text, html, json, xhtml or xml.
-    Return output from page.TextPage().
-    Default and misspelling choice is "text".'''
-    return doc[pno].getText(output)
 
-#==============================================================================
-# A function for rendering a page's image.
-# Requires a page object.
-#==============================================================================
+def getPageText(doc, pno, output = "text"):
+    """ Extract a document page's text by page number.
+
+    Notes:
+        Convenience function calling page.getText().
+    Args:
+        pno: page number
+        output: (str) text, html, dict, json, rawdict, xhtml or xml.
+    Returns:
+        output from page.TextPage().
+    """
+    return doc[pno].getText(output)
 
 def getPixmap(page, matrix = None, colorspace = csRGB, clip = None,
               alpha = True):
     """Create pixmap of page.
     
-    matrix: Matrix for transformation (default: Identity).
-    colorspace: text string / Colorspace (rgb, rgb, gray - case ignored), default csRGB.
-    clip: a IRect to restrict rendering to this area.
+    Args:
+        matrix: Matrix for transformation (default: Identity).
+        colorspace: (str/Colorspace) rgb, rgb, gray - case ignored, default csRGB.
+        clip: (irect-like) restrict rendering to this area.
+        alpha: (bool) include alpha channel
     """
     CheckParent(page)
 
@@ -276,19 +357,22 @@ def getPixmap(page, matrix = None, colorspace = csRGB, clip = None,
     del dl
     return pix
 
-#==============================================================================
-# A function for rendering a page by its number
-#==============================================================================
-# getPagePixmap(doc, pno, matrix = Identity, colorspace = "RGB", clip = None, alpha = False):
 def getPagePixmap(doc, pno, matrix = None, colorspace = csRGB,
                   clip = None, alpha = True):
-    '''Create pixmap of page number.\nmatrix: Matrix for transformation (default: Identity).\ncolorspace: text string / Colorspace (rgb, rgb, gray - case ignored), default csRGB.\nclip: a IRect to restrict rendering to this area.'''
+    """Create pixmap of document page by page number.
+
+    Notes:
+        Convenience function calling page.getPixmap.
+    Args:
+        pno: (int) page number
+        matrix: Matrix for transformation (default: Identity).
+        colorspace: (str/Colorspace) rgb, rgb, gray - case ignored, default csRGB.
+        clip: (irect-like) restrict rendering to this area.
+        alpha: (bool) include alpha channel
+    """
     return doc[pno].getPixmap(matrix = matrix, colorspace = colorspace,
                           clip = clip, alpha = alpha)
 
-#==============================================================================
-# An internal function to create a link info dictionary for getToC and getLinks
-#==============================================================================
 def getLinkDict(ln):
     nl = {"kind": ln.dest.kind, "xref": 0}
     try:
@@ -335,13 +419,12 @@ def getLinkDict(ln):
 
     return nl
 
-#==============================================================================
-# A function to collect all links of a PDF page.
-# Required is a page object previously created by the
-# loadPage() method of a document.
-#==============================================================================
 def getLinks(page):
-    '''Create a list of all links contained in a PDF page as dictionaries - see PyMuPDF ducmentation for details.'''
+    """Create a list of all links contained in a PDF page.
+    
+    Notes:
+        see PyMuPDF ducmentation for details.
+    """
 
     CheckParent(page)
     ln = page.firstLink
@@ -357,12 +440,12 @@ def getLinks(page):
                 links[i]["xref"] = linkxrefs[i]
     return links
 
-#==============================================================================
-# A function to collect all bookmarks of a PDF document in the form of a table
-# of contents.
-#==============================================================================
 def getToC(doc, simple = True):
-    '''Create a table of contents.\nsimple: a bool to control output. Returns a list, where each entry consists of outline level, title, page number and link destination (if simple = False). For details see PyMuPDF's documentation.'''
+    """Create a table of contents.
+
+    Args:
+        simple: a bool to control output. Returns a list, where each entry consists of outline level, title, page number and link destination (if simple = False). For details see PyMuPDF's documentation.
+    """
 
     def recurse(olItem, liste, lvl):
         '''Recursively follow the outline item chain and record item information in a list.'''
@@ -413,9 +496,6 @@ def getRectArea(*args):
     f = (u[unit][0] / u[unit][1])**2
     return f * rect.width * rect.height
 
-#==============================================================================
-# Document method Set Metadata
-#==============================================================================
 def setMetadata(doc, m):
     """Set a PDF's metadata (/Info dictionary)\nm: dictionary like doc.metadata'."""
     if doc.isClosed or doc.isEncrypted:
@@ -497,9 +577,6 @@ def getDestStr(xref, ddict):
 
     return ""
 
-#==============================================================================
-# Document method set Table of Contents
-#==============================================================================
 def setToC(doc, toc):
     '''Create new outline tree (table of contents)\ntoc: a Python list of lists. Each entry must contain level, title, page and optionally top margin on the page.'''
     if doc.isClosed or doc.isEncrypted:
@@ -820,8 +897,8 @@ def getLinkText(page, lnk):
         txt = annot_named
         annot = txt % (lnk["name"], rect)
 
-    return annot    
-    
+    return annot
+
 def updateLink(page, lnk):
     """ Update a link on the current page. """
     CheckParent(page)
@@ -842,9 +919,6 @@ def insertLink(page, lnk, mark = True):
     page._addAnnot_FromString([annot])
     return
 
-#-------------------------------------------------------------------------------
-# Page.insertTextbox
-#-------------------------------------------------------------------------------
 def insertTextbox(page, rect, buffer,
                   fontname="helv",
                   fontfile=None,
@@ -860,20 +934,24 @@ def insertTextbox(page, rect, buffer,
                   border_width=1,
                   morph=None,
                   overlay=True):
-    """Insert text into a given rectangle.
+    """ Insert text into a given rectangle.
+
+    Notes:
+        Creates a Shape object, uses its same-named method and commits it.
     Parameters:
-    rect - the textbox to fill
-    buffer - text to be inserted
-    fontname - a Base-14 font, font name or '/name'
-    fontfile - name of a font file
-    fontsize - font size
-    color - RGB color triple
-    expandtabs - handles tabulators with string function
-    align - left, center, right, justified
-    rotate - 0, 90, 180, or 270 degrees
-    morph - morph box with  a matrix and a pivotal point
-    overlay - put text in foreground or background
-    Returns: unused or deficit rectangle area (float)
+        rect: (rect-like) area to use for text.
+        buffer: text to be inserted
+        fontname: a Base-14 font, font name or '/name'
+        fontfile: name of a font file
+        fontsize: font size
+        color: RGB color triple
+        expandtabs: handles tabulators with string function
+        align: left, center, right, justified
+        rotate: 0, 90, 180, or 270 degrees
+        morph: morph box with  a matrix and a pivotal point
+        overlay: put text in foreground or background
+    Returns:
+        unused or deficit rectangle area (float)
     """
     img = page.newShape()
     rc = img.insertTextbox(rect, buffer,
@@ -894,9 +972,6 @@ def insertTextbox(page, rect, buffer,
         img.commit(overlay)
     return rc
 
-#------------------------------------------------------------------------------
-# Page.insertText
-#------------------------------------------------------------------------------
 def insertText(page, point, text,
                fontsize=11,
                fontname="helv",
@@ -927,19 +1002,13 @@ def insertText(page, point, text,
     if rc >= 0:
         img.commit(overlay)
     return rc
-    
-#-------------------------------------------------------------------------------
-# Document.newPage
-#-------------------------------------------------------------------------------
+
 def newPage(doc, pno = -1, width = 595, height = 842):
     """Create and return a new page object.
     """
     doc.insertPage(pno, width = width, height = height)
     return doc[pno]
 
-#-------------------------------------------------------------------------------
-# Page.drawLine
-#-------------------------------------------------------------------------------
 def drawLine(page, p1, p2, color = (0, 0, 0), dashes = None,
                width = 1, roundCap = True, overlay = True, morph = None):
     """Draw a line from point p1 to point p2.
@@ -952,9 +1021,6 @@ def drawLine(page, p1, p2, color = (0, 0, 0), dashes = None,
 
     return p
 
-#-------------------------------------------------------------------------------
-# Page.drawSquiggle
-#-------------------------------------------------------------------------------
 def drawSquiggle(page, p1, p2, breadth = 2, color = (0, 0, 0), dashes = None,
                width = 1, roundCap = True, overlay = True, morph = None):
     """Draw a squiggly line from point p1 to point p2.
@@ -967,9 +1033,6 @@ def drawSquiggle(page, p1, p2, breadth = 2, color = (0, 0, 0), dashes = None,
 
     return p
 
-#-------------------------------------------------------------------------------
-# Page.drawZigzag
-#-------------------------------------------------------------------------------
 def drawZigzag(page, p1, p2, breadth = 2, color = (0, 0, 0), dashes = None,
                width = 1, roundCap = True, overlay = True, morph = None):
     """Draw a zigzag line from point p1 to point p2.
@@ -982,9 +1045,6 @@ def drawZigzag(page, p1, p2, breadth = 2, color = (0, 0, 0), dashes = None,
 
     return p
 
-#-------------------------------------------------------------------------------
-# Page.drawRect
-#-------------------------------------------------------------------------------
 def drawRect(page, rect, color = (0, 0, 0), fill = None, dashes = None,
              width = 1, roundCap = True, morph = None, overlay = True):
     """Draw a rectangle.
@@ -997,9 +1057,6 @@ def drawRect(page, rect, color = (0, 0, 0), fill = None, dashes = None,
 
     return Q
 
-#-------------------------------------------------------------------------------
-# Page.drawQuad
-#-------------------------------------------------------------------------------
 def drawQuad(page, quad, color = (0, 0, 0), fill = None, dashes = None,
              width = 1, roundCap = True, morph = None, overlay = True):
     """Draw a quadrilateral.
@@ -1012,9 +1069,6 @@ def drawQuad(page, quad, color = (0, 0, 0), fill = None, dashes = None,
 
     return Q
 
-#-------------------------------------------------------------------------------
-# Page.drawPolyline
-#-------------------------------------------------------------------------------
 def drawPolyline(page, points, color = (0, 0, 0), fill = None, dashes = None,
                  width = 1, morph = None, roundCap = True, overlay = True,
                  closePath = False):
@@ -1028,9 +1082,6 @@ def drawPolyline(page, points, color = (0, 0, 0), fill = None, dashes = None,
 
     return Q
 
-#-------------------------------------------------------------------------------
-# Page.drawCircle
-#-------------------------------------------------------------------------------
 def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
                morph = None, dashes = None, width = 1,
                roundCap = True, overlay = True):
@@ -1043,9 +1094,6 @@ def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
     img.commit(overlay)
     return Q
 
-#-------------------------------------------------------------------------------
-# Page.drawOval
-#-------------------------------------------------------------------------------
 def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = None,
              morph = None,
              width = 1, roundCap = True, overlay = True):
@@ -1059,9 +1107,6 @@ def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = None,
     
     return Q
 
-#-------------------------------------------------------------------------------
-# Page.drawCurve
-#-------------------------------------------------------------------------------
 def drawCurve(page, p1, p2, p3, color = (0, 0, 0), fill = None, dashes = None,
               width = 1, morph = None, closePath = False,
               roundCap = True, overlay = True):
@@ -1075,10 +1120,6 @@ def drawCurve(page, p1, p2, p3, color = (0, 0, 0), fill = None, dashes = None,
 
     return Q
 
-
-#-------------------------------------------------------------------------------
-# Page.drawBezier
-#-------------------------------------------------------------------------------
 def drawBezier(page, p1, p2, p3, p4, color = (0, 0, 0), fill = None,
                dashes = None, width = 1, morph = None,
                closePath = False, roundCap = True, overlay = True):
@@ -1092,9 +1133,6 @@ def drawBezier(page, p1, p2, p3, p4, color = (0, 0, 0), fill = None,
     
     return Q
 
-#==============================================================================
-# Draw circular sector
-#==============================================================================
 def drawSector(page, center, point, beta, color = (0, 0, 0), fill = None,
               dashes = None, fullSector = True, morph = None,
               width = 1, closePath = False, roundCap = True, overlay = True):
@@ -1690,9 +1728,9 @@ def getColorInfoList():
 
 def getColor(name):
     """Retrieve RGB color in PDF format by name.
-    Returns a triple of floats in range 0 to 1. In case of name-not-found,
-    "white" is returned.
-    
+
+    Returns:
+        a triple of floats in range 0 to 1. In case of name-not-found, "white" is returned.
     """
     try:
         c = getColorInfoList()[getColorList().index(name.upper())]
@@ -1702,8 +1740,9 @@ def getColor(name):
     
 def getColorHSV(name):
     """Retrieve the hue, saturation, value triple of a color name.
-    Returns a triple (degree, percent, percent). If not found (-1, -1, -1) is
-    returned.
+
+    Returns:
+        a triple (degree, percent, percent). If not found (-1, -1, -1) is returned.
     """
     try:
         x = getColorInfoList()[getColorList().index(name.upper())]
@@ -1736,19 +1775,20 @@ def getColorHSV(name):
 
     return (H, S, V)
 
-#------------------------------------------------------------------------------
-# Document.getCharWidths
-#------------------------------------------------------------------------------
+
 def getCharWidths(doc, xref, limit = 256, idx = 0):
-    """Get list of glyph information of a font, which must be provided by its
-    XREF number. If we already dealt with the font, it will be recorded in
-    doc.FontInfos. Otherwise we insert an entry there.
-    Finally we return the glyphs for the font. This is a list of (glyph, width)
-    where glyph is an integer controlling the char appearance, and width is a
-    float controlling the char's spacing: width * fontsize is the actual space.
-    For 'simple' fonts, glyph == ord(char) will usually be true.
-    Exceptions are 'Symbol' and 'ZapfDingbats'. We are providing data for these
-    directly here.
+    """Get list of glyph information of a font.
+    
+    Notes:
+        Must be provided by its XREF number. If we already dealt with the
+        font, it will be recorded in doc.FontInfos. Otherwise we insert an
+        entry there.
+        Finally we return the glyphs for the font. This is a list of
+        (glyph, width) where glyph is an integer controlling the char
+        appearance, and width is a float controlling the char's spacing:
+        width * fontsize is the actual space.
+        For 'simple' fonts, glyph == ord(char) will usually be true.
+        Exceptions are 'Symbol' and 'ZapfDingbats'. We are providing data for these directly here.
     """
     fontinfo = CheckFontInfo(doc, xref)
     if fontinfo is None:               # not recorded yet: create it
@@ -1819,9 +1859,6 @@ def getCharWidths(doc, xref, limit = 256, idx = 0):
 
     return glyphs
 
-#------------------------------------------------------------------------------
-# Create connected graphics elements on a PDF page
-#------------------------------------------------------------------------------
 class Shape():
     """Create a new shape.
     """
