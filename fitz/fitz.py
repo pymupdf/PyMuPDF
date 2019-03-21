@@ -105,9 +105,9 @@ fitz_py2 = str is bytes           # if true, this is Python 2
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.11"
-VersionDate = "2019-03-18 08:26:46"
-version = (VersionBind, VersionFitz, "20190318082646")
+VersionBind = "1.14.12"
+VersionDate = "2019-03-21 06:59:25"
+version = (VersionBind, VersionFitz, "20190321065925")
 
 
 class Matrix():
@@ -129,8 +129,8 @@ class Matrix():
         if len(args) == 1:                       # either an angle or a sequ
             if hasattr(args[0], "__float__"):
                 theta = math.radians(args[0])
-                c = round(math.cos(theta), 8)
-                s = round(math.sin(theta), 8)
+                c = round(math.cos(theta), 12)
+                s = round(math.sin(theta), 12)
                 self.a = self.d = c
                 self.b = s
                 self.c = -s
@@ -222,8 +222,8 @@ class Matrix():
 
         else:
             rad = math.radians(theta)
-            s = round(math.sin(rad), 8)
-            c = round(math.cos(rad), 8)
+            s = round(math.sin(rad), 12)
+            c = round(math.cos(rad), 12)
             a = self.a
             b = self.b
             self.a = c * a + s * self.c
@@ -1460,15 +1460,15 @@ def getPDFnow():
         pass
     return tstamp
 
-#-------------------------------------------------------------------------------
-# Return a PDF string depending on its coding.
-# If only ascii then "(original)" is returned,
-# else if only 8 bit chars then "(original)" with interspersed octal strings
-# \nnn is returned,
-# else a string "<FEFF[hexstring]>" is returned, where [hexstring] is the
-# UTF-16BE encoding of the original.
-#-------------------------------------------------------------------------------
 def getPDFstr(s):
+    """ Return a PDF string depending on its coding.
+
+    Notes:
+        If only ascii then "(original)" is returned, else if only 8 bit chars
+        then "(original)" with interspersed octal strings \nnn is returned,
+        else a string "<FEFF[hexstring]>" is returned, where [hexstring] is the
+        UTF-16BE encoding of the original.
+    """
     if not bool(s):
         return "()"
 
@@ -1515,15 +1515,17 @@ def getPDFstr(s):
     return "(" + r + ")"
 
 def getTJstr(text, glyphs, simple, ordering):
-    """Return a PDF string enclosed in [] brackets, suitable for the PDF TJ
+    """ Return a PDF string enclosed in [] brackets, suitable for the PDF TJ
     operator.
-    The input string is converted to either 2 or 4 hex digits per character.
-    * simple:
-       - no glyphs: 2-chars, use char codes as the glyph
-       - glyphs: 2-chars, use glyphs instead of char codes (Symbol, ZapfDingbats)
-    * not simple:
-       - ordering < 0: 4-chars, use glyphs not char codes
-       - ordering >=0: a CJK font! 4 chars, use char codes as glyphs
+
+    Notes:
+        The input string is converted to either 2 or 4 hex digits per character.
+    Args:
+        simple: no glyphs: 2-chars, use char codes as the glyph
+                glyphs: 2-chars, use glyphs instead of char codes (Symbol,
+                ZapfDingbats)
+        not simple: ordering < 0: 4-chars, use glyphs not char codes
+                    ordering >=0: a CJK font! 4 chars, use char codes as glyphs
 """
     if text.startswith("[<") and text.endswith(">]"): # already done
         return text
@@ -1625,9 +1627,33 @@ def CheckParent(o):
 
 def CheckColor(c):
     if c is not None:
-        if type(c) not in (list, tuple) or len(c) not in (1, 3, 4) or \
-            min(c) < 0 or max(c) > 1:
+        if (
+            type(c) not in (list, tuple)
+            or len(c) not in (1, 3, 4)
+            or min(c) < 0
+            or max(c) > 1
+        ):
             raise ValueError("need 1, 3 or 4 color components in range 0 to 1")
+
+def ColorCode(c, f):
+    if c is None:
+        return ""
+    if hasattr(c, "__float__"):
+        c = (c,)
+    CheckColor(c)
+    if len(c) == 1:
+        s = "%g " % c[0]
+        return s + "G " if f == "c" else s + "g "
+
+    if len(c) == 3:
+        s = "%g %g %g " % tuple(c)
+        return s + "RG " if f == "c" else s + "rg "
+
+    s = "%g %g %g %g " % tuple(c)
+    return s + "K " if f == "c" else s + "k "
+
+def JM_TUPLE(o):
+    return tuple(map(lambda x: round(x, 8), o))
 
 def CheckMorph(o):
     if not bool(o): return False
@@ -2138,27 +2164,13 @@ open(filename, filetype='type') - from file"""
         return val
 
 
-    def insertPage(self, pno=-1, text=None, fontsize=11, width=595, height=842, fontname=None, fontfile=None, set_simple=0, color=None):
-        """Insert a new page in front of 'pno'. Use arguments 'width', 'height' to specify a non-default page size, and optionally text insertion arguments."""
-
+    def _newPage(self, pno=-1, width=595, height=842):
+        """_newPage(self, pno=-1, width=595, height=842) -> PyObject *"""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
-        if bool(text):
-            CheckColor(color)
-            if fontname and fontname[0] == "/":
-                raise ValueError("invalid font reference")
 
-
-        val = _fitz.Document_insertPage(self, pno, text, fontsize, width, height, fontname, fontfile, set_simple, color)
-
-        if val < 0: return val
+        val = _fitz.Document__newPage(self, pno, width, height)
         self._reset_page_refs()
-        if not bool(text): return val
-        page = self.loadPage(pno)
-        val = page.insertText(Point(50, 72), text, fontsize = fontsize,
-                              fontname = fontname, fontfile = fontfile,
-                              color = color, set_simple = set_simple)
-
 
         return val
 

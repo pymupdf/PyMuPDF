@@ -6,15 +6,16 @@ warnings.simplefilter("once")
 The following is a collection of functions to extend PyMupdf.
 """
 
-def showPDFpage(page,
-                rect,
-                src,
-                pno=0,
-                overlay=True,
-                keep_proportion=True,
-                rotate=0,
-                reuse_xref=0,
-                clip = None,
+def showPDFpage(
+        page,
+        rect,
+        src,
+        pno=0,
+        overlay=True,
+        keep_proportion=True,
+        rotate=0,
+        reuse_xref=0,
+        clip = None,
     ):
     """Show page number 'pno' of PDF 'src' in rectangle 'rect'.
 
@@ -80,6 +81,8 @@ def showPDFpage(page,
         warnings.warn("ignoring 'reuse_xref'", DeprecationWarning)
 
     src_page = src[pno]  # load ource page
+    if len(src_page._getContents()) == 0:
+        raise ValueError("nothing to show - source page empty")
 
     tar_rect = rect * ~page._getTransformation()  # target rect in PDF coordinates
 
@@ -1003,149 +1006,180 @@ def insertText(page, point, text,
         img.commit(overlay)
     return rc
 
-def newPage(doc, pno = -1, width = 595, height = 842):
+def newPage(doc, pno=-1, width=595, height=842):
     """Create and return a new page object.
     """
-    doc.insertPage(pno, width = width, height = height)
+    doc._newPage(pno, width=width, height=height)
     return doc[pno]
 
-def drawLine(page, p1, p2, color = (0, 0, 0), dashes = None,
-               width = 1, roundCap = True, overlay = True, morph = None):
+def insertPage(
+        doc,
+        pno,
+        text=None,
+        fontsize=11,
+        width=595,
+        height=842,
+        fontname="helv",
+        fontfile=None,
+        color=None,
+    ):
+    """ Create a new PDF page and insert some text.
+
+    Notes:
+        Function combining Document.newPage() and Page.insertText().
+        For parameter details see these methods.
+    """
+    page = doc.newPage(pno=pno, width=width, height=height)
+    if not bool(text):
+        return 0
+    rc = page.insertText(
+            (50, 72),
+            text,
+            fontsize=fontsize,
+            fontname=fontname,
+            fontfile=fontfile,
+            color=color,
+         )
+    return rc
+
+def drawLine(page, p1, p2, color=None, dashes=None, width=1, roundCap=False, overlay=True, morph=None):
     """Draw a line from point p1 to point p2.
     """
     img = page.newShape()
     p = img.drawLine(Point(p1), Point(p2))
-    img.finish(color = color, dashes = dashes, width = width, closePath = False,
-               roundCap = roundCap, morph = morph)
+    img.finish(color=color, dashes=dashes, width=width, closePath=False,
+               roundCap=roundCap, morph=morph)
     img.commit(overlay)
 
     return p
 
-def drawSquiggle(page, p1, p2, breadth = 2, color = (0, 0, 0), dashes = None,
-               width = 1, roundCap = True, overlay = True, morph = None):
+def drawSquiggle(page, p1, p2, breadth = 2, color=None, dashes=None,
+               width=1, roundCap=False, overlay=True, morph=None):
     """Draw a squiggly line from point p1 to point p2.
     """
     img = page.newShape()
     p = img.drawSquiggle(Point(p1), Point(p2), breadth = breadth)
-    img.finish(color = color, dashes = dashes, width = width, closePath = False,
-               roundCap = roundCap, morph = morph)
+    img.finish(color=color, dashes=dashes, width=width, closePath=False,
+               roundCap=roundCap, morph=morph)
     img.commit(overlay)
 
     return p
 
-def drawZigzag(page, p1, p2, breadth = 2, color = (0, 0, 0), dashes = None,
-               width = 1, roundCap = True, overlay = True, morph = None):
+def drawZigzag(page, p1, p2, breadth = 2, color=None, dashes=None,
+               width=1, roundCap=False, overlay=True, morph=None):
     """Draw a zigzag line from point p1 to point p2.
     """
     img = page.newShape()
     p = img.drawZigzag(Point(p1), Point(p2), breadth = breadth)
-    img.finish(color = color, dashes = dashes, width = width, closePath = False,
-               roundCap = roundCap, morph = morph)
+    img.finish(color=color, dashes=dashes, width=width, closePath=False,
+               roundCap=roundCap, morph=morph)
     img.commit(overlay)
 
     return p
 
-def drawRect(page, rect, color = (0, 0, 0), fill = None, dashes = None,
-             width = 1, roundCap = True, morph = None, overlay = True):
+def drawRect(page, rect, color=None, fill=None, dashes=None,
+             width=1, roundCap=False, morph=None, overlay=True):
     """Draw a rectangle.
     """
     img = page.newShape()
     Q = img.drawRect(Rect(rect))
-    img.finish(color = color, fill = fill, dashes = dashes, width = width,
-                   roundCap = roundCap, morph = morph)
+    img.finish(color=color, fill=fill, dashes=dashes, width=width,
+                   roundCap=roundCap, morph=morph)
     img.commit(overlay)
 
     return Q
 
-def drawQuad(page, quad, color = (0, 0, 0), fill = None, dashes = None,
-             width = 1, roundCap = True, morph = None, overlay = True):
+def drawQuad(page, quad, color=None, fill=None, dashes=None,
+             width=1, roundCap=False, morph=None, overlay=True):
     """Draw a quadrilateral.
     """
     img = page.newShape()
     Q = img.drawQuad(Quad(quad))
-    img.finish(color = color, fill = fill, dashes = dashes, width = width,
-                   roundCap = roundCap, morph = morph)
+    img.finish(color=color, fill=fill, dashes=dashes, width=width,
+                   roundCap=roundCap, morph=morph)
     img.commit(overlay)
 
     return Q
 
-def drawPolyline(page, points, color = (0, 0, 0), fill = None, dashes = None,
-                 width = 1, morph = None, roundCap = True, overlay = True,
-                 closePath = False):
+def drawPolyline(page, points, color=None, fill=None, dashes=None,
+                 width=1, morph=None, roundCap=False, overlay=True,
+                 closePath=False):
     """Draw multiple connected line segments.
     """
     img = page.newShape()
     Q = img.drawPolyline(points)
-    img.finish(color = color, fill = fill, dashes = dashes, width = width,
-               roundCap = roundCap, morph = morph, closePath = closePath)
+    img.finish(color=color, fill=fill, dashes=dashes, width=width,
+               roundCap=roundCap, morph=morph, closePath=closePath)
     img.commit(overlay)
 
     return Q
 
-def drawCircle(page, center, radius, color = (0, 0, 0), fill = None,
-               morph = None, dashes = None, width = 1,
-               roundCap = True, overlay = True):
+def drawCircle(page, center, radius, color=None, fill=None,
+               morph=None, dashes=None, width=1,
+               roundCap=False, overlay=True):
     """Draw a circle given its center and radius.
     """
     img = page.newShape()
     Q = img.drawCircle(Point(center), radius)
-    img.finish(color = color, fill = fill, dashes = dashes, width = width,
-               roundCap = roundCap, morph = morph)
+    img.finish(color=color, fill=fill, dashes=dashes, width=width,
+               roundCap=roundCap, morph=morph)
     img.commit(overlay)
     return Q
 
-def drawOval(page, rect, color = (0, 0, 0), fill = None, dashes = None,
-             morph = None,
-             width = 1, roundCap = True, overlay = True):
+def drawOval(page, rect, color=None, fill=None, dashes=None,
+             morph=None,
+             width=1, roundCap=False, overlay=True):
     """Draw an oval given its containing rectangle or quad.
     """
     img = page.newShape()
     Q = img.drawOval(rect)
-    img.finish(color = color, fill = fill, dashes = dashes, width = width,
-               roundCap = roundCap, morph = morph)
+    img.finish(color=color, fill=fill, dashes=dashes, width=width,
+               roundCap=roundCap, morph=morph)
     img.commit(overlay)
     
     return Q
 
-def drawCurve(page, p1, p2, p3, color = (0, 0, 0), fill = None, dashes = None,
-              width = 1, morph = None, closePath = False,
-              roundCap = True, overlay = True):
+def drawCurve(page, p1, p2, p3, color=None, fill=None, dashes=None,
+              width=1, morph=None, closePath=False,
+              roundCap=False, overlay=True):
     """Draw a special Bezier curve from p1 to p3, generating control points on lines p1 to p2 and p2 to p3.
     """
     img = page.newShape()
     Q = img.drawCurve(Point(p1), Point(p2), Point(p3))
-    img.finish(color = color, fill = fill, dashes = dashes, width = width,
-               roundCap = roundCap, morph = morph, closePath = closePath)
+    img.finish(color=color, fill=fill, dashes=dashes, width=width,
+               roundCap=roundCap, morph=morph, closePath=closePath)
     img.commit(overlay)
 
     return Q
 
-def drawBezier(page, p1, p2, p3, p4, color = (0, 0, 0), fill = None,
-               dashes = None, width = 1, morph = None,
-               closePath = False, roundCap = True, overlay = True):
+def drawBezier(page, p1, p2, p3, p4, color=None, fill=None,
+               dashes=None, width=1, morph=None,
+               closePath=False, roundCap=False, overlay=True):
     """Draw a general cubic Bezier curve from p1 to p4 using control points p2 and p3.
     """
     img = page.newShape()
     Q = img.drawBezier(Point(p1), Point(p2), Point(p3), Point(p4))
-    img.finish(color = color, fill = fill, dashes = dashes, width = width,
-               roundCap = roundCap, morph = morph, closePath = closePath)
+    img.finish(color=color, fill=fill, dashes=dashes, width=width,
+               roundCap=roundCap, morph=morph, closePath=closePath)
     img.commit(overlay)
     
     return Q
 
-def drawSector(page, center, point, beta, color = (0, 0, 0), fill = None,
-              dashes = None, fullSector = True, morph = None,
-              width = 1, closePath = False, roundCap = True, overlay = True):
-    """Draw a circle sector given circle center, one arc end point and the angle of the arc. Parameters:
-    center - center of circle
-    point - arc end point
-    beta - angle of arc (degrees)
-    fullSector - connect arc ends with center
+def drawSector(page, center, point, beta, color=None, fill=None,
+              dashes=None, fullSector=True, morph=None,
+              width=1, closePath=False, roundCap=False, overlay=True):
+    """ Draw a circle sector given circle center, one arc end point and the angle of the arc.
+    
+    Parameters:
+        center -- center of circle
+        point -- arc end point
+        beta -- angle of arc (degrees)
+        fullSector -- connect arc ends with center
     """
     img = page.newShape()
-    Q = img.drawSector(Point(center), Point(point), beta, fullSector = fullSector)
-    img.finish(color = color, fill = fill, dashes = dashes, width = width,
-               roundCap = roundCap, morph = morph, closePath = closePath)
+    Q = img.drawSector(Point(center), Point(point), beta, fullSector=fullSector)
+    img.finish(color=color, fill=fill, dashes=dashes, width=width,
+               roundCap=roundCap, morph=morph, closePath=closePath)
     img.commit(overlay)
     
     return Q
@@ -1926,11 +1960,11 @@ class Shape():
         p1 = Point(p1)
         p2 = Point(p2)
         if not (self.lastPoint == p1):
-            self.draw_cont += "%f %f m\n" % tuple(p1 * self.ipctm)
+            self.draw_cont += "%g %g m\n" % JM_TUPLE(p1 * self.ipctm)
             self.lastPoint = p1
             self.updateRect(p1)
 
-        self.draw_cont += "%f %f l\n" % tuple(p2 * self.ipctm)
+        self.draw_cont += "%g %g l\n" % JM_TUPLE(p2 * self.ipctm)
         self.updateRect(p2)
         self.lastPoint = p2
         return self.lastPoint
@@ -1941,10 +1975,10 @@ class Shape():
         for i, p in enumerate(points):
             if i == 0:
                 if not (self.lastPoint == Point(p)):
-                    self.draw_cont += "%f %f m\n" % tuple(Point(p) * self.ipctm)
+                    self.draw_cont += "%g %g m\n" % JM_TUPLE(Point(p) * self.ipctm)
                     self.lastPoint = Point(p)
             else:
-                self.draw_cont += "%f %f l\n" % tuple(Point(p) * self.ipctm)
+                self.draw_cont += "%g %g l\n" % JM_TUPLE(Point(p) * self.ipctm)
             self.updateRect(p)
 
         self.lastPoint = Point(points[-1])
@@ -1958,8 +1992,8 @@ class Shape():
         p3 = Point(p3)
         p4 = Point(p4)
         if not (self.lastPoint == p1):
-            self.draw_cont += "%f %f m\n" % tuple(p1 * self.ipctm)
-        self.draw_cont += "%f %f %f %f %f %f c\n" % tuple(list(p2 * self.ipctm) + \
+            self.draw_cont += "%g %g m\n" % JM_TUPLE(p1 * self.ipctm)
+        self.draw_cont += "%g %g %g %g %g %g c\n" % JM_TUPLE(list(p2 * self.ipctm) + \
                                                           list(p3 * self.ipctm) + \
                                                           list(p4 * self.ipctm))
         self.updateRect(p1)
@@ -1984,7 +2018,7 @@ class Shape():
         mb = q.ll + (q.lr - q.ll) * 0.5
         ml = q.ul + (q.ll - q.ul) * 0.5
         if not (self.lastPoint == ml):
-            self.draw_cont += "%f %f m\n" % tuple(ml * self.ipctm)
+            self.draw_cont += "%g %g m\n" % JM_TUPLE(ml * self.ipctm)
             self.lastPoint = ml
         self.drawCurve(ml, q.ll, mb)
         self.drawCurve(mb, q.lr, mr)
@@ -2001,7 +2035,7 @@ class Shape():
             raise ValueError("radius must be postive")
         center = Point(center)
         p1 = center - (radius, 0)
-        return self.drawSector(center, p1, 360, fullSector = False)
+        return self.drawSector(center, p1, 360, fullSector=False)
 
     def drawCurve(self, p1, p2, p3):
         """Draw a curve between points using one control point.
@@ -2014,14 +2048,14 @@ class Shape():
         k2 = p3 + (p2 - p3) * kappa
         return self.drawBezier(p1, k1, k2, p3)
 
-    def drawSector(self, center, point, beta, fullSector = True):
+    def drawSector(self, center, point, beta, fullSector=True):
         """Draw a circle sector.
         """
         center = Point(center)
         point = Point(point)
-        l3 = "%f %f m\n"
-        l4 = "%f %f %f %f %f %f c\n"
-        l5 = "%f %f l\n"
+        l3 = "%g %g m\n"
+        l4 = "%g %g %g %g %g %g c\n"
+        l5 = "%g %g l\n"
         betar = math.radians(-beta)
         w360 = math.radians(math.copysign(360, betar)) * (-1)
         w90  = math.radians(math.copysign(90, betar))
@@ -2029,7 +2063,7 @@ class Shape():
         while abs(betar) > 2 * math.pi:
             betar += w360                       # bring angle below 360 degrees
         if not (self.lastPoint == point):
-            self.draw_cont += l3 % tuple(point * self.ipctm)
+            self.draw_cont += l3 % JM_TUPLE(point * self.ipctm)
             self.lastPoint = point
         Q = Point(0, 0)                    # just make sure it exists
         C = center
@@ -2052,7 +2086,7 @@ class Shape():
             kappa = kappah * abs(P - Q)
             cp1 = P + (R - P) * kappa           # control point 1
             cp2 = Q + (R - Q) * kappa           # control point 2
-            self.draw_cont += l4 % tuple(list(cp1 * self.ipctm) + \
+            self.draw_cont += l4 % JM_TUPLE(list(cp1 * self.ipctm) + \
                                          list(cp2 * self.ipctm) + \
                                          list(Q * self.ipctm))
 
@@ -2073,13 +2107,13 @@ class Shape():
             kappa = kappah * abs(P - Q) / (1 - math.cos(betar))
             cp1 = P + (R - P) * kappa           # control point 1
             cp2 = Q + (R - Q) * kappa           # control point 2
-            self.draw_cont += l4 % tuple(list(cp1 * self.ipctm) + \
+            self.draw_cont += l4 % JM_TUPLE(list(cp1 * self.ipctm) + \
                                          list(cp2 * self.ipctm) + \
                                          list(Q * self.ipctm))
         if fullSector:
-            self.draw_cont += l3 % tuple(point * self.ipctm)
-            self.draw_cont += l5 % tuple(center * self.ipctm)
-            self.draw_cont += l5 % tuple(Q * self.ipctm)
+            self.draw_cont += l3 % JM_TUPLE(point * self.ipctm)
+            self.draw_cont += l5 % JM_TUPLE(center * self.ipctm)
+            self.draw_cont += l5 % JM_TUPLE(Q * self.ipctm)
         self.lastPoint = Q
         return self.lastPoint
     
@@ -2087,7 +2121,7 @@ class Shape():
         """Draw a rectangle.
         """
         r = Rect(rect)
-        self.draw_cont += "%f %f %f %f re\n" % tuple(list(r.bl * self.ipctm) + \
+        self.draw_cont += "%g %g %g %g re\n" % JM_TUPLE(list(r.bl * self.ipctm) + \
                                                [r.width, r.height])
         self.updateRect(r)
         self.lastPoint = r.tl
@@ -2217,10 +2251,12 @@ class Shape():
             tab.append(getTJstr(t, g, simple, ordering))
         text = tab
 
-        CheckColor(color)
-        CheckColor(fill)
+        color_str = ColorCode(color, "c")
+        fill_str = ColorCode(fill, "f")
         if fill is None and render_mode == 0:    # ensure fill color when 0 Tr
             fill = color
+            fill_str = ColorCode(color, "f")
+
         morphing = CheckMorph(morph)
         rot = rotate
         if rot % 90 != 0:
@@ -2229,7 +2265,7 @@ class Shape():
         while rot < 0: rot += 360
         rot = rot % 360               # text rotate = 0, 90, 270, 180
 
-        templ1 = "\nq BT\n%s1 0 0 1 %f %f Tm /%s %g Tf "
+        templ1 = "\nq BT\n%s1 0 0 1 %g %g Tm /%s %g Tf "
         templ2 = "TJ\n0 -%g TD\n"
         cmp90 = "0 1 -1 0 0 0 cm\n"   # rotates 90 deg counter-clockwise
         cmm90 = "0 -1 1 0 0 0 cm\n"   # rotates 90 deg clockwise
@@ -2243,7 +2279,7 @@ class Shape():
             m1 = Matrix(1, 0, 0, 1, morph[0].x + self.x,
                              height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
-            cm = "%f %f %f %f %f %f cm\n" % tuple(mat)
+            cm = "%g %g %g %g %g %g cm\n" % JM_TUPLE(mat)
         else:
             cm = ""
         top = height - point.y - self.y # start of 1st char
@@ -2280,9 +2316,9 @@ class Shape():
         if border_width != 1:
             nres += "%g w " % border_width
         if color is not None:
-            nres += "%g %g %g RG " % tuple(color)
+            nres += color_str
         if fill is not None:
-            nres += "%g %g %g rg " % tuple(fill)
+            nres += fill_str
 
     # =========================================================================
     #   start text insertion
@@ -2325,7 +2361,7 @@ class Shape():
                       render_mode=0,
                       rotate=0,
                       morph=None):
-        """Insert text into a given rectangle.
+        """ Insert text into a given rectangle.
 
         Args:
             rect -- the textbox to fill
@@ -2348,10 +2384,11 @@ class Shape():
         if rect.isEmpty or rect.isInfinite:
             raise ValueError("text box must be finite and not empty")
 
-        CheckColor(color)
-        CheckColor(fill)
+        color_str = ColorCode(color, "c")
+        fill_str = ColorCode(fill, "f")
         if fill is None and render_mode == 0:    # ensure fill color for 0 Tr
             fill = color
+            fill_str = ColorCode(color, "f")
 
         if rotate % 90 != 0:
             raise ValueError("rotate must be multiple of 90")
@@ -2428,7 +2465,7 @@ class Shape():
             m1 = Matrix(1, 0, 0, 1, morph[0].x + self.x,
                              self.height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
-            cm = "%f %f %f %f %f %f cm\n" % tuple(mat)
+            cm = "%g %g %g %g %g %g cm\n" % JM_TUPLE(mat)
         else:
             cm = ""
         
@@ -2530,7 +2567,7 @@ class Shape():
         if more < 1e-5:
             more = 0                            # don't bother with epsilons
         nres = "\nq BT\n" + cm                # initialize output buffer
-        templ = "1 0 0 1 %f %f Tm /%s %g Tf "
+        templ = "1 0 0 1 %g %g Tm /%s %g Tf "
         # center, right, justify: output each line with its own specifics
         spacing = 0
         text_t = text.splitlines()              # split text in lines again
@@ -2571,9 +2608,9 @@ class Shape():
             if spacing != 0:
                 nres += "%g Tw " % spacing
             if color is not None:
-                nres += "%g %g %g RG " % tuple(color)
+                nres += color_str
             if fill is not None:
-                nres += "%g %g %g rg " % tuple(fill)
+                nres += fill_str
             if border_width != 1:
                 nres += "%g w " % border_width
             nres += "%sTJ\n" % getTJstr(t, tj_glyphs, simple, ordering)
@@ -2584,24 +2621,35 @@ class Shape():
         self.updateRect(rect)
         return more
     
-    def finish(self, width = 1,
-                   color = (0, 0, 0),
-                   fill = None,
-                   roundCap = True,
-                   dashes = None,
-                   even_odd = False,
-                   morph = None,
-                   closePath = True):
-        """Finish this drawing segment by applying stroke and fill colors, dashes, line style and width, or morphing. Also determines whether any open path should be closed by a connecting line to its start point.
+    def finish(
+            self,
+            width=1,
+            color=None,
+            fill=None,
+            roundCap=False,
+            dashes=None,
+            even_odd=False,
+            morph=None,
+            closePath=True
+        ):
+        """Finish the current drawing segment.
+
+        Notes:
+            Apply stroke and fill colors, dashes, line style and width, or
+            morphing. Also determines whether any open path should be closed
+            by a connecting line to its start point.
         """
         if self.draw_cont == "":            # treat empty contents as no-op
             return
 
-        CheckColor(color)                   # ensure proper colors
-        CheckColor(fill)                    # ensure proper colors
+        color_str = ColorCode(color, "c")  # ensure proper color string
+        fill_str = ColorCode(fill, "f")  # ensure proper fill string
 
-        self.draw_cont += "%g w\n%i J\n%i j\n" % (width, roundCap,
-                                                 roundCap)
+        if width != 1:
+            self.draw_cont += "%g w\n" % width
+
+        if roundCap:
+            self.draw_cont += "%i J %i j\n" % (roundCap, roundCap)
 
         if dashes is not None and len(dashes) > 0:
             self.draw_cont += "%s d\n" % dashes
@@ -2610,10 +2658,11 @@ class Shape():
             self.draw_cont += "h\n"
             self.lastPoint = None
 
-        self.draw_cont += "%g %g %g RG\n" % color
+        if color is not None:
+            self.draw_cont += color_str
 
         if fill is not None:
-            self.draw_cont += "%g %g %g rg\n" % fill
+            self.draw_cont += fill_str
             if not even_odd:
                 self.draw_cont += "B\n"
             else:
@@ -2625,14 +2674,14 @@ class Shape():
             m1 = Matrix(1, 0, 0, 1, morph[0].x + self.x,
                              self.height - morph[0].y - self.y)
             mat = ~m1 * morph[1] * m1
-            self.draw_cont = "%f %f %f %f %f %f cm\n" % tuple(mat) + self.draw_cont
+            self.draw_cont = "%g %g %g %g %g %g cm\n" % JM_TUPLE(mat) + self.draw_cont
 
         self.totalcont += "\nq\n" + self.draw_cont + "Q\n"
         self.draw_cont = ""
         self.lastPoint = None
         return
 
-    def commit(self, overlay = True):
+    def commit(self, overlay=True):
         """Update the page's /Contents object with Shape data. The argument controls whether data appear in foreground (default) or background.
         """
         CheckParent(self.page)              # doc may have died meanwhile
