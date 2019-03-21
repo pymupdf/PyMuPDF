@@ -79,7 +79,7 @@ Our **documentation**, written using Sphinx, is available in various formats fro
 
 * You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/). For **best quality downloads** you should however use the following links.
 * zipped [HTML](https://github.com/pymupdf/PyMuPDF/tree/master/doc/html.zip)
-* [Windows CHM](https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm)
+* [Windows CHM](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm)
 * [PDF](https://github.com/pymupdf/PyMuPDF/blob/master/doc/PyMuPDF.pdf)
 
 # Earlier Versions
