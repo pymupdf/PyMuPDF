@@ -35,6 +35,7 @@ fitz.Document.setMetadata = fitz.utils.setMetadata
 fitz.Document.setToC = fitz.utils.setToC
 fitz.Document.searchPageFor = fitz.utils.searchPageFor
 fitz.Document.newPage = fitz.utils.newPage
+fitz.Document.insertPage = fitz.utils.insertPage
 fitz.Document.getCharWidths = fitz.utils.getCharWidths
 
 # ------------------------------------------------------------------------------

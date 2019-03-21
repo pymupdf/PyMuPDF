@@ -1059,29 +1059,10 @@ if links:
         //---------------------------------------------------------------------
         // Create and insert a new page (PDF)
         //---------------------------------------------------------------------
-        FITZEXCEPTION(insertPage, result<0)
-        %feature("autodoc","Insert a new page in front of 'pno'. Use arguments 'width', 'height' to specify a non-default page size, and optionally text insertion arguments.") insertPage;
-        %pythonprepend insertPage %{
-        if self.isClosed or self.isEncrypted:
-            raise ValueError("operation illegal for closed / encrypted doc")
-        if bool(text):
-            CheckColor(color)
-            if fontname and fontname[0] == "/":
-                raise ValueError("invalid font reference")
-        %}
-        %pythonappend insertPage %{
-        if val < 0: return val
-        self._reset_page_refs()
-        if not bool(text): return val
-        page = self.loadPage(pno)
-        val = page.insertText(Point(50, 72), text, fontsize = fontsize,
-                              fontname = fontname, fontfile = fontfile,
-                              color = color, set_simple = set_simple)
-        %}
-        int insertPage(int pno = -1, PyObject *text = NULL, float fontsize = 11,
-                       float width = 595, float height = 842,
-                       char *fontname = NULL, char *fontfile = NULL,
-                       int set_simple = 0, PyObject *color = NULL)
+        FITZEXCEPTION(_newPage, !result)
+        CLOSECHECK(_newPage)
+        %pythonappend _newPage %{self._reset_page_refs()%}
+        PyObject *_newPage(int pno=-1, float width=595, float height=842)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_rect mediabox = { 0, 0, 595, 842 };    // ISO-A4 portrait values
@@ -1095,25 +1076,22 @@ if links:
                 if (pno < -1) THROWMSG("invalid page number(s)");
                 // create /Resources and /Contents objects
                 resources = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
-                contents = fz_new_buffer(gctx, 10);
-                fz_append_string(gctx, contents, "");
-                fz_terminate_buffer(gctx, contents);
                 page_obj = pdf_add_page(gctx, pdf, mediabox, 0, resources, contents);
-                pdf_insert_page(gctx, pdf, pno , page_obj);
+                pdf_insert_page(gctx, pdf, pno, page_obj);
             }
             fz_always(gctx)
             {
                 fz_drop_buffer(gctx, contents);
                 pdf_drop_obj(gctx, page_obj);
             }
-            fz_catch(gctx) return -1;
+            fz_catch(gctx) return NULL;
             pdf->dirty = 1;
-            return 0;
+            return NONE;
         }
 
         //---------------------------------------------------------------------
         // Create sub-document to keep only selected pages.
-        // Parameter is a Python list of the wanted page numbers.
+        // Parameter is a Python sequence of the wanted page numbers.
         //---------------------------------------------------------------------
         FITZEXCEPTION(select, !result)
         %feature("autodoc","Build sub-pdf with page numbers in 'list'.") select;

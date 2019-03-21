@@ -18,8 +18,8 @@ class Matrix():
         if len(args) == 1:                       # either an angle or a sequ
             if hasattr(args[0], "__float__"):
                 theta = math.radians(args[0])
-                c = round(math.cos(theta), 8)
-                s = round(math.sin(theta), 8)
+                c = round(math.cos(theta), 12)
+                s = round(math.sin(theta), 12)
                 self.a = self.d = c
                 self.b = s
                 self.c = -s
@@ -111,8 +111,8 @@ class Matrix():
 
         else:
             rad = math.radians(theta)
-            s = round(math.sin(rad), 8)
-            c = round(math.cos(rad), 8)
+            s = round(math.sin(rad), 12)
+            c = round(math.cos(rad), 12)
             a = self.a
             b = self.b
             self.a = c * a + s * self.c

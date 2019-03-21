@@ -10325,7 +10325,7 @@ SWIGINTERN PyObject *fz_document_s_insertPDF(struct fz_document_s *self,struct f
             pdfout->dirty = 1;
             return NONE;
         }
-SWIGINTERN int fz_document_s_insertPage(struct fz_document_s *self,int pno,PyObject *text,float fontsize,float width,float height,char *fontname,char *fontfile,int set_simple,PyObject *color){
+SWIGINTERN PyObject *fz_document_s__newPage(struct fz_document_s *self,int pno,float width,float height){
             pdf_document *pdf = pdf_specifics(gctx, self);
             fz_rect mediabox = { 0, 0, 595, 842 };    // ISO-A4 portrait values
             mediabox.x1 = width;
@@ -10338,28 +10338,18 @@ SWIGINTERN int fz_document_s_insertPage(struct fz_document_s *self,int pno,PyObj
                 if (pno < -1) THROWMSG("invalid page number(s)");
                 // create /Resources and /Contents objects
                 resources = pdf_add_object_drop(gctx, pdf, pdf_new_dict(gctx, pdf, 1));
-                contents = fz_new_buffer(gctx, 10);
-                fz_append_string(gctx, contents, "");
-                fz_terminate_buffer(gctx, contents);
                 page_obj = pdf_add_page(gctx, pdf, mediabox, 0, resources, contents);
-                pdf_insert_page(gctx, pdf, pno , page_obj);
+                pdf_insert_page(gctx, pdf, pno, page_obj);
             }
             fz_always(gctx)
             {
                 fz_drop_buffer(gctx, contents);
                 pdf_drop_obj(gctx, page_obj);
             }
-            fz_catch(gctx) return -1;
+            fz_catch(gctx) return NULL;
             pdf->dirty = 1;
-            return 0;
+            return NONE;
         }
-
-SWIGINTERNINLINE PyObject*
-  SWIG_From_int  (int value)
-{
-  return PyInt_FromLong((long) value);
-}
-
 SWIGINTERN PyObject *fz_document_s_select(struct fz_document_s *self,PyObject *pyliste){
             // preparatory stuff:
             // (1) get underlying pdf document,
@@ -11492,6 +11482,13 @@ SWIGINTERN int fz_page_s_rotation(struct fz_page_s *self){
             if (!page) return -1;
             return pdf_to_int(gctx, pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(Rotate)));
         }
+
+SWIGINTERNINLINE PyObject*
+  SWIG_From_int  (int value)
+{
+  return PyInt_FromLong((long) value);
+}
+
 SWIGINTERN PyObject *fz_page_s_setRotation(struct fz_page_s *self,int rot){
             fz_try(gctx)
             {
@@ -15062,124 +15059,64 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Document_insertPage(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_Document__newPage(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
   int arg2 = (int) -1 ;
-  PyObject *arg3 = (PyObject *) NULL ;
-  float arg4 = (float) 11 ;
-  float arg5 = (float) 595 ;
-  float arg6 = (float) 842 ;
-  char *arg7 = (char *) NULL ;
-  char *arg8 = (char *) NULL ;
-  int arg9 = (int) 0 ;
-  PyObject *arg10 = (PyObject *) NULL ;
+  float arg3 = (float) 595 ;
+  float arg4 = (float) 842 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
+  float val3 ;
+  int ecode3 = 0 ;
   float val4 ;
   int ecode4 = 0 ;
-  float val5 ;
-  int ecode5 = 0 ;
-  float val6 ;
-  int ecode6 = 0 ;
-  int res7 ;
-  char *buf7 = 0 ;
-  int alloc7 = 0 ;
-  int res8 ;
-  char *buf8 = 0 ;
-  int alloc8 = 0 ;
-  int val9 ;
-  int ecode9 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
-  PyObject * obj5 = 0 ;
-  PyObject * obj6 = 0 ;
-  PyObject * obj7 = 0 ;
-  PyObject * obj8 = 0 ;
-  PyObject * obj9 = 0 ;
-  int result;
+  PyObject *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O|OOOOOOOOO:Document_insertPage",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O|OOO:Document__newPage",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_insertPage" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__newPage" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
   }
   arg1 = (struct fz_document_s *)(argp1);
   if (obj1) {
     ecode2 = SWIG_AsVal_int(obj1, &val2);
     if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document_insertPage" "', argument " "2"" of type '" "int""'");
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document__newPage" "', argument " "2"" of type '" "int""'");
     } 
     arg2 = (int)(val2);
   }
   if (obj2) {
-    arg3 = obj2;
+    ecode3 = SWIG_AsVal_float(obj2, &val3);
+    if (!SWIG_IsOK(ecode3)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Document__newPage" "', argument " "3"" of type '" "float""'");
+    } 
+    arg3 = (float)(val3);
   }
   if (obj3) {
     ecode4 = SWIG_AsVal_float(obj3, &val4);
     if (!SWIG_IsOK(ecode4)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "Document_insertPage" "', argument " "4"" of type '" "float""'");
+      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "Document__newPage" "', argument " "4"" of type '" "float""'");
     } 
     arg4 = (float)(val4);
   }
-  if (obj4) {
-    ecode5 = SWIG_AsVal_float(obj4, &val5);
-    if (!SWIG_IsOK(ecode5)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "Document_insertPage" "', argument " "5"" of type '" "float""'");
-    } 
-    arg5 = (float)(val5);
-  }
-  if (obj5) {
-    ecode6 = SWIG_AsVal_float(obj5, &val6);
-    if (!SWIG_IsOK(ecode6)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "Document_insertPage" "', argument " "6"" of type '" "float""'");
-    } 
-    arg6 = (float)(val6);
-  }
-  if (obj6) {
-    res7 = SWIG_AsCharPtrAndSize(obj6, &buf7, NULL, &alloc7);
-    if (!SWIG_IsOK(res7)) {
-      SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "Document_insertPage" "', argument " "7"" of type '" "char *""'");
-    }
-    arg7 = (char *)(buf7);
-  }
-  if (obj7) {
-    res8 = SWIG_AsCharPtrAndSize(obj7, &buf8, NULL, &alloc8);
-    if (!SWIG_IsOK(res8)) {
-      SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "Document_insertPage" "', argument " "8"" of type '" "char *""'");
-    }
-    arg8 = (char *)(buf8);
-  }
-  if (obj8) {
-    ecode9 = SWIG_AsVal_int(obj8, &val9);
-    if (!SWIG_IsOK(ecode9)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "Document_insertPage" "', argument " "9"" of type '" "int""'");
-    } 
-    arg9 = (int)(val9);
-  }
-  if (obj9) {
-    arg10 = obj9;
-  }
   {
-    result = (int)fz_document_s_insertPage(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10);
-    if (result<0)
+    result = (PyObject *)fz_document_s__newPage(arg1,arg2,arg3,arg4);
+    if (!result)
     {
       PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
       return NULL;
     }
   }
-  resultobj = SWIG_From_int((int)(result));
-  if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
-  if (alloc8 == SWIG_NEWOBJ) free((char*)buf8);
+  resultobj = result;
   return resultobj;
 fail:
-  if (alloc7 == SWIG_NEWOBJ) free((char*)buf7);
-  if (alloc8 == SWIG_NEWOBJ) free((char*)buf8);
   return NULL;
 }
 
@@ -21934,7 +21871,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document_save", _wrap_Document_save, METH_VARARGS, (char *)"Document_save(self, filename, garbage=0, clean=0, deflate=0, incremental=0, ascii=0, expand=0, linear=0, pretty=0, decrypt=1) -> PyObject *"},
 	 { (char *)"Document_write", _wrap_Document_write, METH_VARARGS, (char *)"Write document to a bytes object."},
 	 { (char *)"Document_insertPDF", _wrap_Document_insertPDF, METH_VARARGS, (char *)"Copy page range ['from', 'to'] of source PDF, starting as page number 'start_at'."},
-	 { (char *)"Document_insertPage", _wrap_Document_insertPage, METH_VARARGS, (char *)"Insert a new page in front of 'pno'. Use arguments 'width', 'height' to specify a non-default page size, and optionally text insertion arguments."},
+	 { (char *)"Document__newPage", _wrap_Document__newPage, METH_VARARGS, (char *)"Document__newPage(self, pno=-1, width=595, height=842) -> PyObject *"},
 	 { (char *)"Document_select", _wrap_Document_select, METH_VARARGS, (char *)"Build sub-pdf with page numbers in 'list'."},
 	 { (char *)"Document_permissions", _wrap_Document_permissions, METH_VARARGS, (char *)"Get permissions dictionary."},
 	 { (char *)"Document__getCharWidths", _wrap_Document__getCharWidths, METH_VARARGS, (char *)"Return list of glyphs and glyph widths of a font."},
