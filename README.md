@@ -35,7 +35,7 @@ On other operating systems you need to generate PyMuPDF yourself. And of course 
 * Be sure to download the official MuPDF source release from [here](https://mupdf.com/downloads/archive). Do **not use** MuPDF's [GitHub repo](https://github.com/ArtifexSoftware/mupdf). It contains their current **development source**, which is **not compatible** with this PyMuPDF version most of the time.
 
 * The repo's `fitz` folder contains a few files whose names start with an underscore `"_"`. These files contain configuration data and hotfixes. Each one must be copy-renamed to its correct target location of the MuPDF source that you have downloaded, **before you generate MuPDF**. Currently, these files are:
-  - fitz configuration file `_mupdf_config.h` copy-replace to: `mupdf/include/fitz/config.h`. It contains configuration data like e.g. which fonts to support.
+  - fitz configuration file `_mupdf_config.h` copy-replace to: `mupdf/include/mupdf/fitz/config.h`. It contains configuration data like e.g. which fonts to support.
   - fitz error module `_error.c`, copy-replace to: `mupdf/source/fitz/error.c`. It redirects MuPDF warnings and errors so they can be intercepted by PyMuPDF.
   - PDF device module `_pdf-device.c` copy-replace to: `mupdf/source/pdf/pdf-device.c`. It fixes a bug which caused method `Document.convertToPDF()` to bring down the interpeter.
   - Now MuPDF can be generated.
