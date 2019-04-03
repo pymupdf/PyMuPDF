@@ -1478,7 +1478,7 @@ def getPDFstr(s):
         return "<" + t + ">"                         # brackets indicate hex
 
 
-# following either returns original string with mixed-in 
+# following either returns original string with mixed-in
 # octal numbers \nnn if outside ASCII range, or:
 # exits with utf-16be BOM version of the string
     r = ""
@@ -1623,7 +1623,7 @@ def PaperRect(s):
 
 def CheckParent(o):
     if not hasattr(o, "parent") or o.parent is None:
-        raise ValueError("orphaned object: parent is None") 
+        raise ValueError("orphaned object: parent is None")
 
 def CheckColor(c):
     if c is not None:
@@ -1762,10 +1762,26 @@ def ConversionTrailer(i):
 
     return r
 
+class StreamWrapper(_object):
+    """Reusable stream validator/adapter mainly to
+encapsulate typechecks and useful data extraction"""
+    def __init__(self, stream):
+        if stream:
+            if hasattr(stream, 'getvalue'):
+                self.stream = stream.getvalue()
+            elif type(stream) not in (bytes, bytearray):
+                raise ValueError("stream must be bytes or bytearray")
+            else:
+                self.stream = stream
+
+            self.streamlen = len(stream)
+        else:
+            self.stream = None
+            self.streamlen = 0
 
 class Document(_object):
     """open() - new empty PDF
-open('type', stream) - from bytes/bytearray
+open('type', stream) - from bytes/bytearray/BytesIO
 open(filename, filetype='type') - from file"""
 
     __swig_setmethods__ = {}
@@ -1788,22 +1804,19 @@ open(filename, filetype='type') - from file"""
             else:
                 filename = str(filename)     # should take care of pathlib
 
-        self.streamlen = len(stream) if stream else 0
+        self._stream = StreamWrapper(stream)
 
-        self.name = ""
-        if filename and self.streamlen == 0:
+        if filename and not self.hasNonemptyStream:
             self.name = filename
+        else:
+            self.name = ""
 
-        if self.streamlen > 0:
-            if not (filename or filetype):
-                raise ValueError("filetype missing with stream specified")
-            if type(stream) not in (bytes, bytearray):
-                raise ValueError("stream must be bytes or bytearray")
+        if self.hasNonemptyStream and not (filename or filetype):
+            raise ValueError("filetype missing with stream specified")
 
         self.isClosed    = False
         self.isEncrypted = 0
         self.metadata    = None
-        self.stream      = stream       # prevent garbage collecting this
         self.openErrCode = 0
         self.openErrMsg  = ''
         self.FontInfos   = []
@@ -1829,7 +1842,22 @@ open(filename, filetype='type') - from file"""
         else:
             self.thisown = False
 
+    @property
 
+    def stream(self):
+        return self._stream.stream
+
+    @property
+
+    def streamlen(self):
+        return self._stream.streamlen
+
+    @property
+    # @TODO: do we really need to check for streamlen?
+    #        feels like checking self.stream for falsyness
+    #        is sufficient
+    def hasNonemptyStream(self):
+        return self._stream.streamlen > 0
 
 
     def close(self):
@@ -2359,7 +2387,7 @@ open(filename, filetype='type') - from file"""
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
 
-        return _fitz.Document__updateStream(self, xref, stream, new)
+        return _fitz.Document__updateStream(self, xref, StreamWrapper(stream).stream, new)
 
 
     def _setMetadata(self, text):
@@ -2949,7 +2977,7 @@ class Page(_object):
 
     def _insertImage(self, filename=None, pixmap=None, stream=None, overlay=1, matrix=None, _imgname=None):
         """_insertImage(self, filename=None, pixmap=None, stream=None, overlay=1, matrix=None, _imgname=None) -> PyObject *"""
-        return _fitz.Page__insertImage(self, filename, pixmap, stream, overlay, matrix, _imgname)
+        return _fitz.Page__insertImage(self, filename, pixmap, StreamWrapper(stream).stream, overlay, matrix, _imgname)
 
 
     def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,

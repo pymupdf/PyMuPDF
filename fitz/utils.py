@@ -144,7 +144,7 @@ def insertImage(page, rect, filename=None, pixmap=None, stream=None, rotate=0,
         rect: (rect-like) where to place the source image
         filename: (str) name of an image file
         pixmap: (obj) a Pixmap object
-        stream: (bytes) an image in memory
+        stream: (bytes/bytearray/BytesIO) an image in memory
         rotate: (int) degrees (multiple of 90)
         keep_proportion: (bool) whether to maintain aspect ratio
         overlay: (bool) put in foreground
@@ -169,7 +169,7 @@ def insertImage(page, rect, filename=None, pixmap=None, stream=None, rotate=0,
         raise ValueError("rect must be finite and not empty")
 
     clip = r * ~page._getTransformation()  # rect in PDF coordinates
-    
+
     rot = Matrix(rotate)
 
     fw = r.width
@@ -205,8 +205,8 @@ def insertImage(page, rect, filename=None, pixmap=None, stream=None, rotate=0,
         _imgname = n + str(i)
 
     page._insertImage(filename=filename,
-            pixmap=pixmap, 
-            stream=stream, 
+            pixmap=pixmap,
+            stream=StreamWrapper(stream).stream,
             matrix=matrix,
             overlay=overlay,
             _imgname=_imgname,
@@ -250,7 +250,7 @@ def searchPageFor(doc, pno, text, hit_max=16, quads=False):
 
 def getTextBlocks(page, images=False):
     """Return the text blocks on a page.
-    
+
     Notes:
         Lines in a block are concatenated with line breaks.
     Args:
@@ -327,7 +327,7 @@ def getPageText(doc, pno, output = "text"):
 def getPixmap(page, matrix = None, colorspace = csRGB, clip = None,
               alpha = True):
     """Create pixmap of page.
-    
+
     Args:
         matrix: Matrix for transformation (default: Identity).
         colorspace: (str/Colorspace) rgb, rgb, gray - case ignored, default csRGB.
@@ -424,7 +424,7 @@ def getLinkDict(ln):
 
 def getLinks(page):
     """Create a list of all links contained in a PDF page.
-    
+
     Notes:
         see PyMuPDF ducmentation for details.
     """
@@ -494,7 +494,7 @@ def getRectArea(*args):
     if len(args) > 1:
         unit = args[1]
     else:
-        unit = "px"    
+        unit = "px"
     u = {"px": (1,1), "in": (1.,72.), "cm": (2.54, 72.), "mm": (25.4, 72.)}
     f = (u[unit][0] / u[unit][1])**2
     return f * rect.width * rect.height
@@ -875,7 +875,7 @@ def getLinkText(page, lnk):
         else:
             txt = annot_goto_n
             annot = txt % (getPDFstr(lnk["to"]), rect)
-        
+
     elif lnk["kind"] == LINK_GOTOR:
         if lnk["page"] >= 0:
             txt = annot_gotor
@@ -909,7 +909,7 @@ def updateLink(page, lnk):
     if annot == "":
         raise ValueError("link kind not supported")
 
-    page.parent._updateObject(lnk["xref"], annot, page = page) 
+    page.parent._updateObject(lnk["xref"], annot, page = page)
     return
 
 def insertLink(page, lnk, mark = True):
@@ -988,7 +988,7 @@ def insertText(page, point, text,
                rotate=0,
                morph=None,
                overlay=True):
-    
+
     img = page.newShape()
     rc = img.insertText(point, text,
                         fontsize=fontsize,
@@ -1136,7 +1136,7 @@ def drawOval(page, rect, color=None, fill=None, dashes=None,
     img.finish(color=color, fill=fill, dashes=dashes, width=width,
                roundCap=roundCap, morph=morph)
     img.commit(overlay)
-    
+
     return Q
 
 def drawCurve(page, p1, p2, p3, color=None, fill=None, dashes=None,
@@ -1162,14 +1162,14 @@ def drawBezier(page, p1, p2, p3, p4, color=None, fill=None,
     img.finish(color=color, fill=fill, dashes=dashes, width=width,
                roundCap=roundCap, morph=morph, closePath=closePath)
     img.commit(overlay)
-    
+
     return Q
 
 def drawSector(page, center, point, beta, color=None, fill=None,
               dashes=None, fullSector=True, morph=None,
               width=1, closePath=False, roundCap=False, overlay=True):
     """ Draw a circle sector given circle center, one arc end point and the angle of the arc.
-    
+
     Parameters:
         center -- center of circle
         point -- arc end point
@@ -1181,7 +1181,7 @@ def drawSector(page, center, point, beta, color=None, fill=None,
     img.finish(color=color, fill=fill, dashes=dashes, width=width,
                roundCap=roundCap, morph=morph, closePath=closePath)
     img.commit(overlay)
-    
+
     return Q
 
 #----------------------------------------------------------------------
@@ -1771,7 +1771,7 @@ def getColor(name):
         return (c[1] / 255., c[2] / 255., c[3] / 255.)
     except:
         return (1, 1, 1)
-    
+
 def getColorHSV(name):
     """Retrieve the hue, saturation, value triple of a color name.
 
@@ -1782,7 +1782,7 @@ def getColorHSV(name):
         x = getColorInfoList()[getColorList().index(name.upper())]
     except:
         return (-1, -1, -1)
-    
+
     r = x[1] / 255.
     g = x[2] / 255.
     b = x[3] / 255.
@@ -1798,9 +1798,9 @@ def getColorHSV(name):
         hue = 60. * (((b - r)/delta) + 2)
     else:
         hue = 60. * (((r - g)/delta) + 4)
-        
+
     H = int(round(hue))
-    
+
     if cmax == 0:
         sat = 0
     else:
@@ -1812,7 +1812,7 @@ def getColorHSV(name):
 
 def getCharWidths(doc, xref, limit = 256, idx = 0):
     """Get list of glyph information of a font.
-    
+
     Notes:
         Must be provided by its XREF number. If we already dealt with the
         font, it will be recorded in doc.FontInfos. Otherwise we insert an
@@ -1873,9 +1873,9 @@ def getCharWidths(doc, xref, limit = 256, idx = 0):
         oldlimit = 0
     else:
         oldlimit = len(glyphs)
-    
+
     mylimit = max(256, limit)
-    
+
     if mylimit <= oldlimit:
         return glyphs
 
@@ -1896,7 +1896,7 @@ def getCharWidths(doc, xref, limit = 256, idx = 0):
 class Shape():
     """Create a new shape.
     """
-    
+
     @staticmethod
     def horizontal_angle(C, P):
         """Return the angle to the horizontal for the connection from C to P.
@@ -1934,7 +1934,7 @@ class Shape():
         self.totalcont  = ""
         self.lastPoint  = None
         self.rect       = None
-    
+
     def updateRect(self, x):
         if self.rect is None:
             if len(x) == 2:
@@ -1968,7 +1968,7 @@ class Shape():
         self.updateRect(p2)
         self.lastPoint = p2
         return self.lastPoint
-    
+
     def drawPolyline(self, points):
         """Draw several connected line segments.
         """
@@ -2027,7 +2027,7 @@ class Shape():
         self.updateRect(q.rect)
         self.lastPoint = ml
         return self.lastPoint
-    
+
     def drawCircle(self, center, radius):
         """Draw a circle given its center and radius.
         """
@@ -2116,7 +2116,7 @@ class Shape():
             self.draw_cont += l5 % JM_TUPLE(Q * self.ipctm)
         self.lastPoint = Q
         return self.lastPoint
-    
+
     def drawRect(self, rect):
         """Draw a rectangle.
         """
@@ -2147,7 +2147,7 @@ class Shape():
         matrix = TOOLS._hor_matrix(p1, p2)      # normalize line to x-axis
         i_mat  = ~matrix                        # get original position
         points = []                             # stores edges
-        for i in range (1, cnt):                
+        for i in range (1, cnt):
             if i % 4 == 1:                      # point "above" connection
                 p = Point(i, -1) * mb
             elif i % 4 == 3:                    # point "below" connection
@@ -2157,7 +2157,7 @@ class Shape():
             points.append(p * i_mat)
         self.drawPolyline([p1] + points + [p2])  # add start and end points
         return p2
-        
+
     def drawSquiggle(self, p1, p2, breadth = 2):
         """Draw a squiggly line from p1 to p2.
         """
@@ -2174,7 +2174,7 @@ class Shape():
         k = 2.4142135623765633                  # y of drawCurve helper point
 
         points = []                             # stores edges
-        for i in range (1, cnt):                
+        for i in range (1, cnt):
             if i % 4 == 1:                      # point "above" connection
                 p = Point(i, -k) * mb
             elif i % 4 == 3:                    # point "below" connection
@@ -2190,7 +2190,7 @@ class Shape():
             self.drawCurve(points[i], points[i+1], points[i+2])
             i += 2
         return p2
-        
+
 #==============================================================================
 # Shape.insertText
 #==============================================================================
@@ -2206,10 +2206,10 @@ class Shape():
                    border_width=1,
                    rotate=0,
                    morph=None):
-        
+
         # ensure 'text' is a list of strings, worth dealing with
         if not bool(buffer): return 0
-        
+
         if type(buffer) not in (list, tuple):
             text = buffer.splitlines()
         else:
@@ -2292,24 +2292,24 @@ class Shape():
             cm += cmp90
             space = width - abs(top)
             headroom = point.x + self.x
-    
+
         elif rot == 270:
             left = -height + point.y + self.y
             top = point.x + self.x
             cm += cmm90
             space = abs(top)
             headroom = width - point.x - self.x
-    
+
         elif rot == 180:
             left = -point.x - self.x
             top = -height + point.y + self.y
             cm += cm180
             space = abs(point.y + self.y)
             headroom = height - point.y - self.y
-    
+
         if headroom < fontsize:       # at least 1 full line space required!
             raise ValueError("text starts outside page")
-    
+
         nres = templ1 % (cm, left, top, fname, fontsize)
         if render_mode > 0:
             nres += "%i Tr " % render_mode
@@ -2334,16 +2334,16 @@ class Shape():
             nres += text[i] + templ2[:2]
             space -= lheight
             nlines += 1
-    
+
         nres += " ET Q\n"
-    
+
     # =========================================================================
     #   end of text insertion
     # =========================================================================
         # update the /Contents object
         self.text_cont += nres
         return nlines
-    
+
 #==============================================================================
 # Shape.insertTextbox
 #==============================================================================
@@ -2396,7 +2396,7 @@ class Shape():
         rot = rotate
         while rot < 0: rot += 360
         rot = rot % 360
-        
+
         # is buffer worth of dealing with?
         if not bool(buffer):
             return rect.height if rot in (0, 180) else rect.width
@@ -2428,14 +2428,14 @@ class Shape():
             t0 = "\n".join(buffer)
         else:
             t0 = buffer
-            
+
         maxcode = max([ord(c) for c in t0])
         # replace invalid char codes for simple fonts
         if simple and maxcode > 255:
             t0 = "".join([c if ord(c)<256 else "?" for c in t0])
 
         t0 = t0.splitlines()
-        
+
         glyphs = self.doc.getCharWidths(xref, maxcode + 1)
         if simple and bfname not in ("Symbol", "ZapfDingbats"):
             tj_glyphs = None
@@ -2468,7 +2468,7 @@ class Shape():
             cm = "%g %g %g %g %g %g cm\n" % JM_TUPLE(mat)
         else:
             cm = ""
-        
+
         #---------------------------------------------------------------------------
         # adjust for text orientation / rotation
         #---------------------------------------------------------------------------
@@ -2479,7 +2479,7 @@ class Shape():
             pos = point.y + self.y              # y of first line
             maxwidth = rect.width               # pixels available in one line
             maxpos = rect.y1 + self.y           # lines must not be below this
-            
+
         elif rot == 90:                         # rotate counter clockwise
             c_pnt = Point(fontsize, 0)     # progress in x-direction
             point = rect.bl + c_pnt             # line 1 'fontsize' away from left
@@ -2487,7 +2487,7 @@ class Shape():
             maxwidth = rect.height              # pixels available in one line
             maxpos = rect.x1 + self.x           # lines must not be right of this
             cm += cmp90
-            
+
         elif rot == 180:                        # text upside down
             c_pnt = -Point(0, fontsize)    # progress upwards in y direction
             point = rect.br + c_pnt             # line 1 'fontsize' above bottom
@@ -2496,7 +2496,7 @@ class Shape():
             progr = -1                          # subtract lheight for next line
             maxpos = rect.y0 + self.y           # lines must not be above this
             cm += cm180
-            
+
         else:                                   # rotate clockwise (270 or -90)
             c_pnt = -Point(fontsize, 0)    # progress from right to left
             point = rect.tr + c_pnt             # line 1 'fontsize' left of right
@@ -2505,12 +2505,12 @@ class Shape():
             progr = -1                          # subtract lheight for next line
             maxpos = rect.x0 + self.x           # lines must not left of this
             cm += cmm90
-        
+
         #=======================================================================
         # line loop
         #=======================================================================
         just_tab = []                           # 'justify' indicators per line
-        
+
         for i, line in enumerate(t0):
             line_t = line.expandtabs(expandtabs).split(" ")  # split into words
             lbuff = ""                          # init line buffer
@@ -2550,19 +2550,19 @@ class Shape():
                         lbuff = c               # start new line with this char
                 lbuff += " "                    # finish long word
                 rest = maxwidth - pixlen(lbuff) # long word stored
-                    
+
             if lbuff != "":                     # unprocessed line content?
                 text += lbuff.rstrip()          # append to text
                 just_tab.append(False)          # do not justify line
             if i < len(t0) - 1:                 # not the last line?
                 text += "\n"                    # insert line break
                 pos += lheight * progr          # increase line position
-        
+
         more = (pos - maxpos) * progr           # difference to rect size limit
-        
+
         if more > 1e-5:                         # landed too much outside rect
             return (-1) * more                  # return deficit, don't output
-    
+
         more = abs(more)
         if more < 1e-5:
             more = 0                            # don't bother with epsilons
@@ -2616,11 +2616,11 @@ class Shape():
             nres += "%sTJ\n" % getTJstr(t, tj_glyphs, simple, ordering)
 
         nres += "ET Q\n"
-        
+
         self.text_cont += nres
         self.updateRect(rect)
         return more
-    
+
     def finish(
             self,
             width=1,
