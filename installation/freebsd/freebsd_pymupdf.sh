@@ -1,11 +1,11 @@
 setenv CFLAGS -fPIC
 
 # also FreeBSD has a mupdf port, we should build it manually
-wget https://mupdf.com/downloads/mupdf-1.14.0-source.tar.gz
+wget https://mupdf.com/downloads/archive/mupdf-1.14.0-source.tar.gz
 tar -zxvf mupdf-1.14.0-source.tar.gz
 
 rm -rf PyMuPDF
-git clone https://github.com/rk700/PyMuPDF.git
+git clone https://github.com/pymupdf/PyMuPDF.git
 
 cd mupdf-1.14.0-source
 # replace 3 files in mupdf-1.14.0
