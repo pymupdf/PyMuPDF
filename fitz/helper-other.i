@@ -173,9 +173,9 @@ void JM_color_FromSequence(PyObject *color, int *n, float col[4])
 PyObject *JM_BinFromBuffer(fz_context *ctx, fz_buffer *buffer)
 {
     PyObject *bytes = PyBytes_FromString("");
-    char *c = NULL;
     if (buffer)
     {
+        char *c = NULL;
         size_t len = fz_buffer_storage(gctx, buffer, &c);
         bytes = PyBytes_FromStringAndSize(c, (Py_ssize_t) len);
     }
@@ -349,44 +349,42 @@ void hexlify(int n, unsigned char *in, unsigned char *out)
 }
 
 //----------------------------------------------------------------------------
-// Turn a bytes or bytearray object into char* string
-// using the "_AsString" functions. Returns string size or 0 on error.
-//----------------------------------------------------------------------------
-size_t JM_CharFromBytesOrArray(PyObject *stream, char **data)
-{
-    *data = NULL;
-    size_t len = 0;
-    if (!stream) return 0;
-    if (PyBytes_Check(stream))
-    {
-        *data = PyBytes_AsString(stream);
-        len = (size_t) PyBytes_Size(stream);
-    }
-    else if (PyByteArray_Check(stream))
-    {
-        *data = PyByteArray_AsString(stream);
-        len = (size_t) PyByteArray_Size(stream);
-    }
-    return len;
-}
-
-//----------------------------------------------------------------------------
-// Return fz_buffer from a PyBytes or PyByteArray object
-// Attention: must be freed by caller!
+// Make fz_buffer from a PyBytes, PyByteArray, io.BytesIO object
 //----------------------------------------------------------------------------
 fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
 {
     if (!stream) return NULL;
+    if (stream == NONE) return NULL;
     char *c = NULL;
-    size_t len = JM_CharFromBytesOrArray(stream, &c);
-    if (!c) return NULL;
+    PyObject *mybytes = NULL;
+    size_t len = 0;
     fz_buffer *res = NULL;
     fz_var(res);
     fz_try(ctx)
     {
-        res = fz_new_buffer(ctx, len);
-        fz_append_data(ctx, res, c, len);
-        fz_terminate_buffer(ctx, res);
+        if (PyBytes_Check(stream))
+        {
+            c = PyBytes_AsString(stream);
+            len = (size_t) PyBytes_Size(stream);
+        }
+        else if (PyByteArray_Check(stream))
+        {
+            c = PyByteArray_AS_STRING(stream);
+            len = (size_t) PyByteArray_Size(stream);
+        }
+        else if (PyObject_HasAttrString(stream, "getvalue"))
+        {   // we assume here that this delivers what we expect
+            mybytes = PyObject_CallMethod(stream, "getvalue", NULL);
+            c = PyBytes_AsString(mybytes);
+            len = (size_t) PyBytes_Size(mybytes);
+        }
+        // all the above leave c as NULL pointer if unsuccessful
+        if (c) res = fz_new_buffer_from_copied_data(ctx, c, len);
+    }
+    fz_always(ctx)
+    {
+        Py_CLEAR(mybytes);
+        PyErr_Clear();
     }
     fz_catch(ctx)
     {

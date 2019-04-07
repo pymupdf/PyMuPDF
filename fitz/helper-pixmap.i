@@ -126,4 +126,27 @@ JM_invert_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_irect b)
     return 1;
 }
 
+PyObject *JM_image_size(fz_context *ctx, PyObject *imagedata)
+{
+    fz_buffer *res = NULL;
+    fz_image *image = NULL;
+    PyObject *result = NULL;
+    fz_try(ctx)
+    {
+        res = JM_BufferFromBytes(ctx, imagedata);
+        image = fz_new_image_from_buffer(ctx, res);
+        result = Py_BuildValue("iiii", image->w, image->h, (int) image->n, (int) image->bpc);
+    }
+    fz_always(ctx)
+    {
+        fz_drop_buffer(ctx, res);
+        fz_drop_image(ctx, image);
+    }
+    fz_catch(ctx)
+    {
+        result = NONE;
+    }
+    return result;
+}
+
 %}

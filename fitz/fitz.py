@@ -98,6 +98,7 @@ except __builtin__.Exception:
 
 import os
 import weakref
+import io
 from binascii import hexlify
 import math
 
@@ -105,9 +106,9 @@ fitz_py2 = str is bytes           # if true, this is Python 2
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.12"
-VersionDate = "2019-03-21 06:59:25"
-version = (VersionBind, VersionFitz, "20190321065925")
+VersionBind = "1.14.13"
+VersionDate = "2019-04-07 06:43:20"
+version = (VersionBind, VersionFitz, "20190407064320")
 
 
 class Matrix():
@@ -174,7 +175,7 @@ class Matrix():
         return self
 
     def preScale(self, sx, sy):
-        """Calculate pre scaling and replacing current matrix."""
+        """Calculate pre scaling and replace current matrix."""
         self.a *= sx
         self.b *= sx
         self.c *= sy
@@ -1782,28 +1783,36 @@ open(filename, filetype='type') - from file"""
         if not filename or type(filename) is str:
             pass
         else:
-            if fitz_py2:                 # Python 2
+            if fitz_py2:  # Python 2
                 if type(filename) is unicode:
                     filename = filename.encode("utf8")
             else:
-                filename = str(filename)     # should take care of pathlib
+                filename = str(filename)  # should take care of pathlib
 
-        self.streamlen = len(stream) if stream else 0
-
-        self.name = ""
-        if filename and self.streamlen == 0:
-            self.name = filename
-
-        if self.streamlen > 0:
+        if stream:
             if not (filename or filetype):
-                raise ValueError("filetype missing with stream specified")
-            if type(stream) not in (bytes, bytearray):
-                raise ValueError("stream must be bytes or bytearray")
+                raise ValueError("need filetype for opening a stream")
+
+            if type(stream) is bytes:
+                self.stream = stream
+            elif type(stream) is bytearray:
+                self.stream = bytes(stream)
+            elif type(stream) is io.BytesIO:
+                self.stream = stream.getvalue()
+            else:
+                raise ValueError("'stream' has bad type")
+            stream = self.stream
+        else:
+            self.stream = None
+
+        if filename and not stream:
+            self.name = filename
+        else:
+            self.name = ""
 
         self.isClosed    = False
         self.isEncrypted = 0
         self.metadata    = None
-        self.stream      = stream       # prevent garbage collecting this
         self.openErrCode = 0
         self.openErrMsg  = ''
         self.FontInfos   = []
@@ -1920,9 +1929,6 @@ open(filename, filetype='type') - from file"""
 
     def embeddedFileUpd(self, id, buffer=None, filename=None, ufilename=None, desc=None):
         """Change an embedded file given its entry number or name."""
-        if self.isClosed or self.isEncrypted:
-            raise ValueError("operation illegal for closed / encrypted doc")
-
         return _fitz.Document_embeddedFileUpd(self, id, buffer, filename, ufilename, desc)
 
 
@@ -1941,8 +1947,10 @@ open(filename, filetype='type') - from file"""
 
     def embeddedFileAdd(self, buffer, name, filename=None, ufilename=None, desc=None):
         """Embed a new file."""
+
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
+
 
         return _fitz.Document_embeddedFileAdd(self, buffer, name, filename, ufilename, desc)
 
@@ -2126,7 +2134,7 @@ open(filename, filetype='type') - from file"""
         if self.pageCount < 1:
             raise ValueError("cannot save with zero pages")
         if incremental:
-            if self.name != filename or self.streamlen > 0:
+            if self.name != filename or self.stream:
                 raise ValueError("incremental needs original file")
 
 
@@ -2461,17 +2469,17 @@ open(filename, filetype='type') - from file"""
 
     def __repr__(self):
         m = "closed " if self.isClosed else ""
-        if self.streamlen == 0:
-            if self.name == "":
-                return m + "fitz.Document(<new PDF>)"
+        if self.stream is None:
+            if self.name is "":
+                return m + "fitz.Document(<new PDF, doc# %i>)" % self._graft_id
             return m + "fitz.Document('%s')" % (self.name,)
-        return m + "fitz.Document('%s', <memory>)" % (self.name,)
+        return m + "fitz.Document('%s', <memory, doc# %i>)" % (self.name, self._graft_id)
 
     def __getitem__(self, i=0):
         if type(i) is not int:
-            raise ValueError("invalid page number(s)")
+            raise ValueError("bad page number(s)")
         if i >= len(self):
-            raise IndexError("invalid page number(s)")
+            raise IndexError("bad page number(s)")
         return self.loadPage(i)
 
     def __len__(self):
@@ -2500,11 +2508,12 @@ open(filename, filetype='type') - from file"""
             for gmap in self.Graftmaps:
                 self.Graftmaps[gmap] = None
         if hasattr(self, "this") and self.thisown:
-            self.thisown = False
             self.__swig_destroy__(self)
+            self.thisown = False
+
         self.Graftmaps = {}
         self.ShownPages = {}
-        self.stream    = None
+        self.stream = None
         self._reset_page_refs = DUMMY
         self.__swig_destroy__ = DUMMY
         self.isClosed = True
@@ -3045,19 +3054,19 @@ class Page(_object):
     def __str__(self):
         CheckParent(self)
         x = self.parent.name
-        if self.parent.streamlen > 0:
-            x += " (memory)"
+        if self.parent.stream is not None:
+            x = "<memory, doc# %i>" % (self.parent._graft_id,)
         if x == "":
-            x = "<new PDF>"
+            x = "<new PDF, doc# %i>" % self.parent._graft_id
         return "page %s of %s" % (self.number, x)
 
     def __repr__(self):
         CheckParent(self)
         x = self.parent.name
-        if self.parent.streamlen > 0:
-            x += " (memory)"
+        if self.parent.stream is not None:
+            x = "<memory, doc# %i>" % (self.parent._graft_id,)
         if x == "":
-            x = "<new PDF>"
+            x = "<new PDF, doc# %i>" % self.parent._graft_id
         return "page %s of %s" % (self.number, x)
 
     def _forget_annot(self, annot):
@@ -3877,8 +3886,10 @@ class Annot(_object):
 
 
     def fileUpd(self, buffer=None, filename=None, ufilename=None, desc=None):
-        """Update annotation attached file content."""
+        """Update annotation attached file."""
+
         CheckParent(self)
+
 
         return _fitz.Annot_fileUpd(self, buffer, filename, ufilename, desc)
 
@@ -4381,6 +4392,11 @@ class Tools(_object):
     def store_shrink(self, percent):
         """Free 'percent' of current store size."""
         return _fitz.Tools_store_shrink(self, percent)
+
+
+    def image_size(self, imagedata):
+        """Determine dimension and other image data."""
+        return _fitz.Tools_image_size(self, imagedata)
 
     @property
 
