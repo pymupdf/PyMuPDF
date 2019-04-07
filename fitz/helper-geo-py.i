@@ -63,7 +63,7 @@ class Matrix():
         return self
 
     def preScale(self, sx, sy):
-        """Calculate pre scaling and replacing current matrix."""
+        """Calculate pre scaling and replace current matrix."""
         self.a *= sx
         self.b *= sx
         self.c *= sy

@@ -1,6 +1,8 @@
 from fitz import *
 import math
+import os
 import warnings
+import io
 warnings.simplefilter("once")
 """
 The following is a collection of functions to extend PyMupdf.
@@ -80,6 +82,8 @@ def showPDFpage(
     if reuse_xref > 0:
         warnings.warn("ignoring 'reuse_xref'", DeprecationWarning)
 
+    while pno < 0:  # support negative page numbers
+        pno += len(src)
     src_page = src[pno]  # load ource page
     if len(src_page._getContents()) == 0:
         raise ValueError("nothing to show - source page empty")
@@ -150,51 +154,112 @@ def insertImage(page, rect, filename=None, pixmap=None, stream=None, rotate=0,
         overlay: (bool) put in foreground
     """
 
+    def calc_matrix(fw, fh, tr, rotate=0):
+        """ Calculate transformation matrix for image insertion.
+
+        Notes:
+            The image will preserve its aspect ratio if and only if arguments
+            fw, fh are both equal to 1.
+        Args:
+            fw, fh: width / height ratio factors of image - floats in (0,1].
+                At least one of them (corresponding to the longer side) is equal to 1.
+            tr: target rect in PDF coordinates
+            rotate: rotation angle in degrees
+        Returns:
+            Transformation matrix.
+        """
+        # center point of target rect
+        tmp = Point((tr.x1 + tr.x0) / 2., (tr.y1 + tr.y0) / 2.)
+
+        rot = Matrix(rotate)  # rotation matrix
+
+        # matrix m moves image center to (0, 0), then rotates
+        m = Matrix(1, 0, 0, 1, -0.5, -0.5) * rot
+
+        #sr1 = sr * m  # resulting image rect
+
+        # --------------------------------------------------------------------
+        # calculate the scale matrix
+        # --------------------------------------------------------------------
+        small = min(fw, fh)  # factor of the smaller side
+
+        if rotate not in (0, 180):
+            fw, fh = fh, fw  # width / height exchange their roles
+
+        if fw < 1: # portrait
+            if (float(tr.width) / fw) > (float(tr.height) / fh):
+                w = tr.height * small
+                h = tr.height
+            else:
+                w = tr.width
+                h = tr.width / small
+
+        elif fw != fh:  # landscape
+            if (float(tr.width) / fw) > (float(tr.height) / fh):
+                w = tr.height / small
+                h = tr.height
+            else:
+                w = tr.width
+                h = tr.width * small
+
+        else: # (treated as) equal sided
+            w = tr.width
+            h = tr.height
+
+        m *= Matrix(w, h)  # concat scale matrix
+
+        m *= Matrix(1, 0, 0, 1, tmp.x, tmp.y)  # concat move to target center
+
+        return m
+    # -------------------------------------------------------------------------
+
     CheckParent(page)
     doc = page.parent
     if not doc.isPDF:
         raise ValueError("not a PDF")
-    if sum([bool(filename), bool(stream), bool(pixmap)]) != 1:
+    if bool(filename) + bool(stream) + bool(pixmap) != 1:
         raise ValueError("need exactly one of filename, pixmap, stream")
+
+    if filename and not os.path.exists(filename):
+        raise FileNotFoundError("No such file: '%s'" % filename)
+    elif stream and type(stream) not in (bytes, bytearray, io.BytesIO):
+        raise ValueError("stream must be bytes-like or BytesIO")
+    elif pixmap and type(pixmap) is not Pixmap:
+        raise ValueError("pixmap must be a Pixmap")
 
     while rotate < 0:
         rotate += 360
     while rotate > 360:
         rotate -= 360
-    if rotate % 90 != 0:
+    if rotate not in (0, 90, 180, 270):
         raise ValueError("bad rotate value")
 
     r = page.rect & rect
     if r.isEmpty or r.isInfinite:
         raise ValueError("rect must be finite and not empty")
 
-    clip = r * ~page._getTransformation()  # rect in PDF coordinates
-    
-    rot = Matrix(rotate)
+    if keep_proportion is True:  # for this we need the image dimension
+        if pixmap:  # this is the easy case
+            w = pixmap.width
+            h = pixmap.height
+        elif stream:  # use tool to access the information
+            w, h, _, _ = TOOLS.image_size(stream)
+        else:  # worst case, we need to read the file ourselves
+            img = open(filename, "rb")
+            stream = img.read()  # re-use this as parameter
+            w, h, _, _ = TOOLS.image_size(stream)
+            filename = None  # prevent using this again
+            img.close()  # close iamge file
 
-    fw = r.width
-    fh = r.height
-    if keep_proportion:
-        fw = fh = min(fw, fh)
-        my = r.height - max(fw, fh)
-        mx = r.width - max(fw, fh)
+        maxf = max(w, h).__float__()
+        fw = w / maxf
+        fh = h / maxf
     else:
-        my = mx = 0
+        fw = fh = 1.0
 
-    if rotate == 0:
-        m3 = Matrix(fw, fh)
-        m0 = Matrix(1, 0, 0, 1, clip.x0, clip.y0 + my)
-    elif rotate == 180:
-        m3 = Matrix(fw, fh)
-        m0 = Matrix(1, 0, 0, 1, clip.x1 - mx, clip.y1)
-    elif rotate == 90:
-        m3 = Matrix(fh, fw)
-        m0 = Matrix(1, 0, 0, 1, clip.x1 - mx, clip.y0 + my)
-    else:
-        m3 = Matrix(fh, fw)
-        m0 = Matrix(1, 0, 0, 1, clip.x0, clip.y1)
+    clip = r * ~page._getTransformation()  # target rect in PDF coordinates
 
-    matrix = m3 * rot * m0
+    matrix = calc_matrix(fw, fh, clip, rotate=rotate)
 
     ilst = [i[7] for i in doc.getPageImageList(page.number)]
     n = "fzImg"
