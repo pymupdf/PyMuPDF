@@ -106,9 +106,9 @@ fitz_py2 = str is bytes           # if true, this is Python 2
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.13"
-VersionDate = "2019-04-07 06:43:20"
-version = (VersionBind, VersionFitz, "20190407064320")
+VersionBind = "1.14.14"
+VersionDate = "2019-04-09 13:07:58"
+version = (VersionBind, VersionFitz, "20190409130758")
 
 
 class Matrix():
@@ -1800,7 +1800,7 @@ open(filename, filetype='type') - from file"""
             elif type(stream) is io.BytesIO:
                 self.stream = stream.getvalue()
             else:
-                raise ValueError("'stream' has bad type")
+                raise ValueError("bad type: 'stream'")
             stream = self.stream
         else:
             self.stream = None
@@ -2330,20 +2330,20 @@ open(filename, filetype='type') - from file"""
         return _fitz.Document__delXmlMetadata(self)
 
 
-    def _getXrefString(self, xref):
-        """_getXrefString(self, xref) -> PyObject *"""
+    def _getXrefString(self, xref, compressed=1):
+        """_getXrefString(self, xref, compressed=1) -> PyObject *"""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
-        return _fitz.Document__getXrefString(self, xref)
+        return _fitz.Document__getXrefString(self, xref, compressed)
 
 
-    def _getTrailerString(self):
-        """_getTrailerString(self) -> PyObject *"""
+    def _getTrailerString(self, compressed=1):
+        """_getTrailerString(self, compressed=1) -> PyObject *"""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
-        return _fitz.Document__getTrailerString(self)
+        return _fitz.Document__getTrailerString(self, compressed)
 
 
     def _getXrefStream(self, xref):
@@ -2956,9 +2956,9 @@ class Page(_object):
         return _fitz.Page__showPDFpage(self, fz_srcpage, overlay, matrix, xref, clip, graftmap, _imgname)
 
 
-    def _insertImage(self, filename=None, pixmap=None, stream=None, overlay=1, matrix=None, _imgname=None):
-        """_insertImage(self, filename=None, pixmap=None, stream=None, overlay=1, matrix=None, _imgname=None) -> PyObject *"""
-        return _fitz.Page__insertImage(self, filename, pixmap, stream, overlay, matrix, _imgname)
+    def _insertImage(self, filename=None, pixmap=None, stream=None, overlay=1, matrix=None, _imgname=None, _imgpointer=None):
+        """_insertImage(self, filename=None, pixmap=None, stream=None, overlay=1, matrix=None, _imgname=None, _imgpointer=None) -> PyObject *"""
+        return _fitz.Page__insertImage(self, filename, pixmap, stream, overlay, matrix, _imgname, _imgpointer)
 
 
     def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
@@ -4394,9 +4394,9 @@ class Tools(_object):
         return _fitz.Tools_store_shrink(self, percent)
 
 
-    def image_size(self, imagedata):
+    def image_size(self, imagedata, keep_image=0):
         """Determine dimension and other image data."""
-        return _fitz.Tools_image_size(self, imagedata)
+        return _fitz.Tools_image_size(self, imagedata, keep_image)
 
     @property
 

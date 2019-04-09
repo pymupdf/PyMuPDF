@@ -237,19 +237,27 @@ def insertImage(page, rect, filename=None, pixmap=None, stream=None, rotate=0,
     r = page.rect & rect
     if r.isEmpty or r.isInfinite:
         raise ValueError("rect must be finite and not empty")
+    _imgpointer = None
 
     if keep_proportion is True:  # for this we need the image dimension
         if pixmap:  # this is the easy case
             w = pixmap.width
             h = pixmap.height
         elif stream:  # use tool to access the information
-            w, h, _, _ = TOOLS.image_size(stream)
+            # we also pass through the generated fz_image address
+            img_size = TOOLS.image_size(stream, keep_image=True)
+            w, h = img_size[:2]
+            stream = None  # make sure this arg is NOT used
+            _imgpointer = img_size[-1]  # pointer to fz_image
         else:  # worst case, we need to read the file ourselves
             img = open(filename, "rb")
-            stream = img.read()  # re-use this as parameter
-            w, h, _, _ = TOOLS.image_size(stream)
-            filename = None  # prevent using this again
-            img.close()  # close iamge file
+            stream = img.read()
+            img_size = TOOLS.image_size(stream, keep_image=True)
+            w, h = img_size[:2]
+            _imgpointer = img_size[-1]  # pointer to fz_image
+            stream = None  # make sure this arg is NOT used
+            filename = None  # make sure this arg is NOT used
+            img.close()  # close image file
 
         maxf = max(w, h).__float__()
         fw = w / maxf
@@ -269,12 +277,14 @@ def insertImage(page, rect, filename=None, pixmap=None, stream=None, rotate=0,
         i += 1
         _imgname = n + str(i)
 
-    page._insertImage(filename=filename,
-            pixmap=pixmap, 
-            stream=stream, 
-            matrix=matrix,
+    page._insertImage(
+            filename=filename,  # image in file
+            pixmap=pixmap,  # image in pixmap
+            stream=stream,  # image in memory
+            matrix=matrix,  # generated matrix
             overlay=overlay,
-            _imgname=_imgname,
+            _imgname=_imgname,  # generated PDF resource name
+            _imgpointer=_imgpointer,  # address of fz_image
         )
 
 
@@ -499,6 +509,13 @@ def getLinks(page):
     links = []
     while ln:
         nl = getLinkDict(ln)
+        if nl["kind"] == LINK_GOTO:
+            if type(nl["to"]) is Point and nl["page"] >= 0:
+                doc = page.parent
+                target_page = doc[nl["page"]]
+                ctm = target_page._getTransformation()
+                point = nl["to"] * ctm
+                nl["to"] = point
         links.append(nl)
         ln = ln.next
     if len(links) > 0:
@@ -925,9 +942,11 @@ def getLinkText(page, lnk):
 
     annot_named = "<</A<</S/Named/N/%s/Type/Action>>/Rect[%s]/Subtype/Link>>"
 
+    ctm = page._getTransformation()
+    ictm = ~ctm
     r = lnk["from"]
     height = page.rect.height
-    rect = "%g %g %g %g" % (r.x0, height - r.y0, r.x1, height - r.y1)
+    rect = "%g %g %g %g" % tuple(r * ictm)
 
     annot = ""
     if lnk["kind"] == LINK_GOTO:
@@ -936,7 +955,8 @@ def getLinkText(page, lnk):
             pno = lnk["page"]
             xref = page.parent._getPageXref(pno)[0]
             pnt = lnk.get("to", Point(0, 0))          # destination point
-            annot = txt % (xref, pnt.x, pnt.y, rect)
+            ipnt = pnt * ictm
+            annot = txt % (xref, ipnt.x, ipnt.y, rect)
         else:
             txt = annot_goto_n
             annot = txt % (getPDFstr(lnk["to"]), rect)
