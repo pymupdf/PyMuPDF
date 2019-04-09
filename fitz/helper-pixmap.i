@@ -126,21 +126,47 @@ JM_invert_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_irect b)
     return 1;
 }
 
-PyObject *JM_image_size(fz_context *ctx, PyObject *imagedata)
+PyObject *JM_image_size(fz_context *ctx, PyObject *imagedata, int keep_image)
 {
+    if (!imagedata || imagedata == NONE)
+    {
+        return NONE;
+    }
     fz_buffer *res = NULL;
     fz_image *image = NULL;
     PyObject *result = NULL;
     fz_try(ctx)
     {
         res = JM_BufferFromBytes(ctx, imagedata);
-        image = fz_new_image_from_buffer(ctx, res);
-        result = Py_BuildValue("iiii", image->w, image->h, (int) image->n, (int) image->bpc);
+        if (res)
+        {
+            unsigned char *c = NULL;
+            size_t len = fz_buffer_storage(ctx, res, &c);
+            if (len > 8)
+            {
+                image = fz_new_image_from_buffer(ctx, res);
+                result = PyList_New(0);
+                PyList_Append(result, PyInt_FromLong((long) image->w));
+                PyList_Append(result, PyInt_FromLong((long) image->h));
+                PyList_Append(result, PyInt_FromLong((long) image->n));
+                PyList_Append(result, PyInt_FromLong((long) image->bpc));
+                PyList_Append(result, PyInt_FromLong((long) fz_recognize_image_format(ctx, c)));
+                if (keep_image)
+                {   // keep fz_image: hand over address, do not drop
+                    PyList_Append(result, PyLong_FromVoidPtr((void *) fz_keep_image(ctx, image)));
+                }
+
+            }
+            else
+            {
+                result = NONE;
+            }
+        }
     }
     fz_always(ctx)
     {
         fz_drop_buffer(ctx, res);
-        fz_drop_image(ctx, image);
+        if (!keep_image) fz_drop_image(ctx, image); // conditional drop
     }
     fz_catch(ctx)
     {

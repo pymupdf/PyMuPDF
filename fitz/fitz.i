@@ -231,7 +231,7 @@ struct fz_document_s
                 elif type(stream) is io.BytesIO:
                     self.stream = stream.getvalue()
                 else:
-                    raise ValueError("'stream' has bad type")
+                    raise ValueError("bad type: 'stream'")
                 stream = self.stream
             else:
                 self.stream = None
@@ -523,7 +523,7 @@ struct fz_document_s
                 if (!filespec) THROWMSG("bad PDF: /EF object not found");
 
                 res = JM_BufferFromBytes(gctx, buffer);
-                if (buffer && !res) THROWMSG("'buffer' has bad type");
+                if (buffer && !res) THROWMSG("bad type: 'buffer'");
                 if (res)
                 {
                     JM_update_stream(gctx, pdf, filespec, res);
@@ -605,7 +605,7 @@ if self.isClosed or self.isEncrypted:
             {
                 assert_PDF(pdf);
                 data = JM_BufferFromBytes(gctx, buffer);
-                if (!data) THROWMSG("bad type 'buffer'");
+                if (!data) THROWMSG("bad type: 'buffer'");
                 size = fz_buffer_storage(gctx, data, &buffdata);
 
                 // we do not allow duplicate names
@@ -1710,7 +1710,7 @@ if links:
         //---------------------------------------------------------------------
         FITZEXCEPTION(_getXrefString, !result)
         CLOSECHECK0(_getXrefString)
-        PyObject *_getXrefString(int xref)
+        PyObject *_getXrefString(int xref, int compressed=1)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); // conv doc to pdf
             pdf_obj *obj = NULL;
@@ -1726,7 +1726,7 @@ if links:
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 obj = pdf_load_object(gctx, pdf, xref);
-                pdf_print_obj(gctx, out, pdf_resolve_indirect(gctx, obj), 1);
+                pdf_print_obj(gctx, out, pdf_resolve_indirect(gctx, obj), compressed);
                 text = JM_StrFromBuffer(gctx, res);
             }
             fz_always(gctx)
@@ -1744,7 +1744,7 @@ if links:
         //---------------------------------------------------------------------
         FITZEXCEPTION(_getTrailerString, !result)
         CLOSECHECK0(_getTrailerString)
-        PyObject *_getTrailerString()
+        PyObject *_getTrailerString(int compressed=1)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); // conv doc to pdf
             if (!pdf) return NONE;
@@ -1759,7 +1759,7 @@ if links:
                 {
                     res = fz_new_buffer(gctx, 1024);
                     out = fz_new_output_with_buffer(gctx, res);
-                    pdf_print_obj(gctx, out, obj, 1);
+                    pdf_print_obj(gctx, out, obj, compressed);
                     text = JM_StrFromBuffer(gctx, res);
                 }
                 else text = NONE;
@@ -1863,7 +1863,7 @@ if links:
                 if (!new && !pdf_is_stream(gctx, obj))
                     THROWMSG("xref not a stream object");
                 res = JM_BufferFromBytes(gctx, stream);
-                if (!res) THROWMSG("stream must be bytes or bytearray");
+                if (!res) THROWMSG("bad type: 'stream'");
                 JM_update_stream(gctx, pdf, obj, res);
                 
             }
@@ -2318,7 +2318,7 @@ struct fz_page_s {
             {
                 assert_PDF(page);
                 filebuf = JM_BufferFromBytes(gctx, buffer);
-                if (!filebuf) THROWMSG("bad 'buffer' data");
+                if (!filebuf) THROWMSG("bad type: 'buffer'");
                 annot = pdf_create_annot(gctx, page, ANNOT_FILEATTACHMENT);
                 pdf_set_annot_rect(gctx, annot, r);
                 pdf_set_annot_icon_name(gctx, annot, "PushPin");
@@ -3036,7 +3036,7 @@ fannot._erase()
         //---------------------------------------------------------------------
         FITZEXCEPTION(_insertImage, !result)
         PyObject *_insertImage(const char *filename=NULL, struct fz_pixmap_s *pixmap=NULL, PyObject *stream=NULL, int overlay=1, PyObject *matrix=NULL,
-        const char *_imgname=NULL)
+        const char *_imgname=NULL, PyObject *_imgpointer=NULL)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_document *pdf;
@@ -3057,14 +3057,25 @@ fannot._erase()
                 //-------------------------------------------------------------
                 // create the image
                 //-------------------------------------------------------------
-                if (filename || stream)
+                if (filename ||
+                   (stream && stream != NONE) ||
+                   (_imgpointer && _imgpointer != NONE))
                 {
+
                     if (filename)
+                    {
                         image = fz_new_image_from_file(gctx, filename);
-                    else
+                    }
+
+                    else if (stream && stream != NONE)
                     {
                         imgbuf = JM_BufferFromBytes(gctx, stream);
                         image = fz_new_image_from_buffer(gctx, imgbuf);
+                    }
+
+                    else  // fz_image pointer has been handed in
+                    {
+                        image = (fz_image *)PyLong_AsVoidPtr(_imgpointer);
                     }
 
                     // test for alpha (which would require making an SMask)
@@ -3083,15 +3094,20 @@ fannot._erase()
                 }
                 else // pixmap specified
                 {
+                    JM_TRACE("inserting a pixmap");
                     if (pixmap->alpha == 0)
                         image = fz_new_image_from_pixmap(gctx, pixmap, NULL);
                     else
                     {   // pixmap has alpha: create an SMask
+                        JM_TRACE("pixmap has alpha");
                         pm = fz_convert_pixmap(gctx, pixmap, NULL, NULL, NULL, NULL, 1);
                         pm->alpha = 0;
                         pm->colorspace = fz_keep_colorspace(gctx, fz_device_gray(gctx));
+                        JM_TRACE("created pixmap with the alpha values");
                         mask = fz_new_image_from_pixmap(gctx, pm, NULL);
+                        JM_TRACE("created SMask image");
                         image = fz_new_image_from_pixmap(gctx, pixmap, mask);
+                        JM_TRACE("created final image");
                     }
                 }
 
@@ -3802,7 +3818,7 @@ struct fz_pixmap_s
                         if (data && data_len < w * h)
                             THROWMSG("not enough alpha values");
                     }
-                    else THROWMSG("bad type 'alphavalues'");
+                    else THROWMSG("bad type: 'alphavalues'");
                 }
                 int i = 0, k = 0;
                 while (i < balen)
@@ -5207,7 +5223,7 @@ CheckParent(self)
 
                 // file content given
                 res = JM_BufferFromBytes(gctx, buffer);
-                if (buffer && !res) THROWMSG("'buffer' has bad type");
+                if (buffer && !res) THROWMSG("bad type: 'buffer'");
                 if (res)
                 {
                     JM_update_stream(gctx, pdf, stream, res);
@@ -6294,9 +6310,9 @@ struct Tools
         }
 
         %feature("autodoc","Determine dimension and other image data.") image_size;
-        PyObject *image_size(PyObject *imagedata)
+        PyObject *image_size(PyObject *imagedata, int keep_image=0)
         {
-            return JM_image_size(gctx, imagedata);
+            return JM_image_size(gctx, imagedata, keep_image);
         }
 
         %feature("autodoc","Current store size.") store_size;
@@ -6339,8 +6355,8 @@ struct Tools
                 xref = JM_insert_contents(gctx, page->doc, page->obj, contbuf, overlay);
                 page->doc->dirty = 1;
             }
-            fz_always(gctx) fz_drop_buffer(gctx, contbuf);
-            fz_catch(gctx) return NULL;
+            fz_always(gctx) {fz_drop_buffer(gctx, contbuf);}
+            fz_catch(gctx) {return NULL;}
             return Py_BuildValue("i", xref);
         }
 
