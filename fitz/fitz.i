@@ -3094,20 +3094,15 @@ fannot._erase()
                 }
                 else // pixmap specified
                 {
-                    JM_TRACE("inserting a pixmap");
                     if (pixmap->alpha == 0)
                         image = fz_new_image_from_pixmap(gctx, pixmap, NULL);
                     else
                     {   // pixmap has alpha: create an SMask
-                        JM_TRACE("pixmap has alpha");
                         pm = fz_convert_pixmap(gctx, pixmap, NULL, NULL, NULL, NULL, 1);
                         pm->alpha = 0;
                         pm->colorspace = fz_keep_colorspace(gctx, fz_device_gray(gctx));
-                        JM_TRACE("created pixmap with the alpha values");
                         mask = fz_new_image_from_pixmap(gctx, pm, NULL);
-                        JM_TRACE("created SMask image");
                         image = fz_new_image_from_pixmap(gctx, pixmap, mask);
-                        JM_TRACE("created final image");
                     }
                 }
 
