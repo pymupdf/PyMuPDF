@@ -167,6 +167,28 @@ void JM_color_FromSequence(PyObject *color, int *n, float col[4])
     return;
 }
 
+// return extension for fitz image type
+const char *JM_image_extension(int type)
+{
+    switch (type)
+    {
+        case(FZ_IMAGE_RAW): return "raw";
+        case(FZ_IMAGE_FLATE): return "flate";
+        case(FZ_IMAGE_LZW): return "lzw";
+        case(FZ_IMAGE_RLD): return "rld";
+        case(FZ_IMAGE_BMP): return "bmp";
+        case(FZ_IMAGE_GIF): return "gif";
+        case(FZ_IMAGE_JBIG2): return "jbig2";
+        case(FZ_IMAGE_JPEG): return "jpeg";
+        case(FZ_IMAGE_JPX): return "jpx";
+        case(FZ_IMAGE_JXR): return "jxr";
+        case(FZ_IMAGE_PNG): return "png";
+        case(FZ_IMAGE_PNM): return "pnm";
+        case(FZ_IMAGE_TIFF): return "tiff";
+        default: return "n/a";
+    }
+}
+
 //----------------------------------------------------------------------------
 // Turn fz_buffer into a Python bytes object
 //----------------------------------------------------------------------------
@@ -364,19 +386,19 @@ fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
     {
         if (PyBytes_Check(stream))
         {
-            c = PyBytes_AsString(stream);
-            len = (size_t) PyBytes_Size(stream);
+            c = PyBytes_AS_STRING(stream);
+            len = (size_t) PyBytes_GET_SIZE(stream);
         }
         else if (PyByteArray_Check(stream))
         {
             c = PyByteArray_AS_STRING(stream);
-            len = (size_t) PyByteArray_Size(stream);
+            len = (size_t) PyByteArray_GET_SIZE(stream);
         }
         else if (PyObject_HasAttrString(stream, "getvalue"))
         {   // we assume here that this delivers what we expect
             mybytes = PyObject_CallMethod(stream, "getvalue", NULL);
-            c = PyBytes_AsString(mybytes);
-            len = (size_t) PyBytes_Size(mybytes);
+            c = PyBytes_AS_STRING(mybytes);
+            len = (size_t) PyBytes_GET_SIZE(mybytes);
         }
         // all the above leave c as NULL pointer if unsuccessful
         if (c) res = fz_new_buffer_from_copied_data(ctx, c, len);

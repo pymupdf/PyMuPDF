@@ -1,4 +1,7 @@
 %module fitz
+%pythonbegin %{
+from __future__ import division, print_function
+%}
 //-----------------------------------------------------------------------------
 // SWIG macro: generate fitz exceptions
 //-----------------------------------------------------------------------------
@@ -81,6 +84,7 @@
 #define JM_Free(x) free(x)
 #endif
 
+#define EXISTS(x) (x && x != NONE)
 #define THROWMSG(msg) fz_throw(gctx, FZ_ERROR_GENERIC, msg)
 #define assert_PDF(cond) if (cond == NULL) THROWMSG("not a PDF")
 #define INRANGE(v, low, high) ((low) <= v && v <= (high))
@@ -278,7 +282,7 @@ struct fz_document_s
             fz_stream *data = NULL;
             float w = width, h = height;
             fz_rect r = JM_rect_from_py(rect);
-            if (!(fz_is_empty_rect(r) && !fz_is_infinite_rect(r)))
+            if (!fz_is_infinite_rect(r))
             {
                 w = r.x1 - r.x0;
                 h = r.y1 - r.y0;
@@ -286,9 +290,9 @@ struct fz_document_s
 
             fz_try(gctx)
             {
-                if (stream != NONE)  // stream given, MUST be bytes!
+                if (stream != NONE)  // stream given, **MUST** be bytes!
                 {
-                    c = PyBytes_AsString(stream); // just a pointer, no new obj
+                    c = PyBytes_AS_STRING(stream); // just a pointer, no new obj
                     len = (size_t) PyBytes_Size(stream);
                     data = fz_open_memory(gctx, c, len);
                     char *magic = (char *)filename;
@@ -299,7 +303,10 @@ struct fz_document_s
                 {
                     if (filename)
                     {
-                        if (!filetype || strlen(filetype) == 0) doc = fz_open_document(gctx, filename);
+                        if (!filetype || strlen(filetype) == 0)
+                        {
+                            doc = fz_open_document(gctx, filename);
+                        }
                         else
                         {
                             const fz_document_handler *handler;
@@ -732,7 +739,7 @@ if self.isClosed or self.isEncrypted:
             {
                 float w = width, h = height;
                 fz_rect r = JM_rect_from_py(rect);
-                if (!fz_is_empty_rect(r) && !fz_is_infinite_rect(r))
+                if (!fz_is_infinite_rect(r))
                 {
                     w = r.x1 - r.x0;
                     h = r.y1 - r.y0;
@@ -1110,7 +1117,16 @@ if links:
         //---------------------------------------------------------------------
         FITZEXCEPTION(select, !result)
         %feature("autodoc","Build sub-pdf with page numbers in 'list'.") select;
-        CLOSECHECK(select)
+        %pythonprepend select %{
+if self.isClosed or self.isEncrypted:
+    raise ValueError("operation illegal for closed / encrypted doc")
+if not self.isPDF:
+    raise ValueError("not a PDF")
+if not hasattr(pyliste, "__getitem__"):
+    raise ValueError("sequence required")
+if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not in range(len(self)):
+    raise ValueError("sequence items out of range")
+%}
         %pythonappend select %{
             self._reset_page_refs()
             self.initData()%}
@@ -1123,12 +1139,7 @@ if links:
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx)
             {
-                assert_PDF(pdf);
-                if (!PySequence_Check(pyliste))
-                    THROWMSG("sequence required");
-                if (PySequence_Size(pyliste) < 1)
-                    THROWMSG("invalid sequ. length");        
-                // now call retainpages (code copy of fz_clean_file.c)
+                // call retainpages (code copy of fz_clean_file.c)
                 globals glo = {0};
                 glo.ctx = gctx;
                 glo.doc = pdf;
@@ -1369,7 +1380,7 @@ if links:
             fz_var(pix);
             pdf_obj *obj = NULL;
             PyObject *rc = NULL;
-            unsigned char ext[5];
+            const char *ext = NULL;
             fz_image *image = NULL;
             fz_var(image);
             fz_output *out = NULL;
@@ -1427,17 +1438,7 @@ if links:
 
                     if (type != FZ_IMAGE_UNKNOWN)
                     {
-                        switch(type)
-                        {
-                            case(FZ_IMAGE_BMP):  strcpy(ext, "bmp");  break;
-                            case(FZ_IMAGE_GIF):  strcpy(ext, "gif");  break;
-                            case(FZ_IMAGE_JPEG): strcpy(ext, "jpeg"); break;
-                            case(FZ_IMAGE_JPX):  strcpy(ext, "jpx");  break;
-                            case(FZ_IMAGE_JXR):  strcpy(ext, "jxr");  break;
-                            case(FZ_IMAGE_PNM):  strcpy(ext, "pnm");  break;
-                            case(FZ_IMAGE_TIFF): strcpy(ext, "tiff"); break;
-                            default:             strcpy(ext, "png");  break;
-                        }
+                        ext = JM_image_extension(type);
                     }
                     else  // need a pixmap to make a PNG buffer
                     {
@@ -1459,7 +1460,7 @@ if links:
                         out = fz_new_output_with_buffer(gctx, freebuf);
                         fz_write_pixmap_as_png(gctx, out, pix);
                         buffer = freebuf;
-                        strcpy(ext, "png");
+                        ext = "png";
                     }
                     PyObject *bytes = JM_BinFromBuffer(gctx, buffer);
                     rc = Py_BuildValue("{s:s,s:i,s:i,s:i,s:i,s:i,s:i,s:s,s:O}",
@@ -1530,6 +1531,17 @@ if links:
             PyList_Append(xrefs, Py_BuildValue("i", olroot_xref));
             pdf->dirty = 1;
             return xrefs;
+        }
+
+        //---------------------------------------------------------------------
+        // Check: is xref a stream object?
+        //---------------------------------------------------------------------
+        CLOSECHECK0(isStream)
+        PyObject *isStream(int xref=0)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            if (!pdf) Py_RETURN_FALSE;  // not a PDF
+            return JM_BOOL(pdf_obj_num_is_stream(gctx, pdf, xref));
         }
 
         //---------------------------------------------------------------------
@@ -1710,7 +1722,7 @@ if links:
         //---------------------------------------------------------------------
         FITZEXCEPTION(_getXrefString, !result)
         CLOSECHECK0(_getXrefString)
-        PyObject *_getXrefString(int xref, int compressed=1)
+        PyObject *_getXrefString(int xref, int compressed=0)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); // conv doc to pdf
             pdf_obj *obj = NULL;
@@ -1744,7 +1756,7 @@ if links:
         //---------------------------------------------------------------------
         FITZEXCEPTION(_getTrailerString, !result)
         CLOSECHECK0(_getTrailerString)
-        PyObject *_getTrailerString(int compressed=1)
+        PyObject *_getTrailerString(int compressed=0)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); // conv doc to pdf
             if (!pdf) return NONE;
@@ -2153,7 +2165,7 @@ struct fz_page_s {
             float width  = 1.0f;
             fz_point a = JM_point_from_py(p1);
             fz_point b = JM_point_from_py(p2);
-            fz_rect r  = {MIN(a.x, b.x), MIN(a.y, b.y), MAX(a.x, b.x), MAX(a.y, b.y)};
+            fz_rect r  = fz_make_rect(MIN(a.x, b.x), MIN(a.y, b.y), MAX(a.x, b.x), MAX(a.y, b.y));
             fz_var(annot);
             fz_try(gctx)
             {
@@ -2695,8 +2707,8 @@ struct fz_page_s {
         %feature("autodoc","Delete link if PDF") deleteLink;
         %pythonappend deleteLink
 %{if linkdict["xref"] == 0: return
-linkid = linkdict["id"]
 try:
+    linkid = linkdict["id"]
     linkobj = self._annot_refs[linkid]
     linkobj._erase()
 except:
@@ -2704,7 +2716,6 @@ except:
 %}
         void deleteLink(PyObject *linkdict)
         {
-            if (!linkdict) return;               // have no parameter
             if (!PyDict_Check(linkdict)) return; // have no dictionary
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             if (!page) return;                   // have no PDF
@@ -2918,9 +2929,9 @@ fannot._erase()
             int i, lcount;
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             PyObject *linkxrefs = PyList_New(0);
-            if (!page) return linkxrefs;         // empty list for non-PDF
+            if (!page) return linkxrefs;  // empty list for non-PDF
             annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
-            if (!annots) return linkxrefs;
+            if (!annots) return linkxrefs;  // no links on this page
             if (pdf_is_indirect(gctx, annots))
                 annots_arr = pdf_resolve_indirect(gctx, annots);
             else
@@ -3057,17 +3068,14 @@ fannot._erase()
                 //-------------------------------------------------------------
                 // create the image
                 //-------------------------------------------------------------
-                if (filename ||
-                   (stream && stream != NONE) ||
-                   (_imgpointer && _imgpointer != NONE))
+                if (filename || EXISTS(stream) || EXISTS(_imgpointer))
                 {
-
                     if (filename)
                     {
                         image = fz_new_image_from_file(gctx, filename);
                     }
 
-                    else if (stream && stream != NONE)
+                    else if (EXISTS(stream))
                     {
                         imgbuf = JM_BufferFromBytes(gctx, stream);
                         image = fz_new_image_from_buffer(gctx, imgbuf);
@@ -3223,7 +3231,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             pdf_obj *resources, *fonts, *font_obj;
             fz_font *font;
             fz_buffer *res = NULL;
-            char *data = NULL;
+            const unsigned char *data = NULL;
             int size, ixref = 0, index = 0, simple = 0;
             PyObject *value;
             PyObject *exto = NULL;
@@ -3271,7 +3279,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
                 else
                 {
                     res = JM_BufferFromBytes(gctx, fontbuffer);
-                    if (!res) THROWMSG("one of fontfile, fontbuffer must be given");
+                    if (!res) THROWMSG("need one of fontfile, fontbuffer");
                     font = fz_new_font_from_buffer(gctx, NULL, res, idx, 0);
                 }
 
@@ -3327,6 +3335,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         // Get page transformation matrix
         //---------------------------------------------------------------------
         PARENTCHECK(_getTransformation)
+        %feature("autodoc","Return page transformation matrix.") _getTransformation;
         %pythonappend _getTransformation %{val = Matrix(val)%}
         PyObject *_getTransformation()
         {
@@ -3374,7 +3383,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         }
 
         //---------------------------------------------------------------------
-        // Set given object to be the /Contents of a page
+        // Set given object as the /Contents of a page
         //---------------------------------------------------------------------
         FITZEXCEPTION(_setContents, !result)
         PARENTCHECK(_setContents)
@@ -5822,9 +5831,9 @@ struct fz_link_s
         %pythonappend next %{
             if val:
                 val.thisown = True
-                val.parent = self.parent # copy owning page from prev link
+                val.parent = self.parent  # copy owning page from prev link
                 val.parent._annot_refs[id(val)] = val
-                if self.xref > 0: # prev link has an xref
+                if self.xref > 0:  # prev link has an xref
                     link_xrefs = self.parent._getLinkXrefs()
                     idx = link_xrefs.index(self.xref)
                     val.xref = link_xrefs[idx + 1]
@@ -5958,7 +5967,8 @@ struct fz_display_list_s {
 struct fz_stext_page_s {
     %extend {
         FITZEXCEPTION(fz_stext_page_s, !result)
-        fz_stext_page_s(PyObject *mediabox) {
+        fz_stext_page_s(PyObject *mediabox)
+        {
             struct fz_stext_page_s *tp = NULL;
             fz_try(gctx)
                 tp = fz_new_stext_page(gctx, JM_rect_from_py(mediabox));
@@ -6011,17 +6021,200 @@ struct fz_stext_page_s {
         }
 
         //---------------------------------------------------------------------
+        // Get list of all blocks with block type and bbox as a Python list
+        //---------------------------------------------------------------------
+        PyObject *_getBlockList(PyObject *list)
+        {
+            fz_stext_block *block;
+            int i = 0;
+            for (block = $self->first_block; block; block = block->next)
+            {
+                fz_rect r = block->bbox;
+                PyObject *item = Py_BuildValue("iffff", block->type,
+                                               r.x0, r.y0, r.x1, r.y1);
+                PyList_Append(list, item);
+                Py_DECREF(item);
+                i++;
+            }
+            return Py_BuildValue("i", i);
+        }
+
+        //---------------------------------------------------------------------
+        // Get an image blocks by number
+        //---------------------------------------------------------------------
+        PyObject *_getImageBlock(int blockno, PyObject *list)
+        {
+            fz_stext_block *block;
+            int i = -1;
+            for (block = $self->first_block; block; block = block->next)
+            {
+                i++;
+                if (i == blockno) break;
+            }
+
+            if (i != blockno || !block)  // wrong block number
+                return Py_BuildValue("i", -1);
+            if (block->type != FZ_STEXT_BLOCK_IMAGE)  // wrong block type
+                return Py_BuildValue("i", -2);
+
+            fz_image *image = block->u.i.image;
+            fz_buffer *buf = NULL, *freebuf = NULL;
+            fz_compressed_buffer *buffer = fz_compressed_image_buffer(gctx, image);
+            fz_var(buf);
+            fz_var(freebuf);
+            int n = fz_colorspace_n(gctx, image->colorspace);
+            int w = image->w;
+            int h = image->h;
+            int type = FZ_IMAGE_UNKNOWN;
+            if (buffer) type = buffer->params.type;
+            const char *ext = NULL;
+            PyObject *bytes = JM_BinFromChar("");
+            fz_var(bytes);
+            fz_try(gctx)
+            {
+                if (image->use_colorkey ||
+                image->use_decode ||
+                image->mask ||
+                type < FZ_IMAGE_BMP ||
+                type == FZ_IMAGE_JBIG2 ||
+                n != 1 && n != 3 && type == FZ_IMAGE_JPEG)
+                type = FZ_IMAGE_UNKNOWN;
+
+                if (type != FZ_IMAGE_UNKNOWN)
+                {
+                    buf = buffer->buffer;
+                    ext = JM_image_extension(type);
+                }
+                else
+                {
+                    buf = freebuf = fz_new_buffer_from_image_as_png(gctx, image, NULL);
+                    ext = "png";
+                }
+                if (PY_MAJOR_VERSION > 2)
+                    bytes = JM_BinFromBuffer(gctx, buf);
+                else
+                    bytes = JM_BArrayFromBuffer(gctx, buf);
+            }
+            fz_always(gctx)
+            {
+                PyObject *item = Py_BuildValue("iiisO",
+                                               FZ_STEXT_BLOCK_IMAGE,
+                                               w,
+                                               h,
+                                               ext,
+                                               bytes);
+                PyList_Append(list, item);
+                Py_DECREF(bytes);
+                Py_DECREF(item);
+                fz_drop_buffer(gctx, freebuf);
+            }
+            fz_catch(gctx) {;}
+            return Py_BuildValue("i", 0);
+        }
+
+        //---------------------------------------------------------------------
+        // Get list of all lines in a block
+        //---------------------------------------------------------------------
+        PyObject *_getLineList(int blockno, PyObject *list)
+        {
+            fz_stext_block *block;
+            fz_stext_line *line;
+            int i = -1, n = 0;
+            for (block = $self->first_block; block; block = block->next)
+            {
+                i++;
+                if (i == blockno) break;
+            }
+
+            if (i != blockno || !block)  // wrong block number
+                return Py_BuildValue("i", -1);
+            if (block->type != FZ_STEXT_BLOCK_TEXT)  // wrong block type
+                return Py_BuildValue("i", -2);
+
+            for (line = block->u.t.first_line; line; line = line->next)
+            {
+                PyObject *item = Py_BuildValue("iffffff",
+                                               line->wmode,
+                                               line->dir.x,
+                                               line->dir.y,
+                                               line->bbox.x0,
+                                               line->bbox.y0,
+                                               line->bbox.x1,
+                                               line->bbox.y1);
+                PyList_Append(list, item);
+                Py_DECREF(item);
+                n++;
+            }
+            return Py_BuildValue("i", n);
+        }
+
+        //---------------------------------------------------------------------
+        // Get list of all characters in a line
+        //---------------------------------------------------------------------
+        PyObject *_getCharList(int blockno, int lineno, PyObject *list)
+        {
+            fz_stext_block *block;
+            fz_stext_line *line;
+            fz_stext_char *ch;
+            int i = -1, j = -1, n = 0;
+            char data[10];
+            for (block = $self->first_block; block; block = block->next)
+            {
+                i++;
+                if (i == blockno) break;
+            }
+            if (i != blockno || !block)  // wrong block number
+                return Py_BuildValue("i", -1);
+            if (block->type != FZ_STEXT_BLOCK_TEXT)  // wrong block type
+                return Py_BuildValue("i", -2);
+
+            for (line = block->u.t.first_line; line; line = line->next)
+            {
+                j++;
+                if (j == lineno) break;
+            }
+            if (j != lineno || !line)  // wrong line number
+                return Py_BuildValue("i", -3);
+
+            for (ch = line->first_char; ch; ch = ch->next)
+            {
+                fz_rect r = JM_char_bbox(line, ch);
+                Py_ssize_t len = (Py_ssize_t) fz_runetochar(data, ch->c);
+                int flags = JM_char_font_flags(gctx, ch->font, line, ch);
+                PyObject *uchar = PyUnicode_FromStringAndSize(data, len);
+                PyObject *ufont = JM_UnicodeFromASCII(fz_font_name(gctx, ch->font));
+                PyObject *item = Py_BuildValue("fffffffiOO",
+                                                ch->origin.x,
+                                                ch->origin.y,
+                                                r.x0,
+                                                r.y0,
+                                                r.x1,
+                                                r.y1,
+                                                ch->size,
+                                                flags,
+                                                ufont,
+                                                uchar);
+                PyList_Append(list, item);
+                Py_DECREF(uchar);
+                Py_DECREF(ufont);
+                Py_DECREF(item);
+                n++;
+            }
+
+            return Py_BuildValue("i", n);
+        }
+
+        //---------------------------------------------------------------------
         // Get text blocks with their bbox and concatenated lines 
         // as a Python list
         //---------------------------------------------------------------------
         FITZEXCEPTION(_extractTextBlocks_AsList, !result)
-        PyObject *_extractTextBlocks_AsList()
+        PyObject *_extractTextBlocks_AsList(PyObject *lines)
         {
             fz_stext_block *block;
             fz_stext_line *line;
             fz_stext_char *ch;
             int block_n = 0;
-            PyObject *lines = PyList_New(0);
             PyObject *text = NULL, *litem;
             fz_buffer *res = NULL;
             for (block = $self->first_block; block; block = block->next)
@@ -6074,18 +6267,18 @@ struct fz_stext_page_s {
                                       blockrect.x1, blockrect.y1,
                                       text, block_n, block->type);
                 PyList_Append(lines, litem);
-                Py_CLEAR(litem);
-                Py_CLEAR(text);
+                Py_DECREF(litem);
+                Py_DECREF(text);
                 block_n++;
             }
-            return lines;
+            return NONE;
         }
 
         //---------------------------------------------------------------------
         // Get text words with their bbox
         //---------------------------------------------------------------------
         FITZEXCEPTION(_extractTextWords_AsList, !result)
-        PyObject *_extractTextWords_AsList()
+        PyObject *_extractTextWords_AsList(PyObject *lines)
         {
             fz_stext_block *block;
             fz_stext_line *line;
@@ -6094,7 +6287,6 @@ struct fz_stext_page_s {
             size_t buflen = 0;
             int block_n = 0, line_n, word_n;
             fz_rect wbbox = {0,0,0,0};          // word bbox
-            PyObject *lines = PyList_New(0);
             for (block = $self->first_block; block; block = block->next)
             {
                 if (block->type != FZ_STEXT_BLOCK_TEXT)
@@ -6140,31 +6332,25 @@ struct fz_stext_page_s {
                 }
                 block_n++;
             }
-            return lines;
+            return NONE;
         }
 
+        //---------------------------------------------------------------------
+        // TextPage rectangle
+        //---------------------------------------------------------------------
+        %pythoncode %{@property%}
+        %pythonappend rect %{
+val = Rect(val)%}
+        PyObject *rect()
+        {
+            fz_rect mediabox = $self->mediabox;
+            return JM_py_from_rect(mediabox);
+        }
         //---------------------------------------------------------------------
         // method _extractText()
         //---------------------------------------------------------------------
         FITZEXCEPTION(_extractText, !result)
         %newobject _extractText;
-        %pythonappend _extractText %{
-            if format != 2:
-                return val
-            import base64, json
-
-            class b64encode(json.JSONEncoder):
-                def default(self,s):
-                    if not fitz_py2 and type(s) is bytes:
-                        return base64.b64encode(s).decode()
-                    if type(s) is bytearray:
-                        if fitz_py2:
-                            return base64.b64encode(s)
-                        else:
-                            return base64.b64encode(s).decode()
-
-            val = json.dumps(val, separators=(",", ":"), cls=b64encode, indent=1)
-        %}
         PyObject *_extractText(int format)
         {
             fz_buffer *res = NULL;
@@ -6181,20 +6367,11 @@ struct fz_stext_page_s {
                     case(1):
                         fz_print_stext_page_as_html(gctx, out, $self);
                         break;
-                    case(2):
-                        text = JM_stext_page_as_dict(gctx, $self, 0);
-                        break;
                     case(3):
                         fz_print_stext_page_as_xml(gctx, out, $self);
                         break;
                     case(4):
                         fz_print_stext_page_as_xhtml(gctx, out, $self);
-                        break;
-                    case(5):
-                        text = JM_stext_page_as_dict(gctx, $self, 0);
-                        break;
-                    case(6):
-                        text = JM_stext_page_as_dict(gctx, $self, 1);
                         break;
                     default:
                         JM_print_stext_page_as_text(gctx, out, $self);
@@ -6220,7 +6397,22 @@ struct fz_stext_page_s {
                 return self._extractText(1)
 
             def extractJSON(self):
-                return self._extractText(2)
+                import base64, json
+                val = _make_textpage_dict(self)
+
+                class b64encode(json.JSONEncoder):
+                    def default(self,s):
+                        if not fitz_py2 and type(s) is bytes:
+                            return base64.b64encode(s).decode()
+                        if type(s) is bytearray:
+                            if fitz_py2:
+                                return base64.b64encode(s)
+                            else:
+                                return base64.b64encode(s).decode()
+
+                val = json.dumps(val, separators=(",", ":"), cls=b64encode, indent=1)
+
+                return val
 
             def extractXML(self):
                 return self._extractText(3)
@@ -6229,10 +6421,10 @@ struct fz_stext_page_s {
                 return self._extractText(4)
 
             def extractDICT(self):
-                return self._extractText(5)
+                return _make_textpage_dict(self)
 
             def extractRAWDICT(self):
-                return self._extractText(6)
+                return _make_textpage_dict(self, raw=True)
         %}
         %pythoncode %{
         def __del__(self):
@@ -6304,10 +6496,10 @@ struct Tools
             return Py_BuildValue("i", (int) gctx->store->size);
         }
 
-        %feature("autodoc","Determine dimension and other image data.") image_size;
-        PyObject *image_size(PyObject *imagedata, int keep_image=0)
+        %feature("autodoc","Determine dimension and other image data.") image_profile;
+        PyObject *image_profile(PyObject *stream, int keep_image=0)
         {
-            return JM_image_size(gctx, imagedata, keep_image);
+            return JM_image_profile(gctx, stream, keep_image);
         }
 
         %feature("autodoc","Current store size.") store_size;

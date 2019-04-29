@@ -326,7 +326,7 @@ def getPDFstr(s):
 
 
     # following either returns original string with mixed-in 
-    # octal numbers \nnn if outside ASCII range, or:
+    # octal numbers \nnn for chars outside ASCII range, or:
     # exits with utf-16be BOM version of the string
     r = ""
     for c in s:
@@ -544,7 +544,29 @@ def UpdateFontInfo(doc, info):
 
 def DUMMY(*args, **kw):
     return
-    
+
+def ImageProperties(img):
+    """ Return basic properties of an image.
+
+    Args:
+        img: bytes, bytearray, io.BytesIO object or an opened image file.
+    Returns:
+        A dictionary with keys width, height, colorspace.n, bpc, type, ext and size,
+        where 'type' is the MuPDF image type (0 to 14) and 'ext' the suitable
+        file extension.
+    """
+    if type(img) is io.BytesIO:
+        stream = img.getvalue()
+    elif hasattr(img, "read"):
+        stream = img.read()
+    elif type(img) in (bytes, bytearray):
+        stream = img
+    else:
+        raise ValueError("bad argument 'img'")
+
+    return TOOLS.image_profile(stream)
+
+
 def ConversionHeader(i, filename = "unknown"):
     t = i.lower()
     html = """<!DOCTYPE html>
@@ -608,5 +630,107 @@ def ConversionTrailer(i):
         r = text
     
     return r
+
+def _make_textpage_dict(TextPage, raw=False):
+    """ Return a dictionary representing all text on a page.
+
+    Notes:
+        A number of precautions are taken to keep memory consumption under
+        control. E.g. when calling utility functions, we provide empty lists
+        to be filled by them. This ensures that garbage collection on the
+        Python level knows them when taking appropriate action.
+        The utility functions themselves strictly return flat structures (e.g.
+        no dictionaries, no nested lists) to prevent sub-structures that are
+        not reachable by gc.
+    Args:
+        raw: bool which causes inclusion of a dictionary per each character.
+    Returns:
+        dict
+    """
+    page_dict = {"width": TextPage.rect.width, "height": TextPage.rect.height}
+    blocks = []
+    num_blocks = TextPage._getBlockList(blocks)
+    block_list = []
+    for i in range(num_blocks):
+        block = blocks[i]
+        block_dict = {"type": block[0], "bbox": block[1:5]}
+        lines = []  # prepare output for the block details
+
+        if block[0] == 1:  # handle an image block
+            rc = TextPage._getImageBlock(i, lines)  # read block data
+            if rc != 0:  # any problem?
+                raise ValueError("could not extract image block %i" % i)
+            ilist = lines[0]  # the tuple we want
+            block_dict["width"] = ilist[1]
+            block_dict["height"] = ilist[2]
+            block_dict["ext"] = ilist[3]
+            block_dict["image"] = ilist[4]
+            block_list.append(block_dict)  # append image block to list
+            continue  # to next block
+
+        # process a text block
+        num_lines = TextPage._getLineList(i, lines)  # read the line array
+        line_list = []
+
+        for j in range(num_lines):
+            line = lines[j]
+            line_dict = {"wmode": line[0], "dir": line[1:3], "bbox": line[3:]}
+            span_list = []
+            characters = []
+            TextPage._getCharList(i, j, characters)
+            old_style = ()
+            span = {}
+            char_list = []
+            text = ""
+
+            for char in characters:  # iterate through the characters
+                style = char[6:9]  # font info
+                pos = style[2].find("+")  # remove any garbage from font
+                if pos > 0:
+                    style = list(style)
+                    style[2] = style[2][pos+1:]
+
+                # check if the character style has changed
+                if style != old_style:
+
+                    # check for first span
+                    if old_style != ():  # finish previous span first
+                        if raw:
+                            span["chars"] = char_list  # char dictionaries
+                            char_list = []  # reset char dict list
+                        else:
+                            span["text"] = text  # accumulated text
+                            text = ""  # reset text field
+
+                        span_list.append(span)  # output previous span
+
+                    # init a new span
+                    span = {"size": style[0], "flags": style[1], "font": style[2]}
+                    old_style = style
+
+                if raw:
+                    char_dict = {"origin": char[:2], "bbox": char[2:6], "c": char[-1]}
+                    char_list.append(char_dict)
+                else:
+                    text += char[-1]
+
+            # all characters in line have been processed now
+            if max(len(char_list), len(text)) > 0:  # chars missing in outut?
+                if raw:
+                    span["chars"] = char_list
+                else:
+                    span["text"] = text
+
+                span_list.append(span)
+
+            line_dict["spans"] = span_list  # put list of spans in line dict
+            line_list.append(line_dict)  # append line dict to list of lines
+
+        block_dict["lines"] = line_list
+        block_list.append(block_dict)
+
+    page_dict["blocks"] = block_list
+
+    return page_dict
 
 %}

@@ -41,9 +41,9 @@ fz_quad JM_quad_from_py(PyObject *r)
     fz_quad q;
     fz_point p[4];
     size_t i;
-    q.ul = q.ur = q.ll = q.lr = fz_make_point(0,0);
+    q.ul = q.ur = q.ll = q.lr = fz_make_point(0, 0);
 
-    if (!r || !PySequence_Check(r) || PySequence_Size(r) != 4)
+    if (!PySequence_Check(r) || PySequence_Size(r) != 4)
         return q;
 
     double x0 = PyFloat_AsDouble(PySequence_ITEM(r, 0));
@@ -100,7 +100,7 @@ fz_quad JM_quad_from_py(PyObject *r)
 //-----------------------------------------------------------------------------
 fz_rect JM_rect_from_py(PyObject *r)
 {
-    if (!r || !PySequence_Check(r) || PySequence_Size(r) != 4)
+    if (!PySequence_Check(r) || PySequence_Size(r) != 4)
         return fz_infinite_rect;
 
     double x0 = PyFloat_AsDouble(PySequence_ITEM(r, 0));
@@ -135,7 +135,7 @@ PyObject *JM_py_from_rect(fz_rect r)
 //-----------------------------------------------------------------------------
 fz_irect JM_irect_from_py(PyObject *r)
 {
-    if (!r || !PySequence_Check(r) || PySequence_Size(r) != 4)
+    if (!PySequence_Check(r) || PySequence_Size(r) != 4)
         return fz_infinite_irect;
 
     long x0 = PyLong_AsLong(PySequence_ITEM(r, 0));
@@ -171,8 +171,8 @@ PyObject *JM_py_from_irect(fz_irect r)
 //-----------------------------------------------------------------------------
 fz_point JM_point_from_py(PyObject *p)
 {
-    fz_point p0 = {0,0};
-    if (!p || !PySequence_Check(p) || PySequence_Size(p) != 2)
+    fz_point p0 = fz_make_point(0, 0);
+    if (!PySequence_Check(p) || PySequence_Size(p) != 2)
         return p0;
 
     double x = PyFloat_AsDouble(PySequence_ITEM(p, 0));
@@ -203,7 +203,7 @@ PyObject *JM_py_from_point(fz_point p)
 fz_matrix JM_matrix_from_py(PyObject *m)
 {
     fz_matrix m0 = fz_identity;
-    if (!m || !PySequence_Check(m) || PySequence_Size(m) != 6)
+    if (!PySequence_Check(m) || PySequence_Size(m) != 6)
         return m0;
 
     double a = PyFloat_AsDouble(PySequence_ITEM(m, 0));

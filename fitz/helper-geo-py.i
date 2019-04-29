@@ -58,12 +58,16 @@ class Matrix():
 
     def preTranslate(self, tx, ty):
         """Calculate pre translation and replace current matrix."""
+        tx = float(tx)
+        ty = float(ty)
         self.e += tx * self.a + ty * self.c
         self.f += tx * self.b + ty * self.d
         return self
 
     def preScale(self, sx, sy):
         """Calculate pre scaling and replace current matrix."""
+        sx = float(sx)
+        sy = float(sy)
         self.a *= sx
         self.b *= sx
         self.c *= sy
@@ -72,6 +76,8 @@ class Matrix():
 
     def preShear(self, h, v):
         """Calculate pre shearing and replace current matrix."""
+        h = float(h)
+        v = float(v)
         a, b = self.a, self.b
         self.a += v * self.c
         self.b += v * self.d
@@ -81,6 +87,7 @@ class Matrix():
 
     def preRotate(self, theta):
         """Calculate pre rotation and replace current matrix."""
+        theta = float(theta)
         while theta < 0: theta += 360
         while theta >= 360: theta -= 360
         epsilon = 1e-5
@@ -133,6 +140,7 @@ class Matrix():
         return (self.a, self.b, self.c, self.d, self.e, self.f)[i]
 
     def __setitem__(self, i, v):
+        v = float(v)
         if   i == 0: self.a = v
         elif i == 1: self.b = v
         elif i == 2: self.c = v
@@ -217,9 +225,6 @@ class Matrix():
         return (abs(self.b) < epsilon and abs(self.c) < epsilon) or \
             (abs(self.a) < epsilon and abs(self.d) < epsilon);
 
-    def __hash__(self):
-        return hash(tuple(self))
-
 
 class IdentityMatrix(Matrix):
     """Identity matrix [1, 0, 0, 1, 0, 0]"""
@@ -235,14 +240,20 @@ class IdentityMatrix(Matrix):
 
     def checkargs(*args):
         raise NotImplementedError("Identity is readonly")
+
     preRotate    = checkargs
     preShear     = checkargs
     preScale     = checkargs
     preTranslate = checkargs
     concat       = checkargs
     invert       = checkargs
+
     def __repr__(self):
         return "IdentityMatrix(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)"
+
+    def __hash__(self):
+        return hash((1,0,0,1,0,0))
+
 
 Identity = IdentityMatrix()
 
@@ -345,8 +356,9 @@ class Point():
         return 2
 
     def __setitem__(self, i, v):
-        if   i == 0: self.x = float(v)
-        elif i == 1: self.y = float(v)
+        v = float(v)
+        if   i == 0: self.x = v
+        elif i == 1: self.y = v
         else:
             raise IndexError("index out of range")
         return None
@@ -544,10 +556,11 @@ class Rect():
         return 4
 
     def __setitem__(self, i, v):
-        if   i == 0: self.x0 = float(v)
-        elif i == 1: self.y0 = float(v)
-        elif i == 2: self.x1 = float(v)
-        elif i == 3: self.y1 = float(v)
+        v = float(v)
+        if   i == 0: self.x0 = v
+        elif i == 1: self.y0 = v
+        elif i == 2: self.x1 = v
+        elif i == 3: self.y1 = v
         else:
             raise IndexError("index out of range")
         return None
@@ -700,10 +713,11 @@ class IRect(Rect):
         return Rect.intersect(self, r).round()
 
     def __setitem__(self, i, v):
-        if   i == 0: self.x0 = int(v)
-        elif i == 1: self.y0 = int(v)
-        elif i == 2: self.x1 = int(v)
-        elif i == 3: self.y1 = int(v)
+        v = int(v)
+        if   i == 0: self.x0 = v
+        elif i == 1: self.y0 = v
+        elif i == 2: self.x1 = v
+        elif i == 3: self.y1 = v
         else:
             raise IndexError("index out of range")
         return None
