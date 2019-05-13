@@ -9,7 +9,7 @@ git clone https://github.com/pymupdf/PyMuPDF.git
 
 cd mupdf-1.14.0-source
 # replace 3 files in mupdf-1.14.0
-cp ../PyMuPDF/fitz/_mupdf_config.h include/mupdf/fitz/config.hfig.h
+cp ../PyMuPDF/fitz/_mupdf_config.h include/mupdf/fitz/config.h
 cp ../PyMuPDF/fitz/_error.c source/fitz/error.c
 cp ../PyMuPDF/fitz/_pdf-device.c source/pdf/pdf-device.c
 
