@@ -93,9 +93,6 @@ JM_fill_pixmap_rect_with_color(fz_context *ctx, fz_pixmap *dest, unsigned char c
 //-----------------------------------------------------------------------------
 // invert a rectangle - also supports non-alpha pixmaps
 //-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-// fill a rect with a color tuple
-//-----------------------------------------------------------------------------
 int
 JM_invert_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_irect b)
 {
@@ -126,51 +123,85 @@ JM_invert_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_irect b)
     return 1;
 }
 
-PyObject *JM_image_size(fz_context *ctx, PyObject *imagedata, int keep_image)
+//-----------------------------------------------------------------------------
+// Return basic properties of an image provided as bytes or bytearray
+// The function creates an fz_image and optionally returns it.
+//-----------------------------------------------------------------------------
+PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
 {
-    if (!imagedata || imagedata == NONE)
+    if (!EXISTS(imagedata))
     {
-        return NONE;
+        return NONE;  // nothing given
     }
-    fz_buffer *res = NULL;
     fz_image *image = NULL;
+    fz_buffer *res = NULL;
     PyObject *result = NULL;
+    unsigned char *c = NULL;
+    Py_ssize_t len = 0;
+
+    if (PyBytes_Check(imagedata))
+    {
+        c = PyBytes_AS_STRING(imagedata);
+        len = PyBytes_GET_SIZE(imagedata);
+    }
+    else if (PyByteArray_Check(imagedata))
+    {
+        c = PyByteArray_AS_STRING(imagedata);
+        len = PyByteArray_GET_SIZE(imagedata);
+    }
+    else
+    {
+        PySys_WriteStderr("stream not bytes-like\n");
+        return PyDict_New();
+    }
+
+    if (len < 8)
+    {
+        PySys_WriteStderr("stream too short\n");
+        return PyDict_New();
+    }
+
     fz_try(ctx)
     {
-        res = JM_BufferFromBytes(ctx, imagedata);
-        if (res)
+        if (keep_image)
         {
-            unsigned char *c = NULL;
-            size_t len = fz_buffer_storage(ctx, res, &c);
-            if (len > 8)
-            {
-                image = fz_new_image_from_buffer(ctx, res);
-                result = PyList_New(0);
-                PyList_Append(result, PyInt_FromLong((long) image->w));
-                PyList_Append(result, PyInt_FromLong((long) image->h));
-                PyList_Append(result, PyInt_FromLong((long) image->n));
-                PyList_Append(result, PyInt_FromLong((long) image->bpc));
-                PyList_Append(result, PyInt_FromLong((long) fz_recognize_image_format(ctx, c)));
-                if (keep_image)
-                {   // keep fz_image: hand over address, do not drop
-                    PyList_Append(result, PyLong_FromVoidPtr((void *) fz_keep_image(ctx, image)));
-                }
-
-            }
-            else
-            {
-                result = NONE;
-            }
+            res = fz_new_buffer_from_copied_data(ctx, c, (size_t) len);
+        }
+        else
+        {
+            res = fz_new_buffer_from_shared_data(ctx, c, (size_t) len);
+        }
+        image = fz_new_image_from_buffer(ctx, res);
+        int type = fz_recognize_image_format(ctx, c);
+        result = Py_BuildValue("{s:i,s:i,s:i,s:i,s:i,s:s,s:n}",
+                                "width", image->w,
+                                "height", image->h,
+                                "colorspace", image->n,
+                                "bpc", image->bpc,
+                                "format", type,
+                                "ext", JM_image_extension(type),
+                                "size", len
+                              );
+        if (keep_image)
+        {   // keep fz_image: hand over address, do not drop
+            PyDict_SetItemString(result, "image", PyLong_FromVoidPtr((void *) fz_keep_image(ctx, image)));
         }
     }
     fz_always(ctx)
     {
-        fz_drop_buffer(ctx, res);
-        if (!keep_image) fz_drop_image(ctx, image); // conditional drop
+        if (!keep_image)
+        {
+            fz_drop_image(ctx, image);  // conditional drop
+        }
+        else
+        {
+            fz_drop_buffer(ctx, res);  // drop the buffer copy
+        }
     }
     fz_catch(ctx)
     {
-        result = NONE;
+        PySys_WriteStderr("%s\n", fz_caught_message(ctx));
+        result = PyDict_New();
     }
     return result;
 }

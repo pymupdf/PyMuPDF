@@ -65,7 +65,8 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, fz_page *fs
 // Insert a buffer as a new separate /Contents object of a page.
 // 1. Create a new stream object from buffer 'newcont'
 // 2. If /Contents already is an array, then just prepend or append this object
-// 3. Create new array and put old content obj and new obj into it
+// 3. Else, create new array and put old content obj and this object into it.
+//    If the page had no /Contents before, just create a 1-item array.
 //-----------------------------------------------------------------------------
 int JM_insert_contents(fz_context *ctx, pdf_document *pdf,
                         pdf_obj *pageref, fz_buffer *newcont, int overlay)
@@ -102,7 +103,7 @@ int JM_insert_contents(fz_context *ctx, pdf_document *pdf,
     fz_catch(ctx) fz_rethrow(ctx);
     return xref;
 }
-/*-----------------------------------------------------------------------------
+/*------------------ currently not used ---------------------------------------
 //-----------------------------------------------------------------------------
 // Append / prepend a buffer to the /Contents of a page.
 //-----------------------------------------------------------------------------

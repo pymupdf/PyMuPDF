@@ -4,6 +4,11 @@
 # Do not make changes to this file unless you know what you are doing--modify
 # the SWIG interface file instead.
 
+
+from __future__ import division, print_function
+
+
+
 from sys import version_info as _swig_python_version_info
 if _swig_python_version_info >= (2, 7, 0):
     def swig_import_helper():
@@ -106,9 +111,9 @@ fitz_py2 = str is bytes           # if true, this is Python 2
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.14"
-VersionDate = "2019-04-09 13:07:58"
-version = (VersionBind, VersionFitz, "20190409130758")
+VersionBind = "1.14.15"
+VersionDate = "2019-05-22 14:26:15"
+version = (VersionBind, VersionFitz, "20190522142615")
 
 
 class Matrix():
@@ -170,12 +175,16 @@ class Matrix():
 
     def preTranslate(self, tx, ty):
         """Calculate pre translation and replace current matrix."""
+        tx = float(tx)
+        ty = float(ty)
         self.e += tx * self.a + ty * self.c
         self.f += tx * self.b + ty * self.d
         return self
 
     def preScale(self, sx, sy):
         """Calculate pre scaling and replace current matrix."""
+        sx = float(sx)
+        sy = float(sy)
         self.a *= sx
         self.b *= sx
         self.c *= sy
@@ -184,6 +193,8 @@ class Matrix():
 
     def preShear(self, h, v):
         """Calculate pre shearing and replace current matrix."""
+        h = float(h)
+        v = float(v)
         a, b = self.a, self.b
         self.a += v * self.c
         self.b += v * self.d
@@ -193,6 +204,7 @@ class Matrix():
 
     def preRotate(self, theta):
         """Calculate pre rotation and replace current matrix."""
+        theta = float(theta)
         while theta < 0: theta += 360
         while theta >= 360: theta -= 360
         epsilon = 1e-5
@@ -245,6 +257,7 @@ class Matrix():
         return (self.a, self.b, self.c, self.d, self.e, self.f)[i]
 
     def __setitem__(self, i, v):
+        v = float(v)
         if   i == 0: self.a = v
         elif i == 1: self.b = v
         elif i == 2: self.c = v
@@ -329,9 +342,6 @@ class Matrix():
         return (abs(self.b) < epsilon and abs(self.c) < epsilon) or \
             (abs(self.a) < epsilon and abs(self.d) < epsilon);
 
-    def __hash__(self):
-        return hash(tuple(self))
-
 
 class IdentityMatrix(Matrix):
     """Identity matrix [1, 0, 0, 1, 0, 0]"""
@@ -347,14 +357,20 @@ class IdentityMatrix(Matrix):
 
     def checkargs(*args):
         raise NotImplementedError("Identity is readonly")
+
     preRotate    = checkargs
     preShear     = checkargs
     preScale     = checkargs
     preTranslate = checkargs
     concat       = checkargs
     invert       = checkargs
+
     def __repr__(self):
         return "IdentityMatrix(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)"
+
+    def __hash__(self):
+        return hash((1,0,0,1,0,0))
+
 
 Identity = IdentityMatrix()
 
@@ -457,8 +473,9 @@ class Point():
         return 2
 
     def __setitem__(self, i, v):
-        if   i == 0: self.x = float(v)
-        elif i == 1: self.y = float(v)
+        v = float(v)
+        if   i == 0: self.x = v
+        elif i == 1: self.y = v
         else:
             raise IndexError("index out of range")
         return None
@@ -656,10 +673,11 @@ class Rect():
         return 4
 
     def __setitem__(self, i, v):
-        if   i == 0: self.x0 = float(v)
-        elif i == 1: self.y0 = float(v)
-        elif i == 2: self.x1 = float(v)
-        elif i == 3: self.y1 = float(v)
+        v = float(v)
+        if   i == 0: self.x0 = v
+        elif i == 1: self.y0 = v
+        elif i == 2: self.x1 = v
+        elif i == 3: self.y1 = v
         else:
             raise IndexError("index out of range")
         return None
@@ -812,10 +830,11 @@ class IRect(Rect):
         return Rect.intersect(self, r).round()
 
     def __setitem__(self, i, v):
-        if   i == 0: self.x0 = int(v)
-        elif i == 1: self.y0 = int(v)
-        elif i == 2: self.x1 = int(v)
-        elif i == 3: self.y1 = int(v)
+        v = int(v)
+        if   i == 0: self.x0 = v
+        elif i == 1: self.y0 = v
+        elif i == 2: self.x1 = v
+        elif i == 3: self.y1 = v
         else:
             raise IndexError("index out of range")
         return None
@@ -1480,7 +1499,7 @@ def getPDFstr(s):
 
 
 # following either returns original string with mixed-in 
-# octal numbers \nnn if outside ASCII range, or:
+# octal numbers \nnn for chars outside ASCII range, or:
 # exits with utf-16be BOM version of the string
     r = ""
     for c in s:
@@ -1699,6 +1718,28 @@ def UpdateFontInfo(doc, info):
 def DUMMY(*args, **kw):
     return
 
+def ImageProperties(img):
+    """ Return basic properties of an image.
+
+    Args:
+        img: bytes, bytearray, io.BytesIO object or an opened image file.
+    Returns:
+        A dictionary with keys width, height, colorspace.n, bpc, type, ext and size,
+        where 'type' is the MuPDF image type (0 to 14) and 'ext' the suitable
+        file extension.
+    """
+    if type(img) is io.BytesIO:
+        stream = img.getvalue()
+    elif hasattr(img, "read"):
+        stream = img.read()
+    elif type(img) in (bytes, bytearray):
+        stream = img
+    else:
+        raise ValueError("bad argument 'img'")
+
+    return TOOLS.image_profile(stream)
+
+
 def ConversionHeader(i, filename = "unknown"):
     t = i.lower()
     html = """<!DOCTYPE html>
@@ -1762,6 +1803,108 @@ def ConversionTrailer(i):
         r = text
 
     return r
+
+def _make_textpage_dict(TextPage, raw=False):
+    """ Return a dictionary representing all text on a page.
+
+    Notes:
+        A number of precautions are taken to keep memory consumption under
+        control. E.g. when calling utility functions, we provide empty lists
+        to be filled by them. This ensures that garbage collection on the
+        Python level knows them when taking appropriate action.
+        The utility functions themselves strictly return flat structures (e.g.
+        no dictionaries, no nested lists) to prevent sub-structures that are
+        not reachable by gc.
+    Args:
+        raw: bool which causes inclusion of a dictionary per each character.
+    Returns:
+        dict
+    """
+    page_dict = {"width": TextPage.rect.width, "height": TextPage.rect.height}
+    blocks = []
+    num_blocks = TextPage._getBlockList(blocks)
+    block_list = []
+    for i in range(num_blocks):
+        block = blocks[i]
+        block_dict = {"type": block[0], "bbox": block[1:5]}
+        lines = []  # prepare output for the block details
+
+        if block[0] == 1:  # handle an image block
+            rc = TextPage._getImageBlock(i, lines)  # read block data
+            if rc != 0:  # any problem?
+                raise ValueError("could not extract image block %i" % i)
+            ilist = lines[0]  # the tuple we want
+            block_dict["width"] = ilist[1]
+            block_dict["height"] = ilist[2]
+            block_dict["ext"] = ilist[3]
+            block_dict["image"] = ilist[4]
+            block_list.append(block_dict)  # append image block to list
+            continue  # to next block
+
+# process a text block
+        num_lines = TextPage._getLineList(i, lines)  # read the line array
+        line_list = []
+
+        for j in range(num_lines):
+            line = lines[j]
+            line_dict = {"wmode": line[0], "dir": line[1:3], "bbox": line[3:]}
+            span_list = []
+            characters = []
+            TextPage._getCharList(i, j, characters)
+            old_style = ()
+            span = {}
+            char_list = []
+            text = ""
+
+            for char in characters:  # iterate through the characters
+                style = char[6:9]  # font info
+                pos = style[2].find("+")  # remove any garbage from font
+                if pos > 0:
+                    style = list(style)
+                    style[2] = style[2][pos+1:]
+
+# check if the character style has changed
+                if style != old_style:
+
+# check for first span
+                    if old_style != ():  # finish previous span first
+                        if raw:
+                            span["chars"] = char_list  # char dictionaries
+                            char_list = []  # reset char dict list
+                        else:
+                            span["text"] = text  # accumulated text
+                            text = ""  # reset text field
+
+                        span_list.append(span)  # output previous span
+
+# init a new span
+                    span = {"size": style[0], "flags": style[1], "font": style[2]}
+                    old_style = style
+
+                if raw:
+                    char_dict = {"origin": char[:2], "bbox": char[2:6], "c": char[-1]}
+                    char_list.append(char_dict)
+                else:
+                    text += char[-1]
+
+# all characters in line have been processed now
+            if max(len(char_list), len(text)) > 0:  # chars missing in outut?
+                if raw:
+                    span["chars"] = char_list
+                else:
+                    span["text"] = text
+
+                span_list.append(span)
+
+            line_dict["spans"] = span_list  # put list of spans in line dict
+            line_list.append(line_dict)  # append line dict to list of lines
+
+        block_dict["lines"] = line_list
+        block_list.append(block_dict)
+
+    page_dict["blocks"] = block_list
+
+    return page_dict
 
 
 class Document(_object):
@@ -2185,8 +2328,16 @@ open(filename, filetype='type') - from file"""
 
     def select(self, pyliste):
         """Build sub-pdf with page numbers in 'list'."""
+
         if self.isClosed or self.isEncrypted:
             raise ValueError("operation illegal for closed / encrypted doc")
+        if not self.isPDF:
+            raise ValueError("not a PDF")
+        if not hasattr(pyliste, "__getitem__"):
+            raise ValueError("sequence required")
+        if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not in range(len(self)):
+            raise ValueError("sequence items out of range")
+
 
         val = _fitz.Document_select(self, pyliste)
 
@@ -2263,6 +2414,14 @@ open(filename, filetype='type') - from file"""
 
         return val
 
+
+    def isStream(self, xref=0):
+        """isStream(self, xref=0) -> PyObject *"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        return _fitz.Document_isStream(self, xref)
+
     @property
 
     def isFormPDF(self):
@@ -2330,16 +2489,16 @@ open(filename, filetype='type') - from file"""
         return _fitz.Document__delXmlMetadata(self)
 
 
-    def _getXrefString(self, xref, compressed=1):
-        """_getXrefString(self, xref, compressed=1) -> PyObject *"""
+    def _getXrefString(self, xref, compressed=0):
+        """_getXrefString(self, xref, compressed=0) -> PyObject *"""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
         return _fitz.Document__getXrefString(self, xref, compressed)
 
 
-    def _getTrailerString(self, compressed=1):
-        """_getTrailerString(self, compressed=1) -> PyObject *"""
+    def _getTrailerString(self, compressed=0):
+        """_getTrailerString(self, compressed=0) -> PyObject *"""
         if self.isClosed:
             raise ValueError("operation illegal for closed doc")
 
@@ -2864,8 +3023,8 @@ class Page(_object):
 
         val = _fitz.Page_deleteLink(self, linkdict)
         if linkdict["xref"] == 0: return
-        linkid = linkdict["id"]
         try:
+            linkid = linkdict["id"]
             linkobj = self._annot_refs[linkid]
             linkobj._erase()
         except:
@@ -3028,7 +3187,7 @@ class Page(_object):
 
 
     def _getTransformation(self):
-        """_getTransformation(self) -> PyObject *"""
+        """Return page transformation matrix."""
         CheckParent(self)
 
         val = _fitz.Page__getTransformation(self)
@@ -4163,9 +4322,9 @@ class Link(_object):
 
         if val:
             val.thisown = True
-            val.parent = self.parent # copy owning page from prev link
+            val.parent = self.parent  # copy owning page from prev link
             val.parent._annot_refs[id(val)] = val
-            if self.xref > 0: # prev link has an xref
+            if self.xref > 0:  # prev link has an xref
                 link_xrefs = self.parent._getLinkXrefs()
                 idx = link_xrefs.index(self.xref)
                 val.xref = link_xrefs[idx + 1]
@@ -4287,23 +4446,60 @@ class TextPage(_object):
         return val
 
 
-    def _extractTextBlocks_AsList(self):
-        """_extractTextBlocks_AsList(self) -> PyObject *"""
-        return _fitz.TextPage__extractTextBlocks_AsList(self)
+    def _getBlockList(self, list):
+        """_getBlockList(self, list) -> PyObject *"""
+        return _fitz.TextPage__getBlockList(self, list)
 
 
-    def _extractTextWords_AsList(self):
-        """_extractTextWords_AsList(self) -> PyObject *"""
-        return _fitz.TextPage__extractTextWords_AsList(self)
+    def _getImageBlock(self, blockno, list):
+        """_getImageBlock(self, blockno, list) -> PyObject *"""
+        return _fitz.TextPage__getImageBlock(self, blockno, list)
+
+
+    def _getLineList(self, blockno, list):
+        """_getLineList(self, blockno, list) -> PyObject *"""
+        return _fitz.TextPage__getLineList(self, blockno, list)
+
+
+    def _getCharList(self, blockno, lineno, list):
+        """_getCharList(self, blockno, lineno, list) -> PyObject *"""
+        return _fitz.TextPage__getCharList(self, blockno, lineno, list)
+
+
+    def _extractTextBlocks_AsList(self, lines):
+        """_extractTextBlocks_AsList(self, lines) -> PyObject *"""
+        return _fitz.TextPage__extractTextBlocks_AsList(self, lines)
+
+
+    def _extractTextWords_AsList(self, lines):
+        """_extractTextWords_AsList(self, lines) -> PyObject *"""
+        return _fitz.TextPage__extractTextWords_AsList(self, lines)
+
+    @property
+
+    def rect(self):
+        """rect(self) -> PyObject *"""
+        val = _fitz.TextPage_rect(self)
+
+        val = Rect(val)
+
+        return val
 
 
     def _extractText(self, format):
         """_extractText(self, format) -> PyObject *"""
-        val = _fitz.TextPage__extractText(self, format)
+        return _fitz.TextPage__extractText(self, format)
 
-        if format != 2:
-            return val
+
+    def extractText(self):
+        return self._extractText(0)
+
+    def extractHTML(self):
+        return self._extractText(1)
+
+    def extractJSON(self):
         import base64, json
+        val = _make_textpage_dict(self)
 
         class b64encode(json.JSONEncoder):
             def default(self,s):
@@ -4317,18 +4513,7 @@ class TextPage(_object):
 
         val = json.dumps(val, separators=(",", ":"), cls=b64encode, indent=1)
 
-
         return val
-
-
-    def extractText(self):
-        return self._extractText(0)
-
-    def extractHTML(self):
-        return self._extractText(1)
-
-    def extractJSON(self):
-        return self._extractText(2)
 
     def extractXML(self):
         return self._extractText(3)
@@ -4337,10 +4522,10 @@ class TextPage(_object):
         return self._extractText(4)
 
     def extractDICT(self):
-        return self._extractText(5)
+        return _make_textpage_dict(self)
 
     def extractRAWDICT(self):
-        return self._extractText(6)
+        return _make_textpage_dict(self, raw=True)
 
 
     def __del__(self):
@@ -4394,9 +4579,9 @@ class Tools(_object):
         return _fitz.Tools_store_shrink(self, percent)
 
 
-    def image_size(self, imagedata, keep_image=0):
+    def image_profile(self, stream, keep_image=0):
         """Determine dimension and other image data."""
-        return _fitz.Tools_image_size(self, imagedata, keep_image)
+        return _fitz.Tools_image_profile(self, stream, keep_image)
 
     @property
 

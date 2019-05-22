@@ -1,3 +1,4 @@
+from __future__ import division
 from fitz import *
 import math
 import os
@@ -187,7 +188,7 @@ def insertImage(page, rect, filename=None, pixmap=None, stream=None, rotate=0,
             fw, fh = fh, fw  # width / height exchange their roles
 
         if fw < 1: # portrait
-            if (float(tr.width) / fw) > (float(tr.height) / fh):
+            if tr.width / fw > tr.height / fh:
                 w = tr.height * small
                 h = tr.height
             else:
@@ -195,7 +196,7 @@ def insertImage(page, rect, filename=None, pixmap=None, stream=None, rotate=0,
                 h = tr.width / small
 
         elif fw != fh:  # landscape
-            if (float(tr.width) / fw) > (float(tr.height) / fh):
+            if tr.width / fw > tr.height / fh:
                 w = tr.height / small
                 h = tr.height
             else:
@@ -237,29 +238,43 @@ def insertImage(page, rect, filename=None, pixmap=None, stream=None, rotate=0,
     r = page.rect & rect
     if r.isEmpty or r.isInfinite:
         raise ValueError("rect must be finite and not empty")
+
     _imgpointer = None
 
+    # -------------------------------------------------------------------------
+    # Calculate the matrix for image insertion.
+    # -------------------------------------------------------------------------
+    # If aspect ratio must be kept, we need to know image width and height.
+    # Easy for pixmaps. For file and stream cases, we make an fz_image and
+    # take those values from it. In this case, we also hand the fz_image over
+    # to the actual C-level function (_imgpointer), and set all other
+    # parameters to None.
+    # -------------------------------------------------------------------------
     if keep_proportion is True:  # for this we need the image dimension
         if pixmap:  # this is the easy case
             w = pixmap.width
             h = pixmap.height
+
         elif stream:  # use tool to access the information
             # we also pass through the generated fz_image address
-            img_size = TOOLS.image_size(stream, keep_image=True)
-            w, h = img_size[:2]
+            if type(stream) is io.BytesIO:
+                stream = stream.getvalue()
+            img_prof = TOOLS.image_profile(stream, keep_image=True)
+            w, h = img_prof["width"], img_prof["height"]
             stream = None  # make sure this arg is NOT used
-            _imgpointer = img_size[-1]  # pointer to fz_image
-        else:  # worst case, we need to read the file ourselves
+            _imgpointer = img_prof["image"]  # pointer to fz_image
+
+        else:  # worst case: must read the file
             img = open(filename, "rb")
             stream = img.read()
-            img_size = TOOLS.image_size(stream, keep_image=True)
-            w, h = img_size[:2]
-            _imgpointer = img_size[-1]  # pointer to fz_image
+            img_prof = TOOLS.image_profile(stream, keep_image=True)
+            w, h = img_prof["width"], img_prof["height"]
             stream = None  # make sure this arg is NOT used
             filename = None  # make sure this arg is NOT used
             img.close()  # close image file
+            _imgpointer = img_prof["image"]  # pointer to fz_image
 
-        maxf = max(w, h).__float__()
+        maxf = max(w, h)
         fw = w / maxf
         fh = h / maxf
     else:
@@ -267,15 +282,16 @@ def insertImage(page, rect, filename=None, pixmap=None, stream=None, rotate=0,
 
     clip = r * ~page._getTransformation()  # target rect in PDF coordinates
 
-    matrix = calc_matrix(fw, fh, clip, rotate=rotate)
+    matrix = calc_matrix(fw, fh, clip, rotate=rotate)  # calculate matrix
 
-    ilst = [i[7] for i in doc.getPageImageList(page.number)]
-    n = "fzImg"
+    # Create a unique image reference name. First make existing names list.
+    ilst = [i[7] for i in doc.getPageImageList(page.number)]  # existing names
+    n = "fzImg"  # 'fitz image'
     i = 0
-    _imgname = n + "0"
+    _imgname = n + "0"  # first name candidate
     while _imgname in ilst:
         i += 1
-        _imgname = n + str(i)
+        _imgname = n + str(i)  # try new name
 
     page._insertImage(
             filename=filename,  # image in file
@@ -341,7 +357,8 @@ def getTextBlocks(page, images=False):
     if images:
         flags |= TEXT_PRESERVE_IMAGES
     tp = dl.getTextPage(flags)
-    l = tp._extractTextBlocks_AsList()
+    l = []
+    tp._extractTextBlocks_AsList(l)
     del tp
     del dl
     return l
@@ -352,7 +369,8 @@ def getTextWords(page):
     CheckParent(page)
     dl = page.getDisplayList()
     tp = dl.getTextPage()
-    l = tp._extractTextWords_AsList()
+    l = []
+    tp._extractTextWords_AsList(l)
     del dl
     del tp
     return l
@@ -377,10 +395,21 @@ def getText(page, output = "text"):
     except:
         f = 0
     flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
+
     if images[f] :
         flags |= TEXT_PRESERVE_IMAGES
-    tp = dl.getTextPage(flags)     # TextPage with / without images
-    t = tp._extractText(f)
+
+    tp = dl.getTextPage(flags)     # TextPage with or without images
+
+    if f == 2:
+        t = tp.extractJSON()
+    elif f == 5:
+        t = tp.extractDICT()
+    elif f == 6:
+        t = tp.extractRAWDICT()
+    else:
+        t = tp._extractText(f)
+
     del dl
     del tp
     return t
@@ -614,31 +643,33 @@ def setMetadata(doc, m):
     return
 
 def getDestStr(xref, ddict):
+    """ Calculate the PDF action string.
+
+    Notes:
+        Supports Link annotations and outline items (bookmarks).
+    """
     if not ddict:
         return ""
-    str_goto = "/Dest[%s %s R/XYZ %s %s %s]"
+    str_goto   = "/A<</S/GoTo/D[%i 0 R/XYZ %g %g %i]>>"
+    str_gotor1 = "/A<</S/GoToR/D[%s /XYZ %s %s %s]/F<</F%s/UF%s/Type/Filespec>>>>"
+    str_gotor2 = "/A<</S/GoToR/D%s/F<</F%s/UF%s/Type/Filespec>>>>"
+    str_launch = "/A<</S/Launch/F<</F%s/UF%s/Type/Filespec>>>>"
+    str_uri    = "/A<</S/URI/URI%s>>"
 
     if type(ddict) in (int, float):
-        dest = str_goto % (xref[0], xref[1], 0, str(ddict), 0)
+        dest = str_goto % (xref, 0, ddict, 0)
         return dest
-    d_kind = ddict["kind"]
+    d_kind = ddict.get("kind", LINK_NONE)
 
     if d_kind == LINK_NONE:
         return ""
 
     if ddict["kind"] == LINK_GOTO:
-        d_zoom = ddict["zoom"]
-        d_left = ddict["to"].x
-        d_top  = ddict["to"].y
-        dest = str_goto % (xref[0], xref[1], str(d_left), str(d_top),
-                           str(d_zoom))
+        d_zoom = ddict.get("zoom", 0)
+        to = ddict.get("to", Point(0, 0))
+        d_left, d_top = to
+        dest = str_goto % (xref, d_left, d_top, d_zoom)
         return dest
-
-    str_gotor1 = "/A<</D[%s /XYZ %s %s %s]/F<</F%s/UF%s/Type/Filespec>>" \
-                 "/S/GoToR>>"
-    str_gotor2 = "/A<</D%s/F<</F%s/UF%s/Type/Filespec>>/S/GoToR>>"
-    str_launch = "/A<</F<</F%s/UF%s/Type/Filespec>>/S/Launch>>"
-    str_uri    = "/A<</S/URI/URI%s/Type/Action>>"
 
     if ddict["kind"] == LINK_URI:
         dest = str_uri % (getPDFstr(ddict["uri"]),)
@@ -742,7 +773,7 @@ def setToC(doc, toc):
         d["last"]  = -1
         d["prev"]  = -1
         d["next"]  = -1
-        d["dest"]  = getDestStr(doc._getPageObjNumber(pno), dest_dict)
+        d["dest"]  = getDestStr(doc._getPageObjNumber(pno)[0], dest_dict)
         d["top"]   = top
         d["title"] = title
         d["parent"] = lvltab[lvl-1]
@@ -811,17 +842,17 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
     #--------------------------------------------------------------------------
     # define skeletons for /Annots object texts
     #--------------------------------------------------------------------------
-    annot_goto ='''<</Dest[%i 0 R /XYZ %g %g 0]/Rect[%s]/Subtype/Link>>'''
+    annot_goto  = '''<</A<</S/GoTo/D[%i 0 R /XYZ %g %g 0]>>/Rect[%s]/Subtype/Link>>'''
 
-    annot_gotor = '''<</A<</D[%i /XYZ %g %g 0]/F<</F(%s)/UF(%s)/Type/Filespec
-    >>/S/GoToR>>/Rect[%s]/Subtype/Link>>'''
+    annot_gotor = '''<</A<</S/GoToR/D[%i /XYZ %g %g 0]/F<</F(%s)/UF(%s)/Type/Filespec
+    >>>>/Rect[%s]/Subtype/Link>>'''
 
-    annot_gotor_n = "<</A<</D(%s)/F(%s)/S/GoToR>>/Rect[%s]/Subtype/Link>>"
+    annot_gotor_n = "<</A<</S/GoToR/D(%s)/F(%s)>>/Rect[%s]/Subtype/Link>>"
 
-    annot_launch = '''<</A<</F<</F(%s)/UF(%s)/Type/Filespec>>/S/Launch
+    annot_launch = '''<</A<</S/Launch/F<</F(%s)/UF(%s)/Type/Filespec>>
     >>/Rect[%s]/Subtype/Link>>'''
 
-    annot_uri = '''<</A<</S/URI/URI(%s)/Type/Action>>/Rect[%s]/Subtype/Link>>'''
+    annot_uri = '''<</A<</S/URI/URI(%s)>>/Rect[%s]/Subtype/Link>>'''
 
     #--------------------------------------------------------------------------
     # internal function to create the actual "/Annots" object string
@@ -926,16 +957,16 @@ def getLinkText(page, lnk):
     #--------------------------------------------------------------------------
     # define skeletons for /Annots object texts
     #--------------------------------------------------------------------------
-    annot_goto = "<</Dest[%i 0 R/XYZ %g %g 0]/Rect[%s]/Subtype/Link>>"
+    annot_goto = "<</A<</S/GoTo/D[%i 0 R/XYZ %g %g 0]>>/Rect[%s]/Subtype/Link>>"
 
-    annot_goto_n = "<</A<</D%s/S/GoTo>>/Rect[%s]/Subtype/Link>>"
+    annot_goto_n = "<</A<</S/GoTo/D%s>>/Rect[%s]/Subtype/Link>>"
 
-    annot_gotor = '''<</A<</D[%i /XYZ %g %g 0]/F<</F(%s)/UF(%s)/Type/Filespec
-    >>/S/GoToR>>/Rect[%s]/Subtype/Link>>'''
+    annot_gotor = '''<</A<</S/GoToR/D[%i /XYZ %g %g 0]/F<</F(%s)/UF(%s)/Type/Filespec
+    >>>>/Rect[%s]/Subtype/Link>>'''
 
-    annot_gotor_n = "<</A<</D%s/F(%s)/S/GoToR>>/Rect[%s]/Subtype/Link>>"
+    annot_gotor_n = "<</A<</S/GoToR/D%s/F(%s)>>/Rect[%s]/Subtype/Link>>"
 
-    annot_launch = '''<</A<</F<</F(%s)/UF(%s)/Type/Filespec>>/S/Launch
+    annot_launch = '''<</A<</S/Launch/F<</F(%s)/UF(%s)/Type/Filespec>>
     >>/Rect[%s]/Subtype/Link>>'''
 
     annot_uri = "<</A<</S/URI/URI(%s)>>/Rect[%s]/Subtype/Link>>"
@@ -1127,132 +1158,132 @@ def insertPage(
          )
     return rc
 
-def drawLine(page, p1, p2, color=None, dashes=None, width=1, roundCap=False, overlay=True, morph=None):
+def drawLine(page, p1, p2, color=None, dashes=None, width=1, lineCap=0, lineJoin=0, overlay=True, morph=None, roundcap=None):
     """Draw a line from point p1 to point p2.
     """
     img = page.newShape()
     p = img.drawLine(Point(p1), Point(p2))
     img.finish(color=color, dashes=dashes, width=width, closePath=False,
-               roundCap=roundCap, morph=morph)
+               lineCap=lineCap, lineJoin=lineJoin, morph=morph, roundCap=roundcap)
     img.commit(overlay)
 
     return p
 
 def drawSquiggle(page, p1, p2, breadth = 2, color=None, dashes=None,
-               width=1, roundCap=False, overlay=True, morph=None):
+               width=1, lineCap=0, lineJoin=0, overlay=True, morph=None, roundCap=None):
     """Draw a squiggly line from point p1 to point p2.
     """
     img = page.newShape()
     p = img.drawSquiggle(Point(p1), Point(p2), breadth = breadth)
     img.finish(color=color, dashes=dashes, width=width, closePath=False,
-               roundCap=roundCap, morph=morph)
+               lineCap=lineCap, lineJoin=lineJoin, morph=morph, roundCap=roundCap)
     img.commit(overlay)
 
     return p
 
 def drawZigzag(page, p1, p2, breadth = 2, color=None, dashes=None,
-               width=1, roundCap=False, overlay=True, morph=None):
+               width=1, lineCap=0, lineJoin=0, overlay=True, morph=None, roundCap=None):
     """Draw a zigzag line from point p1 to point p2.
     """
     img = page.newShape()
     p = img.drawZigzag(Point(p1), Point(p2), breadth = breadth)
     img.finish(color=color, dashes=dashes, width=width, closePath=False,
-               roundCap=roundCap, morph=morph)
+               lineCap=lineCap, lineJoin=lineJoin, morph=morph, roundCap=roundCap)
     img.commit(overlay)
 
     return p
 
 def drawRect(page, rect, color=None, fill=None, dashes=None,
-             width=1, roundCap=False, morph=None, overlay=True):
+             width=1, lineCap=0, lineJoin=0, morph=None, roundCap=None, overlay=True):
     """Draw a rectangle.
     """
     img = page.newShape()
     Q = img.drawRect(Rect(rect))
     img.finish(color=color, fill=fill, dashes=dashes, width=width,
-                   roundCap=roundCap, morph=morph)
+                   lineCap=lineCap, lineJoin=lineJoin, morph=morph, roundCap=roundCap)
     img.commit(overlay)
 
     return Q
 
 def drawQuad(page, quad, color=None, fill=None, dashes=None,
-             width=1, roundCap=False, morph=None, overlay=True):
+             width=1, lineCap=0, lineJoin=0, morph=None, roundCap=None, overlay=True):
     """Draw a quadrilateral.
     """
     img = page.newShape()
     Q = img.drawQuad(Quad(quad))
     img.finish(color=color, fill=fill, dashes=dashes, width=width,
-                   roundCap=roundCap, morph=morph)
+                   lineCap=lineCap, lineJoin=lineJoin, morph=morph, roundCap=roundCap)
     img.commit(overlay)
 
     return Q
 
 def drawPolyline(page, points, color=None, fill=None, dashes=None,
-                 width=1, morph=None, roundCap=False, overlay=True,
+                 width=1, morph=None, lineCap=0, lineJoin=0, roundCap=None, overlay=True,
                  closePath=False):
     """Draw multiple connected line segments.
     """
     img = page.newShape()
     Q = img.drawPolyline(points)
     img.finish(color=color, fill=fill, dashes=dashes, width=width,
-               roundCap=roundCap, morph=morph, closePath=closePath)
+               lineCap=lineCap, lineJoin=lineJoin, morph=morph, roundCap=roundCap, closePath=closePath)
     img.commit(overlay)
 
     return Q
 
 def drawCircle(page, center, radius, color=None, fill=None,
                morph=None, dashes=None, width=1,
-               roundCap=False, overlay=True):
+               lineCap=0, lineJoin=0, roundCap=None, overlay=True):
     """Draw a circle given its center and radius.
     """
     img = page.newShape()
     Q = img.drawCircle(Point(center), radius)
     img.finish(color=color, fill=fill, dashes=dashes, width=width,
-               roundCap=roundCap, morph=morph)
+               lineCap=lineCap, lineJoin=lineJoin, morph=morph, roundCap=roundCap)
     img.commit(overlay)
     return Q
 
 def drawOval(page, rect, color=None, fill=None, dashes=None,
-             morph=None,
-             width=1, roundCap=False, overlay=True):
+             morph=None,roundCap=None,
+             width=1, lineCap=0, lineJoin=0, overlay=True):
     """Draw an oval given its containing rectangle or quad.
     """
     img = page.newShape()
     Q = img.drawOval(rect)
     img.finish(color=color, fill=fill, dashes=dashes, width=width,
-               roundCap=roundCap, morph=morph)
+               lineCap=lineCap, lineJoin=lineJoin, morph=morph, roundCap=roundCap)
     img.commit(overlay)
     
     return Q
 
 def drawCurve(page, p1, p2, p3, color=None, fill=None, dashes=None,
-              width=1, morph=None, closePath=False,
-              roundCap=False, overlay=True):
+              width=1, morph=None, roundCap=None, closePath=False,
+              lineCap=0, lineJoin=0, overlay=True):
     """Draw a special Bezier curve from p1 to p3, generating control points on lines p1 to p2 and p2 to p3.
     """
     img = page.newShape()
     Q = img.drawCurve(Point(p1), Point(p2), Point(p3))
     img.finish(color=color, fill=fill, dashes=dashes, width=width,
-               roundCap=roundCap, morph=morph, closePath=closePath)
+               lineCap=lineCap, lineJoin=lineJoin, morph=morph, roundCap=roundCap, closePath=closePath)
     img.commit(overlay)
 
     return Q
 
 def drawBezier(page, p1, p2, p3, p4, color=None, fill=None,
-               dashes=None, width=1, morph=None,
-               closePath=False, roundCap=False, overlay=True):
+               dashes=None, width=1, morph=None, roundCap=None,
+               closePath=False, lineCap=0, lineJoin=0, overlay=True):
     """Draw a general cubic Bezier curve from p1 to p4 using control points p2 and p3.
     """
     img = page.newShape()
     Q = img.drawBezier(Point(p1), Point(p2), Point(p3), Point(p4))
     img.finish(color=color, fill=fill, dashes=dashes, width=width,
-               roundCap=roundCap, morph=morph, closePath=closePath)
+               lineCap=lineCap, lineJoin=lineJoin, morph=morph, roundCap=roundCap, closePath=closePath)
     img.commit(overlay)
     
     return Q
 
 def drawSector(page, center, point, beta, color=None, fill=None,
-              dashes=None, fullSector=True, morph=None,
-              width=1, closePath=False, roundCap=False, overlay=True):
+              dashes=None, fullSector=True, morph=None, roundCap=None,
+              width=1, closePath=False, lineCap=0, lineJoin=0, overlay=True):
     """ Draw a circle sector given circle center, one arc end point and the angle of the arc.
     
     Parameters:
@@ -1264,7 +1295,7 @@ def drawSector(page, center, point, beta, color=None, fill=None,
     img = page.newShape()
     Q = img.drawSector(Point(center), Point(point), beta, fullSector=fullSector)
     img.finish(color=color, fill=fill, dashes=dashes, width=width,
-               roundCap=roundCap, morph=morph, closePath=closePath)
+               lineCap=lineCap, lineJoin=lineJoin, morph=morph, roundCap=roundCap, closePath=closePath)
     img.commit(overlay)
     
     return Q
@@ -2029,11 +2060,13 @@ class Shape():
 
         else:
             if len(x) == 2:
+                x = Point(x)
                 self.rect.x0 = min(self.rect.x0, x.x)
                 self.rect.y0 = min(self.rect.y0, x.y)
                 self.rect.x1 = max(self.rect.x1, x.x)
                 self.rect.y1 = max(self.rect.y1, x.y)
             else:
+                x = Rect(x)
                 self.rect.x0 = min(self.rect.x0, x.x0)
                 self.rect.y0 = min(self.rect.y0, x.y0)
                 self.rect.x1 = max(self.rect.x1, x.x1)
@@ -2711,7 +2744,9 @@ class Shape():
             width=1,
             color=None,
             fill=None,
-            roundCap=False,
+            lineCap=0,
+            lineJoin=0,
+            roundCap=None,
             dashes=None,
             even_odd=False,
             morph=None,
@@ -2726,15 +2761,22 @@ class Shape():
         """
         if self.draw_cont == "":            # treat empty contents as no-op
             return
+        if roundCap is not None:
+            warnings.warn("roundCap is replaced by lineCap / lineJoin", DeprecationWarning)
+            lineCap = lineJoin = roundCap
 
+        if width == 0:  # border color makes no sense then
+            color = None
+        elif color is None:  # vice versa 
+            width = 0
         color_str = ColorCode(color, "c")  # ensure proper color string
         fill_str = ColorCode(fill, "f")  # ensure proper fill string
 
-        if width != 1:
+        if width not in (0, 1):
             self.draw_cont += "%g w\n" % width
 
-        if roundCap:
-            self.draw_cont += "%i J %i j\n" % (roundCap, roundCap)
+        if lineCap + lineJoin > 0:
+            self.draw_cont += "%i J %i j\n" % (lineCap, lineJoin)
 
         if dashes is not None and len(dashes) > 0:
             self.draw_cont += "%s d\n" % dashes
@@ -2748,10 +2790,16 @@ class Shape():
 
         if fill is not None:
             self.draw_cont += fill_str
-            if not even_odd:
-                self.draw_cont += "B\n"
+            if color is not None:
+                if not even_odd:
+                    self.draw_cont += "B\n"
+                else:
+                    self.draw_cont += "B*\n"
             else:
-                self.draw_cont += "B*\n"
+                if not even_odd:
+                    self.draw_cont += "f\n"
+                else:
+                    self.draw_cont += "f*\n"
         else:
             self.draw_cont += "S\n"
 
