@@ -111,9 +111,9 @@ fitz_py2 = str is bytes           # if true, this is Python 2
 
 
 VersionFitz = "1.14.0"
-VersionBind = "1.14.15"
-VersionDate = "2019-05-22 14:26:15"
-version = (VersionBind, VersionFitz, "20190522142615")
+VersionBind = "1.14.16"
+VersionDate = "2019-05-28 12:02:59"
+version = (VersionBind, VersionFitz, "20190528120259")
 
 
 class Matrix():
@@ -2044,14 +2044,13 @@ open(filename, filetype='type') - from file"""
         """_dropOutline(self, ol)"""
         return _fitz.Document__dropOutline(self, ol)
 
-    @property
 
-    def embeddedFileCount(self):
-        """Return number of embedded files."""
-        if self.isClosed or self.isEncrypted:
-            raise ValueError("operation illegal for closed / encrypted doc")
+    def _embeddedFileNames(self, namelist):
+        """_embeddedFileNames(self, namelist) -> PyObject *"""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
 
-        return _fitz.Document_embeddedFileCount(self)
+        return _fitz.Document__embeddedFileNames(self, namelist)
 
 
     def embeddedFileDel(self, name):
@@ -2096,6 +2095,49 @@ open(filename, filetype='type') - from file"""
 
 
         return _fitz.Document_embeddedFileAdd(self, buffer, name, filename, ufilename, desc)
+
+
+    def _embeddedFileAdd(self, name, buffer, filename=None, ufilename=None, desc=None):
+        """_embeddedFileAdd(self, name, buffer, filename=None, ufilename=None, desc=None) -> PyObject *"""
+        return _fitz.Document__embeddedFileAdd(self, name, buffer, filename, ufilename, desc)
+
+
+    def embeddedFileNames(self):
+        filenames = []
+        self._embeddedFileNames(filenames)
+        return filenames
+
+    def embeddedFileCount(self):
+        return len(self.embeddedFileNames())
+
+    def embeddedFileNew(self, name, buffer,
+                              filename=None,
+                              ufilename=None,
+                              desc=None):
+        """ Add an item to the EmbeddedFiles array.
+
+        Args:
+            name: the name of the new item.
+            buffer: (binary data) the file content.
+            filename: (str) the file name.
+            ufilename: (unicode) the filen ame.
+            desc: (str) the description.
+        """
+        filenames = self.embeddedFileNames()
+        msg = "Name '%s' already in EmbeddedFiles array." % str(name)
+        if name in filenames:
+            raise ValueError(msg)
+
+        if filename is None:
+            filename = name
+        if ufilename is None:
+            ufilename = unicode(filename, "utf8") if str is bytes else filename
+        if desc is None:
+            desc = name
+        return self._embeddedFileAdd(name, buffer=buffer,
+                                     filename=filename,
+                                     ufilename=ufilename,
+                                     desc=desc)
 
 
     def convertToPDF(self, from_page=0, to_page=-1, rotate=0):
@@ -2340,6 +2382,19 @@ open(filename, filetype='type') - from file"""
 
 
         val = _fitz.Document_select(self, pyliste)
+
+        self._reset_page_refs()
+        self.initData()
+
+        return val
+
+
+    def deletePage(self, pno):
+        """Delete a PDF page."""
+        if self.isClosed:
+            raise ValueError("operation illegal for closed doc")
+
+        val = _fitz.Document_deletePage(self, pno)
 
         self._reset_page_refs()
         self.initData()
@@ -2594,33 +2649,21 @@ open(filename, filetype='type') - from file"""
             pl.insert(to-1, pno)
         return self.select(pl)
 
-    def deletePage(self, pno = -1):
-        """Delete a page from the document. First page is '0', last page is '-1'.
-        """
-        pl = list(range(len(self)))
-        if pno < -1 or pno > pl[-1]:
-            raise ValueError("page number out of range")
-        if pno >= 0:
-            pl.remove(pno)
-        else:
-            pl.remove(pl[-1])
-        return self.select(pl)
-
     def deletePageRange(self, from_page = -1, to_page = -1):
         """Delete pages from the document. First page is '0', last page is '-1'.
         """
-        pl = list(range(len(self)))
-        f = from_page
-        t = to_page
-        if f == -1:
-            f = pl[-1]
-        if t == -1:
-            t = pl[-1]
-        if not 0 <= f <= t <= pl[-1]:
+        pageCount = self.pageCount  # page count of document
+        f = from_page  # first page to delete
+        t = to_page  # last page to delete
+        if f == -1:  # means 'last page'
+            f = pageCount - 1
+        if t == -1:  # means 'last page'
+            t = pageCount - 1
+        if not 0 <= f <= t <= pageCount - 1:
             raise ValueError("page number(s) out of range")
-        for i in range(f, t+1):
-            pl.remove(i)
-        return self.select(pl)
+        for i in range(t, f - 1, -1):  # delete pages, last to first
+            self.deletePage(i)
+        return None
 
     def saveIncr(self):
         """ Save PDF incrementally"""

@@ -9627,11 +9627,32 @@ SWIGINTERN void fz_document_s__dropOutline(struct fz_document_s *self,struct fz_
             fz_drop_outline(gctx, ol);
             DEBUGMSG2;
         }
-SWIGINTERN PyObject *fz_document_s_embeddedFileCount(struct fz_document_s *self){
-            pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
-            int i = -1;
-            if (pdf) i = pdf_count_portfolio_entries(gctx, pdf);
-            return Py_BuildValue("i", i);
+SWIGINTERN PyObject *fz_document_s__embeddedFileNames(struct fz_document_s *self,PyObject *namelist){
+            pdf_document *pdf = pdf_specifics(gctx, self); // get pdf document
+            pdf_obj *names, *o;
+            char *c = NULL;
+
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                names = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                                      PDF_NAME(Root),
+                                      PDF_NAME(Names),
+                                      PDF_NAME(EmbeddedFiles),
+                                      PDF_NAME(Names),
+                                      NULL);
+                if (pdf_is_array(gctx, names))
+                {
+                    int i, n = pdf_array_len(gctx, names);
+                    for (i=0; i < n; i+=2)
+                    {
+                        c = pdf_to_text_string(gctx, pdf_array_get(gctx, names, i));
+                        PyList_Append(namelist, Py_BuildValue("s", c));
+                    }
+                }
+            }
+            fz_catch(gctx) return NULL;
+            return NONE;
         }
 SWIGINTERN PyObject *fz_document_s_embeddedFileDel(struct fz_document_s *self,char *name){
             pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
@@ -9842,6 +9863,54 @@ SWIGINTERN PyObject *fz_document_s_embeddedFileAdd(struct fz_document_s *self,Py
             fz_always(gctx)
             {
                 fz_drop_buffer(gctx, buf);
+                fz_drop_buffer(gctx, data);
+            }
+            fz_catch(gctx) return NULL;
+            pdf->dirty = 1;
+            return NONE;
+        }
+SWIGINTERN PyObject *fz_document_s__embeddedFileAdd(struct fz_document_s *self,char const *name,PyObject *buffer,char *filename,char *ufilename,char *desc){
+            pdf_document *pdf = pdf_document_from_fz_document(gctx, self);
+            fz_buffer *data = NULL;
+            char *buffdata;
+            fz_var(data);
+            int entry = 0;
+            size_t size = 0;
+            pdf_obj *names = NULL;
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                data = JM_BufferFromBytes(gctx, buffer);
+                if (!data) THROWMSG("bad type: 'buffer'");
+                size = fz_buffer_storage(gctx, data, &buffdata);
+
+                names = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                                      PDF_NAME(Root),
+                                      PDF_NAME(Names),
+                                      PDF_NAME(EmbeddedFiles),
+                                      PDF_NAME(Names),
+                                      NULL);
+                if (!pdf_is_array(gctx, names))  // no embedded files yet
+                {
+                    pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf),
+                                                 PDF_NAME(Root));
+                    names = pdf_new_array(gctx, pdf, 6);  // an even number!
+                    pdf_dict_putl_drop(gctx, root, names,
+                                      PDF_NAME(Names),
+                                      PDF_NAME(EmbeddedFiles),
+                                      PDF_NAME(Names),
+                                      NULL);
+                }
+
+                pdf_obj *fileentry = JM_embed_file(gctx, pdf, data,
+                                                   filename,
+                                                   ufilename,
+                                                   desc);
+                pdf_array_push(gctx, names, pdf_new_text_string(gctx, name));
+                pdf_array_push_drop(gctx, names, fileentry);
+            }
+            fz_always(gctx)
+            {
                 fz_drop_buffer(gctx, data);
             }
             fz_catch(gctx) return NULL;
@@ -10243,6 +10312,21 @@ SWIGINTERN PyObject *fz_document_s_select(struct fz_document_s *self,PyObject *p
             }
             fz_catch(gctx) return NULL;
             pdf->dirty = 1;
+            return NONE;
+        }
+SWIGINTERN PyObject *fz_document_s_deletePage(struct fz_document_s *self,int pno){
+            pdf_document *pdf = pdf_specifics(gctx, self);
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                int count = fz_count_pages(gctx, self);
+                int n = pno;
+                while (n < 0) n += count;
+                if (!INRANGE(n, 0, count-1))
+                    THROWMSG("bad page number(s)");
+                pdf_delete_page(gctx, pdf, n);
+            }
+            fz_catch(gctx) return NULL;
             return NONE;
         }
 SWIGINTERN PyObject *fz_document_s_permissions(struct fz_document_s *self){
@@ -13907,21 +13991,31 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Document_embeddedFileCount(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_Document__embeddedFileNames(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  PyObject *arg2 = (PyObject *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
   PyObject *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:Document_embeddedFileCount",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO:Document__embeddedFileNames",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_embeddedFileCount" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__embeddedFileNames" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
   }
   arg1 = (struct fz_document_s *)(argp1);
-  result = (PyObject *)fz_document_s_embeddedFileCount(arg1);
+  arg2 = obj1;
+  {
+    result = (PyObject *)fz_document_s__embeddedFileNames(arg1,arg2);
+    if (!result)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
   resultobj = result;
   return resultobj;
 fail:
@@ -14192,6 +14286,92 @@ SWIGINTERN PyObject *_wrap_Document_embeddedFileAdd(PyObject *SWIGUNUSEDPARM(sel
   return resultobj;
 fail:
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document__embeddedFileAdd(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  char *arg2 = (char *) 0 ;
+  PyObject *arg3 = (PyObject *) 0 ;
+  char *arg4 = (char *) NULL ;
+  char *arg5 = (char *) NULL ;
+  char *arg6 = (char *) NULL ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res4 ;
+  char *buf4 = 0 ;
+  int alloc4 = 0 ;
+  int res5 ;
+  char *buf5 = 0 ;
+  int alloc5 = 0 ;
+  int res6 ;
+  char *buf6 = 0 ;
+  int alloc6 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO|OOO:Document__embeddedFileAdd",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document__embeddedFileAdd" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Document__embeddedFileAdd" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  arg3 = obj2;
+  if (obj3) {
+    res4 = SWIG_AsCharPtrAndSize(obj3, &buf4, NULL, &alloc4);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "Document__embeddedFileAdd" "', argument " "4"" of type '" "char *""'");
+    }
+    arg4 = (char *)(buf4);
+  }
+  if (obj4) {
+    res5 = SWIG_AsCharPtrAndSize(obj4, &buf5, NULL, &alloc5);
+    if (!SWIG_IsOK(res5)) {
+      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "Document__embeddedFileAdd" "', argument " "5"" of type '" "char *""'");
+    }
+    arg5 = (char *)(buf5);
+  }
+  if (obj5) {
+    res6 = SWIG_AsCharPtrAndSize(obj5, &buf6, NULL, &alloc6);
+    if (!SWIG_IsOK(res6)) {
+      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "Document__embeddedFileAdd" "', argument " "6"" of type '" "char *""'");
+    }
+    arg6 = (char *)(buf6);
+  }
+  {
+    result = (PyObject *)fz_document_s__embeddedFileAdd(arg1,(char const *)arg2,arg3,arg4,arg5,arg6);
+    if (!result)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = result;
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+  if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
+  if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
   if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
   if (alloc6 == SWIG_NEWOBJ) free((char*)buf6);
@@ -15207,6 +15387,44 @@ SWIGINTERN PyObject *_wrap_Document_select(PyObject *SWIGUNUSEDPARM(self), PyObj
   arg2 = obj1;
   {
     result = (PyObject *)fz_document_s_select(arg1,arg2);
+    if (!result)
+    {
+      PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
+      return NULL;
+    }
+  }
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Document_deletePage(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  struct fz_document_s *arg1 = (struct fz_document_s *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:Document_deletePage",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_fz_document_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Document_deletePage" "', argument " "1"" of type '" "struct fz_document_s *""'"); 
+  }
+  arg1 = (struct fz_document_s *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Document_deletePage" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  {
+    result = (PyObject *)fz_document_s_deletePage(arg1,arg2);
     if (!result)
     {
       PyErr_SetString(PyExc_RuntimeError, fz_caught_message(gctx));
@@ -22170,12 +22388,13 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document_loadPage", _wrap_Document_loadPage, METH_VARARGS, (char *)"Document_loadPage(self, number=0) -> Page"},
 	 { (char *)"Document__loadOutline", _wrap_Document__loadOutline, METH_VARARGS, (char *)"Document__loadOutline(self) -> Outline"},
 	 { (char *)"Document__dropOutline", _wrap_Document__dropOutline, METH_VARARGS, (char *)"Document__dropOutline(self, ol)"},
-	 { (char *)"Document_embeddedFileCount", _wrap_Document_embeddedFileCount, METH_VARARGS, (char *)"Return number of embedded files."},
+	 { (char *)"Document__embeddedFileNames", _wrap_Document__embeddedFileNames, METH_VARARGS, (char *)"Document__embeddedFileNames(self, namelist) -> PyObject *"},
 	 { (char *)"Document_embeddedFileDel", _wrap_Document_embeddedFileDel, METH_VARARGS, (char *)"Delete embedded file by name."},
 	 { (char *)"Document_embeddedFileInfo", _wrap_Document_embeddedFileInfo, METH_VARARGS, (char *)"Retrieve embedded file information given its entry number or name."},
 	 { (char *)"Document_embeddedFileUpd", _wrap_Document_embeddedFileUpd, METH_VARARGS, (char *)"Change an embedded file given its entry number or name."},
 	 { (char *)"Document_embeddedFileGet", _wrap_Document_embeddedFileGet, METH_VARARGS, (char *)"Retrieve embedded file content by name or by number."},
 	 { (char *)"Document_embeddedFileAdd", _wrap_Document_embeddedFileAdd, METH_VARARGS, (char *)"Embed a new file."},
+	 { (char *)"Document__embeddedFileAdd", _wrap_Document__embeddedFileAdd, METH_VARARGS, (char *)"Document__embeddedFileAdd(self, name, buffer, filename=None, ufilename=None, desc=None) -> PyObject *"},
 	 { (char *)"Document_convertToPDF", _wrap_Document_convertToPDF, METH_VARARGS, (char *)"Convert document to PDF selecting page range and optional rotation. Output bytes object."},
 	 { (char *)"Document_pageCount", _wrap_Document_pageCount, METH_VARARGS, (char *)"Document_pageCount(self) -> PyObject *"},
 	 { (char *)"Document__getMetadata", _wrap_Document__getMetadata, METH_VARARGS, (char *)"Document__getMetadata(self, key) -> char *"},
@@ -22200,6 +22419,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Document_insertPDF", _wrap_Document_insertPDF, METH_VARARGS, (char *)"Copy page range ['from', 'to'] of source PDF, starting as page number 'start_at'."},
 	 { (char *)"Document__newPage", _wrap_Document__newPage, METH_VARARGS, (char *)"Document__newPage(self, pno=-1, width=595, height=842) -> PyObject *"},
 	 { (char *)"Document_select", _wrap_Document_select, METH_VARARGS, (char *)"Build sub-pdf with page numbers in 'list'."},
+	 { (char *)"Document_deletePage", _wrap_Document_deletePage, METH_VARARGS, (char *)"Delete a PDF page."},
 	 { (char *)"Document_permissions", _wrap_Document_permissions, METH_VARARGS, (char *)"Get permissions dictionary."},
 	 { (char *)"Document__getCharWidths", _wrap_Document__getCharWidths, METH_VARARGS, (char *)"Return list of glyphs and glyph widths of a font."},
 	 { (char *)"Document__getPageObjNumber", _wrap_Document__getPageObjNumber, METH_VARARGS, (char *)"Document__getPageObjNumber(self, pno) -> PyObject *"},

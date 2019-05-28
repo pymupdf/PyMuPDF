@@ -403,15 +403,38 @@ struct fz_document_s
             DEBUGMSG2;
         }
 
-        CLOSECHECK(embeddedFileCount)
-        %feature("autodoc","Return number of embedded files.") embeddedFileCount;
-        %pythoncode%{@property%}
-        PyObject *embeddedFileCount()
+        //---------------------------------------------------------------------
+        // Get EmbeddedFiles names
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(_embeddedFileNames, !result)
+        CLOSECHECK0(_embeddedFileNames)
+        PyObject *_embeddedFileNames(PyObject *namelist)
         {
-            pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
-            int i = -1;
-            if (pdf) i = pdf_count_portfolio_entries(gctx, pdf);
-            return Py_BuildValue("i", i);
+            pdf_document *pdf = pdf_specifics(gctx, $self); // get pdf document
+            pdf_obj *names, *o;
+            char *c = NULL;
+
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                names = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                                      PDF_NAME(Root),
+                                      PDF_NAME(Names),
+                                      PDF_NAME(EmbeddedFiles),
+                                      PDF_NAME(Names),
+                                      NULL);
+                if (pdf_is_array(gctx, names))
+                {
+                    int i, n = pdf_array_len(gctx, names);
+                    for (i=0; i < n; i+=2)
+                    {
+                        c = pdf_to_text_string(gctx, pdf_array_get(gctx, names, i));
+                        PyList_Append(namelist, Py_BuildValue("s", c));
+                    }
+                }
+            }
+            fz_catch(gctx) return NULL;
+            return NONE;
         }
 
         FITZEXCEPTION(embeddedFileDel, !result)
@@ -661,6 +684,96 @@ if self.isClosed or self.isEncrypted:
             pdf->dirty = 1;
             return NONE;
         }
+
+        FITZEXCEPTION(_embeddedFileAdd, !result)
+        PyObject *_embeddedFileAdd(const char *name, PyObject *buffer, char *filename=NULL, char *ufilename=NULL, char *desc=NULL)
+        {
+            pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
+            fz_buffer *data = NULL;
+            char *buffdata;
+            fz_var(data);
+            int entry = 0;
+            size_t size = 0;
+            pdf_obj *names = NULL;
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                data = JM_BufferFromBytes(gctx, buffer);
+                if (!data) THROWMSG("bad type: 'buffer'");
+                size = fz_buffer_storage(gctx, data, &buffdata);
+
+                names = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                                      PDF_NAME(Root),
+                                      PDF_NAME(Names),
+                                      PDF_NAME(EmbeddedFiles),
+                                      PDF_NAME(Names),
+                                      NULL);
+                if (!pdf_is_array(gctx, names))  // no embedded files yet
+                {
+                    pdf_obj *root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf),
+                                                 PDF_NAME(Root));
+                    names = pdf_new_array(gctx, pdf, 6);  // an even number!
+                    pdf_dict_putl_drop(gctx, root, names,
+                                      PDF_NAME(Names),
+                                      PDF_NAME(EmbeddedFiles),
+                                      PDF_NAME(Names),
+                                      NULL);
+                }
+
+                pdf_obj *fileentry = JM_embed_file(gctx, pdf, data,
+                                                   filename,
+                                                   ufilename,
+                                                   desc);
+                pdf_array_push(gctx, names, pdf_new_text_string(gctx, name));
+                pdf_array_push_drop(gctx, names, fileentry);
+            }
+            fz_always(gctx)
+            {
+                fz_drop_buffer(gctx, data);
+            }
+            fz_catch(gctx) return NULL;
+            pdf->dirty = 1;
+            return NONE;
+        }
+
+        %pythoncode %{
+        def embeddedFileNames(self):
+            filenames = []
+            self._embeddedFileNames(filenames)
+            return filenames
+
+        def embeddedFileCount(self):
+            return len(self.embeddedFileNames())
+
+        def embeddedFileNew(self, name, buffer,
+                                  filename=None,
+                                  ufilename=None,
+                                  desc=None):
+            """ Add an item to the EmbeddedFiles array.
+
+            Args:
+                name: the name of the new item.
+                buffer: (binary data) the file content.
+                filename: (str) the file name.
+                ufilename: (unicode) the filen ame.
+                desc: (str) the description.
+            """
+            filenames = self.embeddedFileNames()
+            msg = "Name '%s' already in EmbeddedFiles array." % str(name)
+            if name in filenames:
+                raise ValueError(msg)
+
+            if filename is None:
+                filename = name
+            if ufilename is None:
+                ufilename = unicode(filename, "utf8") if str is bytes else filename
+            if desc is None:
+                desc = name
+            return self._embeddedFileAdd(name, buffer=buffer,
+                                         filename=filename,
+                                         ufilename=ufilename,
+                                         desc=desc)
+        %}
 
         FITZEXCEPTION(convertToPDF, !result)
         CLOSECHECK(convertToPDF)
@@ -1150,6 +1263,31 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             return NONE;
         }
 
+        //---------------------------------------------------------------------
+        // remove one page
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(deletePage, !result)
+        %feature("autodoc","Delete a PDF page.") deletePage;
+        CLOSECHECK0(deletePage)
+        %pythonappend deletePage %{
+            self._reset_page_refs()
+            self.initData()%}
+        PyObject *deletePage(int pno)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                int count = fz_count_pages(gctx, $self);
+                int n = pno;
+                while (n < 0) n += count;
+                if (!INRANGE(n, 0, count-1))
+                    THROWMSG("bad page number(s)");
+                pdf_delete_page(gctx, pdf, n);
+            }
+            fz_catch(gctx) return NULL;
+            return NONE;
+        }
         //********************************************************************
         // get document permissions
         //********************************************************************
@@ -1968,7 +2106,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 else:
                     pl.insert(to, pno)
                 return self.select(pl)
-            
+
             def movePage(self, pno, to = -1):
                 """Move a page to before some other page of the document. Specify 'to = -1' to move after last page.
                 """
@@ -1983,34 +2121,22 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 else:
                     pl.insert(to-1, pno)
                 return self.select(pl)
-            
-            def deletePage(self, pno = -1):
-                """Delete a page from the document. First page is '0', last page is '-1'.
-                """
-                pl = list(range(len(self)))
-                if pno < -1 or pno > pl[-1]:
-                    raise ValueError("page number out of range")
-                if pno >= 0:
-                    pl.remove(pno)
-                else:
-                    pl.remove(pl[-1])
-                return self.select(pl)
-            
+
             def deletePageRange(self, from_page = -1, to_page = -1):
                 """Delete pages from the document. First page is '0', last page is '-1'.
                 """
-                pl = list(range(len(self)))
-                f = from_page
-                t = to_page
-                if f == -1:
-                    f = pl[-1]
-                if t == -1:
-                    t = pl[-1]
-                if not 0 <= f <= t <= pl[-1]:
+                pageCount = self.pageCount  # page count of document
+                f = from_page  # first page to delete
+                t = to_page  # last page to delete
+                if f == -1:  # means 'last page'
+                    f = pageCount - 1
+                if t == -1:  # means 'last page'
+                    t = pageCount - 1
+                if not 0 <= f <= t <= pageCount - 1:
                     raise ValueError("page number(s) out of range")
-                for i in range(f, t+1):
-                    pl.remove(i)
-                return self.select(pl)
+                for i in range(t, f - 1, -1):  # delete pages, last to first
+                    self.deletePage(i)
+                return None
 
             def saveIncr(self):
                 """ Save PDF incrementally"""
