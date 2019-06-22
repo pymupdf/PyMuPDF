@@ -58,25 +58,24 @@ else:
         sources=["./fitz/fitz_wrap.c"],
     )
 
+pkg_tab = open("PKG-INFO").read().split("\n")
+long_dtab = []
+classifier = []
+for l in pkg_tab:
+    if l.startswith("Classifier: "):
+        classifier.append(l[12:])
+        continue
+    if l.startswith(" "):
+        long_dtab.append(l.strip())
+long_desc = "\n".join(long_dtab)
+
 setup(
     name="PyMuPDF",
     version="1.14.16",
     description="Python bindings for the PDF rendering library MuPDF",
-    classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "Environment :: Console",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
-        "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
-        "Operating System :: Microsoft :: Windows",
-        "Operating System :: POSIX :: Linux",
-        "Operating System :: MacOS",
-        "Programming Language :: C",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3",
-        "Topic :: Utilities",
-    ],
-    url="https://github.com/rk700/PyMuPDF",
+    long_description=long_desc,
+    classifiers=classifier,
+    url="https://github.com/pymupdf/PyMuPDF",
     author="Ruikai Liu, Jorj McKie",
     author_email="jorj.x.mckie@outlook.de",
     license="GPLv3+",
