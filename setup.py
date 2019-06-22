@@ -89,7 +89,6 @@ setup(
     url="https://github.com/pymupdf/PyMuPDF",
     author="Ruikai Liu, Jorj McKie",
     author_email="jorj.x.mckie@outlook.de",
-    license="GPLv3+",
     cmdclass={'build_py': build_ext_first},
     ext_modules=[module],
     py_modules=["fitz.fitz", "fitz.utils"],
