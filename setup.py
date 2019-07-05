@@ -10,6 +10,7 @@ class build_ext_first(build_py_orig):
         self.run_command("build_ext")
         return super().run()
 
+
 # check the platform
 if sys.platform.startswith("linux"):
     module = Extension(
@@ -31,7 +32,7 @@ if sys.platform.startswith("linux"):
 elif sys.platform.startswith(("darwin", "freebsd")):
     module = Extension(
         "fitz._fitz",  # name of the module
-        ["fitz/fitz_wrap.c"],  # C source file
+        ["fitz/fitz.i"],
         # directories containing mupdf's and zlib's header files
         include_dirs=["/usr/local/include/mupdf", "/usr/local/include"],
         # libraries should already be linked here by brew
@@ -51,6 +52,7 @@ else:
     # ===============================================================================
     module = Extension(
         "fitz._fitz",
+        ["fitz/fitz.i"],
         include_dirs=[  # we need the path of the MuPDF's headers
             "./mupdf/include",
             "./mupdf/include/mupdf",
@@ -66,7 +68,6 @@ else:
         library_dirs=["./mupdf/platform/win32/Release"],
         # x64 dir of libmupdf.lib etc.
         # library_dirs=['./mupdf/platform/win32/x64/Release'],
-        sources=["./fitz/fitz_wrap.c"],
     )
 
 pkg_tab = open("PKG-INFO").read().split("\n")
@@ -82,14 +83,14 @@ long_desc = "\n".join(long_dtab)
 
 setup(
     name="PyMuPDF",
-    version="1.14.16",
+    version="1.14.17",
     description="Python bindings for the PDF rendering library MuPDF",
     long_description=long_desc,
     classifiers=classifier,
     url="https://github.com/pymupdf/PyMuPDF",
     author="Ruikai Liu, Jorj McKie",
     author_email="jorj.x.mckie@outlook.de",
-    cmdclass={'build_py': build_ext_first},
+    cmdclass={"build_py": build_ext_first},
     ext_modules=[module],
     py_modules=["fitz.fitz", "fitz.utils"],
 )

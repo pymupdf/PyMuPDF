@@ -23,13 +23,13 @@ from __future__ import division, print_function
 %define CLOSECHECK(meth)
 %pythonprepend meth
 %{if self.isClosed or self.isEncrypted:
-    raise ValueError("operation illegal for closed / encrypted doc")%}
+    raise ValueError("document closed or encrypted")%}
 %enddef
 
 %define CLOSECHECK0(meth)
 %pythonprepend meth
 %{if self.isClosed:
-    raise ValueError("operation illegal for closed doc")%}
+    raise ValueError("document closed")%}
 %enddef
 
 //-----------------------------------------------------------------------------
@@ -112,6 +112,7 @@ from __future__ import division, print_function
 #include <zlib.h>
 #include <time.h>
 char *JM_Python_str_AsChar(PyObject *str);
+pdf_obj *pdf_lookup_page_loc(fz_context *ctx, pdf_document *doc, int needle, pdf_obj **parentp, int *indexp);
 %}
 
 //-----------------------------------------------------------------------------
@@ -256,17 +257,14 @@ struct fz_document_s
             self._page_refs  = weakref.WeakValueDictionary()%}
 
         %pythonappend fz_document_s %{
-            if this:
+            if self.thisown:
                 self.openErrCode = self._getGCTXerrcode()
                 self.openErrMsg  = self._getGCTXerrmsg()
-                self.thisown = True
                 self._graft_id = TOOLS.gen_id()
                 if self.needsPass:
                     self.isEncrypted = 1
                 else: # we won't init until doc is decrypted
                     self.initData()
-            else:
-                self.thisown = False
         %}
 
         fz_document_s(const char *filename=NULL, PyObject *stream=NULL,
@@ -332,7 +330,7 @@ struct fz_document_s
 
         %pythonprepend close %{
             if self.isClosed:
-                raise ValueError("operation illegal for closed doc")
+                raise ValueError("document closed")
             if hasattr(self, '_outline') and self._outline:
                 self._dropOutline(self._outline)
                 self._outline = None
@@ -388,6 +386,22 @@ struct fz_document_s
             return page;
         }
 
+
+        FITZEXCEPTION(_remove_links_to, !result)
+        PyObject *_remove_links_to(int first, int last)
+        {
+            fz_try(gctx)
+            {
+                pdf_document *pdf = pdf_specifics(gctx, $self);
+                pdf_drop_page_tree(gctx, pdf);
+                pdf_load_page_tree(gctx, pdf);
+                remove_dest_range(gctx, pdf, first, last);
+            }
+            fz_catch(gctx) return NULL;
+            return NONE;
+        }
+
+
         CLOSECHECK0(_loadOutline)
         struct fz_outline_s *_loadOutline()
         {
@@ -404,20 +418,18 @@ struct fz_document_s
         }
 
         //---------------------------------------------------------------------
-        // Get EmbeddedFiles names
+        // EmbeddedFiles utility functions
         //---------------------------------------------------------------------
         FITZEXCEPTION(_embeddedFileNames, !result)
         CLOSECHECK0(_embeddedFileNames)
         PyObject *_embeddedFileNames(PyObject *namelist)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); // get pdf document
-            pdf_obj *names, *o;
-            char *c = NULL;
 
             fz_try(gctx)
             {
                 assert_PDF(pdf);
-                names = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                pdf_obj *names = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
                                       PDF_NAME(Root),
                                       PDF_NAME(Names),
                                       PDF_NAME(EmbeddedFiles),
@@ -428,8 +440,9 @@ struct fz_document_s
                     int i, n = pdf_array_len(gctx, names);
                     for (i=0; i < n; i+=2)
                     {
-                        c = pdf_to_text_string(gctx, pdf_array_get(gctx, names, i));
-                        PyList_Append(namelist, Py_BuildValue("s", c));
+                        PyList_Append(namelist, Py_BuildValue("s",
+                                      pdf_to_text_string(gctx,
+                                      pdf_array_get(gctx, names, i))));
                     }
                 }
             }
@@ -437,123 +450,100 @@ struct fz_document_s
             return NONE;
         }
 
-        FITZEXCEPTION(embeddedFileDel, !result)
-        CLOSECHECK(embeddedFileDel)
-        %feature("autodoc","Delete embedded file by name.") embeddedFileDel;
-        PyObject *embeddedFileDel(char *name)
+        FITZEXCEPTION(_embeddedFileDel, !result)
+        PyObject *_embeddedFileDel(int idx)
         {
-            pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
-            pdf_obj *names;
-            int i, n, m;
-            fz_var(names);
             fz_try(gctx)
             {
-                assert_PDF(pdf);
-                // check presence of name
-                if (JM_find_embedded(gctx, Py_BuildValue("s", name), pdf) < 0)
-                    THROWMSG("name not found");
-
-                names = JM_embedded_names(gctx, pdf);
-                if (!pdf_is_array(gctx, names))
-                    THROWMSG("could not find names array");
-                n = pdf_array_len(gctx, names);
-
-                //-------------------------------------------------------------
-                // Every file has 2 entries: name and file descriptor.
-                // First delete file descriptor, then the name entry.
-                // Because it might be referenced elsewhere, we leave deletion
-                // of stream object to garbage collection.
-                //-------------------------------------------------------------
-                for (i = 0; i < n; i += 2)
-                {
-                    char *test = (char *) pdf_to_text_string(gctx, pdf_array_get(gctx, names, i));
-                    if (!strcmp(test, name))
-                    {
-                        pdf_array_delete(gctx, names, i + 1);
-                        pdf_array_delete(gctx, names, i);
-                    }
-                }
-                m = (n - pdf_array_len(gctx, names)) / 2;
+                pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
+                pdf_obj *names = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                                      PDF_NAME(Root),
+                                      PDF_NAME(Names),
+                                      PDF_NAME(EmbeddedFiles),
+                                      PDF_NAME(Names),
+                                      NULL);
+                pdf_array_delete(gctx, names, idx + 1);
+                pdf_array_delete(gctx, names, idx);
             }
             fz_catch(gctx) return NULL;
-            return Py_BuildValue("i", m);
+            return NONE;
         }
 
-        FITZEXCEPTION(embeddedFileInfo, !result)
-        CLOSECHECK(embeddedFileInfo)
-        %feature("autodoc","Retrieve embedded file information given its entry number or name.") embeddedFileInfo;
-        PyObject *embeddedFileInfo(PyObject *id)
+        FITZEXCEPTION(_embeddedFileInfo, !result)
+        PyObject *_embeddedFileInfo(int idx, PyObject *infodict)
         {
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
             Py_ssize_t name_len = 0;
-            int n = -1;
             char *name = NULL;
             char *sname = NULL;
             fz_try(gctx)
             {
-                assert_PDF(pdf);
-                n = JM_find_embedded(gctx, id, pdf);
-                if (n < 0) THROWMSG("entry not found");
+                pdf_obj *names = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                                      PDF_NAME(Root),
+                                      PDF_NAME(Names),
+                                      PDF_NAME(EmbeddedFiles),
+                                      PDF_NAME(Names),
+                                      NULL);
+
+                pdf_obj *o = pdf_array_get(gctx, names, 2*idx+1);
+
+                name = (char *) pdf_to_text_string(gctx,
+                                   pdf_dict_get(gctx, o, PDF_NAME(F)));
+                PyDict_SetItemString(infodict, "filename", JM_UNICODE(name));
+
+                name = (char *) pdf_to_text_string(gctx,
+                                    pdf_dict_get(gctx, o, PDF_NAME(UF)));
+                PyDict_SetItemString(infodict, "ufilename", JM_UNICODE(name));
+
+                name = (char *) pdf_to_text_string(gctx,
+                                    pdf_dict_get(gctx, o, PDF_NAME(Desc)));
+                PyDict_SetItemString(infodict, "desc", JM_UNICODE(name));
+
+                int len = -1, DL = -1;
+                pdf_obj *ef = pdf_dict_get(gctx, o, PDF_NAME(EF));
+                o = pdf_dict_getl(gctx, ef, PDF_NAME(F),
+                                            PDF_NAME(Length), NULL);
+                if (o) len = pdf_to_int(gctx, o);
+
+                o = pdf_dict_getl(gctx, ef, PDF_NAME(F), PDF_NAME(DL), NULL);
+                if (o) DL = pdf_to_int(gctx, o);
+                else
+                {
+                    o = pdf_dict_getl(gctx, ef, PDF_NAME(F), PDF_NAME(Params),
+                                   PDF_NAME(Size), NULL);
+                    if (o) DL = pdf_to_int(gctx, o);
+                }
+
+                PyDict_SetItemString(infodict, "size", Py_BuildValue("i", DL));
+                PyDict_SetItemString(infodict, "length", Py_BuildValue("i", len));
             }
             fz_catch(gctx) return NULL;
-
-            PyObject *infodict = PyDict_New();
-            // name of file entry
-            name = (char *) pdf_to_text_string(gctx, pdf_portfolio_entry_name(gctx, pdf, n));
-            PyDict_SetItemString(infodict, "name", JM_UNICODE(name));
-
-            pdf_obj *o = pdf_portfolio_entry_obj(gctx, pdf, n);
-
-            name = (char *) pdf_to_text_string(gctx, pdf_dict_get(gctx, o, PDF_NAME(F)));
-            PyDict_SetItemString(infodict, "filename", JM_UNICODE(name));
-
-            name = (char *) pdf_to_text_string(gctx, pdf_dict_get(gctx, o, PDF_NAME(UF)));
-            PyDict_SetItemString(infodict, "ufilename", JM_UNICODE(name));
-
-            name = (char *) pdf_to_text_string(gctx, pdf_dict_get(gctx, o, PDF_NAME(Desc)));
-            PyDict_SetItemString(infodict, "desc", JM_UNICODE(name));
-
-            int len = -1, DL = -1;
-            pdf_obj *ef = pdf_dict_get(gctx, o, PDF_NAME(EF));
-            o = pdf_dict_getl(gctx, ef, PDF_NAME(F),
-                                          PDF_NAME(Length), NULL);
-            if (o) len = pdf_to_int(gctx, o);
-
-            o = pdf_dict_getl(gctx, ef, PDF_NAME(F), PDF_NAME(DL), NULL);
-            if (o) DL = pdf_to_int(gctx, o);
-            else
-            {
-                o = pdf_dict_getl(gctx, ef, PDF_NAME(F), PDF_NAME(Params),
-                                   PDF_NAME(Size), NULL);
-                if (o) DL = pdf_to_int(gctx, o);
-            }
-
-            PyDict_SetItemString(infodict, "size", Py_BuildValue("i", DL));
-            PyDict_SetItemString(infodict, "length", Py_BuildValue("i", len));
-            return infodict;
+            return NONE;
         }
 
-        FITZEXCEPTION(embeddedFileUpd, !result)
-        %feature("autodoc","Change an embedded file given its entry number or name.") embeddedFileUpd;
-        PyObject *embeddedFileUpd(PyObject *id, PyObject *buffer = NULL, char *filename = NULL, char *ufilename = NULL, char *desc = NULL)
+        FITZEXCEPTION(_embeddedFileUpd, !result)
+        PyObject *_embeddedFileUpd(int idx, PyObject *buffer = NULL, char *filename = NULL, char *ufilename = NULL, char *desc = NULL)
         {
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
             fz_buffer *res = NULL;
             fz_var(res);
             fz_try(gctx)
             {
-                assert_PDF(pdf);
+                pdf_obj *names = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                                      PDF_NAME(Root),
+                                      PDF_NAME(Names),
+                                      PDF_NAME(EmbeddedFiles),
+                                      PDF_NAME(Names),
+                                      NULL);
 
-                int n = JM_find_embedded(gctx, id, pdf);
-                if (n < 0) THROWMSG("entry not found");
+                pdf_obj *entry = pdf_array_get(gctx, names, 2*idx+1);
 
-                pdf_obj *entry = pdf_portfolio_entry_obj(gctx, pdf, n);
                 pdf_obj *filespec = pdf_dict_getl(gctx, entry, PDF_NAME(EF),
                                                   PDF_NAME(F), NULL);
                 if (!filespec) THROWMSG("bad PDF: /EF object not found");
 
                 res = JM_BufferFromBytes(gctx, buffer);
-                if (buffer && !res) THROWMSG("bad type: 'buffer'");
+                if (EXISTS(buffer) && !res) THROWMSG("bad type: 'buffer'");
                 if (res)
                 {
                     JM_update_stream(gctx, pdf, filespec, res);
@@ -581,16 +571,8 @@ struct fz_document_s
             return NONE;
         }
 
-        %pythoncode %{
-        def embeddedFileSetInfo(self, id, filename=None, ufilename=None, desc=None):
-            self.embeddedFileUpd(id, filename=filename, ufilename=ufilename, desc=desc)
-            return
-        %}
-
-        FITZEXCEPTION(embeddedFileGet, !result)
-        CLOSECHECK(embeddedFileGet)
-        %feature("autodoc","Retrieve embedded file content by name or by number.") embeddedFileGet;
-        PyObject *embeddedFileGet(PyObject *id)
+        FITZEXCEPTION(_embeddedFileGet, !result)
+        PyObject *_embeddedFileGet(int idx)
         {
             PyObject *cont = NULL;
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
@@ -598,91 +580,22 @@ struct fz_document_s
             fz_var(buf);
             fz_try(gctx)
             {
-                assert_PDF(pdf);
-                int i = JM_find_embedded(gctx, id, pdf);
-                if (i < 0) THROWMSG("entry not found");
-                buf = pdf_portfolio_entry(gctx, pdf, i);
+                pdf_obj *names = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
+                                      PDF_NAME(Root),
+                                      PDF_NAME(Names),
+                                      PDF_NAME(EmbeddedFiles),
+                                      PDF_NAME(Names),
+                                      NULL);
+
+                pdf_obj *entry = pdf_array_get(gctx, names, 2*idx+1);
+                pdf_obj *filespec = pdf_dict_getl(gctx, entry, PDF_NAME(EF),
+                                                  PDF_NAME(F), NULL);
+                buf = pdf_load_stream(gctx, filespec);
                 cont = JM_BinFromBuffer(gctx, buf);
             }
             fz_always(gctx) fz_drop_buffer(gctx, buf);
             fz_catch(gctx) return NULL;
             return cont;
-        }
-
-        FITZEXCEPTION(embeddedFileAdd, !result)
-        %pythonprepend embeddedFileAdd %{
-if self.isClosed or self.isEncrypted:
-    raise ValueError("operation illegal for closed / encrypted doc")
-%}
-        %feature("autodoc","Embed a new file.") embeddedFileAdd;
-        PyObject *embeddedFileAdd(PyObject *buffer, const char *name, char *filename=NULL, char *ufilename=NULL, char *desc=NULL)
-        {
-            pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
-            fz_buffer *data = NULL, *buf = NULL;
-            char *buffdata;
-            fz_var(data);
-            fz_var(buf);
-            int entry = 0;
-            size_t size = 0;
-            char *f = filename, *uf = ufilename, *d = desc;
-            int name_len = (int) strlen(name);
-            // make adjustments for omitted arguments
-            if (!f) f = (char *)name;
-            if (!uf) uf = f;
-            if (!d) d = f;
-
-            fz_try(gctx)
-            {
-                assert_PDF(pdf);
-                data = JM_BufferFromBytes(gctx, buffer);
-                if (!data) THROWMSG("bad type: 'buffer'");
-                size = fz_buffer_storage(gctx, data, &buffdata);
-
-                // we do not allow duplicate names
-                entry = JM_find_embedded(gctx, Py_BuildValue("s", name), pdf);
-                if (entry >= 0) THROWMSG("name already exists");
-
-                // first insert a dummy entry with no more than the name
-                buf = fz_new_buffer(gctx, name_len + 1);   // has no real meaning
-                fz_append_string(gctx, buf, name);         // fill something in
-                fz_terminate_buffer(gctx, buf);            // to make it usable
-                pdf_add_portfolio_entry(gctx, pdf,         // insert the entry.
-                        name, name_len,                    // Except the name,
-                        name, name_len,                    // everything will
-                        name, name_len,                    // be overwritten
-                        name, name_len,
-                        buf);
-                fz_drop_buffer(gctx, buf);                 // kick stupid buffer
-                buf = NULL;
-                //-------------------------------------------------------------
-                // now modify the entry just created:
-                // (1) allow unicode values for filenames and description
-                // (2) deflate the file content
-                //-------------------------------------------------------------
-                // locate the entry again
-                entry = JM_find_embedded(gctx, Py_BuildValue("s", name), pdf);
-                // (1) insert the real metadata
-                pdf_obj *o = pdf_portfolio_entry_obj(gctx, pdf, entry);
-                pdf_dict_put_text_string(gctx, o, PDF_NAME(F),    f);
-                pdf_dict_put_text_string(gctx, o, PDF_NAME(UF),  uf);
-                pdf_dict_put_text_string(gctx, o, PDF_NAME(Desc), d);
-                // (2) insert the real file contents
-                pdf_obj *filespec = pdf_dict_getl(gctx, o, PDF_NAME(EF),
-                                                  PDF_NAME(F), NULL);
-                JM_update_stream(gctx, pdf, filespec, data);
-                // finally update some size attributes
-                pdf_obj *l = pdf_new_int(gctx, (int64_t) size);
-                pdf_dict_put(gctx, filespec, PDF_NAME(DL), l);
-                pdf_dict_putl(gctx, filespec, l, PDF_NAME(Params), PDF_NAME(Size), NULL);
-            }
-            fz_always(gctx)
-            {
-                fz_drop_buffer(gctx, buf);
-                fz_drop_buffer(gctx, data);
-            }
-            fz_catch(gctx) return NULL;
-            pdf->dirty = 1;
-            return NONE;
         }
 
         FITZEXCEPTION(_embeddedFileAdd, !result)
@@ -738,14 +651,90 @@ if self.isClosed or self.isEncrypted:
 
         %pythoncode %{
         def embeddedFileNames(self):
+            """ Return a list of names of EmbeddedFiles.
+            """
             filenames = []
             self._embeddedFileNames(filenames)
             return filenames
 
+        def _embeddedFileIndex(self, item):
+            filenames = self.embeddedFileNames()
+            msg = "'%s' not in EmbeddedFiles array." % str(item)
+            if item in filenames:
+                idx = filenames.index(item)
+            elif item in range(len(filenames)):
+                idx = item
+            else:
+                raise ValueError(msg)
+            return idx
+
         def embeddedFileCount(self):
+            """ Return the number of EmbeddedFiles.
+            """
             return len(self.embeddedFileNames())
 
-        def embeddedFileNew(self, name, buffer,
+        def embeddedFileDel(self, item):
+            """ Delete an entry from EmbeddedFiles.
+
+            Notes:
+                The argument must be name or index of an EmbeddedFiles item.
+                Physical deletion of associated data will happen on save to a
+                new file with appropriate garbage option.
+            Args:
+                item: (str/int) the name or index of the entry.
+            Returns:
+                None
+            """
+            idx = self._embeddedFileIndex(item)
+            return self._embeddedFileDel(idx)
+
+        def embeddedFileInfo(self, item):
+            """ Return information of an item in the EmbeddedFiles array.
+
+            Args:
+                item: the number or the name of the item.
+            Returns:
+                A dictionary of respective information.
+            """
+            idx = self._embeddedFileIndex(item)
+            infodict = {"name": self.embeddedFileNames()[idx]}
+            self._embeddedFileInfo(idx, infodict)
+            return infodict
+
+        def embeddedFileGet(self, item):
+            """ Return the content of an item in the EmbeddedFiles array.
+
+            Args:
+                item: the number or the name of the item.
+            Returns:
+                (bytes) The file content.
+            """
+            idx = self._embeddedFileIndex(item)
+            return self._embeddedFileGet(idx)
+
+        def embeddedFileUpd(self, item, buffer=None,
+                                  filename=None,
+                                  ufilename=None,
+                                  desc=None):
+            """ Make changes to an item in the EmbeddedFiles array.
+
+            Notes:
+                All parameter are optional. If all arguments are omitted, the
+                method results in a no-op.
+            Args:
+                item: the number or the name of the item.
+                buffer: (binary data) the new file content.
+                filename: (str) the new file name.
+                ufilename: (unicode) the new filen ame.
+                desc: (str) the new description.
+            """
+            idx = self._embeddedFileIndex(item)
+            return self._embeddedFileUpd(idx, buffer=buffer,
+                                         filename=filename,
+                                         ufilename=ufilename,
+                                         desc=desc)
+
+        def embeddedFileAdd(self, name, buffer,
                                   filename=None,
                                   ufilename=None,
                                   desc=None):
@@ -798,7 +787,7 @@ if self.isClosed or self.isEncrypted:
 
         CLOSECHECK0(pageCount)
         %pythoncode%{@property%}
-        PyObject *pageCount() 
+        PyObject *pageCount()
         {
             return Py_BuildValue("i", fz_count_pages(gctx, $self));
         }
@@ -1241,14 +1230,13 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
     raise ValueError("sequence items out of range")
 %}
         %pythonappend select %{
-            self._reset_page_refs()
-            self.initData()%}
+            self._reset_page_refs()%}
         PyObject *select(PyObject *pyliste)
         {
             // preparatory stuff:
             // (1) get underlying pdf document,
             // (2) transform Python list into integer array
-            
+
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx)
             {
@@ -1257,6 +1245,10 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 glo.ctx = gctx;
                 glo.doc = pdf;
                 retainpages(gctx, &glo, pyliste);
+                if (pdf->rev_page_map)
+                {
+                    pdf_drop_page_tree(gctx, pdf);
+                }
             }
             fz_catch(gctx) return NULL;
             pdf->dirty = 1;
@@ -1266,28 +1258,23 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         //---------------------------------------------------------------------
         // remove one page
         //---------------------------------------------------------------------
-        FITZEXCEPTION(deletePage, !result)
-        %feature("autodoc","Delete a PDF page.") deletePage;
-        CLOSECHECK0(deletePage)
-        %pythonappend deletePage %{
-            self._reset_page_refs()
-            self.initData()%}
-        PyObject *deletePage(int pno)
+        FITZEXCEPTION(_deletePage, !result)
+        PyObject *_deletePage(int pno)
         {
-            pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx)
             {
-                assert_PDF(pdf);
+                pdf_document *pdf = pdf_specifics(gctx, $self);
                 int count = fz_count_pages(gctx, $self);
-                int n = pno;
-                while (n < 0) n += count;
-                if (!INRANGE(n, 0, count-1))
-                    THROWMSG("bad page number(s)");
-                pdf_delete_page(gctx, pdf, n);
+                pdf_delete_page(gctx, pdf, pno);
+                if (pdf->rev_page_map)
+                {
+                    pdf_drop_page_tree(gctx, pdf);
+                }
             }
             fz_catch(gctx) return NULL;
             return NONE;
         }
+
         //********************************************************************
         // get document permissions
         //********************************************************************
@@ -1423,7 +1410,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 if (n >= pageCount) THROWMSG("bad page number(s)");
                 assert_PDF(pdf);
                 pageref = pdf_lookup_page_obj(gctx, pdf, n);
-                rsrc = pdf_dict_get(gctx, pageref, PDF_NAME(Resources));
+                rsrc = pdf_dict_get_inheritable(gctx, pageref, PDF_NAME(Resources));
                 if (!pageref || !rsrc) THROWMSG("cannot retrieve page info");
                 liste = PyList_New(0);
                 JM_scan_resources(gctx, pdf, rsrc, liste, what);
@@ -1441,7 +1428,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         PyObject *extractFont(int xref = 0, int info_only = 0)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            
+
             fz_try(gctx) assert_PDF(pdf);
             fz_catch(gctx) return NULL;
 
@@ -1458,7 +1445,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 obj = pdf_load_object(gctx, pdf, xref);
                 pdf_obj *type = pdf_dict_get(gctx, obj, PDF_NAME(Type));
                 pdf_obj *subtype = pdf_dict_get(gctx, obj, PDF_NAME(Subtype));
-                if(pdf_name_eq(gctx, type, PDF_NAME(Font)) && 
+                if(pdf_name_eq(gctx, type, PDF_NAME(Font)) &&
                    strncmp(pdf_to_name(gctx, subtype), "CIDFontType", 11) != 0)
                 {
                     basefont = pdf_dict_get(gctx, obj, PDF_NAME(BaseFont));
@@ -1770,7 +1757,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             pdf_document *pdf = pdf_specifics(gctx, $self);
             fz_try(gctx) assert_PDF(pdf);
             fz_catch(gctx) return NULL;
-            
+
             pdf_obj *root, *olroot, *ind_obj;
             // get main root
             root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
@@ -2015,7 +2002,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 res = JM_BufferFromBytes(gctx, stream);
                 if (!res) THROWMSG("bad type: 'stream'");
                 JM_update_stream(gctx, pdf, obj, res);
-                
+
             }
             fz_always(gctx)
             {
@@ -2062,6 +2049,171 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         }
 
         //---------------------------------------------------------------------
+        // create / refresh the page map
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(_make_page_map, !result)
+        CLOSECHECK0(_make_page_map)
+        PyObject *_make_page_map()
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            if (!pdf) return NONE;
+            fz_try(gctx)
+            {
+                pdf_drop_page_tree(gctx, pdf);
+                pdf_load_page_tree(gctx, pdf);
+            }
+            fz_catch(gctx) return NULL;
+            return Py_BuildValue("i", pdf->rev_page_count);
+        }
+
+
+        //---------------------------------------------------------------------
+        // full (deep) copy of one page
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(fullcopyPage, !result)
+        CLOSECHECK0(fullcopyPage)
+        %pythonappend fullcopyPage %{
+            self._reset_page_refs()%}
+        PyObject *fullcopyPage(int pno, int to = -1)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            int pageCount = pdf_count_pages(gctx, pdf);
+            fz_buffer *res = NULL, *nres=NULL;
+            pdf_obj *page2 = NULL;
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                if (!INRANGE(pno, 0, pageCount - 1) ||
+                    !INRANGE(to, -1, pageCount - 1))
+                    THROWMSG("bad page number(s)");
+
+                pdf_obj *page1 = pdf_resolve_indirect(gctx,
+                                 pdf_lookup_page_obj(gctx, pdf, pno));
+
+                pdf_obj *page2 = pdf_deep_copy_obj(gctx, page1);
+
+                // read the old contents stream(s)
+                res = JM_read_contents(gctx, page1);
+
+                // create new /Contents object for page2
+                if (res)
+                {
+                    pdf_obj *contents = pdf_add_stream(gctx, pdf,
+                               fz_new_buffer_from_copied_data(gctx, "  ", 1), NULL, 0);
+                    JM_update_stream(gctx, pdf, contents, res);
+                    pdf_dict_put_drop(gctx, page2, PDF_NAME(Contents), contents);
+                }
+
+                // now insert target page, making sure it is an indirect object
+                int xref = pdf_create_object(gctx, pdf);  // get new xref
+                pdf_update_object(gctx, pdf, xref, page2);  // store new page
+                pdf_drop_obj(gctx, page2);  // give up this object for now
+
+                page2 = pdf_new_indirect(gctx, pdf, xref, 0);  // reread object
+                pdf_insert_page(gctx, pdf, to, page2);  // and store the page
+                pdf_drop_obj(gctx, page2);
+            }
+            fz_always(gctx)
+            {
+                pdf_drop_page_tree(gctx, pdf);
+                fz_drop_buffer(gctx, res);
+                fz_drop_buffer(gctx, nres);
+            }
+            fz_catch(gctx) return NULL;
+            return NONE;
+        }
+
+
+        //---------------------------------------------------------------------
+        // move or copy one page
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(_move_copy_page, !result)
+        CLOSECHECK0(_move_copy_page)
+        %pythonappend _move_copy_page %{
+            self._reset_page_refs()%}
+        PyObject *_move_copy_page(int pno, int nb, int before, int copy)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            int i1, i2, pos, count, same = 0;
+            pdf_obj *parent1 = NULL, *parent2 = NULL, *parent = NULL;
+            pdf_obj *kids1, *kids2;
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                // get the two page objects -----------------------------------
+                // locate the /Kids arrays and indices in each
+                pdf_obj *page1 = pdf_lookup_page_loc(gctx, pdf, pno, &parent1, &i1);
+                kids1 = pdf_dict_get(gctx, parent1, PDF_NAME(Kids));
+
+                pdf_obj *page2 = pdf_lookup_page_loc(gctx, pdf, nb, &parent2, &i2);
+                kids2 = pdf_dict_get(gctx, parent2, PDF_NAME(Kids));
+
+                if (before)  // calc index of source page in target /Kids
+                    pos = i2;
+                else
+                    pos = i2 + 1;
+
+                // same /Kids array? ------------------------------------------
+                same = pdf_objcmp(gctx, kids1, kids2);
+
+                // put source page in target /Kids array ----------------------
+                if (!copy && same != 0)  // update parent in page object
+                {
+                    pdf_dict_put(gctx, page1, PDF_NAME(Parent), parent2);
+                }
+                pdf_array_insert(gctx, kids2, page1, pos);
+
+                if (same != 0) // different /Kids arrays ----------------------
+                {
+                    parent = parent2;
+                    while (parent)  // increase /Count objects in parents
+                    {
+                        count = pdf_dict_get_int(gctx, parent, PDF_NAME(Count));
+                        pdf_dict_put_int(gctx, parent, PDF_NAME(Count), count + 1);
+                        parent = pdf_dict_get(gctx, parent, PDF_NAME(Parent));
+                    }
+                    if (!copy)  // delete original item
+                    {
+                        pdf_array_delete(gctx, kids1, i1);
+                        parent = parent1;
+                        while (parent) // decrease /Count objects in parents
+                        {
+                            count = pdf_dict_get_int(gctx, parent, PDF_NAME(Count));
+                            pdf_dict_put_int(gctx, parent, PDF_NAME(Count), count - 1);
+                            parent = pdf_dict_get(gctx, parent, PDF_NAME(Parent));
+                        }
+                    }
+                }
+                else // same /Kids array --------------------------------------
+                {
+                    if (copy) // source page is copied
+                    {
+                        parent = parent2;
+                        while (parent) // increase /Count object in parents
+                        {
+                            count = pdf_dict_get_int(gctx, parent, PDF_NAME(Count));
+                            pdf_dict_put_int(gctx, parent, PDF_NAME(Count), count + 1);
+                            parent = pdf_dict_get(gctx, parent, PDF_NAME(Parent));
+                        }
+                    }
+                    else
+                    {
+                        if (i1 < pos)
+                            pdf_array_delete(gctx, kids1, i1);
+                        else
+                            pdf_array_delete(gctx, kids1, i1 + 1);
+                    }
+                }
+                if (pdf->rev_page_map)  // page map no longer valid: drop it
+                {
+                    pdf_drop_page_tree(gctx, pdf);
+                }
+            }
+            fz_catch(gctx) return NULL;
+            return NONE;
+        }
+
+        //---------------------------------------------------------------------
         // Initialize document: set outline and metadata properties
         //---------------------------------------------------------------------
         %pythoncode %{
@@ -2079,7 +2231,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 """Retrieve a list of fonts used on a page.
                 """
                 if self.isClosed or self.isEncrypted:
-                    raise ValueError("operation illegal for closed / encrypted doc")
+                    raise ValueError("document closed or encrypted")
                 if self.isPDF:
                     return self._getPageInfo(pno, 1)
                 return []
@@ -2088,54 +2240,112 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 """Retrieve a list of images used on a page.
                 """
                 if self.isClosed or self.isEncrypted:
-                    raise ValueError("operation illegal for closed / encrypted doc")
+                    raise ValueError("document closed or encrypted")
                 if self.isPDF:
                     return self._getPageInfo(pno, 2)
                 return []
 
             def copyPage(self, pno, to=-1):
-                """Copy a page to before some other page of the document. Specify 'to = -1' to copy after last page.
+                """Copy a page within a PDF document.
+
+                Args:
+                    pno: source page number
+                    to: put before this page, '-1' means after last page.
                 """
-                pl = list(range(len(self)))
-                if pno < 0 or pno > pl[-1]:
-                    raise ValueError("'from' page number out of range")
-                if to < -1 or to > pl[-1]:
-                    raise ValueError("'to' page number out of range")
+                if self.isClosed:
+                    raise ValueError("document closed")
+
+                pageCount = len(self)
+                if (
+                    pno not in range(pageCount) or
+                    to not in range(-1, pageCount)
+                   ):
+                    raise ValueError("bad page number(s)")
+                before = 1
+                copy = 1
                 if to == -1:
-                    pl.append(pno)
-                else:
-                    pl.insert(to, pno)
-                return self.select(pl)
+                    to = pageCount - 1
+                    before = 0
+
+                return self._move_copy_page(pno, to, before, copy)
 
             def movePage(self, pno, to = -1):
-                """Move a page to before some other page of the document. Specify 'to = -1' to move after last page.
+                """Move a page within a PDF document.
+
+                Args:
+                    pno: source page number.
+                    to: put before this page, '-1' means after last page.
                 """
-                pl = list(range(len(self)))
-                if pno < 0 or pno > pl[-1]:
-                    raise ValueError("'from' page number out of range")
-                if to < -1 or to > pl[-1]:
-                    raise ValueError("'to' page number out of range")
-                pl.remove(pno)
+                if self.isClosed:
+                    raise ValueError("document closed")
+
+                pageCount = len(self)
+                if (
+                    pno not in range(pageCount) or
+                    to not in range(-1, pageCount)
+                   ):
+                    raise ValueError("bad page number(s)")
+                before = 1
+                copy = 0
                 if to == -1:
-                    pl.append(pno)
-                else:
-                    pl.insert(to-1, pno)
-                return self.select(pl)
+                    to = pageCount - 1
+                    before = 0
+
+                return self._move_copy_page(pno, to, before, copy)
+
+            def deletePage(self, pno = -1):
+                """ Delete one page from a PDF.
+                """
+                if not self.isPDF:
+                    raise ValueError("not a PDF")
+                if self.isClosed:
+                    raise ValueError("document closed")
+
+                pageCount = self.pageCount
+                while pno < 0:
+                    pno += pageCount
+
+                if not pno in range(pageCount):
+                    raise ValueError("bad page number(s)")
+
+                old_toc = self.getToC(False)
+                new_toc = _toc_remove_page(old_toc, pno+1, pno+1)
+                self._remove_links_to(pno, pno)
+
+                self._deletePage(pno)
+
+                self.setToC(new_toc)
+                self._reset_page_refs()
+                return None
+
 
             def deletePageRange(self, from_page = -1, to_page = -1):
-                """Delete pages from the document. First page is '0', last page is '-1'.
+                """Delete pages from a PDF.
                 """
+                if not self.isPDF:
+                    raise ValueError("not a PDF")
+                if self.isClosed:
+                    raise ValueError("document closed")
+
                 pageCount = self.pageCount  # page count of document
                 f = from_page  # first page to delete
                 t = to_page  # last page to delete
-                if f == -1:  # means 'last page'
-                    f = pageCount - 1
-                if t == -1:  # means 'last page'
-                    t = pageCount - 1
-                if not 0 <= f <= t <= pageCount - 1:
-                    raise ValueError("page number(s) out of range")
+                while f < 0:
+                    f += pageCount
+                while t < 0:
+                    t += pageCount
+                if not f <= t < pageCount:
+                    raise ValueError("bad page number(s)")
+
+                old_toc = self.getToC(False)
+                new_toc = _toc_remove_page(old_toc, f+1, t+1)
+                self._remove_links_to(f, t)
+
                 for i in range(t, f - 1, -1):  # delete pages, last to first
-                    self.deletePage(i)
+                    self._deletePage(i)
+
+                self.setToC(new_toc)
+                self._reset_page_refs()
                 return None
 
             def saveIncr(self):
@@ -2159,7 +2369,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 
             def __len__(self):
                 return self.pageCount
-            
+
             def _forget_page(self, page):
                 """Remove a page from document page dict."""
                 pid = id(page)
@@ -2175,7 +2385,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                         page._erase()
                         page = None
                 self._page_refs.clear()
-            
+
             def __del__(self):
                 if hasattr(self, "_reset_page_refs"):
                     self._reset_page_refs()
@@ -3143,7 +3353,7 @@ fannot._erase()
                 //-------------------------------------------------------------
                 // 1. insert Xobject in Resources
                 //-------------------------------------------------------------
-                resources = pdf_dict_get(gctx, tpageref, PDF_NAME(Resources));
+                resources = pdf_dict_get_inheritable(gctx, tpageref, PDF_NAME(Resources));
                 subres = pdf_dict_get(gctx, resources, PDF_NAME(XObject));
                 if (!subres)           // has no XObject yet: create one
                 {
@@ -3187,7 +3397,7 @@ fannot._erase()
 
             const char *template = " q %g %g %g %g %g %g cm /%s Do Q ";
             char *cont = NULL;
-            
+
             fz_image *zimg = NULL, *image = NULL;
             fz_try(gctx)
             {
@@ -3246,7 +3456,7 @@ fannot._erase()
                 pdf = page->doc;  // owning PDF
 
                 // get /Resources, /XObject
-                resources = pdf_dict_get(gctx, page->obj, PDF_NAME(Resources));
+                resources = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(Resources));
                 xobject = pdf_dict_get(gctx, resources, PDF_NAME(XObject));
                 if (!xobject)  // has no XObject yet, create one
                 {
@@ -3366,7 +3576,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
                 assert_PDF(page);
                 pdf = page->doc;
                 // get the objects /Resources, /Resources/Font
-                resources = pdf_dict_get(gctx, page->obj, PDF_NAME(Resources));
+                resources = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(Resources));
                 fonts = pdf_dict_get(gctx, resources, PDF_NAME(Font));
                 if (!fonts)       // page has no fonts yet
                 {
@@ -3518,7 +3728,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_obj *contents = NULL;
-            
+
             fz_try(gctx)
             {
                 assert_PDF(page);           // only works for PDF
@@ -3586,7 +3796,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             self.parent = None
             self.thisown = False
             self.number = None
-            
+
         def __del__(self):
             self._erase()
 
@@ -3605,11 +3815,11 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             x1 = x0 + self.rect.width
             y1 = y0 + self.rect.height
             return Rect(x0, y0, x1, y1)
-        
+
         @property
         def MediaBox(self):
             return Rect(0, 0, self.MediaBoxSize)
-        
+
         %}
     }
 };
@@ -3674,7 +3884,7 @@ struct fz_pixmap_s
                 {
                     pm = fz_scale_pixmap(gctx, spix, spix->x, spix->y, w, h, &bbox);
                 }
-                else 
+                else
                     pm = fz_scale_pixmap(gctx, spix, spix->x, spix->y, w, h, NULL);
             }
             fz_catch(gctx) return NULL;
@@ -3906,7 +4116,7 @@ struct fz_pixmap_s
         }
 
         //----------------------------------------------------------------------
-        // copy pixmaps 
+        // copy pixmaps
         //----------------------------------------------------------------------
         FITZEXCEPTION(copyPixmap, !result)
         PyObject *copyPixmap(struct fz_pixmap_s *src, PyObject *bbox)
@@ -4120,7 +4330,7 @@ def writePNG(self, filename, savealpha = -1):
         }
 
         //----------------------------------------------------------------------
-        // get one pixel as a list 
+        // get one pixel as a list
         //----------------------------------------------------------------------
         FITZEXCEPTION(pixel, !result)
         %feature("autodoc","Return the pixel at (x,y) as a list. Last item is the alpha if Pixmap.alpha is true.") pixel;
@@ -4665,7 +4875,7 @@ struct fz_annot_s
             {
                 pdf_obj *ap = pdf_dict_getl(gctx, annot->obj, PDF_NAME(AP),
                                               PDF_NAME(N), NULL);
-                
+
                 if (pdf_is_stream(gctx, ap))  res = pdf_load_stream(gctx, ap);
                 if (res) r = JM_BinFromBuffer(gctx, res);
             }
@@ -4811,7 +5021,7 @@ struct fz_annot_s
         """
         if not val is True:  # skip if something went wrong
             return val
-        
+
         def color_string(cs, code):
             """Return valid PDF color operator for a given color sequence.
             """
@@ -4837,7 +5047,7 @@ struct fz_annot_s
         bfill  = color_string(fill, "f")
         p_ctm  = self.parent._getTransformation() # page transformation matrix
         imat   = ~p_ctm                     # inverse page transf. matrix
-        
+
         line_end_le, line_end_ri = 0, 0     # line end codes
         if self.lineEnds:
             line_end_le, line_end_ri = self.lineEnds
@@ -5348,7 +5558,7 @@ CheckParent(self)
                                    PDF_NAME(EF), PDF_NAME(F), NULL);
                 // the object for file content
                 if (!stream) THROWMSG("bad PDF: /EF object not found");
-                
+
                 fs = pdf_dict_get(gctx, annot->obj, PDF_NAME(FS));
 
                 // file content given
@@ -5721,7 +5931,7 @@ CheckParent(self)
                 int field_flags = pdf_get_field_flags(gctx, pdf, annot->obj);
                 PyObject_SetAttrString(Widget, "field_flags",
                                        Py_BuildValue("i", field_flags));
-                
+
                 // call Py method to reconstruct text color, font name, size
                 PyObject *call = PyObject_CallMethod(Widget,
                                                      "_parse_da", NULL);
@@ -5931,12 +6141,12 @@ struct fz_link_s
             if self.parent.parent.isClosed or self.parent.parent.isEncrypted:
                 raise ValueError("operation illegal for closed / encrypted doc")
             doc = self.parent.parent
-        
+
             if self.isExternal or self.uri.startswith("#"):
                 uri = None
             else:
                 uri = doc.resolveLink(self.uri)
-            
+
             return linkDest(self, uri)
         %}
 
@@ -6331,7 +6541,7 @@ struct fz_stext_page_s {
         }
 
         //---------------------------------------------------------------------
-        // Get text blocks with their bbox and concatenated lines 
+        // Get text blocks with their bbox and concatenated lines
         // as a Python list
         //---------------------------------------------------------------------
         FITZEXCEPTION(_extractTextBlocks_AsList, !result)
@@ -6356,7 +6566,7 @@ struct fz_stext_page_s {
                         for (line = block->u.t.first_line; line; line = line->next)
                         {
                             fz_rect linerect = line->bbox;
-                            // append line no. 2 with new-line 
+                            // append line no. 2 with new-line
                             if (line_n > 0)
                             {
                                 if (linerect.y0 != last_y0)
@@ -6504,7 +6714,7 @@ val = Rect(val)%}
                         break;
                 }
                 if (!text) text = JM_StrFromBuffer(gctx, res);
-                
+
             }
             fz_always(gctx)
             {
@@ -6609,7 +6819,7 @@ struct Tools
             if (JM_UNIQUE_ID < 0) JM_UNIQUE_ID = 1;
             return Py_BuildValue("i", JM_UNIQUE_ID);
         }
-        
+
         %feature("autodoc","Free 'percent' of current store size.") store_shrink;
         PyObject *store_shrink(int percent)
         {

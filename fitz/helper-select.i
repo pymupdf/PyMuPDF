@@ -320,4 +320,60 @@ void retainpages(fz_context *ctx, globals *glo, PyObject *liste)
     pdf_drop_obj(ctx, names_list);
     pdf_drop_obj(ctx, root);
 }
+
+PyObject *remove_dest_range(fz_context *ctx, pdf_document *pdf, int first, int last)
+{
+    int i, pno, pagecount = pdf_count_pages(ctx, pdf);
+    if (!INRANGE(first, 0, pagecount-1) ||
+        !INRANGE(last, 0, pagecount-1) ||
+        (first > last))
+        return NONE;
+    fz_try(ctx)
+    {
+        for (i = 0; i < pagecount; i++)
+        {
+            if (INRANGE(i, first, last)) continue;
+
+            pdf_obj *pageref = pdf_lookup_page_obj(ctx, pdf, i);
+            pdf_obj *annots = pdf_dict_get(ctx, pageref, PDF_NAME(Annots));
+            pdf_obj *target;
+            if (!annots) continue;
+            int len = pdf_array_len(ctx, annots);
+            int j;
+            for (j = len - 1; j >= 0; j -= 1)
+            {
+                pdf_obj *o = pdf_array_get(ctx, annots, j);
+                if (!pdf_name_eq(ctx, pdf_dict_get(ctx, o, PDF_NAME(Subtype)), PDF_NAME(Link)))
+                    continue;
+                pdf_obj *action = pdf_dict_get(ctx, o, PDF_NAME(A));
+                pdf_obj *dest =  pdf_dict_get(ctx, o, PDF_NAME(Dest));
+                if (action)
+                {
+                    if (!pdf_name_eq(ctx, pdf_dict_get(ctx, action,
+                        PDF_NAME(S)), PDF_NAME(GoTo)))
+                        continue;
+                    dest = pdf_dict_get(ctx, action, PDF_NAME(D));
+                }
+                pno = -1;
+                if (pdf_is_array(ctx, dest))
+                {
+                    target = pdf_array_get(ctx, dest, 0);
+                    pno = pdf_lookup_page_number(ctx, pdf, target);
+                }
+                else if (pdf_is_string(ctx, dest))
+                {
+                    pno = pdf_lookup_anchor(ctx, pdf,
+                                            pdf_to_text_string(ctx, dest),
+                                            NULL, NULL);
+                }
+                if (INRANGE(pno, first, last))
+                {
+                    pdf_array_delete(ctx, annots, j);
+                }
+            }
+        }
+    }
+    fz_catch(ctx) return NULL;
+    return NONE;
+}
 %}

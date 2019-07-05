@@ -85,6 +85,49 @@ Base14_fontdict["tibi"] = "Times-BoldItalic"
 Base14_fontdict["symb"] = "Symbol"
 Base14_fontdict["zadb"] = "ZapfDingbats"
 
+
+def _toc_remove_page(toc, first, last):
+    """ Remove all ToC entries pointing to certain pages.
+
+    Args:
+        toc: old table of contents generated with getToC(False).
+        first: (int) number of first page to remove.
+        last: (int) number of last page to remove.
+    Returns:
+        Modified table of contents, which should be used by PDF
+        document method setToC.
+    """
+    toc2 = []  # intermediate new toc
+    count = last - first + 1  # number of pages to remove
+    # step 1: remove numbers from toc
+    for t in toc:
+        if first <= t[2] <= last:  # skip these entries
+            continue
+        if t[2] < first:  # keep smaller page numbers
+            toc2.append(t)
+            continue
+        # larger page numbers
+        t[2] -= count  # decrease page number
+        d = t[3]
+        if d["kind"] == LINK_GOTO:
+            d["page"] -= count
+            t[3] = d
+        toc2.append(t)
+
+    toc3 = []  # final new toc
+    old_lvl = 0
+
+    # step 2: deal with hierarchy lvl gaps > 1
+    for t in toc2:
+        while t[0] - old_lvl > 1:
+            old_lvl += 1
+            toc3.append([old_lvl] + t[1:])
+        old_lvl = t[0]
+        toc3.append(t)
+
+    return toc3
+
+
 def getTextlength(text, fontname="helv", fontsize=11, encoding=0):
     """Calculate length of a string for a given built-in font.
 
@@ -325,7 +368,7 @@ def getPDFstr(s):
         return "<" + t + ">"                         # brackets indicate hex
 
 
-    # following either returns original string with mixed-in 
+    # following either returns original string with mixed-in
     # octal numbers \nnn for chars outside ASCII range, or:
     # exits with utf-16be BOM version of the string
     r = ""
@@ -470,7 +513,7 @@ def PaperRect(s):
 
 def CheckParent(o):
     if not hasattr(o, "parent") or o.parent is None:
-        raise ValueError("orphaned object: parent is None") 
+        raise ValueError("orphaned object: parent is None")
 
 def CheckColor(c):
     if c is not None:
@@ -511,7 +554,7 @@ def CheckMorph(o):
     if not o[1][4] == o[1][5] == 0:
         raise ValueError("invalid morph parm 1")
     return True
-    
+
 def CheckFont(page, fontname):
     """Return an entry in the page's font list if reference name matches.
     """
@@ -580,7 +623,7 @@ img{position:absolute}
 </style>
 </head>
 <body>\n"""
-    
+
     xml = """<?xml version="1.0"?>
 <document name="%s">\n""" % filename
 
@@ -608,7 +651,7 @@ p{white-space:pre-wrap}
         r = xhtml
     else:
         r = text
-    
+
     return r
 
 def ConversionTrailer(i):
@@ -628,7 +671,7 @@ def ConversionTrailer(i):
         r = xhtml
     else:
         r = text
-    
+
     return r
 
 def _make_textpage_dict(TextPage, raw=False):
@@ -656,7 +699,10 @@ def _make_textpage_dict(TextPage, raw=False):
         block_dict = {"type": block[0], "bbox": block[1:5]}
         lines = []  # prepare output for the block details
 
-        if block[0] == 1:  # handle an image block
+        # ---------------------------------------------------------------------
+        # handle an image block
+        # ---------------------------------------------------------------------
+        if block[0] == 1:
             rc = TextPage._getImageBlock(i, lines)  # read block data
             if rc != 0:  # any problem?
                 raise ValueError("could not extract image block %i" % i)
@@ -668,9 +714,11 @@ def _make_textpage_dict(TextPage, raw=False):
             block_list.append(block_dict)  # append image block to list
             continue  # to next block
 
-        # process a text block
-        num_lines = TextPage._getLineList(i, lines)  # read the line array
-        line_list = []
+        # ---------------------------------------------------------------------
+        # handle a text block
+        # ---------------------------------------------------------------------
+        num_lines = TextPage._getLineList(i, lines)  # read its line array
+        line_list = []  # list of line dictionaries
 
         for j in range(num_lines):
             line = lines[j]
@@ -680,8 +728,9 @@ def _make_textpage_dict(TextPage, raw=False):
             TextPage._getCharList(i, j, characters)
             old_style = ()
             span = {}
-            char_list = []
-            text = ""
+            char_list = []  # list of char dicts of span
+            text = ""  # the text of a span
+            span_bbox = Rect()  # bbox of a span
 
             for char in characters:  # iterate through the characters
                 style = char[6:9]  # font info
@@ -702,12 +751,16 @@ def _make_textpage_dict(TextPage, raw=False):
                             span["text"] = text  # accumulated text
                             text = ""  # reset text field
 
+                        span["bbox"] = tuple(span_bbox)  # put in bbox
                         span_list.append(span)  # output previous span
 
                     # init a new span
                     span = {"size": style[0], "flags": style[1], "font": style[2]}
                     old_style = style
+                    span_bbox = Rect()  # reset span bbox
 
+
+                span_bbox |= char[2:6]  # extend span bbox
                 if raw:
                     char_dict = {"origin": char[:2], "bbox": char[2:6], "c": char[-1]}
                     char_list.append(char_dict)
@@ -721,6 +774,7 @@ def _make_textpage_dict(TextPage, raw=False):
                 else:
                     span["text"] = text
 
+                span["bbox"] = tuple(span_bbox)  # put in bbox
                 span_list.append(span)
 
             line_dict["spans"] = span_list  # put list of spans in line dict
