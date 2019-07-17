@@ -45,7 +45,7 @@ PyObject *JM_text_value(fz_context *ctx, pdf_annot *annot)
     fz_var(text);
     fz_try(ctx)
         text = pdf_field_value(ctx, pdf, annot->obj);
-    fz_catch(ctx) return NONE;
+    fz_catch(ctx) Py_RETURN_NONE;
     return Py_BuildValue("s", text);
 }
 
@@ -85,7 +85,7 @@ PyObject *JM_combobox_value(fz_context *ctx, pdf_annot *annot)
 // Signature field retrieve value
 PyObject *JM_signature_value(fz_context *ctx, pdf_annot *annot)
 {   // signatures are currently not supported
-    return NONE;
+    Py_RETURN_NONE;
 }
 
 // retrieve ListBox / ComboBox choice values
@@ -94,7 +94,7 @@ PyObject *JM_choice_options(fz_context *ctx, pdf_annot *annot)
 {   // return list of choices for list or combo boxes
     pdf_document *pdf = pdf_get_bound_document(ctx, annot->obj);
     int n = pdf_choice_widget_options(ctx, pdf, (pdf_widget *) annot, 0, NULL);
-    if (n == 0) return NONE;                     // wrong widget type
+    if (n == 0) Py_RETURN_NONE;                     // wrong widget type
 
     pdf_obj *optarr = pdf_dict_get(ctx, annot->obj, PDF_NAME(Opt));
     int i, m;
@@ -238,7 +238,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
             pdf_dict_put_int(ctx, annot->obj, PDF_NAME(MaxLen), text_maxlen);
         JM_PyErr_Clear;
     }
-    
+
     // choice values ----------------------------------------------------------
     if (field_type == PDF_WIDGET_TYPE_LISTBOX ||
         field_type == PDF_WIDGET_TYPE_COMBOBOX)
@@ -386,7 +386,7 @@ class Widget():
         self.field_type_string  = None           # field type as string
         self._text_da           = ""             # /DA = default apparance
         self._dr_xref           = 0              # xref of /DR entry
-    
+
     def _validate(self):
         """Validate the class entries.
         """
@@ -400,17 +400,17 @@ class Widget():
             raise ValueError("rect must be finite and not empty")
         if not self.field_name:
             raise ValueError("field name missing")
-        
+
         if self.border_color:
             if not len(self.border_color) in range(1,5) or \
                type(self.border_color) not in (list, tuple):
                raise ValueError("border_color must be 1 - 4 floats")
-        
+
         if self.fill_color:
             if not len(self.fill_color) in range(1,5) or \
                type(self.fill_color) not in (list, tuple):
                raise ValueError("fill_color must be 1 - 4 floats")
-        
+
         if not self.text_color:
             self.text_color = (0, 0, 0)
         if not len(self.text_color) in range(1,5) or \
@@ -468,7 +468,7 @@ class Widget():
     # any widget type specific checks
     def _check0(self):
         return
-    
+
     def _check1(self):
         return
 

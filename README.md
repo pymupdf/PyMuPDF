@@ -24,7 +24,7 @@ See the [change log](https://pymupdf.readthedocs.io/en/latest/changes) and [usag
 
 # Installation
 
-For all **Windows** and (thanks to our user **@jbarlow83**!) for the major **Mac OSX** and **Linux** versions we offer [wheels](https://github.com/pymupdf/PyMuPDF/releases/latest). They can also be found in the [download section of PyPI](https://pypi.org/project/PyMuPDF/#files).
+For all **Windows** and (thanks to our user **@jbarlow83**!) for the major **Mac OSX** and **Linux** versions we offer wheels in the [download section of PyPI](https://pypi.org/project/PyMuPDF/#files).
 
 The platform tag for Mac OSX is `macosx_10_6_intel`.
 
@@ -55,8 +55,6 @@ Then you might need to ``export ARCHFLAGS='-arch x86_64'``, since ``libmupdf.a``
 Finally, please double check ``setup.py`` before building. Update ``include_dirs`` and ``library_dirs`` if necessary.
 
 ## MS Windows
-
-In addition to wheels, this platform offers [pre-generated binaries](https://github.com/JorjMcKie/PyMuPDF-Optional-Material) in a ZIP format, which can be used without PIP.
 
 If you are looking to make your own binary, consult this [Wiki page](https://github.com/pymupdf/PyMuPDF/wiki/Windows-Binaries-Generation). It explains how to use Visual Studio for generating MuPDF in quite some detail.
 

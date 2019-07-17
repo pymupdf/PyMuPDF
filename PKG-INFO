@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: PyMuPDF
-Version: 1.14.17
+Version: 1.14.18
 Author: Ruikai Liu
 Author-email: lrk700@gmail.com
 Maintainer: Jorj X. McKie
@@ -10,7 +10,7 @@ Download-url: https://github.com/pymupdf/PyMuPDF
 Summary: PyMuPDF is a Python binding for the PDF rendering library MuPDF
 Description:
 
-        Release date: Juli 05, 2019
+        Release date: July 07, 2019
 
         Authors
         =======
@@ -21,7 +21,7 @@ Description:
         Introduction
         ============
 
-        This is **version 1.14.17 of PyMuPDF**, a Python binding for `MuPDF <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
+        This is **version 1.14.18 of PyMuPDF**, a Python binding for `MuPDF <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
 
         MuPDF can access files in PDF, XPS, OpenXPS, epub, comic and fiction book formats, and it is known for both, its top performance and high rendering quality.
 
@@ -34,7 +34,7 @@ Description:
         Installation
         ============
 
-        For all MS Windows versions as well as popular Max OS and Linux versions, we are providing Python wheels - see the download section of this site and the current `release directory <https://github.com/pymupdf/PyMuPDF/releases/latest>`_ of our home page. For Windows users, `zip-based installation <https://github.com/JorjMcKie/PyMuPDF-Optional-Material>`_ options are also available. Other platforms need to download and generate the MuPDF library first and then set up PyMuPDF. Do visit our GitHub home, which has more details on this, including latest bugfixes, pre-releases, etc.
+        For all MS Windows versions as well as popular Max OS and Linux versions, we are providing Python wheels - see the download section of this site and the current `release directory <https://github.com/pymupdf/PyMuPDF/releases/latest>`_ of our home page. Other platforms need to download and generate the MuPDF library first and then set up PyMuPDF. Do visit our GitHub home, which has more details on this, including latest bugfixes, pre-releases, etc.
 
         Usage and Documentation
         ========================

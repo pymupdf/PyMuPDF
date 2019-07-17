@@ -327,7 +327,7 @@ PyObject *remove_dest_range(fz_context *ctx, pdf_document *pdf, int first, int l
     if (!INRANGE(first, 0, pagecount-1) ||
         !INRANGE(last, 0, pagecount-1) ||
         (first > last))
-        return NONE;
+        Py_RETURN_NONE;
     fz_try(ctx)
     {
         for (i = 0; i < pagecount; i++)
@@ -374,6 +374,6 @@ PyObject *remove_dest_range(fz_context *ctx, pdf_document *pdf, int first, int l
         }
     }
     fz_catch(ctx) return NULL;
-    return NONE;
+    Py_RETURN_NONE;
 }
 %}

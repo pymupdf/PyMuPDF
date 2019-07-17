@@ -131,7 +131,7 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
 {
     if (!EXISTS(imagedata))
     {
-        return NONE;  // nothing given
+        Py_RETURN_NONE;  // nothing given
     }
     fz_image *image = NULL;
     fz_buffer *res = NULL;

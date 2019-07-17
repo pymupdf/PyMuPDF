@@ -2357,8 +2357,11 @@ class Shape():
         fontdict = fontinfo[1]
         ordering = fontdict["ordering"]
         simple = fontdict["simple"]
-        glyphs = fontdict["glyphs"]
         bfname = fontdict["name"]
+        if maxcode > 255:
+            glyphs = self.doc.getCharWidths(xref, maxcode + 1)
+        else:
+            glyphs = fontdict["glyphs"]
 
         tab = []
         for t in text:

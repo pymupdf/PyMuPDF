@@ -563,7 +563,7 @@ def CheckFont(page, fontname):
             return f
         if f[3].lower() == fontname.lower():
             return f
-    return None
+    Py_RETURN_NONE
 
 def CheckFontInfo(doc, xref):
     """Return a font info if present in the document.
@@ -571,7 +571,7 @@ def CheckFontInfo(doc, xref):
     for f in doc.FontInfos:
         if xref == f[0]:
             return f
-    return None
+    Py_RETURN_NONE
 
 def UpdateFontInfo(doc, info):
     xref = info[0]

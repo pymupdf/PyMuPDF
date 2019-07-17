@@ -266,7 +266,7 @@ struct fz_annot_s *JM_AnnotMultiline(fz_context *ctx, pdf_page *page, PyObject *
         float width  = 1;
         fz_point point = {0,0};
         fz_rect rect;
-        
+
         int n = 0, i;
         if (PySequence_Check(points)) n = PySequence_Size(points);
         if (n < 2) THROWMSG("invalid points list");
@@ -368,7 +368,7 @@ PyObject *JM_annot_set_border(fz_context *ctx, PyObject *border, pdf_document *d
     if (!PyDict_Check(border))
     {
         JM_Warning("arg must be a dict");
-        return NONE;     // not a dict
+        Py_RETURN_NONE;     // not a dict
     }
 
     double nwidth = -1;                       // new width
@@ -423,7 +423,7 @@ PyObject *JM_annot_set_border(fz_context *ctx, PyObject *border, pdf_document *d
                                PDF_NAME(BS), PDF_NAME(S), NULL);
 
     PyErr_Clear();
-    return NONE;
+    Py_RETURN_NONE;
 }
 
 PyObject *JM_annot_colors(fz_context *ctx, pdf_obj *annot_obj)
