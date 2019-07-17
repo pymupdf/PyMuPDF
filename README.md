@@ -1,8 +1,8 @@
-# PyMuPDF 1.14.17
+# PyMuPDF 1.14.18
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: Juli 05, 2019
+Release date: Juli 17, 2019
 
 **Travis-CI:** [![Build Status](https://travis-ci.org/JorjMcKie/py-mupdf.svg?branch=master)](https://travis-ci.org/JorjMcKie/py-mupdf)
 
