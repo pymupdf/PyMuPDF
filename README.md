@@ -8,6 +8,8 @@ Release date: Juli 17, 2019
 
 On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![](https://pepy.tech/badge/pymupdf)](https://pepy.tech/project/pymupdf)
 
+PyMuPDF only supports '''Python 3.x''', not '''Python 2.x'''.
+
 # Authors
 * [Ruikai Liu](mailto:lrk700@gmail.com)
 * [Jorj X. McKie](mailto:jorj.x.mckie@outlook.de)
