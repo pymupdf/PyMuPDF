@@ -105,7 +105,7 @@ from __future__ import division, print_function
 # endif
 
 // define Python None object
-#define NONE Py_NONE
+#define NONE Py_None
 
 #include <fitz.h>
 #include <pdf.h>
@@ -1672,27 +1672,49 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         //---------------------------------------------------------------------
         // Check: is this an AcroForm with at least one field?
         //---------------------------------------------------------------------
+        CLOSECHECK0(getSigFlags)
+        int getSigFlags()
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            if (!pdf) return -1;           // not a PDF
+            int sigflag;
+            fz_try(gctx)
+            {
+                pdf_obj *sigflags = pdf_dict_getl(gctx,
+                                                  pdf_trailer(gctx, pdf),
+                                                  PDF_NAME(Root),
+                                                  PDF_NAME(AcroForm),
+                                                  PDF_NAME(SigFlags),
+                                                  NULL);
+                if (sigflags) sigflag = pdf_to_int(gctx, sigflags);
+                else          sigflag = -1;
+            }
+            fz_catch(gctx) return -1;      // any problem yields -1
+            return sigflag;
+        }
+
+        //---------------------------------------------------------------------
+        // Check: is this an AcroForm with at least one field?
+        //---------------------------------------------------------------------
         CLOSECHECK0(isFormPDF)
         %pythoncode%{@property%}
         PyObject *isFormPDF()
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
             if (!pdf) Py_RETURN_FALSE;           // not a PDF
-            pdf_obj *form = NULL;
-            pdf_obj *fields = NULL;
             int have_form = 0;                   // preset indicator
             fz_try(gctx)
             {
-                form = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root), PDF_NAME(AcroForm), NULL);
-                if (form)                        // form obj exists
-                {
-                    fields = pdf_dict_get(gctx, form, PDF_NAME(Fields));
-                    if (fields && pdf_array_len(gctx, fields) > 0) have_form = 1;
-                }
+                pdf_obj *fields = pdf_dict_getl(gctx,
+                                                pdf_trailer(gctx, pdf),
+                                                PDF_NAME(Root),
+                                                PDF_NAME(AcroForm),
+                                                PDF_NAME(Fields),
+                                                NULL);
+                if (fields && pdf_array_len(gctx, fields) > 0) have_form = 1;
             }
             fz_catch(gctx) Py_RETURN_FALSE;      // any problem yields false
-            if (!have_form) Py_RETURN_FALSE;     // no form / no fields
-            Py_RETURN_TRUE;
+            return JM_BOOL(have_form);
         }
 
         //---------------------------------------------------------------------

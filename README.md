@@ -1,8 +1,8 @@
-# PyMuPDF 1.14.18
+# PyMuPDF 1.14.19
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: Juli 17, 2019
+Release date: Juli 18, 2019
 
 **Travis-CI:** [![Build Status](https://travis-ci.org/JorjMcKie/py-mupdf.svg?branch=master)](https://travis-ci.org/JorjMcKie/py-mupdf)
 
@@ -14,7 +14,7 @@ On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![](https://
 
 # Introduction
 
-This is **version 1.14.18 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.14.x](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
+This is **version 1.14.19 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.14.x](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
