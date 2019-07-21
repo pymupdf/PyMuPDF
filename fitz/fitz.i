@@ -1670,7 +1670,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         }
 
         //---------------------------------------------------------------------
-        // Check: is this an AcroForm with at least one field?
+        // Return the /SigFlags value
         //---------------------------------------------------------------------
         CLOSECHECK0(getSigFlags)
         int getSigFlags()
@@ -2338,7 +2338,6 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 
                 self.setToC(new_toc)
                 self._reset_page_refs()
-                Py_RETURN_NONE
 
 
             def deletePageRange(self, from_page = -1, to_page = -1):
@@ -2368,7 +2367,6 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 
                 self.setToC(new_toc)
                 self._reset_page_refs()
-                Py_RETURN_NONE
 
             def saveIncr(self):
                 """ Save PDF incrementally"""
@@ -5970,7 +5968,7 @@ CheckParent(self)
         def widget(self):
             annot_type = self.type[0]
             if annot_type != ANNOT_WIDGET:
-                Py_RETURN_NONE
+                return None
             w = Widget()
             w.field_type        = self.widget_type[0]
             w.field_type_string = self.widget_type[1]
