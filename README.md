@@ -30,7 +30,9 @@ The platform tag for Mac OSX is `macosx_10_6_intel`.
 
 The platform tag for Linux is `manylinux1_x86_64`, which makes these wheels usable on Debian, Ubuntu and most other variations.
 
-On other operating systems you need to generate PyMuPDF yourself. And of course you can choose to do so for a wheel-supported platform, too. Before you can do this, you must download and generate MuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures for achieving this. Please observe the following general steps:
+On other operating systems you need to generate PyMuPDF yourself. And of course you can choose to do so for a wheel-supported platform, too.
+
+To do this, you must download and generate MuPDF. This process depends very much on your system. For most platforms, the MuPDF source contains prepared procedures for achieving this. Please observe the following general steps:
 
 * Be sure to download the official MuPDF source release from [here](https://mupdf.com/downloads/archive). Do **not use** MuPDF's [GitHub repo](https://github.com/ArtifexSoftware/mupdf). It contains their current **development source**, which is **not compatible** with this PyMuPDF version most of the time.
 
@@ -39,6 +41,11 @@ On other operating systems you need to generate PyMuPDF yourself. And of course 
   - fitz error module `_error.c`, copy-replace to: `mupdf/source/fitz/error.c`. It redirects MuPDF warnings and errors so they can be intercepted by PyMuPDF.
   - PDF device module `_pdf-device.c` copy-replace to: `mupdf/source/pdf/pdf-device.c`. It fixes a bug which caused method `Document.convertToPDF()` to bring down the interpeter.
   - Now MuPDF can be generated.
+
+* Since PyMuPDF v1.14.17, the sources provided in this repository **no longer contain** the interface files ``fitz.py`` and ``fitz.wrap.c`` - they are generated **"on the fly"** by ``setup.py`` using the interface generator [SWIG](http://www.swig.org/). So you need SWIG being installed on your system. Please refer to issue #312 for a background.
+
+* If you do **not (want to) use SWIG** for generating PyMuPDF, please download the **sources from PyPI** - they continue to contain the interface files.
+    - Side note: those files have been generated using **SWIG v4.0.0**, which implements important improvements regarding security and also generates a much simpler ``fitz.py``. Our wheels are based on this SWIG version, too.
 
 Once this is done, adjust directories in ``setup.py`` and run ``python setup.py install``.
 
