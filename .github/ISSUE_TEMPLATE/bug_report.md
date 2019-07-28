@@ -3,26 +3,30 @@ name: Bug report
 about: Create a report to help us improve
 title: ''
 labels: bug
-assignees: ''
+assignees: JorjMcKie
 
 ---
 
-**Describe the bug**
+_**Please provide all mandatory information!**_
+
+## Describe the bug (mandatory)
 A clear and concise description of what the bug is.
 
-**To Reproduce**
-Explain steps to reproduce the behavior, for example. include minimal code snippet, example file, etc.
+## To Reproduce (mandatory)
+Explain the steps to reproduce the behavior, For example, include a minimal code snippet, example files, etc.
 
-**Expected behavior**
+## Expected behavior (mandatory)
 Describe what you expected to happen.
 
-**Screenshots**
+## Screenshots (optional)
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
+## Your configuration (mandatory)
  - Operating system, bitness, potentially version.
  - Python version, bitness
- - PyMuPDF version, installation method (wheel or source generated)
+ - PyMuPDF version, installation method (wheel or source generated).
 
-**Additional context**
+For example, the output of `print(sys.version, "\n", fitz.__doc__)` would be sufficient.
+
+## Additional context (optional)
 Add any other context about the problem here.
