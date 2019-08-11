@@ -195,28 +195,23 @@ void refresh_link_table(fz_context *ctx, pdf_page *page)
 //-----------------------------------------------------------------------------
 // create a strike-out / underline / highlight annotation
 //-----------------------------------------------------------------------------
-struct fz_annot_s *JM_AnnotTextmarker(fz_context *ctx, pdf_page *page, fz_quad q, int type)
+struct fz_annot_s *JM_AnnotTextmarker(fz_context *ctx, pdf_page *page, PyObject *arg, int type)
 {
     pdf_annot *annot = NULL;
-    float width = 0;
     float color[3] = {0,0,0};
     switch (type)
     {
         case PDF_ANNOT_HIGHLIGHT:
             color[0] = color[1] = 1; color[2] = 0;
-            width = 1.0f;
             break;
         case PDF_ANNOT_UNDERLINE:
             color[0] = color[1] = 0; color[2] = 1;
-            width = 0.07f;
             break;
         case PDF_ANNOT_SQUIGGLY:
             color[0] = color[1] = 0; color[2] = 1;
-            width = 0.07f;
             break;
         case PDF_ANNOT_STRIKE_OUT:
             color[0] = 1; color[1] = color[2] = 0;
-            width = 0.07f;
             break;
     }
     fz_try(ctx)
@@ -224,9 +219,14 @@ struct fz_annot_s *JM_AnnotTextmarker(fz_context *ctx, pdf_page *page, fz_quad q
         pdf_document *pdf = page->doc;
         annot = pdf_create_annot(ctx, page, type);
         pdf_set_annot_color(ctx, annot, 3, color);
-        pdf_set_annot_border(ctx, annot, width);
-        pdf_add_annot_quad_point(ctx, annot, q);
-        pdf_set_annot_rect(ctx, annot, fz_rect_from_quad(q));
+        Py_ssize_t i, len = PySequence_Size(arg);
+        for (i = 0; i < len; i++)
+        {
+            PyObject *val = PySequence_ITEM(arg, i);
+            fz_quad q = JM_quad_from_py(val);
+            Py_DECREF(val);
+            pdf_add_annot_quad_point(ctx, annot, q);
+        }
         pdf_update_annot(ctx, annot);
     }
     fz_catch(ctx) fz_rethrow(ctx);

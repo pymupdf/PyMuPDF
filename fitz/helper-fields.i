@@ -363,7 +363,7 @@ Widget_fontdict = _Widget_fontdict()   # needed so we can use it as a property
 #------------------------------------------------------------------------------
 # Class describing a PDF form field ("widget")
 #------------------------------------------------------------------------------
-class Widget():
+class Widget(object):
     def __init__(self):
         self.border_color       = None
         self.border_style       = "S"

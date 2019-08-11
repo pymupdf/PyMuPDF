@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+# Copyright 2016-2019, Jorj McKie, mailto:<jorj.x.mckie@outlook.de>
 # This is a demo which saves a certain page as PNG file
 # It also contains misc feature like displaying document outline
 # usage: demo.py <filename> <page> <zoom> <degree> <output filename> <needle>
@@ -6,20 +6,24 @@
 import fitz
 import sys
 
-assert len(sys.argv) == 7,\
- 'Usage: %s <filename> <page> <zoom> <degree> <output filename> <needle>' % sys.argv[0]
+print(fitz.__doc__)
+
+assert len(sys.argv) == 7, (
+    "Usage: %s <filename> <page> <zoom> <degree> <output filename> <needle>"
+    % sys.argv[0]
+)
 
 # create a document object from the file path
 doc = fitz.Document(sys.argv[1])
 
-'''
+"""
 The metadata is a python dict, whose keys are:
 # format, encryption, title, author, subject, keywords, creator, producer,
 creationDate, modDate.
-The values will be None if the info is not available'''
+The values will be None if the info is not available"""
 for key in doc.metadata:
     if doc.metadata[key]:
-        print('%s: %s' % (key, doc.metadata[key]))
+        print("%s: %s" % (key, doc.metadata[key]))
 
 # here we print out the outline of the document(if any)
 # first, we define a function for traversal
@@ -27,27 +31,28 @@ def olTraversal(root):
     nodes = [root]
     while nodes:
         node = nodes.pop()
-        print('[OUTLINE]- %s ==> %d' % (node.title, node.dest.page))
+        print("[OUTLINE]- %s ==> %d" % (node.title, node.dest.page))
         next = node.next
         if next:
             nodes.append(next)
         else:
-            print('[OUTLINE]<')
+            print("[OUTLINE]<")
         down = node.down
         if down:
-            print('[OUTLINE]>')
+            print("[OUTLINE]>")
             nodes.append(down)
 
+
 # and now let's do this
-ol=doc.outline
+ol = doc.outline
 if ol:
-    print('Outline of the document')
+    print("Outline of the document")
     olTraversal(ol)
 
 # get the page number, which should start from 0
-pn = int(sys.argv[2])-1
+pn = int(sys.argv[2]) - 1
 if pn > doc.pageCount:
-    raise SystemExit('%s has %d pages only' % (sys.argv[1], doc.pageCount))
+    raise SystemExit("%s has %d pages only" % (sys.argv[1], doc.pageCount))
 
 # get the page
 page = doc.loadPage(pn)
@@ -59,9 +64,9 @@ ln = page.loadLinks()
 # check what type of information we are having.
 while ln:
     if ln.dest.kind == fitz.LINK_URI:
-        print('[LINK]URI: %s' % ln.dest.uri)
+        print("[LINK]URI: %s" % ln.dest.uri)
     elif ln.dest.kind == fitz.LINK_GOTO:
-        print('[LINK]jump to page %d' % ln.dest.page)
+        print("[LINK]jump to page %d" % ln.dest.page)
     else:
         pass
     ln = ln.next
@@ -69,16 +74,16 @@ while ln:
 # we create a transformation matrix here
 zoom = int(sys.argv[3])
 rotate = int(sys.argv[4])
-trans = fitz.Matrix(zoom/100.0, zoom/100.0).preRotate(rotate)
+trans = fitz.Matrix(zoom / 100.0, zoom / 100.0).preRotate(rotate)
 
-'''
+"""
 here we introduce the display list, which provides caching-mechanisms
 to reduce parsing of a page.
 first, we need to create a display list
 hand it over to a list device
 and then populate the display list by running the page through that device,
 with transformation applied
-'''
+"""
 mediabox = page.rect
 dl = fitz.DisplayList(mediabox)
 dv = fitz.Device(dl)
@@ -89,7 +94,7 @@ rect = mediabox.transform(trans)
 # create a pixmap with RGB as colorspace and bounded by irect
 pm = fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), rect.round())
 # clear it with 0xff white
-pm.clearWith(0xff)
+pm.clearWith(0xFF)
 
 # fitz.Device(pm, None) is a device for drawing
 # we run the display list above through this drawing device
@@ -109,7 +114,7 @@ pm = None
 # In order to re-draw the pixmap, we just need to run the display list again
 # first, setup the pixmap and its drawing device
 pm1 = fitz.Pixmap(fitz.Colorspace(fitz.CS_RGB), rect.round())
-pm1.clearWith(0xff)
+pm1.clearWith(0xFF)
 # then, run the display list, which already contains drawing commands
 dl.run(fitz.Device(pm1, None), fitz.Identity, rect)
 
@@ -130,4 +135,4 @@ for r in res:
     pm1.invertIRect(r.round())
 
 # and finally write to another PNG
-pm1.writePNG('dl-' + sys.argv[5])
+pm1.writePNG("dl-" + sys.argv[5])

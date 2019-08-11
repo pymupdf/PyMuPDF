@@ -272,7 +272,7 @@ symbol_glyphs = (
  (254, 0.494), (183, 0.46)
  )
 
-class linkDest():
+class linkDest(object):
     """link or outline destination details"""
     def __init__(self, obj, rlink):
         isExt = obj.isExternal

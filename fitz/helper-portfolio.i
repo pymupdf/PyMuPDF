@@ -22,7 +22,7 @@ void JM_embedded_clean(fz_context *ctx, pdf_document *pdf)
     if (efiles)  // make sure embedded files get displayed by viewers
     {
         pdf_dict_put_name(ctx, root, PDF_NAME(PageMode), "UseAttachments");
-        pdf_dict_del(ctx, efiles, PDF_NAME(Limits));
+        //pdf_dict_del(ctx, efiles, PDF_NAME(Limits));
     }
     return;
 }

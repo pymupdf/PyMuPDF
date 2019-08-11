@@ -4,7 +4,7 @@ import math
 import os
 import warnings
 import io
-warnings.simplefilter("once")
+
 """
 The following is a collection of functions to extend PyMupdf.
 """
@@ -2009,7 +2009,7 @@ def getCharWidths(doc, xref, limit = 256, idx = 0):
 
     return glyphs
 
-class Shape():
+class Shape(object):
     """Create a new shape.
     """
 

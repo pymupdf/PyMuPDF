@@ -1,5 +1,5 @@
 %pythoncode %{
-class Matrix():
+class Matrix(object):
     """Matrix() - all zeros\nMatrix(a, b, c, d, e, f)\nMatrix(zoom-x, zoom-y) - zoom\nMatrix(shear-x, shear-y, 1) - shear\nMatrix(degree) - rotate\nMatrix(Matrix) - new copy\nMatrix(sequence) - from 'sequence'"""
     def __init__(self, *args):
         if not args:
@@ -257,7 +257,7 @@ class IdentityMatrix(Matrix):
 
 Identity = IdentityMatrix()
 
-class Point():
+class Point(object):
     """Point() - all zeros\nPoint(x, y)\nPoint(Point) - new copy\nPoint(sequence) - from 'sequence'"""
     def __init__(self, *args):
         if not args:
@@ -420,7 +420,7 @@ class Point():
     def __hash__(self):
         return hash(tuple(self))
 
-class Rect():
+class Rect(object):
     """Rect() - all zeros\nRect(x0, y0, x1, y1)\nRect(top-left, x1, y1)\nRect(x0, y0, bottom-right)\nRect(top-left, bottom-right)\nRect(Rect or IRect) - new copy\nRect(sequence) - from 'sequence'"""
     def __init__(self, *args):
         if not args:
@@ -749,7 +749,7 @@ class IRect(Rect):
     def __and__(self, x):
         return Rect.__and__(self, x).round()
 
-class Quad():
+class Quad(object):
     """Quad() - all zero points\nQuad(ul, ur, ll, lr)\nQuad(quad) - new copy\nQuad(sequence) - from 'sequence'"""
     def __init__(self, *args):
         if not args:

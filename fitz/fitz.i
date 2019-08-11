@@ -44,7 +44,35 @@ from __future__ import division, print_function
 //-----------------------------------------------------------------------------
 %define ANNOTWRAP1(meth, doc)
         FITZEXCEPTION(meth, !result)
-        %pythonprepend meth %{CheckParent(self)%}
+        %pythonprepend meth %{
+        CheckParent(self)
+        if not self.parent.isPDF:
+            raise ValueError("not a PDF")
+        %}
+        %feature("autodoc", doc) meth;
+        %pythonappend meth %{
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val%}
+%enddef
+
+%define MARKERWRAP(meth, doc)
+        FITZEXCEPTION(meth, !result)
+        %pythonprepend meth %{
+        CheckParent(self)
+        if not self.parent.isPDF:
+            raise ValueError("not a PDF")
+        if not hasattr(arg, "__getitem__"):
+            raise ValueError("'arg' must be a sequence")
+        if type(arg) not in (list, tuple):
+            if len(arg) != 4:
+                raise ValueError("'arg' must have length of 4")
+            if hasattr(arg[0], "__float__") or hasattr(arg[0], "__getitem__"):
+                arg = [arg]
+            else:
+                raise ValueError("bad argument 'arg'")
+        %}
         %feature("autodoc", doc) meth;
         %pythonappend meth %{
         if not val: return
@@ -2706,17 +2734,15 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         // page addStrikeoutAnnot
         //---------------------------------------------------------------------
-        ANNOTWRAP1(addStrikeoutAnnot, "Strike out content in a rectangle or quadrilateral.")
-        struct fz_annot_s *addStrikeoutAnnot(PyObject *rect)
+        MARKERWRAP(addStrikeoutAnnot, "Strike out content in a rectangle or quadrilateral.")
+        struct fz_annot_s *addStrikeoutAnnot(PyObject *arg)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             fz_annot *annot = NULL;
             fz_var(annot);
-            fz_quad quad = JM_quad_from_py(rect);
             fz_try(gctx)
             {
-                assert_PDF(page);
-                annot = JM_AnnotTextmarker(gctx, page, quad, PDF_ANNOT_STRIKE_OUT);
+                annot = JM_AnnotTextmarker(gctx, page, arg, PDF_ANNOT_STRIKE_OUT);
             }
             fz_catch(gctx) return NULL;
             return fz_keep_annot(gctx, annot);
@@ -2725,17 +2751,15 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         // page addUnderlineAnnot
         //---------------------------------------------------------------------
-        ANNOTWRAP1(addUnderlineAnnot, "Underline content in a rectangle or quadrilateral.")
-        struct fz_annot_s *addUnderlineAnnot(PyObject *rect)
+        MARKERWRAP(addUnderlineAnnot, "Underline content in a rectangle or quadrilateral.")
+        struct fz_annot_s *addUnderlineAnnot(PyObject *arg)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             fz_annot *annot = NULL;
             fz_var(annot);
-            fz_quad quad = JM_quad_from_py(rect);
             fz_try(gctx)
             {
-                assert_PDF(page);
-                annot = JM_AnnotTextmarker(gctx, page, quad, PDF_ANNOT_UNDERLINE);
+                annot = JM_AnnotTextmarker(gctx, page, arg, PDF_ANNOT_UNDERLINE);
             }
             fz_catch(gctx) return NULL;
             return fz_keep_annot(gctx, annot);
@@ -2744,17 +2768,15 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         // page addSquigglyAnnot
         //---------------------------------------------------------------------
-        ANNOTWRAP1(addSquigglyAnnot, "Wavy underline content in a rectangle or quadrilateral.")
-        struct fz_annot_s *addSquigglyAnnot(PyObject *rect)
+        MARKERWRAP(addSquigglyAnnot, "Wavy underline content in a rectangle or quadrilateral.")
+        struct fz_annot_s *addSquigglyAnnot(PyObject *arg)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             fz_annot *annot = NULL;
             fz_var(annot);
-            fz_quad quad = JM_quad_from_py(rect);
             fz_try(gctx)
             {
-                assert_PDF(page);
-                annot = JM_AnnotTextmarker(gctx, page, quad, PDF_ANNOT_SQUIGGLY);
+                annot = JM_AnnotTextmarker(gctx, page, arg, PDF_ANNOT_SQUIGGLY);
             }
             fz_catch(gctx) return NULL;
             return fz_keep_annot(gctx, annot);
@@ -2763,17 +2785,15 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         // page addHighlightAnnot
         //---------------------------------------------------------------------
-        ANNOTWRAP1(addHighlightAnnot, "Highlight content in a rectangle or quadrilateral.")
-        struct fz_annot_s *addHighlightAnnot(PyObject *rect)
+        MARKERWRAP(addHighlightAnnot, "Highlight content in a rectangle or quadrilateral.")
+        struct fz_annot_s *addHighlightAnnot(PyObject *arg)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             fz_annot *annot = NULL;
             fz_var(annot);
-            fz_quad quad = JM_quad_from_py(rect);
             fz_try(gctx)
             {
-                assert_PDF(page);
-                annot = JM_AnnotTextmarker(gctx, page, quad, PDF_ANNOT_HIGHLIGHT);
+                annot = JM_AnnotTextmarker(gctx, page, arg, PDF_ANNOT_HIGHLIGHT);
             }
             fz_catch(gctx) return NULL;
             return fz_keep_annot(gctx, annot);
@@ -2790,7 +2810,6 @@ struct fz_page_s {
             fz_var(fzannot);
             fz_try(gctx)
             {
-                assert_PDF(page);
                 fzannot = JM_AnnotCircleOrRect(gctx, page, rect, PDF_ANNOT_SQUARE);
             }
             fz_catch(gctx) return NULL;
@@ -2808,7 +2827,6 @@ struct fz_page_s {
             fz_var(fzannot);
             fz_try(gctx)
             {
-                assert_PDF(page);
                 fzannot = JM_AnnotCircleOrRect(gctx, page, rect, PDF_ANNOT_CIRCLE);
             }
             fz_catch(gctx) return NULL;
@@ -2826,7 +2844,6 @@ struct fz_page_s {
             fz_var(fzannot);
             fz_try(gctx)
             {
-                assert_PDF(page);
                 fzannot = JM_AnnotMultiline(gctx, page, points, PDF_ANNOT_POLY_LINE);
             }
             fz_catch(gctx) return NULL;
@@ -2844,7 +2861,6 @@ struct fz_page_s {
             fz_var(fzannot);
             fz_try(gctx)
             {
-                assert_PDF(page);
                 fzannot = JM_AnnotMultiline(gctx, page, points, PDF_ANNOT_POLYGON);
             }
             fz_catch(gctx) return NULL;
@@ -2867,7 +2883,6 @@ struct fz_page_s {
             fz_var(annot);
             fz_try(gctx)
             {
-                assert_PDF(page);
                 annot = pdf_create_annot(gctx, page, PDF_ANNOT_FREE_TEXT);
                 pdf_set_annot_contents(gctx, annot, text);
                 pdf_set_annot_color(gctx, annot, 3, bcol); // set rect colors

@@ -83,7 +83,7 @@ long_desc = "\n".join(long_dtab)
 
 setup(
     name="PyMuPDF",
-    version="1.14.19",
+    version="1.14.20",
     description="Python bindings for the PDF rendering library MuPDF",
     long_description=long_desc,
     classifiers=classifier,
