@@ -34,7 +34,7 @@ int JM_is_valid_quad(fz_quad q)
 //-----------------------------------------------------------------------------
 // PySequence to quad. Default: quad of four (0, 0) points.
 // Four floats are treated as coordinates of a rect, and its corners will
-// define the quad.
+// define the quad. Four pairs of floats are taken to make a quad.
 //-----------------------------------------------------------------------------
 fz_quad JM_quad_from_py(PyObject *r)
 {
@@ -93,6 +93,16 @@ fz_quad JM_quad_from_py(PyObject *r)
     q.ll = p[2];
     q.lr = p[3];
     return q;
+}
+
+PyObject *JM_py_from_quad(fz_quad quad)
+{
+    PyObject *pquad = PyList_New(4);
+    PyList_SET_ITEM(pquad, 0, Py_BuildValue("[ff]", quad.ul.x, quad.ul.y));
+    PyList_SET_ITEM(pquad, 1, Py_BuildValue("[ff]", quad.ur.x, quad.ur.y));
+    PyList_SET_ITEM(pquad, 2, Py_BuildValue("[ff]", quad.ll.x, quad.ll.y));
+    PyList_SET_ITEM(pquad, 3, Py_BuildValue("[ff]", quad.lr.x, quad.lr.y));
+    return pquad;
 }
 
 //-----------------------------------------------------------------------------

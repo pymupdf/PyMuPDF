@@ -22,7 +22,6 @@ void JM_embedded_clean(fz_context *ctx, pdf_document *pdf)
     if (efiles)  // make sure embedded files get displayed by viewers
     {
         pdf_dict_put_name(ctx, root, PDF_NAME(PageMode), "UseAttachments");
-        //pdf_dict_del(ctx, efiles, PDF_NAME(Limits));
     }
     return;
 }
@@ -35,7 +34,8 @@ pdf_obj *JM_embed_file(fz_context *ctx,
                        fz_buffer *buf,
                        char *filename,
                        char *ufilename,
-                       char *desc)
+                       char *desc,
+                       int compress)
 {
     size_t len = 0;
     pdf_obj *ef, *f, *params, *val = NULL;
@@ -53,7 +53,7 @@ pdf_obj *JM_embed_file(fz_context *ctx,
                            fz_new_buffer_from_copied_data(ctx, "  ", 1),
                            NULL, 0);
         pdf_dict_put_drop(ctx, ef, PDF_NAME(F), f);
-        JM_update_stream(ctx, pdf, f, buf);
+        JM_update_stream(ctx, pdf, f, buf, compress);
         len = fz_buffer_storage(ctx, buf, NULL);
         pdf_dict_put_int(ctx, f, PDF_NAME(DL), len);
         pdf_dict_put_int(ctx, f, PDF_NAME(Length), len);

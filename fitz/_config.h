@@ -6,7 +6,7 @@
 	Enable the following for spot (and hence overprint/overprint
 	simulation) capable rendering. This forces FZ_PLOTTERS_N on.
 */
-#define FZ_ENABLE_SPOT_RENDERING 1
+/* #define FZ_ENABLE_SPOT_RENDERING 1 */
 
 /*
 	Choose which plotters we need.
@@ -34,6 +34,11 @@
 /* #define FZ_ENABLE_GPRF 1 */
 
 /*
+	Choose whether to enable ICC color profiles.
+*/
+/* #define FZ_ENABLE_ICC 1 */
+
+/*
 	Choose whether to enable JPEG2000 decoding.
 	By default, it is enabled, but due to frequent security
 	issues with the third party libraries we support disabling
@@ -59,7 +64,7 @@
 #define TOFU // <=== PyMuPDF
 
 /* To skip the CJK font, enable: (this implicitly enables TOFU_CJK_EXT and TOFU_CJK_LANG) */
-// #define TOFU_CJK
+/* #define TOFU_CJK */
 
 /* To skip CJK Extension A, enable: (this implicitly enables TOFU_CJK_LANG) */
 #define TOFU_CJK_EXT // <=== PyMuPDF
@@ -79,9 +84,6 @@
 /* To skip the SIL fonts, enable: */
 #define TOFU_SIL // <=== PyMuPDF
 
-/* To skip the ICC profiles, enable: */
-#define NO_ICC // <=== PyMuPDF
-
 /* To skip the Base14 fonts, enable: */
 /* #define TOFU_BASE14 */
 /* (You probably really don't want to do that except for measurement purposes!) */
@@ -89,6 +91,10 @@
 /* ---------- DO NOT EDIT ANYTHING UNDER THIS LINE ---------- */
 
 #ifndef FZ_ENABLE_SPOT_RENDERING
+#define FZ_ENABLE_SPOT_RENDERING 1
+#endif
+
+#if FZ_ENABLE_SPOT_RENDERING
 #undef FZ_PLOTTERS_N
 #define FZ_PLOTTERS_N 1
 #endif /* FZ_ENABLE_SPOT_RENDERING */
@@ -154,6 +160,10 @@
 #ifndef FZ_ENABLE_JS
 #define FZ_ENABLE_JS 1
 #endif /* FZ_ENABLE_JS */
+
+#ifndef FZ_ENABLE_ICC
+#define FZ_ENABLE_ICC 1
+#endif /* FZ_ENABLE_ICC */
 
 /* If Epub and HTML are both disabled, disable SIL fonts */
 #if FZ_ENABLE_HTML == 0 && FZ_ENABLE_EPUB == 0

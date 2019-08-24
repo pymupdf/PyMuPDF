@@ -57,7 +57,7 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, fz_page *fs
                 resources = pdf_graft_mapped_object(ctx, gmap, o);
             else
                 resources = pdf_graft_object(ctx, pdfout, o);
-            
+
             // get spgage contents source
             res = JM_read_contents(ctx, spageref);
 
@@ -66,7 +66,7 @@ pdf_obj *JM_xobject_from_page(fz_context *ctx, pdf_document *pdfout, fz_page *fs
             //-------------------------------------------------------------
             xobj1 = pdf_new_xobject(ctx, pdfout, mediabox, fz_identity, NULL, res);
             // store spage contents
-            JM_update_stream(ctx, pdfout, xobj1, res);
+            JM_update_stream(ctx, pdfout, xobj1, res, 1);
             fz_drop_buffer(ctx, res);
 
             // store spage resources
@@ -108,7 +108,7 @@ int JM_insert_contents(fz_context *ctx, pdf_document *pdf,
                 if (contents) pdf_array_push(ctx, carr, contents);
                 pdf_array_push_drop(ctx, carr, newconts);
             }
-            else 
+            else
             {
                 pdf_array_push_drop(ctx, carr, newconts);
                 if (contents) pdf_array_push(ctx, carr, contents);
@@ -154,9 +154,9 @@ void JM_extend_contents(fz_context *ctx, pdf_document *pdfout,
             fz_append_buffer(ctx, endcont, oldcont);
         }
         fz_terminate_buffer(ctx, endcont);            // finalize result buffer
-    
+
         // now update the content stream
-        JM_update_stream(ctx, pdfout, contents, endcont);
+        JM_update_stream(ctx, pdfout, contents, endcont, 1);
     }
     fz_always(ctx)
     {

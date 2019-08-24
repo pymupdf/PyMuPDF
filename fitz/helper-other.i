@@ -1,11 +1,23 @@
 %{
+// redirect MuPDF warnings
+void JM_mupdf_warning(void *user, const char *message)
+{
+    PyList_Append(JM_mupdf_warnings_store, Py_BuildValue("s", message));
+}
+
+// redirect MuPDF errors
+void JM_mupdf_error(void *user, const char *message)
+{
+    PySys_WriteStderr("mupdf: %s\n", message);
+}
+
 // a simple tracer
 void JM_TRACE(const char *id)
 {
     PySys_WriteStdout("%s\n", id);
 }
 
-// put warnings on Python-stdout
+// put a warning on Python-stdout
 void JM_Warning(const char *id)
 {
     PySys_WriteStdout("warning: %s\n", id);
@@ -113,7 +125,6 @@ PyObject *JM_fitz_config()
     PyDict_SetItemString(dict, "img", JM_BOOL(FZ_ENABLE_IMG));
     PyDict_SetItemString(dict, "html", JM_BOOL(FZ_ENABLE_HTML));
     PyDict_SetItemString(dict, "epub", JM_BOOL(FZ_ENABLE_EPUB));
-    PyDict_SetItemString(dict, "gprf", JM_BOOL(FZ_ENABLE_GPRF));
     PyDict_SetItemString(dict, "jpx", JM_BOOL(FZ_ENABLE_JPX));
     PyDict_SetItemString(dict, "js", JM_BOOL(FZ_ENABLE_JS));
     PyDict_SetItemString(dict, "tofu", have_TOFU);
@@ -136,18 +147,30 @@ PyObject *JM_fitz_config()
 //----------------------------------------------------------------------------
 void JM_color_FromSequence(PyObject *color, int *n, float col[4])
 {
-    if (!color) return;
+    if (!color || (!PySequence_Check(color) && !PyFloat_Check(color)))
+    {
+        *n = 1;
+        return;
+    }
     if (PyFloat_Check(color)) // maybe just a single float
     {
         float c = (float) PyFloat_AsDouble(color);
-        if (!INRANGE(c, 0.0f, 1.0f)) return;
+        if (!INRANGE(c, 0.0f, 1.0f))
+        {
+            *n = 1;
+            return;
+        }
         col[0] = c;
         *n = 1;
         return;
     }
-    if (!PySequence_Check(color)) return;
-    int len = PySequence_Size(color), i;
-    if (!INRANGE(len, 1, 4) || len == 2) return;
+
+    int len = (int) PySequence_Size(color), i;
+    if (!INRANGE(len, 1, 4) || len == 2)
+    {
+        *n = 1;
+        return;
+    }
 
     float mcol[4] = {0,0,0,0}; // local color storage
     for (i = 0; i < len; i++)
@@ -194,11 +217,18 @@ const char *JM_image_extension(int type)
 //----------------------------------------------------------------------------
 PyObject *JM_BinFromBuffer(fz_context *ctx, fz_buffer *buffer)
 {
+
+#if  PY_VERSION_HEX < 0x03000000
+ #define PyBytes_FromString(x) PyString_FromString(x)
+ #define PyBytes_FromStringAndSize(c, l) PyString_FromStringAndSize(c, l)
+#endif
+
     PyObject *bytes = PyBytes_FromString("");
     if (buffer)
     {
         char *c = NULL;
         size_t len = fz_buffer_storage(gctx, buffer, &c);
+        Py_DECREF(bytes);
         bytes = PyBytes_FromStringAndSize(c, (Py_ssize_t) len);
     }
     return bytes;
@@ -214,6 +244,7 @@ PyObject *JM_BArrayFromBuffer(fz_context *ctx, fz_buffer *buffer)
     if (buffer)
     {
         size_t len = fz_buffer_storage(ctx, buffer, &c);
+        Py_DECREF(bytes);
         bytes = PyByteArray_FromStringAndSize(c, (Py_ssize_t) len);
     }
     return bytes;
@@ -234,6 +265,7 @@ PyObject *JM_B64FromBuffer(fz_context *ctx, fz_buffer *buffer)
         fz_output *out = fz_new_output_with_buffer(ctx, res);
         fz_write_base64(ctx, out, (const unsigned char *) c, (int) len, 0);
         size_t nlen = fz_buffer_storage(ctx, res, &b64);
+        Py_DECREF(bytes);
         bytes = PyBytes_FromStringAndSize(b64, (Py_ssize_t) nlen);
         fz_drop_buffer(ctx, res);
         fz_drop_output(ctx, out);
@@ -242,33 +274,26 @@ PyObject *JM_B64FromBuffer(fz_context *ctx, fz_buffer *buffer)
 }
 
 //----------------------------------------------------------------------------
-// deflate char* into a buffer
-// this is a copy of function "deflatebuf" of pdf_write.c
+// compress char* into a new buffer
 //----------------------------------------------------------------------------
-fz_buffer *JM_deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
+fz_buffer *JM_compress_buffer(fz_context *ctx, fz_buffer *inbuffer)
 {
     fz_buffer *buf = NULL;
-    uLongf csize;
-    int t;
-    uLong longN = (uLong) n;
-    unsigned char *data = NULL;
-    size_t cap;
     fz_try(ctx)
     {
-        if (n != (size_t)longN) THROWMSG("buffer too large to deflate");
-        cap = compressBound(longN);
-        data = fz_malloc(ctx, cap);
-        buf = fz_new_buffer_from_data(ctx, data, cap);
-        csize = (uLongf)cap;
-        t = compress(data, &csize, p, longN);
-        if (t != Z_OK) THROWMSG("cannot deflate buffer");
+        size_t compressed_length = 0;
+        unsigned char *data = fz_new_deflated_data_from_buffer(ctx,
+                              &compressed_length, inbuffer, FZ_DEFLATE_BEST);
+        if (data == NULL || compressed_length == 0)
+            return NULL;
+        buf = fz_new_buffer_from_data(ctx, data, compressed_length);
+        fz_resize_buffer(ctx, buf, compressed_length);
     }
     fz_catch(ctx)
     {
         fz_drop_buffer(ctx, buf);
         fz_rethrow(ctx);
     }
-    fz_resize_buffer(ctx, buf, csize);
     return buf;
 }
 
@@ -276,19 +301,20 @@ fz_buffer *JM_deflatebuf(fz_context *ctx, unsigned char *p, size_t n)
 // update a stream object
 // compress stream when beneficial
 //----------------------------------------------------------------------------
-void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffer *buffer)
+void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffer *buffer, int compress)
 {
-    size_t len, nlen;
-    unsigned char *data = NULL;
+    
     fz_buffer *nres = NULL;
-    len = fz_buffer_storage(ctx, buffer, &data);
-    nlen = len;
-    if (len > 20)       // ignore small stuff
+    size_t len = fz_buffer_storage(ctx, buffer, NULL);
+    size_t nlen = len;
+
+    if (len > 30)       // ignore small stuff
     {
-        nres = JM_deflatebuf(ctx, data, len);
+        nres = JM_compress_buffer(ctx, buffer);
         nlen = fz_buffer_storage(ctx, nres, NULL);
     }
-    if (nlen < len)     // was it worth the effort?
+
+    if (nlen < len && nres && compress==1)  // was it worth the effort?
     {
         pdf_dict_put(ctx, obj, PDF_NAME(Filter), PDF_NAME(FlateDecode));
         pdf_update_stream(ctx, doc, obj, nres, 1);
@@ -305,7 +331,13 @@ void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffe
 // of only the 'clip' part of the displaylist rectangle
 //-----------------------------------------------------------------------------
 fz_pixmap *
-JM_pixmap_from_display_list(fz_context *ctx, fz_display_list *list, PyObject *ctm, fz_colorspace *cs, int alpha, PyObject *clip)
+JM_pixmap_from_display_list(fz_context *ctx,
+                            fz_display_list *list,
+                            PyObject *ctm,
+                            fz_colorspace *cs,
+                            int alpha,
+                            PyObject *clip
+                           )
 {
     fz_rect rect = fz_bound_display_list(ctx, list);
     fz_matrix matrix = JM_matrix_from_py(ctm);
@@ -446,7 +478,7 @@ char *JM_Python_str_AsChar(PyObject *str)
 #if PY_VERSION_HEX >= 0x03000000
 #  define JM_Python_str_DelForPy3(x) JM_Free(x)
 #else
-#  define JM_Python_str_DelForPy3(x) 
+#  define JM_Python_str_DelForPy3(x)
 #endif
 
 //----------------------------------------------------------------------------

@@ -1,8 +1,8 @@
-# PyMuPDF 1.14.20
+# PyMuPDF 1.16.0
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: August 2, 2019
+Release date: August 10, 2019
 
 **Travis-CI:** [![Build Status](https://travis-ci.org/JorjMcKie/py-mupdf.svg?branch=master)](https://travis-ci.org/JorjMcKie/py-mupdf)
 
@@ -14,7 +14,7 @@ On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![](https://
 
 # Introduction
 
-This is **version 1.14.20 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.14.x](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
+This is **version 1.16.0 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.16.x](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -37,15 +37,14 @@ To do this, you must download and generate MuPDF. This process depends very much
 * Be sure to download the official MuPDF source release from [here](https://mupdf.com/downloads/archive). Do **not use** MuPDF's [GitHub repo](https://github.com/ArtifexSoftware/mupdf). It contains their current **development source**, which is **not compatible** with this PyMuPDF version most of the time.
 
 * The repo's `fitz` folder contains a few files whose names start with an underscore `"_"`. These files contain configuration data and hotfixes. Each one must be copy-renamed to its correct target location of the MuPDF source that you have downloaded, **before you generate MuPDF**. Currently, these files are:
-  - fitz configuration file `_mupdf_config.h` copy-replace to: `mupdf/include/mupdf/fitz/config.h`. It contains configuration data like e.g. which fonts to support.
-  - fitz error module `_error.c`, copy-replace to: `mupdf/source/fitz/error.c`. It redirects MuPDF warnings and errors so they can be intercepted by PyMuPDF.
-  - PDF device module `_pdf-device.c` copy-replace to: `mupdf/source/pdf/pdf-device.c`. It fixes a bug which caused method `Document.convertToPDF()` to bring down the interpeter.
+  - fitz configuration file `_config.h` copy-replace to: `mupdf/include/mupdf/fitz/config.h`. It contains configuration data like e.g. which fonts to support.
+
   - Now MuPDF can be generated.
 
 * Since PyMuPDF v1.14.17, the sources provided in this repository **no longer contain** the interface files ``fitz.py`` and ``fitz.wrap.c`` - they are generated **"on the fly"** by ``setup.py`` using the interface generator [SWIG](http://www.swig.org/). So you need SWIG being installed on your system. Please refer to issue #312 for a background.
 
 * If you do **not (want to) use SWIG** for generating PyMuPDF, please download the **sources from PyPI** - they continue to contain the interface files.
-    - Side note: those files have been generated using **SWIG v4.0.0**, which implements important improvements regarding security and also generates a much simpler ``fitz.py``. Our wheels are based on this SWIG version, too.
+    - Side note: those files have been generated using **SWIG v4.0.0**, which implements improvements regarding security and also generates a simpler ``fitz.py``. Our wheels are based on this SWIG version, too.
 
 Once this is done, adjust directories in ``setup.py`` and run ``python setup.py install``.
 
@@ -74,7 +73,9 @@ Specifically for **PDF files**, PyMuPDF also provides update access to **low-lev
 
 Other features include embedding vector images (SVG, PDF) such as logos or watermarks, "posterizing" a PDF or creating "booklet" and "4-up" versions.
 
-You can now also create and update **Form PDFs** and **form fields** with support for text, checkbox, listbox and combobox widgets.
+You can also create and update **Form PDFs** and **form fields** with support for text, checkbox, listbox and combobox widgets.
+
+Starting with version 1.16.0, PDF password protection is **fully supported**: passwords, encryption methods and permission levels can be set, changed or removed.
 
 To some degree, PyMuPDF can also be used as an [image converter](https://github.com/pymupdf/PyMuPDF/wiki/How-to-Convert-Images): it can read a broad range of input formats and can produce **Portable Network Graphics (PNG)**, **Portable Anymaps** (**PNM**, etc.), **Portable Arbitrary Maps (PAM)**, **Adobe Postscript** and **Adobe Photoshop** documents, making the use of other graphics packages obselete in many cases. But interfacing with e.g. PIL/Pillow for image input and output is easy as well.
 

@@ -677,10 +677,10 @@ def _make_textpage_dict(TextPage, raw=False):
     """ Return a dictionary representing all text on a page.
 
     Notes:
-        A number of precautions are taken to keep memory consumption under
+        A number of precautions is taken to keep memory consumption under
         control. E.g. when calling utility functions, we provide empty lists
         to be filled by them. This ensures that garbage collection on the
-        Python level knows them when taking appropriate action.
+        Python level knows them, when taking appropriate action.
         The utility functions themselves strictly return flat structures (e.g.
         no dictionaries, no nested lists) to prevent sub-structures that are
         not reachable by gc.
@@ -732,7 +732,7 @@ def _make_textpage_dict(TextPage, raw=False):
             span_bbox = Rect()  # bbox of a span
 
             for char in characters:  # iterate through the characters
-                style = char[6:9]  # font info
+                style = char[6:10]  # font info
                 pos = style[2].find("+")  # remove any garbage from font
                 if pos > 0:
                     style = list(style)
@@ -754,7 +754,11 @@ def _make_textpage_dict(TextPage, raw=False):
                         span_list.append(span)  # output previous span
 
                     # init a new span
-                    span = {"size": style[0], "flags": style[1], "font": style[2]}
+                    span = {"size": style[0],
+                            "flags": style[1],
+                            "font": style[2],
+                            "color": style[3]
+                           }
                     old_style = style
                     span_bbox = Rect()  # reset span bbox
 

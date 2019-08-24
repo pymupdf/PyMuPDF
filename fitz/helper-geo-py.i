@@ -216,8 +216,9 @@ class Matrix(object):
         return len(m) == 6 and bool(self - m) is False
 
     def __abs__(self):
-        return math.sqrt(self.a*self.a + self.b*self.b + self.c*self.c + \
-                         self.d*self.d + self.e*self.e + self.f*self.f)
+        return math.sqrt(sum([c*c for c in self]))
+
+    norm = __abs__
 
     @property
     def isRectilinear(self):
@@ -385,6 +386,8 @@ class Point(object):
 
     def __abs__(self):
         return math.sqrt(self.x * self.x + self.y * self.y)
+
+    norm = __abs__
 
     def __add__(self, p):
         if hasattr(p, "__float__"):
@@ -589,6 +592,9 @@ class Rect(object):
         if self.isEmpty or self.isInfinite:
             return 0.0
         return (self.x1 - self.x0) * (self.y1 - self.y0)
+
+    def norm(self):
+        return math.sqrt(sum([c*c for c in self]))
 
     def __add__(self, p):
         if hasattr(p, "__float__"):

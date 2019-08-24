@@ -54,7 +54,6 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
     fz_output *out = NULL;
     fz_buffer *res = NULL;
     // prepare write options structure
-    int errors = 0;
     pdf_write_options opts = { 0 };
     opts.do_garbage         = 4;
     opts.do_compress        = 1;
@@ -67,8 +66,7 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
     opts.do_linear          = 0;
     opts.do_clean           = 1;
     opts.do_pretty          = 0;
-    opts.continue_on_error  = 1;
-    opts.errors = &errors;
+
     fz_try(ctx)
     {
         res = fz_new_buffer(ctx, 8192);
