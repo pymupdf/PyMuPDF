@@ -6737,9 +6737,8 @@ struct Tools
             return Py_BuildValue("s", FZ_VERSION);
         }
 
-        %feature("autodoc","Return MuPDF warnings.") mupdf_warnings;
-        %pythonappend mupdf_warnings %{
-        return "\n".join(val)%}
+        %pythoncode %{property%}
+        %pythonappend mupdf_warnings %{val = "\n".join(val)%}
         PyObject *mupdf_warnings()
         {
             return JM_mupdf_warnings_store;
