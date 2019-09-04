@@ -89,6 +89,7 @@ PyObject *JM_annot_border(fz_context *ctx, pdf_obj *annot_obj)
     PyObject *res = PyDict_New();
     PyObject *dash_py   = PyList_New(0);
     PyObject *effect_py = PyList_New(0);
+    PyObject *val;
     int i;
     char *effect2 = NULL, *style = NULL;
     float width = -1.0f;
@@ -102,8 +103,11 @@ PyObject *JM_annot_border(fz_context *ctx, pdf_obj *annot_obj)
         {
             pdf_obj *dash = pdf_array_get(ctx, o, 3);
             for (i = 0; i < pdf_array_len(ctx, dash); i++)
-                PyList_Append(dash_py, Py_BuildValue("i",
-                              pdf_to_int(ctx, pdf_array_get(ctx, dash, i))));
+            {
+                val = Py_BuildValue("i", pdf_to_int(ctx, pdf_array_get(ctx, dash, i)));
+                PyList_Append(dash_py, val);
+                Py_DECREF(val);
+            }
         }
     }
 
@@ -118,8 +122,11 @@ PyObject *JM_annot_border(fz_context *ctx, pdf_obj *annot_obj)
         if (o)
         {
             for (i = 0; i < pdf_array_len(ctx, o); i++)
-                PyList_Append(dash_py, Py_BuildValue("i",
-                              pdf_to_int(ctx, pdf_array_get(ctx, o, i))));
+            {
+                val = Py_BuildValue("i", pdf_to_int(ctx, pdf_array_get(ctx, o, i)));
+                PyList_Append(dash_py, val);
+                Py_DECREF(val);
+            }
         }
     }
 
@@ -132,15 +139,19 @@ PyObject *JM_annot_border(fz_context *ctx, pdf_obj *annot_obj)
         if (o) effect1 = pdf_to_int(ctx, o);
     }
 
-    PyList_Append(effect_py, Py_BuildValue("i", effect1));
-    PyList_Append(effect_py, Py_BuildValue("s", effect2));
-
-    PyDict_SetItemString(res, "width", Py_BuildValue("f", width));
-
+    val = Py_BuildValue("i", effect1);
+    PyList_Append(effect_py, val);
+    Py_DECREF(val);
+    val = Py_BuildValue("s", effect2);
+    PyList_Append(effect_py, val);
+    Py_DECREF(val);
+    val = Py_BuildValue("f", width);
+    PyDict_SetItemString(res, "width", val);
+    Py_DECREF(val);
     PyDict_SetItemString(res, "dashes", dash_py);
-
-    PyDict_SetItemString(res, "style", Py_BuildValue("s", style));
-
+    val = Py_BuildValue("s", style);
+    PyDict_SetItemString(res, "style", val);
+    Py_DECREF(val);
     if (effect1 > -1) PyDict_SetItemString(res, "effect", effect_py);
     Py_CLEAR(effect_py);
     Py_CLEAR(dash_py);
@@ -215,7 +226,7 @@ PyObject *JM_annot_colors(fz_context *ctx, pdf_obj *annot_obj)
     PyObject *res = PyDict_New();
     PyObject *bc = PyList_New(0);        // stroke colors
     PyObject *fc = PyList_New(0);        // fill colors
-
+    PyObject *val;
     int i;
     float col;
     pdf_obj *o = pdf_dict_get(ctx, annot_obj, PDF_NAME(C));
@@ -225,7 +236,9 @@ PyObject *JM_annot_colors(fz_context *ctx, pdf_obj *annot_obj)
         for (i = 0; i < n; i++)
         {
             col = pdf_to_real(ctx, pdf_array_get(ctx, o, i));
-            PyList_Append(bc, Py_BuildValue("f", col));
+            val = Py_BuildValue("f", col);
+            PyList_Append(bc, val);
+            Py_DECREF(val);
         }
     }
     PyDict_SetItemString(res, "stroke", bc);
@@ -237,7 +250,9 @@ PyObject *JM_annot_colors(fz_context *ctx, pdf_obj *annot_obj)
         for (i = 0; i < n; i++)
         {
             col = pdf_to_real(ctx, pdf_array_get(ctx, o, i));
-            PyList_Append(fc, Py_BuildValue("f", col));
+            val = Py_BuildValue("f", col);
+            PyList_Append(fc, val);
+            Py_DECREF(val);
         }
     }
     PyDict_SetItemString(res, "fill", fc);

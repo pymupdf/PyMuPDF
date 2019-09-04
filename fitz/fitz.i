@@ -346,7 +346,7 @@ struct fz_document_s
         %pythonprepend close %{
             if self.isClosed:
                 raise ValueError("document closed")
-            if hasattr(self, '_outline') and self._outline:
+            if hasattr(self, "_outline") and self._outline:
                 self._dropOutline(self._outline)
                 self._outline = None
             self._reset_page_refs()
@@ -438,7 +438,7 @@ struct fz_document_s
         PyObject *_embeddedFileNames(PyObject *namelist)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); // get pdf document
-
+            PyObject *val;
             fz_try(gctx)
             {
                 assert_PDF(pdf);
@@ -453,9 +453,11 @@ struct fz_document_s
                     int i, n = pdf_array_len(gctx, names);
                     for (i=0; i < n; i+=2)
                     {
-                        PyList_Append(namelist, Py_BuildValue("s",
+                        val = Py_BuildValue("s",
                                       pdf_to_text_string(gctx,
-                                      pdf_array_get(gctx, names, i))));
+                                      pdf_array_get(gctx, names, i)));
+                        PyList_Append(namelist, val);
+                        Py_DECREF(val);
                     }
                 }
             }
@@ -489,6 +491,7 @@ struct fz_document_s
             Py_ssize_t name_len = 0;
             char *name = NULL;
             char *sname = NULL;
+            PyObject *val;
             fz_try(gctx)
             {
                 pdf_obj *names = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
@@ -502,15 +505,21 @@ struct fz_document_s
 
                 name = (char *) pdf_to_text_string(gctx,
                                    pdf_dict_get(gctx, o, PDF_NAME(F)));
-                PyDict_SetItemString(infodict, "filename", JM_UNICODE(name));
+                val = JM_UNICODE(name);
+                PyDict_SetItemString(infodict, "filename", val);
+                Py_DECREF(val);
 
                 name = (char *) pdf_to_text_string(gctx,
                                     pdf_dict_get(gctx, o, PDF_NAME(UF)));
-                PyDict_SetItemString(infodict, "ufilename", JM_UNICODE(name));
+                val = JM_UNICODE(name);
+                PyDict_SetItemString(infodict, "ufilename", val);
+                Py_DECREF(val);
 
                 name = (char *) pdf_to_text_string(gctx,
                                     pdf_dict_get(gctx, o, PDF_NAME(Desc)));
-                PyDict_SetItemString(infodict, "desc", JM_UNICODE(name));
+                val = JM_UNICODE(name);
+                PyDict_SetItemString(infodict, "desc", val);
+                Py_DECREF(val);
 
                 int len = -1, DL = -1;
                 pdf_obj *ef = pdf_dict_get(gctx, o, PDF_NAME(EF));
@@ -526,9 +535,12 @@ struct fz_document_s
                                    PDF_NAME(Size), NULL);
                     if (o) DL = pdf_to_int(gctx, o);
                 }
-
-                PyDict_SetItemString(infodict, "size", Py_BuildValue("i", DL));
-                PyDict_SetItemString(infodict, "length", Py_BuildValue("i", len));
+                val = Py_BuildValue("i", DL);
+                PyDict_SetItemString(infodict, "size", val);
+                Py_DECREF(val);
+                val = Py_BuildValue("i", len);
+                PyDict_SetItemString(infodict, "length", val);
+                Py_DECREF(val);
             }
             fz_catch(gctx) return NULL;
             Py_RETURN_NONE;
@@ -943,7 +955,7 @@ struct fz_document_s
             char *hex;
             pdf_obj *o;
             int n, i, len;
-            PyObject *bytes;
+            PyObject *bytes, *val;
             fz_try(gctx)
             {
                 pdf_obj *identity = pdf_dict_get(gctx, pdf_trailer(gctx, pdf),
@@ -958,7 +970,9 @@ struct fz_document_s
                         buffer = fz_new_buffer(gctx, 2 * len);
                         fz_buffer_storage(gctx, buffer, &hex);
                         hexlify(len, (unsigned char *) pdf_to_str_buf(gctx, o), (unsigned char *) hex);
-                        PyList_Append(idlist, Py_BuildValue("s", hex));
+                        val = Py_BuildValue("s", hex);
+                        PyList_Append(idlist, val);
+                        Py_DECREF(val);
                         Py_CLEAR(bytes);
                         fz_drop_buffer(gctx, buffer);
                         buffer = NULL;
@@ -1184,7 +1198,7 @@ if links:
 
         %feature("autodoc","Copy page range ['from', 'to'] of source PDF, starting as page number 'start_at'.") insertPDF;
 
-        PyObject *insertPDF(struct fz_document_s *docsrc, int from_page=-1, int to_page=-1, int start_at=-1, int rotate=-1, int links = 1)
+        PyObject *insertPDF(struct fz_document_s *docsrc, int from_page=-1, int to_page=-1, int start_at=-1, int rotate=-1, int links=1, int annots=1)
         {
             pdf_document *pdfout = pdf_specifics(gctx, $self);
             pdf_document *pdfsrc = pdf_specifics(gctx, docsrc);
@@ -1207,7 +1221,7 @@ if links:
             fz_try(gctx)
             {
                 if (!pdfout || !pdfsrc) THROWMSG("source or target not a PDF");
-                merge_range(gctx, pdfout, pdfsrc, fp, tp, sa, rotate);
+                merge_range(gctx, pdfout, pdfsrc, fp, tp, sa, rotate, links, annots);
             }
             fz_catch(gctx) return NULL;
             pdfout->dirty = 1;
@@ -1348,7 +1362,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                                  int ordering, int limit, int idx = 0)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            PyObject *wlist = NULL;
+            PyObject *wlist = NULL, *val;
             int i, glyph, mylimit;
             mylimit = limit;
             if (mylimit < 256) mylimit = 256;
@@ -1391,11 +1405,15 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 
                     if (glyph > 0)
                     {
-                        PyList_Append(wlist, Py_BuildValue("(i, f)", glyph, adv));
+                        val = Py_BuildValue("(i, f)", glyph, adv);
+                        PyList_Append(wlist, val);
+                        Py_DECREF(val);
                     }
                     else
                     {
-                        PyList_Append(wlist, Py_BuildValue("(i, f)", glyph, 0.0));
+                        val = Py_BuildValue("(i, f)", glyph, 0.0);
+                        PyList_Append(wlist, val);
+                        Py_DECREF(val);
                     }
                 }
             }
@@ -1673,7 +1691,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         PyObject *_delToC()
         {
             PyObject *xrefs = PyList_New(0);          // create Python list
-
+            PyObject *val;
             pdf_document *pdf = pdf_specifics(gctx, $self);
             if (!pdf) return xrefs;                   // not a pdf
 
@@ -1700,7 +1718,9 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 xref = (int) PyInt_AsLong(PyList_GetItem(xrefs, i));
                 pdf_delete_object(gctx, pdf, xref);      // delete outline item
             }
-            PyList_Append(xrefs, Py_BuildValue("i", olroot_xref));
+            val = Py_BuildValue("i", olroot_xref);
+            PyList_Append(xrefs, val);
+            Py_DECREF(val);
             pdf->dirty = 1;
             return xrefs;
         }
@@ -1774,7 +1794,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             pdf_document *pdf = pdf_specifics(gctx, $self);
             if (!pdf) Py_RETURN_NONE;           // not a PDF
             pdf_obj *fonts = NULL;
-            PyObject *liste = PyList_New(0);
+            PyObject *val, *liste = PyList_New(0);
             fz_try(gctx)
             {
                 fonts = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root), PDF_NAME(AcroForm), PDF_NAME(DR), PDF_NAME(Font), NULL);
@@ -1784,7 +1804,9 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                     for (i = 0; i < n; i++)
                     {
                         pdf_obj *f = pdf_dict_get_key(gctx, fonts, i);
-                        PyList_Append(liste, Py_BuildValue("s", pdf_to_name(gctx, f)));
+                        val = Py_BuildValue("s", pdf_to_name(gctx, f));
+                        PyList_Append(liste, val);
+                        Py_DECREF(val);
                     }
                 }
             }
@@ -2424,7 +2446,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             def __repr__(self):
                 m = "closed " if self.isClosed else ""
                 if self.stream is None:
-                    if self.name is "":
+                    if self.name == "":
                         return m + "fitz.Document(<new PDF, doc# %i>)" % self._graft_id
                     return m + "fitz.Document('%s')" % (self.name,)
                 return m + "fitz.Document('%s', <memory, doc# %i>)" % (self.name, self._graft_id)
@@ -2471,6 +2493,12 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 self._reset_page_refs = DUMMY
                 self.__swig_destroy__ = DUMMY
                 self.isClosed = True
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                self.close()
             %}
     }
 };
@@ -3273,7 +3301,7 @@ fannot._erase()
         PARENTCHECK(_addAnnot_FromString)
         PyObject *_addAnnot_FromString(PyObject *linklist)
         {
-            pdf_obj *annots, *annots_arr, *annot, *ind_obj, *new_array;
+            pdf_obj *annots, *annot, *ind_obj, *new_array;
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             PyObject *txtpy;
             char *text;
@@ -3286,21 +3314,14 @@ fannot._erase()
                 // get existing annots array
                 annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
                 if (annots)
-                    {
-                        if (pdf_is_indirect(gctx, annots))
-                            annots_arr = pdf_resolve_indirect(gctx, annots);
-                        else annots_arr = annots;
-                    }
+                {
+                    new_array = annots;
+                }
                 else
-                    annots_arr = NULL;
-                int new_len = lcount;
-                if (annots_arr) new_len += pdf_array_len(gctx, annots_arr);
-                // allocate new array of old plus new size
-                new_array = pdf_new_array(gctx, page->doc, new_len);
-                if (annots_arr)
-                {   // copy existing annots to new array
-                    for (i = 0; i < pdf_array_len(gctx, annots_arr); i++)
-                            pdf_array_push(gctx, new_array, pdf_array_get(gctx, annots_arr, i));
+                {
+                    new_array = pdf_new_array(gctx, page->doc, lcount);
+                    pdf_dict_put_drop(gctx, page->obj, PDF_NAME(Annots), new_array);
+                    new_array = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
                 }
             }
             fz_catch(gctx) return NULL;
@@ -3332,7 +3353,6 @@ fannot._erase()
             }
             fz_try(gctx)
             {
-                pdf_dict_put_drop(gctx, page->obj, PDF_NAME(Annots), new_array);
                 refresh_link_table(gctx, page);
             }
             fz_catch(gctx) return NULL;
@@ -3349,7 +3369,7 @@ fannot._erase()
             pdf_obj *annots, *annots_arr, *link, *obj;
             int i, lcount;
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            PyObject *linkxrefs = PyList_New(0);
+            PyObject *val, *linkxrefs = PyList_New(0);
             if (!page) return linkxrefs;  // empty list for non-PDF
             annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
             if (!annots) return linkxrefs;  // no links on this page
@@ -3363,7 +3383,11 @@ fannot._erase()
                 link = pdf_array_get(gctx, annots_arr, i);
                 obj = pdf_dict_get(gctx, link, PDF_NAME(Subtype));
                 if (pdf_name_eq(gctx, obj, PDF_NAME(Link)))
-                    PyList_Append(linkxrefs, Py_BuildValue("i", pdf_to_num(gctx, link)));
+                {
+                    val = Py_BuildValue("i", pdf_to_num(gctx, link));
+                    PyList_Append(linkxrefs, val);
+                    Py_DECREF(val);
+                }
             }
             return linkxrefs;
         }
@@ -3775,6 +3799,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             PyObject *list = NULL;
             pdf_obj *contents = NULL, *icont = NULL;
+            PyObject *val;
             int i, xref;
             fz_try(gctx)
             {
@@ -3786,13 +3811,17 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
                     {
                         icont = pdf_array_get(gctx, contents, i);
                         xref = pdf_to_num(gctx, icont);
-                        PyList_Append(list,  Py_BuildValue("i", xref));
+                        val = Py_BuildValue("i", xref);
+                        PyList_Append(list, val);
+                        Py_DECREF(val);
                     }
                 }
                 else if (contents)          // at most 1 object there
                 {
                     xref = pdf_to_num(gctx, contents);
-                    PyList_Append(list, Py_BuildValue("i", xref));
+                    val = Py_BuildValue("i", xref);
+                    PyList_Append(list, val);
+                    Py_DECREF(val);
                 }
             }
             fz_catch(gctx) return NULL;
@@ -4451,9 +4480,9 @@ def writePNG(self, filename, savealpha = -1):
                 int stride = fz_pixmap_stride(gctx, $self);
                 int j, i = stride * y + n * x;
                 p = PyList_New(n);
-                for (j=0; j < n; j++)
+                for (j = 0; j < n; j++)
                 {
-                    PyList_SetItem(p, j, Py_BuildValue("i", $self->samples[i + j]));
+                    PyList_SET_ITEM(p, j, Py_BuildValue("i", $self->samples[i + j]));
                 }
             }
             fz_catch(gctx) return NULL;
@@ -5377,7 +5406,7 @@ struct pdf_annot_s
         %feature("autodoc","Retrieve attached file information.") fileInfo;
         PyObject *fileInfo()
         {
-            PyObject *res = PyDict_New();             // create Python dict
+            PyObject *val, *res = PyDict_New();  // create Python dict
             char *filename = NULL;
             char *desc = NULL;
             int length = -1, size = -1;
@@ -5414,10 +5443,18 @@ struct pdf_annot_s
                                 PDF_NAME(Size), NULL);
             if (o) size = pdf_to_int(gctx, o);
 
-            PyDict_SetItemString(res, "filename", JM_UNICODE(filename));
-            PyDict_SetItemString(res, "desc", JM_UNICODE(desc));
-            PyDict_SetItemString(res, "length", Py_BuildValue("i", length));
-            PyDict_SetItemString(res, "size", Py_BuildValue("i", size));
+            val = JM_UNICODE(filename);
+            PyDict_SetItemString(res, "filename", val);
+            Py_DECREF(val);
+            val = JM_UNICODE(desc);
+            PyDict_SetItemString(res, "desc", val);
+            Py_DECREF(val);
+            val = Py_BuildValue("i", length);
+            PyDict_SetItemString(res, "length", val);
+            Py_DECREF(val);
+            val = Py_BuildValue("i", size);
+            PyDict_SetItemString(res, "size", val);
+            Py_DECREF(val);
             return res;
         }
 
@@ -5528,35 +5565,47 @@ CheckParent(self)
         %pythoncode %{@property%}
         PyObject *info()
         {
-            PyObject *res = PyDict_New();
+            PyObject *val, *res = PyDict_New();
             pdf_obj *o;
             char *c;
             c = (char *) pdf_annot_contents(gctx, $self);
-            PyDict_SetItemString(res, "content", JM_UNICODE(c));
+            val = JM_UNICODE(c);
+            PyDict_SetItemString(res, "content", val);
+            Py_DECREF(val);
 
             o = pdf_dict_get(gctx, $self->obj, PDF_NAME(Name));
             c = (char *) pdf_to_name(gctx, o);
-            PyDict_SetItemString(res, "name", JM_UNICODE(c));
+            val = JM_UNICODE(c);
+            PyDict_SetItemString(res, "name", val);
+            Py_DECREF(val);
 
             // Title, author
             o = pdf_dict_get(gctx, $self->obj, PDF_NAME(T));
             c = (char *) pdf_to_text_string(gctx, o);
-            PyDict_SetItemString(res, "title", JM_UNICODE(c));
+            val = JM_UNICODE(c);
+            PyDict_SetItemString(res, "title", val);
+            Py_DECREF(val);
 
             // CreationDate
             o = pdf_dict_gets(gctx, $self->obj, "CreationDate");
             c = (char *) pdf_to_text_string(gctx, o);
-            PyDict_SetItemString(res, "creationDate", JM_UNICODE(c));
+            val = JM_UNICODE(c);
+            PyDict_SetItemString(res, "creationDate", val);
+            Py_DECREF(val);
 
             // ModDate
             o = pdf_dict_get(gctx, $self->obj, PDF_NAME(M));
             c = (char *) pdf_to_text_string(gctx, o);
-            PyDict_SetItemString(res, "modDate", JM_UNICODE(c));
+            val = JM_UNICODE(c);
+            PyDict_SetItemString(res, "modDate", val);
+            Py_DECREF(val);
 
             // Subj
             o = pdf_dict_gets(gctx, $self->obj, "Subj");
             c = (char *) pdf_to_text_string(gctx, o);
-            PyDict_SetItemString(res, "subject", JM_UNICODE(c));
+            val = JM_UNICODE(c);
+            PyDict_SetItemString(res, "subject", val);
+            Py_DECREF(val);
 
             return res;
         }
@@ -6842,10 +6891,35 @@ struct Tools
         %pythoncode %{
 
 def _hor_matrix(self, C, P):
-    """Given two points C, P calculate matrix that rotates and translates the vector C -> P such that C is mapped to Point(0, 0), and P to some point on the x axis
+    """Make a line horizontal.
+
+    Args:
+        C, P: points defining a line.
+    Notes:
+        Given two points C, P calculate matrix that rotates and translates the
+        vector C -> P such that C is mapped to Point(0, 0), and P to some point
+        on the x axis.
+        If C == P, the null matrix will result.
+    Returns:
+        Matrix m such that C * m = (0, 0) and (P * m).y = 0.
     """
-    S = (P - C).unit                        # unit vector C -> P
+
+    S = (P - C).unit  # unit vector C -> P
     return Matrix(1, 0, 0, 1, -C.x, -C.y) * Matrix(S.x, -S.y, S.y, S.x, 0, 0)
+
+def _angle_between(self, C, P, Q):
+    """Compute the angle between two lines.
+
+    Args:
+        C, P, Q: points defining two lines which cross in P.
+    Notes:
+        Compute sine and cosine of the angle between two lines crossing in
+        point P.
+    Returns:
+        (cos(alfa), sin(alfa)) of the angle alfa between the lines.
+    """
+    m = self._hor_matrix(P, Q)
+    return (C * m).unit
 
 def _le_annot_parms(self, annot, p1, p2):
     """Get common parameters for making line end symbols.
@@ -6860,7 +6934,7 @@ def _le_annot_parms(self, annot, p1, p2):
     nr = annot.rect
     np1 = p1                   # point coord relative to annot rect
     np2 = p2                   # point coord relative to annot rect
-    m = self._hor_matrix(np1, np2)        # matrix makes the line horizontal
+    m = self._hor_matrix(np1, np2)  # matrix makes the line horizontal
     im = ~m                            # inverted matrix
     L = np1 * m                        # converted start (left) point
     R = np2 * m                        # converted end (right) point

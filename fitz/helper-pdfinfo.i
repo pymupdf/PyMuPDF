@@ -70,15 +70,15 @@ void JM_gather_fonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
         int xref = pdf_to_num(ctx, fontdict);
         char *ext = "n/a";
         if (xref) ext = fontextension(ctx, pdf, xref);
-        PyObject *entry = PyList_New(0);
-        PyList_Append(entry, Py_BuildValue("i", xref));
-        PyList_Append(entry, Py_BuildValue("s", ext));
-        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, subtype)));
-        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, name)));
-        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, refname)));
-        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, encoding)));
+        PyObject *entry = PyList_New(6);
+        PyList_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
+        PyList_SET_ITEM(entry, 1, Py_BuildValue("s", ext));
+        PyList_SET_ITEM(entry, 2, JM_UnicodeFromASCII(pdf_to_name(ctx, subtype)));
+        PyList_SET_ITEM(entry, 3, JM_UnicodeFromASCII(pdf_to_name(ctx, name)));
+        PyList_SET_ITEM(entry, 4, JM_UnicodeFromASCII(pdf_to_name(ctx, refname)));
+        PyList_SET_ITEM(entry, 5, JM_UnicodeFromASCII(pdf_to_name(ctx, encoding)));
         PyList_Append(fontlist, entry);
-        Py_CLEAR(entry);
+        Py_DECREF(entry);
     }
 }
 
@@ -141,18 +141,18 @@ void JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
         height = pdf_dict_get(ctx, imagedict, PDF_NAME(Height));
         bpc = pdf_dict_get(ctx, imagedict, PDF_NAME(BitsPerComponent));
 
-        PyObject *entry = PyList_New(0);
-        PyList_Append(entry, Py_BuildValue("i", xref));
-        PyList_Append(entry, Py_BuildValue("i", gen));
-        PyList_Append(entry, Py_BuildValue("i", pdf_to_int(ctx, width)));
-        PyList_Append(entry, Py_BuildValue("i", pdf_to_int(ctx, height)));
-        PyList_Append(entry, Py_BuildValue("i", pdf_to_int(ctx, bpc)));
-        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, cs)));
-        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, altcs)));
-        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, refname)));
-        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, filter)));
+        PyObject *entry = PyList_New(9);
+        PyList_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
+        PyList_SET_ITEM(entry, 1, Py_BuildValue("i", gen));
+        PyList_SET_ITEM(entry, 2, Py_BuildValue("i", pdf_to_int(ctx, width)));
+        PyList_SET_ITEM(entry, 3, Py_BuildValue("i", pdf_to_int(ctx, height)));
+        PyList_SET_ITEM(entry, 4, Py_BuildValue("i", pdf_to_int(ctx, bpc)));
+        PyList_SET_ITEM(entry, 5, JM_UnicodeFromASCII(pdf_to_name(ctx, cs)));
+        PyList_SET_ITEM(entry, 6, JM_UnicodeFromASCII(pdf_to_name(ctx, altcs)));
+        PyList_SET_ITEM(entry, 7, JM_UnicodeFromASCII(pdf_to_name(ctx, refname)));
+        PyList_SET_ITEM(entry, 8, JM_UnicodeFromASCII(pdf_to_name(ctx, filter)));
         PyList_Append(imagelist, entry);
-        Py_CLEAR(entry);
+        Py_DECREF(entry);
     }
 }
 
@@ -185,11 +185,11 @@ void JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
 
         int xref = pdf_to_num(ctx, imagedict);
 
-        PyObject *entry = PyList_New(0);
-        PyList_Append(entry, Py_BuildValue("i", xref));
-        PyList_Append(entry, JM_UnicodeFromASCII(pdf_to_name(ctx, refname)));
+        PyObject *entry = PyList_New(2);
+        PyList_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
+        PyList_SET_ITEM(entry, 1, JM_UnicodeFromASCII(pdf_to_name(ctx, refname)));
         PyList_Append(imagelist, entry);
-        Py_CLEAR(entry);
+        Py_DECREF(entry);
     }
 }
 

@@ -3,38 +3,10 @@
 //-----------------------------------------------------------------------------
 // Functions converting betwenn PySequences and fitz geometry objects
 //-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-// Incomplete - not in use
-//-----------------------------------------------------------------------------
-/*
-int JM_is_valid_quad(fz_quad q)
-{
-    fz_point b = fz_normalize_vector(fz_make_point(q.ur.x - q.ul.x, q.ur.y - q.ul.y));
-    if ((fabs(b.x) + fabs(b.y)) <= JM_EPS) return 0;  // empty quad!
-
-    fz_point c = fz_normalize_vector(fz_make_point(q.ll.x - q.ul.x, q.ll.y - q.ul.y));
-    if ((fabs(c.x) + fabs(c.y)) <= JM_EPS) return 0;  // empty quad!
-
-    if (fabs(b.x * c.x + b.y * c.y) > JM_EPS)
-        return 0;                                // angle at UL != 90 deg
-
-    b = fz_normalize_vector(fz_make_point(q.ur.x - q.lr.x, q.ur.y - q.lr.y));
-    c = fz_normalize_vector(fz_make_point(q.ll.x - q.lr.x, q.ll.y - q.lr.y));
-    if (fabs(b.x * c.x + b.y * c.y) > JM_EPS)
-        return 0;                                // angle at LR != 90 deg
-
-    b = fz_normalize_vector(fz_make_point(q.ul.x - q.ll.x, q.ul.y - q.ll.y));
-    c = fz_normalize_vector(fz_make_point(q.lr.x - q.ll.x, q.lr.y - q.ll.y));
-    if (fabs(b.x * c.x + b.y * c.y) > JM_EPS)
-        return 0;                                // angle at LL != 90 deg
-    return 1;
-}
-*/
 
 //-----------------------------------------------------------------------------
-// PySequence to quad. Default: quad of four (0, 0) points.
-// Four floats are treated as coordinates of a rect, and its corners will
-// define the quad. Four pairs of floats are taken to make a quad.
+// fz_quad from PySequence. Four floats are treated as rect coordinates.
+// Else must be four pairs of floats.
 //-----------------------------------------------------------------------------
 fz_quad JM_quad_from_py(PyObject *r)
 {
@@ -95,18 +67,21 @@ fz_quad JM_quad_from_py(PyObject *r)
     return q;
 }
 
+//-----------------------------------------------------------------------------
+// PySequence from fz_quad.
+//-----------------------------------------------------------------------------
 PyObject *JM_py_from_quad(fz_quad quad)
 {
-    PyObject *pquad = PyList_New(4);
-    PyList_SET_ITEM(pquad, 0, Py_BuildValue("[ff]", quad.ul.x, quad.ul.y));
-    PyList_SET_ITEM(pquad, 1, Py_BuildValue("[ff]", quad.ur.x, quad.ur.y));
-    PyList_SET_ITEM(pquad, 2, Py_BuildValue("[ff]", quad.ll.x, quad.ll.y));
-    PyList_SET_ITEM(pquad, 3, Py_BuildValue("[ff]", quad.lr.x, quad.lr.y));
+    PyObject *pquad = PyTuple_New(4);
+    PyTuple_SET_ITEM(pquad, 0, Py_BuildValue("ff", quad.ul.x, quad.ul.y));
+    PyTuple_SET_ITEM(pquad, 1, Py_BuildValue("ff", quad.ur.x, quad.ur.y));
+    PyTuple_SET_ITEM(pquad, 2, Py_BuildValue("ff", quad.ll.x, quad.ll.y));
+    PyTuple_SET_ITEM(pquad, 3, Py_BuildValue("ff", quad.lr.x, quad.lr.y));
     return pquad;
 }
 
 //-----------------------------------------------------------------------------
-// PySequence to rect. Default: infinite rect
+// PySequence to fz_rect. Default: infinite rect
 //-----------------------------------------------------------------------------
 fz_rect JM_rect_from_py(PyObject *r)
 {
@@ -133,7 +108,7 @@ fz_rect JM_rect_from_py(PyObject *r)
 }
 
 //-----------------------------------------------------------------------------
-// fz_rect to PySequence
+// PySequence from fz_rect
 //-----------------------------------------------------------------------------
 PyObject *JM_py_from_rect(fz_rect r)
 {
@@ -168,7 +143,7 @@ fz_irect JM_irect_from_py(PyObject *r)
 }
 
 //-----------------------------------------------------------------------------
-// fz_irect to PySequence
+// PySequence from fz_irect
 //-----------------------------------------------------------------------------
 PyObject *JM_py_from_irect(fz_irect r)
 {
@@ -199,7 +174,7 @@ fz_point JM_point_from_py(PyObject *p)
 }
 
 //-----------------------------------------------------------------------------
-// fz_point to PySequence
+// PySequence from fz_point
 //-----------------------------------------------------------------------------
 PyObject *JM_py_from_point(fz_point p)
 {
@@ -247,7 +222,7 @@ fz_matrix JM_matrix_from_py(PyObject *m)
 }
 
 //-----------------------------------------------------------------------------
-// fz_matrix to PySequence
+// PySequence from fz_matrix
 //-----------------------------------------------------------------------------
 PyObject *JM_py_from_matrix(fz_matrix m)
 {

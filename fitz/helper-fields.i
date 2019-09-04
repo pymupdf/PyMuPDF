@@ -192,6 +192,7 @@ PyObject *JM_text_value(fz_context *ctx, pdf_annot *annot)
 PyObject *JM_listbox_value(fz_context *ctx, pdf_annot *annot)
 {
     int i = 0, n = 0;
+    PyObject *val;
     // may be single value or array
     pdf_obj *optarr = pdf_dict_get(ctx, annot->obj, PDF_NAME(V));
     if (pdf_is_string(ctx, optarr))         // a single string
@@ -208,7 +209,9 @@ PyObject *JM_listbox_value(fz_context *ctx, pdf_annot *annot)
         pdf_obj *elem = pdf_array_get(ctx, optarr, i);
         if (pdf_is_array(ctx, elem))
             elem = pdf_array_get(ctx, elem, 1);
-        PyList_Append(liste, PyString_FromString(pdf_to_text_string(ctx, elem)));
+        val = PyString_FromString(pdf_to_text_string(ctx, elem));
+        PyList_Append(liste, val);
+        Py_DECREF(val);
     }
     return liste;
 }
@@ -231,6 +234,7 @@ PyObject *JM_signature_value(fz_context *ctx, pdf_annot *annot)
 PyObject *JM_choice_options(fz_context *ctx, pdf_annot *annot)
 {   // return list of choices for list or combo boxes
     pdf_document *pdf = pdf_get_bound_document(ctx, annot->obj);
+    PyObject *val;
     int n = pdf_choice_widget_options(ctx, pdf, (pdf_widget *) annot, 0, NULL);
     if (n == 0) Py_RETURN_NONE;                     // wrong widget type
 
@@ -243,13 +247,17 @@ PyObject *JM_choice_options(fz_context *ctx, pdf_annot *annot)
         m = pdf_array_len(ctx, pdf_array_get(ctx, optarr, i));
         if (m == 2)
         {
-            PyList_Append(liste, Py_BuildValue("ss",
+            val = Py_BuildValue("ss",
             pdf_to_text_string(ctx, pdf_array_get(ctx, pdf_array_get(ctx, optarr, i), 0)),
-            pdf_to_text_string(ctx, pdf_array_get(ctx, pdf_array_get(ctx, optarr, i), 1))));
+            pdf_to_text_string(ctx, pdf_array_get(ctx, pdf_array_get(ctx, optarr, i), 1)));
+            PyList_Append(liste, val);
+            Py_DECREF(val);
         }
         else
         {
-            PyList_Append(liste, PyString_FromString(pdf_to_text_string(ctx, pdf_array_get(ctx, optarr, i))));
+            val = PyString_FromString(pdf_to_text_string(ctx, pdf_array_get(ctx, optarr, i)));
+            PyList_Append(liste, val);
+            Py_DECREF(val);
         }
     }
     return liste;
@@ -344,9 +352,10 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
             n = (Py_ssize_t) pdf_array_len(ctx, obj);
             PyObject *d = PyList_New(n);
             for (i = 0; i < n; i++)
-                PyList_SetItem(d, i, Py_BuildValue("i", pdf_to_int(ctx,
+            {
+                PyList_SET_ITEM(d, i, Py_BuildValue("i", pdf_to_int(ctx,
                                 pdf_array_get(ctx, obj, (int) i))));
-
+            }
             SETATTR("border_dashes", d);
             Py_CLEAR(d);
         }
@@ -364,9 +373,10 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
             n = (Py_ssize_t) pdf_array_len(ctx, obj);
             PyObject *col = PyList_New(n);
             for (i = 0; i < n; i++)
-                PyList_SetItem(col, i, Py_BuildValue("f",
+            {
+                PyList_SET_ITEM(col, i, Py_BuildValue("f",
                 pdf_to_real(ctx, pdf_array_get(ctx, obj, (int) i))));
-
+            }
             SETATTR("fill_color", col);
             Py_CLEAR(col);
         }
@@ -378,9 +388,10 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
             n = (Py_ssize_t) pdf_array_len(ctx, obj);
             PyObject *col = PyList_New(n);
             for (i = 0; i < n; i++)
-                PyList_SetItem(col, i, Py_BuildValue("f",
+            {
+                PyList_SET_ITEM(col, i, Py_BuildValue("f",
                 pdf_to_real(ctx, pdf_array_get(ctx, obj, (int) i))));
-
+            }
             SETATTR("border_color", col);
             Py_CLEAR(col);
         }

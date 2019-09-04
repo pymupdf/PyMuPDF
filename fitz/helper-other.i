@@ -2,7 +2,10 @@
 // redirect MuPDF warnings
 void JM_mupdf_warning(void *user, const char *message)
 {
-    PyList_Append(JM_mupdf_warnings_store, Py_BuildValue("s", message));
+    
+    PyObject *val = Py_BuildValue("s", message);
+    PyList_Append(JM_mupdf_warnings_store, val);
+    Py_DECREF(val);
 }
 
 // redirect MuPDF errors
@@ -486,61 +489,82 @@ char *JM_Python_str_AsChar(PyObject *str)
 // Modified copy of function of pdfmerge.c: we also copy annotations, but
 // we skip **link** annotations. In addition we rotate output.
 //----------------------------------------------------------------------------
-void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int page_from, int page_to, int rotate, pdf_graft_map *graft_map)
+void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int page_from, int page_to, int rotate, int links, int copy_annots, pdf_graft_map *graft_map)
 {
-    pdf_obj *pageref = NULL;
-    pdf_obj *page_dict;
-    pdf_obj *obj = NULL, *ref = NULL, *subt = NULL;
+    pdf_obj *page_ref = NULL;
+    pdf_obj *page_dict = NULL;
+    pdf_obj *obj = NULL, *ref = NULL;
 
     // list of object types (per page) we want to copy
-    pdf_obj *known_page_objs[] = {PDF_NAME(Contents), PDF_NAME(Resources),
-        PDF_NAME(MediaBox), PDF_NAME(CropBox), PDF_NAME(BleedBox), PDF_NAME(Annots),
-        PDF_NAME(TrimBox), PDF_NAME(ArtBox), PDF_NAME(Rotate), PDF_NAME(UserUnit)};
-    int n = nelem(known_page_objs);                   // number of list elements
-    int i;
-    int num, j;
+    pdf_obj *known_page_objs[] = {
+        PDF_NAME(Contents),
+        PDF_NAME(Resources),
+        PDF_NAME(MediaBox),
+        PDF_NAME(CropBox),
+        PDF_NAME(BleedBox),
+        PDF_NAME(TrimBox),
+        PDF_NAME(ArtBox),
+        PDF_NAME(Rotate),
+        PDF_NAME(UserUnit)
+    };
+    int i, n = nelem(known_page_objs);  // number of list elements
     fz_var(obj);
     fz_var(ref);
-
+    fz_var(page_dict);
     fz_try(ctx)
     {
-        pageref = pdf_lookup_page_obj(ctx, doc_src, page_from);
-        pdf_flatten_inheritable_page_items(ctx, pageref);
+        page_ref = pdf_lookup_page_obj(ctx, doc_src, page_from);
+        pdf_flatten_inheritable_page_items(ctx, page_ref);
+
         // make a new page
         page_dict = pdf_new_dict(ctx, doc_des, 4);
-        pdf_dict_put_drop(ctx, page_dict, PDF_NAME(Type), PDF_NAME(Page));
+        pdf_dict_put(ctx, page_dict, PDF_NAME(Type), PDF_NAME(Page));
 
         // copy objects of source page into it
         for (i = 0; i < n; i++)
-            {
-            obj = pdf_dict_get(ctx, pageref, known_page_objs[i]);
+        {
+            obj = pdf_dict_get(ctx, page_ref, known_page_objs[i]);
             if (obj != NULL)
                 pdf_dict_put_drop(ctx, page_dict, known_page_objs[i], pdf_graft_mapped_object(ctx, graft_map, obj));
-            }
-        // remove any links from annots array
-        pdf_obj *annots = pdf_dict_get(ctx, page_dict, PDF_NAME(Annots));
-        int len = pdf_array_len(ctx, annots);
-        for (j = 0; j < len; j++)
+        }
+
+        if (copy_annots)  // we shall copy annotations also
         {
-            pdf_obj *o = pdf_array_get(ctx, annots, j);
-            if (!pdf_name_eq(ctx, pdf_dict_get(ctx, o, PDF_NAME(Subtype)), PDF_NAME(Link)))
-                continue;
-            // remove the link annotation
-            pdf_array_delete(ctx, annots, j);
-            len--;
-            j--;
+            pdf_obj *old_annots = pdf_dict_get(ctx, page_ref, PDF_NAME(Annots));
+            if (old_annots)  // there is an annot array
+            {
+                n = pdf_array_len(ctx, old_annots);
+                pdf_obj *new_annots = pdf_new_array(ctx, doc_des, n);
+                for (i = 0; i < n; i++)
+                {
+                    pdf_obj *o = pdf_array_get(ctx, old_annots, i);
+                    if (!pdf_name_eq(ctx, pdf_dict_get(ctx, o, PDF_NAME(Subtype)),
+                                     PDF_NAME(Link)))
+                    {
+                        pdf_array_push_drop(ctx, new_annots,
+                                pdf_graft_mapped_object(ctx, graft_map, o));
+                    }
+                }
+                if (pdf_array_len(ctx, new_annots))
+                {
+                    pdf_dict_put_drop(ctx, page_dict, PDF_NAME(Annots), new_annots);
+                }
+                else
+                {
+                    pdf_drop_obj(ctx, new_annots);
+                }
+            }
         }
         // rotate the page as requested
         if (rotate != -1)
-            {
-            pdf_obj *rotateobj = pdf_new_int(ctx, (int64_t) rotate);
-            pdf_dict_put_drop(ctx, page_dict, PDF_NAME(Rotate), rotateobj);
-            }
+        {
+            pdf_dict_put_int(ctx, page_dict, PDF_NAME(Rotate), (int64_t) rotate);
+        }
         // Now add the page dictionary to dest PDF
-        obj = pdf_add_object_drop(ctx, doc_des, page_dict);
+        obj = pdf_add_object(ctx, doc_des, page_dict);
 
-        // Get indirect ref of the page
-        num = pdf_to_num(ctx, obj);
+        // Get indirect ref of the new page
+        int num = pdf_to_num(ctx, obj);
         ref = pdf_new_indirect(ctx, doc_des, num, 0);
 
         // Insert new page at specified location
@@ -563,7 +587,7 @@ void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, i
 // location (apage) of the target PDF.
 // If spage > epage, the sequence of source pages is reversed.
 //-----------------------------------------------------------------------------
-void merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int spage, int epage, int apage, int rotate)
+void merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int spage, int epage, int apage, int rotate, int links, int annots)
 {
     int page, afterpage, count;
     pdf_graft_map *graft_map;
@@ -575,10 +599,10 @@ void merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, 
     {
         if (spage < epage)
             for (page = spage; page <= epage; page++, afterpage++)
-                page_merge(ctx, doc_des, doc_src, page, afterpage, rotate, graft_map);
+                page_merge(ctx, doc_des, doc_src, page, afterpage, rotate, links, annots, graft_map);
         else
             for (page = spage; page >= epage; page--, afterpage++)
-                page_merge(ctx, doc_des, doc_src, page, afterpage, rotate, graft_map);
+                page_merge(ctx, doc_des, doc_src, page, afterpage, rotate, links, annots, graft_map);
     }
 
     fz_always(ctx)
@@ -601,9 +625,12 @@ PyObject *JM_outline_xrefs(fz_context *ctx, pdf_obj *obj, PyObject *xrefs)
     pdf_obj *first, *parent, *thisobj;
     if (!obj) return xrefs;
     thisobj = obj;
+    PyObject *val;
     while (thisobj)
     {
-        PyList_Append(xrefs, Py_BuildValue("i", pdf_to_num(ctx, thisobj)));
+        val = Py_BuildValue("i", pdf_to_num(ctx, thisobj));
+        PyList_Append(xrefs, val);
+        Py_DECREF(val);
         first = pdf_dict_get(ctx, thisobj, PDF_NAME(First));   // try go down
         if (first) xrefs = JM_outline_xrefs(ctx, first, xrefs);
         thisobj = pdf_dict_get(ctx, thisobj, PDF_NAME(Next));  // try go next

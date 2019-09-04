@@ -350,6 +350,7 @@ def getImageBbox(page, img):
         if imgnm in cont:
             idx = cont.index(imgnm)  # the image name is found here
         else:  # not in page /contents, so look in Form XObjects
+            cont = None
             xreflist = doc._getPageInfo(page.number, 3)  # XObject xrefs
             for item in xreflist:
                 cont = doc._getXrefStream(item[0]).split()
@@ -949,33 +950,31 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
     #--------------------------------------------------------------------------
     # define skeletons for /Annots object texts
     #--------------------------------------------------------------------------
-    annot_goto  = '''<</A<</S/GoTo/D[%i 0 R /XYZ %g %g 0]>>/Rect[%s]/Subtype/Link>>'''
+    annot_goto  = "<</A<</S/GoTo/D[%i 0 R /XYZ %g %g 0]>>/Rect[%s]/Subtype/Link>>"
 
-    annot_gotor = '''<</A<</S/GoToR/D[%i /XYZ %g %g 0]/F<</F(%s)/UF(%s)/Type/Filespec
-    >>>>/Rect[%s]/Subtype/Link>>'''
+    annot_gotor = "<</A<</S/GoToR/D[%i /XYZ %g %g 0]/F<</F(%s)/UF(%s)/Type/Filespec>>>>/Rect[%s]/Subtype/Link>>"
 
     annot_gotor_n = "<</A<</S/GoToR/D(%s)/F(%s)>>/Rect[%s]/Subtype/Link>>"
 
-    annot_launch = '''<</A<</S/Launch/F<</F(%s)/UF(%s)/Type/Filespec>>
-    >>/Rect[%s]/Subtype/Link>>'''
+    annot_launch = "<</A<</S/Launch/F<</F(%s)/UF(%s)/Type/Filespec>>>>/Rect[%s]/Subtype/Link>>"
 
-    annot_uri = '''<</A<</S/URI/URI(%s)>>/Rect[%s]/Subtype/Link>>'''
+    annot_uri = "<</A<</S/URI/URI(%s)>>/Rect[%s]/Subtype/Link>>"
 
     #--------------------------------------------------------------------------
     # internal function to create the actual "/Annots" object string
     #--------------------------------------------------------------------------
-    def cre_annot(lnk, xref_dst, list_src, height):
-        '''Create annotation object string for a passed-in link.'''
+    def cre_annot(lnk, xref_dst, pno_src, ctm):
+        """Create annotation object string for a passed-in link.
+        """
 
-        # "from" rectangle is always there. Note: y-coords are from bottom!
-
-        r = lnk["from"]
-        rect = "%g %g %g %g" % (r.x0, height - r.y0, r.x1, height - r.y1)
+        r = lnk["from"] * ctm  # rect in PDF coordinates
+        rect = "%g %g %g %g" % tuple(r)
         if lnk["kind"] == LINK_GOTO:
             txt = annot_goto
-            idx = list_src.index(lnk["page"])
-            annot = txt % (xref_dst[idx], lnk["to"].x,
-                           lnk["to"].y, rect)
+            idx = pno_src.index(lnk["page"])
+            p = lnk["to"] * ctm  # target point in PDF coordinates
+            annot = txt % (xref_dst[idx], p.x, p.y, rect)
+
         elif lnk["kind"] == LINK_GOTOR:
             if lnk["page"] >= 0:
                 txt = annot_gotor
@@ -994,9 +993,11 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
         elif lnk["kind"] == LINK_LAUNCH:
             txt = annot_launch
             annot = txt % (lnk["file"], lnk["file"], rect)
+
         elif lnk["kind"] == LINK_URI:
             txt = annot_uri
             annot = txt % (lnk["uri"], rect)
+
         else:
             annot = ""
 
@@ -1007,7 +1008,7 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
     if from_page < 0:
         fp = 0
     elif from_page >= doc2.pageCount:
-        from_page = doc2.pageCount - 1
+        fp = doc2.pageCount - 1
     else:
         fp = from_page
 
@@ -1017,39 +1018,40 @@ def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
         tp = to_page
 
     if start_at < 0:
-        raise ValueError("do_links: 'start_at' arg must be >= 0")
+        raise ValueError("'start_at' must be >= 0")
     sa = start_at
 
-    incr = 1 if fp <= tp else -1            # page range could be reversed
+    incr = 1 if fp <= tp else -1  # page range could be reversed
+
     # lists of source / destination page numbers
-    list_src = list(range(fp, tp + incr, incr))
-    list_dst = [sa + i for i in range(len(list_src))]
-    # lists of source / destination page xref numbers
+    pno_src = list(range(fp, tp + incr, incr))
+    pno_dst = [sa + i for i in range(len(pno_src))]
+
+    # lists of source / destination page xrefs
     xref_src = []
     xref_dst = []
-    for i in range(len(list_src)):
-        p_src = list_src[i]
-        p_dst = list_dst[i]
+    for i in range(len(pno_src)):
+        p_src = pno_src[i]
+        p_dst = pno_dst[i]
         old_xref = doc2._getPageObjNumber(p_src)[0]
         new_xref = doc1._getPageObjNumber(p_dst)[0]
         xref_src.append(old_xref)
         xref_dst.append(new_xref)
 
-    # create /Annots per copied page in destination PDF
+    # create the links for each copied page in destination PDF
     for i in range(len(xref_src)):
-        page_src = doc2[list_src[i]]
-        links = page_src.getLinks()
-        if len(links) == 0:
+        page_src = doc2[pno_src[i]]  # load source page
+        links = page_src.getLinks()  # get all its links
+        if len(links) == 0:  # no links there
             page_src = None
             continue
-        height = page_src.bound().y1
-        p_annots = ""
-        page_dst = doc1[list_dst[i]]
-        link_tab = []
+        ctm = ~page_src._getTransformation()  # calc page transformation matrix
+        page_dst = doc1[pno_dst[i]]  # load destination page
+        link_tab = []  # store all link definitions here
         for l in links:
-            if l["kind"] == LINK_GOTO and (l["page"] not in list_src):
-                continue          # target not in copied pages
-            annot_text = cre_annot(l, xref_dst, list_src, height)
+            if l["kind"] == LINK_GOTO and (l["page"] not in pno_src):
+                continue  # GOTO link target not in copied pages
+            annot_text = cre_annot(l, xref_dst, pno_src, ctm)
             if not annot_text:
                 print("cannot create /Annot for kind: " + str(l["kind"]))
             else:

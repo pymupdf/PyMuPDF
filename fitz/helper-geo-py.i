@@ -177,7 +177,8 @@ class Matrix(object):
         m1 = TOOLS._invert_matrix(m)[1]
         if not m1:
             raise ZeroDivisionError("matrix not invertible")
-        return self.concat(self, m1)
+        m2 = Matrix(1,1)
+        return m2.concat(self, m1)
     __div__ = __truediv__
 
     def __add__(self, m):
@@ -314,6 +315,13 @@ class Point(object):
             raise ValueError("at least one parameter must be given")
 
         x = args[0]
+        if len(x) == 2:
+            x = Point(x)
+        elif len(x) == 4:
+            x = Rect(x)
+        else:
+            raise ValueError("arg1 must be point-like or rect-like")
+
         if len(args) > 1:
             unit = args[1]
         else:
@@ -321,6 +329,7 @@ class Point(object):
         u = {"px": (1.,1.), "in": (1.,72.), "cm": (2.54, 72.),
              "mm": (25.4, 72.)}
         f = u[unit][0] / u[unit][1]
+
         if type(x) is Point:
             return abs(self - x) * f
 
@@ -786,33 +795,61 @@ class Quad(object):
     @property
     def isRectangular(self):
         """Check if quad is rectangular.
+
+        Notes:
+            Some rotation matrix can thus transform it into a rectangle.
         """
-        # if any two of the 4 corners are equal return false
-        upper = (self.ur - self.ul).unit
-        if not bool(upper):
+        eps = 1.0e-5
+
+        a = TOOLS._angle_between(self.ul, self.ur, self.lr)
+        if abs(a.y - 1) > eps:
             return False
-        right = (self.lr - self.ur).unit
-        if not bool(right):
+
+        a = TOOLS._angle_between(self.ur, self.lr, self.ll)
+        if abs(a.y - 1) > eps:
             return False
-        left  = (self.ll - self.ul).unit
-        if not bool(left):
+
+        a = TOOLS._angle_between(self.lr, self.ll, self.ul)
+        if abs(a.y - 1) > eps:
             return False
-        lower = (self.lr - self.ll).unit
-        if not bool(lower):
+
+        return True
+
+
+    @property
+    def isConvex(self):
+        """Check if quad is convex.
+
+        Notes:
+            Every line connecting any two points of the quad will be inside
+            the quad. This is equivalent to that two sides meeting in a corner
+            always enclose an angle of no more than 180 degrees.
+            Equivalently, the sine of this angle cannot be negative.
+        Returns:
+            True or False.
+        """
+
+        a = TOOLS._angle_between(self.ul, self.ur, self.lr)
+        if a.y < 0:
             return False
-        eps = 1e-5
-        # we now have 4 sides of length 1. If 3 of them have 90 deg angles,
-        # then it is a rectangle -- we check via scalar product == 0
-        return abs(sum(map(lambda x,y: x*y, upper, right))) <= eps and \
-               abs(sum(map(lambda x,y: x*y, upper, left))) <= eps and \
-               abs(sum(map(lambda x,y: x*y, left, lower))) <= eps
+    
+        a = TOOLS._angle_between(self.ur, self.lr, self.ll)
+        if a.y < 0:
+            return False
+    
+        a = TOOLS._angle_between(self.lr, self.ll, self.ul)
+        if a.y < 0:
+            return False
+
+        return True
+
 
     @property
     def isEmpty(self):
         """Check if quad is empty retangle. If rectangular, we are done (not empty).
         But all 4 points may still be on one line. We check this out here.
-        In that case all 3 lines connecting corners to ul will have same angle with
-        x-axis.
+        In that case all 3 lines connecting corners to ul will have same angle
+        with the x-axis.
         """
         if self.isRectangular:
             return False
@@ -830,7 +867,12 @@ class Quad(object):
 
     @property
     def rect(self):
-        return Rect(self.ul, self.ur) | self.ll | self.lr
+        r = Rect()
+        r.x0 = min(self.ul.x, self.ur.x, self.lr.x, self.ll.x)
+        r.y0 = min(self.ul.y, self.ur.y, self.lr.y, self.ll.y)
+        r.x1 = max(self.ul.x, self.ur.x, self.lr.x, self.ll.x)
+        r.y1 = max(self.ul.y, self.ur.y, self.lr.y, self.ll.y)
+        return r
 
     def __getitem__(self, i):
         return (self.ul, self.ur, self.ll, self.lr)[i]
