@@ -411,7 +411,7 @@ void hexlify(int n, unsigned char *in, unsigned char *out)
 fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
 {
     if (!stream) return NULL;
-    if (stream == NONE) return NULL;
+    if (stream == Py_None) return NULL;
     char *c = NULL;
     PyObject *mybytes = NULL;
     size_t len = 0;

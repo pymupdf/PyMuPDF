@@ -33,6 +33,7 @@ TEXT_OUTPUT_XHTML   = 4
 TEXT_PRESERVE_LIGATURES  = 1
 TEXT_PRESERVE_WHITESPACE = 2
 TEXT_PRESERVE_IMAGES     = 4
+TEXT_INHIBIT_SPACES      = 8
 
 #------------------------------------------------------------------------------
 # Simple text encoding options
@@ -101,7 +102,7 @@ def _toc_remove_page(toc, first, last):
     count = last - first + 1  # number of pages to remove
     # step 1: remove numbers from toc
     for t in toc:
-        if first <= t[2] <= last:  # skip these entries
+        if first <= t[2] <= last:  # skip entries between first and last
             continue
         if t[2] < first:  # keep smaller page numbers
             toc2.append(t)
@@ -119,9 +120,9 @@ def _toc_remove_page(toc, first, last):
 
     # step 2: deal with hierarchy lvl gaps > 1
     for t in toc2:
-        while t[0] - old_lvl > 1:
-            old_lvl += 1
-            toc3.append([old_lvl] + t[1:])
+        while t[0] - old_lvl > 1:  # lvl gap too large
+            old_lvl += 1  # increase previous lvl
+            toc3.append([old_lvl] + t[1:])  # insert a filler item
         old_lvl = t[0]
         toc3.append(t)
 
@@ -587,6 +588,22 @@ def UpdateFontInfo(doc, info):
 def DUMMY(*args, **kw):
     return
 
+
+def planishLine(p1, p2):
+    """Return matrix which flattens out the line from p1 to p2.
+
+    Args:
+        p1, p2: point_like
+    Returns:
+        Matrix which maps p1 to Point(0,0) and p2 to a point on the x axis at
+        the same distance to Point(0,0). Will always combine a rotation and a
+        transformation.
+    """ 
+    p1 = Point(p1)
+    p2 = Point(p2)
+    return TOOLS._hor_matrix(p1, p2)
+
+
 def ImageProperties(img):
     """ Return basic properties of an image.
 
@@ -685,23 +702,21 @@ def _make_textpage_dict(TextPage, raw=False):
         no dictionaries, no nested lists) to prevent sub-structures that are
         not reachable by gc.
     Args:
-        raw: bool which causes inclusion of a dictionary per each character.
+        raw: bool which causes inclusion of a dictionary per each character
+             else characters are concatenated for each span.
     Returns:
         dict
     """
     page_dict = {"width": TextPage.rect.width, "height": TextPage.rect.height}
     blocks = []
     num_blocks = TextPage._getBlockList(blocks)
-    block_list = []
+    block_list = [0] * num_blocks
     for i in range(num_blocks):
         block = blocks[i]
         block_dict = {"type": block[0], "bbox": block[1:5]}
         lines = []  # prepare output for the block details
 
-        # ---------------------------------------------------------------------
-        # handle an image block
-        # ---------------------------------------------------------------------
-        if block[0] == 1:
+        if block[0] == 1:  # handle an image block
             rc = TextPage._getImageBlock(i, lines)  # read block data
             if rc != 0:  # any problem?
                 raise ValueError("could not extract image block %i" % i)
@@ -710,33 +725,34 @@ def _make_textpage_dict(TextPage, raw=False):
             block_dict["height"] = ilist[2]
             block_dict["ext"] = ilist[3]
             block_dict["image"] = ilist[4]
-            block_list.append(block_dict)  # append image block to list
+            block_list[i] = block_dict  # insert image block to list
+            del block_dict, ilist
+
             continue  # to next block
 
-        # ---------------------------------------------------------------------
-        # handle a text block
-        # ---------------------------------------------------------------------
-        num_lines = TextPage._getLineList(i, lines)  # read its line array
-        line_list = []  # list of line dictionaries
+        # process a text block
+        num_lines = TextPage._getLineList(i, lines)  # read the line array
+        line_list = [0] * num_lines
 
         for j in range(num_lines):
             line = lines[j]
             line_dict = {"wmode": line[0], "dir": line[1:3], "bbox": line[3:]}
             span_list = []
             characters = []
-            TextPage._getCharList(i, j, characters)
+            num_chars = TextPage._getCharList(i, j, characters)
             old_style = ()
             span = {}
-            char_list = []  # list of char dicts of span
-            text = ""  # the text of a span
-            span_bbox = Rect()  # bbox of a span
+            char_list = []
+            text = ""
 
             for char in characters:  # iterate through the characters
-                style = char[6:10]  # font info
-                pos = style[2].find("+")  # remove any garbage from font
+                orig_x, orig_y, x0, y0, x1, y1, fsize, flags, font, color, char_text = (
+                    char
+                )
+                pos = font.find("+")  # remove any garbage from font
                 if pos > 0:
-                    style = list(style)
-                    style[2] = style[2][pos+1:]
+                    font = font[pos + 1 :]
+                style = (fsize, flags, font, color)  # font info
 
                 # check if the character style has changed
                 if style != old_style:
@@ -750,25 +766,30 @@ def _make_textpage_dict(TextPage, raw=False):
                             span["text"] = text  # accumulated text
                             text = ""  # reset text field
 
-                        span["bbox"] = tuple(span_bbox)  # put in bbox
+                        span["bbox"] = span_bbox  # put in bbox
                         span_list.append(span)  # output previous span
 
                     # init a new span
-                    span = {"size": style[0],
-                            "flags": style[1],
-                            "font": style[2],
-                            "color": style[3]
-                           }
+                    span = {"size": fsize, "flags": flags, "font": font, "color": color}
                     old_style = style
-                    span_bbox = Rect()  # reset span bbox
+                    span_bbox = (x0, y0, x1, y1)
 
+                span_bbox = (  # extend span bbox
+                    min(x0, span_bbox[0]),
+                    min(y0, span_bbox[1]),
+                    max(x1, span_bbox[2]),
+                    max(y1, span_bbox[3]),
+                )
 
-                span_bbox |= char[2:6]  # extend span bbox
                 if raw:
-                    char_dict = {"origin": char[:2], "bbox": char[2:6], "c": char[-1]}
+                    char_dict = {
+                        "origin": (orig_x, orig_y),
+                        "bbox": (x0, y0, x1, y1),
+                        "c": char_text,
+                    }
                     char_list.append(char_dict)
                 else:
-                    text += char[-1]
+                    text += char_text
 
             # all characters in line have been processed now
             if max(len(char_list), len(text)) > 0:  # chars missing in outut?
@@ -777,17 +798,22 @@ def _make_textpage_dict(TextPage, raw=False):
                 else:
                     span["text"] = text
 
-                span["bbox"] = tuple(span_bbox)  # put in bbox
+                span["bbox"] = span_bbox  # put in bbox
                 span_list.append(span)
 
             line_dict["spans"] = span_list  # put list of spans in line dict
-            line_list.append(line_dict)  # append line dict to list of lines
+            del span_list
+            line_list[j] = line_dict  # insert line dict to list of lines
+            del line_dict
 
         block_dict["lines"] = line_list
-        block_list.append(block_dict)
+        del line_list
+
+        block_list[i] = block_dict
+        del block_dict
 
     page_dict["blocks"] = block_list
-
+    del block_list
     return page_dict
 
 %}

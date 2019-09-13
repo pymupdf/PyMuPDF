@@ -67,8 +67,8 @@ fz_rect JM_char_bbox(fz_stext_line *line, fz_stext_char *ch)
     fz_rect r = fz_rect_from_quad(ch->quad);
     if (!fz_is_empty_rect(r)) return r;
     // we need to correct erroneous font!
-    if ((r.y1 - r.y0) <= JM_EPS) r.y0 = r.y1 - ch->size;
-    if ((r.x1 - r.x0) <= JM_EPS) r.x0 = r.x1 - ch->size;
+    if ((r.y1 - r.y0) <= FLT_EPSILON) r.y0 = r.y1 - ch->size;
+    if ((r.x1 - r.x0) <= FLT_EPSILON) r.x0 = r.x1 - ch->size;
     return r;
 }
 
@@ -87,6 +87,14 @@ int JM_char_font_flags(fz_context *ctx, fz_font *font, fz_stext_line *line, fz_s
     flags += fz_font_is_monospaced(ctx, font) * 8;
     flags += fz_font_is_bold(ctx, font) * 16;
     return flags;
+}
+
+// for faling back to replacement character 0xB7
+PyObject *JM_repl_char()
+{
+    char data[10];
+    Py_ssize_t len = (Py_ssize_t) fz_runetochar(data, 0xb7);
+    return PyUnicode_FromStringAndSize(data, len);
 }
 
 %}
