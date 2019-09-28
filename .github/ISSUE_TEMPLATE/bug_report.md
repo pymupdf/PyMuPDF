@@ -24,9 +24,9 @@ If applicable, add screenshots to help explain your problem.
 ## Your configuration (mandatory)
  - Operating system, potentially version and bitness
  - Python version, bitness
- - PyMuPDF version, installation method (wheel or source generated).
+ - PyMuPDF version, installation method (**wheel** or **generated** from source).
 
-For example, the output of `print(sys.version, "\n", sys.platform, "\n", fitz.__doc__)` would be sufficient.
+For example, the output of `print(sys.version, "\n", sys.platform, "\n", fitz.__doc__)` would be sufficient (for the first two bullets).
 
 ## Additional context (optional)
 Add any other context about the problem here.
