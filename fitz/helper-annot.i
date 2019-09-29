@@ -146,13 +146,13 @@ PyObject *JM_annot_border(fz_context *ctx, pdf_obj *annot_obj)
     PyList_Append(effect_py, val);
     Py_DECREF(val);
     val = Py_BuildValue("f", width);
-    PyDict_SetItemString(res, "width", val);
+    PyDict_SetItem(res, dictkey_width, val);
     Py_DECREF(val);
-    PyDict_SetItemString(res, "dashes", dash_py);
+    PyDict_SetItem(res, dictkey_dashes, dash_py);
     val = Py_BuildValue("s", style);
-    PyDict_SetItemString(res, "style", val);
+    PyDict_SetItem(res, dictkey_style, val);
     Py_DECREF(val);
-    if (effect1 > -1) PyDict_SetItemString(res, "effect", effect_py);
+    if (effect1 > -1) PyDict_SetItem(res, dictkey_effect, effect_py);
     Py_CLEAR(effect_py);
     Py_CLEAR(dash_py);
     return res;
@@ -241,7 +241,7 @@ PyObject *JM_annot_colors(fz_context *ctx, pdf_obj *annot_obj)
             Py_DECREF(val);
         }
     }
-    PyDict_SetItemString(res, "stroke", bc);
+    PyDict_SetItem(res, dictkey_stroke, bc);
 
     o = pdf_dict_gets(ctx, annot_obj, "IC");
     if (pdf_is_array(ctx, o))
@@ -255,7 +255,7 @@ PyObject *JM_annot_colors(fz_context *ctx, pdf_obj *annot_obj)
             Py_DECREF(val);
         }
     }
-    PyDict_SetItemString(res, "fill", fc);
+    PyDict_SetItem(res, dictkey_fill, fc);
 
     Py_CLEAR(bc);
     Py_CLEAR(fc);

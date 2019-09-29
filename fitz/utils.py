@@ -448,10 +448,10 @@ def getTextBlocks(page, flags=None):
     CheckParent(page)
     dl = page.getDisplayList()
     if flags is None:
-        flags = TEXT_PRESERVE_LIGATURES | TEXT_INHIBIT_SPACES
+        flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
     tp = dl.getTextPage(flags)
     l = []
-    tp._extractTextBlocks_AsList(l)
+    tp.extractBLOCKS(l)
     del tp
     del dl
     return l
@@ -465,10 +465,10 @@ def getTextWords(page, flags=None):
     CheckParent(page)
     dl = page.getDisplayList()
     if flags is None:
-        flags = TEXT_PRESERVE_LIGATURES | TEXT_INHIBIT_SPACES
+        flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
     tp = dl.getTextPage(flags)
     l = []
-    tp._extractTextWords_AsList(l)
+    tp.extractWORDS(l)
     del dl
     del tp
     return l
@@ -482,18 +482,22 @@ def getText(page, output="text", flags=None):
     Returns:
         the output of TextPage methods extractText, extractHTML, extractDICT, extractJSON, extractRAWDICT, extractXHTML or etractXML respectively. Default and misspelling choice is "text".
     """
+    output = output.lower()
+    if output == "words":
+        return getTextWords(page, flags=flags)
+    if output == "blocks":
+        return getTextBlocks(page, flags=flags)
     CheckParent(page)
     dl = page.getDisplayList()
     # available output types
     formats = ("text", "html", "json", "xml", "xhtml", "dict", "rawdict")
-    output = output.lower()
     if output not in formats:
         output = "text"
     # choose which of them also include images in the TextPage
     images = (0, 1, 1, 0, 1, 1, 1)      # controls image inclusion in text page
     f = formats.index(output)
     if flags is None:
-        flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_INHIBIT_SPACES
+        flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
         if images[f] == 1:
             flags |= TEXT_PRESERVE_IMAGES
 

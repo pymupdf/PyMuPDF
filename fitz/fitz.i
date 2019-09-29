@@ -126,7 +126,7 @@ from __future__ import division, print_function
 #define INRANGE(v, low, high) ((low) <= v && v <= (high))
 #define MAX(a, b) ((a) < (b)) ? (b) : (a)
 #define MIN(a, b) ((a) < (b)) ? (a) : (b)
-#define JM_StrFromBuffer(ctx, x) PyUnicode_FromFormat("%s", fz_string_from_buffer(ctx, x))
+
 #define JM_PyErr_Clear if (PyErr_Occurred()) PyErr_Clear()
 
 // binary output depends on Python major
@@ -175,10 +175,45 @@ JM_mupdf_warnings_store = PyList_New(0);
 char user[] = "PyMuPDF";
 fz_set_warning_callback(gctx, JM_mupdf_warning, &user);
 fz_set_error_callback(gctx, JM_mupdf_error, &user);
-
 //-----------------------------------------------------------------------------
 // STOP redirect stdout/stderr
 //-----------------------------------------------------------------------------
+// init global constants
+//-----------------------------------------------------------------------------
+dictkey_bbox = PyUnicode_FromString("bbox");
+dictkey_blocks = PyUnicode_FromString("blocks");
+dictkey_c = PyUnicode_FromString("c");
+dictkey_chars = PyUnicode_FromString("chars");
+dictkey_color = PyUnicode_FromString("color");
+dictkey_content = PyUnicode_FromString("content");
+dictkey_creationDate = PyUnicode_FromString("creationDate");
+dictkey_dashes = PyUnicode_FromString("dashes");
+dictkey_desc = PyUnicode_FromString("desc");
+dictkey_dir = PyUnicode_FromString("dir");
+dictkey_effect = PyUnicode_FromString("effect");
+dictkey_ext = PyUnicode_FromString("ext");
+dictkey_filename = PyUnicode_FromString("filename");
+dictkey_fill = PyUnicode_FromString("fill");
+dictkey_flags = PyUnicode_FromString("flags");
+dictkey_font = PyUnicode_FromString("font");
+dictkey_height = PyUnicode_FromString("height");
+dictkey_image = PyUnicode_FromString("image");
+dictkey_length = PyUnicode_FromString("length");
+dictkey_lines = PyUnicode_FromString("lines");
+dictkey_modDate = PyUnicode_FromString("modDate");
+dictkey_name = PyUnicode_FromString("name");
+dictkey_origin = PyUnicode_FromString("origin");
+dictkey_size = PyUnicode_FromString("size");
+dictkey_spans = PyUnicode_FromString("spans");
+dictkey_stroke = PyUnicode_FromString("stroke");
+dictkey_style = PyUnicode_FromString("style");
+dictkey_subject = PyUnicode_FromString("subject");
+dictkey_text = PyUnicode_FromString("text");
+dictkey_title = PyUnicode_FromString("title");
+dictkey_type = PyUnicode_FromString("type");
+dictkey_ufilename = PyUnicode_FromString("ufilename");
+dictkey_width = PyUnicode_FromString("width");
+dictkey_wmode = PyUnicode_FromString("wmode");
 %}
 
 %header %{
@@ -507,19 +542,19 @@ struct fz_document_s
                 name = (char *) pdf_to_text_string(gctx,
                                    pdf_dict_get(gctx, o, PDF_NAME(F)));
                 val = JM_UNICODE(name);
-                PyDict_SetItemString(infodict, "filename", val);
+                PyDict_SetItem(infodict, dictkey_filename, val);
                 Py_DECREF(val);
 
                 name = (char *) pdf_to_text_string(gctx,
                                     pdf_dict_get(gctx, o, PDF_NAME(UF)));
                 val = JM_UNICODE(name);
-                PyDict_SetItemString(infodict, "ufilename", val);
+                PyDict_SetItem(infodict, dictkey_ufilename, val);
                 Py_DECREF(val);
 
                 name = (char *) pdf_to_text_string(gctx,
                                     pdf_dict_get(gctx, o, PDF_NAME(Desc)));
                 val = JM_UNICODE(name);
-                PyDict_SetItemString(infodict, "desc", val);
+                PyDict_SetItem(infodict, dictkey_desc, val);
                 Py_DECREF(val);
 
                 int len = -1, DL = -1;
@@ -537,10 +572,10 @@ struct fz_document_s
                     if (o) DL = pdf_to_int(gctx, o);
                 }
                 val = Py_BuildValue("i", DL);
-                PyDict_SetItemString(infodict, "size", val);
+                PyDict_SetItem(infodict, dictkey_size, val);
                 Py_DECREF(val);
                 val = Py_BuildValue("i", len);
-                PyDict_SetItemString(infodict, "length", val);
+                PyDict_SetItem(infodict, dictkey_length, val);
                 Py_DECREF(val);
             }
             fz_catch(gctx) return NULL;
@@ -5447,16 +5482,16 @@ struct pdf_annot_s
             if (o) size = pdf_to_int(gctx, o);
 
             val = JM_UNICODE(filename);
-            PyDict_SetItemString(res, "filename", val);
+            PyDict_SetItem(res, dictkey_filename, val);
             Py_DECREF(val);
             val = JM_UNICODE(desc);
-            PyDict_SetItemString(res, "desc", val);
+            PyDict_SetItem(res, dictkey_desc, val);
             Py_DECREF(val);
             val = Py_BuildValue("i", length);
-            PyDict_SetItemString(res, "length", val);
+            PyDict_SetItem(res, dictkey_length, val);
             Py_DECREF(val);
             val = Py_BuildValue("i", size);
-            PyDict_SetItemString(res, "size", val);
+            PyDict_SetItem(res, dictkey_size, val);
             Py_DECREF(val);
             return res;
         }
@@ -5573,41 +5608,41 @@ CheckParent(self)
             char *c;
             c = (char *) pdf_annot_contents(gctx, $self);
             val = JM_UNICODE(c);
-            PyDict_SetItemString(res, "content", val);
+            PyDict_SetItem(res, dictkey_content, val);
             Py_DECREF(val);
 
             o = pdf_dict_get(gctx, $self->obj, PDF_NAME(Name));
             c = (char *) pdf_to_name(gctx, o);
             val = JM_UNICODE(c);
-            PyDict_SetItemString(res, "name", val);
+            PyDict_SetItem(res, dictkey_name, val);
             Py_DECREF(val);
 
             // Title, author
             o = pdf_dict_get(gctx, $self->obj, PDF_NAME(T));
             c = (char *) pdf_to_text_string(gctx, o);
             val = JM_UNICODE(c);
-            PyDict_SetItemString(res, "title", val);
+            PyDict_SetItem(res, dictkey_title, val);
             Py_DECREF(val);
 
             // CreationDate
             o = pdf_dict_gets(gctx, $self->obj, "CreationDate");
             c = (char *) pdf_to_text_string(gctx, o);
             val = JM_UNICODE(c);
-            PyDict_SetItemString(res, "creationDate", val);
+            PyDict_SetItem(res, dictkey_creationDate, val);
             Py_DECREF(val);
 
             // ModDate
             o = pdf_dict_get(gctx, $self->obj, PDF_NAME(M));
             c = (char *) pdf_to_text_string(gctx, o);
             val = JM_UNICODE(c);
-            PyDict_SetItemString(res, "modDate", val);
+            PyDict_SetItem(res, dictkey_modDate, val);
             Py_DECREF(val);
 
             // Subj
             o = pdf_dict_gets(gctx, $self->obj, "Subj");
             c = (char *) pdf_to_text_string(gctx, o);
             val = JM_UNICODE(c);
-            PyDict_SetItemString(res, "subject", val);
+            PyDict_SetItem(res, dictkey_subject, val);
             Py_DECREF(val);
 
             return res;
@@ -6158,204 +6193,39 @@ struct fz_stext_page_s {
             return liste;
         }
 
+
         //---------------------------------------------------------------------
         // Get list of all blocks with block type and bbox as a Python list
         //---------------------------------------------------------------------
-        PyObject *_getBlockList(PyObject *list)
+        FITZEXCEPTION(_getNewBlockList, !result)
+        PyObject *_getNewBlockList(PyObject *page_dict, int raw)
         {
-            fz_stext_block *block;
-            int i = 0;
-            for (block = $self->first_block; block; block = block->next)
-            {
-                fz_rect r = block->bbox;
-                PyObject *item = PyTuple_New(5);
-                PyTuple_SET_ITEM(item, 0, Py_BuildValue("i", block->type));
-                PyTuple_SET_ITEM(item, 1, Py_BuildValue("f", r.x0));
-                PyTuple_SET_ITEM(item, 2, Py_BuildValue("f", r.y0));
-                PyTuple_SET_ITEM(item, 3, Py_BuildValue("f", r.x1));
-                PyTuple_SET_ITEM(item, 4, Py_BuildValue("f", r.y1));
-                PyList_Append(list, item);
-                Py_DECREF(item);
-                i++;
-            }
-            return Py_BuildValue("i", i);
-        }
-
-        //---------------------------------------------------------------------
-        // Get an image blocks by number
-        //---------------------------------------------------------------------
-        PyObject *_getImageBlock(int blockno, PyObject *list)
-        {
-            fz_stext_block *block;
-            int i = -1;
-            for (block = $self->first_block; block; block = block->next)
-            {
-                i++;
-                if (i == blockno) break;
-            }
-
-            if (i != blockno || !block)  // wrong block number
-                return Py_BuildValue("i", -1);
-            if (block->type != FZ_STEXT_BLOCK_IMAGE)  // wrong block type
-                return Py_BuildValue("i", -2);
-            fz_color_params color_params = {0};
-            fz_image *image = block->u.i.image;
-            fz_buffer *buf = NULL, *freebuf = NULL;
-            fz_compressed_buffer *buffer = fz_compressed_image_buffer(gctx, image);
-            fz_var(buf);
-            fz_var(freebuf);
-            int n = fz_colorspace_n(gctx, image->colorspace);
-            int w = image->w;
-            int h = image->h;
-            int type = FZ_IMAGE_UNKNOWN;
-            if (buffer) type = buffer->params.type;
-            const char *ext = NULL;
-            PyObject *bytes = JM_BinFromChar("");
-            fz_var(bytes);
             fz_try(gctx)
             {
-                if (type == FZ_IMAGE_JPX && !(image->mask))
-                    {;}
-                else if (image->use_colorkey ||
-                        image->use_decode ||
-                        image->mask ||
-                        type < FZ_IMAGE_BMP ||
-                        type == FZ_IMAGE_JBIG2 ||
-                        (n != 1 && n != 3 && type == FZ_IMAGE_JPEG))
-                    type = FZ_IMAGE_UNKNOWN;
-
-                if (type != FZ_IMAGE_UNKNOWN)
-                {
-                    buf = buffer->buffer;
-                    ext = JM_image_extension(type);
-                }
-                else
-                {
-                    buf = freebuf = fz_new_buffer_from_image_as_png(gctx, image, color_params);
-                    ext = "png";
-                }
-                if (PY_MAJOR_VERSION > 2)
-                    bytes = JM_BinFromBuffer(gctx, buf);
-                else
-                    bytes = JM_BArrayFromBuffer(gctx, buf);
+                JM_make_textpage_dict(gctx, $self, page_dict, raw);
             }
-            fz_always(gctx)
+            fz_catch(gctx)
             {
-                PyObject *item = PyTuple_New(5);
-                PyTuple_SET_ITEM(item, 0, Py_BuildValue("i", FZ_STEXT_BLOCK_IMAGE));
-                PyTuple_SET_ITEM(item, 1, Py_BuildValue("i", w));
-                PyTuple_SET_ITEM(item, 2, Py_BuildValue("i", h));
-                PyTuple_SET_ITEM(item, 3, Py_BuildValue("s", ext));
-                PyTuple_SET_ITEM(item, 4, Py_BuildValue("O", bytes));
-                PyList_Append(list, item);
-                Py_DECREF(bytes);
-                Py_DECREF(item);
-                fz_drop_buffer(gctx, freebuf);
+                return NULL;
             }
-            fz_catch(gctx) {;}
-            return Py_BuildValue("i", 0);
+            return_none;
         }
 
-        //---------------------------------------------------------------------
-        // Get list of all lines in a block
-        //---------------------------------------------------------------------
-        PyObject *_getLineList(int blockno, PyObject *list)
-        {
-            fz_stext_block *block;
-            fz_stext_line *line;
-            int i = -1, n = 0;
-            for (block = $self->first_block; block; block = block->next)
-            {
-                i++;
-                if (i == blockno) break;
-            }
+        %pythoncode %{
+        def _textpage_dict(self, raw = False):
+            page_dict = {"width": self.rect.width, "height": self.rect.height}
+            self._getNewBlockList(page_dict, raw)
+            return page_dict
+        %}
 
-            if (i != blockno || !block)  // wrong block number
-                return Py_BuildValue("i", -1);
-            if (block->type != FZ_STEXT_BLOCK_TEXT)  // wrong block type
-                return Py_BuildValue("i", -2);
-
-            for (line = block->u.t.first_line; line; line = line->next)
-            {
-                PyObject *item = PyTuple_New(7);
-                PyTuple_SET_ITEM(item, 0, Py_BuildValue("i", line->wmode));
-                PyTuple_SET_ITEM(item, 1, Py_BuildValue("f", line->dir.x));
-                PyTuple_SET_ITEM(item, 2, Py_BuildValue("f", line->dir.y));
-                PyTuple_SET_ITEM(item, 3, Py_BuildValue("f", line->bbox.x0));
-                PyTuple_SET_ITEM(item, 4, Py_BuildValue("f", line->bbox.y0));
-                PyTuple_SET_ITEM(item, 5, Py_BuildValue("f", line->bbox.x1));
-                PyTuple_SET_ITEM(item, 6, Py_BuildValue("f", line->bbox.y1));
-                PyList_Append(list, item);
-                Py_DECREF(item);
-                n++;
-            }
-            return Py_BuildValue("i", n);
-        }
-
-        //---------------------------------------------------------------------
-        // Get list of all characters in a line
-        //---------------------------------------------------------------------
-        PyObject *_getCharList(int blockno, int lineno, PyObject *list)
-        {
-            fz_stext_block *block;
-            fz_stext_line *line;
-            fz_stext_char *ch;
-            PyObject *uchar;
-            int i = -1, j = -1, n = 0;
-            for (block = $self->first_block; block; block = block->next)
-            {
-                i++;
-                if (i == blockno) break;
-            }
-            if (i != blockno || !block)  // wrong block number
-                return Py_BuildValue("i", -1);
-            if (block->type != FZ_STEXT_BLOCK_TEXT)  // wrong block type
-                return Py_BuildValue("i", -2);
-
-            for (line = block->u.t.first_line; line; line = line->next)
-            {
-                j++;
-                if (j == lineno) break;
-            }
-            if (j != lineno || !line)  // wrong line number
-                return Py_BuildValue("i", -3);
-
-            for (ch = line->first_char; ch; ch = ch->next)
-            {
-                fz_rect r = JM_char_bbox(line, ch);
-                int flags = JM_char_font_flags(gctx, ch->font, line, ch);
-                PyObject *ufont = JM_UnicodeFromASCII(fz_font_name(gctx, ch->font));
-                uchar = PyUnicode_FromFormat("%c", ch->c);
-                if (!uchar) uchar = JM_repl_char();
-                PyObject *item = PyTuple_New(11);
-                PyTuple_SET_ITEM(item, 0, Py_BuildValue("f", ch->origin.x));
-                PyTuple_SET_ITEM(item, 1, Py_BuildValue("f", ch->origin.y));
-                PyTuple_SET_ITEM(item, 2, Py_BuildValue("f", r.x0));
-                PyTuple_SET_ITEM(item, 3, Py_BuildValue("f", r.y0));
-                PyTuple_SET_ITEM(item, 4, Py_BuildValue("f", r.x1));
-                PyTuple_SET_ITEM(item, 5, Py_BuildValue("f", r.y1));
-                PyTuple_SET_ITEM(item, 6, Py_BuildValue("f", ch->size));
-                PyTuple_SET_ITEM(item, 7, Py_BuildValue("i", flags));
-                PyTuple_SET_ITEM(item, 8, Py_BuildValue("O", ufont));
-                PyTuple_SET_ITEM(item, 9, Py_BuildValue("i", ch->color));
-                PyTuple_SET_ITEM(item, 10, Py_BuildValue("O", uchar));
-                PyList_Append(list, item);
-                Py_DECREF(uchar);
-                Py_DECREF(ufont);
-                Py_DECREF(item);
-                PyErr_Clear();
-                n++;
-            }
-
-            return Py_BuildValue("i", n);
-        }
 
         //---------------------------------------------------------------------
         // Get text blocks with their bbox and concatenated lines
         // as a Python list
         //---------------------------------------------------------------------
-        FITZEXCEPTION(_extractTextBlocks_AsList, !result)
-        PyObject *_extractTextBlocks_AsList(PyObject *lines)
+        FITZEXCEPTION(extractBLOCKS, !result)
+        %feature("autodoc","Fill a given list with text block information.") extractBLOCKS;
+        PyObject *extractBLOCKS(PyObject *lines)
         {
             fz_stext_block *block;
             fz_stext_line *line;
@@ -6363,14 +6233,17 @@ struct fz_stext_page_s {
             int block_n = 0;
             PyObject *text = NULL, *litem;
             fz_buffer *res = NULL;
-            for (block = $self->first_block; block; block = block->next)
+            fz_var(res);
+
+            fz_try(gctx)
             {
-                fz_rect blockrect = block->bbox;
-                if (block->type == FZ_STEXT_BLOCK_TEXT)
+                res = fz_new_buffer(gctx, 1024);
+                for (block = $self->first_block; block; block = block->next)
                 {
-                    fz_try(gctx)
+                    fz_rect blockrect = block->bbox;
+                    if (block->type == FZ_STEXT_BLOCK_TEXT)
                     {
-                        res = fz_new_buffer(gctx, 1024);
+                        fz_clear_buffer(gctx, res);  // set text buffer to empty
                         int line_n = 0;
                         float last_y0 = 0.0;
                         for (line = block->u.t.first_line; line; line = line->next)
@@ -6388,100 +6261,113 @@ struct fz_stext_page_s {
                             line_n++;
                             for (ch = line->first_char; ch; ch = ch->next)
                             {
-                                fz_append_rune(gctx, res, ch->c);
+                                JM_append_rune(gctx, res, ch->c);
                                 linerect = fz_union_rect(linerect, JM_char_bbox(line, ch));
                             }
                             blockrect = fz_union_rect(blockrect, linerect);
                         }
-                        text = JM_StrFromBuffer(gctx, res);
+                        text = JM_EscapeStrFromBuffer(gctx, res);
                     }
-                    fz_always(gctx)
+                    else
                     {
-                        fz_drop_buffer(gctx, res);
-                        res = NULL;
+                        fz_image *img = block->u.i.image;
+                        fz_colorspace *cs = img->colorspace;
+                        text = PyUnicode_FromFormat("<image: %s, width %d, height %d, bpc %d>", fz_colorspace_name(gctx, cs), img->w, img->h, img->bpc);
+                        blockrect = fz_union_rect(blockrect, block->bbox);
                     }
-                    fz_catch(gctx) return NULL;
+                    litem = PyTuple_New(7);
+                    PyTuple_SET_ITEM(litem, 0, Py_BuildValue("f", blockrect.x0));
+                    PyTuple_SET_ITEM(litem, 1, Py_BuildValue("f", blockrect.y0));
+                    PyTuple_SET_ITEM(litem, 2, Py_BuildValue("f", blockrect.x1));
+                    PyTuple_SET_ITEM(litem, 3, Py_BuildValue("f", blockrect.y1));
+                    PyTuple_SET_ITEM(litem, 4, Py_BuildValue("O", text));
+                    PyTuple_SET_ITEM(litem, 5, Py_BuildValue("i", block_n));
+                    PyTuple_SET_ITEM(litem, 6, Py_BuildValue("i", block->type));
+                    PyList_Append(lines, litem);
+                    Py_DECREF(litem);
+                    Py_DECREF(text);
+                    block_n++;
                 }
-                else
-                {
-                    fz_image *img = block->u.i.image;
-                    fz_colorspace *cs = img->colorspace;
-                    text = PyUnicode_FromFormat("<image: %s, width %d, height %d, bpc %d>", fz_colorspace_name(gctx, cs), img->w, img->h, img->bpc);
-                    blockrect = fz_union_rect(blockrect, block->bbox);
-                }
-                litem = PyTuple_New(7);
-                PyTuple_SET_ITEM(litem, 0, Py_BuildValue("f", blockrect.x0));
-                PyTuple_SET_ITEM(litem, 1, Py_BuildValue("f", blockrect.y0));
-                PyTuple_SET_ITEM(litem, 2, Py_BuildValue("f", blockrect.x1));
-                PyTuple_SET_ITEM(litem, 3, Py_BuildValue("f", blockrect.y1));
-                PyTuple_SET_ITEM(litem, 4, Py_BuildValue("O", text));
-                PyTuple_SET_ITEM(litem, 5, Py_BuildValue("i", block_n));
-                PyTuple_SET_ITEM(litem, 6, Py_BuildValue("i", block->type));
-                PyList_Append(lines, litem);
-                Py_DECREF(litem);
-                Py_DECREF(text);
-                block_n++;
             }
+            fz_always(gctx)
+            {
+                fz_drop_buffer(gctx, res);
+                PyErr_Clear();
+            }
+            fz_catch(gctx) return NULL;
             return_none;
         }
 
         //---------------------------------------------------------------------
         // Get text words with their bbox
         //---------------------------------------------------------------------
-        FITZEXCEPTION(_extractTextWords_AsList, !result)
-        PyObject *_extractTextWords_AsList(PyObject *lines)
+        FITZEXCEPTION(extractWORDS, !result)
+        %feature("autodoc","Fill a given list with text word information.") extractWORDS;
+        PyObject *extractWORDS(PyObject *lines)
         {
             fz_stext_block *block;
             fz_stext_line *line;
             fz_stext_char *ch;
             fz_buffer *buff = NULL;
+            fz_var(buff);
             size_t buflen = 0;
             int block_n = 0, line_n, word_n;
             fz_rect wbbox = {0,0,0,0};          // word bbox
-            for (block = $self->first_block; block; block = block->next)
+
+            fz_try(gctx)
             {
-                if (block->type != FZ_STEXT_BLOCK_TEXT)
+                buff = fz_new_buffer(gctx, 64);
+                for (block = $self->first_block; block; block = block->next)
                 {
-                    block_n++;
-                    continue;
-                }
-                line_n = 0;
-                for (line = block->u.t.first_line; line; line = line->next)
-                {
-                    word_n = 0;                       // word counter per line
-                    buff = NULL;                      // reset word buffer
-                    buflen = 0;                       // reset char counter
-                    for (ch = line->first_char; ch; ch = ch->next)
+                    if (block->type != FZ_STEXT_BLOCK_TEXT)
                     {
-                        if (ch->c == 32 && buflen == 0)
-                            continue;                 // skip spaces at line start
-                        if (ch->c == 32)
-                        {   // --> finish the word
+                        block_n++;
+                        continue;
+                    }
+                    line_n = 0;
+                    for (line = block->u.t.first_line; line; line = line->next)
+                    {
+                        word_n = 0;                       // word counter per line
+                        fz_clear_buffer(gctx, buff);      // reset word buffer
+                        buflen = 0;                       // reset char counter
+                        for (ch = line->first_char; ch; ch = ch->next)
+                        {
+                            if (ch->c == 32 && buflen == 0)
+                                continue;                 // skip spaces at line start
+                            if (ch->c == 32)
+                            {   // --> finish the word
+                                word_n = JM_append_word(gctx, lines, buff, &wbbox,
+                                                        block_n, line_n, word_n);
+                                fz_clear_buffer(gctx, buff);
+                                buflen = 0;               // reset char counter
+                                continue;
+                            }
+                            // append one unicode character to the word
+                            JM_append_rune(gctx, buff, ch->c);
+                            buflen++;
+                            // enlarge word bbox
+                            wbbox = fz_union_rect(wbbox, JM_char_bbox(line, ch));
+                        }
+                        if (buflen)                         // store any remaining word
+                        {
                             word_n = JM_append_word(gctx, lines, buff, &wbbox,
                                                     block_n, line_n, word_n);
-                            fz_drop_buffer(gctx, buff);
-                            buff = NULL;
-                            buflen = 0;               // reset char counter
-                            continue;
+                            fz_clear_buffer(gctx, buff);
+                            buflen = 0;
                         }
-                        // append one unicode character to the word
-                        if (!buff) buff = fz_new_buffer(gctx, 64);
-                        fz_append_rune(gctx, buff, ch->c);
-                        buflen++;
-                        // enlarge word bbox
-                        wbbox = fz_union_rect(wbbox, JM_char_bbox(line, ch));
+                        line_n++;
                     }
-                    if (buff)                         // store any remaining word
-                    {
-                        word_n = JM_append_word(gctx, lines, buff, &wbbox,
-                                                block_n, line_n, word_n);
-                        fz_drop_buffer(gctx, buff);
-                        buff = NULL;
-                        buflen = 0;
-                    }
-                    line_n++;
+                    block_n++;
                 }
-                block_n++;
+            }
+            fz_always(gctx)
+            {
+                fz_drop_buffer(gctx, buff);
+                PyErr_Clear();
+            }
+            fz_catch(gctx)
+            {
+                return NULL;
             }
             return_none;
         }
@@ -6526,6 +6412,7 @@ val = Rect(val)%}
                         break;
                     default:
                         JM_print_stext_page_as_text(gctx, out, $self);
+                        text = JM_EscapeStrFromBuffer(gctx, res);
                         break;
                 }
                 if (!text) text = JM_StrFromBuffer(gctx, res);
@@ -6549,7 +6436,7 @@ val = Rect(val)%}
 
             def extractJSON(self):
                 import base64, json
-                val = _make_textpage_dict(self)
+                val = self._textpage_dict(raw=False)
 
                 class b64encode(json.JSONEncoder):
                     def default(self,s):
@@ -6572,10 +6459,10 @@ val = Rect(val)%}
                 return self._extractText(4)
 
             def extractDICT(self):
-                return _make_textpage_dict(self)
+                return self._textpage_dict(raw=False)
 
             def extractRAWDICT(self):
-                return _make_textpage_dict(self, raw=True)
+                return self._textpage_dict(raw=True)
         %}
         %pythoncode %{
         def __del__(self):

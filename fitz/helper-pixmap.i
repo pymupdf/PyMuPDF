@@ -184,7 +184,7 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
                               );
         if (keep_image)
         {   // keep fz_image: hand over address, do not drop
-            PyDict_SetItemString(result, "image", PyLong_FromVoidPtr((void *) fz_keep_image(ctx, image)));
+            PyDict_SetItem(result, dictkey_image, PyLong_FromVoidPtr((void *) fz_keep_image(ctx, image)));
         }
     }
     fz_always(ctx)

@@ -240,3 +240,42 @@
 #define PDF_PERM_PRINT_HQ 1 << 11
 
 %}
+
+%{
+// Global Constants
+PyObject *dictkey_bbox;
+PyObject *dictkey_blocks;
+PyObject *dictkey_c;
+PyObject *dictkey_chars;
+PyObject *dictkey_color;
+PyObject *dictkey_content;
+PyObject *dictkey_creationDate;
+PyObject *dictkey_dashes;
+PyObject *dictkey_desc;
+PyObject *dictkey_dir;
+PyObject *dictkey_effect;
+PyObject *dictkey_ext;
+PyObject *dictkey_filename;
+PyObject *dictkey_fill;
+PyObject *dictkey_flags;
+PyObject *dictkey_font;
+PyObject *dictkey_height;
+PyObject *dictkey_image;
+PyObject *dictkey_length;
+PyObject *dictkey_lines;
+PyObject *dictkey_modDate;
+PyObject *dictkey_name;
+PyObject *dictkey_origin;
+PyObject *dictkey_size;
+PyObject *dictkey_spans;
+PyObject *dictkey_stroke;
+PyObject *dictkey_style;
+PyObject *dictkey_subject;
+PyObject *dictkey_text;
+PyObject *dictkey_title;
+PyObject *dictkey_type;
+PyObject *dictkey_ufilename;
+PyObject *dictkey_width;
+PyObject *dictkey_wmode;
+
+%}
