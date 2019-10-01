@@ -36,7 +36,7 @@
 /*
 	Choose whether to enable ICC color profiles.
 */
-/* #define FZ_ENABLE_ICC 1 */
+#define FZ_ENABLE_ICC 0
 
 /*
 	Choose whether to enable JPEG2000 decoding.
