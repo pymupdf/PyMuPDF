@@ -32,7 +32,7 @@ if not args.desc:
 content = open(impfn, "rb").read()  # read all file content in
 
 # import the file into the PDF
-doc.embeddedFileAdd(content, name, impfn, desc)
+doc.embeddedFileAdd(name, content, impfn, desc)
 # save PDF (either incremental or to new PDF file)
 if not args.output:
     doc.saveIncr()
