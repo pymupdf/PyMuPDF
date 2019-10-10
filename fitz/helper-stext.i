@@ -1,7 +1,4 @@
 %{
-PyObject *JM_UnicodeFromASCII(const char *in);
-
-
 PyObject *JM_StrFromBuffer(fz_context *ctx, fz_buffer *buff)
 {
     if (!buff) return PyUnicode_FromString("");
@@ -28,6 +25,15 @@ PyObject *JM_EscapeStrFromBuffer(fz_context *ctx, fz_buffer *buff)
         val = PyUnicode_FromString("");
         PyErr_Clear();
     }
+    return val;
+}
+
+PyObject *JM_EscapeStrFromStr(fz_context *ctx, const char *c)
+{
+    if (!c) return PyUnicode_FromString("");
+    fz_buffer *buff = fz_new_buffer_from_shared_data(ctx, c, strlen(c));
+    PyObject *val = JM_EscapeStrFromBuffer(ctx, buff);
+    // fz_drop_buffer(ctx, buff);
     return val;
 }
 
@@ -225,7 +231,7 @@ static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw,
             PyDict_SetItem(span, dictkey_flags, val);
             Py_DECREF(val);
 
-            val = Py_BuildValue("s", style.font);
+            val = JM_EscapeStrFromStr(ctx, style.font);
             PyDict_SetItem(span, dictkey_font, val);
             Py_DECREF(val);
 

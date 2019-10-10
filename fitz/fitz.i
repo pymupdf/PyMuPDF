@@ -1538,7 +1538,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             char *ext = NULL;
             char *fontname = NULL;
             PyObject *nulltuple = Py_BuildValue("sssO", "", "", "", bytes);
-            PyObject *tuple;
+            PyObject *tuple, *val;
             Py_ssize_t len = 0;
             fz_try(gctx)
             {
@@ -1560,12 +1560,13 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                         bytes = JM_BinFromBuffer(gctx, buffer);
                         fz_drop_buffer(gctx, buffer);
                     }
-                    fontname = (char *) JM_ASCIIFromChar((char *) pdf_to_name(gctx, bname));
-                    tuple = Py_BuildValue("sssO",
-                                fontname,
-                                ext,
-                                pdf_to_name(gctx, subtype),
-                                bytes);
+                    tuple = PyTuple_New(4);
+                    PyTuple_SET_ITEM(tuple, 0, JM_EscapeStrFromStr(gctx,
+                                               pdf_to_name(gctx, bname)));
+                    PyTuple_SET_ITEM(tuple, 1, Py_BuildValue("s", ext));
+                    PyTuple_SET_ITEM(tuple, 2, Py_BuildValue("s",
+                                                pdf_to_name(gctx, subtype)));
+                    PyTuple_SET_ITEM(tuple, 3, bytes);
                 }
                 else
                 {
@@ -1776,11 +1777,11 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         // Return the /SigFlags value
         //---------------------------------------------------------------------
         CLOSECHECK0(getSigFlags)
-        int getSigFlags()
+        PyObject *getSigFlags()
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            if (!pdf) return -1;           // not a PDF
-            int sigflag;
+            if (!pdf) return Py_BuildValue("i", -1);  // not a PDF
+            size_t sigflag = 0;
             fz_try(gctx)
             {
                 pdf_obj *sigflags = pdf_dict_getl(gctx,
@@ -1789,11 +1790,13 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                                                   PDF_NAME(AcroForm),
                                                   PDF_NAME(SigFlags),
                                                   NULL);
-                if (sigflags) sigflag = pdf_to_int(gctx, sigflags);
-                else          sigflag = -1;
+                if (sigflags)
+                {
+                    sigflag = (size_t) pdf_to_int(gctx, sigflags);
+                }
             }
-            fz_catch(gctx) return -1;      // any problem yields -1
-            return sigflag;
+            fz_catch(gctx) return Py_BuildValue("i", -1);  // any problem
+            return Py_BuildValue("I", sigflag);
         }
 
         //---------------------------------------------------------------------
@@ -1804,8 +1807,8 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         PyObject *isFormPDF()
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            if (!pdf) Py_RETURN_FALSE;           // not a PDF
-            int have_form = 0;                   // preset indicator
+            if (!pdf) Py_RETURN_FALSE;  // not a PDF
+            int count = 0;  // init count
             fz_try(gctx)
             {
                 pdf_obj *fields = pdf_dict_getl(gctx,
@@ -1814,10 +1817,20 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                                                 PDF_NAME(AcroForm),
                                                 PDF_NAME(Fields),
                                                 NULL);
-                if (fields && pdf_array_len(gctx, fields) > 0) have_form = 1;
+                if (pdf_is_array(gctx, fields))
+                {
+                    count = pdf_array_len(gctx, fields);
+                };
             }
             fz_catch(gctx) Py_RETURN_FALSE;      // any problem yields false
-            return JM_BOOL(have_form);
+            if (count)
+            {
+                return Py_BuildValue("i", count);
+            }
+            else
+            {
+                Py_RETURN_FALSE;
+            }
         }
 
         //---------------------------------------------------------------------
@@ -2492,9 +2505,37 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             def __getitem__(self, i=0):
                 if type(i) is not int:
                     raise ValueError("bad page number(s)")
-                if i >= len(self):
+                if i >= self.pageCount:
                     raise IndexError("bad page number(s)")
                 return self.loadPage(i)
+
+            def pages(self, start=None, stop=None, step=None):
+                """Return a generator iterator over a page range.
+
+                Arguments have the same meaning as for the range() built-in.
+                """
+                # set the start value
+                start = start or 0
+                while start < 0:
+                    start += self.pageCount
+                if start not in range(self.pageCount):
+                    raise ValueError("bad start page number")
+
+                # set the stop value
+                stop = stop if stop is not None and stop <= self.pageCount else self.pageCount
+
+                # set the step value
+                if step == 0:
+                    raise ValueError("arg 3 must not be zero")
+                if step is None:
+                    if start > stop:
+                        step = -1
+                    else:
+                        step = 1
+
+                for pno in range(start, stop, step):
+                    yield (self.loadPage(pno))
+
 
             def __len__(self):
                 return self.pageCount
@@ -3923,6 +3964,33 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         def _wrapContents(self):
             TOOLS._insert_contents(self, b"q\n", False)
             TOOLS._insert_contents(self, b"\nQ", True)
+
+
+        def links(self, kinds=None):
+            """ Generator over the links of a page."""
+            all_links = self.getLinks()
+            for link in all_links:
+                if kinds is None or link["kind"] in kinds:
+                    yield (link)
+
+
+        def annots(self, types=None):
+            """ Generator over the annotations of a page."""
+            annot = self.firstAnnot
+            while annot:
+                if types is None or annot.type[0] in types:
+                    yield (annot)
+                annot = annot.next
+
+
+        def widgets(self, types=None):
+            """ Generator over the widgets of a page."""
+            widget = self.firstWidget
+            while widget:
+                if types is None or widget.field_type in types:
+                    yield (widget)
+                widget = widget.next
+
 
         def __str__(self):
             CheckParent(self)
