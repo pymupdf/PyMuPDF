@@ -410,11 +410,9 @@ def searchFor(page, text, hit_max = 16, quads = False):
         a list of rectangles or quads, each containing one occurrence.
     """
     CheckParent(page)
-    dl = page.getDisplayList()         # create DisplayList
-    tp = dl.getTextPage()              # create TextPage
+    tp = page.getTextPage()  # create TextPage
     # return list of hitting reactangles
     rlist = tp.search(text, hit_max = hit_max, quads = quads)
-    dl = None
     tp = None
     return rlist
 
@@ -446,14 +444,12 @@ def getTextBlocks(page, flags=None):
         text lines, block type and running block number.
     """
     CheckParent(page)
-    dl = page.getDisplayList()
     if flags is None:
         flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
-    tp = dl.getTextPage(flags)
+    tp = page.getTextPage(flags)
     l = []
     tp.extractBLOCKS(l)
     del tp
-    del dl
     return l
 
 def getTextWords(page, flags=None):
@@ -463,13 +459,11 @@ def getTextWords(page, flags=None):
         flags: (int) control the amount of data parsed into the textpage.
     """
     CheckParent(page)
-    dl = page.getDisplayList()
     if flags is None:
         flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
-    tp = dl.getTextPage(flags)
+    tp = page.getTextPage(flags)
     l = []
     tp.extractWORDS(l)
-    del dl
     del tp
     return l
 
@@ -488,7 +482,6 @@ def getText(page, output="text", flags=None):
     if output == "blocks":
         return getTextBlocks(page, flags=flags)
     CheckParent(page)
-    dl = page.getDisplayList()
     # available output types
     formats = ("text", "html", "json", "xml", "xhtml", "dict", "rawdict")
     if output not in formats:
@@ -501,7 +494,7 @@ def getText(page, output="text", flags=None):
         if images[f] == 1:
             flags |= TEXT_PRESERVE_IMAGES
 
-    tp = dl.getTextPage(flags)     # TextPage with or without images
+    tp = page.getTextPage(flags)     # TextPage with or without images
 
     if f == 2:
         t = tp.extractJSON()
@@ -512,7 +505,6 @@ def getText(page, output="text", flags=None):
     else:
         t = tp._extractText(f)
 
-    del dl
     del tp
     return t
 

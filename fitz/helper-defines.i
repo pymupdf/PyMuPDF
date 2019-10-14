@@ -277,5 +277,6 @@ PyObject *dictkey_type;
 PyObject *dictkey_ufilename;
 PyObject *dictkey_width;
 PyObject *dictkey_wmode;
+PyObject *dictkey_xref;
 
 %}

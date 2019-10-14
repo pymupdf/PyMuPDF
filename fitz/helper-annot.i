@@ -173,15 +173,15 @@ PyObject *JM_annot_set_border(fz_context *ctx, PyObject *border, pdf_document *d
     PyObject *nstyle  = NULL;                 // new style
     PyObject *ostyle  = NULL;                 // old style
 
-    nwidth = PyFloat_AsDouble(PyDict_GetItemString(border, "width"));
-    ndashes = PyDict_GetItemString(border, "dashes");
-    nstyle  = PyDict_GetItemString(border, "style");
+    nwidth = PyFloat_AsDouble(PyDict_GetItem(border, dictkey_width));
+    ndashes = PyDict_GetItem(border, dictkey_dashes);
+    nstyle  = PyDict_GetItem(border, dictkey_style);
 
     // first get old border properties
     PyObject *oborder = JM_annot_border(ctx, annot_obj);
-    owidth = PyFloat_AsDouble(PyDict_GetItemString(oborder, "width"));
-    odashes = PyDict_GetItemString(oborder, "dashes");
-    ostyle = PyDict_GetItemString(oborder, "style");
+    owidth = PyFloat_AsDouble(PyDict_GetItem(oborder, dictkey_width));
+    odashes = PyDict_GetItem(oborder, dictkey_dashes);
+    ostyle = PyDict_GetItem(oborder, dictkey_style);
 
     // then delete any relevant entries
     pdf_dict_del(ctx, annot_obj, PDF_NAME(BS));

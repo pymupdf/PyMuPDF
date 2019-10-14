@@ -214,6 +214,7 @@ dictkey_type = PyUnicode_FromString("type");
 dictkey_ufilename = PyUnicode_FromString("ufilename");
 dictkey_width = PyUnicode_FromString("width");
 dictkey_wmode = PyUnicode_FromString("wmode");
+dictkey_xref = PyUnicode_FromString("xref");
 %}
 
 %header %{
@@ -1561,8 +1562,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                         fz_drop_buffer(gctx, buffer);
                     }
                     tuple = PyTuple_New(4);
-                    PyTuple_SET_ITEM(tuple, 0, JM_EscapeStrFromStr(gctx,
-                                               pdf_to_name(gctx, bname)));
+                    PyTuple_SET_ITEM(tuple, 0, JM_EscapeStrFromStr(pdf_to_name(gctx, bname)));
                     PyTuple_SET_ITEM(tuple, 1, Py_BuildValue("s", ext));
                     PyTuple_SET_ITEM(tuple, 2, Py_BuildValue("s",
                                                 pdf_to_name(gctx, subtype)));
@@ -2622,11 +2622,36 @@ struct fz_page_s {
         }
 
         //---------------------------------------------------------------------
+        // Page.getTextPage
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(getTextPage, !result)
+        %feature("autodoc","Create a TextPage directly from the page.") getTextPage;
+        %pythonprepend getTextPage %{
+        CheckParent(self)
+        %}
+        struct fz_stext_page_s *getTextPage(int flags=0)
+        {
+            fz_stext_page *textpage=NULL;
+            fz_try(gctx)
+            {
+                textpage = JM_new_stext_page_from_page(gctx, $self, flags);
+            }
+            fz_catch(gctx)
+            {
+                return NULL;
+            }
+            return textpage;
+        }
+
+
+        //---------------------------------------------------------------------
         // Page.getSVGimage
         //---------------------------------------------------------------------
         FITZEXCEPTION(getSVGimage, !result)
         %feature("autodoc","Create an SVG image from the page.") getSVGimage;
-        PARENTCHECK(getSVGimage)
+        %pythonprepend getSVGimage %{
+        CheckParent(self)
+        %}
         PyObject *getSVGimage(PyObject *matrix = NULL)
         {
             fz_rect mediabox = fz_bound_page(gctx, $self);
@@ -2634,7 +2659,6 @@ struct fz_page_s {
             fz_buffer *res = NULL;
             PyObject *text = NULL;
             fz_matrix ctm = JM_matrix_from_py(matrix);
-            fz_cookie *cookie = NULL;
             fz_output *out = NULL;
             fz_separations *seps = NULL;
             fz_var(out);
@@ -2648,7 +2672,7 @@ struct fz_page_s {
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
                 dev = fz_new_svg_device(gctx, out, tbounds.x1-tbounds.x0, tbounds.y1-tbounds.y0, FZ_SVG_TEXT_AS_PATH, 1);
-                fz_run_page(gctx, $self, dev, ctm, cookie);
+                fz_run_page(gctx, $self, dev, ctm, NULL);
                 fz_close_device(gctx, dev);
                 text = JM_StrFromBuffer(gctx, res);
             }
@@ -3104,10 +3128,12 @@ struct fz_page_s {
         }
 
         //---------------------------------------------------------------------
-        // getDisplayList()
+        // Page.getDisplayList()
         //---------------------------------------------------------------------
         FITZEXCEPTION(getDisplayList, !result)
-        PARENTCHECK(getDisplayList)
+        %pythonprepend getDisplayList %{
+        CheckParent(self)
+        %}
         struct fz_display_list_s *getDisplayList(int annots=1)
         {
             fz_display_list *dl = NULL;
@@ -3251,7 +3277,7 @@ except:
             if (!PyDict_Check(linkdict)) return; // have no dictionary
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             if (!page) return;                   // have no PDF
-            int xref = (int) PyInt_AsLong(PyDict_GetItemString(linkdict, "xref"));
+            int xref = (int) PyInt_AsLong(PyDict_GetItem(linkdict, dictkey_xref));
             if (xref < 1) return;                // invalid xref
             pdf_obj *annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
             if (!annots) return;                 // have no annotations
@@ -5383,8 +5409,8 @@ struct pdf_annot_s
         {
             if (!PyDict_Check(colors)) return;
             PyObject *ccol, *icol;
-            ccol = PyDict_GetItemString(colors, "stroke");
-            icol = PyDict_GetItemString(colors, "fill");
+            ccol = PyDict_GetItem(colors, dictkey_stroke);
+            icol = PyDict_GetItem(colors, dictkey_fill);
             int i, n;
             float col[4];
             n = 0;
@@ -5734,7 +5760,7 @@ CheckParent(self)
                     THROWMSG("info not a dict");
 
                 // contents
-                uc = JM_Python_str_AsChar(PyDict_GetItemString(info, "content"));
+                uc = JM_Python_str_AsChar(PyDict_GetItem(info, dictkey_content));
                 if (uc)
                 {
                     pdf_set_annot_contents(gctx, $self, uc);
@@ -5744,7 +5770,7 @@ CheckParent(self)
                 if (is_markup)
                 {
                     // title (= author)
-                    uc = JM_Python_str_AsChar(PyDict_GetItemString(info, "title"));
+                    uc = JM_Python_str_AsChar(PyDict_GetItem(info, dictkey_title));
                     if (uc)
                     {
                         pdf_set_annot_author(gctx, $self, uc);
@@ -5752,8 +5778,7 @@ CheckParent(self)
                     }
 
                     // creation date
-                    uc = JM_Python_str_AsChar(PyDict_GetItemString(info,
-                                              "creationDate"));
+                    uc = JM_Python_str_AsChar(PyDict_GetItem(info, dictkey_creationDate));
                     if (uc)
                     {
                         pdf_dict_put_text_string(gctx, $self->obj,
@@ -5762,7 +5787,7 @@ CheckParent(self)
                     }
 
                     // mod date
-                    uc = JM_Python_str_AsChar(PyDict_GetItemString(info, "modDate"));
+                    uc = JM_Python_str_AsChar(PyDict_GetItem(info, dictkey_modDate));
                     if (uc)
                     {
                         pdf_dict_put_text_string(gctx, $self->obj,
@@ -5771,7 +5796,7 @@ CheckParent(self)
                     }
 
                     // subject
-                    uc = JM_Python_str_AsChar(PyDict_GetItemString(info, "subject"));
+                    uc = JM_Python_str_AsChar(PyDict_GetItem(info, dictkey_subject));
                     if (uc)
                     {
                         pdf_dict_puts_drop(gctx, $self->obj, "Subj",
@@ -5978,8 +6003,8 @@ struct fz_link_s
             int nscol = 0;
             float fcol[4] = {0.0f, 0.0f, 0.0f, 0.0f};
             int nfcol = 0;
-            PyObject *stroke = PyDict_GetItemString(colors, "stroke");
-            PyObject *fill = PyDict_GetItemString(colors, "fill");
+            PyObject *stroke = PyDict_GetItem(colors, dictkey_stroke);
+            PyObject *fill = PyDict_GetItem(colors, dictkey_fill);
             JM_color_FromSequence(stroke, &nscol, scol);
             JM_color_FromSequence(fill, &nfcol, fcol);
             if (!nscol && !nfcol) return_none;

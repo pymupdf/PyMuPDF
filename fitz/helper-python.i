@@ -565,6 +565,7 @@ def CheckFont(page, fontname):
         if f[3].lower() == fontname.lower():
             return f
 
+
 def CheckFontInfo(doc, xref):
     """Return a font info if present in the document.
     """

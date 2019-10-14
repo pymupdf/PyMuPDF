@@ -1,40 +1,30 @@
 %{
-PyObject *JM_StrFromBuffer(fz_context *ctx, fz_buffer *buff)
+fz_stext_page *JM_new_stext_page_from_page(fz_context *ctx, fz_page *page, int flags)
 {
-    if (!buff) return PyUnicode_FromString("");
-    unsigned char *s = NULL;
-    size_t len = fz_buffer_storage(ctx, buff, &s);
-    PyObject *val = PyUnicode_DecodeUTF8(s, (Py_ssize_t) len, "replace");
-    if (!val)
+    if (!page) return NULL;
+    fz_stext_page *text = NULL;
+    fz_device *dev = NULL;
+    fz_var(dev);
+    fz_var(text);
+    fz_stext_options options;
+    options.flags = flags;
+    fz_try(ctx)
     {
-        val = PyUnicode_FromString("");
-        PyErr_Clear();
+        text = fz_new_stext_page(ctx, fz_bound_page(ctx, page));
+        dev = fz_new_stext_device(ctx, text, &options);
+        fz_run_page_contents(ctx, page, dev, fz_identity, NULL);
+        fz_close_device(ctx, dev);
     }
-    return val;
-}
-
-
-PyObject *JM_EscapeStrFromBuffer(fz_context *ctx, fz_buffer *buff)
-{
-    if (!buff) return PyUnicode_FromString("");
-    unsigned char *s = NULL;
-    size_t len = fz_buffer_storage(ctx, buff, &s);
-    PyObject *val = PyUnicode_DecodeUnicodeEscape(s, (Py_ssize_t) len, "replace");
-    if (!val)
+    fz_always(ctx)
     {
-        val = PyUnicode_FromString("");
-        PyErr_Clear();
+        fz_drop_device(ctx, dev);
     }
-    return val;
-}
-
-PyObject *JM_EscapeStrFromStr(fz_context *ctx, const char *c)
-{
-    if (!c) return PyUnicode_FromString("");
-    fz_buffer *buff = fz_new_buffer_from_shared_data(ctx, c, strlen(c));
-    PyObject *val = JM_EscapeStrFromBuffer(ctx, buff);
-    // fz_drop_buffer(ctx, buff);
-    return val;
+    fz_catch(ctx)
+    {
+        fz_drop_stext_page(ctx, text);
+        fz_rethrow(ctx);
+    }
+    return text;
 }
 
 
@@ -231,7 +221,7 @@ static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw,
             PyDict_SetItem(span, dictkey_flags, val);
             Py_DECREF(val);
 
-            val = JM_EscapeStrFromStr(ctx, style.font);
+            val = JM_EscapeStrFromStr(style.font);
             PyDict_SetItem(span, dictkey_font, val);
             Py_DECREF(val);
 

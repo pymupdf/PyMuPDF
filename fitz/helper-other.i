@@ -1,9 +1,50 @@
 %{
+
+PyObject *JM_StrFromBuffer(fz_context *ctx, fz_buffer *buff)
+{
+    if (!buff) return PyUnicode_FromString("");
+    unsigned char *s = NULL;
+    size_t len = fz_buffer_storage(ctx, buff, &s);
+    PyObject *val = PyUnicode_DecodeUTF8(s, (Py_ssize_t) len, "replace");
+    if (!val)
+    {
+        val = PyUnicode_FromString("");
+        PyErr_Clear();
+    }
+    return val;
+}
+
+
+PyObject *JM_EscapeStrFromBuffer(fz_context *ctx, fz_buffer *buff)
+{
+    if (!buff) return PyUnicode_FromString("");
+    unsigned char *s = NULL;
+    size_t len = fz_buffer_storage(ctx, buff, &s);
+    PyObject *val = PyUnicode_DecodeUnicodeEscape(s, (Py_ssize_t) len, "replace");
+    if (!val)
+    {
+        val = PyUnicode_FromString("");
+        PyErr_Clear();
+    }
+    return val;
+}
+
+PyObject *JM_EscapeStrFromStr(const char *c)
+{
+    if (!c) return PyUnicode_FromString("");
+    PyObject *val = PyUnicode_DecodeUnicodeEscape(c, (Py_ssize_t) strlen(c), "replace");
+    if (!val)
+    {
+        val = PyUnicode_FromString("");
+        PyErr_Clear();
+    }
+    return val;
+}
+
 // redirect MuPDF warnings
 void JM_mupdf_warning(void *user, const char *message)
 {
-    
-    PyObject *val = Py_BuildValue("s", message);
+    PyObject *val = JM_EscapeStrFromStr(message);
     PyList_Append(JM_mupdf_warnings_store, val);
     Py_DECREF(val);
 }

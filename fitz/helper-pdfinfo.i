@@ -75,10 +75,10 @@ void JM_gather_fonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
         PyObject *entry = PyList_New(6);
         PyList_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
         PyList_SET_ITEM(entry, 1, Py_BuildValue("s", ext));
-        PyList_SET_ITEM(entry, 2, JM_EscapeStrFromStr(ctx, pdf_to_name(ctx, subtype)));
-        PyList_SET_ITEM(entry, 3, JM_EscapeStrFromStr(ctx, pdf_to_name(ctx, name)));
-        PyList_SET_ITEM(entry, 4, JM_EscapeStrFromStr(ctx, pdf_to_name(ctx, refname)));
-        PyList_SET_ITEM(entry, 5, JM_EscapeStrFromStr(ctx, pdf_to_name(ctx, encoding)));
+        PyList_SET_ITEM(entry, 2, JM_EscapeStrFromStr(pdf_to_name(ctx, subtype)));
+        PyList_SET_ITEM(entry, 3, JM_EscapeStrFromStr(pdf_to_name(ctx, name)));
+        PyList_SET_ITEM(entry, 4, JM_EscapeStrFromStr(pdf_to_name(ctx, refname)));
+        PyList_SET_ITEM(entry, 5, JM_EscapeStrFromStr(pdf_to_name(ctx, encoding)));
         PyList_Append(fontlist, entry);
         Py_DECREF(entry);
     }
@@ -149,10 +149,10 @@ void JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
         PyList_SET_ITEM(entry, 2, Py_BuildValue("i", pdf_to_int(ctx, width)));
         PyList_SET_ITEM(entry, 3, Py_BuildValue("i", pdf_to_int(ctx, height)));
         PyList_SET_ITEM(entry, 4, Py_BuildValue("i", pdf_to_int(ctx, bpc)));
-        PyList_SET_ITEM(entry, 5, JM_EscapeStrFromStr(ctx, pdf_to_name(ctx, cs)));
-        PyList_SET_ITEM(entry, 6, JM_EscapeStrFromStr(ctx, pdf_to_name(ctx, altcs)));
-        PyList_SET_ITEM(entry, 7, JM_EscapeStrFromStr(ctx, pdf_to_name(ctx, refname)));
-        PyList_SET_ITEM(entry, 8, JM_EscapeStrFromStr(ctx, pdf_to_name(ctx, filter)));
+        PyList_SET_ITEM(entry, 5, JM_EscapeStrFromStr(pdf_to_name(ctx, cs)));
+        PyList_SET_ITEM(entry, 6, JM_EscapeStrFromStr(pdf_to_name(ctx, altcs)));
+        PyList_SET_ITEM(entry, 7, JM_EscapeStrFromStr(pdf_to_name(ctx, refname)));
+        PyList_SET_ITEM(entry, 8, JM_EscapeStrFromStr(pdf_to_name(ctx, filter)));
         PyList_Append(imagelist, entry);
         Py_DECREF(entry);
     }
@@ -189,7 +189,7 @@ void JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
 
         PyObject *entry = PyList_New(2);
         PyList_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
-        PyList_SET_ITEM(entry, 1, JM_EscapeStrFromStr(ctx, pdf_to_name(ctx, refname)));
+        PyList_SET_ITEM(entry, 1, JM_EscapeStrFromStr(pdf_to_name(ctx, refname)));
         PyList_Append(imagelist, entry);
         Py_DECREF(entry);
     }
