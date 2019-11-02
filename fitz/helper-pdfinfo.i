@@ -1,45 +1,10 @@
 %{
-/* ************ CURRENTLY NOT USED ***************
-//----------------------------------------------------------------------------
-// convert (char *) to ASCII-only (char*) (which must be freed!)
-//----------------------------------------------------------------------------
-char *JM_ASCIIFromChar(char *in)
-{
-    if (!in) return NULL;
-    size_t i, j = strlen(in) + 1;
-    unsigned char *out = JM_Alloc(unsigned char, j);
-    if (!out) return NULL;
-    memcpy(out, in, j);
-    for (i = 0; i < j-1; i++)
-    {
-        if (out[i] > 126)
-        {
-            out[i] = 63;
-            continue;
-        }
-        if (out[i] < 32)
-            out[i] = 32;
-    }
-    return (char *) out;
-}
-
-//----------------------------------------------------------------------------
-// create an ASCII-only Python string of a (char*)
-//----------------------------------------------------------------------------
-PyObject *JM_UnicodeFromASCII(const char *in)
-{
-    char *c = JM_ASCIIFromChar((char *) in);
-    PyObject *p = Py_BuildValue("s", c);
-    JM_Free(c);
-    return p;
-}
-*/
 
 //-----------------------------------------------------------------------------
 // Store info of a font in Python list
 //-----------------------------------------------------------------------------
 void JM_gather_fonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
-                    PyObject *fontlist)
+                    PyObject *fontlist, int stream_xref)
 {
     int i, n;
     n = pdf_dict_len(ctx, dict);
@@ -52,14 +17,14 @@ void JM_gather_fonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
         pdf_obj *refname = NULL;
         pdf_obj *encoding = NULL;
 
+        refname = pdf_dict_get_key(ctx, dict, i);
         fontdict = pdf_dict_get_val(ctx, dict, i);
         if (!pdf_is_dict(ctx, fontdict))
         {
-            PySys_WriteStdout("warning: not a font dict (%d 0 R)",
-                              pdf_to_num(ctx, fontdict));
+            fz_warn(ctx, "'%s' is no font dict (%d 0 R)",
+                    pdf_to_name(ctx, refname), pdf_to_num(ctx, fontdict));
             continue;
         }
-        refname = pdf_dict_get_key(ctx, dict, i);
         subtype = pdf_dict_get(ctx, fontdict, PDF_NAME(Subtype));
         basefont = pdf_dict_get(ctx, fontdict, PDF_NAME(BaseFont));
         if (!basefont || pdf_is_null(ctx, basefont))
@@ -72,15 +37,15 @@ void JM_gather_fonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
         int xref = pdf_to_num(ctx, fontdict);
         char *ext = "n/a";
         if (xref) ext = fontextension(ctx, pdf, xref);
-        PyObject *entry = PyList_New(6);
-        PyList_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
-        PyList_SET_ITEM(entry, 1, Py_BuildValue("s", ext));
-        PyList_SET_ITEM(entry, 2, JM_EscapeStrFromStr(pdf_to_name(ctx, subtype)));
-        PyList_SET_ITEM(entry, 3, JM_EscapeStrFromStr(pdf_to_name(ctx, name)));
-        PyList_SET_ITEM(entry, 4, JM_EscapeStrFromStr(pdf_to_name(ctx, refname)));
-        PyList_SET_ITEM(entry, 5, JM_EscapeStrFromStr(pdf_to_name(ctx, encoding)));
-        PyList_Append(fontlist, entry);
-        Py_DECREF(entry);
+        PyObject *entry = PyTuple_New(7);
+        PyTuple_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
+        PyTuple_SET_ITEM(entry, 1, PyUnicode_FromString(ext));
+        PyTuple_SET_ITEM(entry, 2, JM_UNICODE(pdf_to_name(ctx, subtype)));
+        PyTuple_SET_ITEM(entry, 3, JM_UNICODE(pdf_to_name(ctx, name)));
+        PyTuple_SET_ITEM(entry, 4, JM_UNICODE(pdf_to_name(ctx, refname)));
+        PyTuple_SET_ITEM(entry, 5, JM_UNICODE(pdf_to_name(ctx, encoding)));
+        PyTuple_SET_ITEM(entry, 6, Py_BuildValue("i", stream_xref));
+        LIST_APPEND_DROP(fontlist, entry);
     }
 }
 
@@ -88,7 +53,7 @@ void JM_gather_fonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
 // Store info of an image in Python list
 //-----------------------------------------------------------------------------
 void JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
-                     PyObject *imagelist)
+                     PyObject *imagelist, int stream_xref)
 {
     int i, n;
     n = pdf_dict_len(ctx, dict);
@@ -104,14 +69,14 @@ void JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
         pdf_obj *cs = NULL;
         pdf_obj *altcs;
 
+        refname = pdf_dict_get_key(ctx, dict, i);
         imagedict = pdf_dict_get_val(ctx, dict, i);
         if (!pdf_is_dict(ctx, imagedict))
         {
-            PySys_WriteStdout("warning: not an image dict (%d 0 R)",
-                              pdf_to_num(ctx, imagedict));
+            fz_warn(ctx, "'%s' is no image dict (%d 0 R)",
+                    pdf_to_name(ctx, refname), pdf_to_num(ctx, imagedict));
             continue;
         }
-        refname = pdf_dict_get_key(ctx, dict, i);
 
         type = pdf_dict_get(ctx, imagedict, PDF_NAME(Subtype));
         if (!pdf_name_eq(ctx, type, PDF_NAME(Image)))
@@ -123,6 +88,10 @@ void JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
         if (smask)
             gen = pdf_to_num(ctx, smask);
         filter = pdf_dict_get(ctx, imagedict, PDF_NAME(Filter));
+        if (pdf_is_array(ctx, filter))
+        {
+            filter = pdf_array_get(ctx, filter, 0);
+        }
 
         altcs = NULL;
         cs = pdf_dict_get(ctx, imagedict, PDF_NAME(ColorSpace));
@@ -143,18 +112,18 @@ void JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
         height = pdf_dict_get(ctx, imagedict, PDF_NAME(Height));
         bpc = pdf_dict_get(ctx, imagedict, PDF_NAME(BitsPerComponent));
 
-        PyObject *entry = PyList_New(9);
-        PyList_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
-        PyList_SET_ITEM(entry, 1, Py_BuildValue("i", gen));
-        PyList_SET_ITEM(entry, 2, Py_BuildValue("i", pdf_to_int(ctx, width)));
-        PyList_SET_ITEM(entry, 3, Py_BuildValue("i", pdf_to_int(ctx, height)));
-        PyList_SET_ITEM(entry, 4, Py_BuildValue("i", pdf_to_int(ctx, bpc)));
-        PyList_SET_ITEM(entry, 5, JM_EscapeStrFromStr(pdf_to_name(ctx, cs)));
-        PyList_SET_ITEM(entry, 6, JM_EscapeStrFromStr(pdf_to_name(ctx, altcs)));
-        PyList_SET_ITEM(entry, 7, JM_EscapeStrFromStr(pdf_to_name(ctx, refname)));
-        PyList_SET_ITEM(entry, 8, JM_EscapeStrFromStr(pdf_to_name(ctx, filter)));
-        PyList_Append(imagelist, entry);
-        Py_DECREF(entry);
+        PyObject *entry = PyTuple_New(10);
+        PyTuple_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
+        PyTuple_SET_ITEM(entry, 1, Py_BuildValue("i", gen));
+        PyTuple_SET_ITEM(entry, 2, Py_BuildValue("i", pdf_to_int(ctx, width)));
+        PyTuple_SET_ITEM(entry, 3, Py_BuildValue("i", pdf_to_int(ctx, height)));
+        PyTuple_SET_ITEM(entry, 4, Py_BuildValue("i", pdf_to_int(ctx, bpc)));
+        PyTuple_SET_ITEM(entry, 5, JM_EscapeStrFromStr(pdf_to_name(ctx, cs)));
+        PyTuple_SET_ITEM(entry, 6, JM_EscapeStrFromStr(pdf_to_name(ctx, altcs)));
+        PyTuple_SET_ITEM(entry, 7, JM_EscapeStrFromStr(pdf_to_name(ctx, refname)));
+        PyTuple_SET_ITEM(entry, 8, JM_EscapeStrFromStr(pdf_to_name(ctx, filter)));
+        PyTuple_SET_ITEM(entry, 9, Py_BuildValue("i", stream_xref));
+        LIST_APPEND_DROP(imagelist, entry);
     }
 }
 
@@ -162,7 +131,7 @@ void JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
 // Store info of a /Form in Python list
 //-----------------------------------------------------------------------------
 void JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
-                     PyObject *imagelist)
+                     PyObject *imagelist, int stream_xref)
 {
     int i, n;
     n = pdf_dict_len(ctx, dict);
@@ -172,14 +141,14 @@ void JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
         pdf_obj *refname = NULL;
         pdf_obj *type;
 
+        refname = pdf_dict_get_key(ctx, dict, i);
         imagedict = pdf_dict_get_val(ctx, dict, i);
         if (!pdf_is_dict(ctx, imagedict))
         {
-            PySys_WriteStdout("warning: not a form dict (%d 0 R)",
-                              pdf_to_num(ctx, imagedict));
+            fz_warn(ctx, "'%s' is no form dict (%d 0 R)",
+                    pdf_to_name(ctx, refname), pdf_to_num(ctx, imagedict));
             continue;
         }
-        refname = pdf_dict_get_key(ctx, dict, i);
 
         type = pdf_dict_get(ctx, imagedict, PDF_NAME(Subtype));
         if (!pdf_name_eq(ctx, type, PDF_NAME(Form)))
@@ -187,11 +156,11 @@ void JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
 
         int xref = pdf_to_num(ctx, imagedict);
 
-        PyObject *entry = PyList_New(2);
-        PyList_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
-        PyList_SET_ITEM(entry, 1, JM_EscapeStrFromStr(pdf_to_name(ctx, refname)));
-        PyList_Append(imagelist, entry);
-        Py_DECREF(entry);
+        PyObject *entry = PyTuple_New(3);
+        PyTuple_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
+        PyTuple_SET_ITEM(entry, 1, JM_UNICODE(pdf_to_name(ctx, refname)));
+        PyTuple_SET_ITEM(entry, 2, Py_BuildValue("i", stream_xref));
+        LIST_APPEND_DROP(imagelist, entry);
     }
 }
 
@@ -199,24 +168,32 @@ void JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
 // Step through /Resources, looking up image or font information
 //-----------------------------------------------------------------------------
 void JM_scan_resources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
-                 PyObject *liste, int what)
+                 PyObject *liste, int what, int stream_xref)
 {
     pdf_obj *font, *xobj, *subrsrc;
-    int i, n;
+    int i, n, sxref;
     if (pdf_mark_obj(ctx, rsrc)) return;    // stop on cylic dependencies
     fz_try(ctx)
     {
         if (what == 1)            // look up fonts
         {
             font = pdf_dict_get(ctx, rsrc, PDF_NAME(Font));
-            JM_gather_fonts(ctx, pdf, font, liste);
+            JM_gather_fonts(ctx, pdf, font, liste, stream_xref);
             n = pdf_dict_len(ctx, font);
             for (i = 0; i < n; i++)
             {
                 pdf_obj *obj = pdf_dict_get_val(ctx, font, i);
+                if (pdf_is_stream(ctx, obj))
+                {
+                    sxref = pdf_to_num(ctx, obj);
+                }
+                else
+                {
+                    sxref = 0;
+                }
                 subrsrc = pdf_dict_get(ctx, obj, PDF_NAME(Resources));
                 if (subrsrc)
-                    JM_scan_resources(ctx, pdf, subrsrc, liste, what);
+                    JM_scan_resources(ctx, pdf, subrsrc, liste, what, sxref);
             }
         }
 
@@ -224,21 +201,29 @@ void JM_scan_resources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
 
         if (what == 2)            // look up images
         {
-            JM_gather_images(ctx, pdf, xobj, liste);
+            JM_gather_images(ctx, pdf, xobj, liste, stream_xref);
         }
 
         if (what == 3)            // look up forms
         {
-            JM_gather_forms(ctx, pdf, xobj, liste);
+            JM_gather_forms(ctx, pdf, xobj, liste, stream_xref);
         }
 
         n = pdf_dict_len(ctx, xobj);
         for (i = 0; i < n; i++)
         {
             pdf_obj *obj = pdf_dict_get_val(ctx, xobj, i);
+            if (pdf_is_stream(ctx, obj))
+            {
+                sxref = pdf_to_num(ctx, obj);
+            }
+            else
+            {
+                sxref = 0;
+            }
             subrsrc = pdf_dict_get(ctx, obj, PDF_NAME(Resources));
             if (subrsrc)
-                JM_scan_resources(ctx, pdf, subrsrc, liste, what);
+                JM_scan_resources(ctx, pdf, subrsrc, liste, what, sxref);
         }
     }
     fz_always(ctx) pdf_unmark_obj(ctx, rsrc);

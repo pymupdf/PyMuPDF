@@ -1,5 +1,6 @@
 %{
 #define SETATTR(a, v) PyObject_SetAttrString(Widget, a, v)
+#define SETATTR_DROP(a, v, t) t=v; PyObject_SetAttrString(Widget, a, v);Py_DECREF(t)
 #define GETATTR(a) PyObject_GetAttrString(Widget, a)
 #define CALLATTR(m, p) PyObject_CallMethod(Widget, m, p)
 //-----------------------------------------------------------------------------
@@ -184,7 +185,7 @@ PyObject *JM_text_value(fz_context *ctx, pdf_annot *annot)
     fz_try(ctx)
         text = pdf_field_value(ctx, annot->obj);
     fz_catch(ctx) Py_RETURN_NONE;
-    return Py_BuildValue("s", text);
+    return JM_UNICODE(text);
 }
 
 // ListBox retrieve value
@@ -192,7 +193,6 @@ PyObject *JM_text_value(fz_context *ctx, pdf_annot *annot)
 PyObject *JM_listbox_value(fz_context *ctx, pdf_annot *annot)
 {
     int i = 0, n = 0;
-    PyObject *val;
     // may be single value or array
     pdf_obj *optarr = pdf_dict_get(ctx, annot->obj, PDF_NAME(V));
     if (pdf_is_string(ctx, optarr))         // a single string
@@ -209,9 +209,7 @@ PyObject *JM_listbox_value(fz_context *ctx, pdf_annot *annot)
         pdf_obj *elem = pdf_array_get(ctx, optarr, i);
         if (pdf_is_array(ctx, elem))
             elem = pdf_array_get(ctx, elem, 1);
-        val = PyString_FromString(pdf_to_text_string(ctx, elem));
-        PyList_Append(liste, val);
-        Py_DECREF(val);
+        LIST_APPEND_DROP(liste, JM_UNICODE(pdf_to_text_string(ctx, elem)));
     }
     return liste;
 }
@@ -250,14 +248,12 @@ PyObject *JM_choice_options(fz_context *ctx, pdf_annot *annot)
             val = Py_BuildValue("ss",
             pdf_to_text_string(ctx, pdf_array_get(ctx, pdf_array_get(ctx, optarr, i), 0)),
             pdf_to_text_string(ctx, pdf_array_get(ctx, pdf_array_get(ctx, optarr, i), 1)));
-            PyList_Append(liste, val);
-            Py_DECREF(val);
+            LIST_APPEND_DROP(liste, val);
         }
         else
         {
-            val = PyString_FromString(pdf_to_text_string(ctx, pdf_array_get(ctx, optarr, i)));
-            PyList_Append(liste, val);
-            Py_DECREF(val);
+            val = JM_UNICODE(pdf_to_text_string(ctx, pdf_array_get(ctx, optarr, i)));
+            LIST_APPEND_DROP(liste, val);
         }
     }
     return liste;
@@ -293,12 +289,11 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     pdf_widget *tw = (pdf_widget *) annot;
     pdf_obj *obj = NULL;
     Py_ssize_t i = 0, n = 0;
+    PyObject *val;
     fz_try(ctx)
     {
         int field_type = pdf_widget_type(gctx, tw);
-        //JM_TRACE("trace 01");
-        SETATTR("field_type", Py_BuildValue("i", field_type));
-        //JM_TRACE("trace 02");
+        SETATTR_DROP("field_type", Py_BuildValue("i", field_type), val);
         if (field_type == PDF_WIDGET_TYPE_SIGNATURE)
         {
             if (pdf_signature_is_signed(ctx, pdf, annot->obj))
@@ -315,36 +310,32 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
             SETATTR("is_signed", Py_None);
             //JM_TRACE("trace 03");
         }
-        SETATTR("border_style",
-                Py_BuildValue("s", pdf_field_border_style(ctx, annot->obj)));
-        //JM_TRACE("trace 04");
-        SETATTR("field_type_string",
-                Py_BuildValue("s", JM_field_type_text(field_type)));
-        //JM_TRACE("trace 05");
+        SETATTR_DROP("border_style",
+                JM_UNICODE(pdf_field_border_style(ctx, annot->obj)), val);
+        SETATTR_DROP("field_type_string",
+                JM_UNICODE(JM_field_type_text(field_type)), val);
+
         char *field_name = pdf_field_name(ctx, annot->obj);
-        SETATTR("field_name",
-                Py_BuildValue("s", field_name));
+        SETATTR_DROP("field_name", JM_UNICODE(field_name), val);
         JM_Free(field_name);
-        //JM_TRACE("trace 06");
 
         const char *label = NULL;
         obj = pdf_dict_get(ctx, annot->obj, PDF_NAME(TU));
         if (obj) label = pdf_to_text_string(ctx, obj);
-        SETATTR("field_label", Py_BuildValue("s", label));
+        SETATTR_DROP("field_label", JM_UNICODE(label), val);
 
-        //JM_TRACE("trace 07");
-        SETATTR("field_value",
-                Py_BuildValue("s", pdf_field_value(ctx, annot->obj)));
-        //JM_TRACE("trace 08");
-        SETATTR("field_display",
-                Py_BuildValue("i", pdf_field_display(ctx, annot->obj)));
-        //JM_TRACE("trace 09");
+        SETATTR_DROP("field_value",
+                JM_UNICODE(pdf_field_value(ctx, annot->obj)), val);
+
+        SETATTR_DROP("field_display",
+                Py_BuildValue("i", pdf_field_display(ctx, annot->obj)), val);
+
         float border_width = pdf_to_real(ctx, pdf_dict_getl(ctx, annot->obj,
                                 PDF_NAME(BS), PDF_NAME(W), NULL));
         if (border_width == 0.0f) border_width = 1.0f;
-        SETATTR("border_width",
-                Py_BuildValue("f", border_width));
-        //JM_TRACE("trace 10");
+        SETATTR_DROP("border_width",
+                Py_BuildValue("f", border_width), val);
+
         obj = pdf_dict_getl(ctx, annot->obj,
                                 PDF_NAME(BS), PDF_NAME(D), NULL);
         if (pdf_is_array(ctx, obj))
@@ -357,17 +348,16 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
                                 pdf_array_get(ctx, obj, (int) i))));
             }
             SETATTR("border_dashes", d);
-            Py_CLEAR(d);
+            Py_DECREF(d);
         }
-        //JM_TRACE("trace 11");
-        SETATTR("text_maxlen",
-                Py_BuildValue("i", pdf_text_widget_max_len(ctx, pdf, tw)));
-        //JM_TRACE("trace 12");
-        SETATTR("text_format",
-                Py_BuildValue("i", pdf_text_widget_format(ctx, pdf, tw)));
-        //JM_TRACE("trace 13");
-        obj = pdf_dict_getl(ctx, annot->obj,
-                                        PDF_NAME(MK), PDF_NAME(BG), NULL);
+
+        SETATTR_DROP("text_maxlen",
+                Py_BuildValue("i", pdf_text_widget_max_len(ctx, pdf, tw)), val);
+
+        SETATTR_DROP("text_format",
+                Py_BuildValue("i", pdf_text_widget_format(ctx, pdf, tw)), val);
+
+        obj = pdf_dict_getl(ctx, annot->obj, PDF_NAME(MK), PDF_NAME(BG), NULL);
         if (pdf_is_array(ctx, obj))
         {
             n = (Py_ssize_t) pdf_array_len(ctx, obj);
@@ -378,11 +368,10 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
                 pdf_to_real(ctx, pdf_array_get(ctx, obj, (int) i))));
             }
             SETATTR("fill_color", col);
-            Py_CLEAR(col);
+            Py_DECREF(col);
         }
-        //JM_TRACE("trace 14");
-        obj = pdf_dict_getl(ctx, annot->obj, PDF_NAME(MK), PDF_NAME(BC), NULL);
 
+        obj = pdf_dict_getl(ctx, annot->obj, PDF_NAME(MK), PDF_NAME(BC), NULL);
         if (pdf_is_array(ctx, obj))
         {
             n = (Py_ssize_t) pdf_array_len(ctx, obj);
@@ -393,28 +382,27 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
                 pdf_to_real(ctx, pdf_array_get(ctx, obj, (int) i))));
             }
             SETATTR("border_color", col);
-            Py_CLEAR(col);
+            Py_DECREF(col);
         }
-        //JM_TRACE("trace 15");
-        SETATTR("choice_values", JM_choice_options(ctx, annot));
-        //JM_TRACE("trace 16");
+
+        SETATTR_DROP("choice_values", JM_choice_options(ctx, annot), val);
+
         char *da = pdf_to_str_buf(ctx, pdf_dict_get_inheritable(ctx,
                                         annot->obj, PDF_NAME(DA)));
-        SETATTR("_text_da", Py_BuildValue("s", da));
-        //JM_TRACE("trace 16");
-        obj = pdf_dict_getl(ctx, annot->obj,
-                                    PDF_NAME(MK), PDF_NAME(CA), NULL);
+        SETATTR_DROP("_text_da", JM_UNICODE(da), val);
+
+        obj = pdf_dict_getl(ctx, annot->obj, PDF_NAME(MK), PDF_NAME(CA), NULL);
         if (obj)
-            SETATTR("button_caption",
-                    JM_UNICODE(pdf_to_str_buf(ctx, obj)));
-        //JM_TRACE("trace 17");
-        SETATTR("field_flags",
-                Py_BuildValue("i", pdf_field_flags(ctx, annot->obj)));
-        //JM_TRACE("trace 18");
+            SETATTR_DROP("button_caption",
+                    JM_UNICODE(pdf_to_str_buf(ctx, obj)), val);
+
+        SETATTR_DROP("field_flags",
+                Py_BuildValue("i", pdf_field_flags(ctx, annot->obj)), val);
+
         // call Py method to reconstruct text color, font name, size
         PyObject *call = CALLATTR("_parse_da", NULL);
         Py_XDECREF(call);
-        //JM_TRACE("trace 19");
+
     }
     fz_always(ctx) PyErr_Clear();
     fz_catch(ctx) fz_rethrow(ctx);

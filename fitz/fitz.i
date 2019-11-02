@@ -18,7 +18,7 @@ from __future__ import division, print_function
 %enddef
 
 //-----------------------------------------------------------------------------
-// SWIG macro: check that a document is not closed
+// SWIG macro: check that a document is not closed / encrypted
 //-----------------------------------------------------------------------------
 %define CLOSECHECK(meth)
 %pythonprepend meth
@@ -128,14 +128,13 @@ from __future__ import division, print_function
 #define MIN(a, b) ((a) < (b)) ? (a) : (b)
 
 #define JM_PyErr_Clear if (PyErr_Occurred()) PyErr_Clear()
+#define JM_UNICODE(data) JM_EscapeStrFromStr(data)
 
 // binary output depends on Python major
 # if PY_VERSION_HEX >= 0x03000000
-#define JM_UNICODE(data) Py_BuildValue("s", data)
 #define JM_BinFromChar(x) PyBytes_FromString(x)
 #define JM_BinFromCharSize(x, y) PyBytes_FromStringAndSize(x, (Py_ssize_t) y)
 # else
-#define JM_UNICODE(data) data ? PyUnicode_DecodeUTF8(data, strlen(data), "replace") : Py_BuildValue("s", NULL)
 #define JM_BinFromChar(x) PyByteArray_FromStringAndSize(x, (Py_ssize_t) strlen(x))
 #define JM_BinFromCharSize(x, y) PyByteArray_FromStringAndSize(x, (Py_ssize_t) y)
 # endif
@@ -180,41 +179,47 @@ fz_set_error_callback(gctx, JM_mupdf_error, &user);
 //-----------------------------------------------------------------------------
 // init global constants
 //-----------------------------------------------------------------------------
-dictkey_bbox = PyUnicode_FromString("bbox");
-dictkey_blocks = PyUnicode_FromString("blocks");
-dictkey_c = PyUnicode_FromString("c");
-dictkey_chars = PyUnicode_FromString("chars");
-dictkey_color = PyUnicode_FromString("color");
-dictkey_content = PyUnicode_FromString("content");
-dictkey_creationDate = PyUnicode_FromString("creationDate");
-dictkey_dashes = PyUnicode_FromString("dashes");
-dictkey_desc = PyUnicode_FromString("desc");
-dictkey_dir = PyUnicode_FromString("dir");
-dictkey_effect = PyUnicode_FromString("effect");
-dictkey_ext = PyUnicode_FromString("ext");
-dictkey_filename = PyUnicode_FromString("filename");
-dictkey_fill = PyUnicode_FromString("fill");
-dictkey_flags = PyUnicode_FromString("flags");
-dictkey_font = PyUnicode_FromString("font");
-dictkey_height = PyUnicode_FromString("height");
-dictkey_image = PyUnicode_FromString("image");
-dictkey_length = PyUnicode_FromString("length");
-dictkey_lines = PyUnicode_FromString("lines");
-dictkey_modDate = PyUnicode_FromString("modDate");
-dictkey_name = PyUnicode_FromString("name");
-dictkey_origin = PyUnicode_FromString("origin");
-dictkey_size = PyUnicode_FromString("size");
-dictkey_spans = PyUnicode_FromString("spans");
-dictkey_stroke = PyUnicode_FromString("stroke");
-dictkey_style = PyUnicode_FromString("style");
-dictkey_subject = PyUnicode_FromString("subject");
-dictkey_text = PyUnicode_FromString("text");
-dictkey_title = PyUnicode_FromString("title");
-dictkey_type = PyUnicode_FromString("type");
-dictkey_ufilename = PyUnicode_FromString("ufilename");
-dictkey_width = PyUnicode_FromString("width");
-dictkey_wmode = PyUnicode_FromString("wmode");
-dictkey_xref = PyUnicode_FromString("xref");
+dictkey_bpc = PyString_InternFromString("bpc");
+dictkey_bbox = PyString_InternFromString("bbox");
+dictkey_blocks = PyString_InternFromString("blocks");
+dictkey_c = PyString_InternFromString("c");
+dictkey_chars = PyString_InternFromString("chars");
+dictkey_color = PyString_InternFromString("color");
+dictkey_colorspace = PyString_InternFromString("colorspace");
+dictkey_content = PyString_InternFromString("content");
+dictkey_creationDate = PyString_InternFromString("creationDate");
+dictkey_cs_name = PyString_InternFromString("cs-name");
+dictkey_dashes = PyString_InternFromString("dashes");
+dictkey_desc = PyString_InternFromString("desc");
+dictkey_dir = PyString_InternFromString("dir");
+dictkey_effect = PyString_InternFromString("effect");
+dictkey_ext = PyString_InternFromString("ext");
+dictkey_filename = PyString_InternFromString("filename");
+dictkey_fill = PyString_InternFromString("fill");
+dictkey_flags = PyString_InternFromString("flags");
+dictkey_font = PyString_InternFromString("font");
+dictkey_height = PyString_InternFromString("height");
+dictkey_image = PyString_InternFromString("image");
+dictkey_length = PyString_InternFromString("length");
+dictkey_lines = PyString_InternFromString("lines");
+dictkey_modDate = PyString_InternFromString("modDate");
+dictkey_name = PyString_InternFromString("name");
+dictkey_origin = PyString_InternFromString("origin");
+dictkey_size = PyString_InternFromString("size");
+dictkey_smask = PyString_InternFromString("smask");
+dictkey_spans = PyString_InternFromString("spans");
+dictkey_stroke = PyString_InternFromString("stroke");
+dictkey_style = PyString_InternFromString("style");
+dictkey_subject = PyString_InternFromString("subject");
+dictkey_text = PyString_InternFromString("text");
+dictkey_title = PyString_InternFromString("title");
+dictkey_type = PyString_InternFromString("type");
+dictkey_ufilename = PyString_InternFromString("ufilename");
+dictkey_width = PyString_InternFromString("width");
+dictkey_wmode = PyString_InternFromString("wmode");
+dictkey_xref = PyString_InternFromString("xref");
+dictkey_xres = PyString_InternFromString("xres");
+dictkey_yres = PyString_InternFromString("yres");
 %}
 
 %header %{
@@ -475,10 +480,10 @@ struct fz_document_s
         PyObject *_embeddedFileNames(PyObject *namelist)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self); // get pdf document
-            PyObject *val;
             fz_try(gctx)
             {
                 assert_PDF(pdf);
+                PyObject *val;
                 pdf_obj *names = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
                                       PDF_NAME(Root),
                                       PDF_NAME(Names),
@@ -490,11 +495,9 @@ struct fz_document_s
                     int i, n = pdf_array_len(gctx, names);
                     for (i=0; i < n; i+=2)
                     {
-                        val = Py_BuildValue("s",
-                                      pdf_to_text_string(gctx,
-                                      pdf_array_get(gctx, names, i)));
-                        PyList_Append(namelist, val);
-                        Py_DECREF(val);
+                        val = JM_UNICODE(pdf_to_text_string(gctx,
+                                         pdf_array_get(gctx, names, i)));
+                        LIST_APPEND_DROP(namelist, val);
                     }
                 }
             }
@@ -525,10 +528,7 @@ struct fz_document_s
         PyObject *_embeddedFileInfo(int idx, PyObject *infodict)
         {
             pdf_document *pdf = pdf_document_from_fz_document(gctx, $self);
-            Py_ssize_t name_len = 0;
-            char *name = NULL;
-            char *sname = NULL;
-            PyObject *val;
+            char *name;
             fz_try(gctx)
             {
                 pdf_obj *names = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf),
@@ -541,22 +541,16 @@ struct fz_document_s
                 pdf_obj *o = pdf_array_get(gctx, names, 2*idx+1);
 
                 name = (char *) pdf_to_text_string(gctx,
-                                   pdf_dict_get(gctx, o, PDF_NAME(F)));
-                val = JM_UNICODE(name);
-                PyDict_SetItem(infodict, dictkey_filename, val);
-                Py_DECREF(val);
+                                          pdf_dict_get(gctx, o, PDF_NAME(F)));
+                DICT_SETITEM_DROP(infodict, dictkey_filename, JM_UNICODE(name));
 
                 name = (char *) pdf_to_text_string(gctx,
                                     pdf_dict_get(gctx, o, PDF_NAME(UF)));
-                val = JM_UNICODE(name);
-                PyDict_SetItem(infodict, dictkey_ufilename, val);
-                Py_DECREF(val);
+                DICT_SETITEM_DROP(infodict, dictkey_ufilename, JM_UNICODE(name));
 
                 name = (char *) pdf_to_text_string(gctx,
                                     pdf_dict_get(gctx, o, PDF_NAME(Desc)));
-                val = JM_UNICODE(name);
-                PyDict_SetItem(infodict, dictkey_desc, val);
-                Py_DECREF(val);
+                DICT_SETITEM_DROP(infodict, dictkey_desc, JM_UNICODE(name));
 
                 int len = -1, DL = -1;
                 pdf_obj *ef = pdf_dict_get(gctx, o, PDF_NAME(EF));
@@ -572,12 +566,8 @@ struct fz_document_s
                                    PDF_NAME(Size), NULL);
                     if (o) DL = pdf_to_int(gctx, o);
                 }
-                val = Py_BuildValue("i", DL);
-                PyDict_SetItem(infodict, dictkey_size, val);
-                Py_DECREF(val);
-                val = Py_BuildValue("i", len);
-                PyDict_SetItem(infodict, dictkey_length, val);
-                Py_DECREF(val);
+                DICT_SETITEM_DROP(infodict, dictkey_size, Py_BuildValue("i", DL));
+                DICT_SETITEM_DROP(infodict, dictkey_length, Py_BuildValue("i", len));
             }
             fz_catch(gctx) return NULL;
             return_none;
@@ -992,7 +982,7 @@ struct fz_document_s
             char *hex;
             pdf_obj *o;
             int n, i, len;
-            PyObject *bytes, *val;
+            PyObject *bytes;
             fz_try(gctx)
             {
                 pdf_obj *identity = pdf_dict_get(gctx, pdf_trailer(gctx, pdf),
@@ -1007,9 +997,7 @@ struct fz_document_s
                         buffer = fz_new_buffer(gctx, 2 * len);
                         fz_buffer_storage(gctx, buffer, &hex);
                         hexlify(len, (unsigned char *) pdf_to_str_buf(gctx, o), (unsigned char *) hex);
-                        val = Py_BuildValue("s", hex);
-                        PyList_Append(idlist, val);
-                        Py_DECREF(val);
+                        LIST_APPEND_DROP(idlist, PyUnicode_FromString(hex));
                         Py_CLEAR(bytes);
                         fz_drop_buffer(gctx, buffer);
                         buffer = NULL;
@@ -1399,7 +1387,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                                  int ordering, int limit, int idx = 0)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            PyObject *wlist = NULL, *val;
+            PyObject *wlist = NULL;
             int i, glyph, mylimit;
             mylimit = limit;
             if (mylimit < 256) mylimit = 256;
@@ -1442,15 +1430,11 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 
                     if (glyph > 0)
                     {
-                        val = Py_BuildValue("(i, f)", glyph, adv);
-                        PyList_Append(wlist, val);
-                        Py_DECREF(val);
+                        LIST_APPEND_DROP(wlist, Py_BuildValue("if", glyph, adv));
                     }
                     else
                     {
-                        val = Py_BuildValue("(i, f)", glyph, 0.0);
-                        PyList_Append(wlist, val);
-                        Py_DECREF(val);
+                        LIST_APPEND_DROP(wlist, Py_BuildValue("if", glyph, 0.0));
                     }
                 }
             }
@@ -1492,11 +1476,11 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         CLOSECHECK(_getPageInfo)
         %feature("autodoc","Show fonts or images used on a page.") _getPageInfo;
         %pythonappend _getPageInfo %{
-        x = []
-        for v in val:
-            if v not in x:
-                x.append(v)
-        val = x%}
+        #x = []
+        #for v in val:
+        #    if v not in x:
+        #        x.append(v)
+        #val = x%}
         PyObject *_getPageInfo(int pno, int what)
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
@@ -1514,7 +1498,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 rsrc = pdf_dict_get_inheritable(gctx, pageref, PDF_NAME(Resources));
                 if (!pageref || !rsrc) THROWMSG("cannot retrieve page info");
                 liste = PyList_New(0);
-                JM_scan_resources(gctx, pdf, rsrc, liste, what);
+                JM_scan_resources(gctx, pdf, rsrc, liste, what, 0);
             }
             fz_catch(gctx)
             {
@@ -1539,7 +1523,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             char *ext = NULL;
             char *fontname = NULL;
             PyObject *nulltuple = Py_BuildValue("sssO", "", "", "", bytes);
-            PyObject *tuple, *val;
+            PyObject *tuple;
             Py_ssize_t len = 0;
             fz_try(gctx)
             {
@@ -1562,10 +1546,9 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                         fz_drop_buffer(gctx, buffer);
                     }
                     tuple = PyTuple_New(4);
-                    PyTuple_SET_ITEM(tuple, 0, JM_EscapeStrFromStr(pdf_to_name(gctx, bname)));
-                    PyTuple_SET_ITEM(tuple, 1, Py_BuildValue("s", ext));
-                    PyTuple_SET_ITEM(tuple, 2, Py_BuildValue("s",
-                                                pdf_to_name(gctx, subtype)));
+                    PyTuple_SET_ITEM(tuple, 0, JM_UNICODE(pdf_to_name(gctx, bname)));
+                    PyTuple_SET_ITEM(tuple, 1, PyUnicode_FromString(ext));
+                    PyTuple_SET_ITEM(tuple, 2, JM_UNICODE(pdf_to_name(gctx, subtype)));
                     PyTuple_SET_ITEM(tuple, 3, bytes);
                 }
                 else
@@ -1613,7 +1596,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             fz_var(out);
             fz_compressed_buffer *cbuf = NULL;
             int type = FZ_IMAGE_UNKNOWN, n = 0, xres = 0, yres = 0, is_jpx = 0;
-            int smask = 0, width = 0, height = 0;
+            int smask = 0, width = 0, height = 0, bpc = 0;
             const char *cs_name = NULL;
             fz_try(gctx)
             {
@@ -1639,6 +1622,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                         n = fz_colorspace_n(gctx, image->colorspace);
                         cs_name = fz_colorspace_name(gctx, image->colorspace);
                         fz_image_resolution(image, &xres, &yres);
+                        bpc = (int) image->bpc;
 
                         cbuf = fz_compressed_image_buffer(gctx, image);
                         if (cbuf)
@@ -1655,6 +1639,8 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                         type = FZ_IMAGE_JPX;
                         o = pdf_dict_get(gctx, obj, PDF_NAME(ColorSpace));
                         if (o) cs_name = pdf_to_name(gctx, o);
+                        o = pdf_dict_get(gctx, obj, PDF_NAME(BitsPerComponent));
+                        if (o) bpc = pdf_to_int(gctx, o);
                     }
 
                     // ensure returning a PNG for unsupported images ----------
@@ -1689,18 +1675,28 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                         buffer = freebuf;
                         ext = "png";
                     }
-                    PyObject *bytes = JM_BinFromBuffer(gctx, buffer);
-                    rc = Py_BuildValue("{s:s,s:i,s:i,s:i,s:i,s:i,s:i,s:s,s:O}",
-                                       "ext", ext,
-                                       "smask", smask,
-                                       "width", width,
-                                       "height", height,
-                                       "colorspace", n,
-                                       "xres", xres,
-                                       "yres", yres,
-                                       "cs-name", cs_name,
-                                       "image", bytes);
-                    Py_CLEAR(bytes);
+
+                    rc = PyDict_New();
+                    DICT_SETITEM_DROP(rc, dictkey_ext,
+                                      PyUnicode_FromString(ext));
+                    DICT_SETITEM_DROP(rc, dictkey_smask,
+                                      PyInt_FromLong((long) smask));
+                    DICT_SETITEM_DROP(rc, dictkey_width,
+                                      PyInt_FromLong((long) width));
+                    DICT_SETITEM_DROP(rc, dictkey_height,
+                                      PyInt_FromLong((long) height));
+                    DICT_SETITEM_DROP(rc, dictkey_colorspace,
+                                      PyInt_FromLong((long) n));
+                    DICT_SETITEM_DROP(rc, dictkey_bpc,
+                                      PyInt_FromLong((long) bpc));
+                    DICT_SETITEM_DROP(rc, dictkey_xres,
+                                      PyInt_FromLong((long) xres));
+                    DICT_SETITEM_DROP(rc, dictkey_yres,
+                                      PyInt_FromLong((long) yres));
+                    DICT_SETITEM_DROP(rc, dictkey_cs_name,
+                                      PyUnicode_FromString(cs_name));
+                    DICT_SETITEM_DROP(rc, dictkey_image,
+                                      JM_BinFromBuffer(gctx, buffer));
                 }
                 else
                     rc = PyDict_New();
@@ -1728,7 +1724,6 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         PyObject *_delToC()
         {
             PyObject *xrefs = PyList_New(0);          // create Python list
-            PyObject *val;
             pdf_document *pdf = pdf_specifics(gctx, $self);
             if (!pdf) return xrefs;                   // not a pdf
 
@@ -1755,9 +1750,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 xref = (int) PyInt_AsLong(PyList_GetItem(xrefs, i));
                 pdf_delete_object(gctx, pdf, xref);      // delete outline item
             }
-            val = Py_BuildValue("i", olroot_xref);
-            PyList_Append(xrefs, val);
-            Py_DECREF(val);
+            LIST_APPEND_DROP(xrefs, Py_BuildValue("i", olroot_xref));
             pdf->dirty = 1;
             return xrefs;
         }
@@ -1843,7 +1836,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             pdf_document *pdf = pdf_specifics(gctx, $self);
             if (!pdf) return_none;           // not a PDF
             pdf_obj *fonts = NULL;
-            PyObject *val, *liste = PyList_New(0);
+            PyObject *liste = PyList_New(0);
             fz_try(gctx)
             {
                 fonts = pdf_dict_getl(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root), PDF_NAME(AcroForm), PDF_NAME(DR), PDF_NAME(Font), NULL);
@@ -1853,9 +1846,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                     for (i = 0; i < n; i++)
                     {
                         pdf_obj *f = pdf_dict_get_key(gctx, fonts, i);
-                        val = Py_BuildValue("s", pdf_to_name(gctx, f));
-                        PyList_Append(liste, val);
-                        Py_DECREF(val);
+                        LIST_APPEND_DROP(liste, JM_UNICODE(pdf_to_name(gctx, f)));
                     }
                 }
             }
@@ -2005,8 +1996,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 obj = pdf_load_object(gctx, pdf, xref);
                 pdf_print_obj(gctx, out, pdf_resolve_indirect(gctx, obj),
                               compressed, ascii);
-                text = JM_StrFromBuffer(gctx, res);
-                if (!text) text = Py_None;
+                text = JM_EscapeStrFromBuffer(gctx, res);
             }
             fz_always(gctx)
             {
@@ -2040,7 +2030,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                     res = fz_new_buffer(gctx, 1024);
                     out = fz_new_output_with_buffer(gctx, res);
                     pdf_print_obj(gctx, out, obj, compressed, ascii);
-                    text = JM_StrFromBuffer(gctx, res);
+                    text = JM_EscapeStrFromBuffer(gctx, res);
                 }
                 else text = Py_None;
             }
@@ -2051,6 +2041,46 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             }
             fz_catch(gctx) return NULL;
             return text;
+        }
+
+        //---------------------------------------------------------------------
+        // Get compressed stream of an object by xref
+        // return_none if not stream
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(_getXrefStreamRaw, !result)
+        CLOSECHECK(_getXrefStreamRaw)
+        PyObject *_getXrefStreamRaw(int xref)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, $self);
+            PyObject *r = Py_None;
+            pdf_obj *obj = NULL;
+            fz_var(obj);
+            fz_buffer *res = NULL;
+            fz_var(res);
+            fz_try(gctx)
+            {
+                assert_PDF(pdf);
+                int xreflen = pdf_xref_len(gctx, pdf);
+                if (!INRANGE(xref, 1, xreflen-1))
+                    THROWMSG("xref out of range");
+                obj = pdf_new_indirect(gctx, pdf, xref, 0);
+                if (pdf_is_stream(gctx, obj))
+                {
+                    res = pdf_load_raw_stream_number(gctx, pdf, xref);
+                    r = JM_BinFromBuffer(gctx, res);
+                }
+            }
+            fz_always(gctx)
+            {
+                fz_drop_buffer(gctx, res);
+                pdf_drop_obj(gctx, obj);
+            }
+            fz_catch(gctx)
+            {
+                Py_CLEAR(r);
+                return NULL;
+            }
+            return r;
         }
 
         //---------------------------------------------------------------------
@@ -2370,23 +2400,29 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             outline = property(lambda self: self._outline)
             _getPageXref = _getPageObjNumber
 
-            def getPageFontList(self, pno):
+            def getPageFontList(self, pno, full=False):
                 """Retrieve a list of fonts used on a page.
                 """
                 if self.isClosed or self.isEncrypted:
                     raise ValueError("document closed or encrypted")
-                if self.isPDF:
-                    return self._getPageInfo(pno, 1)
-                return []
+                if not self.isPDF:
+                    return ()
+                val = self._getPageInfo(pno, 1)
+                if full is False:
+                    return [v[:-1] for v in val]
+                return val
 
-            def getPageImageList(self, pno):
+            def getPageImageList(self, pno, full=False):
                 """Retrieve a list of images used on a page.
                 """
                 if self.isClosed or self.isEncrypted:
                     raise ValueError("document closed or encrypted")
-                if self.isPDF:
-                    return self._getPageInfo(pno, 2)
-                return []
+                if not self.isPDF:
+                    return ()
+                val = self._getPageInfo(pno, 2)
+                if full is False:
+                    return [v[:-1] for v in val]
+                return val
 
             def copyPage(self, pno, to=-1):
                 """Copy a page within a PDF document.
@@ -2674,7 +2710,7 @@ struct fz_page_s {
                 dev = fz_new_svg_device(gctx, out, tbounds.x1-tbounds.x0, tbounds.y1-tbounds.y0, FZ_SVG_TEXT_AS_PATH, 1);
                 fz_run_page(gctx, $self, dev, ctm, NULL);
                 fz_close_device(gctx, dev);
-                text = JM_StrFromBuffer(gctx, res);
+                text = JM_EscapeStrFromBuffer(gctx, res);
             }
             fz_always(gctx)
             {
@@ -3297,27 +3333,40 @@ except:
             return;
         }
 
-        /*********************************************************************/
+        //---------------------------------------------------------------------
         // Page.deleteAnnot() - delete annotation and return the next one
-        /*********************************************************************/
-        PARENTCHECK(deleteAnnot)
-        %feature("autodoc","Delete annot if PDF and return next one") deleteAnnot;
+        //---------------------------------------------------------------------
+        %pythonprepend deleteAnnot
+%{
+CheckParent(self)
+CheckParent(annot)
+%}
         %pythonappend deleteAnnot
-%{if val:
+%{
+if val:
     val.thisown = True
     val.parent = weakref.proxy(self) # owning page object
     val.parent._annot_refs[id(val)] = val
-fannot._erase()
+annot._erase()
 %}
-        struct pdf_annot_s *deleteAnnot(struct pdf_annot_s *fannot)
+        %feature("autodoc","Delete annot if PDF and return next one.") deleteAnnot;
+        struct pdf_annot_s *deleteAnnot(struct pdf_annot_s *annot)
         {
-            if (!fannot) return NULL;  // after this we have a PDF page!
-
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            pdf_annot *nextannot = pdf_next_annot(gctx, fannot);  // store next
-            pdf_delete_annot(gctx, page, fannot);
-
-            if (nextannot) pdf_keep_annot(gctx, nextannot);
+            pdf_annot *irt_annot = NULL;
+            while (1)
+            {
+                irt_annot = JM_find_annot_irt(gctx, annot);
+                if (!irt_annot)
+                    break;
+                JM_delete_annot(gctx, page, irt_annot);
+            }
+            pdf_annot *nextannot = pdf_next_annot(gctx, annot);  // store next
+            JM_delete_annot(gctx, page, annot);
+            if (nextannot)
+            {
+                nextannot = pdf_keep_annot(gctx, nextannot);
+            }
             page->doc->dirty = 1;
             return nextannot;
         }
@@ -3474,7 +3523,7 @@ fannot._erase()
             pdf_obj *annots, *annots_arr, *link, *obj;
             int i, lcount;
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            PyObject *val, *linkxrefs = PyList_New(0);
+            PyObject *linkxrefs = PyList_New(0);
             if (!page) return linkxrefs;  // empty list for non-PDF
             annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
             if (!annots) return linkxrefs;  // no links on this page
@@ -3489,9 +3538,7 @@ fannot._erase()
                 obj = pdf_dict_get(gctx, link, PDF_NAME(Subtype));
                 if (pdf_name_eq(gctx, obj, PDF_NAME(Link)))
                 {
-                    val = Py_BuildValue("i", pdf_to_num(gctx, link));
-                    PyList_Append(linkxrefs, val);
-                    Py_DECREF(val);
+                    LIST_APPEND_DROP(linkxrefs, Py_BuildValue("i", pdf_to_num(gctx, link)));
                 }
             }
             return linkxrefs;
@@ -3706,7 +3753,7 @@ fannot._erase()
 def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
                set_simple=False, wmode=0, encoding=0):
     doc = self.parent
-    if not doc:
+    if doc is None:
         raise ValueError("orphaned object: parent is None")
     idx = 0
 
@@ -3802,7 +3849,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
                 {
                     font = fz_new_font_from_memory(gctx, NULL, data, size, index, 0);
                     font_obj = pdf_add_cjk_font(gctx, pdf, font, ordering, wmode, serif);
-                    exto = Py_BuildValue("s", "n/a");
+                    exto = PyUnicode_FromString("n/a");
                     simple = 0;
                     goto weiter;
                 }
@@ -3815,7 +3862,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
                 {
                     font = fz_new_font_from_memory(gctx, bfname, data, size, 0, 0);
                     font_obj = pdf_add_simple_font(gctx, pdf, font, encoding);
-                    exto = Py_BuildValue("s", "n/a");
+                    exto = PyUnicode_FromString("n/a");
                     simple = 1;
                     goto weiter;
                 }
@@ -3843,14 +3890,14 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
                 weiter: ;
                 ixref = pdf_to_num(gctx, font_obj);
 
-                PyObject *name = Py_BuildValue("s", pdf_to_name(gctx,
+                PyObject *name = JM_UNICODE(pdf_to_name(gctx,
                             pdf_dict_get(gctx, font_obj, PDF_NAME(BaseFont))));
 
-                PyObject *subt = Py_BuildValue("s", pdf_to_name(gctx,
+                PyObject *subt = JM_UNICODE(pdf_to_name(gctx,
                             pdf_dict_get(gctx, font_obj, PDF_NAME(Subtype))));
 
                 if (!exto)
-                    exto = Py_BuildValue("s", fontextension(gctx, pdf, ixref));
+                    exto = PyUnicode_FromString(fontextension(gctx, pdf, ixref));
 
                 value = Py_BuildValue("[i, {s:O, s:O, s:O, s:O, s:i}]",
                                       ixref,
@@ -3904,33 +3951,36 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             PyObject *list = NULL;
             pdf_obj *contents = NULL, *icont = NULL;
-            PyObject *val;
             int i, xref;
+            size_t n = 0;
             fz_try(gctx)
             {
                 assert_PDF(page);           // only works for PDF
                 contents = pdf_dict_get(gctx, page->obj, PDF_NAME(Contents));
-                list = PyList_New(0);       // init an empty list
                 if (pdf_is_array(gctx, contents))     // may be several
-                {   for (i=0; i < pdf_array_len(gctx, contents); i++)
+                {
+                    n = pdf_array_len(gctx, contents);
+                    list = PyList_New(n);
+                    for (i=0; i < pdf_array_len(gctx, contents); i++)
                     {
                         icont = pdf_array_get(gctx, contents, i);
                         xref = pdf_to_num(gctx, icont);
-                        val = Py_BuildValue("i", xref);
-                        PyList_Append(list, val);
-                        Py_DECREF(val);
+                        PyList_SET_ITEM(list, i, Py_BuildValue("i", xref));
                     }
                 }
                 else if (contents)          // at most 1 object there
                 {
+                    list = PyList_New(1);
                     xref = pdf_to_num(gctx, contents);
-                    val = Py_BuildValue("i", xref);
-                    PyList_Append(list, val);
-                    Py_DECREF(val);
+                    PyList_SET_ITEM(list, 0, Py_BuildValue("i", xref));
                 }
             }
             fz_catch(gctx) return NULL;
-            return list;
+            if (list)
+            {
+                return list;
+            }
+            return PyList_New(0);
         }
 
         //---------------------------------------------------------------------
@@ -4070,13 +4120,13 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         def __del__(self):
             self._erase()
 
-        def getFontList(self):
+        def getFontList(self, full=False):
             CheckParent(self)
-            return self.parent.getPageFontList(self.number)
+            return self.parent.getPageFontList(self.number, full=full)
 
-        def getImageList(self):
+        def getImageList(self, full=False):
             CheckParent(self)
-            return self.parent.getPageImageList(self.number)
+            return self.parent.getPageImageList(self.number, full=full)
 
         @property
         def CropBox(self):
@@ -4807,7 +4857,7 @@ struct fz_colorspace_s
         //----------------------------------------------------------------------
         PyObject *_name()
         {
-            return Py_BuildValue("s", fz_colorspace_name(gctx, $self));
+            return PyUnicode_FromString(fz_colorspace_name(gctx, $self));
         }
 
         %pythoncode %{
@@ -4946,7 +4996,7 @@ struct fz_outline_s {
         %}
         PyObject *uri()
         {
-            return Py_BuildValue("s", $self->uri);
+            return JM_UNICODE($self->uri);
         }
 
         %pythoncode %{@property%}
@@ -5139,9 +5189,7 @@ struct pdf_annot_s
                 point.x = pdf_to_real(gctx, pdf_array_get(gctx, o, i));
                 point.y = pdf_to_real(gctx, pdf_array_get(gctx, o, i+1));
                 point = fz_transform_point(point, page_ctm);
-                PyObject *p = Py_BuildValue("ff", point.x, point.y);
-                PyList_Append(res, p);
-                Py_DECREF(p);
+                LIST_APPEND_DROP(res,  Py_BuildValue("ff", point.x, point.y));
             }
 
             return res;
@@ -5538,7 +5586,7 @@ struct pdf_annot_s
         %feature("autodoc","Retrieve attached file information.") fileInfo;
         PyObject *fileInfo()
         {
-            PyObject *val, *res = PyDict_New();  // create Python dict
+            PyObject *res = PyDict_New();  // create Python dict
             char *filename = NULL;
             char *desc = NULL;
             int length = -1, size = -1;
@@ -5575,18 +5623,10 @@ struct pdf_annot_s
                                 PDF_NAME(Size), NULL);
             if (o) size = pdf_to_int(gctx, o);
 
-            val = JM_UNICODE(filename);
-            PyDict_SetItem(res, dictkey_filename, val);
-            Py_DECREF(val);
-            val = JM_UNICODE(desc);
-            PyDict_SetItem(res, dictkey_desc, val);
-            Py_DECREF(val);
-            val = Py_BuildValue("i", length);
-            PyDict_SetItem(res, dictkey_length, val);
-            Py_DECREF(val);
-            val = Py_BuildValue("i", size);
-            PyDict_SetItem(res, dictkey_size, val);
-            Py_DECREF(val);
+            DICT_SETITEM_DROP(res, dictkey_filename, JM_UNICODE(filename));
+            DICT_SETITEM_DROP(res, dictkey_desc, JM_UNICODE(desc));
+            DICT_SETITEM_DROP(res, dictkey_length, Py_BuildValue("i", length));
+            DICT_SETITEM_DROP(res, dictkey_size, Py_BuildValue("i", size));
             return res;
         }
 
@@ -5697,47 +5737,32 @@ CheckParent(self)
         %pythoncode %{@property%}
         PyObject *info()
         {
-            PyObject *val, *res = PyDict_New();
+            PyObject *res = PyDict_New();
             pdf_obj *o;
-            char *c;
-            c = (char *) pdf_annot_contents(gctx, $self);
-            val = JM_UNICODE(c);
-            PyDict_SetItem(res, dictkey_content, val);
-            Py_DECREF(val);
+
+            DICT_SETITEM_DROP(res, dictkey_content,
+                          JM_UNICODE(pdf_annot_contents(gctx, $self)));
 
             o = pdf_dict_get(gctx, $self->obj, PDF_NAME(Name));
-            c = (char *) pdf_to_name(gctx, o);
-            val = JM_UNICODE(c);
-            PyDict_SetItem(res, dictkey_name, val);
-            Py_DECREF(val);
+            DICT_SETITEM_DROP(res, dictkey_name, JM_UNICODE(pdf_to_name(gctx, o)));
 
-            // Title, author
+            // Title (= author)
             o = pdf_dict_get(gctx, $self->obj, PDF_NAME(T));
-            c = (char *) pdf_to_text_string(gctx, o);
-            val = JM_UNICODE(c);
-            PyDict_SetItem(res, dictkey_title, val);
-            Py_DECREF(val);
+            DICT_SETITEM_DROP(res, dictkey_title, JM_UNICODE(pdf_to_text_string(gctx, o)));
 
             // CreationDate
             o = pdf_dict_gets(gctx, $self->obj, "CreationDate");
-            c = (char *) pdf_to_text_string(gctx, o);
-            val = JM_UNICODE(c);
-            PyDict_SetItem(res, dictkey_creationDate, val);
-            Py_DECREF(val);
+            DICT_SETITEM_DROP(res, dictkey_creationDate,
+                          JM_UNICODE(pdf_to_text_string(gctx, o)));
 
             // ModDate
             o = pdf_dict_get(gctx, $self->obj, PDF_NAME(M));
-            c = (char *) pdf_to_text_string(gctx, o);
-            val = JM_UNICODE(c);
-            PyDict_SetItem(res, dictkey_modDate, val);
-            Py_DECREF(val);
+            DICT_SETITEM_DROP(res, dictkey_modDate, JM_UNICODE(pdf_to_text_string(gctx, o)));
 
             // Subj
             o = pdf_dict_gets(gctx, $self->obj, "Subj");
-            c = (char *) pdf_to_text_string(gctx, o);
-            val = JM_UNICODE(c);
-            PyDict_SetItem(res, dictkey_subject, val);
-            Py_DECREF(val);
+            DICT_SETITEM_DROP(res, dictkey_subject,
+                          JM_UNICODE(pdf_to_text_string(gctx, o)));
 
             return res;
         }
@@ -5900,6 +5925,7 @@ CheckParent(self)
             return annot;
         }
 
+
         //---------------------------------------------------------------------
         // annotation pixmap
         //---------------------------------------------------------------------
@@ -6048,7 +6074,7 @@ struct fz_link_s
         %}
         PyObject *uri()
         {
-            return Py_BuildValue("s", $self->uri);
+            return JM_UNICODE($self->uri);
         }
 
         PARENTCHECK(isExternal)
@@ -6277,9 +6303,7 @@ struct fz_stext_page_s {
             int count = fz_search_stext_page(gctx, $self, needle, result, hit_max);
             for (i = 0; i < count; i++)
             {
-                PyObject *pquad = JM_py_from_quad(*quad);
-                PyList_Append(liste, pquad);
-                Py_DECREF(pquad);
+                LIST_APPEND_DROP(liste, JM_py_from_quad(*quad));
                 quad += 1;
             }
             JM_Free(result);
@@ -6376,8 +6400,7 @@ struct fz_stext_page_s {
                     PyTuple_SET_ITEM(litem, 4, Py_BuildValue("O", text));
                     PyTuple_SET_ITEM(litem, 5, Py_BuildValue("i", block_n));
                     PyTuple_SET_ITEM(litem, 6, Py_BuildValue("i", block->type));
-                    PyList_Append(lines, litem);
-                    Py_DECREF(litem);
+                    LIST_APPEND_DROP(lines, litem);
                     Py_DECREF(text);
                     block_n++;
                 }
@@ -6508,7 +6531,7 @@ val = Rect(val)%}
                         text = JM_EscapeStrFromBuffer(gctx, res);
                         break;
                 }
-                if (!text) text = JM_StrFromBuffer(gctx, res);
+                if (!text) text = JM_EscapeStrFromBuffer(gctx, res);
 
             }
             fz_always(gctx)
@@ -6737,7 +6760,7 @@ struct Tools
                 da_str = pdf_to_str_buf(gctx, da);
             }
             fz_catch(gctx) return NULL;
-            return Py_BuildValue("s", da_str);
+            return JM_UNICODE(da_str);
         }
 
 
@@ -6777,7 +6800,7 @@ struct Tools
         %feature("autodoc","Return compiled MuPDF version.") mupdf_version;
         PyObject *mupdf_version()
         {
-            return Py_BuildValue("s", FZ_VERSION);
+            return PyUnicode_FromString(FZ_VERSION);
         }
 
         %pythoncode %{property%}

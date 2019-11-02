@@ -1,4 +1,7 @@
 %{
+//-----------------------------------------------------------------------------
+// Make a text page directly from an fz_page
+//-----------------------------------------------------------------------------
 fz_stext_page *JM_new_stext_page_from_page(fz_context *ctx, fz_page *page, int flags)
 {
     if (!page) return NULL;
@@ -28,44 +31,49 @@ fz_stext_page *JM_new_stext_page_from_page(fz_context *ctx, fz_page *page, int f
 }
 
 
+//-----------------------------------------------------------------------------
 // Replace MuPDF error rune with character 0xB7
+//-----------------------------------------------------------------------------
 PyObject *JM_repl_char()
 {
     const unsigned char data[2] = {194, 183};
     return PyUnicode_FromStringAndSize(data, 2);
 }
 
+//-----------------------------------------------------------------------------
 // append non-ascii runes in unicode escape format
+//-----------------------------------------------------------------------------
 void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
 {
     if (ch >= 32 && ch <= 127)
     {
         fz_append_byte(ctx, buff, ch);
     }
-    else if (ch <= 0xffff)
+    else if (ch <= 0xffff)  // 4 hex digits
     {
         fz_append_printf(ctx, buff, "\\u%04x", ch);
     }
-    else
+    else  // 8 hex digits
     {
         fz_append_printf(ctx, buff, "\\U%08x", ch);
     }
-
 }
 
 
+//-----------------------------------------------------------------------------
 // write non-ascii runes in unicode escape format
+//-----------------------------------------------------------------------------
 void JM_write_rune(fz_context *ctx, fz_output *out, int ch)
 {
     if (ch >= 32 && ch <= 127)
     {
         fz_write_byte(ctx, out, ch);
     }
-    else if (ch <= 0xffff)
+    else if (ch <= 0xffff)  // 4 hex digits
     {
         fz_write_printf(ctx, out, "\\u%04x", ch);
     }
-    else
+    else  // 8 hex digits
     {
         fz_write_printf(ctx, out, "\\U%08x", ch);
     }
@@ -122,9 +130,8 @@ int JM_append_word(fz_context *ctx, PyObject *lines, fz_buffer *buff, fz_rect *w
                                     wbbox->y1,
                                     s,
                                     block_n, line_n, word_n);
-    PyList_Append(lines, litem);
+    LIST_APPEND_DROP(lines, litem);
     Py_DECREF(s);
-    Py_DECREF(litem);
     wbbox->x0 = wbbox->y0 = wbbox->x1 = wbbox->y1 = 0;
     return word_n + 1;                 // word counter
 }
@@ -154,17 +161,17 @@ static int detect_super_script(fz_stext_line *line, fz_stext_char *ch)
 static int JM_char_font_flags(fz_context *ctx, fz_font *font, fz_stext_line *line, fz_stext_char *ch)
 {
     int flags = detect_super_script(line, ch);
-    flags += fz_font_is_italic(ctx, font) * 2;
-    flags += fz_font_is_serif(ctx, font) * 4;
-    flags += fz_font_is_monospaced(ctx, font) * 8;
-    flags += fz_font_is_bold(ctx, font) * 16;
+    flags += fz_font_is_italic(ctx, font) * TEXT_FONT_ITALIC;
+    flags += fz_font_is_serif(ctx, font) * TEXT_FONT_SERIFED;
+    flags += fz_font_is_monospaced(ctx, font) * TEXT_FONT_MONOSPACED;
+    flags += fz_font_is_bold(ctx, font) * TEXT_FONT_BOLD;
     return flags;
 }
 
 //start-trace
 static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw, fz_buffer *buff)
 {
-    PyObject *span = NULL, *char_list = NULL, *char_dict, *val;
+    PyObject *span = NULL, *char_list = NULL, *char_dict;
     PyObject *span_list = PyList_New(0);
     fz_clear_buffer(ctx, buff);
     fz_stext_char *ch;
@@ -192,42 +199,27 @@ static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw,
             {
                 if (raw)  // put character list in the span
                 {
-                    PyDict_SetItem(span, dictkey_chars, char_list);
-                    Py_CLEAR(char_list);
+                    DICT_SETITEM_DROP(span, dictkey_chars, char_list);
+                    char_list = NULL;
                 }
                 else  // put text string in the span
                 {
-                    val = JM_EscapeStrFromBuffer(ctx, buff);
-                    PyDict_SetItem(span, dictkey_text, val);
-                    Py_DECREF(val);
+                    DICT_SETITEM_DROP(span, dictkey_text, JM_EscapeStrFromBuffer(ctx, buff));
                     fz_clear_buffer(ctx, buff);
                 }
 
-                val = JM_py_from_rect(span_rect);
-                PyDict_SetItem(span, dictkey_bbox, val);
-                Py_DECREF(val);
+                DICT_SETITEM_DROP(span, dictkey_bbox, JM_py_from_rect(span_rect));
 
-                PyList_Append(span_list, span);
-                Py_CLEAR(span);
+                LIST_APPEND_DROP(span_list, span);
+                span = NULL;
             }
 
             span = PyDict_New();
 
-            val = Py_BuildValue("f", style.size);
-            PyDict_SetItem(span, dictkey_size, val);
-            Py_DECREF(val);
-
-            val = Py_BuildValue("i", style.flags);
-            PyDict_SetItem(span, dictkey_flags, val);
-            Py_DECREF(val);
-
-            val = JM_EscapeStrFromStr(style.font);
-            PyDict_SetItem(span, dictkey_font, val);
-            Py_DECREF(val);
-
-            val = Py_BuildValue("i", style.color);
-            PyDict_SetItem(span, dictkey_color, val);
-            Py_DECREF(val);
+            DICT_SETITEM_DROP(span, dictkey_size, Py_BuildValue("f", style.size));
+            DICT_SETITEM_DROP(span, dictkey_flags, Py_BuildValue("i", style.flags));
+            DICT_SETITEM_DROP(span, dictkey_font, JM_UNICODE(style.font));
+            DICT_SETITEM_DROP(span, dictkey_color, Py_BuildValue("i", style.color));
 
             old_style = style;
             span_rect = r;
@@ -237,24 +229,20 @@ static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw,
         {
             char_dict = PyDict_New();
 
-            val = Py_BuildValue("ff", ch->origin.x, ch->origin.y);
-            PyDict_SetItem(char_dict, dictkey_origin, val);
-            Py_DECREF(val);
+            DICT_SETITEM_DROP(char_dict, dictkey_origin,
+                          Py_BuildValue("ff", ch->origin.x, ch->origin.y));
 
-            val = Py_BuildValue("ffff", r.x0, r.y0, r.x1, r.y1);
-            PyDict_SetItem(char_dict, dictkey_bbox, val);
-            Py_DECREF(val);
+            DICT_SETITEM_DROP(char_dict, dictkey_bbox,
+                          Py_BuildValue("ffff", r.x0, r.y0, r.x1, r.y1));
 
-            val = PyUnicode_FromFormat("%c", ch->c);
-            PyDict_SetItem(char_dict, dictkey_c, val);
-            Py_DECREF(val);
+            DICT_SETITEM_DROP(char_dict, dictkey_c,
+                          PyUnicode_FromFormat("%c", ch->c));
 
             if (!char_list)
             {
                 char_list = PyList_New(0);
             }
-            PyList_Append(char_list, char_dict);
-            Py_DECREF(char_dict);
+            LIST_APPEND_DROP(char_list, char_dict);
         }
         else  // add character byte to buffer
         {
@@ -266,22 +254,18 @@ static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw,
     {
         if (raw)
         {
-            PyDict_SetItem(span, dictkey_chars, char_list);
-            Py_CLEAR(char_list);
+            DICT_SETITEM_DROP(span, dictkey_chars, char_list);
+            char_list = NULL;
         }
         else
         {
-            val = JM_EscapeStrFromBuffer(ctx, buff);
-            PyDict_SetItem(span, dictkey_text, val);
-            Py_DECREF(val);
+            DICT_SETITEM_DROP(span, dictkey_text, JM_EscapeStrFromBuffer(ctx, buff));
             fz_clear_buffer(ctx, buff);
         }
-        val = JM_py_from_rect(span_rect);
-        PyDict_SetItem(span, dictkey_bbox, val);
-        Py_DECREF(val);
+        DICT_SETITEM_DROP(span, dictkey_bbox, JM_py_from_rect(span_rect));
 
-        PyList_Append(span_list, span);
-        Py_CLEAR(span);
+        LIST_APPEND_DROP(span_list, span);
+        span = NULL;
     }
     return span_list;
 }
@@ -300,7 +284,7 @@ static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject
     int type = FZ_IMAGE_UNKNOWN;
     if (buffer) type = buffer->params.type;
     const char *ext = NULL;
-    PyObject *bytes = JM_BinFromChar(""), *val;
+    PyObject *bytes = JM_BinFromChar("");
     fz_var(bytes);
     fz_try(ctx)
     {
@@ -335,20 +319,21 @@ static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject
     }
     fz_always(ctx)
     {
-        val = Py_BuildValue("i", w);
-        PyDict_SetItem(block_dict, dictkey_width, val);
-        Py_DECREF(val);
-
-        val = Py_BuildValue("i", h);
-        PyDict_SetItem(block_dict, dictkey_height, val);
-        Py_DECREF(val);
-
-        val = Py_BuildValue("s", ext);
-        PyDict_SetItem(block_dict, dictkey_ext, val);
-        Py_DECREF(val);
-
-        PyDict_SetItem(block_dict, dictkey_image, bytes);
-        Py_DECREF(bytes);
+        DICT_SETITEM_DROP(block_dict, dictkey_width,
+                          Py_BuildValue("i", w));
+        DICT_SETITEM_DROP(block_dict, dictkey_height,
+                          Py_BuildValue("i", h));
+        DICT_SETITEM_DROP(block_dict, dictkey_ext,
+                          PyUnicode_FromString(ext));
+        DICT_SETITEM_DROP(block_dict, dictkey_colorspace,
+                          Py_BuildValue("i", n));
+        DICT_SETITEM_DROP(block_dict, dictkey_xres,
+                          Py_BuildValue("i", image->xres));
+        DICT_SETITEM_DROP(block_dict, dictkey_yres,
+                          Py_BuildValue("i", image->xres));
+        DICT_SETITEM_DROP(block_dict, dictkey_bpc,
+                          Py_BuildValue("i", (int) image->bpc));
+        DICT_SETITEM_DROP(block_dict, dictkey_image, bytes);
 
         fz_drop_buffer(ctx, freebuf);
     }
@@ -360,33 +345,24 @@ static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject
 static void JM_make_text_block(fz_context *ctx, fz_stext_block *block, PyObject *block_dict, int raw, fz_buffer *buff)
 {
     fz_stext_line *line;
-    PyObject *line_list = PyList_New(0), *line_dict, *val;
+    PyObject *line_list = PyList_New(0), *line_dict;
 
     for (line = block->u.t.first_line; line; line = line->next)
     {
         line_dict = PyDict_New();
 
-        val = Py_BuildValue("i", line->wmode);
-        PyDict_SetItem(line_dict, dictkey_wmode, val);
-        Py_DECREF(val);
+        DICT_SETITEM_DROP(line_dict, dictkey_wmode,
+                      Py_BuildValue("i", line->wmode));
+        DICT_SETITEM_DROP(line_dict, dictkey_dir,
+                      Py_BuildValue("ff", line->dir.x, line->dir.y));
+        DICT_SETITEM_DROP(line_dict, dictkey_bbox,
+                      JM_py_from_rect(line->bbox));
+        DICT_SETITEM_DROP(line_dict, dictkey_spans,
+                       JM_make_spanlist(ctx, line, raw, buff));
 
-        val = Py_BuildValue("ff", line->dir.x, line->dir.y);
-        PyDict_SetItem(line_dict, dictkey_dir, val);
-        Py_DECREF(val);
-
-        val = JM_py_from_rect(line->bbox);
-        PyDict_SetItem(line_dict, dictkey_bbox, val);
-        Py_DECREF(val);
-
-        val = JM_make_spanlist(ctx, line, raw, buff);
-        PyDict_SetItem(line_dict, dictkey_spans, val);
-        Py_DECREF(val);
-
-        PyList_Append(line_list, line_dict);
-        Py_DECREF(line_dict);
+        LIST_APPEND_DROP(line_list, line_dict);
     }
-    PyDict_SetItem(block_dict, dictkey_lines, line_list);
-    Py_DECREF(line_list);
+    DICT_SETITEM_DROP(block_dict, dictkey_lines, line_list);
     return;
 }
 
@@ -394,18 +370,13 @@ void JM_make_textpage_dict(fz_context *ctx, fz_stext_page *tp, PyObject *page_di
 {
     fz_stext_block *block;
     fz_buffer *text_buffer = fz_new_buffer(ctx, 64);
-    PyObject *block_dict, *block_list = PyList_New(0), *val;
+    PyObject *block_dict, *block_list = PyList_New(0);
     for (block = tp->first_block; block; block = block->next)
     {
         block_dict = PyDict_New();
 
-        val = Py_BuildValue("i", block->type);
-        PyDict_SetItem(block_dict, dictkey_type, val);
-        Py_DECREF(val);
-
-        val = JM_py_from_rect(block->bbox);
-        PyDict_SetItem(block_dict, dictkey_bbox, val);
-        Py_DECREF(val);
+        DICT_SETITEM_DROP(block_dict, dictkey_type, Py_BuildValue("i", block->type));
+        DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(block->bbox));
 
         if (block->type == FZ_STEXT_BLOCK_IMAGE)
         {
@@ -416,11 +387,9 @@ void JM_make_textpage_dict(fz_context *ctx, fz_stext_page *tp, PyObject *page_di
             JM_make_text_block(ctx, block, block_dict, raw, text_buffer);
         }
 
-        PyList_Append(block_list, block_dict);
-        Py_DECREF(block_dict);
+        LIST_APPEND_DROP(block_list, block_dict);
     }
-    PyDict_SetItem(page_dict, dictkey_blocks, block_list);
-    Py_DECREF(block_list);
+    DICT_SETITEM_DROP(page_dict, dictkey_blocks, block_list);
     fz_drop_buffer(ctx, text_buffer);
 }
 //end-trace

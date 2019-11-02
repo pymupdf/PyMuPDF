@@ -230,7 +230,7 @@ def insertImage(page, rect, filename=None, pixmap=None, stream=None, rotate=0,
 
     while rotate < 0:
         rotate += 360
-    while rotate > 360:
+    while rotate >= 360:
         rotate -= 360
     if rotate not in (0, 90, 180, 270):
         raise ValueError("bad rotate value")
@@ -304,12 +304,12 @@ def insertImage(page, rect, filename=None, pixmap=None, stream=None, rotate=0,
         )
 
 
-def getImageBbox(page, img):
+def getImageBbox(page, item):
     """Calculate the rectangle (bbox) of a PDF image.
 
     Args:
         :page: the PyMuPDF page object
-        :img: a list item from doc.getPageImageList(page.number)
+        :item: item from doc.getPageImageList(page.number, full=True)
 
     Returns:
         The bbox (fitz.Rect) of the image.
@@ -320,53 +320,16 @@ def getImageBbox(page, img):
         page.getImageList().
     """
 
-    def lookup_matrix(page, imgname):
-        """Return the transformation matrix for an image name.
-
-        Args:
-            :page: the PyMuPDF page object
-            :imgname: the image reference name, must equal the name in the
-                list doc.getPageImageList(page.number).
-        Returns:
-            concatenated matrices preceeding the image invocation.
-
-        Notes:
-            We are looking up "/imgname Do" in the concatenated /contents of the
-            page first. If not found, also look it up in the streams of any
-            Form XObjects of the page. If still not found, return the zero matrix.
-        """
-        doc = page.parent  # get the PDF document
-        if not doc.isPDF:
-            raise ValueError("not PDF")
-
-        page._cleanContents()  # sanitize image invocation matrices
-        xref = page._getContents()[0]  # the (only) contents object
-        cont = doc._getXrefStream(xref)  # the contents object
+    def calc_matrix(cont, imgname):
+        imgnm = bytes("/" + imgname, "utf8")
         cont = cont.replace(b"/", b" /")  # prepend slashes with a space
         # split this, ignoring white spaces
         cont = cont.split()
-
-        imgnm = bytes("/" + imgname, "utf8")
-        if imgnm in cont:
-            idx = cont.index(imgnm)  # the image name is found here
-        else:  # not in page /contents, so look in Form XObjects
-            cont = None
-            xreflist = doc._getPageInfo(page.number, 3)  # XObject xrefs
-            for item in xreflist:
-                cont = doc._getXrefStream(item[0]).split()
-                if imgnm not in cont:
-                    cont = None
-                    continue
-                idx = cont.index(imgnm)  # image name found here
-                break
-
-        if cont is None:  # safeguard against inconsistencies
-            return fitz.Matrix()
-
-        # list of matrices preceeding image invocation command.
-        # not really required, because clean contents has concatenated those
+        if imgnm not in cont:
+            return Matrix()
+        idx = cont.index(imgnm)  # the image name
         mat_list = []
-        while idx >= 0:  # start value is "/Image Do" location
+        while idx >= 0:  # start position is "/Image Do" location
             if cont[idx] == b"q":  # finished at leading stacking command
                 break
             if cont[idx] == b"cm":  # encountered a matrix command
@@ -376,21 +339,51 @@ def getImageBbox(page, img):
                 idx -= 6  # step backwards 6 entries
             else:
                 idx -= 1  # step backwards
-        mat = fitz.Matrix(1, 1)  # concatenate encountered matrices to this one
-        for m in reversed(mat_list):
-            mat *= m
+
         l = len(mat_list)
         if l == 0:  # safeguard against unusual situations
             return fitz.Matrix()  # the zero matrix
-        return m
 
-    if type(img) in (list, tuple):
-        imgname = img[7]
-    else:
-        imgname = img
-    mat = lookup_matrix(page, imgname)
+        mat = fitz.Matrix(1, 1)  # concatenate encountered matrices to this one
+        for m in reversed(mat_list):
+            mat *= m
+
+        return mat
+
+    def lookup_matrix(page, item):
+        """Return the transformation matrix for an image name.
+
+        Args:
+            :page: the PyMuPDF page object
+            :item: an item of the list doc.getPageImageList(page.number, full=True).
+
+        Returns:
+            concatenated matrices preceeding the image invocation.
+
+        Notes:
+            We are looking up "/imgname Do" in the concatenated /contents of the
+            page first. If not found, also look it up in the streams of any
+            Form XObjects of the page. If still not found, return the zero matrix.
+        """
+        doc = page.parent  # get the PDF document
+        imgname = item[7]  # the image reference name
+        stream_xref = item[-1]  # the contents object to inspect
+
+        if stream_xref == 0:  # only look in the page's /Contents
+            if not getattr(page, "is_cleaned", False):
+                page._cleanContents()  # sanitize image invocation matrices
+                page.is_cleaned = True
+            xref = page._getContents()[0]  # the (only) contents object
+            cont = doc._getXrefStream(xref)  # the contents object
+            return calc_matrix(cont, imgname)
+
+        cont = doc._getXrefStream(stream_xref)  # the contents object
+        return calc_matrix(cont, imgname)
+
+    mat = lookup_matrix(page, item)
     if not bool(mat):
-        raise ValueError("image not found")
+        msg = "image '%s' not found" % item[7]
+        raise ValueError(msg)
 
     ctm = page._getTransformation()  # page transformation matrix
     mat.preScale(1, -1)  # fiddle the matrix
@@ -399,7 +392,7 @@ def getImageBbox(page, img):
     return r * ctm  # the bbox in MuPDF coordinates
 
 
-def searchFor(page, text, hit_max = 16, quads = False):
+def searchFor(page, text, hit_max = 16, quads = False, flags=None):
     """ Search for a string on a page.
 
     Args:
@@ -410,14 +403,16 @@ def searchFor(page, text, hit_max = 16, quads = False):
         a list of rectangles or quads, each containing one occurrence.
     """
     CheckParent(page)
-    tp = page.getTextPage()  # create TextPage
+    if flags is None:
+        flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
+    tp = page.getTextPage(flags)  # create TextPage
     # return list of hitting reactangles
     rlist = tp.search(text, hit_max = hit_max, quads = quads)
     tp = None
     return rlist
 
 
-def searchPageFor(doc, pno, text, hit_max=16, quads=False):
+def searchPageFor(doc, pno, text, hit_max=16, quads=False, flags=None):
     """ Search for a string on a page.
 
     Args:
@@ -429,7 +424,7 @@ def searchPageFor(doc, pno, text, hit_max=16, quads=False):
         a list of rectangles or quads, each containing an occurrence.
     """
 
-    return doc[pno].searchFor(text, hit_max = hit_max, quads = quads)
+    return doc[pno].searchFor(text, hit_max = hit_max, quads = quads, flags=flags)
 
 
 def getTextBlocks(page, flags=None):

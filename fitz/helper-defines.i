@@ -239,17 +239,27 @@
 #define PDF_PERM_ASSEMBLE 1 << 10
 #define PDF_PERM_PRINT_HQ 1 << 11
 
+// General text flags
+#define TEXT_FONT_SUPERSCRIPT 1
+#define TEXT_FONT_ITALIC 2
+#define TEXT_FONT_SERIFED 4
+#define TEXT_FONT_MONOSPACED 8
+#define TEXT_FONT_BOLD 16
+
 %}
 
 %{
-// Global Constants
+// Global Constants - Python dictionary keys
+PyObject *dictkey_bpc;
 PyObject *dictkey_bbox;
 PyObject *dictkey_blocks;
 PyObject *dictkey_c;
 PyObject *dictkey_chars;
+PyObject *dictkey_colorspace;
 PyObject *dictkey_color;
 PyObject *dictkey_content;
 PyObject *dictkey_creationDate;
+PyObject *dictkey_cs_name;
 PyObject *dictkey_dashes;
 PyObject *dictkey_desc;
 PyObject *dictkey_dir;
@@ -267,6 +277,7 @@ PyObject *dictkey_modDate;
 PyObject *dictkey_name;
 PyObject *dictkey_origin;
 PyObject *dictkey_size;
+PyObject *dictkey_smask;
 PyObject *dictkey_spans;
 PyObject *dictkey_stroke;
 PyObject *dictkey_style;
@@ -278,5 +289,7 @@ PyObject *dictkey_ufilename;
 PyObject *dictkey_width;
 PyObject *dictkey_wmode;
 PyObject *dictkey_xref;
+PyObject *dictkey_xres;
+PyObject *dictkey_yres;
 
 %}

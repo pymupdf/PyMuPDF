@@ -184,7 +184,8 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
                               );
         if (keep_image)
         {   // keep fz_image: hand over address, do not drop
-            PyDict_SetItem(result, dictkey_image, PyLong_FromVoidPtr((void *) fz_keep_image(ctx, image)));
+            DICT_SETITEM_DROP(result, dictkey_image,
+                              PyLong_FromVoidPtr((void *) fz_keep_image(ctx, image)));
         }
     }
     fz_always(ctx)
@@ -201,7 +202,8 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
     fz_catch(ctx)
     {
         PySys_WriteStderr("%s\n", fz_caught_message(ctx));
-        result = PyDict_New();
+        Py_CLEAR(result);
+        return PyDict_New();
     }
     return result;
 }
