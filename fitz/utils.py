@@ -382,8 +382,7 @@ def getImageBbox(page, item):
 
     mat = lookup_matrix(page, item)
     if not bool(mat):
-        msg = "image '%s' not found" % item[7]
-        raise ValueError(msg)
+        return fitz.Rect(1, 1, -1, -1)  # return infinite rect if not found
 
     ctm = page._getTransformation()  # page transformation matrix
     mat.preScale(1, -1)  # fiddle the matrix

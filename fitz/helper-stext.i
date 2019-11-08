@@ -272,7 +272,6 @@ static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw,
 
 static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject *block_dict)
 {
-    fz_color_params color_params = {0};
     fz_image *image = block->u.i.image;
     fz_buffer *buf = NULL, *freebuf = NULL;
     fz_compressed_buffer *buffer = fz_compressed_image_buffer(ctx, image);
@@ -281,31 +280,24 @@ static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject
     int n = fz_colorspace_n(ctx, image->colorspace);
     int w = image->w;
     int h = image->h;
-    int type = FZ_IMAGE_UNKNOWN;
-    if (buffer) type = buffer->params.type;
     const char *ext = NULL;
-    PyObject *bytes = JM_BinFromChar("");
+    int type = FZ_IMAGE_UNKNOWN;
+    if (buffer)
+        type = buffer->params.type;
+    if (type < FZ_IMAGE_BMP || type == FZ_IMAGE_JBIG2)
+        type = FZ_IMAGE_UNKNOWN;
+    PyObject *bytes = NULL;
     fz_var(bytes);
     fz_try(ctx)
     {
-        if (type == FZ_IMAGE_JPX && !(image->mask))
-            {;}
-        else if (image->use_colorkey ||
-                image->use_decode ||
-                image->mask ||
-                type < FZ_IMAGE_BMP ||
-                type == FZ_IMAGE_JBIG2 ||
-                (n != 1 && n != 3 && type == FZ_IMAGE_JPEG))
-            type = FZ_IMAGE_UNKNOWN;
-
-        if (type != FZ_IMAGE_UNKNOWN)
+        if (buffer && type != FZ_IMAGE_UNKNOWN)
         {
             buf = buffer->buffer;
             ext = JM_image_extension(type);
         }
         else
         {
-            buf = freebuf = fz_new_buffer_from_image_as_png(ctx, image, color_params);
+            buf = freebuf = fz_new_buffer_from_image_as_png(ctx, image, fz_default_color_params);
             ext = "png";
         }
         if (PY_MAJOR_VERSION > 2)
@@ -319,6 +311,8 @@ static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject
     }
     fz_always(ctx)
     {
+        if (!bytes)
+            bytes = JM_BinFromChar("");
         DICT_SETITEM_DROP(block_dict, dictkey_width,
                           Py_BuildValue("i", w));
         DICT_SETITEM_DROP(block_dict, dictkey_height,
@@ -339,7 +333,6 @@ static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject
     }
     fz_catch(ctx) {;}
     return;
-
 }
 
 static void JM_make_text_block(fz_context *ctx, fz_stext_block *block, PyObject *block_dict, int raw, fz_buffer *buff)

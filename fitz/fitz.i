@@ -1585,15 +1585,11 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 
             fz_buffer *buffer = NULL, *freebuf = NULL;
             fz_var(freebuf);
-            fz_pixmap *pix = NULL;
-            fz_var(pix);
             pdf_obj *obj = NULL;
             PyObject *rc = NULL;
             const char *ext = NULL;
             fz_image *image = NULL;
             fz_var(image);
-            fz_output *out = NULL;
-            fz_var(out);
             fz_compressed_buffer *cbuf = NULL;
             int type = FZ_IMAGE_UNKNOWN, n = 0, xres = 0, yres = 0, is_jpx = 0;
             int smask = 0, width = 0, height = 0, bpc = 0;
@@ -1652,27 +1648,9 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                     {
                         ext = JM_image_extension(type);
                     }
-                    else  // need a pixmap to make a PNG buffer
+                    else  // need to make a PNG buffer
                     {
-                        pix = fz_get_pixmap_from_image(gctx, image,
-                                                       NULL, NULL, NULL, NULL);
-                        n = pix->n;
-                        // only gray & rgb pixmaps support PNG!
-                        if (pix->colorspace &&
-                            pix->colorspace != fz_device_gray(gctx) &&
-                            pix->colorspace != fz_device_rgb(gctx))
-                        {
-                            fz_color_params color_params = {0};
-                            fz_pixmap *pix2 = fz_convert_pixmap(gctx, pix,
-                                     fz_device_rgb(gctx), NULL, NULL, color_params, 1);
-                            fz_drop_pixmap(gctx, pix);
-                            pix = pix2;
-                        }
-
-                        freebuf = fz_new_buffer(gctx, 2048);
-                        out = fz_new_output_with_buffer(gctx, freebuf);
-                        fz_write_pixmap_as_png(gctx, out, pix);
-                        buffer = freebuf;
+                        buffer = freebuf = fz_new_buffer_from_image_as_png(gctx, image, fz_default_color_params);
                         ext = "png";
                     }
 
@@ -1705,8 +1683,6 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             {
                 fz_drop_image(gctx, image);
                 fz_drop_buffer(gctx, freebuf);
-                fz_drop_output(gctx, out);
-                fz_drop_pixmap(gctx, pix);
                 pdf_drop_obj(gctx, obj);
             }
 
@@ -3349,15 +3325,15 @@ if val:
     val.parent._annot_refs[id(val)] = val
 annot._erase()
 %}
-        %feature("autodoc","Delete annot if PDF and return next one.") deleteAnnot;
+        %feature("autodoc","Delete annot and return next one.") deleteAnnot;
         struct pdf_annot_s *deleteAnnot(struct pdf_annot_s *annot)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_annot *irt_annot = NULL;
-            while (1)
+            while (1)  // first loop through all /IRT annots and remove them
             {
                 irt_annot = JM_find_annot_irt(gctx, annot);
-                if (!irt_annot)
+                if (!irt_annot)  // no more there
                     break;
                 JM_delete_annot(gctx, page, irt_annot);
             }
@@ -6803,10 +6779,16 @@ struct Tools
             return PyUnicode_FromString(FZ_VERSION);
         }
 
-        %pythoncode %{property%}
-        %pythonappend mupdf_warnings %{val = "\n".join(val)%}
-        PyObject *mupdf_warnings()
+        %feature("autodoc","Return the MuPDF warnings store.") mupdf_warnings;
+        %pythonappend mupdf_warnings
+        %{
+        val = "\n".join(val)
+        if reset:
+            self.reset_mupdf_warnings()
+        %}
+        PyObject *mupdf_warnings(int reset=1)
         {
+            Py_INCREF(JM_mupdf_warnings_store);
             return JM_mupdf_warnings_store;
         }
 

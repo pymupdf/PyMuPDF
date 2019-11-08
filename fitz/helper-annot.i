@@ -244,6 +244,11 @@ PyObject *JM_annot_colors(fz_context *ctx, pdf_obj *annot_obj)
     return res;
 }
 
+//----------------------------------------------------------------------------
+// delete an annotation using mupdf functions, but first delete the /AP and
+// /Popup dict keys in the annot->obj. Also remove the 'Popup' annotation
+// from the page's /Annots array which may exist.
+//----------------------------------------------------------------------------
 void JM_delete_annot(fz_context *ctx, pdf_page *page, pdf_annot *annot)
 {
     if (!annot) return;
@@ -252,7 +257,7 @@ void JM_delete_annot(fz_context *ctx, pdf_page *page, pdf_annot *annot)
         pdf_obj *popup = pdf_dict_get(ctx, annot->obj, PDF_NAME(Popup));
         pdf_dict_del(ctx, annot->obj, PDF_NAME(Popup));
         pdf_dict_del(ctx, annot->obj, PDF_NAME(AP));
-        if (popup)
+        if (popup)  // now look for the popup entry
         {
             pdf_obj *annots = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
             int i, n = pdf_array_len(ctx, annots);
@@ -277,18 +282,21 @@ void JM_delete_annot(fz_context *ctx, pdf_page *page, pdf_annot *annot)
     return;
 }
 
+//----------------------------------------------------------------------------
+// locate and return the first annotation whose /IRT key points to annot.
+//----------------------------------------------------------------------------
 pdf_annot *JM_find_annot_irt(fz_context *ctx, pdf_annot *annot)
 {
-    pdf_annot *irt_annot = NULL;
+    pdf_annot *irt_annot = NULL;  // returning this
     pdf_obj *o = NULL;
     pdf_annot **annotptr;
     int found = 0;
     fz_try(ctx)
-    {
+    {   // loop thru MuPDF's internal annots array
         pdf_page *page = annot->page;
         for (annotptr = &page->annots; *annotptr; annotptr = &(*annotptr)->next)
         {
-            irt_annot = *annotptr;
+            irt_annot = *annotptr;  // check if this is what we are looking for
             o = pdf_dict_gets(ctx, irt_annot->obj, "IRT");
             if (o)
             {

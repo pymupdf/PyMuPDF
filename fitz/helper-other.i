@@ -59,6 +59,7 @@ void JM_mupdf_warning(void *user, const char *message)
 // redirect MuPDF errors
 void JM_mupdf_error(void *user, const char *message)
 {
+    LIST_APPEND_DROP(JM_mupdf_warnings_store, JM_EscapeStrFromStr(message));
     PySys_WriteStderr("mupdf: %s\n", message);
 }
 
