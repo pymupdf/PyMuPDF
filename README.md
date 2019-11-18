@@ -39,6 +39,7 @@ For all supported document types (i.e. including images) types you can
 * PDFs can be reformatted to support double-sided printing, posterizing, applying logos or watermarks
 * Password protection is fully supported: decryption, encryption, encryption method selection, permmission level and user / owner password setting.
 * Low-level PDF structures can be accessed and modified.
+* Starting with v1.16.8, PyMuPDF can also be used as a module in the commandline using ``"python -m fitz ..."``. This is a versatile utility, which we will further develop over time.
 
 
 Have a look at the basic [demos](https://github.com/pymupdf/PyMuPDF/tree/master/demo), the [examples](https://github.com/pymupdf/PyMuPDF/tree/master/examples) (which contain complete, working programs), and the **recipes** section of our [Wiki](https://github.com/pymupdf/PyMuPDF/wiki) sidebar, which contains more than a dozen of guides in How-To-style.
