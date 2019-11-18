@@ -183,7 +183,8 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
                                 "size", len
                               );
         if (keep_image)
-        {   // keep fz_image: hand over address, do not drop
+        {
+            // keep fz_image: hand over address, do not drop
             DICT_SETITEM_DROP(result, dictkey_image,
                               PyLong_FromVoidPtr((void *) fz_keep_image(ctx, image)));
         }
@@ -206,6 +207,181 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
         return PyDict_New();
     }
     return result;
+}
+
+//----------------------------------------------------------------------------
+// Version of fz_new_pixmap_from_display_list (util.c) to also support
+// rendering of only the 'clip' part of the displaylist rectangle
+//----------------------------------------------------------------------------
+fz_pixmap *
+JM_pixmap_from_display_list(fz_context *ctx,
+                            fz_display_list *list,
+                            PyObject *ctm,
+                            fz_colorspace *cs,
+                            int alpha,
+                            PyObject *clip,
+                            fz_separations *seps
+                           )
+{
+    fz_rect rect = fz_bound_display_list(ctx, list);
+    fz_matrix matrix = JM_matrix_from_py(ctm);
+    fz_pixmap *pix = NULL;
+    fz_var(pix);
+    fz_device *dev = NULL;
+    fz_var(dev);
+    fz_rect rclip = JM_rect_from_py(clip);
+    rect = fz_intersect_rect(rect, rclip);  // no-op if clip is not given
+
+    rect = fz_transform_rect(rect, matrix);
+    fz_irect irect = fz_round_rect(rect);
+
+    pix = fz_new_pixmap_with_bbox(ctx, cs, irect, seps, alpha);
+    if (alpha)
+        fz_clear_pixmap(ctx, pix);
+    else
+        fz_clear_pixmap_with_value(ctx, pix, 0xFF);
+
+    fz_try(ctx)
+    {
+        if (!fz_is_infinite_rect(rclip))
+        {
+            dev = fz_new_draw_device_with_bbox(ctx, matrix, pix, &irect);
+            fz_run_display_list(ctx, list, dev, fz_identity, rclip, NULL);
+        }
+        else
+        {
+            dev = fz_new_draw_device(ctx, matrix, pix);
+            fz_run_display_list(ctx, list, dev, fz_identity, fz_infinite_rect, NULL);
+        }
+
+        fz_close_device(ctx, dev);
+    }
+    fz_always(ctx)
+    {
+        fz_drop_device(ctx, dev);
+    }
+    fz_catch(ctx)
+    {
+        fz_drop_pixmap(ctx, pix);
+        fz_rethrow(ctx);
+    }
+    return pix;
+}
+
+//----------------------------------------------------------------------------
+// Pixmap creation directly using a short-lived displaylist, so we can support
+// separations.
+//----------------------------------------------------------------------------
+fz_pixmap *
+JM_pixmap_from_page(fz_context *ctx,
+                    fz_document *doc,
+                    fz_page *page,
+                    PyObject *ctm,
+                    fz_colorspace *cs,
+                    int alpha,
+                    int annots,
+                    PyObject *clip
+                   )
+{
+    enum { SPOTS_NONE, SPOTS_OVERPRINT_SIM, SPOTS_FULL };
+    int spots;
+    if (FZ_ENABLE_SPOT_RENDERING)
+        spots = SPOTS_OVERPRINT_SIM;
+    else
+        spots = SPOTS_NONE;
+
+    fz_separations *seps = NULL;
+    fz_pixmap *pix = NULL;
+    fz_colorspace *oi = NULL;
+    fz_var(oi);
+    fz_colorspace *colorspace = cs;
+    fz_rect rect;
+    fz_irect bbox;
+    fz_device *dev = NULL;
+    fz_var(dev);
+    fz_matrix matrix = JM_matrix_from_py(ctm);
+    rect = fz_bound_page(ctx, page);
+    fz_rect rclip = JM_rect_from_py(clip);
+    rect = fz_intersect_rect(rect, rclip);  // no-op if clip is not given
+    rect = fz_transform_rect(rect, matrix);
+    bbox = fz_round_rect(rect);
+
+    fz_try(ctx)
+    {
+        // Pixmap of the document's /OutputIntents ("output intents")
+        oi = fz_document_output_intent(ctx, doc);
+        // if present and compatible, use it instead of the parameter
+        if (oi)
+        {
+            if (fz_colorspace_n(ctx, oi) == fz_colorspace_n(ctx, cs))
+            {
+                colorspace = fz_keep_colorspace(ctx, oi);
+            }
+        }
+
+        // check if spots rendering is available and if so use separations
+        if (spots != SPOTS_NONE)
+        {
+            seps = fz_page_separations(ctx, page);
+            if (seps)
+            {
+                int i, n = fz_count_separations(ctx, seps);
+                if (spots == SPOTS_FULL)
+                    for (i = 0; i < n; i++)
+                        fz_set_separation_behavior(ctx, seps, i, FZ_SEPARATION_SPOT);
+                else
+                    for (i = 0; i < n; i++)
+                        fz_set_separation_behavior(ctx, seps, i, FZ_SEPARATION_COMPOSITE);
+            }
+            else if (fz_page_uses_overprint(ctx, page))
+            {
+                /* This page uses overprint, so we need an empty
+                 * sep object to force the overprint simulation on. */
+                seps = fz_new_separations(ctx, 0);
+            }
+            else if (oi && fz_colorspace_n(ctx, oi) != fz_colorspace_n(ctx, colorspace))
+            {
+                /* We have an output intent, and it's incompatible
+                 * with the colorspace our device needs. Force the
+                 * overprint simulation on, because this ensures that
+                 * we 'simulate' the output intent too. */
+                seps = fz_new_separations(ctx, 0);
+            }
+        }
+
+        pix = fz_new_pixmap_with_bbox(ctx, colorspace, bbox, seps, alpha);
+
+        if (alpha)
+        {
+            fz_clear_pixmap(ctx, pix);
+        }
+        else
+        {
+            fz_clear_pixmap_with_value(ctx, pix, 0xFF);
+        }
+
+        dev = fz_new_draw_device(ctx, matrix, pix);
+        if (annots)
+        {
+            fz_run_page(ctx, page, dev, fz_identity, NULL);
+        }
+        else
+        {
+            fz_run_page_contents(ctx, page, dev, fz_identity, NULL);
+        }
+        fz_close_device(ctx, dev);
+    }
+    fz_always(ctx)
+    {
+        fz_drop_device(ctx, dev);
+        fz_drop_separations(ctx, seps);
+        fz_drop_colorspace(ctx, oi);
+    }
+    fz_catch(ctx)
+    {
+        fz_rethrow(ctx);
+    }
+    return pix;
 }
 
 %}

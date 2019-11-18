@@ -81,7 +81,7 @@ long_desc = "\n".join(long_dtab)
 
 setup(
     name="PyMuPDF",
-    version="1.16.7",
+    version="1.16.8",
     description="Python bindings for the PDF rendering library MuPDF",
     long_description=long_desc,
     classifiers=classifier,
@@ -90,5 +90,5 @@ setup(
     author_email="jorj.x.mckie@outlook.de",
     cmdclass={"build_py": build_ext_first},
     ext_modules=[module],
-    py_modules=["fitz.fitz", "fitz.utils"],
+    py_modules=["fitz.fitz", "fitz.utils", "fitz.__main__"],
 )

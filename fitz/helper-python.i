@@ -385,7 +385,7 @@ def getPDFstr(s):
             continue
 
         if oc > 127:
-            r += "\\" + oct(oc)[-3:]
+            r += "\\%03o" % oc
             continue
 
         if oc < 8 or oc > 13 or oc == 11 or c == 127:
@@ -424,17 +424,18 @@ def getTJstr(text, glyphs, simple, ordering):
     if not bool(text):
         return "[<>]"
 
-    if simple:
-        if glyphs is None:             # simple and not Symbol / ZapfDingbats
-            otxt = "".join([hex(ord(c))[2:].rjust(2, "0") if ord(c)<256 else "b7" for c in text])
-        else:                          # Symbol or ZapfDingbats
-            otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(2, "0") if ord(c)<256 else "b7" for c in text])
+    if simple:  # each char or its glyph is coded as a 2-byte hex
+        if glyphs is None:  # not Symbol, not ZapfDingbats: use char code
+            otxt = "".join(["%02x" % ord(c) if ord(c) < 256 else "b7" for c in text])
+        else:  # Symbol or ZapfDingbats: use glyphs
+            otxt = "".join(["%02x" % glyphs[ord(c)][0] if ord(c) < 256 else "b7" for c in text])
         return "[<" + otxt + ">]"
 
-    if ordering < 0:                   # not a CJK font: use the glyphs
-        otxt = "".join([hex(glyphs[ord(c)][0])[2:].rjust(4, "0") for c in text])
-    else:                              # CJK: use char codes, no glyphs
-        otxt = "".join([hex(ord(c))[2:].rjust(4, "0") for c in text])
+    # non-simple fonts: each char or its glyph is coded as 4-byte hex
+    if ordering < 0:  # not a CJK font: use the glyphs
+        otxt = "".join(["%04x" % glyphs[ord(c)][0] for c in text])
+    else:  # CJK: use the char codes
+        otxt = "".join(["%04x" % ord(c) for c in text])
 
     return "[<" + otxt + ">]"
 

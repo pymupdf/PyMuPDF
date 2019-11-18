@@ -145,6 +145,7 @@ from __future__ import division, print_function
 char *JM_Python_str_AsChar(PyObject *str);
 pdf_obj *pdf_lookup_page_loc(fz_context *ctx, pdf_document *doc, int needle, pdf_obj **parentp, int *indexp);
 PyObject *JM_mupdf_warnings_store;
+PyObject *JM_mupdf_show_errors;
 %}
 
 //-----------------------------------------------------------------------------
@@ -171,6 +172,7 @@ PyObject *JM_mupdf_warnings_store;
 // START redirect stdout/stderr
 //-----------------------------------------------------------------------------
 JM_mupdf_warnings_store = PyList_New(0);
+JM_mupdf_show_errors = Py_True;
 char user[] = "PyMuPDF";
 fz_set_warning_callback(gctx, JM_mupdf_warning, &user);
 fz_set_error_callback(gctx, JM_mupdf_error, &user);
@@ -2502,9 +2504,61 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 self.setToC(new_toc)
                 self._reset_page_refs()
 
+
             def saveIncr(self):
                 """ Save PDF incrementally"""
                 return self.save(self.name, incremental=True, encryption=PDF_ENCRYPT_KEEP)
+
+
+            def xrefObject(self, xref, compressed=False, ascii=False):
+                """Return the object definition of an xref.
+                """
+                return self._getXrefString(xref, compressed, ascii)
+
+
+            def updateObject(self, xref, text, page=None):
+                """Repleace the object at xref with text.
+
+                Optionally reload a page.
+                """
+                return self._updateObject(xref, text, page=page)
+
+
+            def xrefStream(self, xref):
+                """Return the decompressed stream content of an xref.
+                """
+                return self._getXrefStream(xref)
+
+
+            def xrefStreamRaw(self, xref):
+                """ Return the raw stream content of an xref.
+                """
+                return self._getXrefStreamRaw(xref)
+
+
+            def updateStream(self, xref, stream, new=False):
+                """Repleace the stream at xref with stream (bytes).
+                """
+                return self._updateStream(xref, stream, new=new)
+
+
+            def PDFTrailer(self, compressed=False, ascii=False):
+                """Return the PDF trailer string.
+                """
+                return self._getTrailerString(compressed, ascii)
+
+
+            def PDFCatalog(self):
+                """Return the xref of the PDF catalog object.
+                """
+                return self._getPDFroot()
+
+
+            def metadataXML(self):
+                """Return the xref of the document XML metadata.
+                """
+                return self._getXmlMetadataXref()
+
 
             def __repr__(self):
                 m = "closed " if self.isClosed else ""
@@ -2683,7 +2737,10 @@ struct fz_page_s {
             {
                 res = fz_new_buffer(gctx, 1024);
                 out = fz_new_output_with_buffer(gctx, res);
-                dev = fz_new_svg_device(gctx, out, tbounds.x1-tbounds.x0, tbounds.y1-tbounds.y0, FZ_SVG_TEXT_AS_PATH, 1);
+                dev = fz_new_svg_device(gctx, out,
+                                        tbounds.x1-tbounds.x0,  // width
+                                        tbounds.y1-tbounds.y0,  // height
+                                        FZ_SVG_TEXT_AS_PATH, 1);
                 fz_run_page(gctx, $self, dev, ctm, NULL);
                 fz_close_device(gctx, dev);
                 text = JM_EscapeStrFromBuffer(gctx, res);
@@ -3140,7 +3197,7 @@ struct fz_page_s {
         }
 
         //---------------------------------------------------------------------
-        // Page.getDisplayList()
+        // Page.getDisplayList
         //---------------------------------------------------------------------
         FITZEXCEPTION(getDisplayList, !result)
         %pythonprepend getDisplayList %{
@@ -3163,6 +3220,75 @@ struct fz_page_s {
             fz_catch(gctx) return NULL;
             return dl;
         }
+
+
+        //---------------------------------------------------------------------
+        // Page._makePixmap
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(_makePixmap, !result)
+        struct fz_pixmap_s *_makePixmap(struct fz_document_s *doc,
+                                       PyObject *ctm,
+                                       struct fz_colorspace_s *cs,
+                                       int alpha=0,
+                                       int annots=1,
+                                       PyObject *clip=NULL)
+        {
+            fz_pixmap *pix = NULL;
+            fz_try(gctx)
+            {
+                pix = JM_pixmap_from_page(gctx, doc, $self, ctm,
+                                          cs, alpha, annots, clip);
+            }
+            fz_catch(gctx) return NULL;
+            return pix;
+        }
+
+
+        //---------------------------------------------------------------------
+        // Page.insertString
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(insertString, !result)
+        PARENTCHECK(insertString)
+        PyObject *insertString(PyObject *point, char *text, float fontsize,
+                               char *fontname, PyObject *color, char *language)
+        {
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            fz_text_language lang = fz_text_language_from_string(language);
+            fz_rect text_rect = fz_infinite_rect;
+            fz_font *user_font = NULL;
+            fz_text *text_obj = NULL;
+            fz_try(gctx)
+            {
+                assert_PDF(page);
+                fz_matrix ctm = fz_identity;
+                pdf_page_transform(gctx, page, NULL, &ctm);
+                fz_matrix ictm = fz_invert_matrix(ctm);
+                fz_point p = fz_transform_point(JM_point_from_py(point), ictm);
+                fz_matrix trm = {1,0,0,1,p.x, p.y};
+                int wmode = 0;
+                int bidi_level = 0;
+                text_obj = fz_new_text(gctx);
+                fz_bidi_direction markup_dir = FZ_BIDI_LTR;
+                trm = fz_show_string(gctx, text_obj,
+                                     user_font,
+                                     trm,
+                                     text,
+                                     wmode,
+                                     bidi_level,
+                                     markup_dir,
+                                     lang);
+            }
+            fz_always(gctx)
+            {
+                fz_drop_text(gctx, text_obj);
+            }
+            fz_catch(gctx)
+            {
+                return NULL;
+            }
+            return JM_py_from_rect(text_rect);
+        }
+
 
         //---------------------------------------------------------------------
         // Page.setCropBox
@@ -6201,7 +6327,7 @@ struct fz_display_list_s {
             fz_try(gctx)
             {
                 pix = JM_pixmap_from_display_list(gctx, $self, matrix, cs,
-                                                  alpha, clip);
+                                                  alpha, clip, NULL);
             }
             fz_catch(gctx) return NULL;
             return pix;
@@ -6797,6 +6923,17 @@ struct Tools
         {
             Py_CLEAR(JM_mupdf_warnings_store);
             JM_mupdf_warnings_store = PyList_New(0);
+        }
+
+        %feature("autodoc","Set MuPDF error display to True or False.") mupdf_display_errors;
+        PyObject *mupdf_display_errors(PyObject *value = NULL)
+        {
+            if (value == Py_True)
+                JM_mupdf_show_errors = Py_True;
+            else if (value == Py_False)
+                JM_mupdf_show_errors = Py_False;
+            Py_INCREF(JM_mupdf_show_errors);
+            return JM_mupdf_show_errors;
         }
 
         %feature("autodoc","Transform rectangle with matrix.") _transform_rect;

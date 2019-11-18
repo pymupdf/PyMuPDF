@@ -60,7 +60,8 @@ void JM_mupdf_warning(void *user, const char *message)
 void JM_mupdf_error(void *user, const char *message)
 {
     LIST_APPEND_DROP(JM_mupdf_warnings_store, JM_EscapeStrFromStr(message));
-    PySys_WriteStderr("mupdf: %s\n", message);
+    if (JM_mupdf_show_errors == Py_True)
+        PySys_WriteStderr("mupdf: %s\n", message);
 }
 
 // a simple tracer
@@ -367,65 +368,6 @@ void JM_update_stream(fz_context *ctx, pdf_document *doc, pdf_obj *obj, fz_buffe
         pdf_update_stream(ctx, doc, obj, buffer, 0);
     }
     fz_drop_buffer(ctx, nres);
-}
-
-//-----------------------------------------------------------------------------
-// Version of fz_new_pixmap_from_display_list (util.c) to support rendering
-// of only the 'clip' part of the displaylist rectangle
-//-----------------------------------------------------------------------------
-fz_pixmap *
-JM_pixmap_from_display_list(fz_context *ctx,
-                            fz_display_list *list,
-                            PyObject *ctm,
-                            fz_colorspace *cs,
-                            int alpha,
-                            PyObject *clip
-                           )
-{
-    fz_rect rect = fz_bound_display_list(ctx, list);
-    fz_matrix matrix = JM_matrix_from_py(ctm);
-    fz_pixmap *pix = NULL;
-    fz_var(pix);
-    fz_device *dev = NULL;
-    fz_var(dev);
-    fz_separations *seps = NULL;
-    fz_rect rclip = JM_rect_from_py(clip);
-    rect = fz_intersect_rect(rect, rclip);  // no-op if clip is not given
-
-    rect = fz_transform_rect(rect, matrix);
-    fz_irect irect = fz_round_rect(rect);
-
-    pix = fz_new_pixmap_with_bbox(ctx, cs, irect, seps, alpha);
-    if (alpha)
-        fz_clear_pixmap(ctx, pix);
-    else
-        fz_clear_pixmap_with_value(ctx, pix, 0xFF);
-
-    fz_try(ctx)
-    {
-        if (!fz_is_infinite_rect(rclip))
-        {
-            dev = fz_new_draw_device_with_bbox(ctx, matrix, pix, &irect);
-            fz_run_display_list(ctx, list, dev, fz_identity, rclip, NULL);
-        }
-        else
-        {
-            dev = fz_new_draw_device(ctx, matrix, pix);
-            fz_run_display_list(ctx, list, dev, fz_identity, fz_infinite_rect, NULL);
-        }
-
-        fz_close_device(ctx, dev);
-    }
-    fz_always(ctx)
-    {
-        fz_drop_device(ctx, dev);
-    }
-    fz_catch(ctx)
-    {
-        fz_drop_pixmap(ctx, pix);
-        fz_rethrow(ctx);
-    }
-    return pix;
 }
 
 //-----------------------------------------------------------------------------

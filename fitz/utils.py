@@ -321,7 +321,7 @@ def getImageBbox(page, item):
     """
 
     def calc_matrix(cont, imgname):
-        imgnm = bytes("/" + imgname, "utf8")
+        imgnm = ("/" + imgname).encode()
         cont = cont.replace(b"/", b" /")  # prepend slashes with a space
         # split this, ignoring white spaces
         cont = cont.split()
@@ -335,16 +335,16 @@ def getImageBbox(page, item):
             if cont[idx] == b"cm":  # encountered a matrix command
                 mat = cont[idx - 6 : idx]  # list of the 6 matrix values
                 l = list(map(float, mat))  # make them floats
-                mat_list.append(fitz.Matrix(l))  # append fitz matrix
+                mat_list.append(Matrix(l))  # append fitz matrix
                 idx -= 6  # step backwards 6 entries
             else:
                 idx -= 1  # step backwards
 
         l = len(mat_list)
         if l == 0:  # safeguard against unusual situations
-            return fitz.Matrix()  # the zero matrix
+            return Matrix()  # the zero matrix
 
-        mat = fitz.Matrix(1, 1)  # concatenate encountered matrices to this one
+        mat = Matrix(1, 1)  # concatenate encountered matrices to this one
         for m in reversed(mat_list):
             mat *= m
 
@@ -382,12 +382,12 @@ def getImageBbox(page, item):
 
     mat = lookup_matrix(page, item)
     if not bool(mat):
-        return fitz.Rect(1, 1, -1, -1)  # return infinite rect if not found
+        return Rect(1, 1, -1, -1)  # return infinite rect if not found
 
     ctm = page._getTransformation()  # page transformation matrix
     mat.preScale(1, -1)  # fiddle the matrix
     mat.preTranslate(0, -1)  # fiddle the matrix
-    r = fitz.Rect(0, 0, 1, 1) * mat  # the bbox in PDF coordinates
+    r = Rect(0, 0, 1, 1) * mat  # the bbox in PDF coordinates
     return r * ctm  # the bbox in MuPDF coordinates
 
 
@@ -516,47 +516,31 @@ def getPageText(doc, pno, output="text"):
     """
     return doc[pno].getText(output)
 
-def getPixmap(page,
-              matrix=None,
-              colorspace=csRGB,
-              clip=None,
-              alpha=False,
-              annots=True,
-            ):
+
+def getPixmap(page, matrix=None, colorspace=csRGB, clip=None, alpha=False,
+                annots=True):
     """Create pixmap of page.
 
     Args:
         matrix: Matrix for transformation (default: Identity).
-        colorspace: (str/Colorspace) rgb, rgb, gray - case ignored, default csRGB.
+        colorspace: (str/Colorspace) cmyk, rgb, gray - case ignored, default csRGB.
         clip: (irect-like) restrict rendering to this area.
-        alpha: (bool) include alpha channel
+        alpha: (bool) whether to include alpha channel
+        annots: (bool) whether to also render annotations
     """
     CheckParent(page)
-
-    # determine required colorspace
-    cs = colorspace
+    doc = page.parent
     if type(colorspace) is str:
         if colorspace.upper() == "GRAY":
-            cs = csGRAY
+            colorspace = csGRAY
         elif colorspace.upper() == "CMYK":
-            cs = csCMYK
+            colorspace = csCMYK
         else:
-            cs = csRGB
-    if cs.n not in (1,3,4):
+            colorspace = csRGB
+    if colorspace.n not in (1, 3, 4):
         raise ValueError("unsupported colorspace")
-
-    dl = page.getDisplayList(annots)  # create DisplayList
-    if clip:
-        scissor = Rect(clip)
-    else:
-        scissor = None
-    pix = dl.getPixmap(matrix=matrix,
-                       colorspace=cs,
-                       alpha=alpha,
-                       clip=scissor,
-                      )
-    del dl
-    return pix
+    
+    return page._makePixmap(doc, matrix, colorspace, alpha, annots, clip)
 
 def getPagePixmap(doc,
                   pno,

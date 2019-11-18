@@ -52,7 +52,7 @@ if ol:
 # get the page number, which should start from 0
 pn = int(sys.argv[2]) - 1
 if pn > doc.pageCount:
-    raise SystemExit("%s has %d pages only" % (sys.argv[1], doc.pageCount))
+    sys.exit("%s has %d pages only" % (sys.argv[1], doc.pageCount))
 
 # get the page
 page = doc.loadPage(pn)
