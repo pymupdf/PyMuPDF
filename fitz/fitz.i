@@ -998,7 +998,7 @@ struct fz_document_s
                         len = pdf_to_str_len(gctx, o);
                         buffer = fz_new_buffer(gctx, 2 * len);
                         fz_buffer_storage(gctx, buffer, &hex);
-                        hexlify(len, (unsigned char *) pdf_to_str_buf(gctx, o), (unsigned char *) hex);
+                        hexlify(len, (unsigned char *) pdf_to_text_string(gctx, o), (unsigned char *) hex);
                         LIST_APPEND_DROP(idlist, PyUnicode_FromString(hex));
                         Py_CLEAR(bytes);
                         fz_drop_buffer(gctx, buffer);
@@ -2121,7 +2121,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 pdf_update_object(gctx, pdf, xref, new_obj);
                 pdf_drop_obj(gctx, new_obj);
                 if (page)
-                    refresh_link_table(gctx, pdf_page_from_fz_page(gctx, page));
+                    JM_refresh_link_table(gctx, pdf_page_from_fz_page(gctx, page));
             }
             fz_catch(gctx) return NULL;
             pdf->dirty = 1;
@@ -2508,6 +2508,12 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             def saveIncr(self):
                 """ Save PDF incrementally"""
                 return self.save(self.name, incremental=True, encryption=PDF_ENCRYPT_KEEP)
+
+
+            def xrefLength(self):
+                """Return the length of the xref table.
+                """
+                return self._getXrefLength()
 
 
             def xrefObject(self, xref, compressed=False, ascii=False):
@@ -3413,26 +3419,30 @@ except:
         void deleteLink(PyObject *linkdict)
         {
             if (!PyDict_Check(linkdict)) return; // have no dictionary
-            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            if (!page) return;                   // have no PDF
-            int xref = (int) PyInt_AsLong(PyDict_GetItem(linkdict, dictkey_xref));
-            if (xref < 1) return;                // invalid xref
-            pdf_obj *annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
-            if (!annots) return;                 // have no annotations
-            int len = pdf_array_len(gctx, annots);
-            int i, oxref = 0;
-            for (i = 0; i < len; i++)
+            fz_try(gctx)
             {
-                oxref = pdf_to_num(gctx, pdf_array_get(gctx, annots, i));
-                if (xref == oxref) break;        // found xref in annotations
+                pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+                if (!page) goto finished;  // have no PDF
+                int xref = (int) PyInt_AsLong(PyDict_GetItem(linkdict, dictkey_xref));
+                if (xref < 1) goto finished;  // invalid xref
+                pdf_obj *annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
+                if (!annots) goto finished;  // have no annotations
+                int len = pdf_array_len(gctx, annots);
+                int i, oxref = 0;
+                for (i = 0; i < len; i++)
+                {
+                    oxref = pdf_to_num(gctx, pdf_array_get(gctx, annots, i));
+                    if (xref == oxref) break;        // found xref in annotations
+                }
+                if (xref != oxref) goto finished;  // xref not in annotations
+                pdf_array_delete(gctx, annots, i);   // delete entry in annotations
+                pdf_delete_object(gctx, page->doc, xref);      // delete link object
+                pdf_dict_put(gctx, page->obj, PDF_NAME(Annots), annots);
+                JM_refresh_link_table(gctx, page);            // reload link / annot tables
+                page->doc->dirty = 1;
+                finished:;
             }
-            if (xref != oxref) return;           // xref not in annotations
-            pdf_array_delete(gctx, annots, i);   // delete entry in annotations
-            pdf_delete_object(gctx, page->doc, xref);      // delete link object
-            pdf_dict_put(gctx, page->obj, PDF_NAME(Annots), annots);
-            refresh_link_table(gctx, page);            // reload link / annot tables
-            page->doc->dirty = 1;
-            return;
+            fz_catch(gctx) {;}
         }
 
         //---------------------------------------------------------------------
@@ -3609,7 +3619,7 @@ annot._erase()
             }
             fz_try(gctx)
             {
-                refresh_link_table(gctx, page);
+                JM_refresh_link_table(gctx, page);
             }
             fz_catch(gctx) return NULL;
             page->doc->dirty = 1;
@@ -3846,6 +3856,27 @@ annot._erase()
             pdf->dirty = 1;
             return_none;
         }
+
+        //---------------------------------------------------------------------
+        // Page.refresh()
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(refresh, !result)
+        %feature("autodoc","Refresh page after link/annot/widget updates.") refresh;
+        PyObject *refresh()
+        {
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            if (!page) return_none;
+            fz_try(gctx)
+            {
+                JM_refresh_link_table(gctx, page);
+            }
+            fz_catch(gctx)
+            {
+                return NULL;
+            }
+            return_none;
+        }
+
 
         //---------------------------------------------------------------------
         // insert font
@@ -5015,7 +5046,7 @@ struct DeviceWrapper
             struct DeviceWrapper *dw = NULL;
             fz_try(gctx) {
                 dw = (struct DeviceWrapper *)calloc(1, sizeof(struct DeviceWrapper));
-                fz_stext_options opts;
+                fz_stext_options opts = { 0 };
                 opts.flags = flags;
                 dw->device = fz_new_stext_device(gctx, tp, &opts);
             }
@@ -5447,7 +5478,7 @@ struct pdf_annot_s
             ap_updated = True
 
         #----------------------------------------------------------------------
-        # the following handles line end symbols for 'Polygon' and 'Polyline
+        # the following handles line end symbols for 'Polygon' and 'Polyline'
         #----------------------------------------------------------------------
         if max(line_end_le, line_end_ri) > 0 and type in (PDF_ANNOT_POLYGON, PDF_ANNOT_POLYLINE):
 
@@ -5481,7 +5512,8 @@ struct pdf_annot_s
                 self._setAP(ap, rect = 0)
 
         # always perform a clean to wrap stream by "q" / "Q"
-        self._cleanContents()%}
+        self._cleanContents()
+        %}
 
         PyObject *update(float fontsize=0,
                          char *fontname=NULL,
@@ -5513,17 +5545,13 @@ struct pdf_annot_s
                 pdf_clean_annot_contents(gctx, $self->page->doc, $self,
                                          NULL, NULL, NULL, 1, 0);
             }
-            fz_always(gctx)
-            {
-                ;
-            }
             fz_catch(gctx)
             {
                 PySys_WriteStderr("cannot update annot: '%s'\n", fz_caught_message(gctx));
                 Py_RETURN_FALSE;
             }
 
-            // check /AP object
+            // check the /AP object for opacity
             pdf_obj *ap = pdf_dict_getl(gctx, $self->obj, PDF_NAME(AP),
                                         PDF_NAME(N), NULL);
             if (!ap)
@@ -5534,18 +5562,27 @@ struct pdf_annot_s
 
             // get opacity
             pdf_obj *ca = pdf_dict_get(gctx, $self->obj, PDF_NAME(CA));
-            if (!ca)              // no opacity given
+            if (!ca)  // no opacity given, nothing to do
                 Py_RETURN_TRUE;
 
-            pdf_obj *alp0 = pdf_new_dict(gctx, $self->page->doc, 2);
-            pdf_dict_put(gctx, alp0, PDF_NAME(CA), ca);
-            pdf_dict_put(gctx, alp0, PDF_NAME(ca), ca);
-            pdf_obj *extg = pdf_new_dict(gctx, $self->page->doc, 1);
-            pdf_dict_puts_drop(gctx, extg, "Alp0", alp0);
-            pdf_dict_putl_drop(gctx, ap, extg, PDF_NAME(Resources),
-                               PDF_NAME(ExtGState), NULL);
-            pdf_dict_putl_drop(gctx, $self->obj, ap, PDF_NAME(AP), PDF_NAME(N), NULL);
-            $self->ap = NULL;
+            fz_try(gctx)  // we need to create an /ExtGState object
+            {
+                pdf_obj *alp0 = pdf_new_dict(gctx, $self->page->doc, 2);
+                pdf_dict_put(gctx, alp0, PDF_NAME(CA), ca);
+                pdf_dict_put(gctx, alp0, PDF_NAME(ca), ca);
+                pdf_obj *extg = pdf_new_dict(gctx, $self->page->doc, 2);
+                pdf_dict_puts_drop(gctx, extg, "Alp0", alp0);
+                pdf_dict_putl_drop(gctx, ap, extg, PDF_NAME(Resources), PDF_NAME(ExtGState), NULL);
+                pdf_dict_putl_drop(gctx, $self->obj, ap, PDF_NAME(AP), PDF_NAME(N), NULL);
+                $self->ap = NULL;
+                JM_refresh_link_table(gctx, $self->page);
+            }
+
+            fz_catch(gctx)
+            {
+                PySys_WriteStderr("could not store opacity\n");
+                Py_RETURN_FALSE;
+            }
 
             Py_RETURN_TRUE;
         }
@@ -5553,9 +5590,13 @@ struct pdf_annot_s
         //---------------------------------------------------------------------
         // annotation set colors
         //---------------------------------------------------------------------
-        PARENTCHECK(setColors)
-        %feature("autodoc","setColors(dict)\nChanges the 'stroke' and 'fill' colors of an annotation. If provided, values must be lists of up to 4 floats.") setColors;
-        void setColors(PyObject *colors)
+        %feature("autodoc","setColors(dict)\nChanges the 'stroke' and 'fill' colors of an annotation. If provided, values must be sequences of up to 4 floats.") setColors;
+        %pythonprepend setColors %{
+        CheckParent(self)
+        if type(colors) is not dict:
+            colors = {"fill": fill, "stroke": stroke}
+        %}
+        void setColors(PyObject *colors=NULL, PyObject *fill=NULL, PyObject *stroke=NULL)
         {
             if (!PyDict_Check(colors)) return;
             PyObject *ccol, *icol;
@@ -5673,10 +5714,16 @@ struct pdf_annot_s
         PARENTCHECK(setOpacity)
         void setOpacity(float opacity)
         {
-            if (INRANGE(opacity, 0.0f, 1.0f))
-                pdf_set_annot_opacity(gctx, $self, opacity);
-            else
+            if (!INRANGE(opacity, 0.0f, 1.0f))
+            {
                 pdf_set_annot_opacity(gctx, $self, 1.0f);
+                return;
+            }
+            pdf_set_annot_opacity(gctx, $self, opacity);
+            if (opacity < 1.0f)
+            {
+                $self->page->transparency = 1;
+            }
         }
 
 
@@ -5949,8 +5996,12 @@ CheckParent(self)
         //---------------------------------------------------------------------
         // set annotation border
         //---------------------------------------------------------------------
-        PARENTCHECK(setBorder)
-        PyObject *setBorder(PyObject *border)
+        %pythonprepend setBorder %{
+        CheckParent(self)
+        if type(border) is not dict:
+            border = {"width": width, "style": style, "dashes": dashes}
+        %}
+        PyObject *setBorder(PyObject *border=NULL, float width=0, char *style=NULL, PyObject *dashes=NULL)
         {
             return JM_annot_set_border(gctx, border, $self->page->doc, $self->obj);
         }
@@ -6028,26 +6079,22 @@ CheckParent(self)
         }
 
 
-        //---------------------------------------------------------------------
-        // annotation pixmap
-        //---------------------------------------------------------------------
-        FITZEXCEPTION(getPixmap, !result)
-        PARENTCHECK(getPixmap)
-        struct fz_pixmap_s *getPixmap(PyObject *matrix=NULL, struct fz_colorspace_s *colorspace=NULL, int alpha=1)
-        {
-            fz_matrix ctm = JM_matrix_from_py(matrix);
-            struct fz_colorspace_s *cs = fz_device_rgb(gctx);
-            fz_pixmap *pix = NULL;
-            if (colorspace) cs = colorspace;
-            fz_separations *seps = NULL;
-            fz_try(gctx)
-                pix = pdf_new_pixmap_from_annot(gctx, $self, ctm, cs, seps, alpha);
-            fz_catch(gctx) return NULL;
-            return pix;
-        }
-
-
         %pythoncode %{
+        def getPixmap(self, matrix=None, colorspace="rgb", alpha=False):
+            """Return the Pixmap of the annotation.
+            """
+            page = self.parent
+            if page is None:
+                raise ValueError("orphaned object: parent is None")
+            return page.getPixmap(
+                matrix=matrix,
+                colorspace=colorspace,
+                alpha=alpha,
+                clip=self.rect,
+                annots=True,
+            )
+
+
         def _erase(self):
             try:
                 self.parent._forget_annot(self)
@@ -6155,14 +6202,18 @@ struct fz_link_s
             def border(self):
                 return self._border(self.parent.parent.this, self.xref)
 
-            def setBorder(self, border):
+            def setBorder(self, border=None, width=0, dashes=None, style=None):
+                if type(border) is not dict:
+                    border = {"width": width, "style": style, "dashes": dashes}
                 return self._setBorder(border, self.parent.parent.this, self.xref)
 
             @property
             def colors(self):
                 return self._colors(self.parent.parent.this, self.xref)
 
-            def setColors(self, colors):
+            def setColors(self, colors=None, stroke=None, fill=None):
+                if type(colors) is not dict:
+                    colors = {"fill": fill, "stroke": stroke}
                 return self._setColors(colors, self.parent.parent.this, self.xref)
         %}
         PARENTCHECK(uri)
@@ -6859,7 +6910,7 @@ struct Tools
                                        PDF_NAME(DA),
                                        NULL);
                 }
-                da_str = pdf_to_str_buf(gctx, da);
+                da_str = pdf_to_text_string(gctx, da);
             }
             fz_catch(gctx) return NULL;
             return JM_UNICODE(da_str);

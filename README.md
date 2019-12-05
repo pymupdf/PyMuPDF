@@ -1,8 +1,8 @@
-# PyMuPDF 1.16.8
+# PyMuPDF 1.16.9
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: November 20, 2019
+Release date: December 5, 2019
 
 **Travis-CI:** [![Build Status](https://travis-ci.org/JorjMcKie/py-mupdf.svg?branch=master)](https://travis-ci.org/JorjMcKie/py-mupdf)
 
@@ -14,7 +14,7 @@ On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![](https://
 
 # Introduction
 
-This is **version 1.16.8 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.16.*](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
+This is **version 1.16.9 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.16.*](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -39,7 +39,7 @@ For all supported document types (i.e. including images) types you can
 * PDFs can be reformatted to support double-sided printing, posterizing, applying logos or watermarks
 * Password protection is fully supported: decryption, encryption, encryption method selection, permmission level and user / owner password setting.
 * Low-level PDF structures can be accessed and modified.
-* Starting with v1.16.8, PyMuPDF can also be used as a **module in the command line** using ``"python -m fitz ..."``. This is a versatile utility, which we will further develop over time. It currently supports PDF document
+* Starting with v1.16.9, PyMuPDF can also be used as a **module in the command line** using ``"python -m fitz ..."``. This is a versatile utility, which we will further develop over time. It currently supports PDF document
 
     - **encryption / decryption / optimization**
     - creating **sub-documents**
@@ -63,7 +63,7 @@ For the major **Windows** and (thanks to our user **@jbarlow83**!) **Mac OSX** o
 
 > The Mac OSX platform tags are `macosx_10_6_intel` (up to Python 3.7) or ``macosx_10_9_x86_64``. For Linux the tag is ``manylinux2010_x86_64``.
 
-> As of November 2019 and starting with PyMuPDF v1.16.8, wheel creation is supported for Python 64bit versions 2.7, 3.5, 3.6, 3.7 and 3.8 only. **Support of Python 3.4 has been dropped.**
+> As of November 2019 and starting with PyMuPDF v1.16.9, wheel creation is supported for Python 64bit versions 2.7, 3.5, 3.6, 3.7 and 3.8 only. **Support for Python 3.4 has been dropped.**
 
 For other Python versions or operating systems you need to generate PyMuPDF yourself as follows (and of course you can choose to do so for a wheel-supported platform, too).
 
@@ -73,16 +73,16 @@ To do this, you must download and generate MuPDF. This process depends very much
 
 * Be sure to download the official MuPDF source release from [here](https://mupdf.com/downloads/archive). Do **not use** MuPDF's [GitHub repo](https://github.com/ArtifexSoftware/mupdf). It contains their current **development source**, which is **not compatible** with this PyMuPDF version most of the time.
 
-* This repo's `fitz` folder contains one or more files whose names start with an underscore `"_"`. These files contain configuration data and hotfixes. Each one must be copy-renamed to its correct target location **inside the MuPDF source** that you have downloaded, **before you generate MuPDF**. Currently, these files are:
+* This repo's `fitz` folder contains one or more files whose names start with a sinlge underscore `"_"`. These files contain configuration data and hotfixes. Each one must be copy-renamed to its correct target location **inside the MuPDF source** that you have downloaded, **before you generate MuPDF**. Currently, these files are:
   - fitz configuration file `_config.h` copy-replace to: `mupdf/include/mupdf/fitz/config.h`. It contains configuration data like e.g. which fonts to support.
 
   - Now MuPDF can be generated.
 
-* Since PyMuPDF v1.14.17, the sources provided in this repository **no longer contain** the interface files ``fitz.py`` and ``fitz.wrap.c`` - they are generated **"on the fly"** by ``setup.py`` using the interface generator [SWIG](http://www.swig.org/). So you need SWIG being installed on your system. Please refer to issue #312 for some background.
+* Since PyMuPDF v1.14.17, the sources provided in this repository **no longer contain** the interface files ``fitz.py`` and ``fitz.wrap.c`` - they are instead generated **"on the fly"** by ``setup.py`` using the interface generator [SWIG](http://www.swig.org/). So you need SWIG being installed on your system. Please refer to issue #312 for some background.
     - PyMuPDF wheels have been generated using **SWIG v4.0.1**.
 
 
-* If you do **not (want to) use SWIG**, please download the **sources from PyPI** - they continue to contain those generated interface files, and installation should work like any other generation of Python extensions for your system.
+* If you do **not (want to) use SWIG**, please download the **sources from PyPI** - they continue to contain those generated files, so installation should work like any other Python extension generation on your system.
 
 Once this is done, adjust directories in ``setup.py`` and run ``python setup.py install``.
 

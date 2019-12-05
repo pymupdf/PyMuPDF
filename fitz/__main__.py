@@ -26,13 +26,13 @@ def recoverpix(doc, item):
 
     """Sanity check:
     - both pixmaps must have the same rectangle
-    - both pixmaps must not have alpha
+    - both pixmaps must have alpha=0
     - pix2 must consist of 1 byte per pixel
     """
     if not (pix1.irect == pix2.irect and pix1.alpha == pix2.alpha == 0 and pix2.n == 1):
         pix2 = None
         print("Warning: unsupported /SMask %i for %i." % (s, x))
-        return getimage(pix1)
+        return getimage(pix1)  # return the pixmap as is
 
     pix = fitz.Pixmap(pix1)  # copy of pix1, with an alpha channel added
     pix.setAlpha(pix2.samples)  # treat pix2.samples as the alpha values
@@ -42,13 +42,13 @@ def recoverpix(doc, item):
     return getimage(pix)
 
 
-def open_file(filename, password, show=False):
-    """Open and authenticate a PDF.
+def open_file(filename, password, show=False, pdf=True):
+    """Open and authenticate a document.
     """
     doc = fitz.open(filename)
+    if not doc.isPDF and pdf is True:
+        sys.exit("this command supports PDF files only")
     rc = -1
-    if not doc.isPDF:
-        sys.exit("not a PDF document")
     if not doc.needsPass:
         return doc
     if password:
@@ -63,7 +63,7 @@ def open_file(filename, password, show=False):
 
 
 def print_dict(item):
-    """Print a dictionary.
+    """Print a Python dictionary.
     """
     l = max([len(k) for k in item.keys()]) + 1
     for k, v in item.items():
@@ -75,7 +75,8 @@ def print_dict(item):
 def print_xref(doc, xref):
     """Print an object given by XREF number.
 
-    Simulate the PDF source in "pretty" format. If a stream also include its size.
+    Simulate the PDF source in "pretty" format.
+    For a stream also print its size.
     """
     print("%i 0 obj" % xref)
     xref_str = doc.xrefObject(xref)
@@ -95,7 +96,7 @@ def print_xref(doc, xref):
 
 
 def get_list(rlist, limit):
-    """Transform a page or xref specification into a list.
+    """Transform a page / xref specification into a list of integers.
 
     Args:
         rlist: (str) the specification
@@ -197,7 +198,7 @@ def show(args):
 
 
 def clean(args):
-    doc = open_file(args.input, args.password)
+    doc = open_file(args.input, args.password, pdf=True)
     encryption = args.encryption
     encrypt = ("keep", "none", "rc4-40", "rc4-128", "aes-128", "aes-256").index(
         encryption
@@ -250,7 +251,7 @@ def doc_join(args):
     for src_item in doc_list:  # process one input PDF
         src_list = src_item.split(",")
         password = src_list[1] if len(src_list) > 1 else None
-        src = open_file(src_list[0], password)
+        src = open_file(src_list[0], password, pdf=True)
         pages = ",".join(src_list[2:])  # get 'pages' specifications
         if pages:  # if anything there, retrieve a list of desired pages
             page_list = get_list(",".join(src_list[2:]), src.pageCount + 1)
@@ -267,7 +268,7 @@ def doc_join(args):
 def embedded_copy(args):
     """Copy embedded files between PDFs.
     """
-    doc = open_file(args.input, args.password)
+    doc = open_file(args.input, args.password, pdf=True)
     if not doc.can_save_incrementally() and (not args.output or args.output == args.input):
         sys.exit("cannot save PDF incrementally")
     src = open_file(args.source, args.pwdsource)
@@ -306,7 +307,7 @@ def embedded_copy(args):
 def embedded_del(args):
     """Delete an embedded file entry.
     """
-    doc = open_file(args.input, args.password)
+    doc = open_file(args.input, args.password, pdf=True)
     if not doc.can_save_incrementally() and (not args.output or args.output == args.input):
         sys.exit("cannot save PDF incrementally")
 
@@ -324,7 +325,7 @@ def embedded_del(args):
 def embedded_get(args):
     """Retrieve contents of an embedded file.
     """
-    doc = open_file(args.input, args.password)
+    doc = open_file(args.input, args.password, pdf=True)
     try:
         stream = doc.embeddedFileGet(args.name)
         d = doc.embeddedFileInfo(args.name)
@@ -341,7 +342,7 @@ def embedded_get(args):
 def embedded_add(args):
     """Insert a new embedded file.
     """
-    doc = open_file(args.input, args.password)
+    doc = open_file(args.input, args.password, pdf=True)
     if not doc.can_save_incrementally() and (args.output is None or args.output == args.input):
         sys.exit("cannot save PDF incrementally")
 
@@ -373,7 +374,7 @@ def embedded_add(args):
 def embedded_upd(args):
     """Update contents or metadata of an embedded file
     """
-    doc = open_file(args.input, args.password)
+    doc = open_file(args.input, args.password, pdf=True)
     if not doc.can_save_incrementally() and (args.output is None or args.output == args.input):
         sys.exit("cannot save PDF incrementally")
 
@@ -421,7 +422,7 @@ def embedded_upd(args):
 def embedded_list(args):
     """List embedded files.
     """
-    doc = open_file(args.input, args.password)
+    doc = open_file(args.input, args.password, pdf=True)
     names = doc.embeddedFileNames()
     if args.name is not None:
         if args.name not in names:
@@ -460,7 +461,7 @@ def extract_objects(args):
     """
     if not args.fonts and not args.images:
         sys.exit("neither fonts nor images requested")
-    doc = open_file(args.input, args.password)
+    doc = open_file(args.input, args.password, pdf=True)
 
     if args.pages:
         pages = get_list(args.pages, doc.pageCount)
@@ -601,11 +602,10 @@ def main():
         help="format for fast web display",
     )
 
-    ps_clean.add_argument("-permission", type=int, default=-1, help="permission levels")
+    ps_clean.add_argument("-permission", type=int, default=-1, help="integer with permission levels")
 
     ps_clean.add_argument(
-        "-san",
-        "--sanitize",
+        "-sanitize",
         action="store_true",
         default=False,
         help="sanitize / clean contents",
@@ -638,10 +638,10 @@ def main():
     ps_extract.add_argument("input", type=str, help="PDF filename")
     ps_extract.add_argument("-images", action="store_true", help="extract images")
     ps_extract.add_argument("-fonts", action="store_true", help="extract fonts")
-    ps_extract.add_argument("-output", help="output directory, defaults to current")
+    ps_extract.add_argument("-output", help="folder to receive output, defaults to current")
     ps_extract.add_argument("-password", help="password")
     ps_extract.add_argument(
-        "-pages", type=str, help="consider only selected pages, format: 1,5-7,50-N"
+        "-pages", type=str, help="consider these pages only, format: 1,5-7,50-N"
     )
     ps_extract.set_defaults(func=extract_objects)
 
@@ -742,18 +742,18 @@ def main():
     )
     ps_embed_copy.add_argument("-source", required=True, help="copy embedded files from here")
     ps_embed_copy.add_argument("-pwdsource", help="password of 'source' PDF")
-    ps_embed_copy.add_argument("-name", nargs="*", help="copy these entries, or all if omitted")
+    ps_embed_copy.add_argument("-name", nargs="*", help="restrict copy to these entries")
     ps_embed_copy.set_defaults(func=embedded_copy)
 
 
     # -------------------------------------------------------------------------
     # start program
     # -------------------------------------------------------------------------
-    args = parser.parse_args()
+    args = parser.parse_args()  # create parameter arguments class
     if not hasattr(args, "func"):  # no function selected
-        parser.print_help()
+        parser.print_help()  # so print top level help
     else:
-        args.func(args)
+        args.func(args)  # execute requested command
 
 
 if __name__ == "__main__":

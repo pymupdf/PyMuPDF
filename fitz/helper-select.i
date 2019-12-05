@@ -14,11 +14,11 @@ int string_in_names_list(fz_context *ctx, pdf_obj *p, pdf_obj *names_list)
 {
     int n = pdf_array_len(ctx, names_list);
     int i;
-    char *str = pdf_to_str_buf(ctx, p);
+    char *str = pdf_to_text_string(ctx, p);
 
     for (i = 0; i < n ; i += 2)
     {
-        if (!strcmp(pdf_to_str_buf(ctx, pdf_array_get(ctx, names_list, i)), str))
+        if (!strcmp(pdf_to_text_string(ctx, pdf_array_get(ctx, names_list, i)), str))
             return 1;
     }
     return 0;

@@ -782,60 +782,73 @@ def getDestStr(xref, ddict):
 
     return ""
 
-def setToC(doc, toc):
-    '''Create new outline tree (table of contents)\ntoc: a Python list of lists. Each entry must contain level, title, page and optionally top margin on the page.'''
+def setToC(doc, toc, collapse=1):
+    '''Create new outline tree (table of contents, TOC).
+
+    Args:
+        toc: (list, tuple) each entry must contain level, title, page and
+            optionally top margin on the page. None or '()' remove the TOC.
+        collapse: (int) collapses entries beyond this level. Zero or None
+            shows all entries unfolded.
+    Returns:
+        the number of inserted items, or the number of removed items respectively.
+    '''
     if doc.isClosed or doc.isEncrypted:
         raise ValueError("document closed or encrypted")
     if not doc.isPDF:
         raise ValueError("not a PDF")
-    toclen = len(toc)
-    # check toc validity ------------------------------------------------------
-    if type(toc) is not list:
-        raise ValueError("arg2 must be a list")
-    if toclen == 0:
+    if not toc:  # remove all entries
         return len(doc._delToC())
-    pageCount = len(doc)
+
+    # validity checks --------------------------------------------------------
+    if type(toc) not in (list, tuple):
+        raise ValueError("'toc' must be list or tuple")
+    toclen = len(toc)
+    pageCount = doc.pageCount
     t0 = toc[0]
-    if type(t0) is not list:
-        raise ValueError("arg2 must contain lists of 3 or 4 items")
+    if type(t0) not in (list, tuple):
+        raise ValueError("items must be sequences of 3 or 4 items")
     if t0[0] != 1:
         raise ValueError("hierarchy level of item 0 must be 1")
     for i in list(range(toclen-1)):
         t1 = toc[i]
         t2 = toc[i+1]
         if not -1 <= t1[2] <= pageCount:
-            raise ValueError("row %i:page number out of range" % i)
-        if (type(t2) is not list) or len(t2) < 3 or len(t2) > 4:
-            raise ValueError("arg2 must contain lists of 3 or 4 items")
+            raise ValueError("row %i: page number out of range" % i)
+        if (type(t2) not in (list, tuple)) or len(t2) not in (3, 4):
+            raise ValueError("bad row %i" % (i+1))
         if (type(t2[0]) is not int) or t2[0] < 1:
-            raise ValueError("hierarchy levels must be int > 0")
+            raise ValueError("bad hierarchy level in row %i" % (i+1))
         if t2[0] > t1[0] + 1:
-            raise ValueError("row %i: hierarchy step is > 1" % i)
+            raise ValueError("bad hierarchy level in row %i" % (i+1))
     # no formal errors in toc --------------------------------------------------
 
-    old_xrefs = doc._delToC()          # del old outlines, get xref numbers
-    old_xrefs = []                     # force creation of new xrefs
+    #--------------------------------------------------------------------------
+    # make a list of xref numbers, which we can use for our TOC entries
+    #--------------------------------------------------------------------------
+    old_xrefs = doc._delToC()  # del old outlines, get their xref numbers
+    old_xrefs = []  # TODO do not reuse them currently
     # prepare table of xrefs for new bookmarks
     xref = [0] + old_xrefs
-    xref[0] = doc._getOLRootNumber()        # entry zero is outline root xref#
-    if toclen > len(old_xrefs):             # too few old xrefs?
+    xref[0] = doc._getOLRootNumber()  # entry zero is outline root xref#
+    if toclen > len(old_xrefs):  # too few old xrefs?
         for i in range((toclen - len(old_xrefs))):
             xref.append(doc._getNewXref())  # acquire new ones
 
     lvltab = {0:0}                     # to store last entry per hierarchy level
 
-#==============================================================================
-# contains new outline objects as strings - first one is outline root
-#==============================================================================
+#------------------------------------------------------------------------------
+# contains new outline objects as strings - first one is the outline root
+#------------------------------------------------------------------------------
     olitems = [{"count":0, "first":-1, "last":-1, "xref":xref[0]}]
-#==============================================================================
+#------------------------------------------------------------------------------
 # build olitems as a list of PDF-like connnected dictionaries
-#==============================================================================
+#------------------------------------------------------------------------------
     for i in range(toclen):
         o = toc[i]
-        lvl = o[0] # level
-        title = getPDFstr(o[1]) # titel
-        pno = min(doc.pageCount - 1, max(0, o[2] - 1)) # page number
+        lvl = o[0]  # level
+        title = getPDFstr(o[1])  # title
+        pno = min(doc.pageCount - 1, max(0, o[2] - 1))  # page number
         page = doc[pno]  # load the page
         ictm = ~page._getTransformation()  # get inverse transformation matrix
         top = Point(72, 36) * ictm  # default top location
@@ -843,7 +856,7 @@ def setToC(doc, toc):
         if o[2] < 0:
             dest_dict["kind"] = LINK_NONE
         if len(o) > 3:  # some target is specified
-            if type(o[3]) in (int, float):  # if number, make a point from it
+            if type(o[3]) in (int, float):  # convert a number to a point
                 dest_dict["to"] = Point(72, o[3]) * ictm
             else:  # if something else, make sure we have a dict
                 dest_dict = o[3] if type(o[3]) is dict else dest_dict
@@ -861,32 +874,33 @@ def setToC(doc, toc):
         d["dest"]  = getDestStr(page.xref, dest_dict)
         d["top"]   = dest_dict["to"]
         d["title"] = title
-        d["parent"] = lvltab[lvl-1]
-        d["xref"] = xref[i+1]
-        lvltab[lvl] = i+1
-        parent = olitems[lvltab[lvl-1]]
-        parent["count"] += 1
+        d["parent"] = lvltab[lvl - 1]
+        d["xref"] = xref[i + 1]
+        lvltab[lvl] = i + 1
+        parent = olitems[lvltab[lvl - 1]]  # the parent entry
+
+        if collapse and lvl > collapse:  # suppress expansion
+            parent["count"] -= 1  # make /Count negative
+        else:
+            parent["count"] += 1  # positive /Count
 
         if parent["first"] == -1:
-            parent["first"] = i+1
-            parent["last"] = i+1
+            parent["first"] = i + 1
+            parent["last"] = i + 1
         else:
             d["prev"] = parent["last"]
             prev = olitems[parent["last"]]
-            prev["next"]   = i+1
-            parent["last"] = i+1
+            prev["next"] = i + 1
+            parent["last"] = i + 1
         olitems.append(d)
 
-#==============================================================================
-# now create each ol item as a string and insert it in the PDF
-#==============================================================================
+#------------------------------------------------------------------------------
+# now create each outline item as a string and insert it in the PDF
+#------------------------------------------------------------------------------
     for i, ol in enumerate(olitems):
         txt = "<<"
-        if ol["count"] > 0:
-            if i > 0:
-                txt += "/Count -%i" % ol["count"]
-            else:
-                txt += "/Count %i" % ol["count"]
+        if ol["count"] != 0:
+            txt += "/Count %i" % ol["count"]
         try:
             txt += ol["dest"]
         except: pass
@@ -913,17 +927,20 @@ def setToC(doc, toc):
         try:
             txt += "/Title" + ol["title"]
         except: pass
-        if i == 0:           # special: this is the outline root
-            txt += "/Type/Outlines"
+        if i == 0:  # special: this is the outline root
+            txt += "/Type/Outlines"  # so add the /Type entry
         txt += ">>"
-        doc._updateObject(xref[i], txt)     # insert the PDF object
+        doc._updateObject(xref[i], txt)  # insert the PDF object
 
     doc.initData()
     return toclen
 
 def do_links(doc1, doc2, from_page = -1, to_page = -1, start_at = -1):
     '''Insert links contained in copied page range into destination PDF.
-    Parameter values **must** equal those of method insertPDF() - which must have been previously executed.'''
+
+    Parameter values **must** equal those of method insertPDF(), which must
+    have been previously executed.
+    '''
     #--------------------------------------------------------------------------
     # define skeletons for /Annots object texts
     #--------------------------------------------------------------------------

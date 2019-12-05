@@ -9,7 +9,7 @@ fz_stext_page *JM_new_stext_page_from_page(fz_context *ctx, fz_page *page, int f
     fz_device *dev = NULL;
     fz_var(dev);
     fz_var(text);
-    fz_stext_options options;
+    fz_stext_options options = { 0 };
     options.flags = flags;
     fz_try(ctx)
     {

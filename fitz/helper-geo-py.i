@@ -552,8 +552,12 @@ class Rect(object):
         self.x0, self.y0, self.x1, self.y1 = TOOLS._intersect_rect(self, r)
         return self
 
+    def contains(self, x):
+        """Check if containing a point-like or rect-like x."""
+        return self.__contains__(x)
+
     def transform(self, m):
-        """Replace rectangle with its transformation by matrix m."""
+        """Replace rectangle with its transformation by matrix-like m."""
         if not len(m) == 6:
             raise ValueError("bad sequ. length")
         self.x0, self.y0, self.x1, self.y1 = TOOLS._transform_rect(self, m)

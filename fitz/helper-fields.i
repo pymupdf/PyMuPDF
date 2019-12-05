@@ -161,9 +161,9 @@ PyObject *JM_checkbox_state(fz_context *ctx, pdf_annot *annot)
     if (leafv  == PDF_NAME(Off)) Py_RETURN_FALSE;
     if (leafv == pdf_new_name(ctx, "Yes"))
         Py_RETURN_TRUE;
-    if (pdf_is_string(ctx, leafv) && !strcmp(pdf_to_str_buf(ctx, leafv), "Off"))
+    if (pdf_is_string(ctx, leafv) && !strcmp(pdf_to_text_string(ctx, leafv), "Off"))
         Py_RETURN_FALSE;
-    if (pdf_is_string(ctx, leafv) && !strcmp(pdf_to_str_buf(ctx, leafv), "Yes"))
+    if (pdf_is_string(ctx, leafv) && !strcmp(pdf_to_text_string(ctx, leafv), "Yes"))
         Py_RETURN_TRUE;
     if (leafas && leafas == PDF_NAME(Off)) Py_RETURN_FALSE;
     Py_RETURN_TRUE;
@@ -292,6 +292,7 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     PyObject *val;
     fz_try(ctx)
     {
+//start-trace
         int field_type = pdf_widget_type(gctx, tw);
         SETATTR_DROP("field_type", Py_BuildValue("i", field_type), val);
         if (field_type == PDF_WIDGET_TYPE_SIGNATURE)
@@ -308,7 +309,6 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         else
         {
             SETATTR("is_signed", Py_None);
-            //JM_TRACE("trace 03");
         }
         SETATTR_DROP("border_style",
                 JM_UNICODE(pdf_field_border_style(ctx, annot->obj)), val);
@@ -387,14 +387,16 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
         SETATTR_DROP("choice_values", JM_choice_options(ctx, annot), val);
 
-        char *da = pdf_to_str_buf(ctx, pdf_dict_get_inheritable(ctx,
+        char *da = pdf_to_text_string(ctx, pdf_dict_get_inheritable(ctx,
                                         annot->obj, PDF_NAME(DA)));
         SETATTR_DROP("_text_da", JM_UNICODE(da), val);
 
         obj = pdf_dict_getl(ctx, annot->obj, PDF_NAME(MK), PDF_NAME(CA), NULL);
         if (obj)
+        {
             SETATTR_DROP("button_caption",
-                    JM_UNICODE(pdf_to_str_buf(ctx, obj)), val);
+                    JM_UNICODE(pdf_to_text_string(ctx, obj)), val);
+        }
 
         SETATTR_DROP("field_flags",
                 Py_BuildValue("i", pdf_field_flags(ctx, annot->obj)), val);
@@ -402,7 +404,7 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         // call Py method to reconstruct text color, font name, size
         PyObject *call = CALLATTR("_parse_da", NULL);
         Py_XDECREF(call);
-
+//end-trace
     }
     fz_always(ctx) PyErr_Clear();
     fz_catch(ctx) fz_rethrow(ctx);
