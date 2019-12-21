@@ -181,9 +181,9 @@ fz_set_error_callback(gctx, JM_mupdf_error, &user);
 //-----------------------------------------------------------------------------
 // init global constants
 //-----------------------------------------------------------------------------
-dictkey_bpc = PyString_InternFromString("bpc");
 dictkey_bbox = PyString_InternFromString("bbox");
 dictkey_blocks = PyString_InternFromString("blocks");
+dictkey_bpc = PyString_InternFromString("bpc");
 dictkey_c = PyString_InternFromString("c");
 dictkey_chars = PyString_InternFromString("chars");
 dictkey_color = PyString_InternFromString("color");
@@ -201,6 +201,7 @@ dictkey_fill = PyString_InternFromString("fill");
 dictkey_flags = PyString_InternFromString("flags");
 dictkey_font = PyString_InternFromString("font");
 dictkey_height = PyString_InternFromString("height");
+dictkey_id = PyString_InternFromString("id");
 dictkey_image = PyString_InternFromString("image");
 dictkey_length = PyString_InternFromString("length");
 dictkey_lines = PyString_InternFromString("lines");
@@ -238,11 +239,11 @@ struct DeviceWrapper {
 // include version information and several other helpers
 //-----------------------------------------------------------------------------
 %pythoncode %{
+import io
+import math
 import os
 import weakref
-import io
 from binascii import hexlify
-import math
 
 fitz_py2 = str is bytes           # if true, this is Python 2
 %}
@@ -1864,24 +1865,26 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         PyObject *_getOLRootNumber()
         {
             pdf_document *pdf = pdf_specifics(gctx, $self);
-            fz_try(gctx) assert_PDF(pdf);
-            fz_catch(gctx) return NULL;
-
             pdf_obj *root, *olroot, *ind_obj;
-            // get main root
-            root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
-            // get outline root
-            olroot = pdf_dict_get(gctx, root, PDF_NAME(Outlines));
-            if (!olroot)
+            fz_try(gctx)
             {
-                olroot = pdf_new_dict(gctx, pdf, 4);
-                pdf_dict_put(gctx, olroot, PDF_NAME(Type), PDF_NAME(Outlines));
-                ind_obj = pdf_add_object(gctx, pdf, olroot);
-                pdf_dict_put(gctx, root, PDF_NAME(Outlines), ind_obj);
+                assert_PDF(pdf);
+                // get main root
+                root = pdf_dict_get(gctx, pdf_trailer(gctx, pdf), PDF_NAME(Root));
+                // get outline root
                 olroot = pdf_dict_get(gctx, root, PDF_NAME(Outlines));
-                pdf_drop_obj(gctx, ind_obj);
-                pdf->dirty = 1;
+                if (!olroot)
+                {
+                    olroot = pdf_new_dict(gctx, pdf, 4);
+                    pdf_dict_put(gctx, olroot, PDF_NAME(Type), PDF_NAME(Outlines));
+                    ind_obj = pdf_add_object(gctx, pdf, olroot);
+                    pdf_dict_put(gctx, root, PDF_NAME(Outlines), ind_obj);
+                    olroot = pdf_dict_get(gctx, root, PDF_NAME(Outlines));
+                    pdf_drop_obj(gctx, ind_obj);
+                    pdf->dirty = 1;
+                }
             }
+            fz_catch(gctx) return NULL;
             return Py_BuildValue("i", pdf_to_num(gctx, olroot));
         }
 
@@ -2516,10 +2519,12 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 return self._getXrefLength()
 
 
-            def xrefObject(self, xref, compressed=False, ascii=False):
+            def get_pdf_object(self, xref, compressed=False, ascii=False):
                 """Return the object definition of an xref.
                 """
                 return self._getXrefString(xref, compressed, ascii)
+
+            xrefObject = get_pdf_object
 
 
             def updateObject(self, xref, text, page=None):
@@ -2564,6 +2569,26 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 """Return the xref of the document XML metadata.
                 """
                 return self._getXmlMetadataXref()
+
+
+            def reload_page(self, page):
+                """Make a fresh copy of a page.
+                """
+                old_annots = {}  # copy annotation kid references to here
+                pno = page.number  # save the page number
+                for k, v in page._annot_refs.items():  # save the annot dictionary
+                    old_annots[k] = v
+                page._erase()  # remove the page
+                page = None
+                page = self.loadPage(pno)  # reload the page
+
+                # copy previous annotation kids over to the new dictionary
+                page_proxy = weakref.proxy(page)
+                for k, v in old_annots.items():
+                    annot = old_annots[k]
+                    annot.parent = page_proxy  # refresh parent to new page
+                    page._annot_refs[k] = annot
+                return page
 
 
             def __repr__(self):
@@ -2779,6 +2804,7 @@ struct fz_page_s {
                 fz_point p = JM_point_from_py(point);
                 fz_rect r = {p.x, p.y, p.x + 20, p.y + 20};
                 pdf_set_annot_rect(gctx, annot, r);
+                JM_add_annot_id(gctx, annot, "fitzannot");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) return NULL;
@@ -2806,6 +2832,7 @@ struct fz_page_s {
                 annot = pdf_create_annot(gctx, page, PDF_ANNOT_LINE);
                 pdf_set_annot_line(gctx, annot, a, b);
                 pdf_set_annot_rect(gctx, annot, r);
+                JM_add_annot_id(gctx, annot, "fitzannot");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) return NULL;
@@ -2839,6 +2866,7 @@ struct fz_page_s {
                 {
                     pdf_dict_put_name(gctx, annot->obj, PDF_NAME(Name), icon);
                 }
+                JM_add_annot_id(gctx, annot, "fitzannot");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) return NULL;
@@ -2896,6 +2924,7 @@ struct fz_page_s {
                 pdf_dict_put_drop(gctx, annot->obj, PDF_NAME(InkList), inklist);
                 inklist = NULL;
                 pdf_dirty_annot(gctx, annot);
+                JM_add_annot_id(gctx, annot, "fitzannot");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx)
@@ -2935,6 +2964,7 @@ struct fz_page_s {
                 pdf_dict_put(gctx, annot->obj, PDF_NAME(Name), name);
                 pdf_set_annot_contents(gctx, annot,
                         pdf_dict_get_name(gctx, annot->obj, PDF_NAME(Name)));
+                JM_add_annot_id(gctx, annot, "fitzannot");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) return NULL;
@@ -2983,6 +3013,7 @@ struct fz_page_s {
                                              filename, uf, d, 1);
                 pdf_dict_put(gctx, annot->obj, PDF_NAME(FS), val);
                 pdf_dict_put_text_string(gctx, annot->obj, PDF_NAME(Contents), filename);
+                JM_add_annot_id(gctx, annot, "fitzannot");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) return NULL;
@@ -3008,6 +3039,7 @@ struct fz_page_s {
                     Py_DECREF(val);
                     pdf_add_annot_quad_point(gctx, annot, q);
                 }
+                JM_add_annot_id(gctx, annot, "fitzannot");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) return NULL;
@@ -3044,6 +3076,7 @@ struct fz_page_s {
             {
                 annot = pdf_create_annot(gctx, page, annot_type);
                 pdf_set_annot_rect(gctx, annot, JM_rect_from_py(rect));
+                JM_add_annot_id(gctx, annot, "fitzannot");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) return NULL;
@@ -3095,6 +3128,7 @@ struct fz_page_s {
                 }
                 rect = fz_expand_rect(rect, 3);
                 pdf_set_annot_rect(gctx, annot, rect);
+                JM_add_annot_id(gctx, annot, "fitzannot");
                 pdf_update_annot(gctx, annot);
             }
             fz_catch(gctx) return NULL;
@@ -3145,12 +3179,52 @@ struct fz_page_s {
 
                 // insert the default appearance string
                 JM_make_annot_DA(gctx, annot, ntcol, tcol, fontname, fontsize);
+                JM_add_annot_id(gctx, annot, "fitzannot");
                 pdf_update_annot(gctx, annot);
             }
             fz_always(gctx) {;}
             fz_catch(gctx) return NULL;
             return pdf_keep_annot(gctx, annot);
         }
+
+        //---------------------------------------------------------------------
+        // page retrieve annotation
+        //---------------------------------------------------------------------
+        %pythonprepend load_annot %{
+        CheckParent(self)
+        if not self.parent.isPDF:
+            raise ValueError("not a PDF")
+        if name not in self.annot_names():
+            return None
+        %}
+        %pythonappend load_annot %{
+        if not val:
+            return val
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
+        %}
+        struct pdf_annot_s *load_annot(char *name)
+        {
+            pdf_annot *annot = NULL;
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            annot = JM_get_annot_by_name(gctx, page, name);
+            return annot;
+        }
+
+        //---------------------------------------------------------------------
+        // page retrieve list of annotation names
+        //---------------------------------------------------------------------
+        PyObject *annot_names()
+        {
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            if (!page)
+            {
+                return_none;
+            }
+            return JM_get_annot_id_list(gctx, page);
+        }
+
 
         %pythoncode %{
             #---------------------------------------------------------------------
@@ -3196,6 +3270,7 @@ struct fz_page_s {
                 JM_Python_str_DelForPy3(field_name);
                 JM_PyErr_Clear;
                 annot = (pdf_annot *) widget;
+                JM_add_annot_id(gctx, annot, "fitzwidget");
             }
             fz_always(gctx) JM_PyErr_Clear;
             fz_catch(gctx) return NULL;
@@ -3659,17 +3734,19 @@ annot._erase()
         //---------------------------------------------------------------------
         // clean contents stream
         //---------------------------------------------------------------------
-        FITZEXCEPTION(_cleanContents, !result)
         PARENTCHECK(_cleanContents)
         PyObject *_cleanContents()
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            if (!page)
+            {
+                return_none;
+            }
             fz_try(gctx)
             {
-                assert_PDF(page);
                 pdf_clean_page_contents(gctx, page->doc, page, NULL, NULL, NULL, 1, 0);
             }
-            fz_catch(gctx) return NULL;
+            fz_catch(gctx) return_none;
             page->doc->dirty = 1;
             return_none;
         }
@@ -5342,188 +5419,12 @@ struct pdf_annot_s
         //---------------------------------------------------------------------
         // annotation update appearance
         //---------------------------------------------------------------------
-        PARENTCHECK(update)
-        %feature("autodoc","Update the appearance of an annotation.") update;
-        %pythonappend update %{
-        """
-        The following code fixes shortcomings of MuPDF's "pdf_update_annot"
-        function. Currently these are:
-        1. Opacity (all annots). MuPDF ignores this proprty. This requires
-           to add an ExtGState (extended graphics state) object in the
-           C code as well.
-        2. Dashing (all annots). MuPDF ignores this proprty.
-        3. Colors and font size for FreeText annotations.
-        4. Line end icons also for POLYGON and POLY_LINE annotations.
-           MuPDF only honors them for LINE annotations.
-        5. Always perform a "clean" for the annot, because MuPDF does not
-           enclose their syntax in a string pair "q ... Q", which may cause
-           Adobe and other readers not to display the annot.
-
-        """
-        if not val is True:  # skip if something went wrong
-            return val
-
-        def color_string(cs, code):
-            """Return valid PDF color operator for a given color sequence.
-            """
-            if cs is None or cs == "":
-                return b""
-            if hasattr(cs, "__float__") or len(cs) == 1:
-                app = " g\n" if code == "f" else " G\n"
-            elif len(cs) == 3:
-                app = " rg\n" if code == "f" else " RG\n"
-            elif len(cs) == 4:
-                app = " k\n" if code == "f" else " K\n"
-            else:
-                return b""
-
-            if hasattr(cs, "__len__"):
-                col = " ".join(map(str, cs)) + app
-            else:
-                col = "%g" % cs + app
-
-            return bytes(col, "utf8") if not fitz_py2 else col
-
-        type   = self.type[0]               # get the annot type
-        dt     = self.border["dashes"]      # get the dashes spec
-        bwidth = self.border["width"]       # get border line width
-        stroke = self.colors["stroke"]      # get the stroke color
-        fill   = self.colors["fill"]        # get the fill color
-        rect   = None                       # used if we change the rect here
-        bfill  = color_string(fill, "f")
-        p_ctm  = self.parent._getTransformation() # page transformation matrix
-        imat   = ~p_ctm                     # inverse page transf. matrix
-        if dt:
-            dashes = "[" + " ".join(map(str, dt)) + "] d\n"
-            dashes = dashes.encode("utf-8")
-        else:
-            dashes = None
-
-        line_end_le, line_end_ri = 0, 0     # line end codes
-        if self.lineEnds:
-            line_end_le, line_end_ri = self.lineEnds
-
-        ap = self._getAP()  # get the annot operator source
-        ap_tab = ap.splitlines()[1:-1]  # temporary remove of 'q ...Q'
-        ap = b"\n".join(ap_tab)
-        ap_updated = False  # assume we did nothing
-
-        if type == PDF_ANNOT_FREE_TEXT:
-            CheckColor(border_color)
-            CheckColor(text_color)
-
-            # read and update default appearance as necessary
-            update_default_appearance = False
-            tcol, fname, fsize = TOOLS._parse_da(self)
-            if fname.lower() not in ("helv", "cour", "tiro", "zadb", "symb"):
-                fname = "Helv"
-                update_default_appearance = True
-            if fsize <= 0:
-                fsize = 12
-                update_default_appearance = True
-            if text_color is not None:
-                tcol = text_color
-                update_default_appearance = True
-            if fontname is not None:
-                fname = fontname
-                update_default_appearance = True
-            if fontsize > 0:
-                fsize = fontsize
-                update_default_appearance = True
-
-            da_str = ""
-            if len(tcol) == 3:
-                fmt = "{:g} {:g} {:g} rg /{f:s} {s:g} Tf"
-            elif len(tcol) == 1:
-                fmt = "{:g} g /{f:s} {s:g} Tf"
-            elif len(tcol) == 4:
-                fmt = "{:g} {:g} {:g} {:g} k /{f:s} {s:g} Tf"
-            da_str = fmt.format(*tcol, f=fname, s=fsize)
-            TOOLS._update_da(self, da_str)
-            
-            if border_color is not None:
-                for i, item in enumerate(ap_tab):
-                    if not item.endswith(b" w"):
-                        continue
-                    idx = i + 2  # step into wrong border color spec
-                    ap_tab[i + 2] = color_string(border_color, "s")
-                    break
-
-            if dashes is not None:  # handle dashes
-                ap_tab.insert(0, dashes)
-                dashes = None
-
-            ap = b"\n".join(ap_tab)         # updated AP stream
-            ap_updated = True
-
-        if bfill != "":
-            if type == PDF_ANNOT_POLYGON:
-                ap = ap[:-1] + bfill + b"b"  # close, fill, and stroke
-                ap_updated = True
-            elif type == PDF_ANNOT_POLYLINE:
-                ap = ap[:-1] + bfill + b"B"  # fill and stroke
-                ap_updated = True
-
-        # Dashes not handled by MuPDF, so we do it here.
-        if dashes is not None:
-            ap = dashes + ap
-            # reset dashing - only applies for LINE annots with line ends given
-            ap = ap.replace(b"\nS\n", b"\nS\n[] d\n", 1)
-            ap_updated = True
-
-        # Opacity not handled by MuPDF, so we do it here. The /ExtGState object
-        # "Alp0" referenced here has already been added by our C code.
-        if 0 <= self.opacity < 1:
-            ap = b"/Alp0 gs\n" + ap
-            ap_updated = True
-
-        #----------------------------------------------------------------------
-        # the following handles line end symbols for 'Polygon' and 'Polyline'
-        #----------------------------------------------------------------------
-        if max(line_end_le, line_end_ri) > 0 and type in (PDF_ANNOT_POLYGON, PDF_ANNOT_POLYLINE):
-
-            le_funcs = (None, TOOLS._le_square, TOOLS._le_circle,
-                        TOOLS._le_diamond, TOOLS._le_openarrow,
-                        TOOLS._le_closedarrow, TOOLS._le_butt,
-                        TOOLS._le_ropenarrow, TOOLS._le_rclosedarrow,
-                        TOOLS._le_slash)
-            le_funcs_range = range(1, len(le_funcs))
-            d = 4 * max(1, self.border["width"])
-            rect = self.rect + (-d, -d, d, d)
-            ap_updated = True
-            points = self.vertices
-            ap = b"q\n" + ap + b"\nQ\n"
-            if line_end_le in le_funcs_range:
-                p1 = Point(points[0]) * imat
-                p2 = Point(points[1]) * imat
-                left = le_funcs[line_end_le](self, p1, p2, False)
-                ap += bytes(left, "utf8") if not fitz_py2 else left
-            if line_end_ri in le_funcs_range:
-                p1 = Point(points[-2]) * imat
-                p2 = Point(points[-1]) * imat
-                left = le_funcs[line_end_ri](self, p1, p2, True)
-                ap += bytes(left, "utf8") if not fitz_py2 else left
-
-        if ap_updated:
-            if rect:                        # rect modified here?
-                self.setRect(rect)
-                self._setAP(ap, rect = 1)
-            else:
-                self._setAP(ap, rect = 0)
-
-        # always perform a clean to wrap stream by "q" / "Q"
-        self._cleanContents()
-        %}
-
-        PyObject *update(float fontsize=0,
-                         char *fontname=NULL,
-                         PyObject *text_color=NULL,
-                         PyObject *border_color=NULL,
-                         PyObject *fill_color=NULL,
-                         int rotate = -1)
+        PyObject *_update_appearance(char *opacity=NULL,
+                                     PyObject *fill_color=NULL,
+                                     int rotate = -1)
         {
             int type = pdf_annot_type(gctx, $self);
-            float fcol[4] = {1,1,1,1}; // fill color: white
+            float fcol[4] = {1,1,1,1};  // fill color: white
             int nfcol = 0;
             JM_color_FromSequence(fill_color, &nfcol, fcol);
             fz_try(gctx)
@@ -5551,31 +5452,37 @@ struct pdf_annot_s
                 Py_RETURN_FALSE;
             }
 
-            // check the /AP object for opacity
-            pdf_obj *ap = pdf_dict_getl(gctx, $self->obj, PDF_NAME(AP),
-                                        PDF_NAME(N), NULL);
-            if (!ap)
+            if (!opacity)  // no opacity given ==> we are done
             {
-                PySys_WriteStderr("annot has no /AP onject!\n");
-                Py_RETURN_FALSE;
-            }
-
-            // get opacity
-            pdf_obj *ca = pdf_dict_get(gctx, $self->obj, PDF_NAME(CA));
-            if (!ca)  // no opacity given, nothing to do
                 Py_RETURN_TRUE;
-
+            }
             fz_try(gctx)  // we need to create an /ExtGState object
             {
-                pdf_obj *alp0 = pdf_new_dict(gctx, $self->page->doc, 2);
+                pdf_obj *ap = pdf_dict_getl(gctx, $self->obj, PDF_NAME(AP),
+                                        PDF_NAME(N), NULL);
+                if (!ap)
+                {
+                    THROWMSG("annot has no /AP object");
+                }
+                pdf_obj *ca = pdf_dict_get(gctx, $self->obj, PDF_NAME(CA));
+                pdf_obj *alp0 = pdf_new_dict(gctx, $self->page->doc, 3);
+                pdf_dict_put(gctx, alp0, PDF_NAME(Type), PDF_NAME(ExtGState));
                 pdf_dict_put(gctx, alp0, PDF_NAME(CA), ca);
                 pdf_dict_put(gctx, alp0, PDF_NAME(ca), ca);
-                pdf_obj *extg = pdf_new_dict(gctx, $self->page->doc, 2);
-                pdf_dict_puts_drop(gctx, extg, "Alp0", alp0);
-                pdf_dict_putl_drop(gctx, ap, extg, PDF_NAME(Resources), PDF_NAME(ExtGState), NULL);
+                pdf_obj *extg = pdf_dict_getl(gctx, ap, PDF_NAME(Resources),
+                                              PDF_NAME(ExtGState), NULL);
+                if (!extg)
+                {
+                    extg = pdf_new_dict(gctx, $self->page->doc, 2);
+                    pdf_dict_puts_drop(gctx, extg, opacity, alp0);
+                    pdf_dict_putl_drop(gctx, ap, extg, PDF_NAME(Resources), PDF_NAME(ExtGState), NULL);
+                }
+                else
+                {
+                    pdf_dict_puts_drop(gctx, extg, opacity, alp0);
+                }
                 pdf_dict_putl_drop(gctx, $self->obj, ap, PDF_NAME(AP), PDF_NAME(N), NULL);
                 $self->ap = NULL;
-                JM_refresh_link_table(gctx, $self->page);
             }
 
             fz_catch(gctx)
@@ -5583,9 +5490,205 @@ struct pdf_annot_s
                 PySys_WriteStderr("could not store opacity\n");
                 Py_RETURN_FALSE;
             }
-
             Py_RETURN_TRUE;
         }
+
+
+        %pythoncode %{
+        def update(self,
+                   fontsize=0,
+                   fontname=None,
+                   text_color=None,
+                   border_color=None,
+                   fill_color=None,
+                   rotate=-1,
+                   ):
+
+            """
+            The following code fixes shortcomings of MuPDF's "pdf_update_annot"
+            function. Currently these are:
+            1. Opacity (all annots). MuPDF ignores this proprty. This requires
+            to add an ExtGState (extended graphics state) object in the
+            C code as well.
+            2. Dashing (all annots). MuPDF ignores this proprty.
+            3. Colors and font size for FreeText annotations.
+            4. Line end icons also for POLYGON and POLY_LINE annotations.
+            MuPDF only honors them for LINE annotations.
+            5. Always perform a "clean" for the annot, because MuPDF does not
+            enclose the contents syntax in a string pair "q ... Q", which may
+            cause Adobe and other readers not to display the annot.
+            """
+            CheckParent(self)
+            def color_string(cs, code):
+                """Return valid PDF color operator for a given color sequence.
+                """
+                if cs is None or cs == "":
+                    return b""
+                if hasattr(cs, "__float__") or len(cs) == 1:
+                    app = " g\n" if code == "f" else " G\n"
+                elif len(cs) == 3:
+                    app = " rg\n" if code == "f" else " RG\n"
+                elif len(cs) == 4:
+                    app = " k\n" if code == "f" else " K\n"
+                else:
+                    return b""
+
+                if hasattr(cs, "__len__"):
+                    col = " ".join(map(str, cs)) + app
+                else:
+                    col = "%g" % cs + app
+
+                return bytes(col, "utf8") if not fitz_py2 else col
+
+            type = self.type[0]  # get the annot type
+            dt = self.border["dashes"]  # get the dashes spec
+            bwidth = self.border["width"]  # get border line width
+            stroke = self.colors["stroke"]  # get the stroke color
+            if fill_color is not None:  # get the fill color
+                fill = fill_color
+            else:
+                fill = self.colors["fill"]
+
+            rect = self.rect  # prevent MuPDF fiddling with it
+
+            # Opacity not handled by MuPDF, so we do it here
+            if 0 <= self.opacity < 1:
+                opacity = "opacity%i" % int(round(self.opacity * 100))
+                opa_code = "/%s + gs\n" % opacity
+            else:
+                opacity = None
+                opa_code = None
+
+            # now invoke MuPDF annot appearance update
+            val = self._update_appearance(opacity, fill, rotate)
+            if not val:  # something went wrong, skip the rest
+                return val
+
+            self.setRect(rect)  # re-establish in case MuPDF changed it
+            rect = None  # used if we change the rect here
+            bfill = color_string(fill, "f")
+            p_ctm = self.parent._getTransformation()  # page transformation matrix
+            imat = ~p_ctm  # inverse page transf. matrix
+            if dt:
+                dashes = "[" + " ".join(map(str, dt)) + "] d\n"
+                dashes = dashes.encode("utf-8")
+            else:
+                dashes = None
+
+            if self.lineEnds:
+                line_end_le, line_end_ri = self.lineEnds
+            else:
+                line_end_le, line_end_ri = 0, 0  # init line end codes
+
+            ap = self._getAP()  # get the annot operator source
+            ap_tab = ap.splitlines()[1:-1]  # temporary remove of 'q ...Q'
+            ap = b"\n".join(ap_tab)
+            ap_updated = False  # assume we did nothing
+
+            if type == PDF_ANNOT_FREE_TEXT:
+                CheckColor(border_color)
+                CheckColor(text_color)
+
+                # read and update default appearance as necessary
+                update_default_appearance = False
+                tcol, fname, fsize = TOOLS._parse_da(self)
+                if fname.lower() not in ("helv", "cour", "tiro", "zadb", "symb"):
+                    fname = "Helv"
+                    update_default_appearance = True
+                if fsize <= 0:
+                    fsize = 12
+                    update_default_appearance = True
+                if text_color is not None:
+                    tcol = text_color
+                    update_default_appearance = True
+                if fontname is not None:
+                    fname = fontname
+                    update_default_appearance = True
+                if fontsize > 0:
+                    fsize = fontsize
+                    update_default_appearance = True
+
+                da_str = ""
+                if len(tcol) == 3:
+                    fmt = "{:g} {:g} {:g} rg /{f:s} {s:g} Tf"
+                elif len(tcol) == 1:
+                    fmt = "{:g} g /{f:s} {s:g} Tf"
+                elif len(tcol) == 4:
+                    fmt = "{:g} {:g} {:g} {:g} k /{f:s} {s:g} Tf"
+                da_str = fmt.format(*tcol, f=fname, s=fsize)
+                TOOLS._update_da(self, da_str)
+                
+                if border_color is not None:
+                    for i, item in enumerate(ap_tab):
+                        if not item.endswith(b" w"):
+                            continue
+                        idx = i + 2  # step into wrong border color spec
+                        ap_tab[i + 2] = color_string(border_color, "s")
+                        break
+
+                if dashes is not None:  # handle dashes
+                    ap_tab.insert(0, dashes)
+                    dashes = None
+
+                ap = b"\n".join(ap_tab)         # updated AP stream
+                ap_updated = True
+
+            if bfill != "":
+                if type == PDF_ANNOT_POLYGON:
+                    ap = ap[:-1] + bfill + b"b"  # close, fill, and stroke
+                    ap_updated = True
+                elif type == PDF_ANNOT_POLYLINE:
+                    ap = ap[:-1] + bfill + b"B"  # fill and stroke
+                    ap_updated = True
+
+            # Dashes not handled by MuPDF, so we do it here.
+            if dashes is not None:
+                ap = dashes + ap
+                # reset dashing - only applies for LINE annots with line ends given
+                ap = ap.replace(b"\nS\n", b"\nS\n[] d\n", 1)
+                ap_updated = True
+
+            if opa_code:
+                ap = opa_code.encode("utf-8") + ap
+                ap_updated = True
+
+            #----------------------------------------------------------------------
+            # the following handles line end symbols for 'Polygon' and 'Polyline'
+            #----------------------------------------------------------------------
+            if max(line_end_le, line_end_ri) > 0 and type in (PDF_ANNOT_POLYGON, PDF_ANNOT_POLYLINE):
+
+                le_funcs = (None, TOOLS._le_square, TOOLS._le_circle,
+                            TOOLS._le_diamond, TOOLS._le_openarrow,
+                            TOOLS._le_closedarrow, TOOLS._le_butt,
+                            TOOLS._le_ropenarrow, TOOLS._le_rclosedarrow,
+                            TOOLS._le_slash)
+                le_funcs_range = range(1, len(le_funcs))
+                d = 4 * max(1, self.border["width"])
+                rect = self.rect + (-d, -d, d, d)
+                ap_updated = True
+                points = self.vertices
+                ap = b"q\n" + ap + b"\nQ\n"
+                if line_end_le in le_funcs_range:
+                    p1 = Point(points[0]) * imat
+                    p2 = Point(points[1]) * imat
+                    left = le_funcs[line_end_le](self, p1, p2, False)
+                    ap += bytes(left, "utf8") if not fitz_py2 else left
+                if line_end_ri in le_funcs_range:
+                    p1 = Point(points[-2]) * imat
+                    p2 = Point(points[-1]) * imat
+                    left = le_funcs[line_end_ri](self, p1, p2, True)
+                    ap += bytes(left, "utf8") if not fitz_py2 else left
+
+            if ap_updated:
+                if rect:                        # rect modified here?
+                    self.setRect(rect)
+                    self._setAP(ap, rect = 1)
+                else:
+                    self._setAP(ap, rect = 0)
+
+            # always perform a clean to wrap stream by "q" / "Q"
+            self._cleanContents()
+        %}
 
         //---------------------------------------------------------------------
         // annotation set colors
@@ -5882,8 +5985,9 @@ CheckParent(self)
         //---------------------------------------------------------------------
         // annotation info
         //---------------------------------------------------------------------
-        PARENTCHECK(info)
         %pythoncode %{@property%}
+        %feature("autodoc","Return various annotation properties.") info;
+        PARENTCHECK(info)
         PyObject *info()
         {
             PyObject *res = PyDict_New();
@@ -5913,6 +6017,11 @@ CheckParent(self)
             DICT_SETITEM_DROP(res, dictkey_subject,
                           JM_UNICODE(pdf_to_text_string(gctx, o)));
 
+            // Identification (PDF key /NM)
+            o = pdf_dict_gets(gctx, $self->obj, "NM");
+            DICT_SETITEM_DROP(res, dictkey_id,
+                          JM_UNICODE(pdf_to_text_string(gctx, o)));
+
             return res;
         }
 
@@ -5920,14 +6029,29 @@ CheckParent(self)
         // annotation set information
         //---------------------------------------------------------------------
         FITZEXCEPTION(setInfo, !result)
-        PARENTCHECK(setInfo)
-        PyObject *setInfo(PyObject *info)
+        %feature("autodoc","Set various annotation properties.") setInfo;
+        %pythonprepend setInfo %{
+        CheckParent(self)
+        if type(info) is not dict:  # build a new dictionary from the other args
+            info = {}
+            if content is not None:
+                info["content"] = content
+            if title is not None:
+                info["title"] = title
+            if creationDate is not None:
+                info["creationDate"] = creationDate
+            if modDate is not None:
+                info["modDate"] = modDate
+            if subject is not None:
+                info["subject"] = subject
+        %}
+        PyObject *setInfo(PyObject *info=NULL, char *content=NULL, char *title=NULL,
+                          char *creationDate=NULL, char *modDate=NULL, char *subject=NULL)
         {
             char *uc = NULL;
 
             // use this to indicate a 'markup' annot type
             int is_markup = pdf_annot_has_author(gctx, $self);
-            fz_var(is_markup);
             fz_try(gctx)
             {
                 if (!PyDict_Check(info))
@@ -6198,23 +6322,23 @@ struct fz_link_s
         }
 
         %pythoncode %{
-            @property
-            def border(self):
-                return self._border(self.parent.parent.this, self.xref)
+        @property
+        def border(self):
+            return self._border(self.parent.parent.this, self.xref)
 
-            def setBorder(self, border=None, width=0, dashes=None, style=None):
-                if type(border) is not dict:
-                    border = {"width": width, "style": style, "dashes": dashes}
-                return self._setBorder(border, self.parent.parent.this, self.xref)
+        def setBorder(self, border=None, width=0, dashes=None, style=None):
+            if type(border) is not dict:
+                border = {"width": width, "style": style, "dashes": dashes}
+            return self._setBorder(border, self.parent.parent.this, self.xref)
 
-            @property
-            def colors(self):
-                return self._colors(self.parent.parent.this, self.xref)
+        @property
+        def colors(self):
+            return self._colors(self.parent.parent.this, self.xref)
 
-            def setColors(self, colors=None, stroke=None, fill=None):
-                if type(colors) is not dict:
-                    colors = {"fill": fill, "stroke": stroke}
-                return self._setColors(colors, self.parent.parent.this, self.xref)
+        def setColors(self, colors=None, stroke=None, fill=None):
+            if type(colors) is not dict:
+                colors = {"fill": fill, "stroke": stroke}
+            return self._setColors(colors, self.parent.parent.this, self.xref)
         %}
         PARENTCHECK(uri)
         %pythoncode %{@property%}
@@ -6910,7 +7034,7 @@ struct Tools
                                        PDF_NAME(DA),
                                        NULL);
                 }
-                da_str = pdf_to_text_string(gctx, da);
+                da_str = (char *) pdf_to_text_string(gctx, da);
             }
             fz_catch(gctx) return NULL;
             return JM_UNICODE(da_str);

@@ -250,13 +250,13 @@
 
 %{
 // Global Constants - Python dictionary keys
-PyObject *dictkey_bpc;
 PyObject *dictkey_bbox;
 PyObject *dictkey_blocks;
+PyObject *dictkey_bpc;
 PyObject *dictkey_c;
 PyObject *dictkey_chars;
-PyObject *dictkey_colorspace;
 PyObject *dictkey_color;
+PyObject *dictkey_colorspace;
 PyObject *dictkey_content;
 PyObject *dictkey_creationDate;
 PyObject *dictkey_cs_name;
@@ -270,6 +270,7 @@ PyObject *dictkey_fill;
 PyObject *dictkey_flags;
 PyObject *dictkey_font;
 PyObject *dictkey_height;
+PyObject *dictkey_id;
 PyObject *dictkey_image;
 PyObject *dictkey_length;
 PyObject *dictkey_lines;

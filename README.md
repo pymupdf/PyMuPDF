@@ -1,8 +1,8 @@
-# PyMuPDF 1.16.9
+# PyMuPDF 1.16.10
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: December 5, 2019
+Release date: December 21, 2019
 
 **Travis-CI:** [![Build Status](https://travis-ci.org/JorjMcKie/py-mupdf.svg?branch=master)](https://travis-ci.org/JorjMcKie/py-mupdf)
 
@@ -14,7 +14,7 @@ On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![](https://
 
 # Introduction
 
-This is **version 1.16.9 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.16.*](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
+This is **version 1.16.10 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.16.*](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -39,7 +39,7 @@ For all supported document types (i.e. including images) types you can
 * PDFs can be reformatted to support double-sided printing, posterizing, applying logos or watermarks
 * Password protection is fully supported: decryption, encryption, encryption method selection, permmission level and user / owner password setting.
 * Low-level PDF structures can be accessed and modified.
-* Starting with v1.16.9, PyMuPDF can also be used as a **module in the command line** using ``"python -m fitz ..."``. This is a versatile utility, which we will further develop over time. It currently supports PDF document
+* Starting with v1.16.10, PyMuPDF can also be used as a **module in the command line** using ``"python -m fitz ..."``. This is a versatile utility, which we will further develop over time. It currently supports PDF document
 
     - **encryption / decryption / optimization**
     - creating **sub-documents**
@@ -63,7 +63,7 @@ For the major **Windows** and (thanks to our user **@jbarlow83**!) **Mac OSX** o
 
 > The Mac OSX platform tags are `macosx_10_6_intel` (up to Python 3.7) or ``macosx_10_9_x86_64``. For Linux the tag is ``manylinux2010_x86_64``.
 
-> As of November 2019 and starting with PyMuPDF v1.16.9, wheel creation is supported for Python 64bit versions 2.7, 3.5, 3.6, 3.7 and 3.8 only. **Support for Python 3.4 has been dropped.**
+> As of November 2019 and starting with PyMuPDF v1.16.10, wheel creation is supported for Python 64bit versions 2.7, 3.5, 3.6, 3.7 and 3.8 only. **Support for Python 3.4 has been dropped.**
 
 For other Python versions or operating systems you need to generate PyMuPDF yourself as follows (and of course you can choose to do so for a wheel-supported platform, too).
 

@@ -387,7 +387,7 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
         SETATTR_DROP("choice_values", JM_choice_options(ctx, annot), val);
 
-        char *da = pdf_to_text_string(ctx, pdf_dict_get_inheritable(ctx,
+        const char *da = pdf_to_text_string(ctx, pdf_dict_get_inheritable(ctx,
                                         annot->obj, PDF_NAME(DA)));
         SETATTR_DROP("_text_da", JM_UNICODE(da), val);
 
@@ -395,7 +395,7 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         if (obj)
         {
             SETATTR_DROP("button_caption",
-                    JM_UNICODE(pdf_to_text_string(ctx, obj)), val);
+                    JM_UNICODE((char *)pdf_to_text_string(ctx, obj)), val);
         }
 
         SETATTR_DROP("field_flags",

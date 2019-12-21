@@ -148,16 +148,16 @@ def getTextlength(text, fontname="helv", fontsize=11, encoding=0):
     if basename == "ZapfDingbats":
         glyphs = zapf_glyphs
     if glyphs is not None:
-        w = sum([glyphs[ord(c)][1] if ord(c)<256 else glyphs[183][1] for c in text])
+        w = sum([glyphs[ord(c)][1] if ord(c) < 256 else glyphs[183][1] for c in text])
         return w * fontsize
 
     if fontname in Base14_fontdict.keys():
         return TOOLS.measure_string(text, Base14_fontdict[fontname], fontsize, encoding)
 
-    if fontname in ["china-t", "china-s",
+    if fontname in ("china-t", "china-s",
                     "china-ts", "china-ss",
                     "japan", "japan-s",
-                    "korea", "korea-s"]:
+                    "korea", "korea-s"):
         return len(text) * fontsize
 
     raise ValueError("Font '%s' is unsupported" % fontname)
@@ -366,7 +366,7 @@ def getPDFstr(s):
     def make_utf16be(s):
         r = hexlify(bytearray([254, 255]) + bytearray(s, "UTF-16BE"))
         t = r if fitz_py2 else r.decode()
-        return "<" + t + ">"                         # brackets indicate hex
+        return "<" + t + ">"  # brackets indicate hex
 
 
     # following either returns original string with mixed-in
@@ -375,33 +375,32 @@ def getPDFstr(s):
     r = ""
     for c in s:
         oc = ord(c)
-        if oc > 255:                                  # shortcut if beyond code range
+        if oc > 255:  # shortcut if beyond 8-bit code range
             return make_utf16be(s)
 
-        if oc > 31 and oc < 127:
-            if c in ("(", ")", "\\"):
+        if oc > 31 and oc < 127:  # in ASCII range
+            if c in ("(", ")", "\\"):  # these need to be escaped
                 r += "\\"
             r += c
             continue
 
-        if oc > 127:
+        if oc > 127:  # beyond ASCII
             r += "\\%03o" % oc
             continue
 
-        if oc < 8 or oc > 13 or oc == 11 or c == 127:
-            r += "\\267"   # indicate unsupported char
-            continue
-
-        if oc == 8:
+        # now the white spaces
+        if oc == 8:  # backspace
             r += "\\b"
-        elif oc == 9:
+        elif oc == 9:  # tab
             r += "\\t"
-        elif oc == 10:
+        elif oc == 10:  # line feed
             r += "\\n"
-        elif oc == 12:
+        elif oc == 12:  # form feed
             r += "\\f"
-        elif oc == 13:
+        elif oc == 13:  # carriage return
             r += "\\r"
+        else:
+            r += "\\267"  # unsupported: replace by 0xB7
 
     return "(" + r + ")"
 
@@ -417,7 +416,7 @@ def getTJstr(text, glyphs, simple, ordering):
                 ZapfDingbats)
         not simple: ordering < 0: 4-chars, use glyphs not char codes
                     ordering >=0: a CJK font! 4 chars, use char codes as glyphs
-"""
+    """
     if text.startswith("[<") and text.endswith(">]"): # already done
         return text
 
@@ -439,12 +438,12 @@ def getTJstr(text, glyphs, simple, ordering):
 
     return "[<" + otxt + ">]"
 
-'''
+"""
 Information taken from the following web sites:
 www.din-formate.de
 www.din-formate.info/amerikanische-formate.html
 www.directtools.de/wissen/normen/iso.htm
-'''
+"""
 paperSizes = { # known paper formats @ 72 dpi
         'a0': (2384, 3370),
         'a1': (1684, 2384),
@@ -492,9 +491,12 @@ paperSizes = { # known paper formats @ 72 dpi
         'tabloid-extra': (864, 1296),
         }
 def PaperSize(s):
-    """Return a tuple (width, height) for a given paper format string. 'A4-L' will
-    return (842, 595), the values for A4 landscape. Suffix '-P' and no suffix
-    returns portrait."""
+    """Return a tuple (width, height) for a given paper format string.
+    
+    Notes:
+        'A4-L' will return (842, 595), the values for A4 landscape.
+        Suffix '-P' and no suffix return the portrait tuple.
+    """
     size = s.lower()
     f = "p"
     if size.endswith("-l"):

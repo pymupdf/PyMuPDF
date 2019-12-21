@@ -254,17 +254,24 @@ PyObject *JM_annot_colors(fz_context *ctx, pdf_obj *annot_obj)
 //----------------------------------------------------------------------------
 // delete an annotation using mupdf functions, but first delete the /AP and
 // /Popup dict keys in the annot->obj. Also remove the 'Popup' annotation
-// from the page's /Annots array which may exist.
+// from the page's /Annots array which may also exist.
 //----------------------------------------------------------------------------
 void JM_delete_annot(fz_context *ctx, pdf_page *page, pdf_annot *annot)
 {
     if (!annot) return;
     fz_try(ctx)
     {
+        // first get any existing popup for the annotation
         pdf_obj *popup = pdf_dict_get(ctx, annot->obj, PDF_NAME(Popup));
+
+
+        // next delete the /Popup and /AP entries from annot dictionary
         pdf_dict_del(ctx, annot->obj, PDF_NAME(Popup));
         pdf_dict_del(ctx, annot->obj, PDF_NAME(AP));
-        if (popup)  // now look for the popup entry
+
+        // if there existed a /Popup, find and destroy it. The right popup
+        // has a /Parent entry which points to our annotation.
+        if (popup)
         {
             pdf_obj *annots = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
             int i, n = pdf_array_len(ctx, annots);
@@ -320,4 +327,116 @@ pdf_annot *JM_find_annot_irt(fz_context *ctx, pdf_annot *annot)
         return irt_annot;
     return NULL;
 }
+
+//----------------------------------------------------------------------------
+// return the identifications of a page's annotations (list of /NM entries)
+//----------------------------------------------------------------------------
+PyObject *JM_get_annot_id_list(fz_context *ctx, pdf_page *page)
+{
+    PyObject *names = PyList_New(0);
+    pdf_obj *o = NULL;
+    pdf_annot **annotptr = NULL;
+    pdf_annot *annot = NULL;
+    fz_try(ctx)
+    {   // loop thru MuPDF's internal annots and widget arrays
+        for (annotptr = &page->annots; *annotptr; annotptr = &(*annotptr)->next)
+        {
+            annot = *annotptr;
+            o = pdf_dict_gets(ctx, annot->obj, "NM");
+            if (o)
+            {
+                LIST_APPEND_DROP(names, JM_UNICODE(pdf_to_text_string(gctx, o)));
+            }
+        }
+        for (annotptr = &page->widgets; *annotptr; annotptr = &(*annotptr)->next)
+        {
+            annot = *annotptr;
+            o = pdf_dict_gets(ctx, annot->obj, "NM");
+            if (o)
+            {
+                LIST_APPEND_DROP(names, JM_UNICODE(pdf_to_text_string(gctx, o)));
+            }
+        }
+    }
+    fz_catch(ctx)
+    {
+        return names;
+    }
+    return names;
+}
+
+
+//----------------------------------------------------------------------------
+// add a unique /NM key to an annotation or widget
+//----------------------------------------------------------------------------
+void JM_add_annot_id(fz_context *ctx, pdf_annot *annot, char *stem)
+{
+    fz_try(ctx)
+    {
+        PyObject *names = JM_get_annot_id_list(ctx, annot->page);
+        int i = 0;
+        PyObject *stem_id = NULL;
+        while (1)
+        {
+            stem_id = PyUnicode_FromFormat("%s-%d", stem, i);
+            if (!PySequence_Contains(names, stem_id))
+            {
+                break;
+            }
+            i += 1;
+            Py_DECREF(stem_id);
+        }
+        char *response = JM_Python_str_AsChar(stem_id);
+        pdf_obj *name = pdf_new_string(ctx, (const char *) response, strlen(response));
+        pdf_dict_puts_drop(ctx, annot->obj, "NM", name);
+        JM_Python_str_DelForPy3(response);
+        Py_DECREF(stem_id);
+    }
+    fz_catch(ctx)
+    {
+        fz_rethrow(ctx);
+    }
+}
+
+//----------------------------------------------------------------------------
+// retrieve an annotation by its /NM key
+//----------------------------------------------------------------------------
+pdf_annot *JM_get_annot_by_name(fz_context *ctx, pdf_page *page, char *name)
+{
+    if (!name || strlen(name) == 0)
+    {
+        return NULL;
+    }
+    pdf_annot **annotptr = NULL;
+    pdf_annot *annot = NULL;
+    int found = 0;
+    size_t len = 0;
+
+    fz_try(ctx)
+    {   // loop thru MuPDF's internal annots and widget arrays
+        for (annotptr = &page->annots; *annotptr; annotptr = &(*annotptr)->next)
+        {
+            annot = *annotptr;
+            const char *response = pdf_to_string(ctx, pdf_dict_gets(ctx, annot->obj, "NM"), &len);
+            if (strcmp(name, response) == 0)
+            {
+                found = 1;
+                break;
+            }
+        }
+    }
+    fz_catch(ctx)
+    {
+        return NULL;
+    }
+    if (found == 1)
+    {
+        return pdf_keep_annot(ctx, annot);
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
 %}
