@@ -25,9 +25,6 @@ extensions = [
     "sphinx.ext.imgmath",
 ]
 
-if str is not bytes:
-    extensions += ["rst2pdf.pdfbuilder"]
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
