@@ -22,7 +22,7 @@ With PyMuPDF you can access files with extensions like ".pdf", ".xps", ".oxps", 
 
 
 # Usage and Documentation
-For all supported document types (i.e. including images) types you can
+For all supported document types (i.e. including images) you can
 * decrypt the document
 * access meta information, links and bookmarks
 * render pages in raster formats (PNG and some others), or the vector format SVG
