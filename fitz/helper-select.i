@@ -14,7 +14,7 @@ int string_in_names_list(fz_context *ctx, pdf_obj *p, pdf_obj *names_list)
 {
     int n = pdf_array_len(ctx, names_list);
     int i;
-    char *str = pdf_to_text_string(ctx, p);
+    const char *str = pdf_to_text_string(ctx, p);
 
     for (i = 0; i < n ; i += 2)
     {

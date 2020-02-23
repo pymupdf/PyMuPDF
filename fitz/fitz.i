@@ -416,7 +416,7 @@ struct fz_document_s
             DEBUGMSG2;
         }
 
-        FITZEXCEPTION(loadPage, result==NULL)
+        FITZEXCEPTION(loadPage, !result)
         CLOSECHECK(loadPage)
         %pythonappend loadPage %{
             if val:
@@ -1489,9 +1489,9 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             pdf_document *pdf = pdf_specifics(gctx, $self);
             int pageCount = fz_count_pages(gctx, $self);
             pdf_obj *pageref, *rsrc;
-            PyObject *liste = NULL;         // returned object
-            int n = pno;                    // pno < 0 is allowed
-            while (n < 0) n += pageCount;
+            PyObject *liste = NULL;  // returned object
+            int n = pno;  // pno < 0 is allowed
+            while (n < 0) n += pageCount;  // make it non-negative
             fz_var(liste);
             fz_try(gctx)
             {
@@ -2572,8 +2572,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 
 
             def reload_page(self, page):
-                """Make a fresh copy of a page.
-                """
+                """Make a fresh copy of a page."""
                 old_annots = {}  # copy annotation kid references to here
                 pno = page.number  # save the page number
                 for k, v in page._annot_refs.items():  # save the annot dictionary
@@ -2792,14 +2791,13 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         // page addCaretAnnot
         //---------------------------------------------------------------------
-        ANNOTWRAP1(addCaretAnnot, "Add 'Caret' annot on the page.")
+        ANNOTWRAP1(addCaretAnnot, "Add a 'Caret' annot on the page.")
         struct pdf_annot_s *addCaretAnnot(PyObject *point)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_annot *annot = NULL;
             fz_try(gctx)
             {
-                pdf_document *pdf = page->doc;
                 annot = pdf_create_annot(gctx, page, PDF_ANNOT_CARET);
                 fz_point p = JM_point_from_py(point);
                 fz_rect r = {p.x, p.y, p.x + 20, p.y + 20};
@@ -2812,26 +2810,71 @@ struct fz_page_s {
         }
 
         //---------------------------------------------------------------------
+        // page addRedactAnnot
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(addRedactAnnot, !result)
+        %feature("autodoc", "Add a 'Redaction' annot on the page.") addRedactAnnot;
+        %pythonprepend addRedactAnnot
+        %{
+        CheckParent(self)
+        if not self.parent.isPDF:
+            raise ValueError("not a PDF")
+        %}
+        %pythonappend addRedactAnnot
+        %{
+        if not val: return
+        val.thisown = True
+        val.parent = weakref.proxy(self)
+        self._annot_refs[id(val)] = val
+        # change the generated appearance to show a crossed-out rectangle
+        val._cleanContents()  # standardize the contents
+        ap_tab = val._getAP().splitlines()[1:5]  # get the 4 commands only
+        LL, LR, UR, UL = ap_tab
+        ap_tab.append(LR)
+        ap_tab.append(LL)
+        ap_tab.append(UR)
+        ap_tab.append(LL)
+        ap_tab.append(UL)
+        ap_tab.append(b"1 0 0 RG")
+        ap_tab.append(b"0.5 w")
+        ap_tab.append(b"S")
+        ap = b"\n".join(ap_tab)
+        val._setAP(ap, 0)
+        val._cleanContents()
+        %}
+        struct pdf_annot_s *addRedactAnnot(PyObject *quad)
+        {
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            pdf_annot *annot = NULL;
+            fz_try(gctx)
+            {
+                annot = pdf_create_annot(gctx, page, PDF_ANNOT_REDACT);
+                fz_quad q = JM_quad_from_py(quad);
+                fz_rect r = fz_rect_from_quad(q);
+                pdf_set_annot_rect(gctx, annot, r);
+                // pdf_add_annot_quad_point(gctx, annot, q);
+                JM_add_annot_id(gctx, annot, "fitzannot");
+                pdf_update_annot(gctx, annot);
+            }
+            fz_catch(gctx) return NULL;
+            return pdf_keep_annot(gctx, annot);
+        }
+
+        //---------------------------------------------------------------------
         // page addLineAnnot
         //---------------------------------------------------------------------
-        ANNOTWRAP1(addLineAnnot, "Add 'Line' annot for points p1 and p2.")
+        ANNOTWRAP1(addLineAnnot, "Add a 'Line' annot for points p1 and p2.")
         struct pdf_annot_s *addLineAnnot(PyObject *p1, PyObject *p2)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_annot *annot = NULL;
             fz_point a = JM_point_from_py(p1);
             fz_point b = JM_point_from_py(p2);
-            fz_rect r  = fz_make_rect(MIN(a.x, b.x),
-                                      MIN(a.y, b.y),
-                                      MAX(a.x, b.x),
-                                      MAX(a.y, b.y));
-            r = fz_expand_rect(r, 3);
             fz_try(gctx)
             {
                 assert_PDF(page);
                 annot = pdf_create_annot(gctx, page, PDF_ANNOT_LINE);
                 pdf_set_annot_line(gctx, annot, a, b);
-                pdf_set_annot_rect(gctx, annot, r);
                 JM_add_annot_id(gctx, annot, "fitzannot");
                 pdf_update_annot(gctx, annot);
             }
@@ -2941,7 +2984,7 @@ struct fz_page_s {
         // page addStampAnnot
         //---------------------------------------------------------------------
         ANNOTWRAP1(addStampAnnot, "Add a 'rubber stamp' in a rectangle.")
-        struct pdf_annot_s *addStampAnnot(PyObject *rect, int stamp = 0)
+        struct pdf_annot_s *addStampAnnot(PyObject *rect, int stamp=0)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_annot *annot = NULL;
@@ -2978,8 +3021,8 @@ struct fz_page_s {
         struct pdf_annot_s *addFileAnnot(PyObject *point,
                     PyObject *buffer,
                     char *filename,
-                    char *ufilename = NULL,
-                    char *desc = NULL,
+                    char *ufilename=NULL,
+                    char *desc=NULL,
                     char *icon=NULL)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
@@ -3114,20 +3157,13 @@ struct fz_page_s {
                     if (PySequence_Size(p) != 2)
                     {
                         Py_DECREF(p);
-                        THROWMSG("bad point in points");
+                        THROWMSG("bad list of points");
                     }
                     fz_point point = JM_point_from_py(p);
                     Py_DECREF(p);
                     pdf_add_annot_vertex(gctx, annot, point);
-                    if (i == 0)
-                    {
-                        rect = fz_make_rect(point.x, point.y, point.x, point.y);
-                    }
-                    else
-                        rect = fz_include_point_in_rect(rect, point);
                 }
-                rect = fz_expand_rect(rect, 3);
-                pdf_set_annot_rect(gctx, annot, rect);
+
                 JM_add_annot_id(gctx, annot, "fitzannot");
                 pdf_update_annot(gctx, annot);
             }
@@ -3300,6 +3336,26 @@ struct fz_page_s {
             }
             fz_catch(gctx) return NULL;
             return dl;
+        }
+
+
+        //---------------------------------------------------------------------
+        // Page apply redactions
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(apply_redactions, !result)
+        PyObject *apply_redactions(int mark=0)
+        {
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            int success = 0;
+            pdf_redact_options opts = { 0 };
+            opts.no_black_boxes = 1 - mark;
+            fz_try(gctx)
+            {
+                assert_PDF(page);
+                success = pdf_redact_page(gctx, page->doc, page, &opts);
+            }
+            fz_catch(gctx) return NULL;
+            return JM_BOOL(success);
         }
 
 
@@ -5424,8 +5480,8 @@ struct pdf_annot_s
                                      int rotate = -1)
         {
             int type = pdf_annot_type(gctx, $self);
-            float fcol[4] = {1,1,1,1};  // fill color: white
-            int nfcol = 0;
+            float fcol[4] = {1,1,1,1};  // std fill color: white
+            int nfcol = 0;  // number of color components
             JM_color_FromSequence(fill_color, &nfcol, fcol);
             fz_try(gctx)
             {
@@ -5443,6 +5499,7 @@ struct pdf_annot_s
                 }
                 $self->needs_new_ap = 1;  // force re-creation of appearance stream
                 pdf_update_annot(gctx, $self);  // update the annotation
+                // this brackets the stream with "q ... Q":
                 pdf_clean_annot_contents(gctx, $self->page->doc, $self,
                                          NULL, NULL, NULL, 1, 0);
             }
@@ -5452,7 +5509,7 @@ struct pdf_annot_s
                 Py_RETURN_FALSE;
             }
 
-            if (!opacity)  // no opacity given ==> we are done
+            if (!opacity)  // no opacity given ==> done
             {
                 Py_RETURN_TRUE;
             }
@@ -5549,7 +5606,7 @@ struct pdf_annot_s
             else:
                 fill = self.colors["fill"]
 
-            rect = self.rect  # prevent MuPDF fiddling with it
+            rect = None  # self.rect  # prevent MuPDF fiddling with it
 
             # Opacity not handled by MuPDF, so we do it here
             if 0 <= self.opacity < 1:
@@ -5559,16 +5616,17 @@ struct pdf_annot_s
                 opacity = None
                 opa_code = None
 
-            # now invoke MuPDF annot appearance update
+            # now invoke MuPDF to update the annot appearance
             val = self._update_appearance(opacity, fill, rotate)
             if not val:  # something went wrong, skip the rest
                 return val
 
-            self.setRect(rect)  # re-establish in case MuPDF changed it
             rect = None  # used if we change the rect here
             bfill = color_string(fill, "f")
+
             p_ctm = self.parent._getTransformation()  # page transformation matrix
             imat = ~p_ctm  # inverse page transf. matrix
+
             if dt:
                 dashes = "[" + " ".join(map(str, dt)) + "] d\n"
                 dashes = dashes.encode("utf-8")
@@ -5584,6 +5642,21 @@ struct pdf_annot_s
             ap_tab = ap.splitlines()[1:-1]  # temporary remove of 'q ...Q'
             ap = b"\n".join(ap_tab)
             ap_updated = False  # assume we did nothing
+
+            if type == PDF_ANNOT_REDACT:
+                # recreate the original PyMuPDF appearance (crossed-out rect)
+                ap_tab = ap_tab[:4]
+                LL, LR, UR, UL = ap_tab
+                ap_tab.append(LR)
+                ap_tab.append(LL)
+                ap_tab.append(UR)
+                ap_tab.append(LL)
+                ap_tab.append(UL)
+                ap_tab.append(b"1 0 0 RG")
+                ap_tab.append(b"0.5 w")
+                ap_tab.append(b"S")
+                ap = b"\n".join(ap_tab)
+                ap_updated = True
 
             if type == PDF_ANNOT_FREE_TEXT:
                 CheckColor(border_color)
@@ -5655,7 +5728,7 @@ struct pdf_annot_s
             #----------------------------------------------------------------------
             # the following handles line end symbols for 'Polygon' and 'Polyline'
             #----------------------------------------------------------------------
-            if max(line_end_le, line_end_ri) > 0 and type in (PDF_ANNOT_POLYGON, PDF_ANNOT_POLYLINE):
+            if line_end_le + line_end_ri > 0 and type in (PDF_ANNOT_POLYGON, PDF_ANNOT_POLYLINE):
 
                 le_funcs = (None, TOOLS._le_square, TOOLS._le_circle,
                             TOOLS._le_diamond, TOOLS._le_openarrow,
@@ -5682,9 +5755,9 @@ struct pdf_annot_s
             if ap_updated:
                 if rect:                        # rect modified here?
                     self.setRect(rect)
-                    self._setAP(ap, rect = 1)
+                    self._setAP(ap, rect=1)
                 else:
-                    self._setAP(ap, rect = 0)
+                    self._setAP(ap, rect=0)
 
             # always perform a clean to wrap stream by "q" / "Q"
             self._cleanContents()

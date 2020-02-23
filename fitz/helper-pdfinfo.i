@@ -128,13 +128,14 @@ void JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
 }
 
 //-----------------------------------------------------------------------------
-// Store info of a /Form in Python list
+// Store info of a /Form xobject in Python list
 //-----------------------------------------------------------------------------
 void JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
                      PyObject *imagelist, int stream_xref)
 {
-    int i, n;
-    n = pdf_dict_len(ctx, dict);
+    int i, n = pdf_dict_len(ctx, dict);
+    fz_rect bbox;
+    pdf_obj *o = NULL, *m = NULL;
     for (i = 0; i < n; i++)
     {
         pdf_obj *imagedict;
@@ -154,18 +155,30 @@ void JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
         if (!pdf_name_eq(ctx, type, PDF_NAME(Form)))
             continue;
 
+        o = pdf_dict_get(ctx, imagedict, PDF_NAME(BBox));
+        m = pdf_dict_get(ctx, imagedict, PDF_NAME(Matrix));
+        if (o && m)
+        {
+            bbox = fz_transform_rect(pdf_to_rect(ctx, o), pdf_to_matrix(ctx, m));
+        }
+        else
+        {
+            bbox = fz_infinite_rect;
+        }
         int xref = pdf_to_num(ctx, imagedict);
 
-        PyObject *entry = PyTuple_New(3);
+        PyObject *entry = PyTuple_New(4);
         PyTuple_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
         PyTuple_SET_ITEM(entry, 1, JM_UNICODE(pdf_to_name(ctx, refname)));
         PyTuple_SET_ITEM(entry, 2, Py_BuildValue("i", stream_xref));
+        PyTuple_SET_ITEM(entry, 3, Py_BuildValue("ffff",
+                                   bbox.x0, bbox.y0, bbox.x1, bbox.y1));
         LIST_APPEND_DROP(imagelist, entry);
     }
 }
 
 //-----------------------------------------------------------------------------
-// Step through /Resources, looking up image or font information
+// Step through /Resources, looking up image, xobject or font information
 //-----------------------------------------------------------------------------
 void JM_scan_resources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
                  PyObject *liste, int what, int stream_xref)
@@ -175,7 +188,7 @@ void JM_scan_resources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
     if (pdf_mark_obj(ctx, rsrc)) return;    // stop on cylic dependencies
     fz_try(ctx)
     {
-        if (what == 1)            // look up fonts
+        if (what == 1)  // look up fonts
         {
             font = pdf_dict_get(ctx, rsrc, PDF_NAME(Font));
             JM_gather_fonts(ctx, pdf, font, liste, stream_xref);
@@ -199,12 +212,12 @@ void JM_scan_resources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
 
         xobj = pdf_dict_get(ctx, rsrc, PDF_NAME(XObject));
 
-        if (what == 2)            // look up images
+        if (what == 2)  // look up images
         {
             JM_gather_images(ctx, pdf, xobj, liste, stream_xref);
         }
 
-        if (what == 3)            // look up forms
+        if (what == 3)  // look up form xobjects
         {
             JM_gather_forms(ctx, pdf, xobj, liste, stream_xref);
         }
