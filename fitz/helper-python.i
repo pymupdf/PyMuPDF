@@ -86,6 +86,15 @@ Base14_fontdict["tibi"] = "Times-BoldItalic"
 Base14_fontdict["symb"] = "Symbol"
 Base14_fontdict["zadb"] = "ZapfDingbats"
 
+annot_skel = {
+    "goto1": "<</A<</S/GoTo/D[%i 0 R/XYZ %g %g 0]>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
+    "goto2": "<</A<</S/GoTo/D%s>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
+    "gotor1": "<</A<</S/GoToR/D[%i /XYZ %g %g 0]/F<</F(%s)/UF(%s)/Type/Filespec>>>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
+    "gotor2": "<</A<</S/GoToR/D%s/F(%s)>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
+    "launch": "<</A<</S/Launch/F<</F(%s)/UF(%s)/Type/Filespec>>>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
+    "uri": "<</A<</S/URI/URI(%s)>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
+    "named": "<</A<</S/Named/N/%s/Type/Action>>/Rect[%s]/BS<</W 0>>/Subtype/Link>>",
+}
 
 def _toc_remove_page(toc, first, last):
     """ Remove all ToC entries pointing to certain pages.
@@ -351,6 +360,7 @@ def getPDFnow():
         pass
     return tstamp
 
+
 def getPDFstr(s):
     """ Return a PDF string depending on its coding.
 
@@ -403,6 +413,7 @@ def getPDFstr(s):
             r += "\\267"  # unsupported: replace by 0xB7
 
     return "(" + r + ")"
+
 
 def getTJstr(text, glyphs, simple, ordering):
     """ Return a PDF string enclosed in [] brackets, suitable for the PDF TJ
@@ -490,6 +501,8 @@ paperSizes = { # known paper formats @ 72 dpi
         'monarch': (279, 540),
         'tabloid-extra': (864, 1296),
         }
+
+
 def PaperSize(s):
     """Return a tuple (width, height) for a given paper format string.
     
@@ -509,15 +522,18 @@ def PaperSize(s):
         return rc
     return (rc[1], rc[0])
 
+
 def PaperRect(s):
     """Return a fitz.Rect for the paper size indicated in string 's'. Must conform to the argument of method 'PaperSize', which will be invoked.
     """
     width, height = PaperSize(s)
     return Rect(0.0, 0.0, width, height)
 
+
 def CheckParent(o):
     if not hasattr(o, "parent") or o.parent is None:
         raise ValueError("orphaned object: parent is None")
+
 
 def CheckColor(c):
     if c is not None:
@@ -528,6 +544,7 @@ def CheckColor(c):
             or max(c) > 1
         ):
             raise ValueError("need 1, 3 or 4 color components in range 0 to 1")
+
 
 def ColorCode(c, f):
     if c is None:
@@ -546,8 +563,10 @@ def ColorCode(c, f):
     s = "%g %g %g %g " % tuple(c)
     return s + "K " if f == "c" else s + "k "
 
+
 def JM_TUPLE(o):
     return tuple(map(lambda x: round(x, 8), o))
+
 
 def CheckMorph(o):
     if not bool(o): return False
@@ -558,6 +577,7 @@ def CheckMorph(o):
     if not o[1][4] == o[1][5] == 0:
         raise ValueError("invalid morph parm 1")
     return True
+
 
 def CheckFont(page, fontname):
     """Return an entry in the page's font list if reference name matches.
@@ -673,6 +693,7 @@ p{white-space:pre-wrap}
         r = text
 
     return r
+
 
 def ConversionTrailer(i):
     t = i.lower()

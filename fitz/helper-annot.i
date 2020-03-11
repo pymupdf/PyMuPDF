@@ -253,7 +253,7 @@ PyObject *JM_annot_colors(fz_context *ctx, pdf_obj *annot_obj)
 
 //----------------------------------------------------------------------------
 // delete an annotation using mupdf functions, but first delete the /AP and
-// /Popup dict keys in the annot->obj. Also remove the 'Popup' annotation
+// /Popup dict keys in annot->obj. Also remove the 'Popup' annotation
 // from the page's /Annots array which may also exist.
 //----------------------------------------------------------------------------
 void JM_delete_annot(fz_context *ctx, pdf_page *page, pdf_annot *annot)
@@ -269,24 +269,23 @@ void JM_delete_annot(fz_context *ctx, pdf_page *page, pdf_annot *annot)
         pdf_dict_del(ctx, annot->obj, PDF_NAME(Popup));
         pdf_dict_del(ctx, annot->obj, PDF_NAME(AP));
 
-        // if there existed a /Popup, find and destroy it. The right popup
+        // if there exists a /Popup, find and destroy it. The right popup
         // has a /Parent entry which points to our annotation.
-        if (popup)
+
+        pdf_obj *annots = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
+        int i, n = pdf_array_len(ctx, annots);
+        for (i = n - 1; i >= 0; i--)
         {
-            pdf_obj *annots = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
-            int i, n = pdf_array_len(ctx, annots);
-            for (i = 0; i < n; i++)
+            pdf_obj *o = pdf_array_get(ctx, annots, i);
+            pdf_obj *p = pdf_dict_get(ctx, o, PDF_NAME(Parent));
+            if (!p)
+                continue;
+            if (!pdf_objcmp(ctx, p, annot->obj))
             {
-                pdf_obj *o = pdf_array_get(ctx, annots, i);
-                pdf_obj *p = pdf_dict_get(ctx, o, PDF_NAME(Parent));
-                if (!p) continue;
-                if (!pdf_objcmp(ctx, p, annot->obj))
-                {
-                    pdf_array_delete(ctx, annots, i);
-                    break;
-                }
+                pdf_array_delete(ctx, annots, i);
             }
         }
+
         pdf_delete_annot(ctx, page, annot);
     }
     fz_catch(ctx)
@@ -297,7 +296,8 @@ void JM_delete_annot(fz_context *ctx, pdf_page *page, pdf_annot *annot)
 }
 
 //----------------------------------------------------------------------------
-// locate and return the first annotation whose /IRT key points to annot.
+// Return the first annotation whose /IRT key ("In Response To") points to
+// annot. Used to remove the response chain of a given annotation.
 //----------------------------------------------------------------------------
 pdf_annot *JM_find_annot_irt(fz_context *ctx, pdf_annot *annot)
 {
@@ -348,15 +348,15 @@ PyObject *JM_get_annot_id_list(fz_context *ctx, pdf_page *page)
                 LIST_APPEND_DROP(names, JM_UNICODE(pdf_to_text_string(gctx, o)));
             }
         }
-        for (annotptr = &page->widgets; *annotptr; annotptr = &(*annotptr)->next)
-        {
-            annot = *annotptr;
-            o = pdf_dict_gets(ctx, annot->obj, "NM");
-            if (o)
-            {
-                LIST_APPEND_DROP(names, JM_UNICODE(pdf_to_text_string(gctx, o)));
-            }
-        }
+        //for (annotptr = &page->widgets; *annotptr; annotptr = &(*annotptr)->next)
+        //{
+        //    annot = *annotptr;
+        //    o = pdf_dict_gets(ctx, annot->obj, "NM");
+        //    if (o)
+        //    {
+        //        LIST_APPEND_DROP(names, JM_UNICODE(pdf_to_text_string(gctx, o)));
+        //    }
+        //}
     }
     fz_catch(ctx)
     {

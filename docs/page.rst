@@ -146,7 +146,7 @@ This is available for PDF documents only. There are basically two groups of meth
 
       :arg str text: the text. May contain any Latin characters.
       :arg float fontsize: the font size. Default is 12.
-      :arg str fontname: the font name. Default is "Helv". Accepted alternatives are "Cour", "TiRo", "ZaDb" and "Symb". The name may be abbreviated to the first two characters, like "Co" for "Cour". Lower case is also accepted.
+      :arg str fontname: the font name. Default is "Helv". Accepted alternatives are "Cour", "TiRo", "ZaDb" and "Symb". The name may be abbreviated to the first two characters, like "Co" for "Cour". Lower case is also accepted. Since MuPDF v1.16, **bold or italic** variants of the fonts are **no longer accepted**. A user-contributed script provides a circumvention for this restriction -- see section *Using Buttons and JavaScript* in chapter :ref:`FAQ`.
       :arg sequence,float text_color: *(new in version 1.16.0)* the text color. Default is black.
 
       :arg sequence,float fill_color: *(new in version 1.16.0)* the fill color. Default is white.
@@ -206,11 +206,23 @@ This is available for PDF documents only. There are basically two groups of meth
       :rtype: :ref:`Annot`
       :returns: the created annotation. It is drawn with line color black, no fill color and line width 1. Use methods of :ref:`Annot` to make any changes.
 
-   .. method:: addRedactAnnot(quad)
+   .. method:: addRedactAnnot(quad, text=None, fontname=None, fontsize=11, align=TEXT_ALIGN_LEFT, fill=(1, 1, 1), text_color=(0, 0, 0))
 
       PDF only: *(new in version 1.16.11)* Add a redaction annotation. A redaction annotation identifies content that is intended to be removed from the document. Adding such an annotation is the first of two steps. It makes visible what will be removed in the subsequent step, :meth:`Page.apply_redactions`.
 
       :arg quad_like,rect_like quad: specifies the (rectangular) area to be removed which is always equal to the annotation rectangle. This may be a :data:`rect_like` or :data:`quad_like` object. If a quad is specified, then the envelopping rectangle is taken.
+
+      :arg str text: *(New in v1.16.12)* text to be placed in the rectangle after applying the redaction (and thus removing old content).
+
+      :arg str fontname: *(New in v1.16.12)* the font to use when *text* is given, otherwise ignored. This must be one of the :ref:`Base14_Fonts` or a CJK fonts.
+
+      :arg float fontsize: *(New in v1.16.12)* the fontsize to use for the replacing text. If the text is too large to fit, several insertion attempts will be made, gradually reducing this value down to 4. If then the text will still not fit, no text insertion will take place at all.
+
+      :arg int align: *(New in v1.16.12)* the horizontal alignment for the replacing text. See :meth:`insertTextbox` for available values. The vertical alignment is always centered (approximately).
+
+      :arg sequence fill: *(New in v1.16.12)* the fill color of the rectangle after applying the redaction. The default is *white = (1, 1, 1)*.
+
+      :arg sequence text_color: *(New in v1.16.12)* the color of the replacing text. Default is *black = (0, 0, 0)*.
 
       :rtype: :ref:`Annot`
       :returns: the created annotation. The appearance of a redaction annotation cannot be changed (except for the annotation rectangle). A redaction is displayed as a crossed-out transparent rectangle with red lines.
@@ -297,16 +309,24 @@ This is available for PDF documents only. There are basically two groups of meth
       :rtype: :ref:`Annot`
       :returns: the annotation following the deleted one. Please remember that physical removal will take place only with saving to a new file with a positive garbage collection option.
 
-   .. method:: apply_redactions(mark=False)
+   .. method:: apply_redactions()
 
-      PDF only: *(new in version 1.16.11)* Remove **text content** in areas marked by some redaction annotation. The respective areas are either emptied or filled with black (*mark* set to *True*). This method also deletes all redaction annotations of the page.
+      PDF only: *(New in version 1.16.11)* Remove **text content** in areas marked by some redaction annotation.
 
-      :returns: *True* if at least one redaction annotation has been found / processed, *False* otherwise.
+      *(Changed in v1.16.12)* The previous *mark* parameter is gone. Instead, the respective rectangles are filled with the *fill* color of their redaction annotation. If a *text* was given in the annotation, then :meth:`insertTextbox` is invoked to insert it, using parameters provided with the redaction.
+      
+      **This method applies and then deletes all redaction annotations of the page.**
+
+      :returns: *True* if at least one redaction annotation has been processed, *False* otherwise.
 
       .. note::
-         Text contained in a redaction rectangle will be **physically** removed from the page's :data:`contents` objects (only) and no longer appear in e.g. text extractions. Images, other annotations or content in embedded PDF pages are unaffected.
+         Text contained in a redaction rectangle will be **physically** removed from the page's :data:`contents` objects (only) and will no longer appear in e.g. text extractions. Other annotations are unaffected.
 
-         Decision to remove text is made on a by-character level. A character is removed if the bottom-left corner of its boundary box is contained in a redaction rectangle. Hence it may happen, that a character is removed even if the better part of it is outside the redaction rect or, vice versa, **not** removed, even if most of it lies inside the rect.
+         Images and XObjects (embedded PDF pages, e.g. via :meth:`showPDFpage`) will also **physically** be removed if they are completely contained in a redation rectangle. **Partial** overlaps will be covered with the redaction background color and no removal will take place.
+
+         Decision to remove text is made on a by-character level. A character is removed if the bottom-left corner of its **boundary box** is contained in a redaction rectangle. Hence it may happen, that a character is removed even if the better part of it is outside the redaction rect or, vice versa, **not** removed, even if most of it lies inside the rect.
+
+         Redactions are an easy way to replace single words in a PDF, or to physically render them unreadable: locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence. Just be wary if the replacement is much longer than the original -- this may lead to an unappealing appearance or no new text at all.
 
    .. method:: deleteLink(linkdict)
 
@@ -681,7 +701,7 @@ This is available for PDF documents only. There are basically two groups of meth
 
          4. The image is stored in the PDF in its original quality. This may be much better than you ever need for your display. In this case consider decreasing the image size before inserting it -- e.g. by using the pixmap option and then shrinking it or scaling it down (see :ref:`Pixmap` chapter). The PIL method *Image.thumbnail()* can also be used for that purpose. The file size savings can be very significant.
 
-         5. The most efficient way to display the same image on multiple pages is another method: :meth:`showPDFpage`. Consult :meth:`Document.convertToPDF` for how to obtain intermediary PDFs usable for that method. Demo script `fitz-logo.py <https://github.com/pymupdf/PyMuPDF/blob/master/demo/fitz-logo.py>`_ implements a fairly complete approach.
+         5. The most efficient way to display the same image on multiple pages is another method: :meth:`showPDFpage`. Consult :meth:`Document.convertToPDF` for how to obtain intermediary PDFs usable for that method. Demo script `fitz-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/fitz-logo.py>`_ implements a fairly complete approach.
 
    .. index::
       pair: blocks; getText
@@ -851,9 +871,9 @@ This is available for PDF documents only. There are basically two groups of meth
 
       PDF only: Display a page of another PDF as a **vector image** (otherwise similar to :meth:`Page.insertImage`). This is a multi-purpose method. For example, you can use it to
 
-      * create "n-up" versions of existing PDF files, combining several input pages into **one output page** (see example `4-up.py <https://github.com/pymupdf/PyMuPDF/blob/master/examples/4-up.py>`_),
-      * create "posterized" PDF files, i.e. every input page is split up in parts which each create a separate output page (see `posterize.py <https://github.com/pymupdf/PyMuPDF/blob/master/examples/posterize.py>`_),
-      * include PDF-based vector images like company logos, watermarks, etc., see `svg-logo.py <https://github.com/pymupdf/PyMuPDF/blob/master/examples/svg-logo.py>`_, which puts an SVG-based logo on each page (requires additional packages to deal with SVG-to-PDF conversions).
+      * create "n-up" versions of existing PDF files, combining several input pages into **one output page** (see example `4-up.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/4-up.py>`_),
+      * create "posterized" PDF files, i.e. every input page is split up in parts which each create a separate output page (see `posterize.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/posterize.py>`_),
+      * include PDF-based vector images like company logos, watermarks, etc., see `svg-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/svg-logo.py>`_, which puts an SVG-based logo on each page (requires additional packages to deal with SVG-to-PDF conversions).
 
       Changed in version 1.14.11
          Parameter *reuse_xref* has been deprecated.

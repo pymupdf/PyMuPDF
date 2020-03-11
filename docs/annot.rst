@@ -11,35 +11,36 @@ Quote from the :ref:`AdobeManual`: "An annotation associates an object such as a
 There is a parent-child relationship between an annotation and its page. If the page object becomes unusable (closed document, any document structure change, etc.), then so does every of its existing annotation objects -- an exception is raised saying that the object is "orphaned", whenever an annotation property or method is accessed.
 
 
-============================ ==============================================================
-**Attribute**                **Short Description**
-============================ ==============================================================
-:meth:`Annot.fileGet`        return attached file content
-:meth:`Annot.fileInfo`       return attached file information
-:meth:`Annot.fileUpd`        set attached file new content
-:meth:`Annot.getPixmap`      image of the annotation as a pixmap
-:meth:`Annot.setBorder`      change the border
-:meth:`Annot.setColors`      change the colors
-:meth:`Annot.setFlags`       change the flags
-:meth:`Annot.setInfo`        change various properties
-:meth:`Annot.setLineEnds`    set line ending styles
-:meth:`Annot.setOpacity`     change transparency
-:meth:`Annot.setName`        change the "Name" field (e.g. icon name)
-:meth:`Annot.setRect`        change the rectangle
-:meth:`Annot.update`         apply accumulated annot changes
-:attr:`Annot.border`         border details
-:attr:`Annot.colors`         border / background and fill colors
-:attr:`Annot.flags`          annotation flags
-:attr:`Annot.info`           various information
-:attr:`Annot.lineEnds`       start / end appearance of line-type annotations
-:attr:`Annot.next`           link to the next annotation
-:attr:`Annot.opacity`        the annot's transparency
-:attr:`Annot.parent`         page object of the annotation
-:attr:`Annot.rect`           rectangle containing the annotation
-:attr:`Annot.type`           type of the annotation
-:attr:`Annot.vertices`       point coordinates of Polygons, PolyLines, etc.
-:attr:`Annot.xref`           the PDF :data:`xref` number
-============================ ==============================================================
+=============================== ==============================================================
+**Attribute**                   **Short Description**
+=============================== ==============================================================
+:meth:`Annot.delete_responses`  delete all responding annotions
+:meth:`Annot.fileGet`           return attached file content
+:meth:`Annot.fileInfo`          return attached file information
+:meth:`Annot.fileUpd`           set attached file new content
+:meth:`Annot.getPixmap`         image of the annotation as a pixmap
+:meth:`Annot.setBorder`         change the border
+:meth:`Annot.setColors`         change the colors
+:meth:`Annot.setFlags`          change the flags
+:meth:`Annot.setInfo`           change various properties
+:meth:`Annot.setLineEnds`       set line ending styles
+:meth:`Annot.setOpacity`        change transparency
+:meth:`Annot.setName`           change the "Name" field (e.g. icon name)
+:meth:`Annot.setRect`           change the rectangle
+:meth:`Annot.update`            apply accumulated annot changes
+:attr:`Annot.border`            border details
+:attr:`Annot.colors`            border / background and fill colors
+:attr:`Annot.flags`             annotation flags
+:attr:`Annot.info`              various information
+:attr:`Annot.lineEnds`          start / end appearance of line-type annotations
+:attr:`Annot.next`              link to the next annotation
+:attr:`Annot.opacity`           the annot's transparency
+:attr:`Annot.parent`            page object of the annotation
+:attr:`Annot.rect`              rectangle containing the annotation
+:attr:`Annot.type`              type of the annotation
+:attr:`Annot.vertices`          point coordinates of Polygons, PolyLines, etc.
+:attr:`Annot.xref`              the PDF :data:`xref` number
+=============================== ==============================================================
 
 **Class API**
 
@@ -135,6 +136,11 @@ There is a parent-child relationship between an annotation and its page. If the 
       :arg dict colors: a dictionary containing color specifications. For accepted dictionary keys and values see below. The most practical way should be to first make a copy of the *colors* property and then modify this dictionary as required.
       :arg sequence stroke: see above.
       :arg sequence fill: see above.
+
+
+   .. method:: delete_responses()
+
+      *(New in version 1.16.12)* Delete annotations referring to this one. This includes any 'Popup' annotations and all annotations responding to it.
 
 
    .. index::

@@ -15,13 +15,17 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
 .. class:: Widget
 
-    .. attribute:: next
-
-       Point to the next form field on the page.
-
     .. method:: update
 
        After any changes to a widget, this method **must be used** to store them in the PDF.
+
+    .. method:: reset
+
+       Reset the field's value to its default -- if defined -- or remove it. Do not forget to issue :meth:`update` afterwards.
+
+    .. attribute:: next
+
+       Point to the next form field on the page.
 
     .. attribute:: border_color
 
@@ -105,7 +109,31 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
     .. attribute:: xref
 
-       An integer defining the PDF cross reference number of the widget.
+       The PDF :data:`xref` of the widget.
+
+    .. attribute:: script
+
+       *(New in version 1.16.12)* JavaScript text (unicode) for an action associated with the widget, or *None*. This is the only script action supported for **button type** widgets.
+
+    .. attribute:: script_stroke
+
+       *(New in version 1.16.12)* JavaScript text (unicode) to be performed when the user types a key-stroke into a text field or combo box or modifies the selection in a scrollable list box. This action can check the keystroke for validity and reject or modify it. *None* if not present.
+
+    .. attribute:: script_format
+
+       *(New in version 1.16.12)* JavaScript text (unicode) to be performed before the field is formatted to display its current value. This action can modify the field’s value before formatting. *None* if not present.
+
+    .. attribute:: script_change
+
+       *(New in version 1.16.12)* JavaScript text (unicode) to be performed when the field’s value is changed. This action can check the new value for validity. *None* if not present.
+
+    .. attribute:: script_calc
+
+       *(New in version 1.16.12)* JavaScript text (unicode) to be performed to recalculate the value of this field when that of another field changes. *None* if not present.
+
+    .. note::
+       1. For **adding** or **changing** one of the above scripts, just put the appropriate JavaScript source code in the widget attribute. To **remove** a script, set the respective attribute to *None*.
+       2. Button fields only support :attr:`script`. Other script entries will automatically be set to *None*.
 
 
 Standard Fonts for Widgets

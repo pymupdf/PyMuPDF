@@ -45,6 +45,7 @@ fitz.Document.getCharWidths = fitz.utils.getCharWidths
 # ------------------------------------------------------------------------------
 # Page
 # ------------------------------------------------------------------------------
+fitz.Page.apply_redactions = fitz.utils.apply_redactions
 fitz.Page.drawBezier = fitz.utils.drawBezier
 fitz.Page.drawCircle = fitz.utils.drawCircle
 fitz.Page.drawCurve = fitz.utils.drawCurve

@@ -181,6 +181,7 @@ fz_set_error_callback(gctx, JM_mupdf_error, &user);
 //-----------------------------------------------------------------------------
 // init global constants
 //-----------------------------------------------------------------------------
+dictkey_align = PyString_InternFromString("align");
 dictkey_bbox = PyString_InternFromString("bbox");
 dictkey_blocks = PyString_InternFromString("blocks");
 dictkey_bpc = PyString_InternFromString("bpc");
@@ -191,6 +192,7 @@ dictkey_colorspace = PyString_InternFromString("colorspace");
 dictkey_content = PyString_InternFromString("content");
 dictkey_creationDate = PyString_InternFromString("creationDate");
 dictkey_cs_name = PyString_InternFromString("cs-name");
+dictkey_da = PyString_InternFromString("da");
 dictkey_dashes = PyString_InternFromString("dashes");
 dictkey_desc = PyString_InternFromString("desc");
 dictkey_dir = PyString_InternFromString("dir");
@@ -245,7 +247,8 @@ import os
 import weakref
 from binascii import hexlify
 
-fitz_py2 = str is bytes           # if true, this is Python 2
+fitz_py2 = str is bytes  # if true, this is Python 2
+string_types = (str, unicode) if fitz_py2 else (str,)
 %}
 %include version.i
 %include helper-defines.i
@@ -2524,8 +2527,6 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 """
                 return self._getXrefString(xref, compressed, ascii)
 
-            xrefObject = get_pdf_object
-
 
             def updateObject(self, xref, text, page=None):
                 """Repleace the object at xref with text.
@@ -2588,6 +2589,11 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                     annot.parent = page_proxy  # refresh parent to new page
                     page._annot_refs[k] = annot
                 return page
+
+
+            xrefObject = get_pdf_object
+            xref_object = get_pdf_object
+            xref_stream = xrefStream
 
 
             def __repr__(self):
@@ -2819,6 +2825,29 @@ struct fz_page_s {
         CheckParent(self)
         if not self.parent.isPDF:
             raise ValueError("not a PDF")
+        if text:
+            if not fontname:
+                fontname = "Helv"
+            if not fontsize:
+                fontsize = 11
+            if not text_color:
+                text_color = (0, 0, 0)
+            if hasattr(text_color, "__float__"):
+                text_color = (text_color, text_color, text_color)
+            if not hasattr(text_color, "__getitem__"):
+                raise ValueError("text color must be a number or a sequence")
+            if len(text_color) > 3:
+                text_color = text_color[:3]
+            fmt = "{:g} {:g} {:g} rg /{f:s} {s:g} Tf"
+            fontname = fmt.format(*text_color, f=fontname, s=fontsize)
+            if not fill:
+                fill = (1, 1, 1)
+            if hasattr(fill, "__float__"):
+                fill = (fill, fill, fill)
+            if not hasattr(fill, "__getitem__"):
+                raise ValueError("fill color must be a number or a sequence")
+            if len(fill) > 3:
+                fill = fill[:3]
         %}
         %pythonappend addRedactAnnot
         %{
@@ -2842,10 +2871,19 @@ struct fz_page_s {
         val._setAP(ap, 0)
         val._cleanContents()
         %}
-        struct pdf_annot_s *addRedactAnnot(PyObject *quad)
+        struct pdf_annot_s *addRedactAnnot(PyObject *quad,
+                                           PyObject *text=NULL,
+                                           const char *fontname=NULL,
+                                           float fontsize=11,
+                                           int align=0,
+                                           PyObject *fill=NULL,
+                                           PyObject *text_color=NULL)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             pdf_annot *annot = NULL;
+            float fcol[4] = { 1, 1, 1, 0};
+            int nfcol = 0, i;
+            char *otext = NULL;
             fz_try(gctx)
             {
                 annot = pdf_create_annot(gctx, page, PDF_ANNOT_REDACT);
@@ -2853,8 +2891,30 @@ struct fz_page_s {
                 fz_rect r = fz_rect_from_quad(q);
                 pdf_set_annot_rect(gctx, annot, r);
                 // pdf_add_annot_quad_point(gctx, annot, q);
+                if (fill)
+                {
+                    JM_color_FromSequence(fill, &nfcol, fcol);
+                    pdf_obj *arr = pdf_new_array(gctx, page->doc, nfcol);
+                    for (i = 0; i < nfcol; i++)
+                    {
+                        pdf_array_push_real(gctx, arr, fcol[i]);
+                    }
+                    pdf_dict_put_drop(gctx, annot->obj, PDF_NAME(IC), arr);
+                }
+                otext = JM_Python_str_AsChar(text);
+                if (otext)
+                {
+                    pdf_dict_puts_drop(gctx, annot->obj, "OverlayText",
+                                       pdf_new_text_string(gctx, otext));
+                    pdf_dict_put_text_string(gctx,annot->obj, PDF_NAME(DA), fontname);
+                    pdf_dict_put_int(gctx, annot->obj, PDF_NAME(Q), (int64_t) align);
+                }
                 JM_add_annot_id(gctx, annot, "fitzannot");
                 pdf_update_annot(gctx, annot);
+            }
+            fz_always(gctx)
+            {
+                JM_Python_str_DelForPy3(otext);
             }
             fz_catch(gctx) return NULL;
             return pdf_keep_annot(gctx, annot);
@@ -3147,7 +3207,6 @@ struct fz_page_s {
             pdf_annot *annot = NULL;
             fz_try(gctx)
             {
-                fz_rect rect;
                 Py_ssize_t i, n = PySequence_Size(points);
                 if (n < 2) THROWMSG("bad list of points");
                 annot = pdf_create_annot(gctx, page, annot_type);
@@ -3342,13 +3401,12 @@ struct fz_page_s {
         //---------------------------------------------------------------------
         // Page apply redactions
         //---------------------------------------------------------------------
-        FITZEXCEPTION(apply_redactions, !result)
-        PyObject *apply_redactions(int mark=0)
+        FITZEXCEPTION(_apply_redactions, !result)
+        PyObject *_apply_redactions()
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             int success = 0;
-            pdf_redact_options opts = { 0 };
-            opts.no_black_boxes = 1 - mark;
+            pdf_redact_options opts = { 0 };  // never use black-boxing
             fz_try(gctx)
             {
                 assert_PDF(page);
@@ -3788,7 +3846,7 @@ annot._erase()
         }
 
         //---------------------------------------------------------------------
-        // clean contents stream
+        // Page clean contents stream
         //---------------------------------------------------------------------
         PARENTCHECK(_cleanContents)
         PyObject *_cleanContents()
@@ -4207,7 +4265,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         }
 
         //---------------------------------------------------------------------
-        // Get list of contents objects
+        // Page Get list of contents objects
         //---------------------------------------------------------------------
         FITZEXCEPTION(_getContents, !result)
         PARENTCHECK(_getContents)
@@ -4405,6 +4463,9 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         @property
         def MediaBox(self):
             return Rect(0, 0, self.MediaBoxSize)
+        
+        clean_contents = _cleanContents
+        get_contents = _getContents
 
         %}
     }
@@ -5378,6 +5439,65 @@ struct pdf_annot_s
             return_none;
         }
 
+
+        //---------------------------------------------------------------------
+        // redaction annotation get values
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(_get_redact_values, !result)
+        %feature("autodoc","Get values of a redaction annot.") _get_redact_values;
+        %pythonappend _get_redact_values %{
+        if not val:
+            return val
+        val["rect"] = self.rect
+        text_color, fontname, fontsize = TOOLS._parse_da(self)
+        val["text_color"] = text_color
+        val["fontname"] = fontname
+        val["fontsize"] = fontsize
+        fill = self.colors["fill"]
+        val["fill"] = fill if fill else (1, 1, 1)
+
+        %}
+        PyObject *_get_redact_values()
+        {
+            if (pdf_annot_type(gctx, $self) != PDF_ANNOT_REDACT)
+            {
+                return_none;
+            }
+            PyObject *values = PyDict_New();
+            const char *text = NULL;
+            fz_try(gctx)
+            {
+                pdf_obj *obj = pdf_dict_gets(gctx, $self->obj, "RO");
+                if (obj)
+                {
+                    THROWMSG("unsupported redaction key '/RO'.");
+                }
+                obj = pdf_dict_gets(gctx, $self->obj, "OverlayText");
+                if (obj)
+                {
+                    text = pdf_to_text_string(gctx, obj);
+                    DICT_SETITEM_DROP(values, dictkey_text, Py_BuildValue("s", text));
+                }
+                else
+                {
+                    DICT_SETITEM_DROP(values, dictkey_text, Py_BuildValue("s", ""));
+                }
+                obj = pdf_dict_get(gctx, $self->obj, PDF_NAME(Q));
+                int align = 0;
+                if (obj)
+                {
+                    align = pdf_to_int(gctx, obj);
+                }
+                DICT_SETITEM_DROP(values, dictkey_align, Py_BuildValue("i", align));
+            }
+            fz_catch(gctx)
+            {
+                Py_DECREF(values);
+                return NULL;
+            }
+            return values;
+        }
+
         //---------------------------------------------------------------------
         // annotation set name
         //---------------------------------------------------------------------
@@ -6241,6 +6361,50 @@ CheckParent(self)
         }
 
         //---------------------------------------------------------------------
+        // annotation delete responses
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(delete_responses, !result)
+        PARENTCHECK(delete_responses)
+        %feature("autodoc","Delete PopUp and responses to this annotation.") delete_responses;
+        PyObject *delete_responses()
+        {
+            pdf_page *page = $self->page;
+            pdf_annot *irt_annot = NULL;
+            fz_try(gctx)
+            {
+                while (1)  // delete any /IRT annotations
+                {
+                    irt_annot = JM_find_annot_irt(gctx, $self);
+                    if (!irt_annot)  // no more there
+                        break;
+                    JM_delete_annot(gctx, page, irt_annot);
+                }
+                pdf_dict_del(gctx, $self->obj, PDF_NAME(Popup));
+                pdf_obj *annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
+                int i, n = pdf_array_len(gctx, annots), found = 0;
+                for (i = n - 1; i >= 0; i--)
+                {
+                    pdf_obj *o = pdf_array_get(gctx, annots, i);
+                    pdf_obj *p = pdf_dict_get(gctx, o, PDF_NAME(Parent));
+                    if (!p)
+                        continue;
+                    if (!pdf_objcmp(gctx, p, $self->obj))
+                    {
+                        pdf_array_delete(gctx, annots, i);
+                        found = 1;
+                    }
+                }
+                if (found > 0)
+                {
+                    pdf_dict_put(gctx, page->obj, PDF_NAME(Annots), annots);
+                }
+            }
+            fz_catch(gctx) return NULL;
+            pdf_dirty_annot(gctx, $self);
+            return_none;
+        }
+
+        //---------------------------------------------------------------------
         // next annotation
         //---------------------------------------------------------------------
         PARENTCHECK(next)
@@ -6989,6 +7153,31 @@ struct Tools
             return Py_BuildValue("i", JM_UNIQUE_ID);
         }
 
+        FITZEXCEPTION(set_icc, !result)
+        %feature("autodoc","Sett ICC color handling on or off.") set_icc;
+        PyObject *set_icc(int on=0)
+        {
+            fz_try(gctx)
+            {
+                if (on)
+                {
+                    if (FZ_ENABLE_ICC)
+                        fz_enable_icc(gctx);
+                    else
+                        THROWMSG("PyMuPDF generated without ICC components.");
+                }
+                else if (FZ_ENABLE_ICC)
+                {
+                    fz_disable_icc(gctx);
+                }
+            }
+            fz_catch(gctx)
+            {
+                return NULL;
+            }
+            return_none;
+        }
+
         %feature("autodoc","Free 'percent' of current store size.") store_shrink;
         PyObject *store_shrink(int percent)
         {
@@ -7040,6 +7229,16 @@ struct Tools
             widget.xref = annot.xref
             widget.parent = annot.parent
             widget._annot = annot  # backpointer to annot object
+            if not widget.script:
+                widget.script = None
+            if not widget.script_stroke:
+                widget.script_stroke = None
+            if not widget.script_format:
+                widget.script_format = None
+            if not widget.script_change:
+                widget.script_change = None
+            if not widget.script_calc:
+                widget.script_calc = None
         %}
         PyObject *_fill_widget(struct pdf_annot_s *annot, PyObject *widget)
         {
@@ -7057,6 +7256,19 @@ struct Tools
             fz_try(gctx)
             {
                 JM_set_widget_properties(gctx, annot, widget);
+            }
+            fz_catch(gctx) return NULL;
+            return_none;
+        }
+
+
+        FITZEXCEPTION(_reset_widget, !result)
+        PyObject *_reset_widget(struct pdf_annot_s *annot)
+        {
+            fz_try(gctx)
+            {
+                pdf_document *pdf = pdf_get_bound_document(gctx, annot->obj);
+                pdf_field_reset(gctx, pdf, annot->obj);
             }
             fz_catch(gctx) return NULL;
             return_none;

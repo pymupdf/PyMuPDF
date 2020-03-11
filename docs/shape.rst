@@ -86,7 +86,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       .. image:: images/img-squiggly.png
 
-      .. note:: Waves drawn are **not** trigonometric (sine / cosine). If you need that, have a look at `draw-sines.py <https://github.com/pymupdf/PyMuPDF/blob/master/demo/draw-sines.py>`_.
+      .. note:: Waves drawn are **not** trigonometric (sine / cosine). If you need that, have a look at `draw-sines.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/draw-sines.py>`_.
 
    .. index::
       pair: breadth; drawZigzag

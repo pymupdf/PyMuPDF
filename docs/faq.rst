@@ -763,7 +763,7 @@ If you see a table in a document, you are not normally looking at something like
 
 Extracting a tabular data from such a page area therefore means that you must find a way to **(1)** graphically indicate table and column borders, and **(2)** then extract text based on this information.
 
-The wxPython GUI script `wxTableExtract.py <https://github.com/pymupdf/PyMuPDF/blob/master/examples/wxTableExtract.py>`_ strives to exactly do that. You may want to have a look at it and adjust it to your liking.
+The wxPython GUI script `wxTableExtract.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/wxTableExtract.py>`_ strives to exactly do that. You may want to have a look at it and adjust it to your liking.
 
 ----------
 
@@ -1096,7 +1096,7 @@ The result looks like this:
 
 How to Use FreeText
 ~~~~~~~~~~~~~~~~~~~~~
-This script shows a couple of possibilities for 'FreeText' annotations::
+This script shows a couple of ways to deal with 'FreeText' annotations::
 
     # -*- coding: utf-8 -*-
     import fitz
@@ -1133,6 +1133,17 @@ The result looks like this:
 
 .. image:: images/img-freetext.jpg
    :scale: 80
+
+------------------------------
+
+Using Buttons and JavaScript
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Since MuPDF v1.16, 'FreeText' annotations no longer support bold or italic versions of the Times-Roman, Helvetica or Courier fonts.
+
+A big **thank you** to our user `@kurokawaikki <https://github.com/kurokawaikki>`_, who contributed the following script to **circumvent this restriction**.
+
+.. literalinclude:: make-bold.py
+   :language: python
 
 --------------------------
 
@@ -1319,7 +1330,7 @@ PDF supports incorporating arbitrary data. This can be done in one of two ways: 
 
 The basic differences between these options are **(1)** you need edit permission to embed a file, but only annotation permission to attach, **(2)** like all annotations, attachments are visible on a page, embedded files are not.
 
-There exist several example scripts: `embedded-list.py <https://github.com/pymupdf/PyMuPDF/blob/master/examples/embedded-list.py>`_, `new-annots.py <https://github.com/pymupdf/PyMuPDF/blob/master/demo/new-annots.py>`_.
+There exist several example scripts: `embedded-list.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-list.py>`_, `new-annots.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/new-annots.py>`_.
 
 Also look at the sections above and at chapter :ref:`Appendix 3`.
 
@@ -1374,7 +1385,7 @@ How to Join PDFs
 ~~~~~~~~~~~~~~~~~~
 It is easy to join PDFs with method :meth:`Document.insertPDF`. Given open PDF documents, you can copy page ranges from one to the other. You can select the point where the copied pages should be placed, you can revert the page sequence and also change page rotation. This Wiki `article <https://github.com/pymupdf/PyMuPDF/wiki/Inserting-Pages-from-other-PDFs>`_ contains a full description.
 
-The GUI script `PDFjoiner.py <https://github.com/pymupdf/PyMuPDF/blob/master/examples/PDFjoiner.py>`_ uses this method to join a list of files while also joining the respective table of contents segments. It looks like this:
+The GUI script `PDFjoiner.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/PDFjoiner.py>`_ uses this method to join a list of files while also joining the respective table of contents segments. It looks like this:
 
 .. image:: images/img-pdfjoiner.jpg
    :scale: 60
