@@ -2592,8 +2592,6 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
 
 
             xrefObject = get_pdf_object
-            xref_object = get_pdf_object
-            xref_stream = xrefStream
 
 
             def __repr__(self):
@@ -3673,28 +3671,56 @@ annot._erase()
         }
 
         //---------------------------------------------------------------------
-        // MediaBox size: width, height of /MediaBox (PDF only)
+        // MediaBox: get the /MediaBox (PDF only)
         //---------------------------------------------------------------------
-        PARENTCHECK(MediaBoxSize)
+        PARENTCHECK(MediaBox)
         %pythoncode %{@property%}
-        %feature("autodoc","Retrieve width, height of /MediaBox.") MediaBoxSize;
-        %pythonappend MediaBoxSize %{
-        val = Point(val)
-        if not bool(val):
-            r = self.rect
-            val = Point(r.width, r.height)
+        %feature("autodoc","Retrieve the /MediaBox.") MediaBox;
+        %pythonappend MediaBox %{
+        val = Rect(val)
         %}
-        PyObject *MediaBoxSize()
+        PyObject *MediaBox()
         {
-            PyObject *p = JM_py_from_point(fz_make_point(0, 0));
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            if (!page) return p;
-            fz_rect r = fz_empty_rect;
-            pdf_obj *o = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(MediaBox));
-            if (!o) return p;
+            if (!page) return JM_py_from_rect(fz_bound_page(gctx, $self));
 
-            r = pdf_to_rect(gctx, o);
-            return JM_py_from_point(fz_make_point(r.x1 - r.x0, r.y1 - r.y0));
+            fz_rect mediabox, cropbox, page_mediabox;
+            PyObject *rect = NULL;
+            pdf_obj *obj;
+            float userunit = 1;
+
+            obj = pdf_dict_get(gctx, page->obj, PDF_NAME(UserUnit));
+            if (pdf_is_real(gctx, obj))
+            {
+                userunit = pdf_to_real(gctx, obj);
+            }
+
+            mediabox = pdf_to_rect(gctx, pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(MediaBox)));
+            if (fz_is_empty_rect(mediabox))
+            {
+                mediabox.x0 = 0;
+                mediabox.y0 = 0;
+                mediabox.x1 = 612;
+                mediabox.y1 = 792;
+            }
+
+            cropbox = pdf_to_rect(gctx,
+                pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(CropBox)));
+            if (!fz_is_empty_rect(cropbox))
+            {
+                mediabox = fz_intersect_rect(mediabox, cropbox);
+            }
+            page_mediabox.x0 = fz_min(mediabox.x0, mediabox.x1);
+            page_mediabox.y0 = fz_min(mediabox.y0, mediabox.y1);
+            page_mediabox.x1 = fz_max(mediabox.x0, mediabox.x1);
+            page_mediabox.y1 = fz_max(mediabox.y0, mediabox.y1);
+
+            if (page_mediabox.x1 - page_mediabox.x0 < 1 ||
+                page_mediabox.y1 - page_mediabox.y0 < 1)
+                page_mediabox = fz_unit_rect;
+
+            return JM_py_from_rect(page_mediabox);
+
         }
 
         //---------------------------------------------------------------------
@@ -3712,6 +3738,7 @@ annot._erase()
             pdf_obj *o = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(CropBox));
             if (!o) return p;                    // no CropBox specified
             fz_rect cbox = pdf_to_rect(gctx, o);
+            Py_DECREF(p);
             return JM_py_from_point(fz_make_point(cbox.x0, cbox.y0));;
         }
 
@@ -4253,7 +4280,12 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         //---------------------------------------------------------------------
         PARENTCHECK(_getTransformation)
         %feature("autodoc","Return page transformation matrix.") _getTransformation;
-        %pythonappend _getTransformation %{val = Matrix(val)%}
+        %pythonappend _getTransformation %{
+        if self.rotation % 360 == 0:
+            val = Matrix(val)
+        else:
+            val = Matrix(1, 0, 0, -1, 0, self.CropBox.height)
+        %}
         PyObject *_getTransformation()
         {
             fz_matrix ctm = fz_identity;
@@ -4454,18 +4486,25 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
 
         @property
         def CropBox(self):
+            """Rectangle /CropBox IGNORING any page rotation."""
+            rotation = self.rotation  # page rotation
+            width = self.rect.width  # page width
+            height = self.rect.height  # page height
+            if rotation % 180 != 0:  # rotation by odd number of 90
+                width, height = height, width  # so revert width and height
             x0 = self.CropBoxPosition.x
-            y0 = self.MediaBoxSize.y - self.CropBoxPosition.y - self.rect.height
-            x1 = x0 + self.rect.width
-            y1 = y0 + self.rect.height
+            y0 = self.MediaBox.height - self.CropBoxPosition.y - height
+            x1 = x0 + width
+            y1 = y0 + height
             return Rect(x0, y0, x1, y1)
 
         @property
-        def MediaBox(self):
-            return Rect(0, 0, self.MediaBoxSize)
-        
-        clean_contents = _cleanContents
-        get_contents = _getContents
+        def MediaBoxSize(self):
+            return Point(self.MediaBox.width, self.MediaBox.height)
+
+        cleanContents = _cleanContents
+        getContents = _getContents
+        getTransformation = _getTransformation
 
         %}
     }

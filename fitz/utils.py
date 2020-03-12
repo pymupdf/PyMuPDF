@@ -2419,8 +2419,10 @@ class Shape(object):
         self.width = page.MediaBoxSize.x
         self.x = page.CropBoxPosition.x
         self.y = page.CropBoxPosition.y
+
         self.pctm = page._getTransformation()  # page transf. matrix
         self.ipctm = ~self.pctm  # inverted transf. matrix
+
         self.draw_cont = ""
         self.text_cont = ""
         self.totalcont = ""

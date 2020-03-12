@@ -984,13 +984,13 @@ This is available for PDF documents only. There are basically two groups of meth
 
    .. attribute:: CropBoxPosition
 
-      Contains the displacement of the page's */CropBox* for a PDF, otherwise the top-left coordinates of :attr:`Page.rect`.
+      Contains the top-left point of the page's */CropBox* for a PDF, otherwise *Point(0, 0)*.
 
       :type: :ref:`Point`
 
    .. attribute:: CropBox
 
-      The page's */CropBox* for a PDF, else :attr:`Page.rect`.
+      The page's */CropBox* for a PDF. Always the **unrotated** page rectangle is returned. For a non-PDF this will always equal the page rectangle.
 
       :type: :ref:`Rect`
 
@@ -1006,7 +1006,7 @@ This is available for PDF documents only. There are basically two groups of meth
 
       :type: :ref:`Rect`
 
-      .. note:: For most PDF documents and for all other types, *page.rect == page.CropBox == page.MediaBox* is true. However, for some PDFs the visible page is a true subset of */MediaBox*. In this case the above attributes help to correctly locate page elements.
+      .. note:: For most PDF documents and for all other types, *page.rect == page.CropBox == page.MediaBox* is true. However, for some PDFs the visible page is a true subset of */MediaBox*. Also, if the page is rotated, its ``Page.rect`` may not equal ``Page.CropBox``. In these cases the above attributes help to correctly locate page elements.
 
    .. attribute:: firstLink
 

@@ -55,27 +55,7 @@ Windows binaries are provided for Python **32-bit and 64-bit** versions.
 
 **Overview of wheel names (PyMuPDF version is x.xx.xx):**
 
-* ``PyMuPDF-x.xx.xx-cp27-cp27m-macosx_10_6_intel.whl``
-* ``PyMuPDF-x.xx.xx-cp27-cp27m-manylinux2010_x86_64.whl``
-* ``PyMuPDF-x.xx.xx-cp27-cp27m-win32.whl``
-* ``PyMuPDF-x.xx.xx-cp27-cp27m-win_amd64.whl``
-* ``PyMuPDF-x.xx.xx-cp27-cp27mu-manylinux2010_x86_64.whl``
-* ``PyMuPDF-x.xx.xx-cp35-cp35m-macosx_10_6_intel.whl``
-* ``PyMuPDF-x.xx.xx-cp35-cp35m-manylinux2010_x86_64.whl``
-* ``PyMuPDF-x.xx.xx-cp35-cp35m-win32.whl``
-* ``PyMuPDF-x.xx.xx-cp35-cp35m-win_amd64.whl``
-* ``PyMuPDF-x.xx.xx-cp36-cp36m-macosx_10_6_intel.whl``
-* ``PyMuPDF-x.xx.xx-cp36-cp36m-manylinux2010_x86_64.whl``
-* ``PyMuPDF-x.xx.xx-cp36-cp36m-win32.whl``
-* ``PyMuPDF-x.xx.xx-cp36-cp36m-win_amd64.whl``
-* ``PyMuPDF-x.xx.xx-cp37-cp37m-macosx_10_6_intel.whl``
-* ``PyMuPDF-x.xx.xx-cp37-cp37m-manylinux2010_x86_64.whl``
-* ``PyMuPDF-x.xx.xx-cp37-cp37m-win32.whl``
-* ``PyMuPDF-x.xx.xx-cp37-cp37m-win_amd64.whl``
-* ``PyMuPDF-x.xx.xx-cp38-cp38-macosx_10_9_x86_64.whl``
-* ``PyMuPDF-x.xx.xx-cp38-cp38-manylinux2010_x86_64.whl``
-* ``PyMuPDF-x.xx.xx-cp38-cp38-win32.whl``
-* ``PyMuPDF-x.xx.xx-cp38-cp38-win_amd64.whl``
+.. literalinclude:: wheelnames.txt
 
 
 Older versions can be found in the releases directory of our home page https://github.com/pymupdf/PyMuPDF/releases.

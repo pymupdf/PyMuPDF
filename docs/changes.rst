@@ -6,10 +6,11 @@ Changes in Version 1.16.12
 * **Fixed** issue `#447 <https://github.com/pymupdf/PyMuPDF/issues/447>`_
 * **Fixed** issue `#461 <https://github.com/pymupdf/PyMuPDF/issues/461>`_.
 * **Fixed** issue `#397 <https://github.com/pymupdf/PyMuPDF/issues/397>`_.
-* **Added** JavaScript support to PDF form fields, thereby addressing `#454 <https://github.com/pymupdf/PyMuPDF/issues/454>`_.
-* **Added** a new annotation method :meth:`Annot.delete_responses`, which removes 'Popup' and response annotations referring to the current one.
+* **Fixed** issue `#463 <https://github.com/pymupdf/PyMuPDF/issues/463>`_.
+* **Added** JavaScript support to PDF form fields, thereby fixing `#454 <https://github.com/pymupdf/PyMuPDF/issues/454>`_.
+* **Added** a new annotation method :meth:`Annot.delete_responses`, which removes 'Popup' and response annotations referring to the current one. Mainly serves data protection purposes.
 * **Added** a new form field method :meth:`Widget.reset`, which resets the field value to its default.
-* **Changed** and extended handling of redactions: images and XObjects are removed if *contained* in a redaction rectangle. Any partial overlaps will just be covered by the redaction background color. Now a text can be specified to be inserted in the rectangle area to **replace the deleted original** text. This resolves `#434 <https://github.com/pymupdf/PyMuPDF/issues/434>`_.
+* **Changed** and extended handling of redactions: images and XObjects are removed if *contained* in a redaction rectangle. Any partial only overlaps will just be covered by the redaction background color. Now an *overlay* text can be specified to be inserted in the rectangle area to **take the place the deleted original** text. This resolves `#434 <https://github.com/pymupdf/PyMuPDF/issues/434>`_.
 
 Changes in Version 1.16.11
 ---------------------------
