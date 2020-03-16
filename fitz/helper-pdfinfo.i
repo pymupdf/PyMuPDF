@@ -157,9 +157,16 @@ void JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
 
         o = pdf_dict_get(ctx, imagedict, PDF_NAME(BBox));
         m = pdf_dict_get(ctx, imagedict, PDF_NAME(Matrix));
-        if (o && m)
+        if (o)
         {
-            bbox = fz_transform_rect(pdf_to_rect(ctx, o), pdf_to_matrix(ctx, m));
+            if (m)
+            {
+                bbox = fz_transform_rect(pdf_to_rect(ctx, o), pdf_to_matrix(ctx, m));
+            }
+            else
+            {
+                bbox = pdf_to_rect(ctx, o);
+            }
         }
         else
         {

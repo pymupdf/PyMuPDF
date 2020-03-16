@@ -1,6 +1,15 @@
 Change Logs
 ===============
 
+Changes in Version 1.16.13
+---------------------------
+
+* **Added** :meth:`Document.getPageXObjectList` which returns a list of **Form XObjects** of the page.
+* **Added** :meth:`Page.setMediaBox` for changing the physical PDF page size.
+* **Added** :ref:`Page` methods which have been internal before: :meth:`Page.cleanContents` (= :meth:`Page._cleanContents`), :meth:`Page.getContents` (= :meth:`Page._getContents`), :meth:`Page.getTransformation` (= :meth:`Page._getTransformation`).
+
+
+
 Changes in Version 1.16.12
 ---------------------------
 * **Fixed** issue `#447 <https://github.com/pymupdf/PyMuPDF/issues/447>`_

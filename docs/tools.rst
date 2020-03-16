@@ -28,8 +28,8 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       .. note:: MuPDF has dropped support for this in v1.14.0, so we have re-implemented a similar function with the following differences:
 
-            * It is not part of MuPDF's global context and not threadsafe (because we do not support threads in PyMuPDF yet).
-            * It is implemented as *int*. This means that the maximum number is *sys.maxsize*. Should this number ever be exceeded, the counter is reset to 1.
+            * It is not part of MuPDF's global context and not threadsafe (not an issue because we do not support threads in PyMuPDF anyway).
+            * It is implemented as *int*. This means that the maximum number is *sys.maxsize*. Should this number ever be exceeded, the counter starts over again at 1.
 
       :rtype: int
       :returns: a unique positive integer.
@@ -50,13 +50,13 @@ This class is a collection of utility methods and attributes, mainly around memo
       Empty MuPDF warnings message buffer.
 
 
-   .. method:: reset_mupdf_display_errors(value=None)
+   .. method:: mupdf_display_errors(value=None)
 
       *(New in version 1.16.8)*
       
-      Show and set whether MuPDF errors should be displayed.
+      Show or set whether MuPDF errors should be displayed.
 
-      :arg bool value: if not a bool, the current setting is returned. If true, MuPDF errors will be shown on *sys.stderr*, otherwise suppressed. In any case, messages continue to be stored in the warnings store. Changes remain in effect. Upon import of PyMuPDF this value is *True*.
+      :arg bool value: if not a bool, the current setting is returned. If true, MuPDF errors will be shown on *sys.stderr*, otherwise suppressed. In any case, messages continue to be stored in the warnings store. Upon import of PyMuPDF this value is *True*.
 
       :returns: *True* or *False*
 
@@ -65,7 +65,7 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       *(New in version 1.16.0)*
       
-      Return all stored MuPDF messages as a string with interspersed *\n*.
+      Return all stored MuPDF messages as a string with interspersed line-breaks.
 
       :arg bool reset: *(new in version 1.16.7)* whether to automatically empty the store.
 
@@ -129,7 +129,7 @@ This class is a collection of utility methods and attributes, mainly around memo
         'tofu-historic': False,
         'tofu-symbol': False,
         'tofu-sil': False,
-        'icc': False,
+        'icc': True,
         'py-memory': True, # (False if Python 2)
         'base14': True}
 

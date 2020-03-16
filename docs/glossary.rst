@@ -22,6 +22,19 @@ Glossary
 
         A Python sequence of 4 :data:`point_like` items.
 
+.. data:: inheritable
+
+        A number of values in a PDF can be specified once and then be inherited by objects further down in a parent-child relationship. The mediabox (physical size) of pages can for example be specified in nodes of the :data:`pagetree` and will then be taken as value for all *kids*, which do not specify their own value.
+
+.. data:: MediaBox
+
+        A PDF array of 4 floats specifying a physical page size (:data:`inheritable`).
+
+.. data:: CropBox
+
+        A PDF array of 4 floats specifying a page's visible area (:data:`inheritable`). This value is **not affected** if the page is rotated.
+
+
 .. data:: catalog
 
         A central PDF :data:`dictionary` -- also called "root" -- containing pointers to many other information.
@@ -57,9 +70,9 @@ Glossary
             /Annots[55 0 R]                   % value: array, one entry (indirect object)
             >>
 
-        */Contents*, */Type*, */MediaBox*, etc. are **keys**, *40 0 R*, */Page*, *[0 0 595.32 841.92]*, etc. are the respective **values**. The strings *<<* and *>>* are used to enclose object definitions.
+        *Contents*, *Type*, *MediaBox*, etc. are **keys**, *40 0 R*, *Page*, *[0 0 595.32 841.92]*, etc. are the respective **values**. The strings *"<<"* and *">>"* are used to enclose object definitions.
 
-        This example also shows the syntax of **nested** dictionary values: */Resources* has an object as its value, which in turn is a dictionary with keys like */ExtGState* (with the value *<</R7 26 0 R>>*, which is another dictionary), etc.
+        This example also shows the syntax of **nested** dictionary values: *Resources* has an object as its value, which in turn is a dictionary with keys like *ExtGState* (with the value *<</R7 26 0 R>>*, which is another dictionary), etc.
 
 .. data:: page
 

@@ -46,7 +46,7 @@ copyright = "2015-2020, Jorj X. McKie"
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "1.16.12"
+release = "1.16.13"
 
 # The short X.Y version
 version = release
@@ -128,7 +128,7 @@ html_theme_options = {
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = "pymupdf.ico"
+html_favicon = "Pymupdf.ico"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

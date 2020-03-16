@@ -1420,7 +1420,10 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                     goto weiter;
                 }
                 buf = fontbuffer(gctx, pdf, xref);
-                if (!buf) THROWMSG("xref is not a supported font");
+                if (!buf)
+                {
+                    fz_throw(gctx, FZ_ERROR_GENERIC, "font at xref %d is not supported", xref);
+                }
                 font = fz_new_font_from_buffer(gctx, NULL, buf, idx, 0);
 
                 weiter:;
@@ -2396,6 +2399,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                     return [v[:-1] for v in val]
                 return val
 
+
             def getPageImageList(self, pno, full=False):
                 """Retrieve a list of images used on a page.
                 """
@@ -2407,6 +2411,18 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                 if full is False:
                     return [v[:-1] for v in val]
                 return val
+
+
+            def getPageXObjectList(self, pno):
+                """Retrieve a list of XObjects used on a page.
+                """
+                if self.isClosed or self.isEncrypted:
+                    raise ValueError("document closed or encrypted")
+                if not self.isPDF:
+                    return ()
+                val = self._getPageInfo(pno, 3)
+                return val
+
 
             def copyPage(self, pno, to=-1):
                 """Copy a page within a PDF document.
@@ -2838,14 +2854,15 @@ struct fz_page_s {
                 text_color = text_color[:3]
             fmt = "{:g} {:g} {:g} rg /{f:s} {s:g} Tf"
             fontname = fmt.format(*text_color, f=fontname, s=fontsize)
-            if not fill:
+            if fill is None:
                 fill = (1, 1, 1)
-            if hasattr(fill, "__float__"):
-                fill = (fill, fill, fill)
-            if not hasattr(fill, "__getitem__"):
-                raise ValueError("fill color must be a number or a sequence")
-            if len(fill) > 3:
-                fill = fill[:3]
+            if fill:
+                if hasattr(fill, "__float__"):
+                    fill = (fill, fill, fill)
+                if not hasattr(fill, "__getitem__"):
+                    raise ValueError("fill color must be a number or a sequence")
+                if len(fill) > 3:
+                    fill = fill[:3]
         %}
         %pythonappend addRedactAnnot
         %{
@@ -2889,7 +2906,7 @@ struct fz_page_s {
                 fz_rect r = fz_rect_from_quad(q);
                 pdf_set_annot_rect(gctx, annot, r);
                 // pdf_add_annot_quad_point(gctx, annot, q);
-                if (fill)
+                if (PyObject_IsTrue(fill) == 1)
                 {
                     JM_color_FromSequence(fill, &nfcol, fcol);
                     pdf_obj *arr = pdf_new_array(gctx, page->doc, nfcol);
@@ -2899,7 +2916,10 @@ struct fz_page_s {
                     }
                     pdf_dict_put_drop(gctx, annot->obj, PDF_NAME(IC), arr);
                 }
-                otext = JM_Python_str_AsChar(text);
+                if (PyObject_IsTrue(text) == 1)
+                {
+                    otext = JM_Python_str_AsChar(text);
+                }
                 if (otext)
                 {
                     pdf_dict_puts_drop(gctx, annot->obj, "OverlayText",
@@ -3404,7 +3424,7 @@ struct fz_page_s {
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             int success = 0;
-            pdf_redact_options opts = { 0 };  // never use black-boxing
+            pdf_redact_options opts = { 1 };  // never use black-boxing
             fz_try(gctx)
             {
                 assert_PDF(page);
@@ -3482,6 +3502,30 @@ struct fz_page_s {
             return JM_py_from_rect(text_rect);
         }
 
+
+        //---------------------------------------------------------------------
+        // Page.setMediaBox
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(setMediaBox, !result)
+        PARENTCHECK(setMediaBox)
+        PyObject *setMediaBox(PyObject *rect)
+        {
+            pdf_page *page = pdf_page_from_fz_page(gctx, $self);
+            fz_try(gctx)
+            {
+                assert_PDF(page);
+                fz_rect mediabox = JM_rect_from_py(rect);
+                if (fz_is_empty_rect(mediabox) || fz_is_infinite_rect(mediabox))
+                {
+                    THROWMSG("rect must be finite and not empty");
+                }
+                pdf_dict_put_rect(gctx, page->obj, PDF_NAME(MediaBox), mediabox);
+                pdf_dict_put_rect(gctx, page->obj, PDF_NAME(CropBox), mediabox);
+            }
+            fz_catch(gctx) return NULL;
+            page->doc->dirty = 1;
+            return_none;
+        }
 
         //---------------------------------------------------------------------
         // Page.setCropBox
@@ -3684,7 +3728,7 @@ annot._erase()
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
             if (!page) return JM_py_from_rect(fz_bound_page(gctx, $self));
 
-            fz_rect mediabox, cropbox, page_mediabox;
+            fz_rect mediabox, page_mediabox;
             PyObject *rect = NULL;
             pdf_obj *obj;
             float userunit = 1;
@@ -3704,12 +3748,6 @@ annot._erase()
                 mediabox.y1 = 792;
             }
 
-            cropbox = pdf_to_rect(gctx,
-                pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(CropBox)));
-            if (!fz_is_empty_rect(cropbox))
-            {
-                mediabox = fz_intersect_rect(mediabox, cropbox);
-            }
             page_mediabox.x0 = fz_min(mediabox.x0, mediabox.x1);
             page_mediabox.y0 = fz_min(mediabox.y0, mediabox.y1);
             page_mediabox.x1 = fz_max(mediabox.x0, mediabox.x1);
@@ -3724,22 +3762,26 @@ annot._erase()
         }
 
         //---------------------------------------------------------------------
-        // CropBox position: top-left of /CropBox (PDF only)
+        // CropBox position: x0, y0 of /CropBox
         //---------------------------------------------------------------------
         PARENTCHECK(CropBoxPosition)
         %pythoncode %{@property%}
-        %feature("autodoc","Retrieve position of /CropBox. Return (0,0) for non-PDF, or no /CropBox.") CropBoxPosition;
         %pythonappend CropBoxPosition %{val = Point(val)%}
         PyObject *CropBoxPosition()
         {
-            PyObject *p = JM_py_from_point(fz_make_point(0, 0));
             pdf_page *page = pdf_page_from_fz_page(gctx, $self);
-            if (!page) return p;                 // not a PDF
-            pdf_obj *o = pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(CropBox));
-            if (!o) return p;                    // no CropBox specified
-            fz_rect cbox = pdf_to_rect(gctx, o);
-            Py_DECREF(p);
-            return JM_py_from_point(fz_make_point(cbox.x0, cbox.y0));;
+            if (!page)
+            {  // not a PDF
+                return JM_py_from_point(fz_make_point(0, 0));
+            }
+            fz_rect cropbox = pdf_to_rect(gctx,
+                pdf_dict_get_inheritable(gctx, page->obj, PDF_NAME(CropBox)));
+            if (fz_is_infinite_rect(cropbox))
+            {  // no /CropBox defined
+                return JM_py_from_point(fz_make_point(0, 0));
+            }
+
+            return JM_py_from_point(fz_make_point(cropbox.x0, cropbox.y0));
         }
 
         //---------------------------------------------------------------------
@@ -5493,7 +5535,7 @@ struct pdf_annot_s
         val["fontname"] = fontname
         val["fontsize"] = fontsize
         fill = self.colors["fill"]
-        val["fill"] = fill if fill else (1, 1, 1)
+        val["fill"] = fill
 
         %}
         PyObject *_get_redact_values()
@@ -7316,8 +7358,8 @@ struct Tools
 
         FITZEXCEPTION(_parse_da, !result)
         %pythonappend _parse_da %{
-        if not val or val == "":
-            retun ((0,), "", 0)
+        if not val:
+            return ((0,), "", 0)
         font = "Helv"
         fsize = 12
         col = (0, 0, 0)

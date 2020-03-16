@@ -536,7 +536,7 @@ def CheckParent(o):
 
 
 def CheckColor(c):
-    if c is not None:
+    if c:
         if (
             type(c) not in (list, tuple)
             or len(c) not in (1, 3, 4)
@@ -547,7 +547,7 @@ def CheckColor(c):
 
 
 def ColorCode(c, f):
-    if c is None:
+    if not c:
         return ""
     if hasattr(c, "__float__"):
         c = (c,)
@@ -713,6 +713,24 @@ def ConversionTrailer(i):
     else:
         r = text
 
+    return r
+
+def DerotateRect(cropbox, rect, deg):
+    if deg == 0:
+        return rect
+    points = []
+    for p in rect.quad:
+        if deg == 90:
+            q = (p.y, cropbox.height - p.x)
+        elif deg == 270:
+            q = (cropbox.width - p.y, p.x)
+        else:
+            q = (cropbox.width - p.x, cropbox.height - p.y)
+        points.append(q)
+
+    r = Rect(points[0], points[0])
+    for p in points[1:]:
+        r |= p
     return r
 
 %}

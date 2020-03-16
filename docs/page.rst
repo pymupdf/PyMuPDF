@@ -77,17 +77,18 @@ This is available for PDF documents only. There are basically two groups of meth
 :meth:`Page.newShape`            PDF only: start a new :ref:`Shape`
 :meth:`Page.searchFor`           search for a string
 :meth:`Page.setCropBox`          PDF only: modify the visible page
+:meth:`Page.setMediaBox`         PDF only: modify the mediabox
 :meth:`Page.setRotation`         PDF only: set page rotation
 :meth:`Page.showPDFpage`         PDF only: display PDF page image
 :meth:`Page.updateLink`          PDF only: modify a link
 :meth:`Page.widgets`             return a generator over the fields on the page
-:attr:`Page.CropBox`             the page's /CropBox
-:attr:`Page.CropBoxPosition`     displacement of the /CropBox
+:attr:`Page.CropBox`             the page's :data:`CropBox`
+:attr:`Page.CropBoxPosition`     displacement of the :data:`CropBox`
 :attr:`Page.firstAnnot`          first :ref:`Annot` on the page
 :attr:`Page.firstLink`           first :ref:`Link` on the page
 :attr:`Page.firstWidget`         first widget (form field) on the page
-:attr:`Page.MediaBox`            the page's /MediaBox
-:attr:`Page.MediaBoxSize`        bottom-right point of /MediaBox
+:attr:`Page.MediaBox`            the page's :data:`MediaBox`
+:attr:`Page.MediaBoxSize`        bottom-right point of :data:`MediaBox`
 :attr:`Page.number`              page number
 :attr:`Page.parent`              owning document object
 :attr:`Page.rect`                rectangle (mediabox) of the page
@@ -101,7 +102,7 @@ This is available for PDF documents only. There are basically two groups of meth
 
    .. method:: bound()
 
-      Determine the rectangle (before transformation) of the page. Same as property :attr:`Page.rect` below. For PDF documents this **usually** also coincides with objects */MediaBox* and */CropBox*, but not always. The best description hence is probably "*/CropBox*, transformed such that top-left coordinates are (0, 0)". Also see attributes :attr:`Page.CropBox` and :attr:`Page.MediaBox`.
+      Determine the rectangle of the page. Same as property :attr:`Page.rect` below. For PDF documents this **usually** also coincides with objects :data:`MediaBox` and :data:`CropBox`, but not always. For example, if the page is rotated, then this is reflected by this method -- the :attr:`Page.CropBox` however will not change.
 
       :rtype: :ref:`Rect`
 
@@ -220,12 +221,12 @@ This is available for PDF documents only. There are basically two groups of meth
 
       :arg int align: *(New in v1.16.12)* the horizontal alignment for the replacing text. See :meth:`insertTextbox` for available values. The vertical alignment is always centered (approximately).
 
-      :arg sequence fill: *(New in v1.16.12)* the fill color of the rectangle after applying the redaction. The default is *white = (1, 1, 1)*.
+      :arg sequence fill: *(New in v1.16.12)* the fill color of the rectangle after applying the redaction. The default is *white = (1, 1, 1)*, which is also taken if *None* is specified. *(Changed in v1.16.13)* To suppress any fill color, specify *False*. In this cases the rectangle remains transparent.
 
       :arg sequence text_color: *(New in v1.16.12)* the color of the replacing text. Default is *black = (0, 0, 0)*.
 
       :rtype: :ref:`Annot`
-      :returns: the created annotation. The appearance of a redaction annotation cannot be changed (except for the annotation rectangle). A redaction is displayed as a crossed-out transparent rectangle with red lines.
+      :returns: the created annotation. The appearance of a redaction annotation cannot be changed (except for its rectangle). A redaction is displayed as a crossed-out transparent rectangle with red lines.
 
       .. image:: images/img-redact.jpg
 
@@ -311,22 +312,22 @@ This is available for PDF documents only. There are basically two groups of meth
 
    .. method:: apply_redactions()
 
-      PDF only: *(New in version 1.16.11)* Remove **text content** in areas marked by some redaction annotation.
+      PDF only: *(New in version 1.16.11)* Remove all **text content** contained in any redaction rectangle.
 
-      *(Changed in v1.16.12)* The previous *mark* parameter is gone. Instead, the respective rectangles are filled with the *fill* color of their redaction annotation. If a *text* was given in the annotation, then :meth:`insertTextbox` is invoked to insert it, using parameters provided with the redaction.
-      
-      **This method applies and then deletes all redaction annotations of the page.**
+      *(Changed in v1.16.12)* The previous *mark* parameter is gone. Instead, the respective rectangles are filled with the individual *fill* color of each redaction annotation. If a *text* was given in the annotation, then :meth:`insertTextbox` is invoked to insert it, using parameters provided with the redaction.
+
+      **This method applies and then deletes all redaction annotations from the page.**
 
       :returns: *True* if at least one redaction annotation has been processed, *False* otherwise.
 
       .. note::
-         Text contained in a redaction rectangle will be **physically** removed from the page's :data:`contents` objects (only) and will no longer appear in e.g. text extractions. Other annotations are unaffected.
+         Text contained in a redaction rectangle will be **physically** removed from the page and will no longer appear in e.g. text extractions. Other annotations are unaffected.
 
-         Images and XObjects (embedded PDF pages, e.g. via :meth:`showPDFpage`) will also **physically** be removed if they are completely contained in a redation rectangle. **Partial** overlaps will be covered with the redaction background color and no removal will take place.
+         Images and XObjects (embedded PDF pages, e.g. via :meth:`showPDFpage`) will also **physically** be removed from the page if they are **completely** contained in a redation rectangle. **Partial** overlaps however will only be **overlaid** with the redaction background color, and no removal will take place.
 
-         Decision to remove text is made on a by-character level. A character is removed if the bottom-left corner of its **boundary box** is contained in a redaction rectangle. Hence it may happen, that a character is removed even if the better part of it is outside the redaction rect or, vice versa, **not** removed, even if most of it lies inside the rect.
+         Decision to remove text is made on a by-character level: A character will be removed if and only if the bottom-left corner of its **boundary box** is contained in some redaction rectangle. Hence it may happen, that a character is removed even if the better part of it is outside the redaction or -- vice versa -- **not removed**, even if most of its bbox is inside the rect.
 
-         Redactions are an easy way to replace single words in a PDF, or to physically render them unreadable: locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence. Just be wary if the replacement is much longer than the original -- this may lead to an unappealing appearance or no new text at all.
+         Redactions are an easy way to replace single words in a PDF, or to physically render them unreadable: locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence. Just be wary if the replacement is much longer than the original -- this may lead to an awkward appearance or no new text at all. Also, for a number of reasons, the new text is often not exactly positioned on the same line like the old one.
 
    .. method:: deleteLink(linkdict)
 
@@ -946,13 +947,25 @@ This is available for PDF documents only. There are basically two groups of meth
 
         .. note:: In this way, the effect supports multi-line text marker annotations.
 
+
+   .. method:: setMediaBox(r)
+
+      PDF only: *(New in v1.16.13)* Change the physical page dimension by setting :data:`MediaBox` in the page's object definition.
+
+      :arg rect-like r: the new :data:`MediaBox` value.
+
+      .. note:: This method also sets the page's :data:`CropBox` to the same value -- to prevent mismatches caused by values further up in the parent hierarchy.
+
+      .. caution:: For existing pages this may have unexpected effects, if painting commands depend on a certain setting, and may lead to an empty or distorted appearance.
+
+
    .. method:: setCropBox(r)
 
       PDF only: change the visible part of the page.
 
-      :arg rect_like r: the new visible area of the page.
+      :arg rect_like r: the new visible area of the page. Note that this **must** be specified in **unrotated coordinates**.
 
-      After execution, :attr:`Page.rect` will equal this rectangle, shifted to the top-left position (0, 0). Example session:
+      After execution if the page is not rotated, :attr:`Page.rect` will equal this rectangle, shifted to the top-left position (0, 0). Example session:
 
       >>> page = doc.newPage()
       >>> page.rect
@@ -996,17 +1009,17 @@ This is available for PDF documents only. There are basically two groups of meth
 
    .. attribute:: MediaBoxSize
 
-      Contains the width and height of the page's */MediaBox* for a PDF, otherwise the bottom-right coordinates of :attr:`Page.rect`.
+      Contains the width and height of the page's :attr:`Page.MediaBox` for a PDF, otherwise the bottom-right coordinates of :attr:`Page.rect`.
 
       :type: :ref:`Point`
 
    .. attribute:: MediaBox
 
-      The page's */MediaBox* for a PDF, otherwise :attr:`Page.rect`.
+      The page's :data:`MediaBox` for a PDF, otherwise :attr:`Page.rect`.
 
       :type: :ref:`Rect`
 
-      .. note:: For most PDF documents and for all other types, *page.rect == page.CropBox == page.MediaBox* is true. However, for some PDFs the visible page is a true subset of */MediaBox*. Also, if the page is rotated, its ``Page.rect`` may not equal ``Page.CropBox``. In these cases the above attributes help to correctly locate page elements.
+      .. note:: For most PDF documents and for all other types, *page.rect == page.CropBox == page.MediaBox* is true. However, for some PDFs the visible page is a true subset of :data:`MediaBox`. Also, if the page is rotated, its ``Page.rect`` may not equal ``Page.CropBox``. In these cases the above attributes help to correctly locate page elements.
 
    .. attribute:: firstLink
 

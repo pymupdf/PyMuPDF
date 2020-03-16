@@ -49,10 +49,12 @@ To see how these fonts can be used -- including the **CJK built-in** fonts -- lo
 
 .. _AdobeManual:
 
-Adobe PDF Reference 1.7
+Adobe PDF References
 ---------------------------
 
 This PDF Reference manual published by Adobe is frequently quoted throughout this documentation. It can be viewed and downloaded from `here <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_.
+
+There is a newer version of this, which be found `here <https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDF32000_2008.pdf>`_. Redaction annotation are an example, which is contained in this one, but not in the earlier version.
 
 ------------
 

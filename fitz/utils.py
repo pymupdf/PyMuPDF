@@ -2756,7 +2756,7 @@ class Shape(object):
 
         color_str = ColorCode(color, "c")
         fill_str = ColorCode(fill, "f")
-        if fill is None and render_mode == 0:  # ensure fill color when 0 Tr
+        if not fill and render_mode == 0:  # ensure fill color when 0 Tr
             fill = color
             fill_str = ColorCode(color, "f")
 
@@ -2982,14 +2982,14 @@ class Shape(object):
         progr = 1  # direction of line progress
         c_pnt = Point(0, fontsize)  # used for line progress
         if rot == 0:  # normal orientation
-            point = rect.tl + c_pnt  # line 1 is 'fontsize' below top
+            point = rect.tl + c_pnt  # line 1 is 'lheight' below top
             pos = point.y + self.y  # y of first line
             maxwidth = rect.width  # pixels available in one line
             maxpos = rect.y1 + self.y  # lines must not be below this
 
         elif rot == 90:  # rotate counter clockwise
             c_pnt = Point(fontsize, 0)  # progress in x-direction
-            point = rect.bl + c_pnt  # line 1 'fontsize' away from left
+            point = rect.bl + c_pnt  # line 1 'lheight' away from left
             pos = point.x + self.x  # position of first line
             maxwidth = rect.height  # pixels available in one line
             maxpos = rect.x1 + self.x  # lines must not be right of this
@@ -2997,7 +2997,7 @@ class Shape(object):
 
         elif rot == 180:  # text upside down
             c_pnt = -Point(0, fontsize)  # progress upwards in y direction
-            point = rect.br + c_pnt  # line 1 'fontsize' above bottom
+            point = rect.br + c_pnt  # line 1 'lheight' above bottom
             pos = point.y + self.y  # position of first line
             maxwidth = rect.width  # pixels available in one line
             progr = -1  # subtract lheight for next line
@@ -3006,7 +3006,7 @@ class Shape(object):
 
         else:  # rotate clockwise (270 or -90)
             c_pnt = -Point(fontsize, 0)  # progress from right to left
-            point = rect.tr + c_pnt  # line 1 'fontsize' left of right
+            point = rect.tr + c_pnt  # line 1 'lheight' left of right
             pos = point.x + self.x  # position of first line
             maxwidth = rect.height  # pixels available in one line
             progr = -1  # subtract lheight for next line
@@ -3233,12 +3233,12 @@ def apply_redactions(page):
     """
 
     def center_rect(annot_rect, text, font, fsize):
-        """Calculate a sub-rectangle containing the overlay text.
+        """Calculate minimal sub-rectangle for the overlay text.
 
         Notes:
             We will use 'insertTextbox', which supports no vertical text
             centering. We calculate an approximate number of lines here and
-            return a sub-rectangle, which should suffice to contain the text.
+            return a sub-rectangle, which should still contain the text.
         Args:
             annot_rect: the annotation rectangle
             text: the text to insert.
@@ -3247,14 +3247,20 @@ def apply_redactions(page):
         Returns:
             A rectangle to use instead of the annot rectangle.
         """
-        text_width = fitz.getTextlength(text, font, fsize)
+        if not text:
+            return annot_rect
+        try:
+            text_width = fitz.getTextlength(text, font, fsize)
+        except ValueError:  # unsupported font
+            return annot_rect
         line_height = fsize * 1.2
-        h = (math.ceil(text_width / annot_rect.width) + 1) * line_height
+        limit = annot_rect.width
+        h = math.ceil(text_width / limit) * line_height  # estimate rect height
         if h >= annot_rect.height:
             return annot_rect
-        y0 = (annot_rect.tl.y + annot_rect.bl.y - h) * 0.5
         r = annot_rect
-        r.y0 = y0
+        y = (annot_rect.tl.y + annot_rect.bl.y - h) * 0.5
+        r.y0 = y
         return r
 
     CheckParent(page)
@@ -3317,11 +3323,15 @@ def apply_redactions(page):
     # now write replacement text in old redact rectangles
     shape = page.newShape()
     for redact in redact_annots:
-        shape.drawRect(redact["rect"])  # colorize the rect background
-        shape.finish(fill=redact["fill"], color=redact["fill"])
+        annot_rect = redact["rect"]
+        fill = redact["fill"]
+        annot_rect = DerotateRect(page.CropBox, annot_rect, page.rotation)
+        if fill:
+            shape.drawRect(annot_rect)  # colorize the rect background
+            shape.finish(fill=fill, color=fill)
         if "text" in redact.keys():  # if we also have text
             trect = center_rect(  # try finding vertical centered sub-rect
-                redact["rect"], redact["text"], redact["fontname"], redact["fontsize"]
+                annot_rect, redact["text"], redact["fontname"], redact["fontsize"]
             )
             fsize = redact["fontsize"]  # start with stored fontsize
             rc = -1
@@ -3336,21 +3346,4 @@ def apply_redactions(page):
                 )
                 fsize -= 0.5  # reduce font if unsuccessful
     shape.commit()  # append new contents object
-
-    # also remove the name references from the page definition
-    page_def_lines = doc.xrefObject(page.xref).splitlines()  # split into lines
-    new_lines = []  # lines of updated definition
-    for line in page_def_lines:
-        line = line.strip()  # remove any surrounding spaces
-        found = False  # assume name not found
-        for name in candidate_names:
-            if line.startswith("/" + name):
-                found = True  # the name is referenced here
-                break
-        if not found:  # consider lines without the name only
-            new_lines.append(line)
-    new_page_def = "\n".join(new_lines)  # updated page definition
-
-    doc.updateObject(page.xref, new_page_def)  # rewrite page definition
-    page._cleanContents()  # clean up any incongruences in page definition
     return True
