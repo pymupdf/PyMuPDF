@@ -1,6 +1,24 @@
 Change Logs
 ===============
 
+Changes in Version 1.16.14
+---------------------------
+
+* **Changed** text marker annotations to accept parameters beyond just quadrilaterals such that now **text lines between two given points can be marked**.
+
+* **Added** :meth:`Document.scrub` which **removes potentially sensitive data** from a PDF. Implements `#453 <https://github.com/pymupdf/PyMuPDF/issues/453>`_.
+
+* **Added** :meth:`Annot.blendMode` which returns the **blend mode** of annotations.
+
+* **Added** :meth:`Annot.setBlendMode` to set the annotation's blend mode. This resolves issue `#416 <https://github.com/pymupdf/PyMuPDF/issues/416>`_.
+* **Changed** :meth:`Annot.update` to accept additional parameters for setting blend mode and opacity.
+* **Added** advanced graphics features to **control the anti-aliasing values**, :meth:`Tools.set_aa_level`. Resolves `#467 <https://github.com/pymupdf/PyMuPDF/issues/467>`_
+
+* **Fixed** issue `#474 <https://github.com/pymupdf/PyMuPDF/issues/474>`_.
+* **Fixed** issue `#466 <https://github.com/pymupdf/PyMuPDF/issues/466>`_.
+
+
+
 Changes in Version 1.16.13
 ---------------------------
 

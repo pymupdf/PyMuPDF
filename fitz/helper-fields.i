@@ -66,7 +66,7 @@ PyObject *JM_get_script(fz_context *ctx, pdf_obj *key)
 
     if (pdf_is_string(ctx, js))
     {
-        script = JM_UNICODE(pdf_to_text_string(ctx, js));
+        script = PyUnicode_FromString(pdf_to_text_string(ctx, js));
     }
     else if (pdf_is_stream(ctx, js))
     {
@@ -349,7 +349,7 @@ PyObject *JM_text_value(fz_context *ctx, pdf_annot *annot)
     fz_try(ctx)
         text = pdf_field_value(ctx, annot->obj);
     fz_catch(ctx) Py_RETURN_NONE;
-    return JM_UNICODE(text);
+    return PyUnicode_FromString(text);
 }
 
 // ListBox retrieve value
@@ -373,7 +373,7 @@ PyObject *JM_listbox_value(fz_context *ctx, pdf_annot *annot)
         pdf_obj *elem = pdf_array_get(ctx, optarr, i);
         if (pdf_is_array(ctx, elem))
             elem = pdf_array_get(ctx, elem, 1);
-        LIST_APPEND_DROP(liste, JM_UNICODE(pdf_to_text_string(ctx, elem)));
+        LIST_APPEND_DROP(liste, PyUnicode_FromString(pdf_to_text_string(ctx, elem)));
     }
     return liste;
 }
@@ -416,7 +416,7 @@ PyObject *JM_choice_options(fz_context *ctx, pdf_annot *annot)
         }
         else
         {
-            val = JM_UNICODE(pdf_to_text_string(ctx, pdf_array_get(ctx, optarr, i)));
+            val = PyUnicode_FromString(pdf_to_text_string(ctx, pdf_array_get(ctx, optarr, i)));
             LIST_APPEND_DROP(liste, val);
         }
     }
@@ -475,21 +475,21 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
             SETATTR("is_signed", Py_None);
         }
         SETATTR_DROP("border_style",
-                JM_UNICODE(pdf_field_border_style(ctx, annot->obj)), val);
+                PyUnicode_FromString(pdf_field_border_style(ctx, annot->obj)), val);
         SETATTR_DROP("field_type_string",
-                JM_UNICODE(JM_field_type_text(field_type)), val);
+                PyUnicode_FromString(JM_field_type_text(field_type)), val);
 
         char *field_name = pdf_field_name(ctx, annot->obj);
-        SETATTR_DROP("field_name", JM_UNICODE(field_name), val);
+        SETATTR_DROP("field_name", PyUnicode_FromString(field_name), val);
         JM_Free(field_name);
 
         const char *label = NULL;
         obj = pdf_dict_get(ctx, annot->obj, PDF_NAME(TU));
         if (obj) label = pdf_to_text_string(ctx, obj);
-        SETATTR_DROP("field_label", JM_UNICODE(label), val);
+        SETATTR_DROP("field_label", PyUnicode_FromString(label), val);
 
         SETATTR_DROP("field_value",
-                JM_UNICODE(pdf_field_value(ctx, annot->obj)), val);
+                PyUnicode_FromString(pdf_field_value(ctx, annot->obj)), val);
 
         SETATTR_DROP("field_display",
                 Py_BuildValue("i", pdf_field_display(ctx, annot->obj)), val);
@@ -553,13 +553,13 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
         const char *da = pdf_to_text_string(ctx, pdf_dict_get_inheritable(ctx,
                                         annot->obj, PDF_NAME(DA)));
-        SETATTR_DROP("_text_da", JM_UNICODE(da), val);
+        SETATTR_DROP("_text_da", PyUnicode_FromString(da), val);
 
         obj = pdf_dict_getl(ctx, annot->obj, PDF_NAME(MK), PDF_NAME(CA), NULL);
         if (obj)
         {
             SETATTR_DROP("button_caption",
-                    JM_UNICODE((char *)pdf_to_text_string(ctx, obj)), val);
+                    PyUnicode_FromString((char *)pdf_to_text_string(ctx, obj)), val);
         }
 
         SETATTR_DROP("field_flags",

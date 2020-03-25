@@ -377,6 +377,27 @@ Widget flags (*field_flags*)
     PDF_CH_FIELD_IS_COMMIT_ON_SEL_CHANGE  1 << 26
 
 
+.. _BlendModes:
+
+PDF Standard Blend Modes
+----------------------------
+
+For an explanation see :ref:`AdobeManual`, page 520::
+
+    PDF_BM_ColorBurn "ColorBurn"
+    PDF_BM_ColorDodge "ColorDodge"
+    PDF_BM_Darken "Darken"
+    PDF_BM_Difference "Difference"
+    PDF_BM_Exclusion "Exclusion"
+    PDF_BM_HardLight "HardLight
+    PDF_BM_Lighten "Lighten"
+    PDF_BM_Multiply "Multiply"
+    PDF_BM_Normal "Normal"
+    PDF_BM_Overlay "Overlay"
+    PDF_BM_Screen "Screen"
+    PDF_BM_SoftLight "Softlight"
+
+
 .. _StampIcons:
 
 Stamp Annotation Icons

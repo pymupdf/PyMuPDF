@@ -524,7 +524,7 @@ def PaperSize(s):
 
 
 def PaperRect(s):
-    """Return a fitz.Rect for the paper size indicated in string 's'. Must conform to the argument of method 'PaperSize', which will be invoked.
+    """Return a Rect for the paper size indicated in string 's'. Must conform to the argument of method 'PaperSize', which will be invoked.
     """
     width, height = PaperSize(s)
     return Rect(0.0, 0.0, width, height)
@@ -716,11 +716,26 @@ def ConversionTrailer(i):
     return r
 
 def DerotateRect(cropbox, rect, deg):
-    if deg == 0:
+    """Calculate the non-rotated rect version.
+
+    Args:
+        cropbox: the page's /CropBox
+        rect: rectangle
+        deg: the page's /Rotate value
+    Returns:
+        Rectangle in original (/CropBox) coordinates
+    """
+    while deg < 0:
+        deg += 360
+    while deg >= 360:
+        deg -= 360
+    if deg % 90 > 0:
+        deg = 0
+    if deg == 0:  # no rotation: no-op
         return rect
-    points = []
-    for p in rect.quad:
-        if deg == 90:
+    points = []  # store the new rect points here
+    for p in rect.quad:  # run through the rect's quad points
+        if deg == 90:  
             q = (p.y, cropbox.height - p.x)
         elif deg == 270:
             q = (cropbox.width - p.y, p.x)
@@ -732,5 +747,82 @@ def DerotateRect(cropbox, rect, deg):
     for p in points[1:]:
         r |= p
     return r
+
+
+def get_highlight_selection(page, start=None, stop=None, clip=None):
+    """Return rectangles of text lines between two points.
+
+    Notes:
+        The default of 'start' is top-left of 'clip'. The default of 'stop'
+        is bottom-reight of 'clip'.
+
+    Args:
+        start: start point_like
+        stop: end point_like, must be 'below' start
+        clip: consider this rect_like only, default is page rectangle
+    Returns:
+        List of line bbox intersections with the area established by the
+        parameters.
+    """
+    # validate and normalize arguments
+    if clip is None:
+        clip = page.rect
+    clip = Rect(clip)
+    if start is None:
+        start = clip.tl
+    start = Point(start)
+    if stop is None:
+        stop = clip.br
+    stop = Point(stop)
+
+    # extract text of page (no images)
+    blocks = page.getText(
+        "dict", flags=TEXT_PRESERVE_LIGATURES + TEXT_PRESERVE_WHITESPACE
+    )["blocks"]
+    rectangles = []  # we will be returning this
+    lines = []  # intermediate bbox store
+    for b in blocks:
+        for line in b["lines"]:
+            bbox = Rect(line["bbox"]) & clip  # line bbox intersection
+            if bbox.isEmpty:  # do not output empty rectangles
+                continue
+            if bbox.y0 < start.y or bbox.y1 > stop.y:
+                continue  # line above or below the selection points
+            lines.append(bbox)
+
+    if lines == []:  # we did not select anything
+        return rectangles
+
+    lines.sort(key=lambda bbox: bbox.y0)  # sort result by vertical positions
+
+    bboxf = lines[0]  # potentially cut off left part of first line
+    if bboxf.y0 - start.y <= 0.1 * bboxf.height:  # close enough to the top?
+        r = Rect(start.x, bboxf.y0, bboxf.br)  # intersection rectangle
+        if r.isEmpty or r.isInfinite:
+            bboxf = Rect()  # first line will be skipped
+        else:
+            bboxf &= r
+
+    if len(lines) > 1:  # if we selected 2 or more lines
+        if not bboxf.isEmpty:
+            rectangles.append(bboxf)  # output bbox of first line
+        bboxl = lines[-1]  # and read last line
+    else:
+        bboxl = bboxf  # further restrict the only line selected
+
+    if stop.y - bboxl.y1 <= 0.1 * bboxl.height:  # close enough to bottom?
+        r = Rect(bboxl.tl, stop.x, bboxl.y1)  # intersection rectangle
+        if r.isEmpty or r.isInfinite:  # last line will be skipped
+            bboxl = Rect()
+        else:
+            bboxl &= r
+
+    if not bboxl.isEmpty:
+        rectangles.append(bboxl)
+
+    for bbox in lines[1:-1]:  # now add remaining line bboxes
+        rectangles.append(bbox)
+
+    return rectangles
 
 %}

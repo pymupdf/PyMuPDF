@@ -247,7 +247,7 @@ def insertImage(
     if rotate not in (0, 90, 180, 270):
         raise ValueError("bad rotate value")
 
-    r = page.rect & rect
+    r = page.CropBox & rect
     if r.isEmpty or r.isInfinite:
         raise ValueError("rect must be finite and not empty")
 
@@ -3347,3 +3347,160 @@ def apply_redactions(page):
                 fsize -= 0.5  # reduce font if unsuccessful
     shape.commit()  # append new contents object
     return True
+
+
+# ------------------------------------------------------------------------------
+# Remove potentially sensitive data from a PDF. Corresponds to the Adobe
+# Acrobat 'sanitize' function
+# ------------------------------------------------------------------------------
+def scrub(
+    doc,
+    attached_files=True,
+    clean_pages=True,
+    embedded_files=True,
+    hidden_text=True,
+    javascript=True,
+    metadata=True,
+    redactions=True,
+    remove_links=True,
+    reset_fields=True,
+    reset_responses=True,
+    xml_metadata=True,
+):
+    def remove_hidden(cont_lines):
+        """Remove hidden text from a PDF page.
+
+        Args:
+            cont_lines: list of lines with /Contents content. Should have status
+                from after page.cleanContents().
+
+        Returns:
+            List of /Contents lines from which hidden text has been removed.
+
+        Notes:
+            The input must have been created after the page's /Contents object(s)
+            have been cleaned with page.cleanContents(). This ensures a standard
+            formatting: one command per line, no double spaces between operators.
+            This allows for drastic simplification of this code.
+        """
+        out_lines = []  # will return this
+        in_text = False  # indicate if within BT/ET object
+        suppress = False  # indicate text suppression active
+        make_return = False
+        for line in cont_lines:
+            if line == "BT":  # start of text object
+                in_text = True  # switch on
+                out_lines.append(line)  # output it
+                continue
+            if line == "ET":  # end of text object
+                in_text = False  # switch off
+                out_lines.append(line)  # output it
+                continue
+            if line == "3 Tr":  # text suppression operator
+                suppress = True  # switch on
+                make_return = True
+                continue
+            if line[-2:] == "Tr" and line[0] != "3":
+                suppress = False  # text rendering changed
+                out_lines.append(line)
+                continue
+            if line == "Q":  # unstack command also switches off
+                suppress = False
+                out_lines.append(line)
+                continue
+            if suppress and in_text:  # suppress hidden lines
+                continue
+            out_lines.append(line)
+        if make_return:
+            return out_lines
+        else:
+            return None
+
+    if not doc.isPDF:  # only works for PDF
+        ValueError("not a PDF")
+    if doc.isEncrypted or doc.isClosed:
+        ValueError("closed or encrypted doc")
+
+    if clean_pages is False:
+        hidden_text = False
+        redactions = False
+
+    if metadata:
+        doc.setMetadata({})  # remove standard metadata
+
+    if not (xml_metadata or javascript):
+        xref_limit = 0
+    else:
+        xref_limit = doc.xrefLength()
+    for xref in range(1, xref_limit):
+        obj = doc.xrefObject(xref)  # get object definition source
+        # note: this string is formatted in a fixed, standard way by MuPDF.
+
+        if javascript and "/S /JavaScript" in obj:  # a /JavaScript action object?
+            obj = "<</S/JavaScript/JS()>>"  # replace with a null JavaScript
+            doc.updateObject(xref, obj)  # update this object
+            continue  # no further handling
+
+        if not xml_metadata or "/Metadata" not in obj:
+            continue
+
+        if "/Type /Metadata" in obj:  # delete any metadata object directly
+            doc._deleteObject(xref)
+            continue
+
+        obj_lines = obj.splitlines()
+        new_lines = []  # will receive remaining obj definition lines
+        found = False  # assume /Metadata  not found
+        for line in obj_lines:
+            line = line.strip()
+            if not line.startswith("/Metadata "):
+                new_lines.append(line)  # keep this line
+            else:  # drop this line
+                found = True
+        if found:  # if removed /Metadata key, update object definition
+            doc.updateObject(xref, "\n".join(new_lines))
+
+    # remove embedded files
+    if embedded_files:
+        for name in doc.embeddedFileNames():
+            doc.embeddedFileDel(name)
+
+    for page in doc:
+        if reset_fields:
+            # reset form fields (widgets)
+            for widget in page.widgets():
+                widget.reset()
+                widget.update()
+
+        if remove_links:
+            links = page.getLinks()  # list of all links on page
+            for link in links:  # remove all links
+                page.deleteLink(link)
+
+        found_redacts = False
+        for annot in page.annots():
+            if annot.type[0] == PDF_ANNOT_FILEATTACHMENT and attached_files:
+                annot.fileUpd(buffer=b"")  # set file content to empty
+            if reset_responses:
+                annot.delete_responses()
+            if annot.type[0] == PDF_ANNOT_REDACT:
+                found_redacts = True
+
+        if redactions and found_redacts:
+            page.apply_redactions()
+
+        if not page.getContents():  # safeguard against empty /Contents
+            continue
+
+        if not (clean_pages or hidden_text):
+            continue  # done with the page
+
+        page.cleanContents()
+
+        if hidden_text:
+            xref = page.getContents()[0]  # only one b/o cleaning!
+            cont = doc.xrefStream(xref).decode()  # /Contents converted to str
+            cont_lines = remove_hidden(cont.splitlines())  # remove hidden text
+            if cont_lines:  # something was actually removed
+                cont = "\n".join(cont_lines).encode()
+                doc.updateStream(xref, cont)  # rewrite the page /Contents

@@ -14,6 +14,8 @@ There is a parent-child relationship between an annotation and its page. If the 
 =============================== ==============================================================
 **Attribute**                   **Short Description**
 =============================== ==============================================================
+:meth:`Annot.blendMode`         return the annotation's blend mode
+:meth:`Annot.setBlendMode`      set the annotation's blend mode
 :meth:`Annot.delete_responses`  delete all responding annotions
 :meth:`Annot.fileGet`           return attached file content
 :meth:`Annot.fileInfo`          return attached file information
@@ -88,7 +90,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: setOpacity(value)
 
-      Change an annotation's transparency.
+      Set the annotation's transparency. Opacity can also be set in :meth:`Annot.update`.
 
       :arg float value: a float in range *[0, 1]*. Any value outside is assumed to be 1. E.g. a value of 0.5 sets the transparency to 50%.
 
@@ -96,12 +98,26 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       .. image:: images/img-opacity.jpg
 
+   .. method:: blendMode()
+
+      *(New in v1.16.14)* Return the annotation's blend mode. See :ref:`AdobeManual`, page 520 for explanations.
+
+      :rtype: str
+      :returns: the blend mode or *None*.
+
+   .. method:: setBlendMode(blend_mode)
+
+      *(New in v1.16.14)* Set the annotation's blend mode. See :ref:`AdobeManual`, page 520 for explanations. The blend mode can also be set in :meth:`Annot.update`.
+
+      :arg str blend_mode: set the blend mode. Use :meth:`Annot.update` to reflect this in the visual appearance. For predefined values see :ref:`BlendModes`.
+
    .. method:: setName(name)
 
       *(New in version 1.16.0)* Change the name field of any annotation type. For 'FileAttachment' and 'Text' annotations, this is the icon name, for 'Stamp' annotations the text in the stamp. The visual result (if any) depends on your PDF viewer. See also :ref:`mupdficons`.
 
-
       :arg str name: the new name.
+
+      .. caution:: If you set the name of a 'Stamp' annotation, then this will **not change** the rectangle, nor will the text be layouted in any way. If you choose a standard text from :ref:`StampIcons` (the **exact** name piece after ``STAMP_``!), you should receive the original layout. An **arbitrary text** will not be changed to upper case, but be written as is, horizontally centered in **one line**. If its length exceeds the available width, it will be accordingly shortened. To ensure your own text will **not be shortened**, ensure that ``fitz.getTextLength(text, fontname="tiro", fontsize=20) / annot.rect.width <= 0.85``.
 
    .. method:: setRect(rect)
 
@@ -144,27 +160,30 @@ There is a parent-child relationship between an annotation and its page. If the 
 
 
    .. index::
+      pair: blend_mode; update
       pair: fontsize; update
       pair: text_color; update
       pair: border_color; update
       pair: fill_color; update
       pair: rotate; update
 
-   .. method:: update(fontsize=0, text_color=None, border_color=None, fill_color=None, rotate=-1)
+   .. method:: update(opacity=None, blend_mode=None, fontsize=0, text_color=None, border_color=None, fill_color=None, rotate=-1)
 
       Synchronize the appearance of an annotation with its properties after any changes. 
 
-      You can safely omit this method only for the following changes:
+      You can safely omit this method **only** for the following changes:
 
          * :meth:`setRect`
          * :meth:`setFlags`
          * :meth:`fileUpd`
          * :meth:`setInfo` (except changes to *"content"*)
 
-      All arguments are optional and **are reserved for 'FreeText'** annotations -- because of implementation peculiarities of this annotation type. For other types they are ignored.
+      All arguments are optional. *(Changed in v1.16.14)* blend_mode and opacity are applicable to all annotation types. The other arguments **are reserved for 'FreeText'** annotations and ignored for other types.
 
       Color specifications may be made in the usual format used in PuMuPDF as sequences of floats ranging from 0.0 to 1.0 (including both). The sequence length must be 1, 3 or 4 (supporting GRAY, RGB and CMYK colorspaces respectively). For mono-color, just a float is also acceptable.
 
+      :arg float opacity: *(new in v1.16.14)* **valid for all annotation types:** change or set the annotation's transparency. Valid values are *0 <= opacity < 1*.
+      :arg str blend_mode: *(new in v1.16.14)* **valid for all annotation types:** change or set the annotation's blend mode. For valid values see :ref:`BlendModes`.
       :arg float fontsize: change font size of the text.
       :arg sequence,float text_color: change the text color.
       :arg sequence,float border_color: change the border color.

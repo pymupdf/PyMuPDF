@@ -50,6 +50,7 @@ For addional details on **embedded files** refer to Appendix 3.
 :meth:`Document.reload_page`            PDF only: provide a new copy of a page
 :meth:`Document.save`                   PDF only: save the document
 :meth:`Document.saveIncr`               PDF only: save the document incrementally
+:meth:`Document.scrub`                  PDF only: remove sensitive data
 :meth:`Document.searchPageFor`          search for a string on a page
 :meth:`Document.select`                 PDF only: select a subset of pages
 :meth:`Document.setMetadata`            PDF only: set the metadata
@@ -424,6 +425,23 @@ For addional details on **embedded files** refer to Appendix 3.
       *(New in version 1.16.0)*
       
       Check whether the document can be saved incrementally. Use it to choose the right option without encountering exceptions.
+
+    .. method:: scrub(attached_files=True, clean_pages=True, embedded_files=True, hidden_text=True, javascript=True, metadata=True, redactions=True, remove_links=True, reset_fields=True, reset_responses=True, xml_metadata=True)
+
+      PDF only: *(New in v1.16.14)* Remove potentially sensitive data from the PDF. This function is inspired by the similar "Sanitize" function in Adobe Acrobat products. The process is configurable by a number of options, which are all *True* by default.
+
+      :arg bool attached_files: Search for 'FileAttachment' annotations and remove the file content.
+      :arg bool clean_pages: Remove any comments from page painting sources. If this option is set to *False*, then this is also done for *hidden_text* and *redactions*.
+      :arg bool embedded_files: Remove embedded files.
+      :arg bool hidden_text: Remove OCR-ed text and invisible text.
+      :arg bool javascript: Remove JavaScript sources.
+      :arg bool metadata: Remove PDF standard metadata.
+      :arg bool redactions: Apply redaction annotations.
+      :arg bool remove_links: Remove all links.
+      :arg bool reset_fields: Reset all form fields to their defaults.
+      :arg bool reset_responses: Remove all responses from all annotations.
+      :arg bool xml_metadata: Remove XML metadata.
+
 
     .. method:: save(outfile, garbage=0, clean=False, deflate=False, incremental=False, ascii=False, expand=0, linear=False, pretty=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None)
 

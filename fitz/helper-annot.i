@@ -145,10 +145,10 @@ PyObject *JM_annot_border(fz_context *ctx, pdf_obj *annot_obj)
     }
 
     LIST_APPEND_DROP(effect_py, Py_BuildValue("i", effect1));
-    LIST_APPEND_DROP(effect_py, JM_UNICODE(effect2));
+    LIST_APPEND_DROP(effect_py, PyUnicode_FromString(effect2));
     DICT_SETITEM_DROP(res, dictkey_width, Py_BuildValue("f", width));
     DICT_SETITEM_DROP(res, dictkey_dashes, dash_py);
-    DICT_SETITEM_DROP(res, dictkey_style, JM_UNICODE(style));
+    DICT_SETITEM_DROP(res, dictkey_style, PyUnicode_FromString(style));
     if (effect1 > -1) PyDict_SetItem(res, dictkey_effect, effect_py);
     Py_CLEAR(effect_py);
     return res;
@@ -345,7 +345,7 @@ PyObject *JM_get_annot_id_list(fz_context *ctx, pdf_page *page)
             o = pdf_dict_gets(ctx, annot->obj, "NM");
             if (o)
             {
-                LIST_APPEND_DROP(names, JM_UNICODE(pdf_to_text_string(gctx, o)));
+                LIST_APPEND_DROP(names, PyUnicode_FromString(pdf_to_text_string(gctx, o)));
             }
         }
         //for (annotptr = &page->widgets; *annotptr; annotptr = &(*annotptr)->next)
@@ -354,7 +354,7 @@ PyObject *JM_get_annot_id_list(fz_context *ctx, pdf_page *page)
         //    o = pdf_dict_gets(ctx, annot->obj, "NM");
         //    if (o)
         //    {
-        //        LIST_APPEND_DROP(names, JM_UNICODE(pdf_to_text_string(gctx, o)));
+        //        LIST_APPEND_DROP(names, PyUnicode_FromString(pdf_to_text_string(gctx, o)));
         //    }
         //}
     }

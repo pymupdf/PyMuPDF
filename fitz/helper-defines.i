@@ -239,6 +239,27 @@
 #define PDF_PERM_ASSEMBLE 1 << 10
 #define PDF_PERM_PRINT_HQ 1 << 11
 
+//----------------------------------------------------------------------------
+// PDF Blend Modes
+//----------------------------------------------------------------------------
+#define PDF_BM_ColorBurn "ColorBurn"
+#define PDF_BM_ColorDodge "ColorDodge"
+#define PDF_BM_Darken "Darken"
+#define PDF_BM_Difference "Difference"
+#define PDF_BM_Exclusion "Exclusion"
+#define PDF_BM_HardLight "HardLight"
+#define PDF_BM_Lighten "Lighten"
+#define PDF_BM_Multiply "Multiply"
+#define PDF_BM_Normal "Normal"
+#define PDF_BM_Overlay "Overlay"
+#define PDF_BM_Screen "Screen"
+#define PDF_BM_SoftLight "Softlight"
+#define PDF_BM_Hue "Hue"
+#define PDF_BM_Saturation "Saturation"
+#define PDF_BM_Color "Color"
+#define PDF_BM_Luminosity "Luminosity"
+
+
 // General text flags
 #define TEXT_FONT_SUPERSCRIPT 1
 #define TEXT_FONT_ITALIC 2

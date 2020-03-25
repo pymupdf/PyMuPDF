@@ -244,32 +244,37 @@ This is available for PDF documents only. There are basically two groups of meth
       .. image:: images/img-polyline.png
          :scale: 70
 
-   .. method:: addUnderlineAnnot(quads)
+   .. method:: addUnderlineAnnot(quads=None, start=None, stop=None, clip=None)
 
-   .. method:: addStrikeoutAnnot(quads)
+   .. method:: addStrikeoutAnnot(quads=None, start=None, stop=None, clip=None)
 
-   .. method:: addSquigglyAnnot(quads)
+   .. method:: addSquigglyAnnot(quads=None, start=None, stop=None, clip=None)
 
-   .. method:: addHighlightAnnot(quads)
+   .. method:: addHighlightAnnot(quads=None, start=None, stop=None, clip=None)
 
-      PDF only: These annotations are normally used for marking text which has previously been located (for example via :meth:`searchFor`). But the actual presence of text within the specified area(s) is neither checked nor required. So you are free to "mark" anything.
+      PDF only: These annotations are normally used for **marking text** which has previously been somehow located (for example via :meth:`searchFor`). But this is not required: you are free to "mark" just anything.
 
       Standard colors are chosen per annotation type: **yellow** for highlighting, **red** for strike out, **green** for underlining, and **magenta** for wavy underlining.
 
-      The methods convert the argument into a list of :ref:`Quad` objects. The **annotation** rectangle is calculated to envelop these quadrilaterals.
+      The methods convert the arguments into a list of :ref:`Quad` objects. The **annotation** rectangle is then calculated to envelop all these quadrilaterals.
 
-      .. note:: :meth:`searchFor` supports :ref:`Quad` objects as an output option. Hence the following two statements are sufficient to locate and mark every occurrence of string "pymupdf" with **one common** annotation::
+      .. note:: :meth:`searchFor` delivers a list of either rectangles or quadrilaterals. Such a list can be directly used as parameter for these annotation types and will deliver **one common** annotation for all occurrences of the search string::
 
            >>> quads = page.searchFor("pymupdf", hit_max=100, quads=True)
            >>> page.addHighlightAnnot(quads)
 
-      :arg rect_like,quad_like,list,tuple quads: Changed in version 1.14.20 the rectangles or quads containing the to-be-marked text (locations). A list or tuple must consist of :data:`rect_like` or :data:`quad_like` items (or even a mixture of either). You should prefer using quads, because this will automatically support non-horizontal text and avoid rectangle-to-quad conversion effort.
+      :arg rect_like,quad_like,list,tuple quads: *(Changed in v1.14.20)* the rectangles or quads containing the to-be-marked text (locations). A list or tuple must consist of :data:`rect_like` or :data:`quad_like` items (or even a mixture of either). You should prefer using quads, because this will automatically support non-horizontal text and avoid rectangle-to-quad conversion effort. *(Changed in v1.16.14)* **Set this parameter to** *None* if you want to use the following arguments.
+      :arg point_like start: *(New in v1.16.14)* start text marking at this point. Defaults to the top-left point of *clip*.
+      :arg point_like stop: *(New in v1.16.14)* stop text marking at this point. Defaults to the bottom-right point of *clip*.
+      :arg rect_like clip: *(New in v1.16.14)* only consider text lines intersecting this area. Defaults to the page rectangle.
 
-      :rtype: :ref:`Annot`
-      :returns: the created annotation. To change colors, set the "stroke" color accordingly (:meth:`Annot.setColors`) and then perform an :meth:`Annot.update`.
+      :rtype: :ref:`Annot` or *(changed in v1.16.14)* *None*
+      :returns: the created annotation. *(Changed in v1.16.14)* If *quads* is an empty list, **no annotation** is created. To change colors, set the "stroke" color accordingly (:meth:`Annot.setColors`) and then perform an :meth:`Annot.update`.
+
+      .. note:: Starting with v1.16.14 you can use parameters *start*, *stop* and *clip* to highlight consecutive lines between the points *start* and *stop*. Make use of *clip* to further reduce the selected line bboxes and thus deal with e.g. multi-column pages. The following multi-line highlight was created specifying the two red points and setting clip accordingly.
 
       .. image:: images/img-markers.jpg
-         :scale: 80
+         :scale: 100
 
    .. method:: addStampAnnot(rect, stamp=0)
 
@@ -281,9 +286,10 @@ This is available for PDF documents only. There are basically two groups of meth
 
       .. note::
 
-         * The stamp's text (e.g. "APPROVED") and its border line will automatically be sized and put centered in the given rectangle. :attr:`Annot.rect` is automatically calculated to fit and will usually be smaller than this parameter. The appearance can be changed using :meth:`Annot.setOpacity` and by setting the "stroke" color (no "fill" color supported).
-         
-         * This can conveniently be used to create watermark images: on a temporary PDF page create a stamp annotation with a low opacity value, make a pixmap from it with *alpha=True* (and potentially also rotate it), discard the temporary PDF page and use the pixmap with :meth:`insertImage` for your target PDF.
+         * The stamp's text and its border line will automatically be sized and be put horizontally and vertically centered in the given rectangle. :attr:`Annot.rect` is automatically calculated to fit the given **width** and will usually be smaller than this parameter.
+         * The font chosen is "Times Bold" and the text will be upper case.
+         * The appearance can be changed using :meth:`Annot.setOpacity` and by setting the "stroke" color (no "fill" color supported).
+         * This can be used to create watermark images: on a temporary PDF page create a stamp annotation with a low opacity value, make a pixmap from it with *alpha=True* (and potentially also rotate it), discard the temporary PDF page and use the pixmap with :meth:`insertImage` for your target PDF.
 
 
       .. image :: images/img-stampannot.jpg

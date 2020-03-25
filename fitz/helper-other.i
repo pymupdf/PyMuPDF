@@ -276,7 +276,7 @@ PyObject *JM_BinFromBuffer(fz_context *ctx, fz_buffer *buffer)
         return PyBytes_FromString("");
     }
     char *c = NULL;
-    size_t len = fz_buffer_storage(gctx, buffer, &c);
+    size_t len = fz_buffer_storage(ctx, buffer, &c);
     return PyBytes_FromStringAndSize(c, (Py_ssize_t) len);
 }
 
@@ -799,4 +799,208 @@ struct fz_store_s
 	int needs_reaping;
 };
 
+
+//----------------------------------------------------------------------------
+// return normalized /Rotate value
+//----------------------------------------------------------------------------
+int JM_norm_rotation(int rotate)
+{
+    while (rotate < 0) rotate += 360;
+    while (rotate >= 360) rotate -= 360;
+    if (rotate % 90 != 0) return 0;
+    return rotate;
+}
+
+
+//----------------------------------------------------------------------------
+// return a PDF page's /Rotate value
+//----------------------------------------------------------------------------
+int JM_page_rotation(fz_context *ctx, pdf_page *page)
+{
+    int rotate = 0;
+    fz_try(ctx)
+    {
+        rotate = pdf_to_int(ctx,
+                pdf_dict_get_inheritable(ctx, page->obj, PDF_NAME(Rotate)));
+        rotate = JM_norm_rotation(rotate);
+    }
+    fz_catch(ctx) fz_rethrow(ctx);
+    return rotate;
+}
+
+
+//----------------------------------------------------------------------------
+// return a PDF page's MediaBox
+//----------------------------------------------------------------------------
+fz_rect JM_mediabox(fz_context *ctx, pdf_page *page)
+{
+    fz_rect mediabox, page_mediabox;
+    pdf_obj *obj;
+    float userunit = 1;
+
+    obj = pdf_dict_get(ctx, page->obj, PDF_NAME(UserUnit));
+    if (pdf_is_real(ctx, obj))
+        userunit = pdf_to_real(ctx, obj);
+
+    mediabox = pdf_to_rect(ctx, pdf_dict_get_inheritable(ctx, page->obj,
+        PDF_NAME(MediaBox)));
+    if (fz_is_empty_rect(mediabox) || fz_is_infinite_rect(mediabox))
+    {
+        mediabox.x0 = 0;
+        mediabox.y0 = 0;
+        mediabox.x1 = 612;
+        mediabox.y1 = 792;
+    }
+
+    page_mediabox.x0 = fz_min(mediabox.x0, mediabox.x1);
+    page_mediabox.y0 = fz_min(mediabox.y0, mediabox.y1);
+    page_mediabox.x1 = fz_max(mediabox.x0, mediabox.x1);
+    page_mediabox.y1 = fz_max(mediabox.y0, mediabox.y1);
+
+    if (page_mediabox.x1 - page_mediabox.x0 < 1 ||
+        page_mediabox.y1 - page_mediabox.y0 < 1)
+        page_mediabox = fz_unit_rect;
+
+    return page_mediabox;
+}
+
+
+//----------------------------------------------------------------------------
+// return a PDF page's CropBox
+//----------------------------------------------------------------------------
+fz_rect JM_cropbox(fz_context *ctx, pdf_page *page)
+{
+    fz_rect mediabox = JM_mediabox(ctx, page);
+    fz_rect cropbox = pdf_to_rect(ctx,
+                pdf_dict_get_inheritable(ctx, page->obj, PDF_NAME(CropBox)));
+    if (fz_is_infinite_rect(cropbox) || fz_is_empty_rect(cropbox))
+        cropbox = mediabox;
+    float y0 = mediabox.y1 - cropbox.y1;
+    float y1 = mediabox.y1 - cropbox.y0;
+    cropbox.y0 = y0;
+    cropbox.y1 = y1;
+    return cropbox;
+}
+
+
+//----------------------------------------------------------------------------
+// determine width and height of the unrotated page
+//----------------------------------------------------------------------------
+fz_point JM_cropbox_size(fz_context *ctx, pdf_page *page)
+{
+    fz_point size;
+    fz_try(ctx)
+    {
+        fz_rect rect = JM_cropbox(ctx, page);
+        float w = (rect.x0 < rect.x1 ? rect.x1 - rect.x0 : rect.x0 - rect.x1);
+        float h = (rect.y0 < rect.y1 ? rect.y1 - rect.y0 : rect.y0 - rect.y1);
+        size = fz_make_point(w, h);
+    }
+    fz_catch(ctx) fz_rethrow(ctx);
+    return size;
+}
+
+
+//----------------------------------------------------------------------------
+// calculate NON-ROTATED point coordinates
+//----------------------------------------------------------------------------
+fz_point JM_derotate_point(fz_context *ctx, pdf_page *page, fz_point point)
+{
+    fz_point newp;
+    fz_try(ctx)
+    {
+        fz_point cb_size = JM_cropbox_size(ctx, page);
+        float w = cb_size.x;
+        float h = cb_size.y;
+        int rotate = JM_page_rotation(ctx, page);
+        if (rotate == 0)
+            newp = point;
+        else if (rotate == 90)
+            newp = fz_make_point(point.y, h - point.x);
+        else if (rotate == 180)
+            newp = fz_make_point(w - point.x, h - point.y);
+        else  // rotate == 270
+            newp = fz_make_point(w - point.y, point.x);
+    }
+    fz_catch(ctx) fz_rethrow(ctx);
+    return newp;
+}
+
+
+//----------------------------------------------------------------------------
+// calculate ROTATED point coordinates
+//----------------------------------------------------------------------------
+fz_point JM_rotate_point(fz_context *ctx, pdf_page *page, fz_point point)
+{
+    fz_point newp;
+    fz_try(ctx)
+    {
+        fz_point cb_size = JM_cropbox_size(ctx, page);
+        float w = cb_size.x;
+        float h = cb_size.y;
+        int rotate = JM_page_rotation(ctx, page);
+        if (rotate == 0)
+            newp = point;
+        else if (rotate == 90)
+            newp = fz_make_point(h - point.y, point.x);
+        else if (rotate == 180)
+            newp = fz_make_point(w - point.x, h - point.y);
+        else  // rotate == 270
+            newp = fz_make_point(point.y, w - point.x);
+    }
+    fz_catch(ctx) fz_rethrow(ctx);
+    return newp;
+}
+
+
+//----------------------------------------------------------------------------
+// calculate ROTATED rect coordinates
+//----------------------------------------------------------------------------
+fz_rect JM_rotate_rect(fz_context *ctx, pdf_page *page, fz_rect rect)
+{
+    fz_rect newr;
+    fz_try(ctx)
+    {
+        fz_point p;
+        p = JM_rotate_point(ctx, page, fz_make_point(rect.x0, rect.y0));
+        newr.x0 = p.x;
+        newr.y0 = p.y;
+        newr.x1 = p.x;
+        newr.y1 = p.y;
+        p = JM_rotate_point(ctx, page, fz_make_point(rect.x1, rect.y0));
+        newr = fz_include_point_in_rect(newr, p);
+        p = JM_rotate_point(ctx, page, fz_make_point(rect.x0, rect.y1));
+        newr = fz_include_point_in_rect(newr, p);
+        p = JM_rotate_point(ctx, page, fz_make_point(rect.x1, rect.y1));
+        newr = fz_include_point_in_rect(newr, p);
+    }
+    fz_catch(ctx) fz_rethrow(ctx);
+    return newr;
+}
+
+
+//----------------------------------------------------------------------------
+// calculate NON-ROTATED rect coordinates
+//----------------------------------------------------------------------------
+fz_rect JM_derotate_rect(fz_context *ctx, pdf_page *page, fz_rect rect)
+{
+    fz_rect newr;
+    fz_try(ctx)
+    {
+        fz_point p;
+        p = JM_derotate_point(ctx, page, fz_make_point(rect.x0, rect.y0));
+        newr.x0 = p.x;
+        newr.y0 = p.y;
+        newr.x1 = p.x;
+        newr.y1 = p.y;
+        p = JM_derotate_point(ctx, page, fz_make_point(rect.x1, rect.y0));
+        newr = fz_include_point_in_rect(newr, p);
+        p = JM_derotate_point(ctx, page, fz_make_point(rect.x0, rect.y1));
+        newr = fz_include_point_in_rect(newr, p);
+        p = JM_derotate_point(ctx, page, fz_make_point(rect.x1, rect.y1));
+        newr = fz_include_point_in_rect(newr, p);
+    }
+    fz_catch(ctx) fz_rethrow(ctx);
+    return newr;
+}
 %}
