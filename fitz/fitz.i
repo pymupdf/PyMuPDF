@@ -101,7 +101,7 @@ from __future__ import division, print_function
   #define FLT_EPSILON 1e-5
 #endif
 
-#define return_none return Py_BuildValue("s", NULL)
+#define return_none Py_RETURN_NONE
 #define SWIG_FILE_WITH_INIT
 #define SWIG_PYTHON_2_UNICODE
 
@@ -128,7 +128,6 @@ from __future__ import division, print_function
 #define MIN(a, b) ((a) < (b)) ? (a) : (b)
 
 #define JM_PyErr_Clear if (PyErr_Occurred()) PyErr_Clear()
-#define JM_UNICODE(data) JM_EscapeStrFromStr(data)
 
 // binary output depends on Python major
 # if PY_VERSION_HEX >= 0x03000000
@@ -501,7 +500,7 @@ struct fz_document_s
                     int i, n = pdf_array_len(gctx, names);
                     for (i=0; i < n; i+=2)
                     {
-                        val = JM_UNICODE(pdf_to_text_string(gctx,
+                        val = JM_EscapeStrFromStr(pdf_to_text_string(gctx,
                                          pdf_array_get(gctx, names, i)));
                         LIST_APPEND_DROP(namelist, val);
                     }
@@ -548,15 +547,15 @@ struct fz_document_s
 
                 name = (char *) pdf_to_text_string(gctx,
                                           pdf_dict_get(gctx, o, PDF_NAME(F)));
-                DICT_SETITEM_DROP(infodict, dictkey_filename, JM_UNICODE(name));
+                DICT_SETITEM_DROP(infodict, dictkey_filename, JM_EscapeStrFromStr(name));
 
                 name = (char *) pdf_to_text_string(gctx,
                                     pdf_dict_get(gctx, o, PDF_NAME(UF)));
-                DICT_SETITEM_DROP(infodict, dictkey_ufilename, JM_UNICODE(name));
+                DICT_SETITEM_DROP(infodict, dictkey_ufilename, JM_EscapeStrFromStr(name));
 
                 name = (char *) pdf_to_text_string(gctx,
                                     pdf_dict_get(gctx, o, PDF_NAME(Desc)));
-                DICT_SETITEM_DROP(infodict, dictkey_desc, JM_UNICODE(name));
+                DICT_SETITEM_DROP(infodict, dictkey_desc, JM_UnicodeFromStr(name));
 
                 int len = -1, DL = -1;
                 pdf_obj *ef = pdf_dict_get(gctx, o, PDF_NAME(EF));
@@ -1555,7 +1554,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                         fz_drop_buffer(gctx, buffer);
                     }
                     tuple = PyTuple_New(4);
-                    PyTuple_SET_ITEM(tuple, 0, JM_UNICODE(pdf_to_name(gctx, bname)));
+                    PyTuple_SET_ITEM(tuple, 0, JM_EscapeStrFromStr(pdf_to_name(gctx, bname)));
                     PyTuple_SET_ITEM(tuple, 1, PyUnicode_FromString(ext));
                     PyTuple_SET_ITEM(tuple, 2, PyUnicode_FromString(pdf_to_name(gctx, subtype)));
                     PyTuple_SET_ITEM(tuple, 3, bytes);
@@ -4284,7 +4283,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
                 weiter: ;
                 ixref = pdf_to_num(gctx, font_obj);
 
-                PyObject *name = JM_UNICODE(pdf_to_name(gctx,
+                PyObject *name = JM_EscapeStrFromStr(pdf_to_name(gctx,
                             pdf_dict_get(gctx, font_obj, PDF_NAME(BaseFont))));
 
                 PyObject *subt = PyUnicode_FromString(pdf_to_name(gctx,
@@ -5383,16 +5382,9 @@ struct fz_outline_s {
 */
     %extend {
         %pythoncode %{@property%}
-        %pythonappend uri %{
-        if val:
-            nval = "".join([c for c in val if 32 <= ord(c) <= 127])
-            val = nval
-        else:
-            val = ""
-        %}
         PyObject *uri()
         {
-            return JM_UNICODE($self->uri);
+            return JM_UnicodeFromStr($self->uri);
         }
 
         %pythoncode %{@property%}
@@ -5468,7 +5460,7 @@ struct pdf_annot_s
                 obj = pdf_dict_get(gctx, $self->obj, PDF_NAME(BM));
                 if (obj)  // check the annot object for /BM
                 {
-                    blend_mode = Py_BuildValue("s", pdf_to_name(gctx, obj));
+                    blend_mode = JM_UnicodeFromStr(pdf_to_name(gctx, obj));
                     goto fertig;
                 }
                 // loop through the /AP/N/Resources/ExtGState objects
@@ -5492,7 +5484,7 @@ struct pdf_annot_s
                                 obj2 = pdf_dict_get_key(gctx, obj1, j);
                                 if (pdf_objcmp(gctx, obj2, PDF_NAME(BM)) == 0)
                                 {
-                                    blend_mode = Py_BuildValue("s", pdf_to_name(gctx, pdf_dict_get_val(gctx, obj1, j)));
+                                    blend_mode = JM_UnicodeFromStr(pdf_to_name(gctx, pdf_dict_get_val(gctx, obj1, j)));
                                     goto fertig;
                                 }
                             }
@@ -5616,7 +5608,7 @@ struct pdf_annot_s
                 if (obj)
                 {
                     text = pdf_to_text_string(gctx, obj);
-                    DICT_SETITEM_DROP(values, dictkey_text, Py_BuildValue("s", text));
+                    DICT_SETITEM_DROP(values, dictkey_text, JM_UnicodeFromStr(text));
                 }
                 else
                 {
@@ -6225,8 +6217,8 @@ struct pdf_annot_s
                                 PDF_NAME(Size), NULL);
             if (o) size = pdf_to_int(gctx, o);
 
-            DICT_SETITEM_DROP(res, dictkey_filename, JM_UNICODE(filename));
-            DICT_SETITEM_DROP(res, dictkey_desc, JM_UNICODE(desc));
+            DICT_SETITEM_DROP(res, dictkey_filename, JM_EscapeStrFromStr(filename));
+            DICT_SETITEM_DROP(res, dictkey_desc, JM_UnicodeFromStr(desc));
             DICT_SETITEM_DROP(res, dictkey_length, Py_BuildValue("i", length));
             DICT_SETITEM_DROP(res, dictkey_size, Py_BuildValue("i", size));
             return res;
@@ -6344,23 +6336,23 @@ CheckParent(self)
             pdf_obj *o;
 
             DICT_SETITEM_DROP(res, dictkey_content,
-                          Py_BuildValue("s", pdf_annot_contents(gctx, $self)));
+                          JM_UnicodeFromStr(pdf_annot_contents(gctx, $self)));
 
             o = pdf_dict_get(gctx, $self->obj, PDF_NAME(Name));
-            DICT_SETITEM_DROP(res, dictkey_name, Py_BuildValue("s", pdf_to_name(gctx, o)));
+            DICT_SETITEM_DROP(res, dictkey_name, JM_UnicodeFromStr(pdf_to_name(gctx, o)));
 
             // Title (= author)
             o = pdf_dict_get(gctx, $self->obj, PDF_NAME(T));
-            DICT_SETITEM_DROP(res, dictkey_title, Py_BuildValue("s", pdf_to_text_string(gctx, o)));
+            DICT_SETITEM_DROP(res, dictkey_title, JM_UnicodeFromStr(pdf_to_text_string(gctx, o)));
 
             // CreationDate
             o = pdf_dict_gets(gctx, $self->obj, "CreationDate");
             DICT_SETITEM_DROP(res, dictkey_creationDate,
-                          Py_BuildValue("s", pdf_to_text_string(gctx, o)));
+                          JM_UnicodeFromStr(pdf_to_text_string(gctx, o)));
 
             // ModDate
             o = pdf_dict_get(gctx, $self->obj, PDF_NAME(M));
-            DICT_SETITEM_DROP(res, dictkey_modDate, Py_BuildValue("s", pdf_to_text_string(gctx, o)));
+            DICT_SETITEM_DROP(res, dictkey_modDate, JM_UnicodeFromStr(pdf_to_text_string(gctx, o)));
 
             // Subj
             o = pdf_dict_gets(gctx, $self->obj, "Subj");
@@ -6370,7 +6362,7 @@ CheckParent(self)
             // Identification (PDF key /NM)
             o = pdf_dict_gets(gctx, $self->obj, "NM");
             DICT_SETITEM_DROP(res, dictkey_id,
-                          Py_BuildValue("s", pdf_to_text_string(gctx, o)));
+                          JM_UnicodeFromStr(pdf_to_text_string(gctx, o)));
 
             return res;
         }
@@ -6700,16 +6692,9 @@ struct fz_link_s
         %}
         PARENTCHECK(uri)
         %pythoncode %{@property%}
-        %pythonappend uri %{
-        if not val:
-            val = ""
-        else:
-            nval = "".join([c for c in val if 32 <= ord(c) <= 127])
-            val = nval
-        %}
         PyObject *uri()
         {
-            return JM_UNICODE($self->uri);
+            return JM_UnicodeFromStr($self->uri);
         }
 
         PARENTCHECK(isExternal)
@@ -7313,12 +7298,12 @@ struct Tools
         }
 
 
-        %feature("autodoc","Show anti-aliasing values.") anti_aliasing_values;
-        %pythonappend anti_aliasing_values %{
+        %feature("autodoc","Show anti-aliasing values.") show_aa_level;
+        %pythonappend show_aa_level %{
         d = {"graphics": val[0], "text": val[1], "graphics_min_line_width": val[2]}
         val = d
         %}
-        PyObject *anti_aliasing_values()
+        PyObject *show_aa_level()
         {
             return Py_BuildValue("iif",
                 fz_graphics_aa_level(gctx),

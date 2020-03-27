@@ -39,11 +39,11 @@ void JM_gather_fonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
         if (xref) ext = fontextension(ctx, pdf, xref);
         PyObject *entry = PyTuple_New(7);
         PyTuple_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
-        PyTuple_SET_ITEM(entry, 1, PyUnicode_FromString(ext));
-        PyTuple_SET_ITEM(entry, 2, PyUnicode_FromString(pdf_to_name(ctx, subtype)));
-        PyTuple_SET_ITEM(entry, 3, JM_UNICODE(pdf_to_name(ctx, name)));
-        PyTuple_SET_ITEM(entry, 4, PyUnicode_FromString(pdf_to_name(ctx, refname)));
-        PyTuple_SET_ITEM(entry, 5, PyUnicode_FromString(pdf_to_name(ctx, encoding)));
+        PyTuple_SET_ITEM(entry, 1, Py_BuildValue("s", ext));
+        PyTuple_SET_ITEM(entry, 2, Py_BuildValue("s", pdf_to_name(ctx, subtype)));
+        PyTuple_SET_ITEM(entry, 3, JM_EscapeStrFromStr(pdf_to_name(ctx, name)));
+        PyTuple_SET_ITEM(entry, 4, Py_BuildValue("s", pdf_to_name(ctx, refname)));
+        PyTuple_SET_ITEM(entry, 5, Py_BuildValue("s", pdf_to_name(ctx, encoding)));
         PyTuple_SET_ITEM(entry, 6, Py_BuildValue("i", stream_xref));
         LIST_APPEND_DROP(fontlist, entry);
     }
@@ -176,7 +176,7 @@ void JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
 
         PyObject *entry = PyTuple_New(4);
         PyTuple_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
-        PyTuple_SET_ITEM(entry, 1, PyUnicode_FromString(pdf_to_name(ctx, refname)));
+        PyTuple_SET_ITEM(entry, 1, Py_BuildValue("s", pdf_to_name(ctx, refname)));
         PyTuple_SET_ITEM(entry, 2, Py_BuildValue("i", stream_xref));
         PyTuple_SET_ITEM(entry, 3, Py_BuildValue("ffff",
                                    bbox.x0, bbox.y0, bbox.x1, bbox.y1));

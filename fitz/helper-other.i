@@ -38,6 +38,18 @@ PyObject *JM_EscapeStrFromBuffer(fz_context *ctx, fz_buffer *buff)
     return val;
 }
 
+PyObject *JM_UnicodeFromStr(const char *c)
+{
+    if (!c) return PyUnicode_FromString("");
+    PyObject *val = Py_BuildValue("s", c);
+    if (!val)
+    {
+        val = PyUnicode_FromString("");
+        PyErr_Clear();
+    }
+    return val;
+}
+
 PyObject *JM_EscapeStrFromStr(const char *c)
 {
     if (!c) return PyUnicode_FromString("");

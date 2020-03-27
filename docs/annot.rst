@@ -105,11 +105,21 @@ There is a parent-child relationship between an annotation and its page. If the 
       :rtype: str
       :returns: the blend mode or *None*.
 
+         >>> annot=page.firstAnnot
+         >>> annot.blendMode()
+         'Multiply'
+
+
    .. method:: setBlendMode(blend_mode)
 
       *(New in v1.16.14)* Set the annotation's blend mode. See :ref:`AdobeManual`, page 520 for explanations. The blend mode can also be set in :meth:`Annot.update`.
 
-      :arg str blend_mode: set the blend mode. Use :meth:`Annot.update` to reflect this in the visual appearance. For predefined values see :ref:`BlendModes`.
+      :arg str blend_mode: set the blend mode. Use :meth:`Annot.update` to reflect this in the visual appearance. For predefined values see :ref:`BlendModes`. The best way to **remove** a special blend mode is choosing ``PDF_BM_Normal``.
+
+         >>> annot.setBlendMode(fitz.PDF_BM_Multiply)
+         >>> annot.update()
+         >>> # or in one statement:
+         >>> annot.update(blend_mode=fitz.PDF_BM_Multiply, ...)
 
    .. method:: setName(name)
 
@@ -117,7 +127,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg str name: the new name.
 
-      .. caution:: If you set the name of a 'Stamp' annotation, then this will **not change** the rectangle, nor will the text be layouted in any way. If you choose a standard text from :ref:`StampIcons` (the **exact** name piece after ``STAMP_``!), you should receive the original layout. An **arbitrary text** will not be changed to upper case, but be written as is, horizontally centered in **one line**. If its length exceeds the available width, it will be accordingly shortened. To ensure your own text will **not be shortened**, ensure that ``fitz.getTextLength(text, fontname="tiro", fontsize=20) / annot.rect.width <= 0.85``.
+      .. caution:: If you set the name of a 'Stamp' annotation, then this will **not change** the rectangle, nor will the text be layouted in any way. If you choose a standard text from :ref:`StampIcons` (the **exact** name piece after "STAMP_"), you should receive the original layout. An **arbitrary text** will not be changed to upper case, but be written as is, horizontally centered in **one line** and be shortened to fit. To avoid this make sure the following inequality is true: ``fitz.getTextlength(text, fontname="tiro", fontsize=20) / annot.rect.width <= 0.85``.
 
    .. method:: setRect(rect)
 

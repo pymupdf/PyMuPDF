@@ -218,7 +218,7 @@ static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw,
 
             DICT_SETITEM_DROP(span, dictkey_size, Py_BuildValue("f", style.size));
             DICT_SETITEM_DROP(span, dictkey_flags, Py_BuildValue("i", style.flags));
-            DICT_SETITEM_DROP(span, dictkey_font, JM_UNICODE(style.font));
+            DICT_SETITEM_DROP(span, dictkey_font, JM_EscapeStrFromStr(style.font));
             DICT_SETITEM_DROP(span, dictkey_color, Py_BuildValue("i", style.color));
 
             old_style = style;
@@ -318,7 +318,7 @@ static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject
         DICT_SETITEM_DROP(block_dict, dictkey_height,
                           Py_BuildValue("i", h));
         DICT_SETITEM_DROP(block_dict, dictkey_ext,
-                          PyUnicode_FromString(ext));
+                          Py_BuildValue("s", ext));
         DICT_SETITEM_DROP(block_dict, dictkey_colorspace,
                           Py_BuildValue("i", n));
         DICT_SETITEM_DROP(block_dict, dictkey_xres,

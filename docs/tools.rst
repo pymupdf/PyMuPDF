@@ -13,6 +13,8 @@ This class is a collection of utility methods and attributes, mainly around memo
 :meth:`Tools.mupdf_warnings`       return the accumulated MuPDF warnings
 :meth:`Tools.mupdf_display_errors` return the accumulated MuPDF warnings
 :meth:`Tools.reset_mupdf_warnings` empty MuPDF messages on STDOUT
+:meth:`Tools.set_aa_level`         set the anti-aliasing values
+:meth:`Tools.show_aa_level`        return the anti-aliasing values
 :attr:`Tools.fitz_config`          configuration settings of PyMuPDF
 :attr:`Tools.store_maxsize`        maximum storables cache size
 :attr:`Tools.store_size`           current storables cache size
@@ -42,6 +44,21 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       :rtype: int
       :returns: the new current store size. Depending on the situation, the size reduction may be larger than the requested percentage.
+
+   .. method:: show_aa_level()
+
+      *(New in version 1.16.14)* Return the current anti-aliasing values. These values control the rendering quality of graphics and text elements.
+
+      :rtype: dict
+      :returns: A dictionary with the following initial content: ``{'graphics': 8, 'text': 8, 'graphics_min_line_width': 0.0}``.
+
+
+   .. method:: set_aa_level(level)
+
+      *(New in version 1.16.14)* Set the new number of bits to use for anti-aliasing. The same value is taken currently for graphics and text rendering. This might change in a future MuPDF release.
+
+      :arg int level: an integer ranging between 0 and 8. Value outside this range will be silently changed to valid values. The value will remain in effect throughout the current session or until changed again.
+
 
    .. method:: reset_mupdf_warnings()
 
