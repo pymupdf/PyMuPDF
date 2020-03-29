@@ -83,7 +83,12 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: setLineEnds(start, end)
 
-      Sets an annotation's line ending styles. Only 'FreeText', 'Line', 'PolyLine', and 'Polygon' annotations can have these properties. Each of these annotation types is defined by a list of points which are connected by lines. The symbol identified by *start* is attached to the first point, and *end* to the last point of this list. For unsupported annotation types, a no-operation with a warning message results.
+      Sets an annotation's line ending styles. Each of these annotation types is defined by a list of points which are connected by lines. The symbol identified by *start* is attached to the first point, and *end* to the last point of this list. For unsupported annotation types, a no-operation with a warning message results.
+
+      .. note::
+
+         * While only 'FreeText', 'Line', 'PolyLine', and 'Polygon' annotations can have these properties, (Py-) MuPDF does not support line ends for 'FreeText', because the call-out variant for these is not supported.
+         * *(Changed in v1.16.16)* Some symbols have an interior area (diamonds, circles, squares, etc.). By default, these areas are filled with the fill color of the annotation. If this is *None*, then white is chosen. The *fill_color* argument of :meth:`Annot.update` can now be used to override this.
 
       :arg int start: The symbol number for the first point.
       :arg int end: The symbol number for the last point.
@@ -127,7 +132,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg str name: the new name.
 
-      .. caution:: If you set the name of a 'Stamp' annotation, then this will **not change** the rectangle, nor will the text be layouted in any way. If you choose a standard text from :ref:`StampIcons` (the **exact** name piece after "STAMP_"), you should receive the original layout. An **arbitrary text** will not be changed to upper case, but be written as is, horizontally centered in **one line** and be shortened to fit. To avoid this make sure the following inequality is true: ``fitz.getTextlength(text, fontname="tiro", fontsize=20) / annot.rect.width <= 0.85``.
+      .. caution:: If you set the name of a 'Stamp' annotation, then this will **not change** the rectangle, nor will the text be layouted in any way. If you choose a standard text from :ref:`StampIcons` (the **exact** name piece after "STAMP_"), you should receive the original layout. An **arbitrary text** will not be changed to upper case, but be written in font "Times-Bold" as is, horizontally centered in **one line** and be shortened to fit. To get your text fully displayed, its length using fontsize 20 must not exceed 190 pixels. So please make sure that the following inequality is true: ``fitz.getTextlength(text, fontname="tibo", fontsize=20) <= 190``.
 
    .. method:: setRect(rect)
 
@@ -188,17 +193,21 @@ There is a parent-child relationship between an annotation and its page. If the 
          * :meth:`fileUpd`
          * :meth:`setInfo` (except changes to *"content"*)
 
-      All arguments are optional. *(Changed in v1.16.14)* blend_mode and opacity are applicable to all annotation types. The other arguments **are reserved for 'FreeText'** annotations and ignored for other types.
+      All arguments are optional. *(Changed in v1.16.14)* Blend mode and opacity are applicable to all annotation types. The other arguments are mostly special use, as described below.
 
-      Color specifications may be made in the usual format used in PuMuPDF as sequences of floats ranging from 0.0 to 1.0 (including both). The sequence length must be 1, 3 or 4 (supporting GRAY, RGB and CMYK colorspaces respectively). For mono-color, just a float is also acceptable.
+      Color specifications may be made in the usual format used in PuMuPDF as sequences of floats ranging from 0.0 to 1.0 (including both). The sequence length must be 1, 3 or 4 (supporting GRAY, RGB and CMYK colorspaces respectively). For mono-color, just a float is also acceptable and yields some shade of gray.
 
       :arg float opacity: *(new in v1.16.14)* **valid for all annotation types:** change or set the annotation's transparency. Valid values are *0 <= opacity < 1*.
       :arg str blend_mode: *(new in v1.16.14)* **valid for all annotation types:** change or set the annotation's blend mode. For valid values see :ref:`BlendModes`.
-      :arg float fontsize: change font size of the text.
-      :arg sequence,float text_color: change the text color.
-      :arg sequence,float border_color: change the border color.
-      :arg sequence,float fill_color: the fill color. If you set (or leave) this to *None*, then **no rectangle at all** will be drawn around the text, and the border color will be ignored. This will leave anything "under" the text visible.
-      :arg int rotate: new rotation value. Default (-1) means no change.
+      :arg float fontsize: change font size of the text. 'FreeText' annotations only.
+      :arg sequence,float text_color: change the text color. 'FreeText' annotations only.
+      :arg sequence,float border_color: change the border color. 'FreeText' annotations only.
+      :arg sequence,float fill_color: the fill color.
+      
+          * 'FreeText' annotations: If you set (or leave) this to *None*, then **no rectangle at all** will be drawn around the text, and the border color will be ignored. This will leave anything "under" the text visible.
+          * 'Line', 'Polyline', 'Polygon' annotations: use it for line end symbols to give them a fill color other than the one of the annotation *(changed in v1.16.16)*
+
+      :arg int rotate: new rotation value. Default (-1) means no change. 'FreeText' annotations only.
 
       :rtype: bool
 

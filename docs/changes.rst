@@ -1,6 +1,13 @@
 Change Logs
 ===============
 
+Changes in Version 1.16.16
+---------------------------
+
+* **Fixed** issue `#477 <https://github.com/pymupdf/PyMuPDF/issues/477>`_.
+* **Fixed** issue `#476 <https://github.com/pymupdf/PyMuPDF/issues/476>`_.
+* **Changed** annotation line end symbol coloring and fixed an error coloring the interior of 'Polyline' /'Polygon' annotations.
+
 Changes in Version 1.16.14
 ---------------------------
 

@@ -3082,10 +3082,13 @@ struct fz_page_s {
             fz_try(gctx)
             {
                 assert_PDF(page);
+                fz_rect r = JM_rect_from_py(rect);
+                if (fz_is_infinite_rect(r) || fz_is_empty_rect(r))
+                    THROWMSG("rect must be finite and not empty");
                 if (INRANGE(stamp, 0, n-1))
                     name = stamp_id[stamp];
                 annot = pdf_create_annot(gctx, page, PDF_ANNOT_STAMP);
-                pdf_set_annot_rect(gctx, annot, JM_rect_from_py(rect));
+                pdf_set_annot_rect(gctx, annot, r);
                 pdf_dict_put(gctx, annot->obj, PDF_NAME(Name), name);
                 pdf_set_annot_contents(gctx, annot,
                         pdf_dict_get_name(gctx, annot->obj, PDF_NAME(Name)));
@@ -3219,8 +3222,11 @@ struct fz_page_s {
             pdf_annot *annot = NULL;
             fz_try(gctx)
             {
+                fz_rect r = JM_rect_from_py(rect);
+                if (fz_is_infinite_rect(r) || fz_is_empty_rect(r))
+                    THROWMSG("rect must be finite and not empty");
                 annot = pdf_create_annot(gctx, page, annot_type);
-                pdf_set_annot_rect(gctx, annot, JM_rect_from_py(rect));
+                pdf_set_annot_rect(gctx, annot, r);
                 JM_add_annot_id(gctx, annot, "fitzannot");
                 pdf_update_annot(gctx, annot);
             }
@@ -3304,6 +3310,8 @@ struct fz_page_s {
             pdf_annot *annot = NULL;
             fz_try(gctx)
             {
+                if (fz_is_infinite_rect(r) || fz_is_empty_rect(r))
+                    THROWMSG("rect must be finite and not empty");
                 annot = pdf_create_annot(gctx, page, PDF_ANNOT_FREE_TEXT);
                 pdf_set_annot_contents(gctx, annot, text);
                 pdf_set_annot_rect(gctx, annot, r);
@@ -3703,19 +3711,17 @@ except:
         //---------------------------------------------------------------------
         // Page.deleteAnnot() - delete annotation and return the next one
         //---------------------------------------------------------------------
-        %pythonprepend deleteAnnot
-%{
-CheckParent(self)
-CheckParent(annot)
-%}
-        %pythonappend deleteAnnot
-%{
-if val:
-    val.thisown = True
-    val.parent = weakref.proxy(self) # owning page object
-    val.parent._annot_refs[id(val)] = val
-annot._erase()
-%}
+        %pythonprepend deleteAnnot %{
+        CheckParent(self)
+        CheckParent(annot)
+        %}
+        %pythonappend deleteAnnot %{
+        if val:
+            val.thisown = True
+            val.parent = weakref.proxy(self) # owning page object
+            val.parent._annot_refs[id(val)] = val
+        annot._erase()
+        %}
         %feature("autodoc","Delete annot and return next one.") deleteAnnot;
         struct pdf_annot_s *deleteAnnot(struct pdf_annot_s *annot)
         {
@@ -3737,6 +3743,7 @@ annot._erase()
             page->doc->dirty = 1;
             return nextannot;
         }
+
 
         //---------------------------------------------------------------------
         // MediaBox: get the /MediaBox (PDF only)
@@ -5836,7 +5843,7 @@ struct pdf_annot_s
             def color_string(cs, code):
                 """Return valid PDF color operator for a given color sequence.
                 """
-                if cs is None or cs == "":
+                if not cs:
                     return b""
                 if hasattr(cs, "__float__") or len(cs) == 1:
                     app = " g\n" if code == "f" else " G\n"
@@ -5858,10 +5865,12 @@ struct pdf_annot_s
             dt = self.border["dashes"]  # get the dashes spec
             bwidth = self.border["width"]  # get border line width
             stroke = self.colors["stroke"]  # get the stroke color
-            if fill_color is not None:  # get the fill color
-                fill = fill_color
+            if fill_color is not None and type == PDF_ANNOT_FREE_TEXT:
+                fill = fill_color  # get the fill color for 'FreeText' only
             else:
                 fill = self.colors["fill"]
+                if not fill:
+                    fill = None
 
             rect = None  # self.rect  # prevent MuPDF fiddling with it
 
@@ -5975,16 +5984,22 @@ struct pdf_annot_s
                 ap = b"\n".join(ap_tab)         # updated AP stream
                 ap_updated = True
 
-            if bfill != "":
+            if bfill != b"":
                 if type == PDF_ANNOT_POLYGON:
                     ap = ap[:-1] + bfill + b"b"  # close, fill, and stroke
                     ap_updated = True
                 elif type == PDF_ANNOT_POLYLINE:
                     ap = ap[:-1] + bfill + b"B"  # fill and stroke
                     ap_updated = True
+            else:
+                if type == PDF_ANNOT_POLYGON:
+                    ap = ap[:-1] + b"s"  # close and stroke
+                    ap_updated = True
+                elif type == PDF_ANNOT_POLYLINE:
+                    ap = ap[:-1] + b"S"  # stroke
+                    ap_updated = True
 
-            # Dashes not handled by MuPDF, so we do it here.
-            if dashes is not None:
+            if dashes is not None:  # handle dashes
                 ap = dashes + ap
                 # reset dashing - only applies for LINE annots with line ends given
                 ap = ap.replace(b"\nS\n", b"\nS\n[] d\n", 1)
@@ -6013,12 +6028,12 @@ struct pdf_annot_s
                 if line_end_le in le_funcs_range:
                     p1 = Point(points[0]) * imat
                     p2 = Point(points[1]) * imat
-                    left = le_funcs[line_end_le](self, p1, p2, False)
+                    left = le_funcs[line_end_le](self, p1, p2, False, fill_color)
                     ap += bytes(left, "utf8") if not fitz_py2 else left
                 if line_end_ri in le_funcs_range:
                     p1 = Point(points[-2]) * imat
                     p2 = Point(points[-1]) * imat
-                    left = le_funcs[line_end_ri](self, p1, p2, True)
+                    left = le_funcs[line_end_ri](self, p1, p2, True, fill_color)
                     ap += bytes(left, "utf8") if not fitz_py2 else left
 
             if ap_updated:
@@ -6374,12 +6389,12 @@ CheckParent(self)
         %feature("autodoc","Set various annotation properties.") setInfo;
         %pythonprepend setInfo %{
         CheckParent(self)
-        if type(info) is dict:  # build a new dictionary from the other args
-            content = info.get("content", "")
-            title = info.get("title", "")
-            creationDate = info.get("creationDate", "")
-            modDate = info.get("modDate", "")
-            subject = info.get("subject", "")
+        if type(info) is dict:  # build the args from the dictionary
+            content = info.get("content", None)
+            title = info.get("title", None)
+            creationDate = info.get("creationDate", None)
+            modDate = info.get("modDate", None)
+            subject = info.get("subject", None)
             info = None
         %}
         PyObject *setInfo(PyObject *info=NULL, char *content=NULL, char *title=NULL,
@@ -6389,24 +6404,29 @@ CheckParent(self)
             int is_markup = pdf_annot_has_author(gctx, $self);
             fz_try(gctx)
             {
-                // contents{
-                pdf_set_annot_contents(gctx, $self, content);
+                // contents
+                if (content)
+                    pdf_set_annot_contents(gctx, $self, content);
 
                 if (is_markup)
                 {
                     // title (= author)
-                    pdf_set_annot_author(gctx, $self, title);
+                    if (title)
+                        pdf_set_annot_author(gctx, $self, title);
 
                     // creation date
-                    pdf_dict_put_text_string(gctx, $self->obj,
+                    if (creationDate)
+                        pdf_dict_put_text_string(gctx, $self->obj,
                                                  PDF_NAME(CreationDate), creationDate);
 
                     // mod date
-                    pdf_dict_put_text_string(gctx, $self->obj,
+                    if (modDate)
+                        pdf_dict_put_text_string(gctx, $self->obj,
                                                  PDF_NAME(M), modDate);
 
                     // subject
-                    pdf_dict_puts_drop(gctx, $self->obj, "Subj",
+                    if (subject)
+                        pdf_dict_puts_drop(gctx, $self->obj, "Subj",
                                            pdf_new_text_string(gctx, subject));
                 }
             }
@@ -7695,15 +7715,20 @@ def _angle_between(self, C, P, Q):
     m = self._hor_matrix(P, Q)
     return (C * m).unit
 
-def _le_annot_parms(self, annot, p1, p2):
+def _le_annot_parms(self, annot, p1, p2, fill_color):
     """Get common parameters for making line end symbols.
     """
-    w = annot.border["width"]          # line width
-    sc = annot.colors["stroke"]        # stroke color
-    if not sc: sc = (0,0,0)
+    w = annot.border["width"]  # line width
+    sc = annot.colors["stroke"]  # stroke color
+    if not sc:  # black if missing
+        sc = (0,0,0)
     scol = " ".join(map(str, sc)) + " RG\n"
-    fc = annot.colors["fill"]          # fill color
-    if not fc: fc = (0,0,0)
+    if fill_color:
+        fc = fill_color
+    else:
+        fc = annot.colors["fill"]  # fill color
+    if not fc:
+        fc = (1,1,1)  # white if missing
     fcol = " ".join(map(str, fc)) + " rg\n"
     nr = annot.rect
     np1 = p1                   # point coord relative to annot rect
@@ -7713,7 +7738,7 @@ def _le_annot_parms(self, annot, p1, p2):
     L = np1 * m                        # converted start (left) point
     R = np2 * m                        # converted end (right) point
     if 0 <= annot.opacity < 1:
-        opacity = "/Alp0 gs\n"
+        opacity = "/H gs\n"
     else:
         opacity = ""
     return m, im, L, R, w, scol, fcol, opacity
@@ -7746,10 +7771,10 @@ def _oval_string(self, p1, p2, p3, p4):
     ap += bezier(ul1, ul2, ml)
     return ap
 
-def _le_diamond(self, annot, p1, p2, lr):
+def _le_diamond(self, annot, p1, p2, lr, fill_color):
     """Make stream commands for diamond line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2, fill_color)
     shift = 2.5             # 2*shift*width = length of square edge
     d = shift * max(1, w)
     M = R - (d/2., 0) if lr else L + (d/2., 0)
@@ -7767,10 +7792,10 @@ def _le_diamond(self, annot, p1, p2, lr):
     ap += scol + fcol + "b\nQ\n"
     return ap
 
-def _le_square(self, annot, p1, p2, lr):
+def _le_square(self, annot, p1, p2, lr, fill_color):
     """Make stream commands for square line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2, fill_color)
     shift = 2.5             # 2*shift*width = length of square edge
     d = shift * max(1, w)
     M = R - (d/2., 0) if lr else L + (d/2., 0)
@@ -7788,10 +7813,10 @@ def _le_square(self, annot, p1, p2, lr):
     ap += scol + fcol + "b\nQ\n"
     return ap
 
-def _le_circle(self, annot, p1, p2, lr):
+def _le_circle(self, annot, p1, p2, lr, fill_color):
     """Make stream commands for circle line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2, fill_color)
     shift = 2.5             # 2*shift*width = length of square edge
     d = shift * max(1, w)
     M = R - (d/2., 0) if lr else L + (d/2., 0)
@@ -7801,10 +7826,10 @@ def _le_circle(self, annot, p1, p2, lr):
     ap += scol + fcol + "b\nQ\n"
     return ap
 
-def _le_butt(self, annot, p1, p2, lr):
+def _le_butt(self, annot, p1, p2, lr, fill_color):
     """Make stream commands for butt line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2, fill_color)
     shift = 3
     d = shift * max(1, w)
     M = R if lr else L
@@ -7816,10 +7841,10 @@ def _le_butt(self, annot, p1, p2, lr):
     ap += scol + "s\nQ\n"
     return ap
 
-def _le_slash(self, annot, p1, p2, lr):
+def _le_slash(self, annot, p1, p2, lr, fill_color):
     """Make stream commands for slash line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2, fill_color)
     rw = 1.1547 * max(1, w) * 1.0         # makes rect diagonal a 30 deg inclination
     M = R if lr else L
     r = Rect(M.x - rw, M.y - 2 * w, M.x + rw, M.y + 2 * w)
@@ -7831,10 +7856,10 @@ def _le_slash(self, annot, p1, p2, lr):
     ap += scol + "s\nQ\n"
     return ap
 
-def _le_openarrow(self, annot, p1, p2, lr):
+def _le_openarrow(self, annot, p1, p2, lr, fill_color):
     """Make stream commands for open arrow line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2, fill_color)
     shift = 2.5
     d = shift * max(1, w)
     p2 = R + (d/2., 0) if lr else L - (d/2., 0)
@@ -7850,10 +7875,10 @@ def _le_openarrow(self, annot, p1, p2, lr):
     ap += scol + "S\nQ\n"
     return ap
 
-def _le_closedarrow(self, annot, p1, p2, lr):
+def _le_closedarrow(self, annot, p1, p2, lr, fill_color):
     """Make stream commands for closed arrow line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2, fill_color)
     shift = 2.5
     d = shift * max(1, w)
     p2 = R + (d/2., 0) if lr else L - (d/2., 0)
@@ -7869,10 +7894,10 @@ def _le_closedarrow(self, annot, p1, p2, lr):
     ap += scol + fcol + "b\nQ\n"
     return ap
 
-def _le_ropenarrow(self, annot, p1, p2, lr):
+def _le_ropenarrow(self, annot, p1, p2, lr, fill_color):
     """Make stream commands for right open arrow line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2, fill_color)
     shift = 2.5
     d = shift * max(1, w)
     p2 = R - (d/3., 0) if lr else L + (d/3., 0)
@@ -7888,10 +7913,10 @@ def _le_ropenarrow(self, annot, p1, p2, lr):
     ap += scol + fcol + "S\nQ\n"
     return ap
 
-def _le_rclosedarrow(self, annot, p1, p2, lr):
+def _le_rclosedarrow(self, annot, p1, p2, lr, fill_color):
     """Make stream commands for right closed arrow line end symbol. "lr" denotes left (False) or right point.
     """
-    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2)
+    m, im, L, R, w, scol, fcol, opacity = self._le_annot_parms(annot, p1, p2, fill_color)
     shift = 2.5
     d = shift * max(1, w)
     p2 = R - (2*d, 0) if lr else L + (2*d, 0)
