@@ -3183,7 +3183,7 @@ struct fz_page_s {
         def addHighlightAnnot(self, quads=None, start=None, stop=None, clip=None):
             """Add a 'Highlight' annotation."""
             if quads is None:
-                quads = get_highlight_selection(self, start=start, stop=stop, clip=rect)
+                quads = get_highlight_selection(self, start=start, stop=stop, clip=clip)
             if quads:
                 return self._add_text_marker(quads, PDF_ANNOT_HIGHLIGHT)
             else:
