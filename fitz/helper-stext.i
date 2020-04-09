@@ -41,7 +41,7 @@ PyObject *JM_repl_char()
 }
 
 //-----------------------------------------------------------------------------
-// append non-ascii runes in unicode escape format
+// APPEND non-ascii runes in unicode escape format to a fz_buffer
 //-----------------------------------------------------------------------------
 void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
 {
@@ -61,7 +61,7 @@ void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
 
 
 //-----------------------------------------------------------------------------
-// write non-ascii runes in unicode escape format
+// WRITE non-ascii runes in unicode escape format to a fz_output
 //-----------------------------------------------------------------------------
 void JM_write_rune(fz_context *ctx, fz_output *out, int ch)
 {
@@ -168,7 +168,7 @@ static int JM_char_font_flags(fz_context *ctx, fz_font *font, fz_stext_line *lin
     return flags;
 }
 
-//start-trace
+
 static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw, fz_buffer *buff)
 {
     PyObject *span = NULL, *char_list = NULL, *char_dict;
@@ -385,6 +385,109 @@ void JM_make_textpage_dict(fz_context *ctx, fz_stext_page *tp, PyObject *page_di
     DICT_SETITEM_DROP(page_dict, dictkey_blocks, block_list);
     fz_drop_buffer(ctx, text_buffer);
 }
-//end-trace
 
+PyObject *JM_object_to_string(fz_context *ctx, pdf_obj *what, int compress, int ascii)
+{
+    fz_buffer *res=NULL;
+    fz_output *out=NULL;
+    PyObject *text=NULL;
+    fz_try(ctx)
+    {
+        res = fz_new_buffer(ctx, 1024);
+        out = fz_new_output_with_buffer(ctx, res);
+        pdf_print_obj(ctx, out, what, compress, ascii);
+        text = JM_EscapeStrFromBuffer(ctx, res);
+    }
+    fz_always(ctx)
+    {
+        fz_drop_output(ctx, out);
+        fz_drop_buffer(ctx, res);
+    }
+    fz_catch(ctx)
+    {
+        text = PyUnicode_FromString("");
+        return text;
+    }
+    return text;
+}
+
+//-----------------------------------------------------------------------------
+// Merge the /Resources object created by a text pdf device into the page.
+// The device may have created multiple /ExtGState/Alp? and /Font/F? objects.
+// These need to be renamed (renumbered) to not overwrite existing page
+// objects from previous executions.
+// Returns the next available numbers n, m for objects /Alp<n>, /F<m>.
+//-----------------------------------------------------------------------------
+PyObject *JM_merge_resources(fz_context *ctx, pdf_page *page, pdf_obj *temp_res)
+{
+    // page objects /Resources, /Resources/ExtGState, /Resources/Font
+    pdf_obj *resources = pdf_dict_get(ctx, page->obj, PDF_NAME(Resources));
+    pdf_obj *main_extg = pdf_dict_get(ctx, resources, PDF_NAME(ExtGState));
+    pdf_obj *main_fonts = pdf_dict_get(ctx, resources, PDF_NAME(Font));
+
+    // text pdf device objects /ExtGState, /Font
+    pdf_obj *temp_extg = pdf_dict_get(ctx, temp_res, PDF_NAME(ExtGState));
+    pdf_obj *temp_fonts = pdf_dict_get(ctx, temp_res, PDF_NAME(Font));
+
+    int max_alp = 0, max_fonts = 0, i, n;
+    char start_str[32] = {0};  // string for comparison
+    char text[32] = {0};  // string for comparison
+
+    // Handle /Alp objects
+    if (pdf_is_dict(ctx, temp_extg))  // any created at all?
+    {
+        n = pdf_dict_len(ctx, temp_extg);
+        if (pdf_is_dict(ctx, main_extg))  // does page have /ExtGState yet?
+        {
+            for (i = 0; i < pdf_dict_len(ctx, main_extg); i++)
+            {   // get highest number of objects named /Alp?
+                char *alp = (char *) pdf_to_name(ctx, pdf_dict_get_key(ctx, main_extg, i));
+                if (strncmp(alp, "Alp", 3) != 0) continue;
+                if (strcmp(start_str, alp) < 0) strcpy(start_str, alp);
+            }
+            while (strcmp(text, start_str) < 0)
+            {   // compute next available number
+                fz_snprintf(text, sizeof(text), "Alp%d", max_alp);
+                max_alp++;
+            }
+        }
+        else  // create a /ExtGState for the page
+            main_extg = pdf_dict_put_dict(ctx, resources, PDF_NAME(ExtGState), n);
+
+        for (i = 0; i < n; i++)  // copy over renumbered /Alp objects
+        {
+            fz_snprintf(text, sizeof(text), "Alp%d", i + max_alp);  // new name
+            pdf_obj *val = pdf_dict_get_val(ctx, temp_extg, i);
+            pdf_dict_puts(ctx, main_extg, text, val);
+        }
+    }
+
+    text[0] = 0;  // empty comparison string
+    start_str[0] = 0;  // empty comparison string
+
+    if (pdf_is_dict(ctx, main_fonts))  // has page any fonts yet?
+    {
+        for (i = 0; i < pdf_dict_len(ctx, main_fonts); i++)
+        {   // get highest number of fonts named /F?
+            char *font = (char *) pdf_to_name(ctx, pdf_dict_get_key(ctx, main_fonts, i));
+            if (strncmp(font, "F", 1) != 0) continue;
+            if (strcmp(start_str, font) < 0) strcpy(start_str, font);
+        }
+        while (strcmp(text, start_str) < 0)
+        {   // compute next available number
+            fz_snprintf(text, sizeof(text), "F%d", max_fonts);
+            max_fonts++;
+        }
+    }
+    else  // create a Resources/Font for the page
+        main_fonts = pdf_dict_put_dict(ctx, resources, PDF_NAME(Font), 2);
+
+    for (i = 0; i < pdf_dict_len(ctx, temp_fonts); i++)
+    {   // copy over renumbered font objects
+        fz_snprintf(text, sizeof(text), "F%d", i + max_fonts);
+        pdf_obj *val = pdf_dict_get_val(ctx, temp_fonts, i);
+        pdf_dict_puts_drop(ctx, main_fonts, text, val);
+    }
+    return Py_BuildValue("ii", max_alp, max_fonts); // next available numbers
+}
 %}

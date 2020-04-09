@@ -1,6 +1,12 @@
 Change Logs
 ===============
 
+Changes in Version 1.16.17
+---------------------------
+
+* **Fixed** issue `#479 <https://github.com/pymupdf/PyMuPDF/issues/479>`_. PyMuPDF should now more correctly report image resolutions. This applies to both, images (either from images files or extracted from PDF documents) and pixmaps created from images.
+* **Added** :meth:`Pixmap.setResolution` which sets the image resolution in x and y directions.
+
 Changes in Version 1.16.16
 ---------------------------
 

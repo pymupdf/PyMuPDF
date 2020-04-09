@@ -138,7 +138,6 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
     PyObject *result = NULL;
     unsigned char *c = NULL;
     Py_ssize_t len = 0;
-
     if (PyBytes_Check(imagedata))
     {
         c = PyBytes_AS_STRING(imagedata);
@@ -151,19 +150,24 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
     }
     else
     {
-        PySys_WriteStderr("stream not bytes-like\n");
-        return PyDict_New();
+        PySys_WriteStderr("bad image data\n");
+        Py_RETURN_NONE;
     }
 
     if (len < 8)
     {
-        PySys_WriteStderr("stream too short\n");
-        return PyDict_New();
+        PySys_WriteStderr("bad image data\n");
+        Py_RETURN_NONE;
+    }
+    int type = fz_recognize_image_format(ctx, c);
+    if (type == FZ_IMAGE_UNKNOWN)
+    {
+        Py_RETURN_NONE;
     }
 
     fz_try(ctx)
     {
-        if (keep_image)
+        if (keep_image)  // ensure image buffer is not dropped
         {
             res = fz_new_buffer_from_copied_data(ctx, c, (size_t) len);
         }
@@ -172,28 +176,38 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
             res = fz_new_buffer_from_shared_data(ctx, c, (size_t) len);
         }
         image = fz_new_image_from_buffer(ctx, res);
-        int type = fz_recognize_image_format(ctx, c);
-        result = Py_BuildValue("{s:i,s:i,s:i,s:i,s:i,s:s,s:n}",
-                                "width", image->w,
-                                "height", image->h,
-                                "colorspace", image->n,
-                                "bpc", image->bpc,
-                                "format", type,
-                                "ext", JM_image_extension(type),
-                                "size", len
-                              );
-        if (keep_image)
+        int xres, yres;
+        fz_image_resolution(image, &xres, &yres);
+        const char *cs_name = fz_colorspace_name(gctx, image->colorspace);
+        result = PyDict_New();
+        DICT_SETITEM_DROP(result, dictkey_width,
+                Py_BuildValue("i", image->w));
+        DICT_SETITEM_DROP(result, dictkey_height,
+                Py_BuildValue("i", image->h));
+        DICT_SETITEM_DROP(result, dictkey_xres,
+                Py_BuildValue("i", xres));
+        DICT_SETITEM_DROP(result, dictkey_yres,
+                Py_BuildValue("i", yres));
+        DICT_SETITEM_DROP(result, dictkey_colorspace,
+                Py_BuildValue("i", image->n));
+        DICT_SETITEM_DROP(result, dictkey_bpc,
+                Py_BuildValue("i", image->bpc));
+        DICT_SETITEM_DROP(result, dictkey_ext,
+                Py_BuildValue("s", JM_image_extension(type)));
+        DICT_SETITEM_DROP(result, dictkey_cs_name,
+                Py_BuildValue("s", cs_name));
+
+        if (keep_image)  // hand over fz_image address and do not drop
         {
-            // keep fz_image: hand over address, do not drop
             DICT_SETITEM_DROP(result, dictkey_image,
-                              PyLong_FromVoidPtr((void *) fz_keep_image(ctx, image)));
+                    PyLong_FromVoidPtr((void *) fz_keep_image(ctx, image)));
         }
     }
     fz_always(ctx)
     {
-        if (!keep_image)
+        if (!keep_image)  // drop the image
         {
-            fz_drop_image(ctx, image);  // conditional drop
+            fz_drop_image(ctx, image);
         }
         else
         {
@@ -202,10 +216,10 @@ PyObject *JM_image_profile(fz_context *ctx, PyObject *imagedata, int keep_image)
     }
     fz_catch(ctx)
     {
-        PySys_WriteStderr("%s\n", fz_caught_message(ctx));
         Py_CLEAR(result);
-        return PyDict_New();
+        Py_RETURN_NONE;
     }
+    PyErr_Clear();
     return result;
 }
 

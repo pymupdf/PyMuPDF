@@ -170,6 +170,8 @@ For addional details on **embedded files** refer to Appendix 3.
       :rtype: :ref:`Page`
 
       :returns: a new copy of the same page. All pending updates (e.g. to annotations or widgets) will be finalized and a fresh copy of the page will be loaded.
+        .. note:: In a typical use case, a page :ref:`Pixmap` should be taken after annotations / widgets have been added or changed. To force all those changes being reflected in the page structure, this method re-instates a fresh copy while keeping the object hierarchy "document -> page -> annotation(s)" intact.
+
 
     .. method:: pages(start=None, [stop=None, [step=None]])
 

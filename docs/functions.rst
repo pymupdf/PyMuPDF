@@ -547,11 +547,11 @@ Yet others are handy, general-purpose utilities.
       :rtype: int
       :returns: :data:`xref` number of the **/Outlines** root object.
 
-   .. method:: Document.extractImage(xref=0)
+   .. method:: Document.extractImage(xref)
 
       PDF Only: Extract data and meta information of an image stored in the document. The output can directly be used to be stored as an image file, as input for PIL, :ref:`Pixmap` creation, etc. This method avoids using pixmaps wherever possible to present the image in its original format (e.g. as JPEG).
 
-      :arg int xref: :data:`xref` of an image object. Must be in *range(1, doc._getXrefLength())*, else an exception is raised. If the object is no image or other errors occur, an empty dictionary is returned and no exception occurs.
+      :arg int xref: :data:`xref` of an image object. If this is not in *range(1, doc.xrefLength())*, or the object is no image or other errors occur, *None* is returned and no exception is raised.
 
       :rtype: dict
       :returns: a dictionary with the following keys
@@ -560,15 +560,12 @@ Yet others are handy, general-purpose utilities.
         * *smask* (*int*) :data:`xref` number of a stencil (/SMask) image or zero
         * *width* (*int*) image width
         * *height* (*int*) image height
-        * *colorspace* (*int*) the image's *pixmap.n* number (indicative only: depends on whether internal pixmaps had to be used). Zero for JPX images.
+        * *colorspace* (*int*) the image's *colorspace.n* number.
         * *cs-name* (*str*) the image's *colorspace.name*.
-        * *xres* (*int*) resolution in x direction. Zero for JPX images.
-        * *yres* (*int*) resolution in y direction. Zero for JPX images.
+        * *xres* (*int*) resolution in x direction. Please also see :data:`resolution`.
+        * *yres* (*int*) resolution in y direction. Please also see :data:`resolution`.
         * *image* (*bytes*) image data, usable as image file content
 
-      >>> d = doc.extractImage(25)
-      >>> d
-      {}
       >>> d = doc.extractImage(1373)
       >>> d
       {'ext': 'png', 'smask': 2934, 'width': 5, 'height': 629, 'colorspace': 3, 'xres': 96,
@@ -579,7 +576,7 @@ Yet others are handy, general-purpose utilities.
       102
       >>> imgout.close()
 
-      .. note:: There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, followed by a *pix.getPNGData()*. Main differences are that extractImage **(1)** does not only deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** generates an empty *dict* for non-image xrefs (generates no exception). Look at the following example images within the same PDF.
+      .. note:: There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, followed by a *pix.getPNGData()*. Main differences are that extractImage, **(1)** does not only deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns *None* in error cases (generates no exception). Look at the following example images within the same PDF.
 
          * xref 1268 is a PNG -- Comparable execution time and identical output::
 
@@ -593,7 +590,7 @@ Yet others are handy, general-purpose utilities.
             In [26]: len(img["image"])
             Out[26]: 21462
 
-         * xref 1186 is a JPEG -- :meth:`Document.extractImage` is **thousands of times faster** and produces a **much smaller** output (2.48 MB vs. 0.35 MB)::
+         * xref 1186 is a JPEG -- :meth:`Document.extractImage` is **many times faster** and produces a **much smaller** output (2.48 MB vs. 0.35 MB)::
 
             In [27]: %timeit pix = fitz.Pixmap(doc, 1186);pix.getPNGData()
             341 ms ± 2.86 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)

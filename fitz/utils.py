@@ -277,13 +277,11 @@ def insertImage(
             _imgpointer = img_prof["image"]  # pointer to fz_image
 
         else:  # worst case: must read the file
-            img = open(filename, "rb")
-            stream = img.read()
+            stream = open(filename, "rb").read()
             img_prof = TOOLS.image_profile(stream, keep_image=True)
             w, h = img_prof["width"], img_prof["height"]
             stream = None  # make sure this arg is NOT used
             filename = None  # make sure this arg is NOT used
-            img.close()  # close image file
             _imgpointer = img_prof["image"]  # pointer to fz_image
 
         maxf = max(w, h)

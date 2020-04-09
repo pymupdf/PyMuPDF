@@ -32,6 +32,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :meth:`Pixmap.pixel`          return the value of a pixel
 :meth:`Pixmap.setPixel`       set the color of a pixel
 :meth:`Pixmap.setRect`        set the color of a rectangle
+:meth:`Pixmap.setResolution`  set the image resolution
 :meth:`Pixmap.setAlpha`       set alpha values
 :meth:`Pixmap.shrink`         reduce size keeping proportions
 :meth:`Pixmap.tintWith`       tint a pixmap with a color
@@ -224,6 +225,16 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
          1. This method is equivalent to :meth:`Pixmap.setPixel` executed for each pixel in the rectangle, but is obviously **very much faster** if many pixels are involved.
          2. This method can be used similar to :meth:`Pixmap.clearWith` to initialize a pixmap with a certain color like this: *pix.setRect(pix.irect, (255, 255, 0))* (RGB example, colors the complete pixmap with yellow).
 
+   .. method:: setResolution(xres, yres)
+
+      *(New in v1.16.17)* Set the resolution (dpi) in x and y direction.
+
+      :arg int xres: resolution in x direction.
+      :arg int yres: resolution in y direction.
+
+      .. note:: This is just documentary information. In MuPDF, this will not have other implications and will not be written to images created from the pixmap.
+
+
    .. method:: setAlpha([alphavalues])
 
       Change the alpha values. The pixmap must have an alpha channel.
@@ -362,13 +373,13 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: xres
 
-      Horizontal resolution in dpi (dots per inch).
+      Horizontal resolution in dpi (dots per inch). Please also see :data:`resolution`.
 
       :type: int
 
    .. attribute:: yres
 
-      Vertical resolution in dpi.
+      Vertical resolution in dpi. Please also see :data:`resolution`.
 
       :type: int
 

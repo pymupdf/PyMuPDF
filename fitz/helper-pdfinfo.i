@@ -36,7 +36,7 @@ void JM_gather_fonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
             encoding = pdf_dict_get(ctx, encoding, PDF_NAME(BaseEncoding));
         int xref = pdf_to_num(ctx, fontdict);
         char *ext = "n/a";
-        if (xref) ext = fontextension(ctx, pdf, xref);
+        if (xref) ext = JM_get_fontextension(ctx, pdf, xref);
         PyObject *entry = PyTuple_New(7);
         PyTuple_SET_ITEM(entry, 0, Py_BuildValue("i", xref));
         PyTuple_SET_ITEM(entry, 1, Py_BuildValue("s", ext));
