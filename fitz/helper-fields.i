@@ -59,10 +59,7 @@ PyObject *JM_get_script(fz_context *ctx, pdf_obj *key)
     {
         js = pdf_dict_get(ctx, key, PDF_NAME(JS));
     }
-    if (!js)
-    {
-        Py_RETURN_NONE;
-    }
+    if (!js) Py_RETURN_NONE;
 
     if (pdf_is_string(ctx, js))
     {
@@ -455,7 +452,6 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     PyObject *val;
     fz_try(ctx)
     {
-//start-trace
         int field_type = pdf_widget_type(gctx, tw);
         SETATTR_DROP("field_type", Py_BuildValue("i", field_type), val);
         if (field_type == PDF_WIDGET_TYPE_SIGNATURE)
@@ -593,7 +589,6 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
             "script_calc",
             JM_get_script(ctx, pdf_dict_getl(ctx, annot->obj, PDF_NAME(AA), PDF_NAME(C), NULL)),
             val);
-//end-trace
     }
     fz_always(ctx) PyErr_Clear();
     fz_catch(ctx) fz_rethrow(ctx);
@@ -687,6 +682,16 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         char *label = JM_Python_str_AsChar(value);
         pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME(TU), label);
         JM_Python_str_DelForPy3(label);
+    }
+    Py_CLEAR(value);
+
+    // field name -------------------------------------------------------------
+    value = GETATTR("field_name");
+    if (value != Py_None)
+    {
+        char *name = JM_Python_str_AsChar(value);
+        pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME(T), name);
+        JM_Python_str_DelForPy3(name);
     }
     Py_CLEAR(value);
 

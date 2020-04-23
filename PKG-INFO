@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: PyMuPDF
-Version: 1.16.17
+Version: 1.16.18
 Author: Ruikai Liu
 Author-email: lrk700@gmail.com
 Maintainer: Jorj X. McKie
@@ -9,7 +9,7 @@ Home-page: https://github.com/pymupdf/PyMuPDF
 Download-url: https://github.com/pymupdf/PyMuPDF
 Summary: PyMuPDF is a Python binding for the PDF rendering library MuPDF
 Description:
-        Release date: March 31, 2020
+        Release date: April 22, 2020
         
         Authors
         =======

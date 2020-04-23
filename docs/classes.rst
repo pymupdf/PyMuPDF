@@ -9,6 +9,7 @@ Classes
    colorspace.rst
    displaylist.rst
    document.rst
+   font.rst
    identity.rst
    irect.rst
    link.rst
@@ -22,5 +23,6 @@ Classes
    rect.rst
    shape.rst
    textpage.rst
+   textwriter.rst
    tools.rst
    widget.rst

@@ -21,7 +21,7 @@
 
 /*
 	Choose which document agents to include.
-	By default all but GPRF are enabled. To avoid building unwanted
+	By default all are enabled. To avoid building unwanted
 	ones, define FZ_ENABLE_... to 0.
 */
 /* #define FZ_ENABLE_PDF 1 */
@@ -31,12 +31,11 @@
 /* #define FZ_ENABLE_IMG 1 */
 /* #define FZ_ENABLE_HTML 1 */
 /* #define FZ_ENABLE_EPUB 1 */
-/* #define FZ_ENABLE_GPRF 1 */
 
 /*
 	Choose whether to enable ICC color profiles.
 */
-#define FZ_ENABLE_ICC 0
+#define FZ_ENABLE_ICC 1
 
 /*
 	Choose whether to enable JPEG2000 decoding.
@@ -61,13 +60,13 @@
 	unwanted fonts.
 */
 /* To avoid all noto fonts except CJK, enable: */
-#define TOFU // <=== PyMuPDF
+#define TOFU // <=== PyMuPDF: not the complete NOTO!
 
 /* To skip the CJK font, enable: (this implicitly enables TOFU_CJK_EXT and TOFU_CJK_LANG) */
 /* #define TOFU_CJK */
 
 /* To skip CJK Extension A, enable: (this implicitly enables TOFU_CJK_LANG) */
-#define TOFU_CJK_EXT // <=== PyMuPDF
+#define TOFU_CJK_EXT // <=== PyMuPDF: causes 1.5 MB extra size
 
 /* To skip CJK language specific fonts, enable: */
 #define TOFU_CJK_LANG // <=== PyMuPDF
@@ -82,7 +81,7 @@
 #define TOFU_SYMBOL // <=== PyMuPDF
 
 /* To skip the SIL fonts, enable: */
-#define TOFU_SIL // <=== PyMuPDF
+// #define TOFU_SIL // <=== PyMuPDF: ok to have it, only small fonts
 
 /* To skip the Base14 fonts, enable: */
 /* #define TOFU_BASE14 */
@@ -148,10 +147,6 @@
 #ifndef FZ_ENABLE_EPUB
 #define FZ_ENABLE_EPUB 1
 #endif /* FZ_ENABLE_EPUB */
-
-#ifndef FZ_ENABLE_GPRF
-#define FZ_ENABLE_GPRF 0
-#endif /* FZ_ENABLE_GPRF */
 
 #ifndef FZ_ENABLE_JPX
 #define FZ_ENABLE_JPX 1

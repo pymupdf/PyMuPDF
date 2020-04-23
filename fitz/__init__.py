@@ -53,26 +53,26 @@ fitz.Page.drawCurve = fitz.utils.drawCurve
 fitz.Page.drawLine = fitz.utils.drawLine
 fitz.Page.drawOval = fitz.utils.drawOval
 fitz.Page.drawPolyline = fitz.utils.drawPolyline
-fitz.Page.drawRect = fitz.utils.drawRect
 fitz.Page.drawQuad = fitz.utils.drawQuad
+fitz.Page.drawRect = fitz.utils.drawRect
 fitz.Page.drawSector = fitz.utils.drawSector
 fitz.Page.drawSquiggle = fitz.utils.drawSquiggle
 fitz.Page.drawZigzag = fitz.utils.drawZigzag
 fitz.Page.getImageBbox = fitz.utils.getImageBbox
+fitz.Page.getLinks = fitz.utils.getLinks
+fitz.Page.getPixmap = fitz.utils.getPixmap
+fitz.Page.getText = fitz.utils.getText
 fitz.Page.getTextBlocks = fitz.utils.getTextBlocks
 fitz.Page.getTextWords = fitz.utils.getTextWords
-fitz.Page.getLinks = fitz.utils.getLinks
-fitz.Page.getText = fitz.utils.getText
-fitz.Page.getPixmap = fitz.utils.getPixmap
+fitz.Page.insertImage = fitz.utils.insertImage
 fitz.Page.insertLink = fitz.utils.insertLink
-fitz.Page.insertTextbox = fitz.utils.insertTextbox
 fitz.Page.insertText = fitz.utils.insertText
+fitz.Page.insertTextbox = fitz.utils.insertTextbox
+fitz.Page.newShape = lambda x: fitz.utils.Shape(x)
 fitz.Page.searchFor = fitz.utils.searchFor
 fitz.Page.showPDFpage = fitz.utils.showPDFpage
-fitz.Page.insertImage = fitz.utils.insertImage
 fitz.Page.updateLink = fitz.utils.updateLink
-fitz.Page.newShape = lambda x: fitz.utils.Shape(x)
-
+fitz.Page.writeText = fitz.utils.writeText
 # ------------------------------------------------------------------------------
 # Rect
 # ------------------------------------------------------------------------------
@@ -84,6 +84,12 @@ fitz.Rect.getArea = fitz.utils.getRectArea
 # ------------------------------------------------------------------------------
 fitz.IRect.getRectArea = fitz.utils.getRectArea
 fitz.IRect.getArea = fitz.utils.getRectArea
+
+# ------------------------------------------------------------------------------
+# IRect
+# ------------------------------------------------------------------------------
+fitz.TextWriter.fillTextbox = fitz.utils.fillTextbox
+
 
 fitz.__doc__ = """
 PyMuPDF %s: Python bindings for the MuPDF %s library.

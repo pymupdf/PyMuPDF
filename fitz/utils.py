@@ -13,6 +13,54 @@ The following is a collection of functions to extend PyMupdf.
 """
 
 
+def writeText(
+    page,
+    rect=None,
+    writers=None,
+    opacity=None,
+    color=None,
+    overlay=True,
+    keep_proportion=True,
+    rotate=0,
+):
+    """Write the text of one or TextWriter objects.
+    
+    Args:
+        rect: target rectangle. If None, the union of the text writers is used.
+        writers: one or more TextWriter objects.
+        overlay: put in foreground or background.
+        keep_proportion: maintain aspect ratio of rectangle sides.
+        rotate: arbitrary rotation angle.
+    """
+    if not writers:
+        raise ValueError("specify at least one TextWriter")
+    if type(writers) is TextWriter:
+        if rotate == 0 and rect is None:
+            writers.writeText(page, opacity=opacity, color=color, overlay=overlay)
+            return None
+        else:
+            writers = (writers,)
+    clip = writers[0].textRect
+    textdoc = Document()
+    tpage = textdoc.newPage(width=page.rect.width, height=page.rect.height)
+    for writer in writers:
+        clip |= writer.textRect
+        writer.writeText(tpage, opacity=opacity, color=color)
+    if rect is None:
+        rect = clip
+    page.showPDFpage(
+        rect,
+        textdoc,
+        0,
+        overlay=overlay,
+        keep_proportion=keep_proportion,
+        rotate=rotate,
+        clip=clip,
+    )
+    textdoc = None
+    tpage = None
+
+
 def showPDFpage(
     page,
     rect,
@@ -72,7 +120,7 @@ def showPDFpage(
 
         m *= Matrix(fw, fh)  # concat scale matrix
         m *= Matrix(1, 0, 0, 1, tmp.x, tmp.y)  # concat move to target center
-        return m
+        return JM_TUPLE(m)
 
     CheckParent(page)
     doc = page.parent
@@ -105,7 +153,7 @@ def showPDFpage(
     # list of existing /Form /XObjects
     ilst = [i[1] for i in doc._getPageInfo(page.number, 3)]
 
-    # create a name that is not in that list
+    # create a name not in that list
     n = "fzFrm"
     i = 0
     _imgname = n + "0"
@@ -380,11 +428,7 @@ def getImageBbox(page, item):
         stream_xref = item[-1]  # the contents object to inspect
 
         if stream_xref == 0:  # only look in the page's /Contents
-            if not getattr(page, "is_cleaned", False):
-                page._cleanContents()  # sanitize image invocation matrices
-                page.is_cleaned = True
-            xref = page._getContents()[0]  # the (only) contents object
-            cont = doc._getXrefStream(xref)  # the contents object
+            cont = TOOLS._get_all_contents(page)  # concatenated contents
             return calc_matrix(cont, imgname)
 
         cont = doc._getXrefStream(stream_xref)  # the contents object
@@ -2384,8 +2428,7 @@ def getCharWidths(doc, xref, limit=256, idx=0):
 
 
 class Shape(object):
-    """Create a new shape.
-    """
+    """Create a new shape."""
 
     @staticmethod
     def horizontal_angle(C, P):
@@ -3248,7 +3291,7 @@ def apply_redactions(page):
         if not text:
             return annot_rect
         try:
-            text_width = fitz.getTextlength(text, font, fsize)
+            text_width = getTextlength(text, font, fsize)
         except ValueError:  # unsupported font
             return annot_rect
         line_height = fsize * 1.2
@@ -3269,7 +3312,7 @@ def apply_redactions(page):
         raise ValueError("not a PDF")
 
     redact_annots = []  # storage of annot values
-    for annot in page.annots(types=(fitz.PDF_ANNOT_REDACT,)):  # loop redactions
+    for annot in page.annots(types=(PDF_ANNOT_REDACT,)):  # loop redactions
         redact_annots.append(annot._get_redact_values())  # save annot values
 
     if redact_annots == []:  # any redactions on this page?
@@ -3295,7 +3338,7 @@ def apply_redactions(page):
     for item in doc._getPageInfo(page.number, 3):  # loop through /XObjects
         if item[-2] != 0:  # only consider if in page's own contents
             continue
-        bbox = fitz.Rect(item[-1]) * ctm  # need transformation matrix here
+        bbox = Rect(item[-1]) * ctm  # need transformation matrix here
         for redact in redact_annots:  # check if covered by a redaction
             if bbox in redact["rect"]:
                 candidate_names.append(item[1])
@@ -3502,3 +3545,138 @@ def scrub(
             if cont_lines:  # something was actually removed
                 cont = "\n".join(cont_lines).encode()
                 doc.updateStream(xref, cont)  # rewrite the page /Contents
+
+
+def fillTextbox(
+    writer, rect=None, text=None, font=None, fontsize=11, align=0, warn=True
+):
+    """Fill a rectangle with text.
+
+    Args:
+        text: a string or a list of strings.
+        rect: a rect-like to fill with the text.
+        font: the font.
+        fontsize: the fontsize.
+        align: an integer: 0 = left, 1 = center, 2 = right, 3 = justify
+        warn: (bool) warn if too much text for the area, else raise exception.
+    """
+    textlen = lambda x: font.text_length(x, fontsize)  # just for abbreviation
+
+    rect = fitz.Rect(rect)
+    if rect.isEmpty or rect.isInfinite:
+        raise ValueError("fill rect must be finite and not empty.")
+    if not text:
+        raise ValueError("no text to output")
+
+    # calculate displacement factor for alignment
+    if align == fitz.TEXT_ALIGN_CENTER:
+        factor = 0.5
+    elif align == fitz.TEXT_ALIGN_RIGHT:
+        factor = 1.0
+    else:
+        factor = 0
+
+    # split in lines if just a string was given
+    if type(text) not in (tuple, list):
+        text = text.splitlines()
+
+    text = " \n".join(text).split(" ")  # split in words, preserve line breaks
+
+    tolerance = fontsize * 0.25
+    width = rect.width - tolerance
+    len_space = textlen(" ")
+
+    # we first compute lists of words and corresponding lengths
+    words = []  # recomputed list of words
+    len_words = []  # corresponding lengths
+
+    for word in text:
+        # fill the lists of words and their lengths
+        if word.startswith("\n"):
+            len_word = textlen(word[1:])
+        else:
+            len_word = textlen(word)
+        if len_word <= width:  # simple case: word not longer than a line
+            words.append(word)
+            len_words.append(len_word)
+            continue
+        # deal with an extra long word
+        w = word[0]  # start with 1st char
+        l = textlen(w)  # and its length
+        for i in range(1, len(word)):
+            nl = textlen(word[i])  # next char length
+            if l + nl > width:  # if too long
+                words.append(w)  # append what we have so far
+                len_words.append(l)
+                w = word[i]  # start over with new char
+                l = nl  # and its length
+            else:  # if still fitting
+                w += word[i]  # just append char
+                l += nl  # and add its length
+        words.append(w)  # output tail of long word
+        len_words.append(l)  # output length of long word tail
+
+    pos = 0  # index of current word processed
+    line_ctr = 1  # counter for output lines
+    end_pos = len(words)  # number of words
+
+    while True:  # now output the text
+        # compute the new insertion point
+        # we add a small distance to the left to copy with funny glyph bboxes
+        start = rect.tl + (tolerance, fontsize * 1.3 * line_ctr)
+        if start.y > rect.y1:  # landed below rectangle area
+            if warn:
+                print("Warning: only fitting %i of %i total words." % (pos, end_pos))
+                break
+            else:
+                raise ValueError("only fitting %i of %i total words." % (pos, end_pos))
+        if pos >= end_pos:  # all words processed
+            break
+
+        word = words[pos]  # get first word for the line
+        if word.startswith("\n"):  # remove any leading line breaks
+            word = word[1:]
+
+        line = [word]  # create a list of words fitting in one line
+        len_line = [len_words[pos]]
+        exhausted = False  # switch indicating we are done
+        justify = True  # enable text justify as default
+        next_words = range(pos + 1, end_pos)  # remaining words in text
+
+        for i in next_words:  # try adding more words to the line
+            nw = words[i]  # next word
+            if nw.startswith("\n"):  # a forced line break
+                justify = False  # do not justify this current line
+                break
+            tl = len_space + len_words[i]
+            if tl + sum(len_line) + (len(line) - 1) * len_space > width:  # won't fit
+                break
+            line.append(nw)  # append new word
+            len_line.append(len_words[i])  # add its length
+            if i >= end_pos - 1:  # if we exhausted the words
+                justify = False  # do not justify current line
+                exhausted = True  # and turn on switch
+
+        # finished preparing a line
+        if align != fitz.TEXT_ALIGN_JUSTIFY:  # trivial alignments
+            fin_len = sum(len_line) + (len(line) - 1) * len_space
+            d = (width - fin_len) * factor  # takes care of alignment
+            start.x += d
+            writer.append(start, " ".join(line), font, fontsize)
+        else:  # take care of justify alignment
+            writer.append(start, line[0], font, fontsize)  # always 1st word
+            if len(line) > 1:  # more than one word in the line
+                if justify is False:  # if no justify use space as gap
+                    gap = len_space
+                else:
+                    gap = (width - sum(len_line)) / (len(line) - 1)
+                this_gap = len_line[0] + gap  # gap for 2nd word
+                for j in range(1, len(line)):
+                    writer.append(start + (this_gap, 0), line[j], font, fontsize)
+                    this_gap += len_line[j] + gap  # gap for next word
+
+        if len(next_words) == 0 or exhausted is True:  # no words left
+            break
+
+        pos = i  # number of next word to read
+        line_ctr += 1  # line counter

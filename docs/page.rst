@@ -74,7 +74,7 @@ This is available for PDF documents only. There are basically two groups of meth
 :meth:`Page.links`               return a generator of the links on the page
 :meth:`Page.load_annot`          PDF only: load an annotation identified by its name
 :meth:`Page.loadLinks`           return the first link on a page
-:meth:`Page.newShape`            PDF only: start a new :ref:`Shape`
+:meth:`Page.newShape`            PDF only: create a new :ref:`Shape`
 :meth:`Page.searchFor`           search for a string
 :meth:`Page.setCropBox`          PDF only: modify the visible page
 :meth:`Page.setMediaBox`         PDF only: modify the mediabox
@@ -82,6 +82,7 @@ This is available for PDF documents only. There are basically two groups of meth
 :meth:`Page.showPDFpage`         PDF only: display PDF page image
 :meth:`Page.updateLink`          PDF only: modify a link
 :meth:`Page.widgets`             return a generator over the fields on the page
+:meth:`Page.writeText`           write one or more :ref:`Textwriter` objects
 :attr:`Page.CropBox`             the page's :data:`CropBox`
 :attr:`Page.CropBoxPosition`     displacement of the :data:`CropBox`
 :attr:`Page.firstAnnot`          first :ref:`Annot` on the page
@@ -392,6 +393,23 @@ This is available for PDF documents only. There are basically two groups of meth
 
       :rtype: generator
       :returns: a :ref:`Widget` for each iteration.
+
+
+   .. method:: writeText(rect=None, writers=None, overlay=True, color=None, opacity=None, keep_proportion=True, rotate=0)
+
+      *(New in version 1.16.18)*
+      
+      PDF only: Write the text of one or more :ref:`Textwriter` ojects to the page.
+
+      :arg rect_like rect: where to place the text. If omitted, the rectangle union of the text writers is used.
+      :arg sequence writers: a non-empty tuple / list of :ref:`TextWriter` objects or a single :ref:`TextWriter`.
+      :arg float opacity: set transparency, overwrites resp. value in the text writers.
+      :arg sequ color: set the text color, overwrites  resp. value in the text writers.
+      :arg bool overlay: put the text in foreground or background.
+      :arg bool keep_proportion: maintain the aspect ratio.
+      :arg float rotate: rotate the text by an arbitrary angle.
+
+      .. note:: Parameters overlay, keep_proportion and rotate have the same meaning as in :ref:`showPDFpage`.
 
 
    .. index::
@@ -931,6 +949,7 @@ This is available for PDF documents only. There are basically two groups of meth
 
       :rtype: :ref:`Shape`
       :returns: a new :ref:`Shape` to use for compound drawings. See description there.
+
 
    .. index::
       pair: flags; searchFor

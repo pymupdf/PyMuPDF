@@ -1,6 +1,19 @@
 Change Logs
 ===============
 
+Changes in Version 1.16.18
+---------------------------
+This version introduces several new features around PDF text output. The motivation is to simplify this task, while at the same time offering extending features.
+
+One major achievement is using MuPDF's capabilities to dynamically choosing fallback fonts whenever a character cannot be found in the predefined one. This seemlessly works for Base-14 fonts in combination with CJK fonts (China, Japan, Korea).
+
+* **Fixed** issue `#493 <https://github.com/pymupdf/PyMuPDF/issues/493>`_. ``Pixmap(doc, xref)`` should now again correctly resemble the loaded image object.
+* **Fixed** issue `#488 <https://github.com/pymupdf/PyMuPDF/issues/488>`_. Widget names are now modifyable.
+* **Added** new class :ref:`Font` which represents a font.
+* **Added** new class :ref:`TextWriter` which serves as a container for text to be written on a page.
+* **Added** :meth:`Page.writeText` to write one or more :ref:`TextWriter` objects to the page.
+
+
 Changes in Version 1.16.17
 ---------------------------
 

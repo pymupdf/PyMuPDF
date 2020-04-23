@@ -402,11 +402,11 @@ PyObject *JM_object_to_string(fz_context *ctx, pdf_obj *what, int compress, int 
     {
         fz_drop_output(ctx, out);
         fz_drop_buffer(ctx, res);
+        PyErr_Clear();
     }
     fz_catch(ctx)
     {
-        text = PyUnicode_FromString("");
-        return text;
+        return PyUnicode_FromString("");
     }
     return text;
 }
@@ -486,8 +486,110 @@ PyObject *JM_merge_resources(fz_context *ctx, pdf_page *page, pdf_obj *temp_res)
     {   // copy over renumbered font objects
         fz_snprintf(text, sizeof(text), "F%d", i + max_fonts);
         pdf_obj *val = pdf_dict_get_val(ctx, temp_fonts, i);
-        pdf_dict_puts_drop(ctx, main_fonts, text, val);
+        pdf_dict_puts(ctx, main_fonts, text, val);
     }
     return Py_BuildValue("ii", max_alp, max_fonts); // next available numbers
 }
+
+
+//-----------------------------------------------------------------------------
+// version of fz_show_string, which also covers UCDN script
+//-----------------------------------------------------------------------------
+fz_matrix JM_show_string(fz_context *ctx, fz_text *text, fz_font *user_font, fz_matrix trm, const char *s, int wmode, int bidi_level, fz_bidi_direction markup_dir, fz_text_language language, int script)
+{
+    fz_font *font;
+    int gid, ucs;
+    float adv;
+
+    while (*s)
+    {
+        s += fz_chartorune(&ucs, s);
+        gid = fz_encode_character_with_fallback(ctx, user_font, ucs, script, language, &font);
+        fz_show_glyph(ctx, text, font, trm, gid, ucs, wmode, bidi_level, markup_dir, language);
+        adv = fz_advance_glyph(ctx, font, gid, wmode);
+        if (wmode == 0)
+            trm = fz_pre_translate(trm, adv, 0);
+        else
+            trm = fz_pre_translate(trm, 0, -adv);
+    }
+
+    return trm;
+}
+
+
+//-----------------------------------------------------------------------------
+// return a fz_font from a number of parameters
+//-----------------------------------------------------------------------------
+fz_font *JM_get_font(fz_context *ctx,
+    char *fontname,
+    char *fontfile,
+    PyObject *fontbuffer,
+    int script,
+    int lang,
+    int ordering,
+    int is_bold,
+    int is_italic,
+    int is_serif)
+{
+    const unsigned char *data = NULL;
+    int size, index=0;
+    fz_buffer *res = NULL;
+    fz_font *font = NULL;
+    fz_try(ctx)
+    {
+        if (fontfile) goto have_file;
+        if (EXISTS(fontbuffer)) goto have_buffer;
+        if (ordering > -1) goto have_cjk;
+        if (fontname) goto have_base14;
+        goto have_noto;
+
+        // Base-14 font
+        have_base14:;
+        data = fz_lookup_base14_font(ctx, fontname, &size);
+        if (data) font = fz_new_font_from_memory(ctx, fontname, data, size, 0, 0);
+        if(font) goto fertig;
+
+        data = fz_lookup_builtin_font(gctx, fontname, is_bold, is_italic, &size);
+        if (data) font = fz_new_font_from_memory(ctx, fontname, data, size, 0, 0);
+        goto fertig;
+
+        // CJK font
+        have_cjk:;
+        data = fz_lookup_cjk_font(ctx, ordering, &size, &index);
+        if (data) font = fz_new_font_from_memory(ctx, NULL, data, size, index, 0);
+        goto fertig;
+
+        // fontfile
+        have_file:;
+        font = fz_new_font_from_file(ctx, NULL, fontfile, index, 0);
+        goto fertig;
+
+        // fontbuffer
+        have_buffer:;
+        res = JM_BufferFromBytes(ctx, fontbuffer);
+        font = fz_new_font_from_buffer(ctx, NULL, res, index, 0);
+        goto fertig;
+
+        // Check for NOTO font
+        have_noto:;
+        data = fz_lookup_noto_font(ctx, script, lang, &size, &index);
+        if (data) font = fz_new_font_from_memory(ctx, NULL, data, size, index, 0);
+        if (font) goto fertig;
+        font = fz_load_fallback_font(ctx, script, lang, is_serif, is_bold, is_italic);
+        goto fertig;
+
+        fertig:;
+        if (!font) THROWMSG("could not find a matching font");
+    }
+    fz_always(ctx)
+    {
+        fz_drop_buffer(ctx, res);
+    }
+    fz_catch(ctx)
+    {
+        fz_rethrow(ctx);
+    }
+    return font;
+}
+
 %}
