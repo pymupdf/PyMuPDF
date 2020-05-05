@@ -24,6 +24,7 @@ int DICT_SETITEMSTR_DROP(PyObject *dict, const char *key, PyObject *value)
     return rc;
 }
 
+
 PyObject *JM_EscapeStrFromBuffer(fz_context *ctx, fz_buffer *buff)
 {
     if (!buff) return PyUnicode_FromString("");
@@ -81,6 +82,7 @@ void JM_TRACE(const char *id)
 {
     PySys_WriteStdout("%s\n", id);
 }
+
 
 // put a warning on Python-stdout
 void JM_Warning(const char *id)
@@ -826,7 +828,7 @@ int JM_norm_rotation(int rotate)
 
 
 //----------------------------------------------------------------------------
-// return a PDF page's /Rotate value: normalized degrees
+// return a PDF page's /Rotate value: one of (0, 90, 180, 270)
 //----------------------------------------------------------------------------
 int JM_page_rotation(fz_context *ctx, pdf_page *page)
 {
@@ -837,7 +839,7 @@ int JM_page_rotation(fz_context *ctx, pdf_page *page)
                 pdf_dict_get_inheritable(ctx, page->obj, PDF_NAME(Rotate)));
         rotate = JM_norm_rotation(rotate);
     }
-    fz_catch(ctx) fz_rethrow(ctx);
+    fz_catch(ctx) return 0;
     return rotate;
 }
 
@@ -887,7 +889,7 @@ fz_rect JM_cropbox(fz_context *ctx, pdf_page *page)
     fz_rect cropbox = pdf_to_rect(ctx,
                 pdf_dict_get_inheritable(ctx, page->obj, PDF_NAME(CropBox)));
     if (fz_is_infinite_rect(cropbox) || fz_is_empty_rect(cropbox))
-        cropbox = mediabox;
+        return mediabox;
     float y0 = mediabox.y1 - cropbox.y1;
     float y1 = mediabox.y1 - cropbox.y0;
     cropbox.y0 = y0;
@@ -897,7 +899,7 @@ fz_rect JM_cropbox(fz_context *ctx, pdf_page *page)
 
 
 //----------------------------------------------------------------------------
-// determine width and height of the unrotated page
+// calculate width and height of the UNROTATED page
 //----------------------------------------------------------------------------
 fz_point JM_cropbox_size(fz_context *ctx, pdf_page *page)
 {
@@ -915,99 +917,29 @@ fz_point JM_cropbox_size(fz_context *ctx, pdf_page *page)
 
 
 //----------------------------------------------------------------------------
-// calculate NON-ROTATED point coordinates
+// calculate page rotation matrices
 //----------------------------------------------------------------------------
-fz_point JM_derotate_point(fz_context *ctx, pdf_page *page, fz_point point)
+fz_matrix JM_rotate_page_matrix(fz_context *ctx, pdf_page *page)
 {
-    fz_point newp;
-    fz_try(ctx)
-    {
-        fz_point cb_size = JM_cropbox_size(ctx, page);
-        float w = cb_size.x;
-        float h = cb_size.y;
-        int rotate = JM_page_rotation(ctx, page);
-        if (rotate == 0)
-            newp = point;
-        else if (rotate == 90)
-            newp = fz_make_point(point.y, h - point.x);
-        else if (rotate == 180)
-            newp = fz_make_point(w - point.x, h - point.y);
-        else  // rotate == 270
-            newp = fz_make_point(w - point.y, point.x);
-    }
-    fz_catch(ctx) fz_rethrow(ctx);
-    return newp;
+    if (!page) return fz_identity;  // no valid pdf page given
+    int rotation = JM_page_rotation(ctx, page);
+    if (rotation == 0) return fz_identity;  // no rotation
+    fz_matrix m;
+    fz_point cb_size = JM_cropbox_size(ctx, page);
+    float w = cb_size.x;
+    float h = cb_size.y;
+    if (rotation == 90)
+        m = fz_make_matrix(0, 1, -1, 0, h, 0);
+    else if (rotation == 180)
+        m = fz_make_matrix(-1, 0, 0, -1, w, h);
+    else
+        m = fz_make_matrix(0, -1, 1, 0, 0, w);
+    return m;
 }
 
 
-//----------------------------------------------------------------------------
-// calculate ROTATED point coordinates
-//----------------------------------------------------------------------------
-fz_point JM_rotate_point(fz_context *ctx, pdf_page *page, fz_point point)
-{
-    fz_point newp;
-    fz_try(ctx)
-    {
-        fz_point cb_size = JM_cropbox_size(ctx, page);
-        float w = cb_size.x;
-        float h = cb_size.y;
-        int rotate = JM_page_rotation(ctx, page);
-        if (rotate == 0)
-            newp = point;
-        else if (rotate == 90)
-            newp = fz_make_point(h - point.y, point.x);
-        else if (rotate == 180)
-            newp = fz_make_point(w - point.x, h - point.y);
-        else  // rotate == 270
-            newp = fz_make_point(point.y, w - point.x);
-    }
-    fz_catch(ctx) fz_rethrow(ctx);
-    return newp;
-}
-
-
-//----------------------------------------------------------------------------
-// calculate ROTATED rect coordinates
-//----------------------------------------------------------------------------
-fz_rect JM_rotate_rect(fz_context *ctx, pdf_page *page, fz_rect rect)
-{
-    fz_rect newr;
-    fz_try(ctx)
-    {
-        fz_point p;
-        p = JM_rotate_point(ctx, page, fz_make_point(rect.x0, rect.y0));
-        newr = fz_make_rect(p.x, p.y, p.x, p.y);
-        p = JM_rotate_point(ctx, page, fz_make_point(rect.x1, rect.y0));
-        newr = fz_include_point_in_rect(newr, p);
-        p = JM_rotate_point(ctx, page, fz_make_point(rect.x0, rect.y1));
-        newr = fz_include_point_in_rect(newr, p);
-        p = JM_rotate_point(ctx, page, fz_make_point(rect.x1, rect.y1));
-        newr = fz_include_point_in_rect(newr, p);
-    }
-    fz_catch(ctx) fz_rethrow(ctx);
-    return newr;
-}
-
-
-//----------------------------------------------------------------------------
-// calculate NON-ROTATED rect coordinates
-//----------------------------------------------------------------------------
-fz_rect JM_derotate_rect(fz_context *ctx, pdf_page *page, fz_rect rect)
-{
-    fz_rect newr;
-    fz_try(ctx)
-    {
-        fz_point p;
-        p = JM_derotate_point(ctx, page, fz_make_point(rect.x0, rect.y0));
-        newr = fz_make_rect(p.x, p.y, p.x, p.y);
-        p = JM_derotate_point(ctx, page, fz_make_point(rect.x1, rect.y0));
-        newr = fz_include_point_in_rect(newr, p);
-        p = JM_derotate_point(ctx, page, fz_make_point(rect.x0, rect.y1));
-        newr = fz_include_point_in_rect(newr, p);
-        p = JM_derotate_point(ctx, page, fz_make_point(rect.x1, rect.y1));
-        newr = fz_include_point_in_rect(newr, p);
-    }
-    fz_catch(ctx) fz_rethrow(ctx);
-    return newr;
+fz_matrix JM_derotate_page_matrix(fz_context *ctx, pdf_page *page)
+{  // just the inverse of rotation
+    return fz_invert_matrix(JM_rotate_page_matrix(ctx, page));
 }
 %}

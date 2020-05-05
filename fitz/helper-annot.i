@@ -1,14 +1,5 @@
 %{
 //----------------------------------------------------------------------------
-// return code for line end style string
-//----------------------------------------------------------------------------
-int JM_le_value(fz_context *ctx, char *le)
-{
-    if (!le) return PDF_ANNOT_LE_NONE;
-    return pdf_line_ending_from_string(ctx, le);
-}
-
-//----------------------------------------------------------------------------
 // return pdf_obj "border style" from Python str
 //----------------------------------------------------------------------------
 pdf_obj *JM_get_border_style(fz_context *ctx, PyObject *style)

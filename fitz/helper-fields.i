@@ -392,7 +392,7 @@ PyObject *JM_choice_options(fz_context *ctx, pdf_annot *annot)
 {   // return list of choices for list or combo boxes
     pdf_document *pdf = pdf_get_bound_document(ctx, annot->obj);
     PyObject *val;
-    int n = pdf_choice_widget_options(ctx, pdf, (pdf_widget *) annot, 0, NULL);
+    int n = pdf_choice_widget_options(ctx, (pdf_widget *) annot, 0, NULL);
     if (n == 0) Py_RETURN_NONE;                     // wrong widget type
 
     pdf_obj *optarr = pdf_dict_get(ctx, annot->obj, PDF_NAME(Opt));
@@ -511,10 +511,10 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         }
 
         SETATTR_DROP("text_maxlen",
-                Py_BuildValue("i", pdf_text_widget_max_len(ctx, pdf, tw)), val);
+                Py_BuildValue("i", pdf_text_widget_max_len(ctx, tw)), val);
 
         SETATTR_DROP("text_format",
-                Py_BuildValue("i", pdf_text_widget_format(ctx, pdf, tw)), val);
+                Py_BuildValue("i", pdf_text_widget_format(ctx, tw)), val);
 
         obj = pdf_dict_getl(ctx, annot->obj, PDF_NAME(MK), PDF_NAME(BG), NULL);
         if (pdf_is_array(ctx, obj))
@@ -616,6 +616,8 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     value = GETATTR("rect");
     rect = JM_rect_from_py(value);
     Py_CLEAR(value);
+    fz_matrix rot_mat = JM_rotate_page_matrix(ctx, page);
+    rect = fz_transform_rect(rect, rot_mat);
     pdf_set_annot_rect(ctx, annot, rect);    // set the rect
 
     // fill color -------------------------------------------------------------

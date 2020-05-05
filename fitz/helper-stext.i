@@ -5,16 +5,18 @@
 fz_stext_page *JM_new_stext_page_from_page(fz_context *ctx, fz_page *page, int flags)
 {
     if (!page) return NULL;
-    fz_stext_page *text = NULL;
+    fz_stext_page *tp = NULL;
+    fz_rect rect;
     fz_device *dev = NULL;
     fz_var(dev);
-    fz_var(text);
+    fz_var(tp);
     fz_stext_options options = { 0 };
     options.flags = flags;
     fz_try(ctx)
     {
-        text = fz_new_stext_page(ctx, fz_bound_page(ctx, page));
-        dev = fz_new_stext_device(ctx, text, &options);
+        rect = fz_bound_page(ctx, page);
+        tp = fz_new_stext_page(ctx, rect);
+        dev = fz_new_stext_device(ctx, tp, &options);
         fz_run_page_contents(ctx, page, dev, fz_identity, NULL);
         fz_close_device(ctx, dev);
     }
@@ -24,10 +26,10 @@ fz_stext_page *JM_new_stext_page_from_page(fz_context *ctx, fz_page *page, int f
     }
     fz_catch(ctx)
     {
-        fz_drop_stext_page(ctx, text);
+        fz_drop_stext_page(ctx, tp);
         fz_rethrow(ctx);
     }
-    return text;
+    return tp;
 }
 
 

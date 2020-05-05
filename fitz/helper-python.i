@@ -365,6 +365,7 @@ def getPDFstr(s):
     """ Return a PDF string depending on its coding.
 
     Notes:
+        Returns a string bracketed with either "()" or "<>" for hex values.
         If only ascii then "(original)" is returned, else if only 8 bit chars
         then "(original)" with interspersed octal strings \nnn is returned,
         else a string "<FEFF[hexstring]>" is returned, where [hexstring] is the
@@ -379,9 +380,9 @@ def getPDFstr(s):
         return "<" + t + ">"  # brackets indicate hex
 
 
-    # following either returns original string with mixed-in
-    # octal numbers \nnn for chars outside ASCII range, or:
-    # exits with utf-16be BOM version of the string
+    # The following either returns the original string with mixed-in
+    # octal numbers \nnn for chars outside the ASCII range, or returns
+    # the UTF-16BE BOM version of the string.
     r = ""
     for c in s:
         oc = ord(c)
@@ -824,5 +825,24 @@ def get_highlight_selection(page, start=None, stop=None, clip=None):
         rectangles.append(bbox)
 
     return rectangles
+
+def annot_preprocess(page):
+    CheckParent(page)
+    if not page.parent.isPDF:
+        raise ValueError("not a PDF")
+    old_rotation = page.rotation
+    if old_rotation != 0:
+        page.setRotation(0)
+    return old_rotation, None
+
+
+def annot_postprocess(page, annot, old_rotation):
+    if old_rotation != 0:
+        page.setRotation(old_rotation)
+    if not annot:
+        return None
+    annot.thisown = True
+    annot.parent = weakref.proxy(page)
+    page._annot_refs[id(annot)] = annot
 
 %}
