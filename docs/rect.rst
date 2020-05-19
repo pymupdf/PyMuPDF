@@ -30,6 +30,7 @@ Hence some useful classification:
 :meth:`Rect.includeRect`      enlarge rectangle to also contain another one
 :meth:`Rect.intersect`        common part with another rectangle
 :meth:`Rect.intersects`       checks for non-empty intersections
+:meth:`Rect.morph`            transform with a point and a matrix
 :meth:`Rect.norm`             the Euclidean norm
 :meth:`Rect.normalize`        makes a rectangle finite
 :meth:`Rect.round`            create smallest :ref:`Irect` containing rectangle
@@ -151,6 +152,16 @@ Hence some useful classification:
       :arg rect_like r: the rectangle to check.
 
       :rtype: bool
+
+   .. method:: morph(point, matrix)
+
+      *(New in version 1.17.0)*
+      
+      Return a new quad after applying a matrix to it using a pivotal point.
+
+      :arg point_like point: the pivotal point.
+      :arg matrix_like matrix: the matrix.
+      :returns: a new quad. 
 
    .. method:: norm()
 

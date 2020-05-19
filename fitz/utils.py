@@ -362,89 +362,6 @@ def insertImage(
     )
 
 
-def getImageBbox(page, item):
-    """Calculate the rectangle (bbox) of a PDF image.
-
-    Args:
-        :page: the PyMuPDF page object
-        :item: item from doc.getPageImageList(page.number, full=True)
-
-    Returns:
-        The bbox (fitz.Rect) of the image.
-
-    Notes:
-        This function can be used to find a connection between images returned
-        by page.getText("dict") and the images referenced in the list
-        page.getImageList().
-    """
-
-    def calc_matrix(cont, imgname):
-        imgnm = ("/" + imgname).encode()
-        cont = cont.replace(b"/", b" /")  # prepend slashes with a space
-        # split this, ignoring white spaces
-        cont = cont.split()
-        if imgnm not in cont:
-            return Matrix()
-        idx = cont.index(imgnm)  # the image name
-        mat_list = []
-        while idx >= 0:  # start position is "/Image Do" location
-            if cont[idx] == b"q":  # finished at leading stacking command
-                break
-            if cont[idx] == b"cm":  # encountered a matrix command
-                mat = cont[idx - 6 : idx]  # list of the 6 matrix values
-                l = list(map(float, mat))  # make them floats
-                mat_list.append(Matrix(l))  # append fitz matrix
-                idx -= 6  # step backwards 6 entries
-            else:
-                idx -= 1  # step backwards
-
-        l = len(mat_list)
-        if l == 0:  # safeguard against unusual situations
-            return Matrix()  # the zero matrix
-
-        mat = Matrix(1, 1)  # concatenate encountered matrices to this one
-        for m in reversed(mat_list):
-            mat *= m
-
-        return mat
-
-    def lookup_matrix(page, item):
-        """Return the transformation matrix for an image name.
-
-        Args:
-            :page: the PyMuPDF page object
-            :item: an item of the list doc.getPageImageList(page.number, full=True).
-
-        Returns:
-            concatenated matrices preceeding the image invocation.
-
-        Notes:
-            We are looking up "/imgname Do" in the concatenated /contents of the
-            page first. If not found, also look it up in the streams of any
-            Form XObjects of the page. If still not found, return the zero matrix.
-        """
-        doc = page.parent  # get the PDF document
-        imgname = item[7]  # the image reference name
-        stream_xref = item[-1]  # the contents object to inspect
-
-        if stream_xref == 0:  # only look in the page's /Contents
-            cont = TOOLS._get_all_contents(page)  # concatenated contents
-            return calc_matrix(cont, imgname)
-
-        cont = doc._getXrefStream(stream_xref)  # the contents object
-        return calc_matrix(cont, imgname)
-
-    mat = lookup_matrix(page, item)
-    if not bool(mat):
-        return Rect(1, 1, -1, -1)  # return infinite rect if not found
-
-    ctm = page.transformationMatrix  # page transformation matrix
-    mat.preScale(1, -1)  # fiddle the matrix
-    mat.preTranslate(0, -1)  # fiddle the matrix
-    r = Rect(0, 0, 1, 1) * mat  # the bbox in PDF coordinates
-    return r * ctm  # the bbox in MuPDF coordinates
-
-
 def searchFor(page, text, hit_max=16, quads=False, flags=None):
     """ Search for a string on a page.
 
@@ -710,7 +627,11 @@ def getToC(doc, simple=True):
 
             if not olItem.isExternal:
                 if olItem.uri:
-                    page = olItem.page + 1
+                    if olItem.page == -1:
+                        resolve = doc.resolveLink(olItem.uri)
+                        page = resolve[0] + 1
+                    else:
+                        page = olItem.page + 1
                 else:
                     page = -1
             else:
@@ -3255,10 +3176,11 @@ class Shape(object):
         if not fitz_py2:  # need bytes if Python > 2
             self.totalcont = bytes(self.totalcont, "utf-8")
 
-        # make /Contents object with dummy stream
-        xref = TOOLS._insert_contents(self.page, b" ", overlay)
-        # update it with potential compression
-        self.doc._updateStream(xref, self.totalcont)
+        if self.totalcont != b"":
+            # make /Contents object with dummy stream
+            xref = TOOLS._insert_contents(self.page, b" ", overlay)
+            # update it with potential compression
+            self.doc.updateStream(xref, self.totalcont)
 
         self.lastPoint = None  # clean up ...
         self.rect = None  #

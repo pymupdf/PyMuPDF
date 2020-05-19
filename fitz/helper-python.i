@@ -349,13 +349,13 @@ class linkDest(object):
 #-------------------------------------------------------------------------------
 def getPDFnow():
     import time
-    tz = "%s'%s'" % (str(time.timezone // 3600).rjust(2, "0"),
-                 str((time.timezone // 60)%60).rjust(2, "0"))
+    tz = "%s'%s'" % (str(abs(time.altzone // 3600)).rjust(2, "0"),
+                 str((abs(time.altzone // 60)%60)).rjust(2, "0"))
     tstamp = time.strftime("D:%Y%m%d%H%M%S", time.localtime())
-    if time.timezone > 0:
+    if time.altzone > 0:
         tstamp += "-" + tz
-    elif time.timezone < 0:
-        tstamp = "+" + tz
+    elif time.altzone < 0:
+        tstamp += "+" + tz
     else:
         pass
     return tstamp
@@ -566,7 +566,52 @@ def ColorCode(c, f):
 
 
 def JM_TUPLE(o):
-    return tuple(map(lambda x: round(x, 8), o))
+    return tuple(map(lambda x: round(x, 5) if abs(x) >= 1e-4 else 0, o))
+
+
+def CheckRect(r):
+    """Check whether an object is rect-like.
+
+    It must be a sequence of 4 numbers.
+    """
+    try:
+        if r.__len__() != 4:
+            return False
+        for i in range(len(r)):
+            a = float(r[i])
+    except:
+        return False
+    return True
+
+
+def CheckQuad(q):
+    """Check whether an object is quad-like.
+
+    It must be a sequence of 4 pairs of numbers.
+    """
+    try:
+        if q.__len__() != 4:
+            return False
+        for i in range(len(q)):
+            if q[i].__len__() != 2:
+                return False
+            a = float(q[i][0])
+            a = float(q[i][1])
+    except:
+        return False
+    return True
+
+
+def CheckMarkerArg(quads):
+    if CheckRect(quads):
+        r = Rect(quads)
+        return (r.quad,)
+    if CheckQuad(quads):
+        return (quads,)
+    for q in quads:
+        if not (CheckRect(q) or CheckQuad(q)):
+            raise ValueError("bad quads entry")
+    return quads
 
 
 def CheckMorph(o):
@@ -833,16 +878,11 @@ def annot_preprocess(page):
     old_rotation = page.rotation
     if old_rotation != 0:
         page.setRotation(0)
-    return old_rotation, None
+    return old_rotation
 
 
-def annot_postprocess(page, annot, old_rotation):
-    if old_rotation != 0:
-        page.setRotation(old_rotation)
-    if not annot:
-        return None
-    annot.thisown = True
+def annot_postprocess(page, annot):
     annot.parent = weakref.proxy(page)
     page._annot_refs[id(annot)] = annot
-
+    annot.thisown = True
 %}

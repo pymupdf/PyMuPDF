@@ -18,6 +18,7 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.searchF
 **Methods / Attributes**      **Short Description**
 ============================= =======================================================
 :meth:`Quad.transform`        transform with a matrix
+:meth:`Quad.morph`            transform with a point and matrix
 :attr:`Quad.ul`               upper left point
 :attr:`Quad.ur`               upper right point
 :attr:`Quad.ll`               lower left point
@@ -54,6 +55,19 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.searchF
       Modify the quadrilateral by transforming each of its corners with a matrix.
 
       :arg matrix_like matrix: the matrix.
+
+   .. method:: morph(point, matrix)
+
+      *(New in version 1.17.0)* "Morph" the quad with a matrix-like using a point-like as pivotal point.
+
+      :arg point_like point: the point.
+      :arg matrix_like matrix: the matrix.
+      :returns: a new quad. The effect is achieved by using the following code snippet::
+
+         >>> T = fitz.Matrix(1, 1).preTranslate(point.x, point.y)
+         >>> result = self * ~T * matrix * T
+
+      Typical uses include rotating the quad around a desired point.
 
    .. attribute:: rect
 

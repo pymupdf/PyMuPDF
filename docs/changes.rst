@@ -1,11 +1,37 @@
 Change Logs
 ===============
 
+Changes in Version 1.17.0
+---------------------------
+This version is based on MuPDF v1.17. Following are highlights of new and changed features:
+
+* **Added** extended language support for annotations and widgets: a mixture of Latin, Greece, Russian, Chinese, Japanese and Korean characters can now be used in 'FreeText' annotations and text widgets. No special arrangement is required to use it.
+
+* Faster page access is implemented for documents supporting a "chapter" structure. This applies to EPUB documents currently. This comes with several new :ref:`Document` methods and changes for :meth:`Document.loadPage` and the "indexed" page access *doc[n]*: In addition to specifying a page number as before, a tuple *(chaper, pno)* can be specified to identify the desired page.
+
+* **Changed:** Improved support of redaction annotations: images overlapped by redactions are **permanantly modified** by erasing the overlap areas. Also links are removed if overlapped by redactions. This is now fully in sync with PDF specifications.
+
+Other changes:
+
+* **Changed** :meth:`TextWriter.writeText` to support the *"morph"* parameter.
+* **Added** methods :meth:`Rect.morph`, :meth:`IRect.morph`, and :meth:`Quad.morph`, which return a new :ref:`Quad`.
+* **Changed** :meth:`Page.addFreetextAnnot` to support text alignment via a new *"align"* parameter.
+* **Fixed** issue `#508 <https://github.com/pymupdf/PyMuPDF/issues/508>`_. Improved image rectangle calculation to hopefully deliver correct values in most if not all cases.
+* **Fixed** issue `#502 <https://github.com/pymupdf/PyMuPDF/issues/502>`_.
+* **Fixed** issue `#500 <https://github.com/pymupdf/PyMuPDF/issues/500>`_. :meth:`Document.convertToPDF` should no longer cause memory leaks.
+* **Fixed** issue `#496 <https://github.com/pymupdf/PyMuPDF/issues/496>`_. Annotations and widgets / fields are now added or modified using the coordinates of the **unrotated page**. This behavior is now in sync with other methods modifying PDF pages.
+* **Added** :attr:`Page.rotationMatrix` and :attr:`Page.derotationMatrix` to support coordinate transformations between the rotated and the original versions of a PDF page.
+
+Potential code breaking changes:
+
+* The private method ``Page._getTransformation()`` has been removed. Use the public :attr:`Page.transformationMattrix` instead.
+
+
 Changes in Version 1.16.18
 ---------------------------
 This version introduces several new features around PDF text output. The motivation is to simplify this task, while at the same time offering extending features.
 
-One major achievement is using MuPDF's capabilities to dynamically choosing fallback fonts whenever a character cannot be found in the predefined one. This seemlessly works for Base-14 fonts in combination with CJK fonts (China, Japan, Korea).
+One major achievement is using MuPDF's capabilities to dynamically choosing fallback fonts whenever a character cannot be found in the current one. This seemlessly works for Base-14 fonts in combination with CJK fonts (China, Japan, Korea). So a text may contain **any combination of characters** from the Latin, Greek, Russian, Chinese, Japanese and Korean languages.
 
 * **Fixed** issue `#493 <https://github.com/pymupdf/PyMuPDF/issues/493>`_. ``Pixmap(doc, xref)`` should now again correctly resemble the loaded image object.
 * **Fixed** issue `#488 <https://github.com/pymupdf/PyMuPDF/issues/488>`_. Widget names are now modifyable.

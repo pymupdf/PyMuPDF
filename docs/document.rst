@@ -56,6 +56,8 @@ For addional details on **embedded files** refer to Appendix 3.
 :meth:`Document.setMetadata`            PDF only: set the metadata
 :meth:`Document.setToC`                 PDF only: set the table of contents (TOC)
 :meth:`Document.updateObject`           PDF only: replace object source
+:meth:`Document.nextLocation`           return (chapter, pno) of following page
+:meth:`Document.previousLocation`       return (chapter, pno) of preceeding page
 :meth:`Document.updateStream`           PDF only: replace stream source
 :meth:`Document.write`                  PDF only: writes the document to memory
 :meth:`Document.xrefObject`             PDF only: object source at the :data:`xref`
@@ -67,6 +69,7 @@ For addional details on **embedded files** refer to Appendix 3.
 :attr:`Document.isFormPDF`              is this a Form PDF?
 :attr:`Document.isPDF`                  is this a PDF?
 :attr:`Document.isReflowable`           is this a reflowable document?
+:attr:`Document.lastLocation`           return (chapter, pno) of last page
 :attr:`Document.metadata`               metadata
 :attr:`Document.name`                   filename of document
 :attr:`Document.needsPass`              require password to access data?
@@ -148,15 +151,45 @@ For addional details on **embedded files** refer to Appendix 3.
         * bit 2 set => **owner** password authenticated
 
 
-    .. method:: loadPage(pno=0)
+    .. method:: nextLocation(page_id)
+
+      *(New in v.1.17.0)* Return the locator of the following page.
+
+      :arg tuple page_id: the current page id. This must be a tuple *(chapter, pno)* identifying an existing page.
+
+      :returns: The tuple of the following page, i.e. either *(chapter, pno + 1)* or *(chapter + 1, 0)*, **or** the empty tuple *()* if the argument was the last page.
+
+
+    .. method:: previousLocation(page_id)
+
+      *(New in v.1.17.0)* Return the locator of the preceeding page.
+
+      :arg tuple page_id: the current page id. This must be a tuple *(chapter, pno)* identifying an existing page.
+
+      :returns: The tuple of the preceeding page, i.e. either *(chapter, pno - 1)* or the last page of the receeding chapter, **or** the empty tuple *()* if the argument was the first page.
+
+
+    .. method:: loadPage(page_id=0)
 
       Create a :ref:`Page` object for further processing (like rendering, text searching, etc.).
 
-      :arg int pno: page number, zero-based (0 is default and the first page of the document). Any integer -inf < pno < pageCount is acceptable. If pno is negative, then :attr:`pageCount` will be added until this is no longer the case. For example: to load the last page, you can specify doc.loadPage(-1). After this you have page.number = doc.pageCount - 1.
+      *(Changed in v1.17.0)* For document types supporting a so-called "chapter structure" (like EPUB), pages can also be loaded via the combination of chapter number and relative page number, instead of the absolute page number. This should **significantly speed up access** for large documents.
+
+      :arg int,tuple page_id: *(Changed in v1.17.0)*
+      
+          Either a 0-based page number, or a tuple *(chapter, pno)*. For an integer, any *-inf < page_id < pageCount* is acceptable. While page_id is negative, :attr:`pageCount` will be added to it. For example: to load the last page, you can use *doc.loadPage(-1)*. After this you have page.number = doc.pageCount - 1.
+      
+          For a tuple, *chapter* must be in range :attr:`Document.chapterCount`, and *pno* must be in range :meth:`Document.chapterPageCount` of that chapter. Both values are 0-based. With this notation, :attr:`Page.number` will equal the given tuple.
 
       :rtype: :ref:`Page`
 
-    .. note:: Documents also follow the Python sequence protocol with page numbers as indices: *doc.loadPage(n) == doc[n]*. Consequently, expressions like *"for page in doc: ..."* and *"for page in reversed(doc): ..."* will successively yield the document's pages. Refer to :meth:`Document.pages` which allows processing pages as with slicing.
+    .. note::
+    
+       Documents also follow the Python sequence protocol with page numbers as indices: *doc.loadPage(n) == doc[n]*. Consequently, expressions like *"for page in doc: ..."* and *"for page in reversed(doc): ..."* will successively yield the document's pages. Refer to :meth:`Document.pages` which allows processing pages as with slicing.
+
+       You can also use this notation with the new chapter-based page identification: use *page = doc[(5, 2)]* to load the third page of the sixth chapter.
+
+       For document types not supporting a chapter structure (like PDFs), :attr:`Document.chapterCount` is 1, and pages can alternatively be loaded via tuples *(0, pno)*. See this [#f3]_ footnote for comments on performance improvements.
 
     .. method:: reload_page(page)
 
@@ -1000,3 +1033,5 @@ Other Examples
 .. [#f1] Content streams describe what (e.g. text or images) appears where and how on a page. PDF uses a specialized mini language similar to PostScript to do this (pp. 985 in :ref:`AdobeManual`), which gets interpreted when a page is loaded.
 
 .. [#f2] However, you **can** use :meth:`Document.getToC` and :meth:`Page.getLinks` (which are available for all document types) and copy this information over to the output PDF. See demo `pdf-converter.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py>`_.
+
+.. [f3] For applicable (layoutable) document types, loading a page via its absolute number may result in layouting a large part of the document, before the page can be accessed. To avoid this, prefer the chapter-based access. Use convenience methods / attributes :meth:`Document.nextLocation`, :meth:`Document.previousLocation` and :attr:`Document.lastLocation` for maintaining a high level of coding efficiency.

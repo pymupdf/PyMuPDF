@@ -92,9 +92,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg irect_like clip: a region of the source pixmap to take the copy from.
 
-      .. note:: If width or height are not *de facto* integers (meaning e.g. *round(width) != width*), then pixmap will be created with *alpha = 1*.
+      .. note:: If width or height are not *de facto* integers (meaning e.g. *float(int(width) != width*), then pixmap will be created with *alpha = 1*.
 
-   .. method:: __init__(self, source, alpha = 1)
+   .. method:: __init__(self, source, alpha=1)
 
       **Copy and add or drop alpha:** Copy *source* and add or drop its alpha channel. Identical copy if *alpha* equals *source.alpha*. If an alpha channel is added, its values will be set to 255.
 

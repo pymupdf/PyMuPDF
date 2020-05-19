@@ -58,7 +58,6 @@ fitz.Page.drawRect = fitz.utils.drawRect
 fitz.Page.drawSector = fitz.utils.drawSector
 fitz.Page.drawSquiggle = fitz.utils.drawSquiggle
 fitz.Page.drawZigzag = fitz.utils.drawZigzag
-fitz.Page.getImageBbox = fitz.utils.getImageBbox
 fitz.Page.getLinks = fitz.utils.getLinks
 fitz.Page.getPixmap = fitz.utils.getPixmap
 fitz.Page.getText = fitz.utils.getText

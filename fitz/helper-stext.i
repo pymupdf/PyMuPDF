@@ -38,7 +38,7 @@ fz_stext_page *JM_new_stext_page_from_page(fz_context *ctx, fz_page *page, int f
 //-----------------------------------------------------------------------------
 PyObject *JM_repl_char()
 {
-    const unsigned char data[2] = {194, 183};
+    const char data[2] = {194, 183};
     return PyUnicode_FromStringAndSize(data, 2);
 }
 
@@ -90,10 +90,10 @@ void JM_write_rune(fz_context *ctx, fz_output *out, int ch)
 void
 JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page)
 {
-    fz_stext_block *block;
-    fz_stext_line *line;
-    fz_stext_char *ch;
-    int last_char;
+    fz_stext_block *block = NULL;
+    fz_stext_line *line = NULL;
+    fz_stext_char *ch = NULL;
+    int last_char = 0;
 
     for (block = page->first_block; block; block = block->next)
     {

@@ -30,7 +30,7 @@ PyObject *JM_EscapeStrFromBuffer(fz_context *ctx, fz_buffer *buff)
     if (!buff) return PyUnicode_FromString("");
     unsigned char *s = NULL;
     size_t len = fz_buffer_storage(ctx, buff, &s);
-    PyObject *val = PyUnicode_DecodeRawUnicodeEscape(s, (Py_ssize_t) len, "replace");
+    PyObject *val = PyUnicode_DecodeRawUnicodeEscape((const char *) s, (Py_ssize_t) len, "replace");
     if (!val)
     {
         val = PyUnicode_FromString("");
@@ -227,7 +227,7 @@ void JM_color_FromSequence(PyObject *color, int *n, float col[4])
         return;
     }
 
-    int len = (int) PySequence_Size(color), i;
+    int len = (int) PySequence_Size(color), rc;
     if (!INRANGE(len, 1, 4) || len == 2)
     {
         *n = 1;
@@ -235,15 +235,11 @@ void JM_color_FromSequence(PyObject *color, int *n, float col[4])
     }
 
     float mcol[4] = {0,0,0,0}; // local color storage
+    Py_ssize_t i;
     for (i = 0; i < len; i++)
     {
-        mcol[i] = (float) PyFloat_AsDouble(PySequence_ITEM(color, i));
-        if (PyErr_Occurred())
-        {
-            PyErr_Clear(); // reset Py error indicator
-            return;
-        }
-        if (!INRANGE(mcol[i], 0.0f, 1.0f)) return;
+        rc = JM_FLOAT_ITEM(color, i, &mcol[i]);
+        if (!INRANGE(mcol[i], 0, 1) || rc == 1) mcol[i] = 1;
     }
 
     *n = len;
@@ -289,9 +285,9 @@ PyObject *JM_BinFromBuffer(fz_context *ctx, fz_buffer *buffer)
     {
         return PyBytes_FromString("");
     }
-    char *c = NULL;
+    unsigned char *c = NULL;
     size_t len = fz_buffer_storage(ctx, buffer, &c);
-    return PyBytes_FromStringAndSize(c, (Py_ssize_t) len);
+    return PyBytes_FromStringAndSize((const char *) c, (Py_ssize_t) len);
 }
 
 //----------------------------------------------------------------------------
@@ -303,33 +299,11 @@ PyObject *JM_BArrayFromBuffer(fz_context *ctx, fz_buffer *buffer)
     {
         return PyByteArray_FromStringAndSize("", 0);
     }
-    char *c = NULL;
+    unsigned char *c = NULL;
     size_t len = fz_buffer_storage(ctx, buffer, &c);
-    return PyByteArray_FromStringAndSize(c, (Py_ssize_t) len);
+    return PyByteArray_FromStringAndSize((const char *) c, (Py_ssize_t) len);
 }
 
-//----------------------------------------------------------------------------
-// Turn fz_buffer to a base64 encoded bytes object
-//----------------------------------------------------------------------------
-PyObject *JM_B64FromBuffer(fz_context *ctx, fz_buffer *buffer)
-{
-    PyObject *bytes = PyBytes_FromString("");
-    char *c = NULL;
-    char *b64 = NULL;
-    if (buffer)
-    {
-        size_t len = fz_buffer_storage(ctx, buffer, &c);
-        fz_buffer *res = fz_new_buffer(ctx, len);
-        fz_output *out = fz_new_output_with_buffer(ctx, res);
-        fz_write_base64(ctx, out, (const unsigned char *) c, (int) len, 0);
-        size_t nlen = fz_buffer_storage(ctx, res, &b64);
-        Py_DECREF(bytes);
-        bytes = PyBytes_FromStringAndSize(b64, (Py_ssize_t) nlen);
-        fz_drop_buffer(ctx, res);
-        fz_drop_output(ctx, out);
-    }
-    return bytes;
-}
 
 //----------------------------------------------------------------------------
 // compress char* into a new buffer
@@ -406,8 +380,7 @@ void hexlify(int n, unsigned char *in, unsigned char *out)
 //----------------------------------------------------------------------------
 fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
 {
-    if (!stream) return NULL;
-    if (stream == Py_None) return NULL;
+    if (!EXISTS(stream)) return NULL;
     char *c = NULL;
     PyObject *mybytes = NULL;
     size_t len = 0;
@@ -432,7 +405,7 @@ fz_buffer *JM_BufferFromBytes(fz_context *ctx, PyObject *stream)
             len = (size_t) PyBytes_GET_SIZE(mybytes);
         }
         // all the above leave c as NULL pointer if unsuccessful
-        if (c) res = fz_new_buffer_from_copied_data(ctx, c, len);
+        if (c) res = fz_new_buffer_from_copied_data(ctx, (const unsigned char *) c, len);
     }
     fz_always(ctx)
     {
@@ -585,10 +558,9 @@ void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, i
 //-----------------------------------------------------------------------------
 void merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int spage, int epage, int apage, int rotate, int links, int annots)
 {
-    int page, afterpage, count;
+    int page, afterpage;
     pdf_graft_map *graft_map;
     afterpage = apage;
-    count = pdf_count_pages(ctx, doc_src);
     graft_map = pdf_new_graft_map(ctx, doc_des);
 
     fz_try(ctx)
@@ -640,9 +612,9 @@ fz_buffer *JM_get_fontbuffer(fz_context *ctx, pdf_document *doc, int xref)
 {
     if (xref < 1) return NULL;
     pdf_obj *o, *obj = NULL, *desft, *stream = NULL;
-    char *ext = "";
     o = pdf_load_object(ctx, doc, xref);
     desft = pdf_dict_get(ctx, o, PDF_NAME(DescendantFonts));
+    char *ext = NULL;
     if (desft)
     {
         obj = pdf_resolve_indirect(ctx, pdf_array_get(ctx, desft, 0));
@@ -780,9 +752,9 @@ pdf_obj *JM_pdf_obj_from_str(fz_context *ctx, pdf_document *doc, char *src)
 //-----------------------------------------------------------------------------
 struct Tools {int index;};
 
-typedef struct fz_item_s fz_item;
+typedef struct fz_item fz_item;
 
-struct fz_item_s
+struct fz_item
 {
 	void *key;
 	fz_storable *val;
@@ -793,7 +765,7 @@ struct fz_item_s
 	const fz_store_type *type;
 };
 
-struct fz_store_s
+struct fz_store
 {
 	int refs;
 
@@ -850,12 +822,6 @@ int JM_page_rotation(fz_context *ctx, pdf_page *page)
 fz_rect JM_mediabox(fz_context *ctx, pdf_page *page)
 {
     fz_rect mediabox, page_mediabox;
-    pdf_obj *obj;
-    float userunit = 1;
-
-    obj = pdf_dict_get(ctx, page->obj, PDF_NAME(UserUnit));
-    if (pdf_is_real(ctx, obj))
-        userunit = pdf_to_real(ctx, obj);
 
     mediabox = pdf_to_rect(ctx, pdf_dict_get_inheritable(ctx, page->obj,
         PDF_NAME(MediaBox)));

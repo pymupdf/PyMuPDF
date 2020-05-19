@@ -47,9 +47,9 @@ void JM_make_annot_DA(fz_context *ctx, pdf_annot *annot, int ncol, float col[4],
         else
             fz_append_printf(ctx, buf, "%g %g %g %g k ", col[0], col[1], col[2], col[3]);
         fz_append_printf(ctx, buf, "/%s %g Tf", JM_expand_fname(&fontname), fontsize);
-        char *da = NULL;
+        unsigned char *da = NULL;
         size_t len = fz_buffer_storage(ctx, buf, &da);
-        pdf_dict_put_string(ctx, annot->obj, PDF_NAME(DA), (const char *)da, len);
+        pdf_dict_put_string(ctx, annot->obj, PDF_NAME(DA), (const char *) da, len);
     }
     fz_always(ctx) fz_drop_buffer(ctx, buf);
     fz_catch(ctx) fz_rethrow(ctx);
@@ -358,7 +358,8 @@ PyObject *JM_get_annot_id_list(fz_context *ctx, pdf_page *page)
 
 
 //----------------------------------------------------------------------------
-// add a unique /NM key to an annotation or widget
+// Add a unique /NM key to an annotation or widget.
+// Append a number to 'stem' such that the result is a unique name.
 //----------------------------------------------------------------------------
 void JM_add_annot_id(fz_context *ctx, pdf_annot *annot, char *stem)
 {
@@ -371,9 +372,7 @@ void JM_add_annot_id(fz_context *ctx, pdf_annot *annot, char *stem)
         {
             stem_id = PyUnicode_FromFormat("%s-%d", stem, i);
             if (!PySequence_Contains(names, stem_id))
-            {
                 break;
-            }
             i += 1;
             Py_DECREF(stem_id);
         }

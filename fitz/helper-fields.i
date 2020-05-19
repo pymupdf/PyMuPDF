@@ -609,6 +609,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     pdf_obj *dashes = NULL;
     Py_ssize_t i, n = 0;
     int d;
+    int result = 0;
     int field_type = (int) PyInt_AsLong(GETATTR("field_type"));
     PyObject *value = NULL;
 
@@ -626,10 +627,11 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     {
         n = PySequence_Size(value);
         fill_col = pdf_new_array(ctx, pdf, n);
+        float col = 0;
         for (i = 0; i < n; i++)
         {
-            pdf_array_push_real(ctx, fill_col,
-                                PyFloat_AsDouble(PySequence_ITEM(value, i)));
+            JM_FLOAT_ITEM(value, i, &col);
+            pdf_array_push_real(ctx, fill_col, col);
         }
         pdf_field_set_fill_color(ctx, annot->obj, fill_col);
         pdf_drop_obj(ctx, fill_col);
@@ -660,10 +662,11 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     {
         n = PySequence_Size(value);
         border_col = pdf_new_array(ctx, pdf, n);
+        float col = 0;
         for (i = 0; i < n; i++)
         {
-            pdf_array_push_real(ctx, border_col,
-                                PyFloat_AsDouble(PySequence_ITEM(value, i)));
+            JM_FLOAT_ITEM(value, i, &col);
+            pdf_array_push_real(ctx, border_col, col);
         }
         pdf_dict_putl_drop(ctx, annot->obj, border_col,
                                 PDF_NAME(MK),
@@ -789,7 +792,6 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     // fields this may lead to an unrecognized state for some PDF viewers.
     //-------------------------------------------------------------------------
     value = GETATTR("field_value");
-    int result = 0;
     char *text = NULL;
     switch(field_type)
     {

@@ -522,6 +522,9 @@ class Rect(object):
     def quad(self):
         return Quad(self.tl, self.tr, self.bl, self.br)
 
+    def morph(self, p, m):
+        return self.quad.morph(p, m)
+
     def round(self):
         return IRect(min(self.x0, self.x1), min(self.y0, self.y1),
                      max(self.x0, self.x1), max(self.y0, self.y1))
@@ -848,9 +851,9 @@ class Quad(object):
     @property
     def isEmpty(self):
         """Check if quad is empty retangle. If rectangular, we are done (not empty).
-        But all 4 points may still be on one line. We check this out here.
-        In that case all 3 lines connecting corners to ul will have same angle
-        with the x-axis.
+        But all 4 points may still be on one line. This is checked out here.
+        In that case all 3 lines connecting the other corners with UL will have
+        the same angle with the x-axis.
         """
         if self.isRectangular:
             return False
@@ -914,6 +917,17 @@ class Quad(object):
         if self.isEmpty:
             return 0.0
         return abs(self.ul - self.ur) * abs(self.ul - self.ll)
+
+
+    def morph(self, p, m):
+        """Morph the quad with some matrix 'm' around some pivotal point 'p'.
+
+        Return a new quad."""
+
+        delta = Matrix(1, 1).preTranslate(p.x, p.y)
+        q = self * ~delta * m * delta
+        return q
+
 
     def transform(self, m):
         """Replace quad by its transformation with matrix m."""
