@@ -1034,4 +1034,4 @@ Other Examples
 
 .. [#f2] However, you **can** use :meth:`Document.getToC` and :meth:`Page.getLinks` (which are available for all document types) and copy this information over to the output PDF. See demo `pdf-converter.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/pdf-converter.py>`_.
 
-.. [f3] For applicable (layoutable) document types, loading a page via its absolute number may result in layouting a large part of the document, before the page can be accessed. To avoid this, prefer the chapter-based access. Use convenience methods / attributes :meth:`Document.nextLocation`, :meth:`Document.previousLocation` and :attr:`Document.lastLocation` for maintaining a high level of coding efficiency.
+.. [#f3] For applicable (layoutable) document types, loading a page via its absolute number may result in layouting a large part of the document, before the page can be accessed. To avoid this, prefer the chapter-based access. Use convenience methods / attributes :meth:`Document.nextLocation`, :meth:`Document.previousLocation` and :attr:`Document.lastLocation` for maintaining a high level of coding efficiency.
