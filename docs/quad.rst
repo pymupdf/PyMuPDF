@@ -14,6 +14,7 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.searchF
 
    * Attribute :attr:`Quad.rect` obtains the envelopping rectangle. Vice versa, rectangles now have attributes :attr:`Rect.quad`, resp. :attr:`IRect.quad` to obtain their respective tetragon versions.
 
+
 ============================= =======================================================
 **Methods / Attributes**      **Short Description**
 ============================= =======================================================
@@ -56,16 +57,18 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.searchF
 
       :arg matrix_like matrix: the matrix.
 
-   .. method:: morph(point, matrix)
+   .. method:: morph(pivot, matrix)
 
       *(New in version 1.17.0)* "Morph" the quad with a matrix-like using a point-like as pivotal point.
 
-      :arg point_like point: the point.
+      :arg point_like pivot: the point.
       :arg matrix_like matrix: the matrix.
-      :returns: a new quad. The effect is achieved by using the following code snippet::
+      :returns: a new quad. The effect is achieved by using the following code::
 
-         >>> T = fitz.Matrix(1, 1).preTranslate(point.x, point.y)
+         >>> T = fitz.Matrix(1, 1).preTranslate(pivot.x, pivot.y)
          >>> result = self * ~T * matrix * T
+
+      So the quad is translated such, that pivot becomes the origin (0, 0), then the matrix is applied to it, and finally a reverse translation is done.
 
       Typical uses include rotating the quad around a desired point.
 
@@ -105,19 +108,19 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.searchF
 
       *(New in version 1.16.1)*
       
-      True if all lines are contained in the quad which connect two points of the quad. 
+      True if every line connecting two points of the quad is inside the quad. We in addition also make sure here, that the quad is not "degenerate", i.e. not all corners are on the same line (which would still qualify as convexity in the mathematical sense).
 
       :type: bool
 
    .. attribute:: isEmpty
 
-      True if enclosed area is zero, which means that all four points are on the same line. If this is false, the quad may still be degenerate or not look like a rectangle at all (triangles, parallelograms, trapezoids, ...).
+      True if enclosed area is zero, which means that at least three of the four corners are on the same line. If this is false, the quad may still be degenerate or not look like a tetragon at all (triangles, parallelograms, trapezoids, ...).
 
       :type: bool
 
    .. attribute:: isRectangular
 
-      True if all angles are 90 degrees. This also implies that the area is **not empty** and **convex**.
+      True if all corner angles are 90 degrees. This implies that the quad is **convex and not empty**.
 
       :type: bool
 

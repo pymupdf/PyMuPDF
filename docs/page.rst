@@ -59,7 +59,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.drawSquiggle`         PDF only: draw a squiggly line
 :meth:`Page.drawZigzag`           PDF only: draw a zig-zagged line
 :meth:`Page.getFontList`          PDF only: get list of used fonts
-:meth:`Page.getImageBbox`         PDF only: get bbox of inserted image
+:meth:`Page.getImageBbox`         PDF only: get bbox of embedded image
 :meth:`Page.getImageList`         PDF only: get list of used images
 :meth:`Page.getLinks`             get all links
 :meth:`Page.getPixmap`            create a page image in raster format
@@ -269,7 +269,7 @@ In a nutshell, this is what you can do with PyMuPDF:
            >>> quads = page.searchFor("pymupdf", hit_max=100, quads=True)
            >>> page.addHighlightAnnot(quads)
 
-      :arg rect_like,quad_like,list,tuple quads: *(Changed in v1.14.20)* the rectangles or quads containing the to-be-marked text (locations). A list or tuple must consist of :data:`rect_like` or :data:`quad_like` items (or even a mixture of either). You should prefer using quads, because this will automatically support non-horizontal text and avoid rectangle-to-quad conversion effort. *(Changed in v1.16.14)* **Set this parameter to** *None* if you want to use the following arguments.
+      :arg rect_like,quad_like,list,tuple quads: *(Changed in v1.14.20)* the location(s) -- rectangle(s) or quad(s) -- to be marked. A list or tuple must consist of :data:`rect_like` or :data:`quad_like` items (or even a mixture of either). Every item must be finite, convex and not empty (as applicable). *(Changed in v1.16.14)* **Set this parameter to** *None* if you want to use the following arguments.
       :arg point_like start: *(New in v1.16.14)* start text marking at this point. Defaults to the top-left point of *clip*.
       :arg point_like stop: *(New in v1.16.14)* stop text marking at this point. Defaults to the bottom-right point of *clip*.
       :arg rect_like clip: *(New in v1.16.14)* only consider text lines intersecting this area. Defaults to the page rectangle.
@@ -797,16 +797,16 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       *Changed in version 1.17.0:*
 
-      * The method should deliver mostly correct results now.
+      * The method should deliver correct results now.
       * The page's ``/Contents`` are no longer modified by this method.
-      * Images occurring inside embedded PDF pages (i.e. in **Form XObjects**) never correctly worked and are now ignored. Use the items of :meth:`Document.getPageXObjectList` to determine the bboxes of embedded PDF pages.
+      * Images occurring inside embedded PDF pages (i.e. in **Form XObjects**) never correctly worked and are now ignored [#f5]_. Use the items of :meth:`Document.getPageXObjectList` to determine the bboxes of embedded PDF pages.
       
-      :arg list,str item: an item of the list :meth:`Page.getImageList` with *full=True* specified, or the **name** entry of such an item, which is item[-3] (or item[7] respectively). *Changed in v1.17.0:* only images are considered where item[1] == 0. This are images **directly** referenced by the page.
+      :arg list,str item: an item of the list :meth:`Page.getImageList` with *full=True* specified, or the **name** entry of such an item, which is item[-3] (or item[7] respectively). *Changed in v1.17.0:* only images are considered where item[1] == 0 [#f5]_. This are images **directly** referenced by the page.
 
       :rtype: :ref:`Rect`
       :returns: the boundary box of the image.
          *(Changed in version 1.16.7)* If the page in fact does not display this image, an infinite rectangle is returned now. In previous versions, an exception was raised.
-         *(Changed in version 1.17.0)* Only images referenced directly by the page are considered. This means that images occurring in embedded PDF pages are ignored and an infinite rectangle is returned.
+         *(Changed in version 1.17.0)* Only images referenced directly by the page are considered. This means that images occurring in embedded PDF pages are ignored and an exception is raised.
 
       .. note::
 
@@ -1192,3 +1192,5 @@ The page number "pno"` is a 0-based integer *-inf < pno < pageCount*.
 .. [#f3] Not all PDF readers display these fonts at all. Some others do, but use a wrong character spacing, etc.
 
 .. [#f4] You are generally free to choose any of the :ref:`mupdficons` you consider adequate.
+
+.. [#f5] This restriction will be removed with the next MuPDF version again: all inserted images shown on the page will be reported correctly, whether the page itself invokes them or some of its Form XObjects.

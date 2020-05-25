@@ -1,7 +1,7 @@
-wget https://mupdf.com/downloads/archive/mupdf-1.16.1-source.tar.gz
-tar -zxvf mupdf-1.16.1-source.tar.gz
+wget https://mupdf.com/downloads/archive/mupdf-1.17.0-source.tar.gz
+tar -zxvf mupdf-1.17.0-source.tar.gz
 
-cd mupdf-1.16.1-source
+cd mupdf-1.17.0-source
 
 export CFLAGS="-fPIC"
 # install some prerequirement
