@@ -13,7 +13,7 @@ sudo make HAVE_X11=no HAVE_GLFW=no HAVE_GLUT=no prefix=/usr/local install
 cd ..
 
 rm -rf PyMuPDF
-git clone https://github.com/rk700/PyMuPDF.git
+git clone https://github.com/pymupdf/PyMuPDF.git
 cd PyMuPDF
 
 sudo python setup.py build
