@@ -325,29 +325,57 @@ pdf_annot *JM_find_annot_irt(fz_context *ctx, pdf_annot *annot)
 PyObject *JM_get_annot_id_list(fz_context *ctx, pdf_page *page)
 {
     PyObject *names = PyList_New(0);
-    pdf_obj *o = NULL;
-    pdf_annot **annotptr = NULL;
-    pdf_annot *annot = NULL;
+    pdf_obj *annot_obj = NULL;
+    pdf_obj *annots = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
+    pdf_obj *name = NULL;
+    if (!annots) return names;
     fz_try(ctx)
-    {   // loop thru MuPDF's internal annots and widget arrays
-        for (annotptr = &page->annots; *annotptr; annotptr = &(*annotptr)->next)
+    {
+        int i, n = pdf_array_len(ctx, annots);
+        for (i = 0; i < n; i++)
         {
-            annot = *annotptr;
-            o = pdf_dict_gets(ctx, annot->obj, "NM");
-            if (o)
+            annot_obj = pdf_array_get(ctx, annots, i);
+            name = pdf_dict_gets(ctx, annot_obj, "NM");
+            if (name)
             {
-                LIST_APPEND_DROP(names, Py_BuildValue("s", pdf_to_text_string(gctx, o)));
+                LIST_APPEND_DROP(names, Py_BuildValue("s", pdf_to_text_string(ctx, name)));
             }
         }
-        //for (annotptr = &page->widgets; *annotptr; annotptr = &(*annotptr)->next)
-        //{
-        //    annot = *annotptr;
-        //    o = pdf_dict_gets(ctx, annot->obj, "NM");
-        //    if (o)
-        //    {
-        //        LIST_APPEND_DROP(names, Py_BuildValue("s", pdf_to_text_string(gctx, o)));
-        //    }
-        //}
+    }
+    fz_catch(ctx)
+    {
+        return names;
+    }
+    return names;
+}
+
+
+//----------------------------------------------------------------------------
+// return the xref numbers of a page's annots, links and fields
+//----------------------------------------------------------------------------
+PyObject *JM_get_annot_xref_list(fz_context *ctx, pdf_page *page)
+{
+    PyObject *names = PyList_New(0);
+    pdf_obj *annot_obj = NULL;
+    pdf_obj *annots = pdf_dict_get(ctx, page->obj, PDF_NAME(Annots));
+    pdf_obj *name = NULL;
+    if (!annots) return names;
+    fz_try(ctx)
+    {
+        int i, n = pdf_array_len(ctx, annots);
+        for (i = 0; i < n; i++)
+        {
+            annot_obj = pdf_array_get(ctx, annots, i);
+            int xref = pdf_to_num(ctx, annot_obj);
+            pdf_obj *subtype = pdf_dict_get(ctx, annot_obj, PDF_NAME(Subtype));
+            int type = PDF_ANNOT_UNKNOWN;
+            if (subtype)
+            {
+                const char *name = pdf_to_name(ctx, subtype);
+                type = pdf_annot_type_from_string(ctx, name);
+            }
+            LIST_APPEND_DROP(names, Py_BuildValue("ii", xref, type));
+        }
     }
     fz_catch(ctx)
     {
@@ -365,7 +393,9 @@ void JM_add_annot_id(fz_context *ctx, pdf_annot *annot, char *stem)
 {
     fz_try(ctx)
     {
-        PyObject *names = JM_get_annot_id_list(ctx, annot->page);
+        PyObject *names = NULL;
+        names = JM_get_annot_id_list(ctx, annot->page);
+
         int i = 0;
         PyObject *stem_id = NULL;
         while (1)
@@ -380,7 +410,8 @@ void JM_add_annot_id(fz_context *ctx, pdf_annot *annot, char *stem)
         pdf_obj *name = pdf_new_string(ctx, (const char *) response, strlen(response));
         pdf_dict_puts_drop(ctx, annot->obj, "NM", name);
         JM_Python_str_DelForPy3(response);
-        Py_DECREF(stem_id);
+        Py_CLEAR(stem_id);
+        Py_CLEAR(names);
     }
     fz_catch(ctx)
     {
@@ -389,7 +420,7 @@ void JM_add_annot_id(fz_context *ctx, pdf_annot *annot, char *stem)
 }
 
 //----------------------------------------------------------------------------
-// retrieve an annotation by its /NM key
+// retrieve annot by name (/NM key)
 //----------------------------------------------------------------------------
 pdf_annot *JM_get_annot_by_name(fz_context *ctx, pdf_page *page, char *name)
 {
@@ -414,19 +445,45 @@ pdf_annot *JM_get_annot_by_name(fz_context *ctx, pdf_page *page, char *name)
                 break;
             }
         }
+        if (!found)
+            fz_throw(ctx, FZ_ERROR_GENERIC, "'%s' is not an annot of this page", name);
     }
     fz_catch(ctx)
     {
-        return NULL;
+        fz_rethrow(ctx);
     }
-    if (found == 1)
+    return pdf_keep_annot(ctx, annot);
+}
+
+//----------------------------------------------------------------------------
+// retrieve annot by its xref
+//----------------------------------------------------------------------------
+pdf_annot *JM_get_annot_by_xref(fz_context *ctx, pdf_page *page, int xref)
+{
+    pdf_annot **annotptr = NULL;
+    pdf_annot *annot = NULL;
+    int found = 0;
+    size_t len = 0;
+
+    fz_try(ctx)
+    {   // loop thru MuPDF's internal annots array
+        for (annotptr = &page->annots; *annotptr; annotptr = &(*annotptr)->next)
+        {
+            annot = *annotptr;
+            if (xref == pdf_to_num(ctx, annot->obj))
+            {
+                found = 1;
+                break;
+            }
+        }
+        if (!found)
+            fz_throw(ctx, FZ_ERROR_GENERIC, "xref %d is not an annot of this page", xref);
+    }
+    fz_catch(ctx)
     {
-        return pdf_keep_annot(ctx, annot);
+        fz_rethrow(ctx);
     }
-    else
-    {
-        return NULL;
-    }
+    return pdf_keep_annot(ctx, annot);
 }
 
 %}

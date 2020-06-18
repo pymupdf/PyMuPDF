@@ -57,18 +57,18 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.searchF
 
       :arg matrix_like matrix: the matrix.
 
-   .. method:: morph(pivot, matrix)
+   .. method:: morph(fixpoint, matrix)
 
-      *(New in version 1.17.0)* "Morph" the quad with a matrix-like using a point-like as pivotal point.
+      *(New in version 1.17.0)* "Morph" the quad with a matrix-like using a point-like as fixed point.
 
-      :arg point_like pivot: the point.
+      :arg point_like fixpoint: the point.
       :arg matrix_like matrix: the matrix.
       :returns: a new quad. The effect is achieved by using the following code::
 
-         >>> T = fitz.Matrix(1, 1).preTranslate(pivot.x, pivot.y)
+         >>> T = fitz.Matrix(1, 1).preTranslate(fixpoint.x, fixpoint.y)
          >>> result = self * ~T * matrix * T
 
-      So the quad is translated such, that pivot becomes the origin (0, 0), then the matrix is applied to it, and finally a reverse translation is done.
+      So the quad is translated such, that fixpoint becomes the origin (0, 0), then the matrix is applied to it, and finally a reverse translation is done.
 
       Typical uses include rotating the quad around a desired point.
 

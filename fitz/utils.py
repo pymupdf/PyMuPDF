@@ -404,8 +404,8 @@ def getTextBlocks(page, flags=None):
     Args:
         flags: (int) control the amount of data parsed into the textpage.
     Returns:
-        A list of the blocks. Each item contains the containing rectangle coordinates,
-        text lines, block type and running block number.
+        A list of the blocks. Each item contains the containing rectangle
+        coordinates, text lines, block type and running block number.
     """
     CheckParent(page)
     if flags is None:
@@ -433,28 +433,33 @@ def getTextWords(page, flags=None):
     return l
 
 
-def getText(page, output="text", flags=None):
+def getText(page, option="text", flags=None):
     """ Extract a document page's text.
 
+    This is a unifying wrapper for various methods of Page / TextPage classes.
+
     Args:
-        output: (str) text, html, dict, json, rawdict, xhtml or xml.
+        option: (str) text, words, blocks, html, dict, json, rawdict, xhtml or xml.
 
     Returns:
-        the output of TextPage methods extractText, extractHTML, extractDICT, extractJSON, extractRAWDICT, extractXHTML or etractXML respectively. Default and misspelling choice is "text".
+        the output of Page methods getTextWords / getTextBlocks or TextPage
+        methods extractText, extractHTML, extractDICT, extractJSON, extractRAWDICT,
+        extractXHTML or etractXML respectively.
+        Default and misspelling choice is "text".
     """
-    output = output.lower()
-    if output == "words":
+    option = option.lower()
+    if option == "words":
         return getTextWords(page, flags=flags)
-    if output == "blocks":
+    if option == "blocks":
         return getTextBlocks(page, flags=flags)
     CheckParent(page)
     # available output types
     formats = ("text", "html", "json", "xml", "xhtml", "dict", "rawdict")
-    if output not in formats:
-        output = "text"
+    if option not in formats:
+        option = "text"
     # choose which of them also include images in the TextPage
     images = (0, 1, 1, 0, 1, 1, 1)  # controls image inclusion in text page
-    f = formats.index(output)
+    f = formats.index(option)
     if flags is None:
         flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
         if images[f] == 1:
@@ -475,18 +480,18 @@ def getText(page, output="text", flags=None):
     return t
 
 
-def getPageText(doc, pno, output="text"):
+def getPageText(doc, pno, option="text"):
     """ Extract a document page's text by page number.
 
     Notes:
         Convenience function calling page.getText().
     Args:
         pno: page number
-        output: (str) text, html, dict, json, rawdict, xhtml or xml.
+        option: (str) text, words, blocks, html, dict, json, rawdict, xhtml or xml.
     Returns:
         output from page.TextPage().
     """
-    return doc[pno].getText(output)
+    return doc[pno].getText(option)
 
 
 def getPixmap(page, matrix=None, colorspace=csRGB, clip=None, alpha=False, annots=True):
@@ -1154,7 +1159,7 @@ def insertTextbox(
         expandtabs: handles tabulators with string function
         align: left, center, right, justified
         rotate: 0, 90, 180, or 270 degrees
-        morph: morph box with  a matrix and a pivotal point
+        morph: morph box with a matrix and a fixpoint
         overlay: put text in foreground or background
     Returns:
         unused or deficit rectangle area (float)
@@ -2844,7 +2849,7 @@ class Shape(object):
             expandtabs -- handles tabulators with string function
             align -- left, center, right, justified
             rotate -- 0, 90, 180, or 270 degrees
-            morph -- morph box with  a matrix and a pivotal point
+            morph -- morph box with a matrix and a fixpoint
         Returns:
             unused or deficit rectangle area (float)
         """
@@ -3191,7 +3196,7 @@ class Shape(object):
 
 
 def apply_redactions(page):
-    """Apply redaction annotations of the page.
+    """Apply the redaction annotations of the page.
     """
 
     def center_rect(annot_rect, text, font, fsize):
@@ -3434,12 +3439,13 @@ def fillTextbox(
     """Fill a rectangle with text.
 
     Args:
-        text: a string or a list of strings.
-        rect: a rect-like to fill with the text.
-        font: the font.
+        writer: TextWriter object (= "self")
+        text: string or list/tuple of strings.
+        rect: rect-like to receive the text.
+        font: Font object (default Font('helv'))
         fontsize: the fontsize.
-        align: an integer: 0 = left, 1 = center, 2 = right, 3 = justify
-        warn: (bool) warn if too much text for the area, else raise exception.
+        align: (int) 0 = left, 1 = center, 2 = right, 3 = justify
+        warn: (bool) just warn on text overflow, else raise exception.
     """
     textlen = lambda x: font.text_length(x, fontsize)  # just for abbreviation
 
@@ -3448,6 +3454,9 @@ def fillTextbox(
         raise ValueError("fill rect must be finite and not empty.")
     if not text:
         raise ValueError("no text to output")
+
+    if font is None or type(font) is not Font:
+        font = Font("helv")
 
     # calculate displacement factor for alignment
     if align == fitz.TEXT_ALIGN_CENTER:
@@ -3544,7 +3553,7 @@ def fillTextbox(
             d = (width - fin_len) * factor  # takes care of alignment
             start.x += d
             writer.append(start, " ".join(line), font, fontsize)
-        else:  # take care of justify alignment
+        else:  # take care of justified alignment
             writer.append(start, line[0], font, fontsize)  # always 1st word
             if len(line) > 1:  # more than one word in the line
                 if justify is False:  # if no justify use space as gap

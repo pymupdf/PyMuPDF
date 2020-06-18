@@ -1,8 +1,8 @@
-# PyMuPDF 1.17.0
+# PyMuPDF 1.17.1
 
 ![logo](https://github.com/pymupdf/PyMuPDF/blob/master/demo/pymupdf.jpg)
 
-Release date: May 18, 2020
+Release date: June 20, 2020
 
 **Travis-CI:** [![Build Status](https://travis-ci.org/JorjMcKie/py-mupdf.svg?branch=master)](https://travis-ci.org/JorjMcKie/py-mupdf)
 
@@ -14,7 +14,7 @@ On **[PyPI](https://pypi.org/project/PyMuPDF)** since August 2016: [![](https://
 
 # Introduction
 
-This is **version 1.17.0 of PyMuPDF (formerly python-fitz)**, a Python binding with support for [MuPDF 1.17.*](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
+This is **version 1.17.1 of PyMuPDF**, a Python binding with support for [MuPDF 1.17.*](http://mupdf.com/) - "a lightweight PDF, XPS, and E-book viewer".
 
 MuPDF can access files in PDF, XPS, OpenXPS, CBZ, EPUB and FB2 (e-books) formats, and it is known for its top performance and high rendering quality.
 
@@ -52,7 +52,7 @@ Have a look at the basic [demos](https://github.com/pymupdf/PyMuPDF-Utilities/tr
 
 Our **documentation**, written using Sphinx, is available in various formats from the following sources. It currently is a combination of a reference guide and a user manual. For a **quick start** look at the [tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial/) and the [recipes](https://pymupdf.readthedocs.io/en/latest/faq/) chapters.
 
-* You can view it online at [Read the Docs](https://pymupdf.readthedocs.io/). This site also provides download options for zipped HTML and PDF.
+* You can view it online at [Read the Docs](https://readthedocs.org/projects/pymupdf/). This site also provides download options for zipped HTML and PDF.
 * Find a Windows help file [here](https://github.com/pymupdf/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm).
 
 

@@ -1,6 +1,14 @@
 Change Logs
 ===============
 
+Changes in Version 1.17.1
+---------------------------
+* **Fixed** issue `#520 <https://github.com/pymupdf/PyMuPDF/issues/520>`_.
+* **Fixed** issue `#525 <https://github.com/pymupdf/PyMuPDF/issues/525>`_. Vertices for 'Ink' annots should now be correct.
+* **Fixed** issue `#524 <https://github.com/pymupdf/PyMuPDF/issues/524>`_. It is now possible to query and set rotation for applicable annotation types.
+
+Also significantly improved inline documentation for better support of interactive help.
+
 Changes in Version 1.17.0
 ---------------------------
 This version is based on MuPDF v1.17. Following are highlights of new and changed features:

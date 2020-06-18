@@ -16,11 +16,14 @@ Changing page properties and adding or changing page content is available for PD
 
 In a nutshell, this is what you can do with PyMuPDF:
 
-* Modify page rotation and the visible part of the page.
+* Modify page rotation and the visible part ("CropBox") of the page.
 * Insert images, other PDF pages, text and simple geometrical objects.
 * Add annotations and form fields.
 
-.. note:: Many methods require coordinates (mostly points or rectangles) to put new content in the right place. Please be aware that these coordinates must always be provided relative to the **unrotated** page.
+.. note::
+   Many methods require coordinates (mostly points or rectangles) to put new content in the right place. Please be aware that these coordinates **must always** be provided relative to the **unrotated** page. And vice versa: all methods / attributes returning coordinates of page objects will present them as if the page were not rotated. This applies to text extraction, annotation rectangles, image bboxes, etc.
+
+   So the returned value of e.g. :meth:`Page.getImageBbox` will not change if you do a :meth:`Page.setRotation`. The same is true for coordinates returned by :meth:`Page.getText`, annotation rectangles, and so on. If you want to find out, where an object is located in **rotated coordinates**, multiplay the coordinates by :attr:`Page.rotationMatrix`. There also is its inverse, :attr:`Page.derotationMatrix`, which you can use when interfacing with other readers, which may behave differently in this respect.
 
 ================================= =======================================================
 **Method / Attribute**            **Short Description**
@@ -35,7 +38,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.addPolygonAnnot`      PDF only: add a polygon annotation
 :meth:`Page.addPolylineAnnot`     PDF only: add a multi-line annotation
 :meth:`Page.addRectAnnot`         PDF only: add a rectangle annotation
-:meth:`Page.addRedactAnnot`       PDF only: add a redation annotation
+:meth:`Page.addRedactAnnot`       PDF only: add a redaction annotation
 :meth:`Page.addSquigglyAnnot`     PDF only: add a "squiggly" annotation
 :meth:`Page.addStampAnnot`        PDF only: add a "rubber stamp" annotation
 :meth:`Page.addStrikeoutAnnot`    PDF only: add a "strike-out" annotation
@@ -44,7 +47,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.addWidget`            PDF only: add a PDF Form field
 :meth:`Page.annot_names`          PDF only: a list of annotation and widget names
 :meth:`Page.annots`               return a generator over the annots on the page
-:meth:`Page.apply_redactions`     PDF olny: process redaction annots on the page
+:meth:`Page.apply_redactions`     PDF olny: process the redactions of the page
 :meth:`Page.bound`                rectangle of the page
 :meth:`Page.deleteAnnot`          PDF only: delete an annotation
 :meth:`Page.deleteLink`           PDF only: delete a link
@@ -72,7 +75,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.insertText`           PDF only: insert text
 :meth:`Page.insertTextbox`        PDF only: insert a text box
 :meth:`Page.links`                return a generator of the links on the page
-:meth:`Page.load_annot`           PDF only: load an annotation by its name
+:meth:`Page.loadAnnot`            PDF only: load a specific annotation
 :meth:`Page.loadLinks`            return the first link on a page
 :meth:`Page.newShape`             PDF only: create a new :ref:`Shape`
 :meth:`Page.searchFor`            search for a string
@@ -95,9 +98,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 :attr:`Page.transformationMatrix` PDF only: translate between PDF and MuPDF space
 :attr:`Page.number`               page number
 :attr:`Page.parent`               owning document object
-:attr:`Page.rect`                 rectangle (mediabox) of the page
+:attr:`Page.rect`                 rectangle of the page
 :attr:`Page.rotation`             PDF only: page rotation
-:attr:`Page.xref`                 PDF :data:`xref`
+:attr:`Page.xref`                 PDF only: page :data:`xref`
 ================================= =======================================================
 
 **Class API**
@@ -106,7 +109,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: bound()
 
-      Determine the rectangle of the page. Same as property :attr:`Page.rect` below. For PDF documents this **usually** also coincides with objects :data:`MediaBox` and :data:`CropBox`, but not always. For example, if the page is rotated, then this is reflected by this method -- the :attr:`Page.CropBox` however will not change.
+      Determine the rectangle of the page. Same as property :attr:`Page.rect` below. For PDF documents this **usually** also coincides with :data:`MediaBox` and :data:`CropBox`, but not always. For example, if the page is rotated, then this is reflected by this method -- the :attr:`Page.CropBox` however will not change.
 
       :rtype: :ref:`Rect`
 
@@ -114,7 +117,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       *(New in version 1.16.0)*
       
-      PDF only: Add a caret icon. A caret annotation is a visual symbol that indicates the presence of text edits.
+      PDF only: Add a caret icon. A caret annotation is a visual symbol normally used to indicate the presence of text edits on the page.
 
       :arg point_like point: the top left point of a 20 x 20 rectangle containing the MuPDF-provided icon.
 
@@ -126,7 +129,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: addTextAnnot(point, text, icon="Note")
 
-      PDF only: Add a comment icon ("sticky note") with accompanying text.
+      PDF only: Add a comment icon ("sticky note") with accompanying text. Only the icon is visible, the accompanying text is hidden and can be visualized by many PDF viewers by hovering the mouse over the symbol.
 
       :arg point_like point: the top left point of a 20 x 20 rectangle containing the MuPDF-provided "note" icon.
 
@@ -200,7 +203,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg point_like p2: the end point of the line.
 
       :rtype: :ref:`Annot`
-      :returns: the created annotation. It is drawn with line color black and line width 1. To change, or attach other information (like author, creation date, line properties, colors, line ends, etc.) use methods of :ref:`Annot`. The **rectangle** is automatically created to contain both points, each one surrounded by a circle of radius 3 (= 3 * line width) to make room for any line end symbols. Use methods of :ref:`Annot` to make any changes.
+      :returns: the created annotation. It is drawn with line color black and line width 1. The **rectangle** is automatically created to contain both points, each one surrounded by a circle of radius 3 * line width to make room for any line end symbols.
 
    .. method:: addRectAnnot(rect)
 
@@ -211,11 +214,11 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg rect_like rect: the rectangle in which the circle or rectangle is drawn, must be finite and not empty. If the rectangle is not equal-sided, an ellipse is drawn.
 
       :rtype: :ref:`Annot`
-      :returns: the created annotation. It is drawn with line color black, no fill color and line width 1. Use methods of :ref:`Annot` to make any changes.
+      :returns: the created annotation. It is drawn with line color red, no fill color and line width 1.
 
    .. method:: addRedactAnnot(quad, text=None, fontname=None, fontsize=11, align=TEXT_ALIGN_LEFT, fill=(1, 1, 1), text_color=(0, 0, 0))
 
-      PDF only: *(new in version 1.16.11)* Add a redaction annotation. A redaction annotation identifies content that is intended to be removed from the document. Adding such an annotation is the first of two steps. It makes visible what will be removed in the subsequent step, :meth:`Page.apply_redactions`.
+      PDF only: *(new in version 1.16.11)* Add a redaction annotation. A redaction annotation identifies content to be removed from the document. Adding such an annotation is the first of two steps. It makes visible what will be removed in the subsequent step, :meth:`Page.apply_redactions`.
 
       :arg quad_like,rect_like quad: specifies the (rectangular) area to be removed which is always equal to the annotation rectangle. This may be a :data:`rect_like` or :data:`quad_like` object. If a quad is specified, then the envelopping rectangle is taken.
 
@@ -225,7 +228,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg float fontsize: *(New in v1.16.12)* the fontsize to use for the replacing text. If the text is too large to fit, several insertion attempts will be made, gradually reducing this value down to 4. If then the text will still not fit, no text insertion will take place at all.
 
-      :arg int align: *(New in v1.16.12)* the horizontal alignment for the replacing text. See :meth:`insertTextbox` for available values. The vertical alignment is always centered (approximately).
+      :arg int align: *(New in v1.16.12)* the horizontal alignment for the replacing text. See :meth:`insertTextbox` for available values. The vertical alignment is always (approximately) centered.
 
       :arg sequence fill: *(New in v1.16.12)* the fill color of the rectangle after applying the redaction. The default is *white = (1, 1, 1)*, which is also taken if *None* is specified. *(Changed in v1.16.13)* To suppress any fill color, specify *False*. In this cases the rectangle remains transparent.
 
@@ -258,7 +261,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: addHighlightAnnot(quads=None, start=None, stop=None, clip=None)
 
-      PDF only: These annotations are normally used for **marking text** which has previously been somehow located (for example via :meth:`searchFor`). But this is not required: you are free to "mark" just anything.
+      PDF only: These annotations are normally used for **marking text** which has previously been somehow located (for example via :meth:`Page.searchFor`). But this is not required: you are free to "mark" just anything.
 
       Standard colors are chosen per annotation type: **yellow** for highlighting, **red** for strike out, **green** for underlining, and **magenta** for wavy underlining.
 
@@ -277,7 +280,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :rtype: :ref:`Annot` or *(changed in v1.16.14)* *None*
       :returns: the created annotation. *(Changed in v1.16.14)* If *quads* is an empty list, **no annotation** is created. To change colors, set the "stroke" color accordingly (:meth:`Annot.setColors`) and then perform an :meth:`Annot.update`.
 
-      .. note:: Starting with v1.16.14 you can use parameters *start*, *stop* and *clip* to highlight consecutive lines between the points *start* and *stop*. Make use of *clip* to further reduce the selected line bboxes and thus deal with e.g. multi-column pages. The following multi-line highlight was created specifying the two red points and setting clip accordingly.
+      .. note:: Starting with v1.16.14 you can use parameters *start*, *stop* and *clip* to highlight consecutive lines between the points *start* and *stop*. Make use of *clip* to further reduce the selected line bboxes and thus deal with e.g. multi-column pages. The following multi-line highlight on a page with three text columnbs was created by specifying the two red points and setting clip accordingly.
 
       .. image:: images/img-markers.jpg
          :scale: 100
@@ -335,11 +338,11 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. note::
          Text contained in a redaction rectangle will be **physically** removed from the page and will no longer appear in e.g. text extractions. Other annotations are unaffected.
 
-         Images and XObjects (embedded PDF pages, e.g. via :meth:`showPDFpage`) will also **physically** be removed from the page if they are **completely** contained in a redation rectangle. **Partial** overlaps however will only be **overlaid** with the redaction background color, and no removal will take place.
+         Images and links will also **physically** be removed from the page. For an image, overlapping parts will be blanked-out. Links will always be completely removed.
 
-         Decision to remove text is made on a by-character level: A character will be removed if and only if the bottom-left corner of its **boundary box** is contained in some redaction rectangle. Hence it may happen, that a character is removed even if the better part of it is outside the redaction or -- vice versa -- **not removed**, even if most of its bbox is inside the rect.
+         Text removal is made on a by-character level: A character is removed if its bbox has a non-empty intersection with a redaction *(changed in v1.17)*.
 
-         Redactions are an easy way to replace single words in a PDF, or to physically render them unreadable: locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence. Just be wary if the replacement is much longer than the original -- this may lead to an awkward appearance or no new text at all. Also, for a number of reasons, the new text is often not exactly positioned on the same line like the old one.
+         Redactions are an easy way to replace single words in a PDF, or to just physically remove them from the PDF: locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence. Be wary if the replacement is much longer than the original -- this may lead to an awkward appearance or no new text at all. Also, for a number of reasons, the new text may not exactly be positioned on the same line like the old one.
 
    .. method:: deleteLink(linkdict)
 
@@ -862,21 +865,37 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       *(New in version 1.16.10)*
 
-      PDF only: return a list of the names of annotations or widgets.
+      PDF only: return a list of the names of annotations, widgets and links. Technically, these are the */NM* values of every PDF object found in the page's */Annots*  array.
 
       :rtype: list
 
 
-   .. method:: load_annot(annot_id)
+   .. method:: annot_xrefs()
 
-      *(New in version 1.16.10)*
+      *(New in version 1.17.1)*
 
-      PDF only: return the annotation identified by *annot_id* -- its unique name (*/NM*).
+      PDF only: return a list of the :data`xref` numbers of annotations, widgets and links -- technically of all entries found in the page's */Annots*  array.
 
-      :arg str annot_id: the annotation name.
+      :rtype: list
+      :returns: a list of items *(xref, type)* where type is the annotation type.Obviously, the type can be used to tell apart links, fields and annotations.
+
+
+   .. method:: load_annot(ident)
+
+      *(Deprecated since v1.17.1)*.
+
+   .. method:: loadAnnot(ident)
+
+      *(New in version 1.17.1)*
+
+      PDF only: return the annotation identified by *ident*. This may be its unique name (PDF */NM* key), or its :data:`xref`.
+
+      :arg str,int ident: the annotation name or xref.
 
       :rtype: :ref:`Annot`
       :returns: the annotation or *None*.
+
+      .. note:: Methods :meth:`Page.annot_names`, :meth:`Page.annots_xrefs` provide lists of names or xrefs, respectively, from where an item may be picked and loaded via this method.
 
    .. method:: loadLinks()
 

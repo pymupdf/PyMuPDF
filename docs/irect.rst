@@ -93,13 +93,13 @@ IRect is a rectangular bounding box similar to :ref:`Rect`, except that all corn
 
       :rtype: bool
 
-   .. method:: morph(pivot, matrix)
+   .. method:: morph(fixpoint, matrix)
 
       *(New in version 1.17.0)*
       
-      Return a new quad after applying a matrix to it using a pivotal point.
+      Return a new quad after applying a matrix to it using a fixed point.
 
-      :arg point_like pivot: the pivotal point.
+      :arg point_like fixpoint: the fixed point.
       :arg matrix_like matrix: the matrix.
       :returns: a new :ref:`Quad`. This a wrapper of the same-named quad method.
 

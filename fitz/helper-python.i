@@ -161,7 +161,7 @@ def getTextlength(text, fontname="helv", fontsize=11, encoding=0):
         return w * fontsize
 
     if fontname in Base14_fontdict.keys():
-        return TOOLS.measure_string(text, Base14_fontdict[fontname], fontsize, encoding)
+        return TOOLS._measure_string(text, Base14_fontdict[fontname], fontsize, encoding)
 
     if fontname in ("china-t", "china-s",
                     "china-ts", "china-ss",
@@ -570,7 +570,7 @@ def JM_TUPLE(o):
 
 
 def CheckRect(r):
-    """Check whether an object is rect-like.
+    """Check whether an object is non-degenerate rect-like.
 
     It must be a sequence of 4 numbers.
     """
@@ -581,13 +581,15 @@ def CheckRect(r):
             a = float(r[i])
     except:
         return False
-    return True
+
+    r = Rect(r)
+    return not (r.isEmpty or r.isInfinite)
 
 
 def CheckQuad(q):
-    """Check whether an object is quad-like.
+    """Check whether an object is convex, not empty  quad-like.
 
-    It must be a sequence of 4 pairs of numbers.
+    It must be a sequence of 4 number pairs.
     """
     try:
         if q.__len__() != 4:
@@ -599,7 +601,8 @@ def CheckQuad(q):
             a = float(q[i][1])
     except:
         return False
-    return True
+
+    return Quad(q).isConvex
 
 
 def CheckMarkerArg(quads):
@@ -671,7 +674,7 @@ def planishLine(p1, p2):
     """ 
     p1 = Point(p1)
     p2 = Point(p2)
-    return TOOLS._hor_matrix(p1, p2)
+    return Matrix(TOOLS._hor_matrix(p1, p2))
 
 
 def ImageProperties(img):

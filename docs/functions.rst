@@ -1,9 +1,9 @@
 ============
 Functions
 ============
-The following are miscellaneous functions on a fairly low-level technical detail.
+The following are miscellaneous functions and attributes on a fairly low-level technical detail.
 
-Some functions provide detail access to PDF structures. Others are stripped-down, high performance versions of functions providing more information.
+Some functions provide detail access to PDF structures. Others are stripped-down, high performance versions of other functions which provide more information.
 
 Yet others are handy, general-purpose utilities.
 
@@ -11,8 +11,11 @@ Yet others are handy, general-purpose utilities.
 ==================================== ==============================================================
 **Function**                         **Short Description**
 ==================================== ==============================================================
-:attr:`Document.FontInfos`           PDF only: information on inserted fonts
 :meth:`Annot._cleanContents`         PDF only: clean the annot's :data:`contents` objects
+:meth:`Annot.setAPNMatrix`           PDF only: set the matrix of the appearance object
+:meth:`Annot.setAPNMatrix`           PDF only: set the matrix of the appearance object
+:attr:`Annot.APNMattrix`             PDF only: the matrix of the appearance object
+:attr:`Annot.APNBBox`                PDF only: bbox of the appearance object
 :meth:`ConversionHeader`             return header string for *getText* methods
 :meth:`ConversionTrailer`            return trailer string for *getText* methods
 :meth:`Document._delXmlMetadata`     PDF only: remove XML metadata
@@ -34,13 +37,14 @@ Yet others are handy, general-purpose utilities.
 :meth:`Document.extractImage`        PDF only: extract embedded image
 :meth:`Document.getCharWidths`       PDF only: return a list of glyph widths of a font
 :meth:`Document.isStream`            PDF only: check whether an :data:`xref` is a stream object
+:attr:`Document.FontInfos`           PDF only: information on inserted fonts
 :meth:`ImageProperties`              return a dictionary of basic image properties
 :meth:`getPDFnow`                    return the current timestamp in PDF format
 :meth:`getPDFstr`                    return PDF-compatible string
 :meth:`getTextlength`                return string length for a given font & fontsize
 :meth:`Page._cleanContents`          PDF only: clean the page's :data:`contents` objects
 :meth:`Page._getContents`            PDF only: return a list of content numbers
-:meth:`Page._setContents`            PDF only: set page's :data:`contents` object to specified :data:`xref`
+:meth:`Page._setContents`            PDF only: set page's :data:`contents` to some :data:`xref`
 :meth:`Page.getDisplayList`          create the page's display list
 :meth:`Page.getTextBlocks`           extract text blocks as a Python list
 :meth:`Page.getTextWords`            extract text words as a Python list

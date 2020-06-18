@@ -46,16 +46,16 @@ There also exists :meth:`Page.writeText` which is able to combine one or more Te
 
       :returns: :attr:`textRect` and :attr:`lastPoint`.
 
-   .. method:: fillTextbox(rect, text, font="helv", fontsize=11, align=0, warn=True)
+   .. method:: fillTextbox(rect, text, font=None, fontsize=11, align=0, warn=True)
 
       Fill a given rectangle with text. This is a convenience method to use instead of :meth:`append`.
 
       :arg rect_like rect: the area to fill. No part of the text will appear outside of this.
       :arg str,sequ text: the text. Can be specified as a (UTF-8) string or a list / tuple of strings. A string will first be converted to a list using *splitlines()*. Every list item will begin on a new line (forced line breaks).
-      :arg font: the :ref:`Font`
+      :arg font: the :ref:`Font`, default `fitz.Font("helv")`.
       :arg float fontsize: the fontsize.
       :arg int align: text alignment. Use one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT or TEXT_ALIGN_JUSTIFY.
-      :arg bool warn: print a warning if the area is too small, or raise an exception.
+      :arg bool warn: warn on text overflow, or raise an exception.
 
    .. note:: Use these methods as often as is required -- there is no technical limit, except memory constraints of your system. You can also mix appends and text boxes and have multiple of both. Text positioning is controlled by the insertion point. There is no need to adhere to any reading order.
 
@@ -67,7 +67,7 @@ There also exists :meth:`Page.writeText` which is able to combine one or more Te
       :arg page: write to this :ref:`Page`.
       :arg float opacity: override the value of the TextWriter for this output.
       :arg sequ color: override the value of the TextWriter for this output.
-      :arg sequ morph: modify the text appearance by applying a matrix to it. If provided, this must be a sequence *(pivot, matrix)* with a point-like *pivot* and a matrix-like *matrix*. A typical example is rotating the text around *pivot*.
+      :arg sequ morph: modify the text appearance by applying a matrix to it. If provided, this must be a sequence *(fixpoint, matrix)* with a point-like *fixpoint* and a matrix-like *matrix*. A typical example is rotating the text around *fixpoint*.
       :arg bool overlay: put in foreground (default) or background.
 
 

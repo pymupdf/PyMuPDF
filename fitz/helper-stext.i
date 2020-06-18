@@ -238,7 +238,7 @@ static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw,
                           Py_BuildValue("ffff", r.x0, r.y0, r.x1, r.y1));
 
             DICT_SETITEM_DROP(char_dict, dictkey_c,
-                          PyUnicode_FromFormat("%c", ch->c));
+                          Py_BuildValue("C", ch->c));
 
             if (!char_list)
             {

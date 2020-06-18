@@ -15,11 +15,11 @@ class Matrix(object):
             self.e = float(args[4])
             self.f = float(args[5])
             return None
-        if len(args) == 1:                       # either an angle or a sequ
+        if len(args) == 1:  # either an angle or a sequ
             if hasattr(args[0], "__float__"):
                 theta = math.radians(args[0])
-                c = math.cos(theta)
-                s = math.sin(theta)
+                c = round(math.cos(theta), 8)
+                s = round(math.sin(theta), 8)
                 self.a = self.d = c
                 self.b = s
                 self.c = -s
@@ -157,6 +157,7 @@ class Matrix(object):
         return "Matrix" + str(tuple(self))
 
     def __invert__(self):
+        """Calculate inverted matrix."""
         m1 = Matrix()
         m1.invert(self)
         return m1
@@ -210,10 +211,10 @@ class Matrix(object):
     def __nonzero__(self):
         return not (max(self) == min(self) == 0)
 
-    def __eq__(self, m):
-        if not hasattr(m, "__len__"):
+    def __eq__(self, mat):
+        if not hasattr(mat, "__len__"):
             return False
-        return len(m) == 6 and bool(self - m) is False
+        return len(mat) == 6 and bool(self - mat) is False
 
     def __abs__(self):
         return math.sqrt(sum([c*c for c in self]))
@@ -222,6 +223,7 @@ class Matrix(object):
 
     @property
     def isRectilinear(self):
+        """True if rectangles are mapped to rectangles."""
         return (abs(self.b) < EPSILON and abs(self.c) < EPSILON) or \
             (abs(self.a) < EPSILON and abs(self.d) < EPSILON);
 
@@ -291,7 +293,7 @@ class Point(object):
 
     @property
     def unit(self):
-        """Return unit vector of a point."""
+        """Unit vector of the point."""
         s = self.x * self.x + self.y * self.y
         if s < EPSILON:
             return Point(0,0)
@@ -300,7 +302,7 @@ class Point(object):
 
     @property
     def abs_unit(self):
-        """Return unit vector of a point with positive coordinates."""
+        """Unit vector with positive coordinates."""
         s = self.x * self.x + self.y * self.y
         if s < EPSILON:
             return Point(0,0)
@@ -308,7 +310,7 @@ class Point(object):
         return Point(abs(self.x) / s, abs(self.y) / s)
 
     def distance_to(self, *args):
-        """Return the distance to a rectangle or another point."""
+        """Return distance to rectangle or another point."""
         if not len(args) > 0:
             raise ValueError("at least one parameter must be given")
 
@@ -489,28 +491,32 @@ class Rect(object):
 
     @property
     def isEmpty(self):
-        """Check if rectangle area is empty."""
+        """True if rectangle area is empty."""
         return self.x0 == self.x1 or self.y0 == self.y1
 
     @property
     def isInfinite(self):
-        """Check if rectangle is infinite."""
+        """True if rectangle is infinite."""
         return self.x0 > self.x1 or self.y0 > self.y1
 
     @property
     def top_left(self):
+        """Top-left corner."""
         return Point(self.x0, self.y0)
 
     @property
     def top_right(self):
+        """Top-right corner."""
         return Point(self.x1, self.y0)
 
     @property
     def bottom_left(self):
+        """Bottom-left corner."""
         return Point(self.x0, self.y1)
 
     @property
     def bottom_right(self):
+        """Bottom-right corner."""
         return Point(self.x1, self.y1)
 
     tl = top_left
@@ -520,12 +526,17 @@ class Rect(object):
 
     @property
     def quad(self):
+        """Return Quad version of rectangle."""
         return Quad(self.tl, self.tr, self.bl, self.br)
 
     def morph(self, p, m):
+        """Morph with matrix-like m and point-like p.
+
+        Returns a new quad."""
         return self.quad.morph(p, m)
 
     def round(self):
+        """Return the IRect."""
         return IRect(min(self.x0, self.x1), min(self.y0, self.y1),
                      max(self.x0, self.x1), max(self.y0, self.y1))
 
@@ -535,32 +546,32 @@ class Rect(object):
     height = property(lambda self: abs(self.y1 - self.y0))
 
     def includePoint(self, p):
-        """Extend rectangle to include point p."""
+        """Extend to include point-like p."""
         if not len(p) == 2:
             raise ValueError("bad sequ. length")
         self.x0, self.y0, self.x1, self.y1 = TOOLS._include_point_in_rect(self, p)
         return self
 
     def includeRect(self, r):
-        """Extend rectangle to include rectangle r."""
+        """Extend to include rect-like r."""
         if not len(r) == 4:
             raise ValueError("bad sequ. length")
         self.x0, self.y0, self.x1, self.y1 = TOOLS._union_rect(self, r)
         return self
 
     def intersect(self, r):
-        """Restrict self to common area with rectangle r."""
+        """Restrict to common rect with rect-like r."""
         if not len(r) == 4:
             raise ValueError("bad sequ. length")
         self.x0, self.y0, self.x1, self.y1 = TOOLS._intersect_rect(self, r)
         return self
 
     def contains(self, x):
-        """Check if containing a point-like or rect-like x."""
+        """Check if containing point-like or rect-like x."""
         return self.__contains__(x)
 
     def transform(self, m):
-        """Replace rectangle with its transformation by matrix-like m."""
+        """Replace with the transformation by matrix-like m."""
         if not len(m) == 6:
             raise ValueError("bad sequ. length")
         self.x0, self.y0, self.x1, self.y1 = TOOLS._transform_rect(self, m)
@@ -597,10 +608,10 @@ class Rect(object):
     def __nonzero__(self):
         return not (max(self) == min(self) == 0)
 
-    def __eq__(self, p):
-        if not hasattr(p, "__len__"):
+    def __eq__(self, rect):
+        if not hasattr(rect, "__len__"):
             return False
-        return len(p) == 4 and bool(self - p) is False
+        return len(rect) == 4 and bool(self - rect) is False
 
     def __abs__(self):
         if self.isEmpty or self.isInfinite:
@@ -803,18 +814,21 @@ class Quad(object):
 
         Notes:
             Some rotation matrix can thus transform it into a rectangle.
+            This is equivalent to three corners enclose 90 degrees.
+        Returns:
+            True or False.
         """
 
-        a = TOOLS._angle_between(self.ul, self.ur, self.lr)
-        if abs(a.y - 1) > EPSILON:
+        sine = TOOLS._sine_between(self.ul, self.ur, self.lr)
+        if abs(sine - 1) > EPSILON:  # the sine of the angle
             return False
 
-        a = TOOLS._angle_between(self.ur, self.lr, self.ll)
-        if abs(a.y - 1) > EPSILON:
+        sine = TOOLS._sine_between(self.ur, self.lr, self.ll)
+        if abs(sine - 1) > EPSILON:
             return False
 
-        a = TOOLS._angle_between(self.lr, self.ll, self.ul)
-        if abs(a.y - 1) > EPSILON:
+        sine = TOOLS._sine_between(self.lr, self.ll, self.ul)
+        if abs(sine - 1) > EPSILON:
             return False
 
         return True
@@ -822,48 +836,67 @@ class Quad(object):
 
     @property
     def isConvex(self):
-        """Check if quad is convex.
+        """Check if quad is convex and not degenerate.
 
         Notes:
-            Every line connecting any two points of the quad will be inside
-            the quad. This is equivalent to that two sides meeting in a corner
-            always enclose an angle of no more than 180 degrees.
-            Equivalently, the sine of this angle cannot be negative.
+            For convexity, every line connecting two points of the quad must be
+            inside the quad. This is equivalent to that every corner encloses
+            an angle with 0 < angle < 180 degrees.
+            We exclude the "degenerate" case, where all points are on the
+            same line.
+            So it suffices to check that the sines of three angles are > 0.
         Returns:
             True or False.
         """
-
-        a = TOOLS._angle_between(self.ul, self.ur, self.lr)
-        if a.y < 0:
-            return False
-    
-        a = TOOLS._angle_between(self.ur, self.lr, self.ll)
-        if a.y < 0:
-            return False
-    
-        a = TOOLS._angle_between(self.lr, self.ll, self.ul)
-        if a.y < 0:
+        count = 0
+        sine = TOOLS._sine_between(self.ul, self.ur, self.lr)
+        if sine > 0:
+            count += 1
+        elif sine < 0:
             return False
 
-        return True
+        sine = TOOLS._sine_between(self.ur, self.lr, self.ll)
+        if sine > 0:
+            count += 1
+        elif sine < 0:
+            return False
+
+        sine = TOOLS._sine_between(self.lr, self.ll, self.ul)
+        if sine > 0:
+            count += 1
+        elif sine < 0:
+            return False
+
+        sine = TOOLS._sine_between(self.ll, self.ul, self.ur)
+        if sine > 0:
+            count += 1
+        elif sine < 0:
+            return False
+
+        if count >= 2:
+            return True
+
+        return False
 
 
     @property
     def isEmpty(self):
-        """Check if quad is empty retangle. If rectangular, we are done (not empty).
-        But all 4 points may still be on one line. This is checked out here.
-        In that case all 3 lines connecting the other corners with UL will have
-        the same angle with the x-axis.
+        """Check whether all quad corners are on the same line.
+
+        The is the case exactly if more than one corner angle is zero.
         """
-        if self.isRectangular:
+        count = 0
+        if abs(TOOLS._sine_between(self.ul, self.ur, self.lr)) < EPSILON:
+            count += 1
+        if abs(TOOLS._sine_between(self.ur, self.lr, self.ll)) < EPSILON:
+            count += 1
+        if abs(TOOLS._sine_between(self.lr, self.ll, self.ul)) < EPSILON:
+            count += 1
+        if abs(TOOLS._sine_between(self.ll, self.ul, self.ur)) < EPSILON:
+            count += 1
+        if count <= 2:
             return False
-        ul = Point()
-        ur = (self.ur - self.ul).abs_unit
-        lr = (self.lr - self.ul).abs_unit
-        ll = (self.ll - self.ul).abs_unit
-        if max(ur.y, lr.y, ll.y) - min(ur.y, lr.y, ll.y) < EPSILON:
-            return True
-        return False
+        return True
 
     width  = property(lambda self: max(abs(self.ul - self.ur), abs(self.ll - self.lr)))
     height = property(lambda self: max(abs(self.ul - self.ll), abs(self.ur - self.lr)))
@@ -907,11 +940,15 @@ class Quad(object):
     def __nonzero__(self):
         return not self.isEmpty
 
-    def __eq__(self, p):
-        if not hasattr(p, "__len__"):
+    def __eq__(self, quad):
+        if not hasattr(quad, "__len__"):
             return False
-        return len(p) == 4 and self.ul == p[0] and self.ur == p[1] and \
-               self.ll == p[3] and self.lr == p[3]
+        return len(quad) == 4 and (
+            self.ul == quad[0] and
+            self.ur == quad[1] and
+            self.ll == quad[3] and
+            self.lr == quad[3]
+        )
 
     def __abs__(self):
         if self.isEmpty:
@@ -920,7 +957,7 @@ class Quad(object):
 
 
     def morph(self, p, m):
-        """Morph the quad with some matrix 'm' around some pivotal point 'p'.
+        """Morph the quad with matrix-like 'm' and point-like 'p'.
 
         Return a new quad."""
 
