@@ -6,25 +6,23 @@ fz_buffer *JM_read_contents(fz_context * ctx, pdf_obj * pageref)
 {
     fz_buffer *res = NULL, *nres = NULL;
     int i;
-    fz_try(ctx)
-    {
+    fz_try(ctx) {
         pdf_obj *contents = pdf_dict_get(ctx, pageref, PDF_NAME(Contents));
-        if (pdf_is_array(ctx, contents)) // maybe more than one!
-        {
+        if (pdf_is_array(ctx, contents)) {
             res = fz_new_buffer(ctx, 1024);
-            for (i = 0; i < pdf_array_len(ctx, contents); i++)
-            {
+            for (i = 0; i < pdf_array_len(ctx, contents); i++) {
                 nres = pdf_load_stream(ctx, pdf_array_get(ctx, contents, i));
                 fz_append_buffer(ctx, res, nres);
                 fz_drop_buffer(ctx, nres);
             }
         }
-        else if (contents)
-        {
+        else if (contents) {
             res = pdf_load_stream(ctx, contents);
         }
     }
-    fz_catch(ctx) fz_rethrow(ctx);
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
+    }
     return res;
 }
 
@@ -38,18 +36,15 @@ pdf_obj *JM_xobject_from_page(fz_context * ctx, pdf_document * pdfout, fz_page *
     pdf_obj *xobj1, *resources = NULL, *o, *spageref;
     fz_rect mediabox;
 
-    fz_try(ctx)
-    {
+    fz_try(ctx) {
         pdf_page *srcpage = pdf_page_from_fz_page(ctx, fsrcpage);
         spageref = srcpage->obj;
         mediabox = pdf_to_rect(ctx, pdf_dict_get_inheritable(ctx, spageref, PDF_NAME(MediaBox)));
 
-        if (xref > 0) // we can reuse an XObject!
-        {
+        if (xref > 0) {
             xobj1 = pdf_new_indirect(ctx, pdfout, xref, 0);
         }
-        else // need to create new XObject
-        {
+        else {
             // Deep-copy resources object of source page
             o = pdf_dict_get_inheritable(ctx, spageref, PDF_NAME(Resources));
             if (gmap) // use graftmap when possible
@@ -72,7 +67,9 @@ pdf_obj *JM_xobject_from_page(fz_context * ctx, pdf_document * pdfout, fz_page *
             pdf_dict_put_drop(ctx, xobj1, PDF_NAME(Resources), resources);
         }
     }
-    fz_catch(ctx) fz_rethrow(ctx);
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
+    }
     return xobj1;
 }
 
@@ -87,29 +84,24 @@ int JM_insert_contents(fz_context * ctx, pdf_document * pdf,
                         pdf_obj * pageref, fz_buffer * newcont, int overlay)
 {
     int xref = 0;
-    fz_try(ctx)
-    {
+    fz_try(ctx) {
         pdf_obj *contents = pdf_dict_get(ctx, pageref, PDF_NAME(Contents));
         pdf_obj *newconts = pdf_add_stream(ctx, pdf, newcont, NULL, 0);
         xref = pdf_to_num(ctx, newconts);
-        if (pdf_is_array(ctx, contents))
-        {
+        if (pdf_is_array(ctx, contents)) {
             if (overlay) // append new object
                 pdf_array_push(ctx, contents, newconts);
             else // prepend new object
                 pdf_array_insert(ctx, contents, newconts, 0);
         }
-        else // make new array
-        {
+        else {
             pdf_obj *carr = pdf_new_array(ctx, pdf, 5);
-            if (overlay)
-            {
+            if (overlay) {
                 if (contents)
                     pdf_array_push(ctx, carr, contents);
                 pdf_array_push(ctx, carr, newconts);
             }
-            else
-            {
+            else {
                 pdf_array_push_drop(ctx, carr, newconts);
                 if (contents)
                     pdf_array_push(ctx, carr, contents);
@@ -117,7 +109,9 @@ int JM_insert_contents(fz_context * ctx, pdf_document * pdf,
             pdf_dict_put(ctx, pageref, PDF_NAME(Contents), carr);
         }
     }
-    fz_catch(ctx) fz_rethrow(ctx);
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
+    }
     return xref;
 }
 
@@ -154,31 +148,26 @@ JM_filter_content_stream(
     *out_buf = NULL;
     *out_res = NULL;
 
-    fz_try(ctx)
-    {
+    fz_try(ctx) {
 		*out_buf = fz_new_buffer(ctx, 1024);
 		proc_buffer = pdf_new_buffer_processor(ctx, *out_buf, filter->ascii);
-		if (filter->sanitize)
-		{
+		if (filter->sanitize) {
 			*out_res = pdf_new_dict(ctx, doc, 1);
 			proc_filter = pdf_new_filter_processor(ctx, doc, proc_buffer, in_res, *out_res, struct_parents, transform, filter);
 			pdf_process_contents(ctx, proc_filter, doc, in_res, in_stm, NULL);
 			pdf_close_processor(ctx, proc_filter);
 		}
-		else
-		{
+		else {
 			*out_res = pdf_keep_obj(ctx, in_res);
 			pdf_process_contents(ctx, proc_buffer, doc, in_res, in_stm, NULL);
 		}
 		pdf_close_processor(ctx, proc_buffer);
     }
-    fz_always(ctx)
-    {
+    fz_always(ctx) {
         pdf_drop_processor(ctx, proc_filter);
         pdf_drop_processor(ctx, proc_buffer);
     }
-    fz_catch(ctx)
-    {
+    fz_catch(ctx) {
         fz_drop_buffer(ctx, *out_buf);
         *out_buf = NULL;
         pdf_drop_obj(ctx, *out_res);

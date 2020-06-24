@@ -141,7 +141,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg rect_like rect: the new rectangle of the annotation (finite and not empty). E.g. using a value of *annot.rect + (5, 5, 5, 5)* will shift the annot position 5 pixels to the right and downwards.
 
-      .. note:: You need not invoke :meth:`Annot.update` for activation of the effect.
+      .. note:: You **need not** invoke :meth:`Annot.update` for activation of the effect.
 
 
    .. method:: setRotation(angle)
@@ -196,9 +196,10 @@ There is a parent-child relationship between an annotation and its page. If the 
       pair: text_color; update
       pair: border_color; update
       pair: fill_color; update
+      pair: cross_out; update
       pair: rotate; update
 
-   .. method:: update(opacity=None, blend_mode=None, fontsize=0, text_color=None, border_color=None, fill_color=None, rotate=-1)
+   .. method:: update(opacity=None, blend_mode=None, fontsize=0, text_color=None, border_color=None, fill_color=None, cross_out=True, rotate=-1)
 
       Synchronize the appearance of an annotation with its properties after any changes. 
 
@@ -223,6 +224,7 @@ There is a parent-child relationship between an annotation and its page. If the 
           * 'FreeText' annotations: If you set (or leave) this to *None*, then **no rectangle at all** will be drawn around the text, and the border color will be ignored. This will leave anything "under" the text visible.
           * 'Line', 'Polyline', 'Polygon' annotations: use it to give applicable line end symbols a fill color other than that of the annotation *(changed in v1.16.16)*.
 
+      :arg bool cross_out: *(new in v1.17.2)* add two diagonal lines to the annotation rectangle. 'Redact' annotations only. If not desired, *False* must be specified even if the annotation was created with *False*.
       :arg int rotate: new rotation value. Default (-1) means no change. Supports 'FreeText' and several other annotation types (see `Annot.setRotation`), [#f1]_. Only choose 0, 90, 180, or 270 degrees for 'FreeText'. Otherwise any integer is acceptable.
 
       :rtype: bool

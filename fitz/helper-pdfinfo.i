@@ -19,8 +19,7 @@ void JM_gather_fonts(fz_context *ctx, pdf_document *pdf, pdf_obj *dict,
 
         refname = pdf_dict_get_key(ctx, dict, i);
         fontdict = pdf_dict_get_val(ctx, dict, i);
-        if (!pdf_is_dict(ctx, fontdict))
-        {
+        if (!pdf_is_dict(ctx, fontdict)) {
             fz_warn(ctx, "'%s' is no font dict (%d 0 R)",
                     pdf_to_name(ctx, refname), pdf_to_num(ctx, fontdict));
             continue;
@@ -57,8 +56,7 @@ void JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
 {
     int i, n;
     n = pdf_dict_len(ctx, dict);
-    for (i = 0; i < n; i++)
-    {
+    for (i = 0; i < n; i++) {
         pdf_obj *imagedict, *smask;
         pdf_obj *refname = NULL;
         pdf_obj *type;
@@ -71,8 +69,7 @@ void JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
 
         refname = pdf_dict_get_key(ctx, dict, i);
         imagedict = pdf_dict_get_val(ctx, dict, i);
-        if (!pdf_is_dict(ctx, imagedict))
-        {
+        if (!pdf_is_dict(ctx, imagedict)) {
             fz_warn(ctx, "'%s' is no image dict (%d 0 R)",
                     pdf_to_name(ctx, refname), pdf_to_num(ctx, imagedict));
             continue;
@@ -81,27 +78,24 @@ void JM_gather_images(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
         type = pdf_dict_get(ctx, imagedict, PDF_NAME(Subtype));
         if (!pdf_name_eq(ctx, type, PDF_NAME(Image)))
             continue;
-        
+
         int xref = pdf_to_num(ctx, imagedict);
         int gen = 0;
         smask = pdf_dict_get(ctx, imagedict, PDF_NAME(SMask));
         if (smask)
             gen = pdf_to_num(ctx, smask);
         filter = pdf_dict_get(ctx, imagedict, PDF_NAME(Filter));
-        if (pdf_is_array(ctx, filter))
-        {
+        if (pdf_is_array(ctx, filter)) {
             filter = pdf_array_get(ctx, filter, 0);
         }
 
         altcs = NULL;
         cs = pdf_dict_get(ctx, imagedict, PDF_NAME(ColorSpace));
-        if (pdf_is_array(ctx, cs))
-        {
+        if (pdf_is_array(ctx, cs)) {
             pdf_obj *cses = cs;
             cs = pdf_array_get(ctx, cses, 0);
             if (pdf_name_eq(ctx, cs, PDF_NAME(DeviceN)) ||
-                pdf_name_eq(ctx, cs, PDF_NAME(Separation)))
-            {
+                pdf_name_eq(ctx, cs, PDF_NAME(Separation))) {
                 altcs = pdf_array_get(ctx, cses, 2);
                 if (pdf_is_array(ctx, altcs))
                     altcs = pdf_array_get(ctx, altcs, 0);
@@ -136,16 +130,14 @@ void JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
     int i, n = pdf_dict_len(ctx, dict);
     fz_rect bbox;
     pdf_obj *o = NULL, *m = NULL;
-    for (i = 0; i < n; i++)
-    {
+    for (i = 0; i < n; i++) {
         pdf_obj *imagedict;
         pdf_obj *refname = NULL;
         pdf_obj *type;
 
         refname = pdf_dict_get_key(ctx, dict, i);
         imagedict = pdf_dict_get_val(ctx, dict, i);
-        if (!pdf_is_dict(ctx, imagedict))
-        {
+        if (!pdf_is_dict(ctx, imagedict)) {
             fz_warn(ctx, "'%s' is no form dict (%d 0 R)",
                     pdf_to_name(ctx, refname), pdf_to_num(ctx, imagedict));
             continue;
@@ -157,19 +149,15 @@ void JM_gather_forms(fz_context *ctx, pdf_document *doc, pdf_obj *dict,
 
         o = pdf_dict_get(ctx, imagedict, PDF_NAME(BBox));
         m = pdf_dict_get(ctx, imagedict, PDF_NAME(Matrix));
-        if (o)
-        {
-            if (m)
-            {
+        if (o) {
+            if (m) {
                 bbox = fz_transform_rect(pdf_to_rect(ctx, o), pdf_to_matrix(ctx, m));
             }
-            else
-            {
+            else {
                 bbox = pdf_to_rect(ctx, o);
             }
         }
-        else
-        {
+        else {
             bbox = fz_infinite_rect;
         }
         int xref = pdf_to_num(ctx, imagedict);
@@ -193,22 +181,17 @@ void JM_scan_resources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
     pdf_obj *font, *xobj, *subrsrc;
     int i, n, sxref;
     if (pdf_mark_obj(ctx, rsrc)) return;    // stop on cylic dependencies
-    fz_try(ctx)
-    {
-        if (what == 1)  // look up fonts
-        {
+    fz_try(ctx) {
+        if (what == 1) {
             font = pdf_dict_get(ctx, rsrc, PDF_NAME(Font));
             JM_gather_fonts(ctx, pdf, font, liste, stream_xref);
             n = pdf_dict_len(ctx, font);
-            for (i = 0; i < n; i++)
-            {
+            for (i = 0; i < n; i++) {
                 pdf_obj *obj = pdf_dict_get_val(ctx, font, i);
-                if (pdf_is_stream(ctx, obj))
-                {
+                if (pdf_is_stream(ctx, obj)) {
                     sxref = pdf_to_num(ctx, obj);
                 }
-                else
-                {
+                else {
                     sxref = 0;
                 }
                 subrsrc = pdf_dict_get(ctx, obj, PDF_NAME(Resources));
@@ -219,26 +202,21 @@ void JM_scan_resources(fz_context *ctx, pdf_document *pdf, pdf_obj *rsrc,
 
         xobj = pdf_dict_get(ctx, rsrc, PDF_NAME(XObject));
 
-        if (what == 2)  // look up images
-        {
+        if (what == 2) {  // look up images
             JM_gather_images(ctx, pdf, xobj, liste, stream_xref);
         }
 
-        if (what == 3)  // look up form xobjects
-        {
+        if (what == 3) {  // look up form xobjects
             JM_gather_forms(ctx, pdf, xobj, liste, stream_xref);
         }
 
         n = pdf_dict_len(ctx, xobj);
-        for (i = 0; i < n; i++)
-        {
+        for (i = 0; i < n; i++) {
             pdf_obj *obj = pdf_dict_get_val(ctx, xobj, i);
-            if (pdf_is_stream(ctx, obj))
-            {
+            if (pdf_is_stream(ctx, obj)) {
                 sxref = pdf_to_num(ctx, obj);
             }
-            else
-            {
+            else {
                 sxref = 0;
             }
             subrsrc = pdf_dict_get(ctx, obj, PDF_NAME(Resources));

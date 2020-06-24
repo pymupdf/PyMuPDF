@@ -42,14 +42,15 @@ Yet others are handy, general-purpose utilities.
 :meth:`getPDFnow`                    return the current timestamp in PDF format
 :meth:`getPDFstr`                    return PDF-compatible string
 :meth:`getTextlength`                return string length for a given font & fontsize
-:meth:`Page._cleanContents`          PDF only: clean the page's :data:`contents` objects
+:meth:`Page.cleanContents`           PDF only: clean the page's :data:`contents` objects
 :meth:`Page._getContents`            PDF only: return a list of content numbers
 :meth:`Page._setContents`            PDF only: set page's :data:`contents` to some :data:`xref`
 :meth:`Page.getDisplayList`          create the page's display list
 :meth:`Page.getTextBlocks`           extract text blocks as a Python list
 :meth:`Page.getTextWords`            extract text words as a Python list
 :meth:`Page.run`                     run a page through a device
-:meth:`Page._wrapContents`           wrap contents with stacking commands
+:meth:`Page.readContents`            PDF only: get complete, concatenated /Contents source
+:meth:`Page.wrapContents`            wrap contents with stacking commands
 :attr:`Page._isWrapped`              check whether contents wrapping is present
 :meth:`planishLine`                  matrix to map a line to the x-axis
 :meth:`PaperSize`                    return width, height for a known paper format
@@ -167,13 +168,13 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: ImageProperties(image)
+   .. method:: ImageProperties(stream)
 
       *(New in version 1.14.14)*
-      
+
       Return a number of basic properties for an image.
 
-      :arg bytes|bytearray|BytesIO|file image: an image either in memory or an **opened** file. A memory resident image maybe any of the formats *bytes*, *bytearray* or *io.BytesIO*.
+      :arg bytes|bytearray|BytesIO|file stream: an image either in memory or an **opened** file. A memory resident image maybe any of the formats *bytes*, *bytearray* or *io.BytesIO*.
 
       :returns: a dictionary with the following keys (an empty dictionary for any error):
 
@@ -185,7 +186,7 @@ Yet others are handy, general-purpose utilities.
          colorspace (int) colorspace.n (e.g. 3 = RGB)
          bpc        (int) bits per component (usually 8)
          format     (int) image format in *range(15)*
-         ext        (str) suggested image file extension for the format
+         ext        (str) image file extension indicating the format
          size       (int) length of the image in bytes
          ========== ====================================================
 
@@ -319,17 +320,17 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page._wrapContents
+   .. method:: Page.wrapContents
 
       Put string pair "q" / "Q" before, resp. after a page's */Contents* object(s) to ensure that any "geometry" changes are **local** only.
 
-      Use this method as an alternative, minimalistic version of :meth:`Page._cleanContents`. Its advantage is a small footprint in terms of processing time and impact on incremental saves.
+      Use this method as an alternative, minimalistic version of :meth:`Page.cleanContents`. Its advantage is a small footprint in terms of processing time and impact on incremental saves.
 
 -----
 
    .. attribute:: Page._isWrapped
 
-      Indicate whether :meth:`Page._wrapContents` may be required for object insertions in standard PDF geometry. Please note that this is a quick, basic check only: a value of *False* may still be a false alarm.
+      Indicate whether :meth:`Page.wrapContents` may be required for object insertions in standard PDF geometry. Please note that this is a quick, basic check only: a value of *False* may still be a false alarm.
 
 -----
 
@@ -381,13 +382,21 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page._cleanContents()
+   .. method:: Page.cleanContents()
 
       Clean and concatenate all :data:`contents` objects associated with this page. "Cleaning" includes syntactical corrections, standardizations and "pretty printing" of the contents stream. Discrepancies between :data:`contents` and :data:`resources` objects will also be corrected. See :meth:`Page._getContents` for more details.
 
       Changed in version 1.16.0 Annotations are no longer implicitely cleaned by this method. Use :meth:`Annot._cleanContents` separately.
 
       .. warning:: This is a complex function which may generate large amounts of new data and render other data unused. It is **not recommended** using it together with the **incremental save** option. Also note that the resulting singleton new */Contents* object is **uncompressed**. So you should save to a **new file** using options *"deflate=True, garbage=3"*.
+
+-----
+
+   .. method:: Page.readContents()
+
+      *New in version 1.17.0.*
+      Return the concatenation of all :data:`contents` objects associated with the page -- without cleaning or otherwise modifying them. Use this method whenever you need to parse this source in its entirety whithout having to bother how many separate contents objects exist.
+
 
 -----
 

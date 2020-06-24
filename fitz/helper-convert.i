@@ -7,13 +7,13 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
 {
     pdf_document *pdfout = pdf_create_document(ctx);  // new PDF document
     int i, incr = 1, s = fp, e = tp;
-    if (fp > tp)             // revert page sequence
-    {
+    if (fp > tp) {
         incr = -1;           // count backwards
         s = tp;              // adjust ...
         e = fp;              // ... range
     }
     fz_rect mediabox;
+    int rot = JM_norm_rotation(rotate);
     fz_device *dev = NULL;
     fz_buffer *contents = NULL;
     pdf_obj *resources = NULL;
@@ -22,10 +22,8 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
     fz_var(contents);
     fz_var(resources);
     fz_var(page);
-    for (i = fp; INRANGE(i, s, e); i += incr)
-    {   // interpret & write document pages as PDF pages
-        fz_try(ctx)
-        {
+    for (i = fp; INRANGE(i, s, e); i += incr) {  // interpret & write document pages as PDF pages
+        fz_try(ctx) {
             page = fz_load_page(ctx, doc, i);
             mediabox = fz_bound_page(ctx, page);
             dev = pdf_page_write(ctx, pdfout, mediabox, &resources, &contents);
@@ -33,19 +31,17 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
             fz_close_device(ctx, dev);
             fz_drop_device(ctx, dev);
             dev = NULL;
-            pdf_obj *page_obj = pdf_add_page(ctx, pdfout, mediabox, rotate, resources, contents);
+            pdf_obj *page_obj = pdf_add_page(ctx, pdfout, mediabox, rot, resources, contents);
             pdf_insert_page(ctx, pdfout, -1, page_obj);
             pdf_drop_obj(ctx, page_obj);
         }
-        fz_always(ctx)
-        {
+        fz_always(ctx) {
             pdf_drop_obj(ctx, resources);
             fz_drop_buffer(ctx, contents);
             fz_drop_device(ctx, dev);
             fz_drop_page(ctx, page);
         }
-        fz_catch(ctx)
-        {
+        fz_catch(ctx) {
             fz_rethrow(ctx);
         }
     }
@@ -67,8 +63,7 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
     opts.do_clean           = 1;
     opts.do_pretty          = 0;
 
-    fz_try(ctx)
-    {
+    fz_try(ctx) {
         res = fz_new_buffer(ctx, 8192);
         out = fz_new_output_with_buffer(ctx, res);
         pdf_write_document(ctx, pdfout, out, &opts);
@@ -76,14 +71,12 @@ PyObject *JM_convert_to_pdf(fz_context *ctx, fz_document *doc, int fp, int tp, i
         size_t len = fz_buffer_storage(gctx, res, &c);
         r = PyBytes_FromStringAndSize((const char *) c, (Py_ssize_t) len);
     }
-    fz_always(ctx)
-    {
+    fz_always(ctx) {
         pdf_drop_document(ctx, pdfout);
         fz_drop_output(ctx, out);
         fz_drop_buffer(ctx, res);
     }
-    fz_catch(ctx)
-    {
+    fz_catch(ctx) {
         fz_rethrow(ctx);
     }
     return r;

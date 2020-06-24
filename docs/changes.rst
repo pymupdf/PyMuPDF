@@ -1,6 +1,12 @@
 Change Logs
 ===============
 
+Changes in Version 1.17.2
+---------------------------
+* **Fixed** issue `#533 <https://github.com/pymupdf/PyMuPDF/issues/533>`_.
+* **Added** options to modify 'Redact' annotation appearance. Implements `#535 <https://github.com/pymupdf/PyMuPDF/issues/535>`_.
+
+
 Changes in Version 1.17.1
 ---------------------------
 * **Fixed** issue `#520 <https://github.com/pymupdf/PyMuPDF/issues/520>`_.

@@ -220,17 +220,17 @@ void retainpages(fz_context *ctx, globals *glo, PyObject *liste)
 
     // Retain pages specified
     Py_ssize_t page;
-    fz_try(ctx)
-    {
-        for (page = 0; page < argc; page++)
-            {
-                i = (int) PyInt_AsLong(PySequence_ITEM(liste, page));
-                if (i < 0 || i >= pagecount)
-                    THROWMSG("invalid page number(s)");
-                retainpage(ctx, doc, pages, kids, i);
-            }
+    fz_try(ctx) {
+        for (page = 0; page < argc; page++) {
+            i = (int) PyInt_AsLong(PySequence_ITEM(liste, page));
+            if (i < 0 || i >= pagecount)
+                THROWMSG("invalid page number(s)");
+            retainpage(ctx, doc, pages, kids, i);
+        }
     }
-    fz_catch(ctx) fz_rethrow(ctx);
+    fz_catch(ctx) {
+        fz_rethrow(ctx);
+    }
 
     // Update page count and kids array
     countobj = pdf_new_int(ctx, pdf_array_len(ctx, kids));
@@ -328,10 +328,8 @@ PyObject *remove_dest_range(fz_context *ctx, pdf_document *pdf, int first, int l
         !INRANGE(last, 0, pagecount-1) ||
         (first > last))
         Py_RETURN_NONE;
-    fz_try(ctx)
-    {
-        for (i = 0; i < pagecount; i++)
-        {
+    fz_try(ctx) {
+        for (i = 0; i < pagecount; i++) {
             if (INRANGE(i, first, last)) continue;
 
             pdf_obj *pageref = pdf_lookup_page_obj(ctx, pdf, i);
@@ -340,40 +338,37 @@ PyObject *remove_dest_range(fz_context *ctx, pdf_document *pdf, int first, int l
             if (!annots) continue;
             int len = pdf_array_len(ctx, annots);
             int j;
-            for (j = len - 1; j >= 0; j -= 1)
-            {
+            for (j = len - 1; j >= 0; j -= 1) {
                 pdf_obj *o = pdf_array_get(ctx, annots, j);
                 if (!pdf_name_eq(ctx, pdf_dict_get(ctx, o, PDF_NAME(Subtype)), PDF_NAME(Link)))
                     continue;
                 pdf_obj *action = pdf_dict_get(ctx, o, PDF_NAME(A));
                 pdf_obj *dest =  pdf_dict_get(ctx, o, PDF_NAME(Dest));
-                if (action)
-                {
+                if (action) {
                     if (!pdf_name_eq(ctx, pdf_dict_get(ctx, action,
                         PDF_NAME(S)), PDF_NAME(GoTo)))
                         continue;
                     dest = pdf_dict_get(ctx, action, PDF_NAME(D));
                 }
                 pno = -1;
-                if (pdf_is_array(ctx, dest))
-                {
+                if (pdf_is_array(ctx, dest)) {
                     target = pdf_array_get(ctx, dest, 0);
                     pno = pdf_lookup_page_number(ctx, pdf, target);
                 }
-                else if (pdf_is_string(ctx, dest))
-                {
+                else if (pdf_is_string(ctx, dest)) {
                     pno = pdf_lookup_anchor(ctx, pdf,
                                             pdf_to_text_string(ctx, dest),
                                             NULL, NULL);
                 }
-                if (INRANGE(pno, first, last))
-                {
+                if (INRANGE(pno, first, last)) {
                     pdf_array_delete(ctx, annots, j);
                 }
             }
         }
     }
-    fz_catch(ctx) return NULL;
+    fz_catch(ctx) {
+        return NULL;
+    }
     Py_RETURN_NONE;
 }
 %}

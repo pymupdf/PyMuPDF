@@ -12,20 +12,17 @@ fz_stext_page *JM_new_stext_page_from_page(fz_context *ctx, fz_page *page, int f
     fz_var(tp);
     fz_stext_options options = { 0 };
     options.flags = flags;
-    fz_try(ctx)
-    {
+    fz_try(ctx) {
         rect = fz_bound_page(ctx, page);
         tp = fz_new_stext_page(ctx, rect);
         dev = fz_new_stext_device(ctx, tp, &options);
         fz_run_page_contents(ctx, page, dev, fz_identity, NULL);
         fz_close_device(ctx, dev);
     }
-    fz_always(ctx)
-    {
+    fz_always(ctx) {
         fz_drop_device(ctx, dev);
     }
-    fz_catch(ctx)
-    {
+    fz_catch(ctx) {
         fz_drop_stext_page(ctx, tp);
         fz_rethrow(ctx);
     }
@@ -290,29 +287,23 @@ static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject
         type = FZ_IMAGE_UNKNOWN;
     PyObject *bytes = NULL;
     fz_var(bytes);
-    fz_try(ctx)
-    {
-        if (buffer && type != FZ_IMAGE_UNKNOWN)
-        {
+    fz_try(ctx) {
+        if (buffer && type != FZ_IMAGE_UNKNOWN) {
             buf = buffer->buffer;
             ext = JM_image_extension(type);
         }
-        else
-        {
+        else {
             buf = freebuf = fz_new_buffer_from_image_as_png(ctx, image, fz_default_color_params);
             ext = "png";
         }
-        if (PY_MAJOR_VERSION > 2)
-        {
+        if (PY_MAJOR_VERSION > 2) {
             bytes = JM_BinFromBuffer(ctx, buf);
         }
-        else
-        {
+        else {
             bytes = JM_BArrayFromBuffer(ctx, buf);
         }
     }
-    fz_always(ctx)
-    {
+    fz_always(ctx) {
         if (!bytes)
             bytes = JM_BinFromChar("");
         DICT_SETITEM_DROP(block_dict, dictkey_width,
@@ -393,21 +384,18 @@ PyObject *JM_object_to_string(fz_context *ctx, pdf_obj *what, int compress, int 
     fz_buffer *res=NULL;
     fz_output *out=NULL;
     PyObject *text=NULL;
-    fz_try(ctx)
-    {
+    fz_try(ctx) {
         res = fz_new_buffer(ctx, 1024);
         out = fz_new_output_with_buffer(ctx, res);
         pdf_print_obj(ctx, out, what, compress, ascii);
         text = JM_EscapeStrFromBuffer(ctx, res);
     }
-    fz_always(ctx)
-    {
+    fz_always(ctx) {
         fz_drop_output(ctx, out);
         fz_drop_buffer(ctx, res);
         PyErr_Clear();
     }
-    fz_catch(ctx)
-    {
+    fz_catch(ctx) {
         return PyUnicode_FromString("");
     }
     return text;
@@ -537,8 +525,7 @@ fz_font *JM_get_font(fz_context *ctx,
     int size, index=0;
     fz_buffer *res = NULL;
     fz_font *font = NULL;
-    fz_try(ctx)
-    {
+    fz_try(ctx) {
         if (fontfile) goto have_file;
         if (EXISTS(fontbuffer)) goto have_buffer;
         if (ordering > -1) goto have_cjk;
@@ -583,12 +570,10 @@ fz_font *JM_get_font(fz_context *ctx,
         fertig:;
         if (!font) THROWMSG("could not find a matching font");
     }
-    fz_always(ctx)
-    {
+    fz_always(ctx) {
         fz_drop_buffer(ctx, res);
     }
-    fz_catch(ctx)
-    {
+    fz_catch(ctx) {
         fz_rethrow(ctx);
     }
     return font;

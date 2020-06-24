@@ -1,19 +1,20 @@
 %pythoncode %{
 class Matrix(object):
-    """Matrix() - all zeros\nMatrix(a, b, c, d, e, f)\nMatrix(zoom-x, zoom-y) - zoom\nMatrix(shear-x, shear-y, 1) - shear\nMatrix(degree) - rotate\nMatrix(Matrix) - new copy\nMatrix(sequence) - from 'sequence'"""
+    """Matrix() - all zeros
+    Matrix(a, b, c, d, e, f)
+    Matrix(zoom-x, zoom-y) - zoom
+    Matrix(shear-x, shear-y, 1) - shear
+    Matrix(degree) - rotate
+    Matrix(Matrix) - new copy
+    Matrix(sequence) - from 'sequence'"""
     def __init__(self, *args):
         if not args:
             self.a = self.b = self.c = self.d = self.e = self.f = 0.0
             return None
         if len(args) > 6:
             raise ValueError("bad sequ. length")
-        if len(args) == 6:                       # 6 numbers
-            self.a = float(args[0])
-            self.b = float(args[1])
-            self.c = float(args[2])
-            self.d = float(args[3])
-            self.e = float(args[4])
-            self.f = float(args[5])
+        if len(args) == 6:  # 6 numbers
+            self.a, self.b, self.c, self.d, self.e, self.f = map(float, args)
             return None
         if len(args) == 1:  # either an angle or a sequ
             if hasattr(args[0], "__float__"):
@@ -26,12 +27,7 @@ class Matrix(object):
                 self.e = self.f = 0.0
                 return None
             else:
-                self.a = float(args[0][0])
-                self.b = float(args[0][1])
-                self.c = float(args[0][2])
-                self.d = float(args[0][3])
-                self.e = float(args[0][4])
-                self.f = float(args[0][5])
+                self.a, self.b, self.c, self.d, self.e, self.f = map(float, args[0])
                 return None
         if len(args) == 2 or len(args) == 3 and args[2] == 0:
             self.a, self.b, self.c, self.d, self.e, self.f = float(args[0]), \
@@ -442,10 +438,7 @@ class Rect(object):
         if len(args) > 4:
             raise ValueError("bad sequ. length")
         if len(args) == 4:
-            self.x0 = float(args[0])
-            self.y0 = float(args[1])
-            self.x1 = float(args[2])
-            self.y1 = float(args[3])
+            self.x0, self.y0, self.x1, self.y1 = map(float, args)
             return None
         if len(args) == 1:
             l = args[0]
@@ -453,10 +446,7 @@ class Rect(object):
                 raise ValueError("bad Rect constructor")
             if len(l) != 4:
                 raise ValueError("bad sequ. length")
-            self.x0 = float(l[0])
-            self.y0 = float(l[1])
-            self.x1 = float(l[2])
-            self.y1 = float(l[3])
+            self.x0, self.y0, self.x1, self.y1 = map(float, l)
             return None
         if len(args) == 2:                  # 2 Points provided
             self.x0 = float(args[0][0])
@@ -790,10 +780,7 @@ class Quad(object):
         if len(args) > 4:
             raise ValueError("bad sequ. length")
         if len(args) == 4:
-            self.ul = Point(args[0])
-            self.ur = Point(args[1])
-            self.ll = Point(args[2])
-            self.lr = Point(args[3])
+            self.ul, self.ur, self.ll, self.lr = map(Point, args)
             return None
         if len(args) == 1:
             l = args[0]
@@ -801,10 +788,7 @@ class Quad(object):
                 raise ValueError("bad Quad constructor")
             if len(l) != 4:
                 raise ValueError("bad sequ. length")
-            self.ul = Point(l[0])
-            self.ur = Point(l[1])
-            self.ll = Point(l[2])
-            self.lr = Point(l[3])
+            self.ul, self.ur, self.ll, self.lr = map(Point, l)
             return None
         raise ValueError("bad Quad constructor")
 
@@ -842,9 +826,8 @@ class Quad(object):
             For convexity, every line connecting two points of the quad must be
             inside the quad. This is equivalent to that every corner encloses
             an angle with 0 < angle < 180 degrees.
-            We exclude the "degenerate" case, where all points are on the
-            same line.
-            So it suffices to check that the sines of three angles are > 0.
+            Excluding the "degenerate" case (all points on the same line),
+            it suffices to check that the sines of three angles are > 0.
         Returns:
             True or False.
         """
@@ -946,7 +929,7 @@ class Quad(object):
         return len(quad) == 4 and (
             self.ul == quad[0] and
             self.ur == quad[1] and
-            self.ll == quad[3] and
+            self.ll == quad[2] and
             self.lr == quad[3]
         )
 

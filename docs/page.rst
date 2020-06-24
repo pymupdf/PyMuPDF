@@ -216,7 +216,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :rtype: :ref:`Annot`
       :returns: the created annotation. It is drawn with line color red, no fill color and line width 1.
 
-   .. method:: addRedactAnnot(quad, text=None, fontname=None, fontsize=11, align=TEXT_ALIGN_LEFT, fill=(1, 1, 1), text_color=(0, 0, 0))
+   .. method:: addRedactAnnot(quad, text=None, fontname=None, fontsize=11, align=TEXT_ALIGN_LEFT, fill=(1, 1, 1), text_color=(0, 0, 0), cross_out=True)
 
       PDF only: *(new in version 1.16.11)* Add a redaction annotation. A redaction annotation identifies content to be removed from the document. Adding such an annotation is the first of two steps. It makes visible what will be removed in the subsequent step, :meth:`Page.apply_redactions`.
 
@@ -230,12 +230,14 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg int align: *(New in v1.16.12)* the horizontal alignment for the replacing text. See :meth:`insertTextbox` for available values. The vertical alignment is always (approximately) centered.
 
-      :arg sequence fill: *(New in v1.16.12)* the fill color of the rectangle after applying the redaction. The default is *white = (1, 1, 1)*, which is also taken if *None* is specified. *(Changed in v1.16.13)* To suppress any fill color, specify *False*. In this cases the rectangle remains transparent.
+      :arg sequence fill: *(New in v1.16.12)* the fill color of the rectangle **after applying** the redaction. The default is *white = (1, 1, 1)*, which is also taken if *None* is specified. *(Changed in v1.16.13)* To suppress a fill color alltogether, specify *False*. In this cases the rectangle remains transparent.
 
       :arg sequence text_color: *(New in v1.16.12)* the color of the replacing text. Default is *black = (0, 0, 0)*.
 
+      :arg bool cross_out: *(new in v1.17.2)* add two diagonal lines to the annotation rectangle.
+
       :rtype: :ref:`Annot`
-      :returns: the created annotation. The appearance of a redaction annotation cannot be changed (except for its rectangle). A redaction is displayed as a crossed-out transparent rectangle with red lines.
+      :returns: the created annotation. *(Changed in v1.17.2)* Its standard appearance looks like a red rectangle (no fill color), optionally showing two diagonal lines. Colors, line width, dashing, opacity and blend mode can now be set and applied via :meth:`Annot.update` like with other annotations.
 
       .. image:: images/img-redact.jpg
 

@@ -10,8 +10,7 @@ JM_INT_ITEM(PyObject *obj, Py_ssize_t idx, int *result)
     if (!temp) return 1;
     *result = (int) PyLong_AsLong(temp);
     Py_DECREF(temp);
-    if (PyErr_Occurred())
-    {
+    if (PyErr_Occurred()) {
         PyErr_Clear();
         return 1;
     }
@@ -25,8 +24,7 @@ JM_FLOAT_ITEM(PyObject *obj, Py_ssize_t idx, float *result)
     if (!temp) return 1;
     *result = (float) PyFloat_AsDouble(temp);
     Py_DECREF(temp);
-    if (PyErr_Occurred())
-    {
+    if (PyErr_Occurred()) {
         PyErr_Clear();
         return 1;
     }
@@ -160,8 +158,7 @@ JM_quad_from_py(PyObject *r)
     if (JM_FLOAT_ITEM(r, 0, &test) == 0)
         return fz_quad_from_rect(JM_rect_from_py(r));
 
-    for (i = 0; i < 4; i++)
-    {
+    for (i = 0; i < 4; i++) {
         obj = PySequence_ITEM(r, i);  // next point item
         if (!obj || !PySequence_Check(obj) || PySequence_Size(obj) != 2)
             goto exit_result;  // invalid: cancel the rest

@@ -17,6 +17,7 @@ For addional details on **embedded files** refer to Appendix 3.
 ======================================= ==========================================================
 :meth:`Document.authenticate`           gain access to an encrypted document
 :meth:`Document.can_save_incrementally` check if incremental save is possible
+:meth:`Document.chapterPageCount`       number of pages in chapter
 :meth:`Document.close`                  close the document
 :meth:`Document.convertToPDF`           write a PDF version to memory
 :meth:`Document.copyPage`               PDF only: copy a page reference
@@ -63,6 +64,7 @@ For addional details on **embedded files** refer to Appendix 3.
 :meth:`Document.xrefObject`             PDF only: object source at the :data:`xref`
 :meth:`Document.xrefStream`             PDF only: stream source at the :data:`xref`
 :meth:`Document.xrefStreamRaw`          PDF only: raw stream source at the :data:`xref`
+:attr:`Document.chapterCount`           number of chapters
 :attr:`Document.FormFonts`              PDF only: list of global widget fonts
 :attr:`Document.isClosed`               has document been closed?
 :attr:`Document.isEncrypted`            document (still) encrypted?
@@ -151,13 +153,23 @@ For addional details on **embedded files** refer to Appendix 3.
         * bit 2 set => **owner** password authenticated
 
 
+    .. method:: chapterPageCount(chapter)
+
+      *(New in v.1.17.0)* Return the number of pages of a chapter.
+
+      :arg int chapter: the 0-based chapter number.
+
+      :rtype: int
+      :returns: number of pages in chapter. Relevant only for document types whith chapter support (EPUB currently).
+
+
     .. method:: nextLocation(page_id)
 
       *(New in v.1.17.0)* Return the locator of the following page.
 
       :arg tuple page_id: the current page id. This must be a tuple *(chapter, pno)* identifying an existing page.
 
-      :returns: The tuple of the following page, i.e. either *(chapter, pno + 1)* or *(chapter + 1, 0)*, **or** the empty tuple *()* if the argument was the last page.
+      :returns: The tuple of the following page, i.e. either *(chapter, pno + 1)* or *(chapter + 1, 0)*, **or** the empty tuple *()* if the argument was the last page. Relevant only for document types whith chapter support (EPUB currently).
 
 
     .. method:: previousLocation(page_id)
@@ -166,7 +178,7 @@ For addional details on **embedded files** refer to Appendix 3.
 
       :arg tuple page_id: the current page id. This must be a tuple *(chapter, pno)* identifying an existing page.
 
-      :returns: The tuple of the preceeding page, i.e. either *(chapter, pno - 1)* or the last page of the receeding chapter, **or** the empty tuple *()* if the argument was the first page.
+      :returns: The tuple of the preceeding page, i.e. either *(chapter, pno - 1)* or the last page of the receeding chapter, **or** the empty tuple *()* if the argument was the first page. Relevant only for document types whith chapter support (EPUB currently).
 
 
     .. method:: loadPage(page_id=0)
@@ -179,7 +191,7 @@ For addional details on **embedded files** refer to Appendix 3.
       
           Either a 0-based page number, or a tuple *(chapter, pno)*. For an integer, any *-inf < page_id < pageCount* is acceptable. While page_id is negative, :attr:`pageCount` will be added to it. For example: to load the last page, you can use *doc.loadPage(-1)*. After this you have page.number = doc.pageCount - 1.
       
-          For a tuple, *chapter* must be in range :attr:`Document.chapterCount`, and *pno* must be in range :meth:`Document.chapterPageCount` of that chapter. Both values are 0-based. With this notation, :attr:`Page.number` will equal the given tuple.
+          For a tuple, *chapter* must be in range :attr:`Document.chapterCount`, and *pno* must be in range :meth:`Document.chapterPageCount` of that chapter. Both values are 0-based. With this notation, :attr:`Page.number` will equal the given tuple. Relevant only for document types whith chapter support (EPUB currently).
 
       :rtype: :ref:`Page`
 
@@ -684,11 +696,11 @@ For addional details on **embedded files** refer to Appendix 3.
 
     .. method:: getSigFlags()
 
-      PDF only: Return whether the document contains signature fields.
+      PDF only: Return whether the document contains signature fields. This is an optional PDF property: if not present, no conclusions can be drawn, because the PDF creator may just not have bothered to use it.
 
       :rtype: int
       :returns:
-         * -1: not a Form PDF or no signature fields exist.
+         * -1: not a Form PDF / no signature fields recorded / no *SigFlags* found.
          * 1: at least one signature field exists.
          * 3:  contains signatures that may be invalidated if the file is saved (written) in a way that alters its previous contents, as opposed to an incremental update.
 
@@ -929,6 +941,20 @@ For addional details on **embedded files** refer to Appendix 3.
     .. Attribute:: pageCount
 
       Contains the number of pages of the document. May return 0 for documents with no pages. Function *len(doc)* will also deliver this result.
+
+      :type: int
+
+    .. Attribute:: chapterCount
+      
+      *(New in version 1.17.0)*
+      Contains the number of chapters in the document. Always at least 1. Relevant only for document types with chapter support (EPUB currently). Other documents will return 1.
+
+      :type: int
+
+    .. Attribute:: lastLocation
+
+      *(New in version 1.17.0)*
+      Contains (chapter, pno) of the document's last page. Relevant only for document types with chapter support (EPUB currently). Other documents will return *(0, len(doc) - 1)* and *(0, -1)* if it has no pages.
 
       :type: int
 
