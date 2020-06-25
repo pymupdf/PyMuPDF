@@ -67,7 +67,7 @@ There also exists :meth:`Page.writeText` which is able to combine one or more Te
       :arg page: write to this :ref:`Page`.
       :arg float opacity: override the value of the TextWriter for this output.
       :arg sequ color: override the value of the TextWriter for this output.
-      :arg sequ morph: modify the text appearance by applying a matrix to it. If provided, this must be a sequence *(fixpoint, matrix)* with a point-like *fixpoint* and a matrix-like *matrix*. A typical example is rotating the text around *fixpoint*.
+      :arg sequ morph: modify the text appearance by applying a matrix to it. If provided, this must be a sequence *(fixpoint, matrix)* with a point-like *fixpoint* and a matrix-like *matrix*. A typical example is rotating the text around *fixpoint*. 
       :arg bool overlay: put in foreground (default) or background.
 
 

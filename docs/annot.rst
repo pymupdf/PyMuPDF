@@ -146,14 +146,14 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: setRotation(angle)
 
-      Set the rotation of an annotation. This rotates the annotation rectangle around its center point. Then a **new rectangle** is calculated which replaces the existing one.
+      Set the rotation of an annotation. This rotates the annotation rectangle around its center point. Then a **new annotation rectangle** is calculated from the resulting quad.
 
-      :arg int angle: rotation angle in degrees. Arbitrary values are possible, but will be replaced by equivalent values 0 <= angle < 360.
+      :arg int angle: rotation angle in degrees. Arbitrary values are possible, but will be clamped to the interval 0 <= angle < 360.
 
       .. note::
         * You **must invoke** :meth:`Annot.update` to activate the effect.
-        * For PDF_ANNOT_FREE_TEXT, only the four values 0, 90, 180 and 270 are possible and will only **rotate the text** inside the current rectangle (which remains unchanged). Other values are silently ignored and treated as 0.
-        * Otherwise, only the following `AnnotationTypes`_ can be rotated: 'Square', 'Circle', 'Caret', 'Text', 'FileAttachment', 'Ink', 'Line', 'Polyline', 'Polygon', and 'Stamp'. For all others the method is a no-op.
+        * For PDF_ANNOT_FREE_TEXT, only one of the values 0, 90, 180 and 270 is possible and will **rotate the text** inside the current rectangle (which remains unchanged). Other values are silently ignored and replaced by 0.
+        * Otherwise, only the following :ref:`AnnotationTypes` can be rotated: 'Square', 'Circle', 'Caret', 'Text', 'FileAttachment', 'Ink', 'Line', 'Polyline', 'Polygon', and 'Stamp'. For all others the method is a no-op.
 
 
    .. method:: setBorder(border=None, width=0, style=None, dashes=None)
@@ -225,7 +225,7 @@ There is a parent-child relationship between an annotation and its page. If the 
           * 'Line', 'Polyline', 'Polygon' annotations: use it to give applicable line end symbols a fill color other than that of the annotation *(changed in v1.16.16)*.
 
       :arg bool cross_out: *(new in v1.17.2)* add two diagonal lines to the annotation rectangle. 'Redact' annotations only. If not desired, *False* must be specified even if the annotation was created with *False*.
-      :arg int rotate: new rotation value. Default (-1) means no change. Supports 'FreeText' and several other annotation types (see `Annot.setRotation`), [#f1]_. Only choose 0, 90, 180, or 270 degrees for 'FreeText'. Otherwise any integer is acceptable.
+      :arg int rotate: new rotation value. Default (-1) means no change. Supports 'FreeText' and several other annotation types (see :meth:`Annot.setRotation`), [#f1]_. Only choose 0, 90, 180, or 270 degrees for 'FreeText'. Otherwise any integer is acceptable.
 
       :rtype: bool
 

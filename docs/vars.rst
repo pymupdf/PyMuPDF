@@ -256,56 +256,67 @@ Link Destination Flags
 
     :rtype: bool
 
-.. _AnnotationTypes:
 
 Annotation Related Constants
 -----------------------------
-See chapter 8.4.5, pp. 615 of the :ref:`AdobeManual` for more details.
+See chapter 8.4.5, pp. 615 of the :ref:`AdobeManual` for details.
 
-**Annotation Types**::
+.. _AnnotationTypes:
+
+Annotation Types
+~~~~~~~~~~~~~~~~~
+::
 
     PDF_ANNOT_TEXT 0
     PDF_ANNOT_LINK 1
-    PDF_ANNOT_FREETEXT 2
+    PDF_ANNOT_FREE_TEXT 2
     PDF_ANNOT_LINE 3
     PDF_ANNOT_SQUARE 4
     PDF_ANNOT_CIRCLE 5
     PDF_ANNOT_POLYGON 6
-    PDF_ANNOT_POLYLINE 7
+    PDF_ANNOT_POLY_LINE 7
     PDF_ANNOT_HIGHLIGHT 8
     PDF_ANNOT_UNDERLINE 9
     PDF_ANNOT_SQUIGGLY 10
-    PDF_ANNOT_STRIKEOUT 11
+    PDF_ANNOT_STRIKE_OUT 11
     PDF_ANNOT_REDACT 12
     PDF_ANNOT_STAMP 13
     PDF_ANNOT_CARET 14
     PDF_ANNOT_INK 15
     PDF_ANNOT_POPUP 16
-    PDF_ANNOT_FILEATTACHMENT 17
+    PDF_ANNOT_FILE_ATTACHMENT 17
     PDF_ANNOT_SOUND 18
     PDF_ANNOT_MOVIE 19
     PDF_ANNOT_WIDGET 20
     PDF_ANNOT_SCREEN 21
-    PDF_ANNOT_PRINTERMARK 22
-    PDF_ANNOT_TRAPNET 23
+    PDF_ANNOT_PRINTER_MARK 22
+    PDF_ANNOT_TRAP_NET 23
     PDF_ANNOT_WATERMARK 24
     PDF_ANNOT_3D 25
+    PDF_ANNOT_UNKNOWN -1
 
+.. _AnnotationFlags:
 
-**Annotation Flag Bits**::
+Annotation Flag Bits
+~~~~~~~~~~~~~~~~~~~~~
+::
 
-    PDF_ANNOT_IS_Invisible 1 << (1-1)
-    PDF_ANNOT_IS_Hidden 1 << (2-1)
-    PDF_ANNOT_IS_Print 1 << (3-1)
-    PDF_ANNOT_IS_NoZoom 1 << (4-1)
-    PDF_ANNOT_IS_NoRotate 1 << (5-1)
-    PDF_ANNOT_IS_NoView 1 << (6-1)
-    PDF_ANNOT_IS_ReadOnly 1 << (7-1)
-    PDF_ANNOT_IS_Locked 1 << (8-1)
-    PDF_ANNOT_IS_ToggleNoView 1 << (9-1)
-    PDF_ANNOT_IS_LockedContents 1 << (10-1)
+    PDF_ANNOT_IS_INVISIBLE 1 << (1-1)
+    PDF_ANNOT_IS_HIDDEN 1 << (2-1)
+    PDF_ANNOT_IS_PRINT 1 << (3-1)
+    PDF_ANNOT_IS_NO_ZOOM 1 << (4-1)
+    PDF_ANNOT_IS_NO_ROTATE 1 << (5-1)
+    PDF_ANNOT_IS_NO_VIEW 1 << (6-1)
+    PDF_ANNOT_IS_READ_ONLY 1 << (7-1)
+    PDF_ANNOT_IS_LOCKED 1 << (8-1)
+    PDF_ANNOT_IS_TOGGLE_NO_VIEW 1 << (9-1)
+    PDF_ANNOT_IS_LOCKED_CONTENTS 1 << (10-1)
 
-**Annotation Line Ending Styles**::
+.. _AnnotationLineEnds:
+
+Annotation Line Ending Styles
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+::
 
     PDF_ANNOT_LE_NONE 0
     PDF_ANNOT_LE_SQUARE 1
@@ -322,7 +333,11 @@ See chapter 8.4.5, pp. 615 of the :ref:`AdobeManual` for more details.
 Widget Constants
 -----------------
 
-**Widget types** (*field_type*)::
+.. _WidgetTypes:
+
+Widget Types (*field_type*)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+::
 
     PDF_WIDGET_TYPE_UNKNOWN 0
     PDF_WIDGET_TYPE_BUTTON 1
@@ -333,7 +348,9 @@ Widget Constants
     PDF_WIDGET_TYPE_SIGNATURE 6
     PDF_WIDGET_TYPE_TEXT 7
 
-**Text Widget Subtypes** (*text_format*)::
+Text Widget Subtypes (*text_format*)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+::
 
     PDF_WIDGET_TX_FORMAT_NONE 0
     PDF_WIDGET_TX_FORMAT_NUMBER 1

@@ -21,9 +21,10 @@ In a nutshell, this is what you can do with PyMuPDF:
 * Add annotations and form fields.
 
 .. note::
-   Many methods require coordinates (mostly points or rectangles) to put new content in the right place. Please be aware that these coordinates **must always** be provided relative to the **unrotated** page. And vice versa: all methods / attributes returning coordinates of page objects will present them as if the page were not rotated. This applies to text extraction, annotation rectangles, image bboxes, etc.
 
-   So the returned value of e.g. :meth:`Page.getImageBbox` will not change if you do a :meth:`Page.setRotation`. The same is true for coordinates returned by :meth:`Page.getText`, annotation rectangles, and so on. If you want to find out, where an object is located in **rotated coordinates**, multiplay the coordinates by :attr:`Page.rotationMatrix`. There also is its inverse, :attr:`Page.derotationMatrix`, which you can use when interfacing with other readers, which may behave differently in this respect.
+   Methods require coordinates (points, rectangles) to put content in desired places. Please be aware that since v1.17.0 these coordinates **must always** be provided relative to the **unrotated** page. The reverse is also true: all coordinates returned by methods and attributes pertain to the unrotated page.
+
+   So the returned value of e.g. :meth:`Page.getImageBbox` will not change if you do a :meth:`Page.setRotation`. The same is true for coordinates returned by :meth:`Page.getText`, annotation rectangles, and so on. If you want to find out, where an object is located in **rotated coordinates**, multiply the coordinates with :attr:`Page.rotationMatrix`. There also is its inverse, :attr:`Page.derotationMatrix`, which you can use when interfacing with other readers, which may behave differently in this respect.
 
 ================================= =======================================================
 **Method / Attribute**            **Short Description**
