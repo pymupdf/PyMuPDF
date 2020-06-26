@@ -265,10 +265,12 @@ See chapter 8.4.5, pp. 615 of the :ref:`AdobeManual` for details.
 
 Annotation Types
 ~~~~~~~~~~~~~~~~~
+These identifiers also cover **links** and **widgets**: the PDF specification technically handles them all in the same way, whereas **MuPDF** (and PyMuPDF) treats them as three basically different types of objects.
+
 ::
 
     PDF_ANNOT_TEXT 0
-    PDF_ANNOT_LINK 1
+    PDF_ANNOT_LINK 1  # <=== Link object in PyMuPDF
     PDF_ANNOT_FREE_TEXT 2
     PDF_ANNOT_LINE 3
     PDF_ANNOT_SQUARE 4
@@ -287,7 +289,7 @@ Annotation Types
     PDF_ANNOT_FILE_ATTACHMENT 17
     PDF_ANNOT_SOUND 18
     PDF_ANNOT_MOVIE 19
-    PDF_ANNOT_WIDGET 20
+    PDF_ANNOT_WIDGET 20  # <=== Widget object in PyMuPDF
     PDF_ANNOT_SCREEN 21
     PDF_ANNOT_PRINTER_MARK 22
     PDF_ANNOT_TRAP_NET 23

@@ -839,7 +839,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: getPixmap(matrix=fitz.Identity, colorspace=fitz.csRGB, clip=None, alpha=False, annots=True)
 
-     Create a pixmap from the page. This is probably the most often used method to create a pixmap.
+     Create a pixmap from the page. This is probably the most often used method to create a :ref:`Pixmap`.
 
      :arg matrix_like matrix: default is :ref:`Identity`.
      :arg colorspace: Defines the required colorspace, one of "GRAY", "RGB" or "CMYK" (case insensitive). Or specify a :ref:`Colorspace`, ie. one of the predefined ones: :data:`csGRAY`, :data:`csRGB` or :data:`csCMYK`.
@@ -859,10 +859,10 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          .. image:: images/img-alpha-0.png
 
-     :arg bool annots: *(new in vrsion 1.16.0)* whether to also render any annotations on the page. You can create pixmaps for annotations separately.
+     :arg bool annots: *(new in vrsion 1.16.0)* whether to also render annotations or to suppress them. You can create pixmaps for annotations separately.
 
      :rtype: :ref:`Pixmap`
-     :returns: Pixmap of the page.
+     :returns: Pixmap of the page. For fine-controlling the generated image, the by far most important parameter is **matrix**. E.g. you can increase or decrease the image resolution by using **Matrix(xzoom, yzoom)**. If zoom > 1, you will get a higher resolution: zoom=2 will double the number of pixels in that direction and thus generate a 2 times larger image. Non-positive values will flip horizontally, resp. vertically. Similarly, matrices also let you rotate or shear, and you can combine effects via e.g. matrix multiplication. See the :ref:`Matrix` section to learn more.
 
    .. method:: annot_names()
 
@@ -880,7 +880,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       PDF only: return a list of the :data`xref` numbers of annotations, widgets and links -- technically of all entries found in the page's */Annots*  array.
 
       :rtype: list
-      :returns: a list of items *(xref, type)* where type is the annotation type.Obviously, the type can be used to tell apart links, fields and annotations.
+      :returns: a list of items *(xref, type)* where type is the annotation type. Use the type to tell apart links, fields and annotations, see :ref:`AnnotationTypes`.
 
 
    .. method:: load_annot(ident)
