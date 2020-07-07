@@ -176,7 +176,7 @@ html_show_copyright = True
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
 # base URL from which the finished HTML is served.
-html_use_opensearch = "https://pymupdf.readthedocs.io/en/latest"
+# html_use_opensearch = "https://pymupdf.readthedocs.io/en/latest"
 
 # This is the file name suffix for HTML files (e.g. ".xhtml").
 # html_file_suffix = ".html"
@@ -207,7 +207,7 @@ latex_logo = "images/img-pymupdf.jpg"
 latex_show_pagerefs = False
 
 # If true, show URL addresses after external links.
-latex_show_urls = "footnote"
+# latex_show_urls = "footnote"
 # latex_use_xindy = True
 # Documents to append as an appendix to all manuals.
 # latex_appendices = []
