@@ -432,7 +432,7 @@ char *JM_Python_str_AsChar(PyObject *str)
 // Modified copy of function of pdfmerge.c: we also copy annotations, but
 // we skip **link** annotations. In addition we rotate output.
 //----------------------------------------------------------------------------
-void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int page_from, int page_to, int rotate, int links, int copy_annots, pdf_graft_map *graft_map)
+static void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int page_from, int page_to, int rotate, int links, int copy_annots, pdf_graft_map *graft_map)
 {
     pdf_obj *page_ref = NULL;
     pdf_obj *page_dict = NULL;
@@ -518,7 +518,7 @@ void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, i
 // location (apage) of the target PDF.
 // If spage > epage, the sequence of source pages is reversed.
 //-----------------------------------------------------------------------------
-void merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int spage, int epage, int apage, int rotate, int links, int annots)
+void JM_merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int spage, int epage, int apage, int rotate, int links, int annots)
 {
     int page, afterpage;
     pdf_graft_map *graft_map;
@@ -526,12 +526,13 @@ void merge_range(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, 
     graft_map = pdf_new_graft_map(ctx, doc_des);
 
     fz_try(ctx) {
-        if (spage < epage)
+        if (spage < epage) {
             for (page = spage; page <= epage; page++, afterpage++)
                 page_merge(ctx, doc_des, doc_src, page, afterpage, rotate, links, annots, graft_map);
-        else
+        } else {
             for (page = spage; page >= epage; page--, afterpage++)
                 page_merge(ctx, doc_des, doc_src, page, afterpage, rotate, links, annots, graft_map);
+        }
     }
 
     fz_always(ctx) {

@@ -29,7 +29,8 @@ enum
 // Parameters are a PDF document and a Python string.
 // Returns a PDF action object.
 //-----------------------------------------------------------------------------
-pdf_obj *JM_new_javascript(fz_context *ctx, pdf_document *pdf, PyObject *value)
+pdf_obj *
+JM_new_javascript(fz_context *ctx, pdf_document *pdf, PyObject *value)
 {
     fz_buffer *res = NULL;
     if (!PyObject_IsTrue(value))  // no argument given
@@ -55,7 +56,8 @@ pdf_obj *JM_new_javascript(fz_context *ctx, pdf_document *pdf, PyObject *value)
 // dictionary, which must have keys /S and /JS. The value of /S must be
 // '/JavaScript'. The value of /JS is returned.
 //-----------------------------------------------------------------------------
-PyObject *JM_get_script(fz_context *ctx, pdf_obj *key)
+PyObject *
+JM_get_script(fz_context *ctx, pdf_obj *key)
 {
     pdf_obj *js = NULL;
     fz_buffer *res = NULL;
@@ -63,28 +65,21 @@ PyObject *JM_get_script(fz_context *ctx, pdf_obj *key)
     if (!key) Py_RETURN_NONE;
 
     if (!strcmp(pdf_to_name(ctx,
-                pdf_dict_get(ctx, key, PDF_NAME(S))), "JavaScript"))
-    {
+                pdf_dict_get(ctx, key, PDF_NAME(S))), "JavaScript")) {
         js = pdf_dict_get(ctx, key, PDF_NAME(JS));
     }
     if (!js) Py_RETURN_NONE;
 
-    if (pdf_is_string(ctx, js))
-    {
+    if (pdf_is_string(ctx, js)) {
         script = JM_UnicodeFromStr(pdf_to_text_string(ctx, js));
-    }
-    else if (pdf_is_stream(ctx, js))
-    {
+    } else if (pdf_is_stream(ctx, js)) {
         res = pdf_load_stream(ctx, js);
         script = JM_EscapeStrFromBuffer(ctx, res);
         fz_drop_buffer(ctx, res);
-    }
-    else
-    {
+    } else {
         Py_RETURN_NONE;
     }
-    if (PyObject_IsTrue(script))  // do not return an empty script
-    {
+    if (PyObject_IsTrue(script)) { // do not return an empty script
         return script;
     }
     Py_CLEAR(script);
@@ -104,39 +99,28 @@ void JM_put_script(fz_context *ctx, pdf_obj *annot_obj, pdf_obj *key1, pdf_obj *
     pdf_document *pdf = pdf_get_bound_document(ctx, annot_obj);  // owning PDF
 
     // if no new script given, just delete corresponding key
-    if (!value || !PyObject_IsTrue(value))
-    {
-        if (!key2)
-        {
+    if (!value || !PyObject_IsTrue(value)) {
+        if (!key2) {
             pdf_dict_del(ctx, annot_obj, key1);
-        }
-        else if (key1_obj)
-        {
+        } else if (key1_obj) {
             pdf_dict_del(ctx, key1_obj, key2);
         }
         return;
     }
 
     // read any existing script as a PyUnicode string
-    if (!key2 || !key1_obj)
-    {
+    if (!key2 || !key1_obj) {
         script = JM_get_script(ctx, key1_obj);
-    }
-    else
-    {
+    } else {
         script = JM_get_script(ctx, pdf_dict_get(ctx, key1_obj, key2));
     }
 
     // replace old script, if different from new one
-    if (!PyObject_RichCompareBool(value, script, Py_EQ))
-    {
+    if (!PyObject_RichCompareBool(value, script, Py_EQ)) {
         pdf_obj *newaction = JM_new_javascript(ctx, pdf, value);
-        if (!key2)
-        {
+        if (!key2) {
             pdf_dict_put_drop(ctx, annot_obj, key1, newaction);
-        }
-        else
-        {
+        } else {
             pdf_dict_putl_drop(ctx, annot_obj, newaction, key1, key2, NULL);
         }
     }
@@ -147,33 +131,28 @@ void JM_put_script(fz_context *ctx, pdf_obj *annot_obj, pdf_obj *key1, pdf_obj *
 /*
 // Execute a JavaScript action for annot or field.
 //-----------------------------------------------------------------------------
-PyObject *JM_exec_script(fz_context *ctx, pdf_obj *annot_obj, pdf_obj *key1, pdf_obj *key2)
+PyObject *
+JM_exec_script(fz_context *ctx, pdf_obj *annot_obj, pdf_obj *key1, pdf_obj *key2)
 {
     PyObject *script = NULL;
     char *code = NULL;
-    fz_try(ctx)
-    {
+    fz_try(ctx) {
         pdf_document *pdf = pdf_get_bound_document(ctx, annot_obj);
         char buf[100];
-        if (!key2)
-        {
+        if (!key2) {
             script = JM_get_script(ctx, key1_obj);
-        }
-        else
-        {
+        } else {
             script = JM_get_script(ctx, pdf_dict_get(ctx, key1_obj, key2));
         }
         code = JM_Python_str_AsChar(script);
         fz_snprintf(buf, sizeof buf, "%d/A", pdf_to_num(ctx, annot_obj));
         pdf_js_execute(pdf->js, buf, code);
     }
-    fz_always(ctx)
-    {
+    fz_always(ctx) {
         JM_Python_str_DelForPy3(code);
         Py_XDECREF(string);
     }
-    fz_catch(ctx)
-    {
+    fz_catch(ctx) {
         Py_RETURN_FALSE;
     }
     Py_RETURN_TRUE;
@@ -184,8 +163,7 @@ PyObject *JM_exec_script(fz_context *ctx, pdf_obj *annot_obj, pdf_obj *key1, pdf
 //-----------------------------------------------------------------------------
 char *JM_field_type_text(int wtype)
 {
-    switch(wtype)
-    {
+    switch(wtype) {
         case(PDF_WIDGET_TYPE_BUTTON):
             return "Button";
         case(PDF_WIDGET_TYPE_CHECKBOX):
@@ -213,8 +191,7 @@ void JM_set_field_type(fz_context *ctx, pdf_document *doc, pdf_obj *obj, int typ
 	int clearbits = 0;
 	pdf_obj *typename = NULL;
 
-	switch(type)
-	{
+	switch(type) {
 	case PDF_WIDGET_TYPE_BUTTON:
 		typename = PDF_NAME(Btn);
 		setbits = PDF_BTN_FIELD_IS_PUSHBUTTON;
@@ -247,8 +224,7 @@ void JM_set_field_type(fz_context *ctx, pdf_document *doc, pdf_obj *obj, int typ
 	if (typename)
 		pdf_dict_put_drop(ctx, obj, PDF_NAME(FT), typename);
 
-	if (setbits != 0 || clearbits != 0)
-	{
+	if (setbits != 0 || clearbits != 0) {
 		int bits = pdf_dict_get_int(ctx, obj, PDF_NAME(Ff));
 		bits &= ~clearbits;
 		bits |= setbits;
@@ -265,13 +241,11 @@ pdf_annot *JM_create_widget(fz_context *ctx, pdf_document *doc, pdf_page *page, 
 	int old_sigflags = pdf_to_int(ctx, pdf_dict_getp(ctx, pdf_trailer(ctx, doc), "Root/AcroForm/SigFlags"));
 	pdf_annot *annot = pdf_create_annot_raw(ctx, page, PDF_ANNOT_WIDGET);
 
-	fz_try(ctx)
-	{
+	fz_try(ctx) {
 		JM_set_field_type(ctx, doc, annot->obj, type);
 		pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME(T), fieldname);
 
-		if (type == PDF_WIDGET_TYPE_SIGNATURE)
-		{
+		if (type == PDF_WIDGET_TYPE_SIGNATURE) {
 			int sigflags = (old_sigflags | (SigFlag_SignaturesExist|SigFlag_AppendOnly));
 			pdf_dict_putl_drop(ctx, pdf_trailer(ctx, doc), pdf_new_int(ctx, sigflags), PDF_NAME(Root), PDF_NAME(AcroForm), PDF_NAME(SigFlags), NULL);
 		}
@@ -281,8 +255,7 @@ pdf_annot *JM_create_widget(fz_context *ctx, pdf_document *doc, pdf_page *page, 
 		annot array. We also need it linked into the document's form
 		*/
 		form = pdf_dict_getp(ctx, pdf_trailer(ctx, doc), "Root/AcroForm/Fields");
-		if (!form)
-		{
+		if (!form) {
 			form = pdf_new_array(ctx, doc, 1);
 			pdf_dict_putl_drop(ctx, pdf_trailer(ctx, doc),
                                form,
@@ -292,16 +265,14 @@ pdf_annot *JM_create_widget(fz_context *ctx, pdf_document *doc, pdf_page *page, 
                                NULL);
 		}
 
-		pdf_array_push(ctx, form, annot->obj); /* Cleanup relies on this statement being last */
+		pdf_array_push(ctx, form, annot->obj); // Cleanup relies on this statement being last
 	}
-	fz_catch(ctx)
-	{
+	fz_catch(ctx) {
 		pdf_delete_annot(ctx, page, annot);
 
-		/* An empty Fields array may have been created, but that is harmless */
-
-		if (type == PDF_WIDGET_TYPE_SIGNATURE)
+		if (type == PDF_WIDGET_TYPE_SIGNATURE) {
 			pdf_dict_putl_drop(ctx, pdf_trailer(ctx, doc), pdf_new_int(ctx, old_sigflags), PDF_NAME(Root), PDF_NAME(AcroForm), PDF_NAME(SigFlags), NULL);
+        }
 
 		fz_rethrow(ctx);
 	}
@@ -371,8 +342,7 @@ PyObject *JM_listbox_value(fz_context *ctx, pdf_annot *annot)
 
     // extract a list of strings
     // each entry may again be an array: take second entry then
-    for (i = 0; i < n; i++)
-    {
+    for (i = 0; i < n; i++) {
         pdf_obj *elem = pdf_array_get(ctx, optarr, i);
         if (pdf_is_array(ctx, elem))
             elem = pdf_array_get(ctx, elem, 1);
@@ -384,7 +354,7 @@ PyObject *JM_listbox_value(fz_context *ctx, pdf_annot *annot)
 // ComboBox retrieve value
 //-----------------------------------------------------------------------------
 PyObject *JM_combobox_value(fz_context *ctx, pdf_annot *annot)
-{   // combobox values are treated like listbox values
+{   // combobox treated like listbox
     return JM_listbox_value(ctx, annot);
 }
 
@@ -407,18 +377,14 @@ PyObject *JM_choice_options(fz_context *ctx, pdf_annot *annot)
     int i, m;
     PyObject *liste = PyList_New(0);
 
-    for (i = 0; i < n; i++)
-    {
+    for (i = 0; i < n; i++) {
         m = pdf_array_len(ctx, pdf_array_get(ctx, optarr, i));
-        if (m == 2)
-        {
+        if (m == 2) {
             val = Py_BuildValue("ss",
             pdf_to_text_string(ctx, pdf_array_get(ctx, pdf_array_get(ctx, optarr, i), 0)),
             pdf_to_text_string(ctx, pdf_array_get(ctx, pdf_array_get(ctx, optarr, i), 1)));
             LIST_APPEND_DROP(liste, val);
-        }
-        else
-        {
+        } else {
             val = JM_UnicodeFromStr(pdf_to_text_string(ctx, pdf_array_get(ctx, optarr, i)));
             LIST_APPEND_DROP(liste, val);
         }
@@ -438,8 +404,7 @@ void JM_set_choice_options(fz_context *ctx, pdf_annot *annot, PyObject *liste)
     char *opt = NULL;
     pdf_obj *optarr = pdf_new_array(ctx, pdf, n);
     PyObject *val = NULL;
-    for (i = 0; i < n; i++)
-    {
+    for (i = 0; i < n; i++) {
         val = PySequence_ITEM(liste, i);
         opt = JM_Python_str_AsChar(val);
         pdf_array_push_text_string(ctx, optarr, (const char *) opt);
@@ -462,23 +427,16 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     pdf_obj *obj = NULL, *js = NULL, *o = NULL;
     fz_buffer *res = NULL;
     Py_ssize_t i = 0, n = 0;
-    fz_try(ctx)
-    {
+    fz_try(ctx) {
         int field_type = pdf_widget_type(gctx, tw);
         SETATTR_DROP(Widget, "field_type", Py_BuildValue("i", field_type));
-        if (field_type == PDF_WIDGET_TYPE_SIGNATURE)
-        {
-            if (pdf_signature_is_signed(ctx, pdf, annot->obj))
-            {
+        if (field_type == PDF_WIDGET_TYPE_SIGNATURE) {
+            if (pdf_signature_is_signed(ctx, pdf, annot->obj)) {
                 SETATTR("is_signed", Py_True);
-            }
-            else
-            {
+            } else {
                 SETATTR("is_signed", Py_False);
             }
-        }
-        else
-        {
+        } else {
             SETATTR("is_signed", Py_None);
         }
         SETATTR_DROP(Widget, "border_style",
@@ -509,12 +467,10 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
         obj = pdf_dict_getl(ctx, annot->obj,
                                 PDF_NAME(BS), PDF_NAME(D), NULL);
-        if (pdf_is_array(ctx, obj))
-        {
+        if (pdf_is_array(ctx, obj)) {
             n = (Py_ssize_t) pdf_array_len(ctx, obj);
             PyObject *d = PyList_New(n);
-            for (i = 0; i < n; i++)
-            {
+            for (i = 0; i < n; i++) {
                 PyList_SET_ITEM(d, i, Py_BuildValue("i", pdf_to_int(ctx,
                                 pdf_array_get(ctx, obj, (int) i))));
             }
@@ -528,12 +484,10 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
                 Py_BuildValue("i", pdf_text_widget_format(ctx, tw)));
 
         obj = pdf_dict_getl(ctx, annot->obj, PDF_NAME(MK), PDF_NAME(BG), NULL);
-        if (pdf_is_array(ctx, obj))
-        {
+        if (pdf_is_array(ctx, obj)) {
             n = (Py_ssize_t) pdf_array_len(ctx, obj);
             PyObject *col = PyList_New(n);
-            for (i = 0; i < n; i++)
-            {
+            for (i = 0; i < n; i++) {
                 PyList_SET_ITEM(col, i, Py_BuildValue("f",
                 pdf_to_real(ctx, pdf_array_get(ctx, obj, (int) i))));
             }
@@ -541,12 +495,10 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         }
 
         obj = pdf_dict_getl(ctx, annot->obj, PDF_NAME(MK), PDF_NAME(BC), NULL);
-        if (pdf_is_array(ctx, obj))
-        {
+        if (pdf_is_array(ctx, obj)) {
             n = (Py_ssize_t) pdf_array_len(ctx, obj);
             PyObject *col = PyList_New(n);
-            for (i = 0; i < n; i++)
-            {
+            for (i = 0; i < n; i++) {
                 PyList_SET_ITEM(col, i, Py_BuildValue("f",
                 pdf_to_real(ctx, pdf_array_get(ctx, obj, (int) i))));
             }
@@ -560,8 +512,7 @@ void JM_get_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         SETATTR_DROP(Widget, "_text_da", JM_UnicodeFromStr(da));
 
         obj = pdf_dict_getl(ctx, annot->obj, PDF_NAME(MK), PDF_NAME(CA), NULL);
-        if (obj)
-        {
+        if (obj) {
             SETATTR_DROP(Widget, "button_caption",
                     JM_UnicodeFromStr((char *)pdf_to_text_string(ctx, obj)));
         }
@@ -623,13 +574,11 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // fill color -------------------------------------------------------------
     value = GETATTR("fill_color");
-    if (value && PySequence_Check(value))
-    {
+    if (value && PySequence_Check(value)) {
         n = PySequence_Size(value);
         fill_col = pdf_new_array(ctx, pdf, n);
         float col = 0;
-        for (i = 0; i < n; i++)
-        {
+        for (i = 0; i < n; i++) {
             JM_FLOAT_ITEM(value, i, &col);
             pdf_array_push_real(ctx, fill_col, col);
         }
@@ -640,12 +589,10 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // dashes -----------------------------------------------------------------
     value = GETATTR("border_dashes");
-    if (value && PySequence_Check(value))
-    {
+    if (value && PySequence_Check(value)) {
         n = PySequence_Size(value);
         dashes = pdf_new_array(ctx, pdf, n);
-        for (i = 0; i < n; i++)
-        {
+        for (i = 0; i < n; i++) {
             pdf_array_push_int(ctx, dashes,
                                (int64_t) PyInt_AsLong(PySequence_ITEM(value, i)));
         }
@@ -658,13 +605,11 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // border color -----------------------------------------------------------
     value = GETATTR("border_color");
-    if (value && PySequence_Check(value))
-    {
+    if (value && PySequence_Check(value)) {
         n = PySequence_Size(value);
         border_col = pdf_new_array(ctx, pdf, n);
         float col = 0;
-        for (i = 0; i < n; i++)
-        {
+        for (i = 0; i < n; i++) {
             JM_FLOAT_ITEM(value, i, &col);
             pdf_array_push_real(ctx, border_col, col);
         }
@@ -682,8 +627,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // field label -----------------------------------------------------------
     value = GETATTR("field_label");
-    if (value != Py_None)
-    {
+    if (value != Py_None) {
         char *label = JM_Python_str_AsChar(value);
         pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME(TU), label);
         JM_Python_str_DelForPy3(label);
@@ -692,11 +636,14 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // field name -------------------------------------------------------------
     value = GETATTR("field_name");
-    if (value != Py_None)
-    {
+    if (value != Py_None) {
         char *name = JM_Python_str_AsChar(value);
-        pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME(T), name);
+        char *old_name = pdf_field_name(ctx, annot->obj);
+        if (strcmp(name, old_name) != 0) {
+            pdf_dict_put_text_string(ctx, annot->obj, PDF_NAME(T), name);
+        }
         JM_Python_str_DelForPy3(name);
+        JM_Free(old_name);
     }
     Py_XDECREF(value);
 
@@ -705,8 +652,9 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     {
         value = GETATTR("text_maxlen");
         int text_maxlen = (int) PyInt_AsLong(value);
-        if (text_maxlen)
+        if (text_maxlen) {
             pdf_dict_put_int(ctx, annot->obj, PDF_NAME(MaxLen), text_maxlen);
+        }
         Py_XDECREF(value);
     }
     value = GETATTR("field_display");
@@ -716,8 +664,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // choice values ----------------------------------------------------------
     if (field_type == PDF_WIDGET_TYPE_LISTBOX ||
-        field_type == PDF_WIDGET_TYPE_COMBOBOX)
-    {
+        field_type == PDF_WIDGET_TYPE_COMBOBOX) {
         value = GETATTR("choice_values");
         JM_set_choice_options(ctx, annot, value);
         Py_XDECREF(value);
@@ -752,12 +699,10 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // field flags ------------------------------------------------------------
     int field_flags = 0, Ff = 0;
-    if (field_type != PDF_WIDGET_TYPE_CHECKBOX)
-    {
+    if (field_type != PDF_WIDGET_TYPE_CHECKBOX) {
         value = GETATTR("field_flags");
         field_flags = (int) PyInt_AsLong(value);
-        if (!PyErr_Occurred())
-        {
+        if (!PyErr_Occurred()) {
             Ff = pdf_field_flags(ctx, annot->obj);
             Ff |= field_flags;
         }
@@ -769,8 +714,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     value = GETATTR("button_caption");
     char *ca = JM_Python_str_AsChar(value);
     Py_XDECREF(value);
-    if (ca)
-    {
+    if (ca) {
         pdf_field_set_button_caption(ctx, annot->obj, ca);
         JM_Python_str_DelForPy3(ca);
     }
@@ -810,21 +754,17 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     {
     case PDF_WIDGET_TYPE_CHECKBOX:
     case PDF_WIDGET_TYPE_RADIOBUTTON:
-        if (PyObject_RichCompareBool(value, Py_True, Py_EQ))
-        {
+        if (PyObject_RichCompareBool(value, Py_True, Py_EQ)) {
             result = pdf_set_field_value(ctx, pdf, annot->obj, "Yes", 1);
             pdf_dict_put_name(ctx, annot->obj, PDF_NAME(V), "Yes");
-        }
-        else
-        {
+        } else {
             result = pdf_set_field_value(ctx, pdf, annot->obj, "Off", 1);
             pdf_dict_put(ctx, annot->obj, PDF_NAME(V), PDF_NAME(Off));
         }
         break;
     default:
         text = JM_Python_str_AsChar(value);
-        if (text)
-        {
+        if (text) {
             result = pdf_set_field_value(ctx, pdf, annot->obj, (const char *)text, 1);
             JM_Python_str_DelForPy3(text);
         }

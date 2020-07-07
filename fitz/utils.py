@@ -3434,7 +3434,7 @@ def scrub(
 
 
 def fillTextbox(
-    writer, rect=None, text=None, font=None, fontsize=11, align=0, warn=True
+    writer, rect, text, pos=None, font=None, fontsize=11, align=0, warn=True
 ):
     """Fill a rectangle with text.
 
@@ -3442,7 +3442,8 @@ def fillTextbox(
         writer: TextWriter object (= "self")
         text: string or list/tuple of strings.
         rect: rect-like to receive the text.
-        font: Font object (default Font('helv'))
+        pos: point-like start position of first word.
+        font: Font object (default Font('helv')).
         fontsize: the fontsize.
         align: (int) 0 = left, 1 = center, 2 = right, 3 = justify
         warn: (bool) just warn on text overflow, else raise exception.
@@ -3452,11 +3453,22 @@ def fillTextbox(
     rect = fitz.Rect(rect)
     if rect.isEmpty or rect.isInfinite:
         raise ValueError("fill rect must be finite and not empty.")
-    if not text:
-        raise ValueError("no text to output")
 
-    if font is None or type(font) is not Font:
+    if type(font) is not Font:
         font = Font("helv")
+
+    tolerance = fontsize * 0.25
+    width = rect.width - tolerance  # available horizontal space
+
+    len_space = textlen(" ")  # width of space character
+
+    # starting point of the text
+    if pos is not None:
+        pos = Point(pos)
+        if not pos in rect:
+            raise ValueError("'pos' must be inside 'rect'")
+    else:  # default is just below rect top-left
+        pos = rect.tl + (tolerance, fontsize * 1.3)
 
     # calculate displacement factor for alignment
     if align == fitz.TEXT_ALIGN_CENTER:
@@ -3472,16 +3484,14 @@ def fillTextbox(
 
     text = " \n".join(text).split(" ")  # split in words, preserve line breaks
 
-    tolerance = fontsize * 0.25
-    width = rect.width - tolerance
-    len_space = textlen(" ")
-
-    # we first compute lists of words and corresponding lengths
+    # compute lists of words and word lengths
     words = []  # recomputed list of words
     len_words = []  # corresponding lengths
 
     for word in text:
         # fill the lists of words and their lengths
+        # this splits words longer than width into chunks, which each are
+        # treated as words themselves.
         if word.startswith("\n"):
             len_word = textlen(word[1:])
         else:
@@ -3506,36 +3516,49 @@ def fillTextbox(
         words.append(w)  # output tail of long word
         len_words.append(l)  # output length of long word tail
 
-    pos = 0  # index of current word processed
-    line_ctr = 1  # counter for output lines
-    end_pos = len(words)  # number of words
+    idx = 0  # index of current word processed
+    line_ctr = 0  # counter for output lines
+    end_idx = len(words)  # number of words
 
-    while True:  # now output the text
-        # compute the new insertion point
-        # we add a small distance to the left to copy with funny glyph bboxes
-        start = rect.tl + (tolerance, fontsize * 1.3 * line_ctr)
-        if start.y > rect.y1:  # landed below rectangle area
-            if warn:
-                print("Warning: only fitting %i of %i total words." % (pos, end_pos))
-                break
-            else:
-                raise ValueError("only fitting %i of %i total words." % (pos, end_pos))
-        if pos >= end_pos:  # all words processed
+    # -------------------------------------------------------------------------
+    # each loop outputs one line
+    # -------------------------------------------------------------------------
+    while True:
+        if idx >= end_idx:  # all words processed
             break
 
-        word = words[pos]  # get first word for the line
+        # compute the new insertion point
+        if line_ctr == 0 and len_words[0] >= rect.x1 - pos.x and idx == 0:
+            line_ctr = 1  # first word wont fit in first line: take next one
+
+        if line_ctr == 0:  # first line in rect
+            start = pos
+            width = rect.x1 - pos.x
+        else:
+            start = Point(rect.x0 + tolerance, pos.y + fontsize * 1.3 * line_ctr)
+            width = rect.width - tolerance
+
+        if start.y > rect.y1:  # landed below rectangle area
+            if warn:
+                print("Warning: only fitting %i of %i total words." % (idx, end_idx))
+                break
+            else:
+                raise ValueError("only fitting %i of %i total words." % (idx, end_idx))
+
+        word = words[idx]  # get first word for the line
         if word.startswith("\n"):  # remove any leading line breaks
             word = word[1:]
 
-        line = [word]  # create a list of words fitting in one line
-        len_line = [len_words[pos]]
+        line = [word]  # list of words fitting in this line
+        len_line = [len_words[idx]]  # list of word lengths
+
         exhausted = False  # switch indicating we are done
         justify = True  # enable text justify as default
-        next_words = range(pos + 1, end_pos)  # remaining words in text
+        next_words = range(idx + 1, end_idx)  # remaining words in text
 
         for i in next_words:  # try adding more words to the line
             nw = words[i]  # next word
-            if nw.startswith("\n"):  # a forced line break
+            if nw.startswith("\n"):  # forced line break
                 justify = False  # do not justify this current line
                 break
             tl = len_space + len_words[i]
@@ -3543,7 +3566,7 @@ def fillTextbox(
                 break
             line.append(nw)  # append new word
             len_line.append(len_words[i])  # add its length
-            if i >= end_pos - 1:  # if we exhausted the words
+            if i >= end_idx - 1:  # if we exhausted the words
                 justify = False  # do not justify current line
                 exhausted = True  # and turn on switch
 
@@ -3568,5 +3591,5 @@ def fillTextbox(
         if len(next_words) == 0 or exhausted is True:  # no words left
             break
 
-        pos = i  # number of next word to read
+        idx = i  # number of next word to read
         line_ctr += 1  # line counter
