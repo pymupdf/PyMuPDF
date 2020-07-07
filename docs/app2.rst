@@ -259,7 +259,7 @@ XHTML
 
 Text Extraction Flags Defaults
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*(New in version 1.16.2)* Method :meth:`Page.getText` supports a keyword parameter *flags* *(int)* to control the amount and the quality of extracted data. The following table shows the defaults settings (flags parameter omitted or None) for each extraction variant. A description of the respective bit settings can be found in :ref:`TextPreserve`.
+*(New in version 1.16.2)* Method :meth:`Page.getText` supports a keyword parameter *flags* *(int)* to control the amount and the quality of extracted data. The following table shows the defaults settings (flags parameter omitted or None) for each extraction variant. If you specify flags with a value other than *None*, be aware that you must set **all desired** options. A description of the respective bit settings can be found in :ref:`TextPreserve`.
 
 =================== ==== ==== ===== === ==== ======= ===== ======
 Indicator           text html xhtml xml dict rawdict words blocks

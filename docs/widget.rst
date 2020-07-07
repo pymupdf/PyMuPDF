@@ -8,7 +8,7 @@ This class represents a PDF Form field, also called "widget". Fields are a speci
 
 Like annotations, widgets live on PDF pages. Similar to annotations, the first widget on a page is accessible via :attr:`Page.firstWidget` and subsequent widgets can be accessed via the :attr:`Widget.next` property.
 
-*(Changed in version 1.16.0)* Widgets are no longer mixed with annotations. :attr:`Page.firstAnnot` and :meth:`Annot.next` will deliver non-widget annotations exclusively, and be *None* if only form fields exist on a page. Vice versa, :attr:`Page.firstWidget` and :meth:`Widget.next` will only show widgets.
+*(Changed in version 1.16.0)* MuPDF no longer treats widgets as a subset of general annotations. Consequently, :attr:`Page.firstAnnot` and :meth:`Annot.next` will deliver non-widget annotations exclusively, and be *None* if only form fields exist on a page. Vice versa, :attr:`Page.firstWidget` and :meth:`Widget.next` will only show widgets. This design decision is purely internal to MuPDF; technically, links, annotations and fields have a lot in common and also continue to share the better part of their code within (Py-) MuPDF.
 
 
 **Class API**
@@ -17,7 +17,7 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
     .. method:: update
 
-       After any changes to a widget, this method **must be used** to store them in the PDF.
+       After any changes to a widget, this method **must be used** to store them in the PDF [#f1]_.
 
     .. method:: reset
 
@@ -41,11 +41,11 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
     .. attribute:: border_dashes
 
-       A list of integers defining the dash properties of the border line. This is only meaningful if *border_style == "D"* and :attr:`border_color` is provided.
+       A list/tuple of integers defining the dash properties of the border line. This is only meaningful if *border_style == "D"* and :attr:`border_color` is provided.
 
     .. attribute:: choice_values
 
-       Python sequence of strings defining the valid choices of list boxes and combo boxes. For these widget types the property is mandatory. Ignored for other types. The sequence must contain at least two items. When updating the widget, this sequence will always the complete new list of values must be specified.
+       Python sequence of strings defining the valid choices of list boxes and combo boxes. For these widgets, this property is mandatory and must contain at least two items. Ignored for other types.
 
     .. attribute:: field_name
 
@@ -162,3 +162,7 @@ ZaDb          ZapfDingbats
 ============= =======================
 
 You are generally free to use any font for every widget. However, we recommend using *ZaDb* ("ZapfDingbats") and fontsize 0 for check boxes: typical viewers will put a correctly sized tickmark in the field's rectangle, when it is clicked.
+
+.. rubric:: Footnotes
+
+.. [#f1] If you intend to re-access a new or updated field (e.g. for making a pixmap), make sure to reload the page first. Either close and re-open the document, or load another page first, or simply do ``page = doc.reload_page(page)``.

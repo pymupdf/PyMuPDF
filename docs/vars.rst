@@ -201,6 +201,12 @@ Possible values of :attr:`linkDest.kind` (link destination kind). For details co
 
     :rtype: int
 
+.. py:data:: LINK_NAMED
+
+    4 -- points to a named location.
+
+    :rtype: int
+
 .. py:data:: LINK_GOTOR
 
     5 -- Points to a place in another PDF document.

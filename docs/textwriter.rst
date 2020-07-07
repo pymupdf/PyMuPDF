@@ -46,18 +46,19 @@ There also exists :meth:`Page.writeText` which is able to combine one or more Te
 
       :returns: :attr:`textRect` and :attr:`lastPoint`.
 
-   .. method:: fillTextbox(rect, text, font=None, fontsize=11, align=0, warn=True)
+   .. method:: fillTextbox(rect, text, pos=None, font=None, fontsize=11, align=0, warn=True)
 
-      Fill a given rectangle with text. This is a convenience method to use instead of :meth:`append`.
+      Fill a given rectangle with text. This is a convenience method to use as an alternative to :meth:`append`.
 
       :arg rect_like rect: the area to fill. No part of the text will appear outside of this.
       :arg str,sequ text: the text. Can be specified as a (UTF-8) string or a list / tuple of strings. A string will first be converted to a list using *splitlines()*. Every list item will begin on a new line (forced line breaks).
+      :arg point_like pos: *(new in v1.17.3)* start storing at this point. Default is a point near rectangle top-left.
       :arg font: the :ref:`Font`, default `fitz.Font("helv")`.
       :arg float fontsize: the fontsize.
       :arg int align: text alignment. Use one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT or TEXT_ALIGN_JUSTIFY.
-      :arg bool warn: warn on text overflow, or raise an exception.
+      :arg bool warn: warn on text overflow (default), or raise an exception. In any case, text not fitting will not be written.
 
-   .. note:: Use these methods as often as is required -- there is no technical limit, except memory constraints of your system. You can also mix appends and text boxes and have multiple of both. Text positioning is controlled by the insertion point. There is no need to adhere to any reading order.
+   .. note:: Use these methods as often as is required -- there is no technical limit (except memory constraints of your system). You can also mix appends and text boxes and have multiple of both. Text positioning is controlled by the insertion point. There is no need to adhere to any order.
 
 
    .. method:: writeText(page, opacity=None, color=None, morph=None, overlay=True)
@@ -101,3 +102,4 @@ To see some demo scripts dealing with TextWriter, have a look at `this <https://
   2. If you need different colors / transpareny, you must create a separate TextWriter. Whenever you determine the color should change, simply append the text to the respective TextWriter using the previously returned :attr:`lastPoint` as position for the new text span.
   3. Appending items or text boxes can occur in arbitrary order: only the position parameter controls where text appears.
   4. Font and fontsize can freely vary within the same TextWriter. This can be used to let text with different properties appear on the same displayed line: just specify *pos* accordingly, and e.g. set it to :attr:`lastPoint` of the previously added item.
+  5. You can use the *pos* argument of :meth:`TextWriter.fillTextbox` to indent the first line, so its text may continue preceeding one in a continuous manner.

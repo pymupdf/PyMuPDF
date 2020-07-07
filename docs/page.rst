@@ -22,9 +22,15 @@ In a nutshell, this is what you can do with PyMuPDF:
 
 .. note::
 
-   Methods require coordinates (points, rectangles) to put content in desired places. Please be aware that since v1.17.0 these coordinates **must always** be provided relative to the **unrotated** page. The reverse is also true: all coordinates returned by methods and attributes pertain to the unrotated page.
+   Methods require coordinates (points, rectangles) to put content in desired places. Please be aware that since v1.17.0 these coordinates **must always** be provided relative to the **unrotated** page. The reverse is also true: expcept :attr:`Page.rect`, resp. :meth:`Page.bound` (both *reflect* when the page is rotated), all coordinates returned by methods and attributes pertain to the unrotated page.
 
    So the returned value of e.g. :meth:`Page.getImageBbox` will not change if you do a :meth:`Page.setRotation`. The same is true for coordinates returned by :meth:`Page.getText`, annotation rectangles, and so on. If you want to find out, where an object is located in **rotated coordinates**, multiply the coordinates with :attr:`Page.rotationMatrix`. There also is its inverse, :attr:`Page.derotationMatrix`, which you can use when interfacing with other readers, which may behave differently in this respect.
+
+.. note::
+
+   If you add or update annotations, links or form fields on the page and immediately afterwards need to work with them (i.e. **without leaving the page**), you should reload the page using :meth:`Document.reload_page` before referring to these new or updated items.
+
+   This ensures all your changes have been fully applied to PDF structures, so can safely create Pixmaps or successfully iterate over annotations, links and form fields.
 
 ================================= =======================================================
 **Method / Attribute**            **Short Description**
@@ -914,7 +920,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       PDF only: Sets the rotation of the page.
 
-      :arg int rotate: An integer specifying the required rotation in degrees. Must be an integer multiple of 90.
+      :arg int rotate: An integer specifying the required rotation in degrees. Must be an integer multiple of 90. Values will be converted to one of 0, 90, 180, 270.
 
    .. index::
       pair: clip; showPDFpage
@@ -1046,7 +1052,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. attribute:: rotation
 
-      PDF only: contains the rotation of the page in degrees and *-1* for other document types.
+      Contains the rotation of the page in degrees (always 0 for non-PDF types).
 
       :type: int
 
