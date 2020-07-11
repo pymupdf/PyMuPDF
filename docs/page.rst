@@ -231,11 +231,22 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg str text: *(New in v1.16.12)* text to be placed in the rectangle after applying the redaction (and thus removing old content).
 
-      :arg str fontname: *(New in v1.16.12)* the font to use when *text* is given, otherwise ignored. This must be one of the :ref:`Base14_Fonts` or a CJK fonts.
+      :arg str fontname: *(New in v1.16.12)* the font to use when *text* is given, otherwise ignored. The same rules apply as for :meth:`Page.insertTextbox` -- which is the method :meth:`Page.apply_redactions` internally invokes. The replacement text will be **vertically centered**, if this is one of the CJK or :ref:`Base-14-Fonts`.
+
+         .. note::
+            For an **existing** font of the page, use its reference name as *fontname* (*item[4]* of its entry in :meth:`Page.getFontList`). To use a new, non-builtin font, proceed as follows::
+
+               page.insertText(point,  # anywhere, but outside all redaction rectangles
+               "somthing",  # some non-empty string
+               fontname="newname",  # new, unused reference name
+               fontfile="...",  # desired font file
+               render_mode=3,  # makes the text invisible
+               )
+               page.addRedactAnnot(..., fontname="newname")
 
       :arg float fontsize: *(New in v1.16.12)* the fontsize to use for the replacing text. If the text is too large to fit, several insertion attempts will be made, gradually reducing this value down to 4. If then the text will still not fit, no text insertion will take place at all.
 
-      :arg int align: *(New in v1.16.12)* the horizontal alignment for the replacing text. See :meth:`insertTextbox` for available values. The vertical alignment is always (approximately) centered.
+      :arg int align: *(New in v1.16.12)* the horizontal alignment for the replacing text. See :meth:`insertTextbox` for available values. The vertical alignment is (approximately) centered if a PDF built-in font is used (CJK or :ref:`Base-14-Fonts`).
 
       :arg sequence fill: *(New in v1.16.12)* the fill color of the rectangle **after applying** the redaction. The default is *white = (1, 1, 1)*, which is also taken if *None* is specified. *(Changed in v1.16.13)* To suppress a fill color alltogether, specify *False*. In this cases the rectangle remains transparent.
 
@@ -345,13 +356,17 @@ In a nutshell, this is what you can do with PyMuPDF:
       :returns: *True* if at least one redaction annotation has been processed, *False* otherwise.
 
       .. note::
-         Text contained in a redaction rectangle will be **physically** removed from the page and will no longer appear in e.g. text extractions. Other annotations are unaffected.
+         Text contained in a redaction rectangle will be **physically** removed from the page and will no longer appear in e.g. text extractions or anywhere else. Other annotations are unaffected.
 
          Images and links will also **physically** be removed from the page. For an image, overlapping parts will be blanked-out. Links will always be completely removed.
 
-         Text removal is made on a by-character level: A character is removed if its bbox has a non-empty intersection with a redaction *(changed in v1.17)*.
+         Text removal is done by character: A character is removed if its bbox has a **non-empty intersection** with a redaction *(changed in v1.17)*.
 
-         Redactions are an easy way to replace single words in a PDF, or to just physically remove them from the PDF: locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence. Be wary if the replacement is much longer than the original -- this may lead to an awkward appearance or no new text at all. Also, for a number of reasons, the new text may not exactly be positioned on the same line like the old one.
+         Redactions are an easy way to replace single words in a PDF, or to just physically remove them from the PDF: locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence.
+
+            * Be wary if the replacement is longer than the original -- this may lead to an awkward appearance, line breaks or no new text at all.
+
+            * For a number of reasons, the new text may not exactly be positioned on the same line like the old one -- especially true if the replacement font was not one of CJK or :ref:`Base-14-Fonts`.
 
    .. method:: deleteLink(linkdict)
 
@@ -811,9 +826,8 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       * The method should deliver correct results now.
       * The page's ``/Contents`` are no longer modified by this method.
-      * Images occurring inside embedded PDF pages (i.e. in **Form XObjects**) never correctly worked and are now ignored [#f5]_. Use the items of :meth:`Document.getPageXObjectList` to determine the bboxes of embedded PDF pages.
       
-      :arg list,str item: an item of the list :meth:`Page.getImageList` with *full=True* specified, or the **name** entry of such an item, which is item[-3] (or item[7] respectively). *Changed in v1.17.0:* only images are considered where item[1] == 0 [#f5]_. This are images **directly** referenced by the page.
+      :arg list,str item: an item of the list :meth:`Page.getImageList` with *full=True* specified, or the **name** entry of such an item, which is item[-3] (or item[7] respectively).
 
       :rtype: :ref:`Rect`
       :returns: the boundary box of the image.
@@ -1220,5 +1234,3 @@ The page number "pno"` is a 0-based integer *-inf < pno < pageCount*.
 .. [#f3] Not all PDF readers display these fonts at all. Some others do, but use a wrong character spacing, etc.
 
 .. [#f4] You are generally free to choose any of the :ref:`mupdficons` you consider adequate.
-
-.. [#f5] This restriction will be removed with the next MuPDF version again: all inserted images shown on the page will be reported correctly, whether the page itself invokes them or some of its Form XObjects.

@@ -7,7 +7,7 @@ Changes in Version 1.17.3
 * **Fixed** issue `#540 <https://github.com/pymupdf/PyMuPDF/issues/540>`_. Text extraction for EPUB should again work correctly.
 * **Fixed** issue `#548 <https://github.com/pymupdf/PyMuPDF/issues/548>`_. Documentation now includes ``LINK_NAMED``.
 * **Added** new parameter to control start of text in :meth:`TextWriter.fillTextbox`. Implements `#549 <https://github.com/pymupdf/PyMuPDF/issues/549>`_.
-
+* **Changed** documentation of :meth:`Page.addRedactAnnot` to explain the usage of non-builtin fonts.
 
 Changes in Version 1.17.2
 ---------------------------

@@ -4,24 +4,25 @@
 TextWriter
 ================
 
-*(New in v1.16.18)* This class represents a MuPDF *text* object. It can be thought of as a collection of text spans. Each span has its own starting position and its font and font size. It is an elegant alternative for writing text to PDF pages, when compared with methods :meth:`Page.insertText` and friends:
+*(New in v1.16.18)* This class represents a MuPDF *text* object. It can be thought of as a collection of text *"spans"*. Each span has its own starting position, font and font size. It is an elegant alternative for writing text to PDF pages, when compared with methods :meth:`Page.insertText` and friends:
 
-* **Improved text positioning:** Choose any point where insertion of a text span should start. The position of the last inserted character is returned, as well as the combined rectangle of all spans stored so far.
-* **Free font choice:** Each text span has its own font and fontsize. This lets you easily switch between normal, bold and italic versions of either the same or a different font when composing a larger text.
-* **Automatic fallback fonts:** If a character is not represented by the chosen font, alternative fonts are automatically checked. This significantly reduces the risk of seeing unprintable symbols in the output, so-called "TOFUs". PyMuPDF now also comes with the **universal font "Droid Sans Fallback Regular"**, which supports **all Latin** characters (incuding Cyrillic and Greek), and **all CJK** characters (Chinese, Japanese, Korean).
+* **Improved text positioning:** Choose any point where insertion of a text span should start. Storing a text span returns the coordinates of the *last character* of the span.
+* **Free font choice:** Each text span has its own font and fontsize. This lets you easily switch between font and font characteristics when composing a larger text.
+* **Automatic fallback fonts:** If a character is not represented by the chosen font, alternative fonts are automatically searched. This significantly reduces the risk of seeing unprintable symbols in the output ("TOFUs"). PyMuPDF now also comes with the **universal font "Droid Sans Fallback Regular"**, which supports **all Latin** characters (incuding Cyrillic and Greek), and **all CJK** characters (Chinese, Japanese, Korean).
+* **Cyrillic and Greek Support:** The :ref:`Base-14-fonts` have integrated support of Cyrillic and Greek characters **without specifying encoding.** If your text is a mixture of Latin, Greek and Cyrillic, it will be shown correctly if you just use e.g. font "Helvetica".
 * **Transparency support:** Parameter *opacity* is supported. This offers a handy way to create watermark-style text.
 * **Justified text:** Supported for any font -- not just simple fonts as in :meth:`Page.insertText`.
-* **Reusability:** A TextWriter exists independent from any page. The same text can be written multiple times, either to the same or to other pages, in the same or in different PDFs, choosing different colors or transparency.
+* **Reusability:** A TextWriter object exists independent from any page. It can be written multiple times, either to the same or to other pages, in the same or in different PDFs, choosing different colors or transparency.
 
 Using this object entails three steps:
 
-1. When **created**, a TextWriter object requires a fixed **page rectangle** in relation to which it calculates text positions. Text can be written to a page if and only if the page's size equals that of the TextWriter.
-2. Store text in the TextWriter using methods :meth:`TextWriter.append` or :meth:`TextWriter.fillTextbox` any number of times.
-3. Output the stored text on some PDF page (having the same rectangle).
+1. When **created**, a TextWriter requires a fixed **page rectangle** in relation to which it calculates text span positions. Text can be written to a page if and only if its size equals that of the TextWriter.
+2. Store text in the TextWriter using methods :meth:`TextWriter.append` and :meth:`TextWriter.fillTextbox` as often as desired.
+3. Output the TextWriter object on some PDF page with a compatible size.
 
-Starting with version 1.17.0, TextWriters **do support** text rotation via the *morph* parameter of :meth:`TextWriter.writeText`.
+.. note:: Starting with version 1.17.0, TextWriters **do support** text rotation via the *morph* parameter of :meth:`TextWriter.writeText`.
 
-There also exists :meth:`Page.writeText` which is able to combine one or more TextWriters and jointly write them to a given rectangle and with a given any rotation angle -- much like :meth:`Page.showPDFpage`.
+There also exists :meth:`Page.writeText` which lets you combine one or more TextWriters and jointly write them to a given rectangle and with a given rotation angle -- much like :meth:`Page.showPDFpage`.
 
 **Class API**
 
