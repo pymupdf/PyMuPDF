@@ -55,6 +55,9 @@ Yet others are handy, general-purpose utilities.
 :meth:`planishLine`                  matrix to map a line to the x-axis
 :meth:`PaperSize`                    return width, height for a known paper format
 :meth:`PaperRect`                    return rectangle for a known paper format
+:meth:`sRGB_to_pdf`                  return PDF RGB color tuple from a sRGB integer
+:meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from a sRGB integer
+:meth:`make_table`                   return list of table cells for a given rectangle
 :attr:`paperSizes`                   dictionary of pre-defined paper formats
 ==================================== ==============================================================
 
@@ -86,6 +89,49 @@ Yet others are handy, general-purpose utilities.
       >>> fitz.PaperRect("letter-l")
       fitz.Rect(0.0, 0.0, 792.0, 612.0)
       >>>
+
+-----
+
+   .. method:: sRGB_to_pdf(srgb)
+
+      *New in v1.17.4*
+
+      Convenience function returning a PDF color triple (red, green, blue) for a given sRGB color integer as it occurs in :meth:`Page.getText` dictionaries "dict" and "rawdict".
+
+      :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
+
+      :returns: a tuple (red, green, blue) with float items in intervall *0 <= item <= 1* representing the same color.
+
+-----
+
+   .. method:: sRGB_to_rgb(srgb)
+
+      *New in v1.17.4*
+
+      Convenience function returning a color (red, green, blue) for a given sRGB color integer .
+
+      :arg int srgb: an integer of format RRGGBB, where each color component is an integer in range(255).
+
+      :returns: a tuple (red, green, blue) with integer items in intervall *0 <= item <= 255* representing the same color.
+
+-----
+
+   .. method:: make_table(rect=(0, 0, 1, 1), cols=1, rows=1)
+
+      *New in v1.17.4*
+
+      Convenience function returning a list of <rows x cols> :ref:`Rect` objects representing equal sized table cells for the given rectangle.
+
+      :arg rect_like rect: the rectangle to contain the table.
+      :arg int cols: the desired number of columns.
+      :arg int rows: the desired number of rows.
+      :returns: a list of :ref:`Rect` objects of equal size, whose union equals *rect*::
+
+         [
+            [cell00, cell01, ...]  # row 0
+            ...
+            [...]  # last row
+         ]
 
 -----
 

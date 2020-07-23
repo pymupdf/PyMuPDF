@@ -432,7 +432,8 @@ char *JM_Python_str_AsChar(PyObject *str)
 // Modified copy of function of pdfmerge.c: we also copy annotations, but
 // we skip **link** annotations. In addition we rotate output.
 //----------------------------------------------------------------------------
-static void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int page_from, int page_to, int rotate, int links, int copy_annots, pdf_graft_map *graft_map)
+static void
+page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc_src, int page_from, int page_to, int rotate, int links, int copy_annots, pdf_graft_map *graft_map)
 {
     pdf_obj *page_ref = NULL;
     pdf_obj *page_dict = NULL;
@@ -469,24 +470,26 @@ static void page_merge(fz_context *ctx, pdf_document *doc_des, pdf_document *doc
                 pdf_dict_put_drop(ctx, page_dict, known_page_objs[i], pdf_graft_mapped_object(ctx, graft_map, obj));
         }
 
-        if (copy_annots) {  // we shall copy annotations also
+        // Copy the annotations, but skip types Link and Popup.
+        // Also skip IRT annotations ("in response to").
+        // Remove dict keys P (parent) and Popup from copyied annot.
+        if (copy_annots) {
             pdf_obj *old_annots = pdf_dict_get(ctx, page_ref, PDF_NAME(Annots));
             if (old_annots) {
                 n = pdf_array_len(ctx, old_annots);
                 pdf_obj *new_annots = pdf_new_array(ctx, doc_des, n);
                 for (i = 0; i < n; i++) {
                     pdf_obj *o = pdf_array_get(ctx, old_annots, i);
-                    if (!pdf_name_eq(ctx, pdf_dict_get(ctx, o, PDF_NAME(Subtype)),
-                                     PDF_NAME(Link))) {
-                        pdf_array_push_drop(ctx, new_annots,
-                                pdf_graft_mapped_object(ctx, graft_map, o));
-                    }
+                    pdf_obj *subtype = pdf_dict_get(ctx, o, PDF_NAME(Subtype));
+                    if (pdf_name_eq(ctx, subtype, PDF_NAME(Link))) continue;
+                    if (pdf_name_eq(ctx, subtype, PDF_NAME(Popup))) continue;
+                    if (pdf_dict_gets(ctx, o, "IRT")) continue;
+                    pdf_obj *copy_o = pdf_graft_mapped_object(ctx, graft_map, o);
+                    pdf_dict_del(gctx, copy_o, PDF_NAME(Popup));
+                    pdf_dict_del(gctx, copy_o, PDF_NAME(P));
+                    pdf_array_push_drop(ctx, new_annots, copy_o);
                 }
-                if (pdf_array_len(ctx, new_annots)) {
-                    pdf_dict_put_drop(ctx, page_dict, PDF_NAME(Annots), new_annots);
-                } else {
-                    pdf_drop_obj(ctx, new_annots);
-                }
+                pdf_dict_put_drop(ctx, page_dict, PDF_NAME(Annots), new_annots);
             }
         }
         // rotate the page as requested
@@ -699,46 +702,6 @@ pdf_obj *JM_pdf_obj_from_str(fz_context *ctx, pdf_document *doc, char *src)
 
 }
 
-//-----------------------------------------------------------------------------
-// dummy structure for various tools and utilities
-//-----------------------------------------------------------------------------
-struct Tools {int index;};
-
-typedef struct fz_item fz_item;
-
-struct fz_item
-{
-	void *key;
-	fz_storable *val;
-	size_t size;
-	fz_item *next;
-	fz_item *prev;
-	fz_store *store;
-	const fz_store_type *type;
-};
-
-struct fz_store
-{
-	int refs;
-
-	/* Every item in the store is kept in a doubly linked list, ordered
-	 * by usage (so LRU entries are at the end). */
-	fz_item *head;
-	fz_item *tail;
-
-	/* We have a hash table that allows to quickly find a subset of the
-	 * entries (those whose keys are indirect objects). */
-	fz_hash_table *hash;
-
-	/* We keep track of the size of the store, and keep it below max. */
-	size_t max;
-	size_t size;
-
-	int defer_reap_count;
-	int needs_reaping;
-};
-
-
 //----------------------------------------------------------------------------
 // return normalized /Rotate value
 //----------------------------------------------------------------------------
@@ -860,4 +823,46 @@ fz_matrix JM_derotate_page_matrix(fz_context *ctx, pdf_page *page)
 {  // just the inverse of rotation
     return fz_invert_matrix(JM_rotate_page_matrix(ctx, page));
 }
+
+
+//-----------------------------------------------------------------------------
+// dummy structure for various tools and utilities
+//-----------------------------------------------------------------------------
+struct Tools {int index;};
+
+typedef struct fz_item fz_item;
+
+struct fz_item
+{
+	void *key;
+	fz_storable *val;
+	size_t size;
+	fz_item *next;
+	fz_item *prev;
+	fz_store *store;
+	const fz_store_type *type;
+};
+
+struct fz_store
+{
+	int refs;
+
+	/* Every item in the store is kept in a doubly linked list, ordered
+	 * by usage (so LRU entries are at the end). */
+	fz_item *head;
+	fz_item *tail;
+
+	/* We have a hash table that allows to quickly find a subset of the
+	 * entries (those whose keys are indirect objects). */
+	fz_hash_table *hash;
+
+	/* We keep track of the size of the store, and keep it below max. */
+	size_t max;
+	size_t size;
+
+	int defer_reap_count;
+	int needs_reaping;
+};
+
+
 %}

@@ -1,6 +1,18 @@
 Change Logs
 ===============
 
+Changes in Version 1.17.4
+---------------------------
+* **Fixed** issue `#561 <https://github.com/pymupdf/PyMuPDF/issues/561>`_. Handling of more than 10 :ref:`Font` objects on one page should now work correctly.
+* **Fixed** issue `#562 <https://github.com/pymupdf/PyMuPDF/issues/562>`_. Annotation pixmaps are no longer derived from the page pixmap, thus avoiding unintended inclusion of page content.
+* **Fixed** issue `#559 <https://github.com/pymupdf/PyMuPDF/issues/559>`_. This **MuPDF** bug is being temporarily fixed with a pre-version of MuPDF's next release.
+* **Added** utility function :meth:`repair_mono_font` for correcting displayed character spacing for some mono-spaced fonts.
+* **Added** utility method :meth:`Document.need_appearances` for fine-controlling Form PDF behavior. Addresses issue `#563 <https://github.com/pymupdf/PyMuPDF/issues/563>`_.
+* **Added** utility function :meth:`sRGB_to_pdf` to recover the PDF color triple for a given color integer in sRGB format.
+* **Added** utility function :meth:`sRGB_to_rgb` to recover the (R, G, B) color triple for a given color integer in sRGB format.
+* **Added** utility function :meth:`make_table` which delivers table cells for a given rectangle and desired numbers of columns and rows.
+* **Added** support for optional fonts in repository `pymupdf-fonts <https://github.com/pymupdf/pymupdf-fonts>`_.
+
 Changes in Version 1.17.3
 ---------------------------
 * **Fixed** an undocumented issue, which prevented fully cleaning a PDF page when using :meth:`Page.cleanContents`.

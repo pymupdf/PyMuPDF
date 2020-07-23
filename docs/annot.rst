@@ -67,7 +67,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :rtype: :ref:`Pixmap`
 
-      .. note:: If the annotation has just been created or modified
+      .. note:: If the annotation has just been created or modified, you should reload the page first via *page = doc.reload_page(page)*.
 
    .. method:: setInfo(info=None, content=None, title=None, creationDate=None, modDate=None, subject=None)
 

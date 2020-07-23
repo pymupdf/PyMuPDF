@@ -379,26 +379,24 @@ void JM_make_textpage_dict(fz_context *ctx, fz_stext_page *tp, PyObject *page_di
     fz_drop_buffer(ctx, text_buffer);
 }
 
-PyObject *JM_object_to_string(fz_context *ctx, pdf_obj *what, int compress, int ascii)
+
+fz_buffer *JM_object_to_buffer(fz_context *ctx, pdf_obj *what, int compress, int ascii)
 {
     fz_buffer *res=NULL;
     fz_output *out=NULL;
-    PyObject *text=NULL;
     fz_try(ctx) {
         res = fz_new_buffer(ctx, 1024);
         out = fz_new_output_with_buffer(ctx, res);
         pdf_print_obj(ctx, out, what, compress, ascii);
-        text = JM_EscapeStrFromBuffer(ctx, res);
     }
     fz_always(ctx) {
         fz_drop_output(ctx, out);
-        fz_drop_buffer(ctx, res);
-        PyErr_Clear();
     }
     fz_catch(ctx) {
-        return PyUnicode_FromString("");
+        return NULL;
     }
-    return text;
+    fz_terminate_buffer(gctx, res);
+    return res;
 }
 
 //-----------------------------------------------------------------------------
@@ -458,10 +456,11 @@ PyObject *JM_merge_resources(fz_context *ctx, pdf_page *page, pdf_obj *temp_res)
     if (pdf_is_dict(ctx, main_fonts))  // has page any fonts yet?
     {
         for (i = 0; i < pdf_dict_len(ctx, main_fonts); i++)
-        {   // get highest number of fonts named /F?
+        {   // get highest number of fonts named /Fxxx
             char *font = (char *) pdf_to_name(ctx, pdf_dict_get_key(ctx, main_fonts, i));
             if (strncmp(font, "F", 1) != 0) continue;
-            if (strcmp(start_str, font) < 0) strcpy(start_str, font);
+            if (strcmp(start_str, font) < 0 || strlen(start_str) < strlen(font))
+                strcpy(start_str, font);
         }
         while (strcmp(text, start_str) < 0)
         {   // compute next available number

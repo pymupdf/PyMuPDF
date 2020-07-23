@@ -94,7 +94,7 @@ There also exists :meth:`Page.writeText` which lets you combine one or more Text
       The page rectangle for which this TextWriter was created. Must not be modified.
 
 
-To see some demo scripts dealing with TextWriter, have a look at `this <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/textwriter>`_ rpository.
+To see some demo scripts dealing with TextWriter, have a look at `this <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/textwriter>`_ repository.
 
 
 .. note::
@@ -103,4 +103,4 @@ To see some demo scripts dealing with TextWriter, have a look at `this <https://
   2. If you need different colors / transpareny, you must create a separate TextWriter. Whenever you determine the color should change, simply append the text to the respective TextWriter using the previously returned :attr:`lastPoint` as position for the new text span.
   3. Appending items or text boxes can occur in arbitrary order: only the position parameter controls where text appears.
   4. Font and fontsize can freely vary within the same TextWriter. This can be used to let text with different properties appear on the same displayed line: just specify *pos* accordingly, and e.g. set it to :attr:`lastPoint` of the previously added item.
-  5. You can use the *pos* argument of :meth:`TextWriter.fillTextbox` to indent the first line, so its text may continue preceeding one in a continuous manner.
+  5. You can use the *pos* argument of :meth:`TextWriter.fillTextbox` to indent the first line, so its text may continue any preceeding one in a continuous manner.

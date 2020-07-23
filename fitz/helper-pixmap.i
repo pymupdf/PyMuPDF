@@ -309,13 +309,11 @@ JM_pixmap_from_page(fz_context *ctx,
                 else
                     for (i = 0; i < n; i++)
                         fz_set_separation_behavior(ctx, seps, i, FZ_SEPARATION_COMPOSITE);
-            }
-            else if (fz_page_uses_overprint(ctx, page)) {
+            } else if (fz_page_uses_overprint(ctx, page)) {
                 /* This page uses overprint, so we need an empty
                  * sep object to force the overprint simulation on. */
                 seps = fz_new_separations(ctx, 0);
-            }
-            else if (oi && fz_colorspace_n(ctx, oi) != fz_colorspace_n(ctx, colorspace)) {
+            } else if (oi && fz_colorspace_n(ctx, oi) != fz_colorspace_n(ctx, colorspace)) {
                 /* We have an output intent, and it's incompatible
                  * with the colorspace our device needs. Force the
                  * overprint simulation on, because this ensures that
@@ -328,16 +326,14 @@ JM_pixmap_from_page(fz_context *ctx,
 
         if (alpha) {
             fz_clear_pixmap(ctx, pix);
-        }
-        else {
+        } else {
             fz_clear_pixmap_with_value(ctx, pix, 0xFF);
         }
 
         dev = fz_new_draw_device(ctx, matrix, pix);
         if (annots) {
             fz_run_page(ctx, page, dev, fz_identity, NULL);
-        }
-        else {
+        } else {
             fz_run_page_contents(ctx, page, dev, fz_identity, NULL);
         }
         fz_close_device(ctx, dev);

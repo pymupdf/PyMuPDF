@@ -480,7 +480,7 @@ def getText(page, option="text", flags=None):
     return t
 
 
-def getPageText(doc, pno, option="text"):
+def getPageText(doc, pno, option="text", flags=None):
     """ Extract a document page's text by page number.
 
     Notes:
@@ -491,7 +491,7 @@ def getPageText(doc, pno, option="text"):
     Returns:
         output from page.TextPage().
     """
-    return doc[pno].getText(option)
+    return doc[pno].getText(option, flags=flags)
 
 
 def getPixmap(page, matrix=None, colorspace=csRGB, clip=None, alpha=False, annots=True):
@@ -2218,6 +2218,13 @@ def getColorInfoList():
     ]
 
 
+def getColorInfoDict():
+    d = {}
+    for item in getColorInfoList():
+        d[item[0].lower()] = item[1:]
+    return d
+
+
 def getColor(name):
     """Retrieve RGB color in PDF format by name.
 
@@ -2776,9 +2783,6 @@ class Shape(object):
             space = abs(point.y + self.y)
             headroom = height - point.y - self.y
 
-        if headroom < fontsize:  # at least 1 full line space required!
-            raise ValueError("text starts outside page")
-
         nres = templ1 % (cm, left, top, fname, fontsize)
         if render_mode > 0:
             nres += "%i Tr " % render_mode
@@ -3118,7 +3122,8 @@ class Shape(object):
             return
         if roundCap is not None:
             warnings.warn(
-                "roundCap is replaced by lineCap / lineJoin", DeprecationWarning
+                "roundCap replaced by lineCap / lineJoin and removed in next version",
+                DeprecationWarning,
             )
             lineCap = lineJoin = roundCap
 
@@ -3203,13 +3208,14 @@ def apply_redactions(page):
         """Calculate minimal sub-rectangle for the overlay text.
 
         Notes:
-            We will use 'insertTextbox', which supports no vertical text
-            centering. We calculate an approximate number of lines here and
-            return a sub-rectangle, which should still contain the text.
+            Because 'insertTextbox' supports no vertical text centering,
+            we calculate an approximate number of lines here and return a
+            sub-rect with smaller height, which should still be sufficient.
         Args:
             annot_rect: the annotation rectangle
             text: the text to insert.
-            font: the fontname. Must be one of CJK or Base-14 set.
+            font: the fontname. Must be one of the CJK or Base-14 set, else
+                the rectangle is returned unchanged.
             fsize: the fontsize
         Returns:
             A rectangle to use instead of the annot rectangle.

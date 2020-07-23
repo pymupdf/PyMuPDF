@@ -53,7 +53,8 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.loadPage`               read a page
 :meth:`Document.makeBookmark`           create a page pointer in reflowable documents
 :meth:`Document.metadataXML`            PDF only: :data:`xref` of XML metadata
-:meth:`Document.movePage`               PDF only: move a page to another location
+:meth:`Document.movePage`               PDF only: move a page to different location in doc
+:meth:`Document.need_appearances`       PDF only: get/set */NeedAppearances* property
 :meth:`Document.newPage`                PDF only: insert a new empty page
 :meth:`Document.nextLocation`           return (chapter, pno) of following page
 :meth:`Document.pages`                  iterator over a page range
@@ -70,10 +71,10 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.setToC`                 PDF only: set the table of contents (TOC)
 :meth:`Document.updateObject`           PDF only: replace object source
 :meth:`Document.updateStream`           PDF only: replace stream source
-:meth:`Document.write`                  PDF only: writes the document to memory
+:meth:`Document.write`                  PDF only: writes document to memory
 :meth:`Document.xrefObject`             PDF only: object source at the :data:`xref`
-:meth:`Document.xrefStream`             PDF only: stream source at the :data:`xref`
-:meth:`Document.xrefStreamRaw`          PDF only: raw stream source at the :data:`xref`
+:meth:`Document.xrefStream`             PDF only: decompressed stream source at :data:`xref`
+:meth:`Document.xrefStreamRaw`          PDF only: raw stream source at :data:`xref`
 :attr:`Document.chapterCount`           number of chapters
 :attr:`Document.FormFonts`              PDF only: list of global widget fonts
 :attr:`Document.isClosed`               has document been closed?
@@ -719,7 +720,11 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg int to: the page number in front of which to copy. The default inserts **after** the last page.
 
-      .. note:: In contrast to :meth:`copyPage`, this method creates a completely identical new page object -- with the exception of :attr:`Page.xref` of course, which will be different. So changes to a copy will only show there.
+      .. note::
+      
+          * In contrast to :meth:`copyPage`, this method creates a new page object (with a new :data:`xref`), which can be changed independently from the original.
+
+          * Any Popup and "IRT" ("in response to") annotations are **not copied** to avoid potentially incorrect situations.
 
     .. method:: movePage(pno, to=-1)
 
@@ -729,9 +734,26 @@ For details on **embedded files** refer to Appendix 3.
 
       :arg int to: the page number in front of which to insert the moved page. The default moves **after** the last page.
 
+
+    .. method:: need_appearances(value=None)
+
+      *(New in v1.17.4)*
+
+      PDF only: Get or set the */NeedAppearances* property of Form PDFs. Quote: *"(Optional) A flag specifying whether to construct appearance streams and appearance dictionaries for all widget annotations in the document ... Default value: false."* This may help controlling the behavior of some readers / viewers.
+
+      :arg bool value: set the property to this value. If omitted or *None*, inquire the current value.
+
+      :rtype: bool
+      :returns:
+         * None: not a Form PDF or property not defined.
+         * True / False: the value of the property (either just set or existing for inquiries).
+
+         Once set, the property cannot be removed again (which is no problem).
+
+
     .. method:: getSigFlags()
 
-      PDF only: Return whether the document contains signature fields. This is an optional PDF property: if not present, no conclusions can be drawn, because the PDF creator may just not have bothered to use it.
+      PDF only: Return whether the document contains signature fields. This is an optional PDF property: if not present (return value -1), no conclusions can be drawn -- the PDF creator may just not have bothered to use it.
 
       :rtype: int
       :returns:

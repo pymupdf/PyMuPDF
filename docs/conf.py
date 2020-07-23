@@ -12,7 +12,7 @@ import sphinx_rtd_theme
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-# needs_sphinx = "2.0"
+# needs_sphinx = "3.1"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -46,7 +46,7 @@ copyright = "2015-2020, Jorj X. McKie"
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "1.17.3"
+release = "1.17.4"
 
 # The short X.Y version
 version = release
@@ -207,7 +207,7 @@ latex_logo = "images/img-pymupdf.jpg"
 latex_show_pagerefs = False
 
 # If true, show URL addresses after external links.
-latex_show_urls = True
+# latex_show_urls = True
 # latex_use_xindy = True
 # Documents to append as an appendix to all manuals.
 # latex_appendices = []

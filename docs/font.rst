@@ -19,6 +19,11 @@ A Font object also contains useful general information, like the font bbox, the 
       Font constructor. The large number of parameters are used to locate font, which most closely resembles the requirements. Not all parameters are ever required -- see the below pseudo code explaining the logic how the parameters are evaluated.
 
       :arg str fontname: one of the :ref:`Base-14-Fonts` or CJK fontnames. Also possible are a select few of other names like (watch the correct spelling): "Arial", "Times", "Times Roman".
+      
+         *(Changed in v1.17.4)*
+
+         If you have installed `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_, you can also use the following new "reserved" fontnames: "figo", "figbo", "figit", "figbi", "fimo", and "fimbo". This will provide one of the "FiraGo" or resp. "FiraMono" fonts, created by Mozilla.org.
+
       :arg str filename: the filename of a fontfile somewhere on your system [#f1]_.
       :arg bytes,bytearray,io.BytesIO fontbuffer: a fontfile loaded in memory [#f1]_.
       :arg in script: the number of a UCDN script. Currently supported in PyMuPDF are numbers 24, and 32 through 35.
@@ -48,7 +53,7 @@ A Font object also contains useful general information, like the font bbox, the 
             look for fallback font
 
       .. note::
-      
+
         With the usual abbreviations "helv", "tiro", etc., you will create fonts with the expected names "Helvetica", "Times-Roman" and so on.
 
         Using *ordering >= 0*, or fontnames starting with "china", "japan" or "korea" will always create the same **"universal"** font **"Droid Sans Fallback Regular"**. This font supports **all CJK and all Latin characters**.
@@ -57,11 +62,22 @@ A Font object also contains useful general information, like the font bbox, the 
 
         If you **know** you have a mixture of CJK and Latin text, consider just using ``Font(ordering=0)`` because this supports everything and also significantly (by a factor of two to three) speeds up execution: MuPDF will always find any character in this single font and need not check fallbacks.
 
-        But if you do specify a Base-14 fontname, you will still be able to also write CJK characters! MuPDF automatically detects this situation and silently falls back to the universal font (which will then of course also be included in your PDF).
+        But if you do specify a Base-14 fontname, you will still be able to also write CJK characters! MuPDF automatically detects this situation and silently falls back to the universal font (which will then of course also be embedded in your PDF).
+
+        *(New in v1.17.4)* Optionally, a set of new "reserved" fontnames becomes available if you install `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_. The currently available fonts are from the Fira fonts family created by Mozilla. "Fira Mono" is a nice mono-spaced sans font set and FiraGO is another non-serifed "universal" font, set which supports all European languages (including Cyrillic and Greek) plus Thai, Arabian, Hewbrew and Devanagari -- however none of the CJK languages. The size of a FiraGO font is only a quarter of the "Droid Sans Fallback" size (compressed 400 KB vs. 1.65 MB) -- and the style variants bold and italic are available..The following table maps a fontname to the corresponding font:
+
+            =========== =======================================
+            Fontname    Font
+            =========== =======================================
+            figo        FiraGO Regular
+            figbo       FiraGO Bold
+            figit       FiraGO Italic
+            figbi       FiraGO Bold Italic
+            fimo        Fira Mono Regular
+            fimbo       Fira Mono Bold
+            =========== =======================================
 
         **All fonts mentioned here** also support Greek and Cyrillic letters.
-
-        *Monospaced* fonts are an issue: They are written with a too large width, e.g. ``" a"`` instead of ``"a"``. This applies to "cour" variants as well as most other mono fonts. The only exception we know of so far is ``consola.ttf``. If you want to output monospaced text, we recommend using the Consolas font for the time being.
 
    .. method:: has_glyph(chr, language=None, script=0)
 

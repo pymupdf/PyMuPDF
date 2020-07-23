@@ -99,6 +99,7 @@ pdf_obj *pdf_lookup_page_loc(fz_context *ctx, pdf_document *doc, int needle, pdf
 fz_pixmap *fz_scale_pixmap(fz_context *ctx, fz_pixmap *src, float x, float y, float w, float h, const fz_irect *clip);
 int fz_pixmap_size(fz_context *ctx, fz_pixmap *src);
 void fz_subsample_pixmap(fz_context *ctx, fz_pixmap *tile, int factor);
+void fz_copy_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_pixmap *src, fz_irect b, const fz_default_colorspaces *default_cs);
 // end of additional MuPDF headers --------------------------------------------
 
 PyObject *JM_mupdf_warnings_store;
@@ -1184,7 +1185,7 @@ struct Document
             fz_catch(gctx) {
                 return NULL;
             }
-            return PyLong_FromVoidPtr(mark);
+            return PyLong_FromVoidPtr((void *) mark);
         }
 
 
@@ -1999,6 +2000,48 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         }
 
         //---------------------------------------------------------------------
+        // Return or set NeedAppearances
+        //---------------------------------------------------------------------
+        %pythonprepend need_appearances
+%{"""Get/set the NeedAppearances value."""
+if self.isClosed:
+    raise ValueError("document closed")
+if not self.isFormPDF:
+    return None
+%}
+        PyObject *need_appearances(PyObject *value=NULL)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
+            int oldval = -1;
+            pdf_obj *app = NULL;
+            char appkey[] = "NeedAppearances";
+            fz_try(gctx) {
+                pdf_obj *form = pdf_dict_getp(gctx, pdf_trailer(gctx, pdf),
+                                "Root/AcroForm");
+                app = pdf_dict_gets(gctx, form, appkey);
+                if (pdf_is_bool(gctx, app)) {
+                    oldval = pdf_to_bool(gctx, app);
+                }
+
+                if (EXISTS(value)) {
+                    pdf_dict_puts_drop(gctx, form, appkey, PDF_TRUE);
+                } else if (value == Py_False) {
+                    pdf_dict_puts_drop(gctx, form, appkey, PDF_FALSE);
+                }
+            }
+            fz_catch(gctx) {
+                return_none;
+            }
+            if (value != Py_None) {
+                return value;
+            }
+            if (oldval >= 0) {
+                return JM_BOOL(oldval);
+            }
+            return_none;
+        }
+
+        //---------------------------------------------------------------------
         // Return the /SigFlags value
         //---------------------------------------------------------------------
         CLOSECHECK0(getSigFlags, """Get /SigFlags value.""")
@@ -2217,16 +2260,20 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             pdf_obj *obj = NULL;
             PyObject *text = NULL;
+            
+            fz_buffer *res=NULL;
             fz_try(gctx) {
                 ASSERT_PDF(pdf);
                 int xreflen = pdf_xref_len(gctx, pdf);
                 if (!INRANGE(xref, 1, xreflen-1))
                     THROWMSG("xref out of range");
                 obj = pdf_load_object(gctx, pdf, xref);
-                text = JM_object_to_string(gctx, pdf_resolve_indirect(gctx, obj), compressed, ascii);
+                res = JM_object_to_buffer(gctx, pdf_resolve_indirect(gctx, obj), compressed, ascii);
+                text = JM_EscapeStrFromBuffer(gctx, res);
             }
             fz_always(gctx) {
                 pdf_drop_obj(gctx, obj);
+                fz_drop_buffer(gctx, res);
             }
             fz_catch(gctx) return PyUnicode_FromString("");
             return text;
@@ -2242,8 +2289,13 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
             if (!pdf) return_none;
             PyObject *text = NULL;
+            fz_buffer *res=NULL;
             fz_try(gctx) {
-                text = JM_object_to_string(gctx, pdf_trailer(gctx, pdf), compressed, ascii);
+                res = JM_object_to_buffer(gctx, pdf_trailer(gctx, pdf), compressed, ascii);
+                text = JM_EscapeStrFromBuffer(gctx, res);
+            }
+            fz_always(gctx) {
+                fz_drop_buffer(gctx, res);
             }
             fz_catch(gctx) {
                 return PyUnicode_FromString("PDF trailer damaged");
@@ -2450,7 +2502,7 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
         // full (deep) copy of one page
         //---------------------------------------------------------------------
         FITZEXCEPTION(fullcopyPage, !result)
-        CLOSECHECK0(fullcopyPage, """Make full page duplicate.""")
+        CLOSECHECK0(fullcopyPage, """Make full page duplication.""")
         %pythonappend fullcopyPage %{self._reset_page_refs()%}
         PyObject *fullcopyPage(int pno, int to = -1)
         {
@@ -2468,8 +2520,31 @@ if len(pyliste) == 0 or min(pyliste) not in range(len(self)) or max(pyliste) not
                                  pdf_lookup_page_obj(gctx, pdf, pno));
 
                 pdf_obj *page2 = pdf_deep_copy_obj(gctx, page1);
+                pdf_obj *old_annots = pdf_dict_get(gctx, page2, PDF_NAME(Annots));
 
-                // read the old contents stream(s)
+                // copy annotations, but remove Popup and IRT types
+                if (old_annots) {
+                    int i, n = pdf_array_len(gctx, old_annots);
+                    pdf_obj *new_annots = pdf_new_array(gctx, pdf, n);
+                    for (i = 0; i < n; i++) {
+                        pdf_obj *o = pdf_array_get(gctx, old_annots, i);
+                        pdf_obj *subtype = pdf_dict_get(gctx, o, PDF_NAME(Subtype));
+                        if (pdf_name_eq(gctx, subtype, PDF_NAME(Popup))) continue;
+                        if (pdf_dict_gets(gctx, o, "IRT")) continue;
+                        pdf_obj *copy_o = pdf_deep_copy_obj(gctx,
+                                            pdf_resolve_indirect(gctx, o));
+                        int xref = pdf_create_object(gctx, pdf);
+                        pdf_update_object(gctx, pdf, xref, copy_o);
+                        pdf_drop_obj(gctx, copy_o);
+                        copy_o = pdf_new_indirect(gctx, pdf, xref, 0);
+                        pdf_dict_del(gctx, copy_o, PDF_NAME(Popup));
+                        pdf_dict_del(gctx, copy_o, PDF_NAME(P));
+                        pdf_array_push_drop(gctx, new_annots, copy_o);
+                    }
+                pdf_dict_put_drop(gctx, page2, PDF_NAME(Annots), new_annots);
+                }
+
+                // copy the old contents stream(s)
                 res = JM_read_contents(gctx, page1);
 
                 // create new /Contents object for page2
@@ -4714,7 +4789,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
             pdf_document *pdf;
             pdf_obj *resources, *fonts, *font_obj;
-            fz_font *font;
+            fz_font *font = NULL;
             fz_buffer *res = NULL;
             const unsigned char *data = NULL;
             int size, ixref = 0, index = 0, simple = 0;
@@ -4794,13 +4869,12 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
                 Py_CLEAR(name);
                 Py_CLEAR(subt);
 
-                // resources and fonts objects will contain named reference to font
-                pdf_dict_puts(gctx, fonts, fontname, font_obj);
-                pdf_drop_obj(gctx, font_obj);
-                fz_drop_font(gctx, font);
+                // store font in resources and fonts objects will contain named reference to font
+                pdf_dict_puts_drop(gctx, fonts, fontname, font_obj);
             }
             fz_always(gctx) {
                 fz_drop_buffer(gctx, res);
+                fz_drop_font(gctx, font);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -5369,8 +5443,7 @@ if not self.colorspace or self.colorspace.n > 3:
                     THROWMSG("cannot copy pixmap with NULL colorspace");
                 if (pm->alpha != src_pix->alpha)
                     THROWMSG("source and target alpha must be equal");
-                JM_Warning("Not implemented in MuPDF v1.17");
-                // fz_copy_pixmap_rect(gctx, pm, src_pix, JM_irect_from_py(bbox), NULL);
+                fz_copy_pixmap_rect(gctx, pm, src_pix, JM_irect_from_py(bbox), NULL);
             }
             fz_catch(gctx) {
                 return NULL;
@@ -7553,22 +7626,40 @@ struct Annot
         }
 
 
+        //---------------------------------------------------------------------
+        // annotation pixmap
+        //---------------------------------------------------------------------
+        FITZEXCEPTION(getPixmap, !result)
+        PARENTCHECK(getPixmap, """Annotation Pixmap.""")
+        %pythonprepend getPixmap
+%{"""Annotation Pixmap."""
+
+CheckParent(self)
+cspaces = {"gray": csGRAY, "rgb": csRGB, "cmyk": csCMYK}
+if type(colorspace) is str:
+    colorspace = cspaces.get(colorspace.lower(), None)
+%}
+        struct Pixmap *
+        getPixmap(PyObject *matrix = NULL, struct Colorspace *colorspace = NULL, int alpha = 0)
+        {
+            fz_matrix ctm = JM_matrix_from_py(matrix);
+            fz_colorspace *cs = (fz_colorspace *) colorspace;
+            fz_pixmap *pix = NULL;
+            if (!cs) {
+                cs = fz_device_rgb(gctx);
+            }
+
+            fz_try(gctx) {
+                pix = pdf_new_pixmap_from_annot(gctx, (pdf_annot *) $self, ctm, cs, NULL, alpha);
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            return (struct Pixmap *) pix;
+        }
+
+
         %pythoncode %{
-        def getPixmap(self, matrix=None, colorspace="rgb", alpha=False):
-            """Return the Pixmap of the annotation.
-            """
-            page = self.parent
-            if page is None:
-                raise ValueError("orphaned object: parent is None")
-            return page.getPixmap(
-                matrix=matrix,
-                colorspace=colorspace,
-                alpha=alpha,
-                clip=self.rect,
-                annots=True,
-            )
-
-
         def _erase(self):
             try:
                 self.parent._forget_annot(self)
@@ -7894,6 +7985,13 @@ struct DisplayList {
 //-----------------------------------------------------------------------------
 struct TextPage {
     %extend {
+        ~TextPage()
+        {
+            DEBUGMSG1("TextPage");
+            fz_drop_stext_page(gctx, (fz_stext_page *) $self);
+            DEBUGMSG2;
+        }
+
         FITZEXCEPTION(TextPage, !result)
         TextPage(PyObject *mediabox)
         {
@@ -7907,12 +8005,6 @@ struct TextPage {
             return (struct TextPage *) tp;
         }
 
-        ~TextPage()
-        {
-            DEBUGMSG1("TextPage");
-            fz_drop_stext_page(gctx, (fz_stext_page *) $self);
-            DEBUGMSG2;
-        }
         //---------------------------------------------------------------------
         // method search()
         //---------------------------------------------------------------------
@@ -7962,7 +8054,8 @@ struct TextPage {
         // Get list of all blocks with block type and bbox as a Python list
         //---------------------------------------------------------------------
         FITZEXCEPTION(_getNewBlockList, !result)
-        PyObject *_getNewBlockList(PyObject *page_dict, int raw)
+        PyObject *
+        _getNewBlockList(PyObject *page_dict, int raw)
         {
             fz_try(gctx) {
                 JM_make_textpage_dict(gctx, (fz_stext_page *) $self, page_dict, raw);
@@ -7988,7 +8081,8 @@ struct TextPage {
         FITZEXCEPTION(extractBLOCKS, !result)
         %pythonprepend extractBLOCKS
         %{"""Fill a given list with text block information."""%}
-        PyObject *extractBLOCKS(PyObject *lines)
+        PyObject *
+        extractBLOCKS(PyObject *lines)
         {
             fz_stext_block *block;
             fz_stext_line *line;
@@ -8060,7 +8154,8 @@ struct TextPage {
         FITZEXCEPTION(extractWORDS, !result)
         %pythonprepend extractWORDS
         %{"""Fill a list with text word information."""%}
-        PyObject *extractWORDS(PyObject *lines)
+        PyObject *
+        extractWORDS(PyObject *lines)
         {
             fz_stext_block *block;
             fz_stext_line *line;
@@ -8220,6 +8315,10 @@ struct TextPage {
             def extractRAWDICT(self):
                 """Return page content as a Python dict of images and text characters."""
                 return self._textpage_dict(raw=True)
+
+            def __del__(self):
+                if not type(self) is TextPage: return
+                self.__swig_destroy__(self)
         %}
     }
 };
@@ -8252,6 +8351,12 @@ struct Graftmap
             }
             return (struct Graftmap *) map;
         }
+        %pythoncode %{
+        def __del__(self):
+            if not type(self) is Graftmap:
+                return
+            self.__swig_destroy__(self)
+        %}
     }
 };
 
@@ -8261,8 +8366,7 @@ struct Graftmap
 //-----------------------------------------------------------------------------
 struct TextWriter
 {
-    %extend
-    {
+    %extend {
         ~TextWriter()
         {
             DEBUGMSG1("TextWriter");
@@ -8283,6 +8387,7 @@ struct TextWriter
         self.lastPoint.__doc__ = "Position following last text insertion."
         self.textRect = Rect(0, 0, -1, -1)
         self.textRect.__doc__ = "Accumulated area of text spans."
+        self.used_fonts = set()
         %}
         TextWriter(PyObject *page_rect, int opacity=1, PyObject *color=NULL )
         {
@@ -8307,6 +8412,8 @@ struct TextWriter
         self.lastPoint = Point(val[-2:]) * self.ctm
         self.textRect = self._bbox * self.ctm
         val = self.textRect, self.lastPoint
+        if font.flags["mono"] == 1:
+            self.used_fonts.add(font)
         %}
         PyObject *
         append(PyObject *pos, char *text, struct Font *font=NULL, float fontsize=11, char *language=NULL, int wmode=0, int bidi_level=0)
@@ -8333,7 +8440,7 @@ struct TextWriter
 
         FITZEXCEPTION(writeText, !result)
         %pythonprepend writeText%{
-        """Write the text to a PDF page with the TextWriter's page size.
+        """Write the text to a PDF page having the TextWriter's page size.
 
         Args:
             page: a PDF page having same size.
@@ -8341,6 +8448,7 @@ struct TextWriter
             opacity: override transparency.
             overlay: put in foreground or background.
             morph: tuple(Point, Matrix), apply Matrix with fixpoint Point.
+            render_mode: (int) PDF render mode operator 'Tr'.
         """
 
         CheckParent(page)
@@ -8374,6 +8482,10 @@ struct TextWriter
         for line in old_cont_lines:
             if line.endswith(" cm"):
                 continue
+            if line == "BT":
+                new_cont_lines.append(line)
+                new_cont_lines.append("%i Tr" % render_mode)
+                continue
             if line.endswith(" gs"):
                 alp = int(line.split()[0][4:]) + max_alp
                 line = "/Alp%i gs" % alp
@@ -8381,13 +8493,21 @@ struct TextWriter
                 temp = line.split()
                 font = int(temp[0][2:]) + max_font
                 line = " ".join(["/F%i" % font] + temp[1:])
+            elif line.endswith(" rg"):
+                new_cont_lines.append(line.replace("rg", "RG"))
+            elif line.endswith(" g"):
+                new_cont_lines.append(line.replace(" g", " G"))
+            elif line.endswith(" k"):
+                new_cont_lines.append(line.replace(" k", " K"))
             new_cont_lines.append(line)
         new_cont_lines.append("Q\n")
         content = "\n".join(new_cont_lines).encode("utf-8")
         TOOLS._insert_contents(page, content, overlay=overlay)
         val = None
+        for font in self.used_fonts:
+            repair_mono_font(page, font)
         %}
-        PyObject *writeText(struct Page *page, PyObject *color=NULL, float opacity=-1, int overlay=1, PyObject *morph=NULL)
+        PyObject *writeText(struct Page *page, PyObject *color=NULL, float opacity=-1, int overlay=1, PyObject *morph=NULL, int render_mode=0)
         {
             pdf_page *pdfpage = pdf_page_from_fz_page(gctx, (fz_page *) page);
             fz_rect mediabox = fz_bound_page(gctx, (fz_page *) page);
@@ -8435,6 +8555,12 @@ struct TextWriter
             }
             return result;
         }
+        %pythoncode %{
+        def __del__(self):
+            if not type(self) is TextWriter:
+                return
+            self.__swig_destroy__(self)
+        %}
     }
 };
 
@@ -8462,13 +8588,24 @@ struct Font
                 ordering = ("china-t", "china-s", "japan", "korea","china-ts", "china-ss", "japan-s", "korea-s").index(fontname.lower()) % 4
             except ValueError:
                 ordering = -1
-            if ordering < 0:
+            if fontname.lower().startswith(("fig", "fim")):
+                try:
+                    import pymupdf_fonts  # optional fonts
+                    fontbuffer = pymupdf_fonts.myfont(fontname)[:]  # make a copy
+                    fontname = None  # ensure using fontbuffer only
+                    del pymupdf_fonts  # remove package again
+                except Exception as exc:
+                    if repr(exc).startswith(("ImportError", "AttributeError")):
+                        raise ImportError("Optional package 'pymupdf_fonts' not installed")
+                    else:
+                        raise exc
+            elif ordering < 0:
                 fontname = Base14_fontdict.get(fontname.lower(), fontname)
         %}
         Font(char *fontname=NULL, char *fontfile=NULL,
-                  PyObject *fontbuffer=NULL, int script=0,
-                  char *language=NULL, int ordering=-1, int is_bold=0,
-                  int is_italic=0, int is_serif=0)
+             PyObject *fontbuffer=NULL, int script=0,
+             char *language=NULL, int ordering=-1, int is_bold=0,
+             int is_italic=0, int is_serif=0)
         {
             fz_font *font = NULL;
             fz_try(gctx) {
@@ -8525,6 +8662,7 @@ struct Font
             Py_RETURN_FALSE;
         }
 
+
         %pythoncode %{@property%}
         PyObject *flags()
         {
@@ -8567,6 +8705,11 @@ struct Font
 
             def __repr__(self):
                 return "Font('%s')" % self.name
+
+            def __del__(self):
+                if type(self) is not Font:
+                    return None
+                self.__swig_destroy__(self)
         %}
     }
 };
@@ -9037,6 +9180,35 @@ struct Tools
             fz_matrix m1 = fz_make_matrix(1, 0, 0, 1, -c.x, -c.y);
             fz_matrix m2 = fz_make_matrix(s.x, -s.y, s.y, s.x, 0, 0);
             return JM_py_from_matrix(fz_concat(m1, m2));
+        }
+
+
+        FITZEXCEPTION(set_font_width, !result)
+        PyObject *
+        set_font_width(struct Document *doc, int xref, int width)
+        {
+            pdf_document *pdf = pdf_specifics(gctx, (fz_document *) doc);
+            if (!pdf) Py_RETURN_FALSE;
+            pdf_obj *font=NULL, *dfonts=NULL;
+            fz_try(gctx) {
+                font = pdf_load_object(gctx, pdf, xref);
+                dfonts = pdf_dict_get(gctx, font, PDF_NAME(DescendantFonts));
+                if (pdf_is_array(gctx, dfonts)) {
+                    int i, n = pdf_array_len(gctx, dfonts);
+                    for (i = 0; i < n; i++) {
+                        pdf_obj *dfont = pdf_array_get(gctx, dfonts, i);
+                        pdf_obj *warray = pdf_new_array(gctx, pdf, 3);
+                        pdf_array_push(gctx, warray, pdf_new_int(gctx, 0));
+                        pdf_array_push(gctx, warray, pdf_new_int(gctx, 65532));
+                        pdf_array_push(gctx, warray, pdf_new_int(gctx, width));
+                        pdf_dict_put_drop(gctx, dfont, PDF_NAME(W), warray);
+                    }
+                }
+            }
+            fz_catch(gctx) {
+                return NULL;
+            }
+            Py_RETURN_TRUE;
         }
 
 
