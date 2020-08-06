@@ -307,7 +307,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    ..  method:: pillowData(*args, **kwargs)
 
-      Return the pixmap as a bytes object in the specified format using Pillow. For example ``stream = pix.pillowData(format="JPEG", optimize=True)``. For details on possible parameters see the Pillow documentation.
+      *(New in v1.17.3)*
+
+      Return an image as a bytes object in the specified format using Pillow. For example ``stream = pix.pillowData(format="JPEG", optimize=True)``. Also see above. For details on possible parameters see the Pillow documentation.
 
 
    .. attribute:: alpha

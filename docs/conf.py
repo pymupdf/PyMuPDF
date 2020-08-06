@@ -17,13 +17,9 @@ import sphinx_rtd_theme
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-    "sphinx.ext.autodoc",
-    # "sphinx.ext.todo",
-    "sphinx.ext.coverage",
-    "sphinx.ext.ifconfig",
-    # "sphinx.ext.imgmath",
-]
+extensions = ["sphinx.ext.autodoc", "sphinx.ext.coverage", "sphinx.ext.ifconfig"]
+if sys.platform == "win32":
+    extensions.extend(["sphinx.ext.autodoc", "rst2pdf.pdfbuilder"])
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -46,7 +42,7 @@ copyright = "2015-2020, Jorj X. McKie"
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-release = "1.17.4"
+release = "1.17.5"
 
 # The short X.Y version
 version = release
@@ -222,7 +218,7 @@ latex_domain_indices = True
 pdf_documents = [("index", "PyMuPDF", "PyMuPDF Manual", "Jorj McKie")]
 
 # A comma-separated list of custom stylesheets. Example:
-pdf_stylesheets = ["sphinx", "bahnschrift"]
+pdf_stylesheets = ["sphinx", "bahnschrift", "a4"]
 
 # Create a compressed PDF
 pdf_compressed = True

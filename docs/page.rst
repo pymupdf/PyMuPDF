@@ -234,17 +234,19 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg str fontname: *(New in v1.16.12)* the font to use when *text* is given, otherwise ignored. The same rules apply as for :meth:`Page.insertTextbox` -- which is the method :meth:`Page.apply_redactions` internally invokes. The replacement text will be **vertically centered**, if this is one of the CJK or :ref:`Base-14-Fonts`.
 
          .. note::
-            For an **existing** font of the page, use its reference name as *fontname* (*item[4]* of its entry in :meth:`Page.getFontList`). To use a new, non-builtin font, proceed as follows::
+
+            * For an **existing** font of the page, use its reference name as *fontname* (this is *item[4]* of its entry in :meth:`Page.getFontList`).
+            * For a **new, non-builtin** font, proceed as follows::
 
                page.insertText(point,  # anywhere, but outside all redaction rectangles
-               "somthing",  # some non-empty string
-               fontname="newname",  # new, unused reference name
-               fontfile="...",  # desired font file
-               render_mode=3,  # makes the text invisible
+                   "somthing",  # some non-empty string
+                   fontname="newname",  # new, unused reference name
+                   fontfile="...",  # desired font file
+                   render_mode=3,  # makes the text invisible
                )
                page.addRedactAnnot(..., fontname="newname")
 
-      :arg float fontsize: *(New in v1.16.12)* the fontsize to use for the replacing text. If the text is too large to fit, several insertion attempts will be made, gradually reducing this value down to 4. If then the text will still not fit, no text insertion will take place at all.
+      :arg float fontsize: *(New in v1.16.12)* the fontsize to use for the replacing text. If the text is too large to fit, several insertion attempts will be made, gradually reducing the fontsize to no less than 4. If then the text will still not fit, no text insertion will take place at all.
 
       :arg int align: *(New in v1.16.12)* the horizontal alignment for the replacing text. See :meth:`insertTextbox` for available values. The vertical alignment is (approximately) centered if a PDF built-in font is used (CJK or :ref:`Base-14-Fonts`).
 
@@ -831,8 +833,8 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :rtype: :ref:`Rect`
       :returns: the boundary box of the image.
-         *(Changed in version 1.16.7)* If the page in fact does not display this image, an infinite rectangle is returned now. In previous versions, an exception was raised.
-         *(Changed in version 1.17.0)* Only images referenced directly by the page are considered. This means that images occurring in embedded PDF pages are ignored and an exception is raised.
+         *(Changed in v1.16.7)* -- If the page in fact does not display this image, an infinite rectangle is returned now. In previous versions, an exception was raised.
+         *(Changed in v.17.0)* -- Only images referenced directly by the page are considered. This means that images occurring in embedded PDF pages are ignored and an exception is raised.
 
       .. note::
 
@@ -842,11 +844,12 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. index::
       pair: matrix; getSVGimage
 
-   .. method:: getSVGimage(matrix=fitz.Identity)
+   .. method:: getSVGimage(matrix=fitz.Identity, text_as_path=True)
 
       Create an SVG image from the page. Only full page images are currently supported.
 
      :arg matrix_like matrix: a matrix, default is :ref:`Identity`.
+     :arg bool text_as_path: *(new in v1.17.5)* -- controls how text is represented. *True* outputs each character as a series of elementary draw commands, which leads to a more precise text display in browsers, but a **very much larger** output for text-oriented pages. Display quality for *False* relies on the presence of the referenced fonts on the current system. For missing fonts, the internet browser will fall back to some default -- leading to unpleasant appearances. Choose *False* if you want to parse the text of the SVG.
 
      :returns: a UTF-8 encoded string that contains the image. Because SVG has XML syntax it can be saved in a text file with extension *.svg*.
 
@@ -1012,7 +1015,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg str text: Text to search for. Upper / lower case is ignored. The string may contain spaces.
 
-      :arg int hit_max: Maximum number of occurrences accepted.
+      :arg int hit_max: Maximum number of returned occurrences.
       :arg bool quads: Return :ref:`Quad` instead of :ref:`Rect` objects.
       :arg int flags: Control the data extracted by the underlying :ref:`TextPage`. Default is 0 (ligatures are dissolved, white space is replaced with space and excessive spaces are not suppressed).
 
@@ -1021,6 +1024,10 @@ In a nutshell, this is what you can do with PyMuPDF:
       :returns: A list of :ref:`Rect` \s (resp. :ref:`Quad` \s) each of which  -- **normally!** -- surrounds one occurrence of *text*. **However:** if the search string spreads across more than one line, then a separate item is recorded in the list for each part of the string per line. So, if you are looking for "search string" and the two words happen to be located on separate lines, two entries will be recorded in the list: one for "search" and one for "string".
 
         .. note:: In this way, the effect supports multi-line text marker annotations.
+
+        .. note:: The number of returned objects will never exceed *hit_max*. Hence, if the returned list has this many items, you cannot know whether there really exist more on the page. So please make sure you provide a hit_max value which is large enough.
+
+        .. note:: Please also be aware of a trickier aspect: the search logic regards **contiguous multiple** occurrences of the search string as one: assuming your search string is "abc", and the page contains "abc" and "abcabc", then only **two** rectangles will be returned, one containing "abc", and a second one containing "abcabc".
 
 
    .. method:: setMediaBox(r)
@@ -1217,7 +1224,7 @@ This is an overview of homologous methods on the :ref:`Document` and on the :ref
 *Document.searchPageFor(pno, ...)*     :meth:`Page.searchFor`
 ====================================== =====================================
 
-The page number "pno"` is a 0-based integer *-inf < pno < pageCount*.
+The page number "pno" is a 0-based integer *-inf < pno < pageCount*.
 
 .. note::
 

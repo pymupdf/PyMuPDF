@@ -175,6 +175,29 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
+   .. attribute:: fitz_fontdescriptors
+
+      *(New in v1.17.5)*
+
+      A dictionary of usable fonts from repository `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_. Items are keyed by their reserved fontname and provide information like this::
+
+         In [2]: fitz.fitz_fontdescriptors.keys()
+         Out[2]: dict_keys(['figbo', 'figo', 'figbi', 'figit', 'fimbo', 'fimo',
+         'spacembo', 'spacembi', 'spacemit', 'spacemo', 'math', 'music', 'symbol1',
+         'symbol2'])
+         In [3]: fitz.fitz_fontdescriptors["fimo"]
+         Out[3]:
+         {'name': 'Fira Mono Regular',
+         'size': 125712,
+         'mono': True,
+         'bold': False,
+         'italic': False,
+         'serif': True,
+         'glyphs': 1485}
+         
+
+-----
+
    .. method:: getPDFnow()
 
       Convenience function to return the current local timestamp in PDF compatible format, e.g. *D:20170501121525-04'00'* for local datetime May 1, 2017, 12:15:25 in a timezone 4 hours westward of the UTC meridian.

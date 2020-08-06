@@ -1,6 +1,17 @@
 Change Logs
 ===============
 
+Changes in Version 1.17.5
+---------------------------
+* **Fixed** issue `#561 <https://github.com/pymupdf/PyMuPDF/issues/561>`_ -- second go: certain :ref:`TextWriter` usages with many alternating fonts did not work correctly.
+* **Fixed** issue `#566 <https://github.com/pymupdf/PyMuPDF/issues/566>`_.
+* **Fixed** issue `#568 <https://github.com/pymupdf/PyMuPDF/issues/568>`_.
+* **Fixed** -- opacity is now correctly taken from the :ref:`TextWriter` object, if not given in :meth:`TextWriter.writeText`.
+* **Added** a new global attribute :attr:`fitz_fontdescriptors`. Contains information about usable fonts from repository `pymupdf-fonts <https://github.com/pymupdf/pymupdf-fonts>`_.
+* **Added** :meth:`Font.valid_codepoints` which returns an array of unicode codepoints for which the font has a glyph.
+* **Added** option ``text_as_path`` to :meth:`Page.getSVGimage`. this implements `#580 <https://github.com/pymupdf/PyMuPDF/issues/580>`_. Generates much smaller SVG files with parseable text if set to *False*.
+
+
 Changes in Version 1.17.4
 ---------------------------
 * **Fixed** issue `#561 <https://github.com/pymupdf/PyMuPDF/issues/561>`_. Handling of more than 10 :ref:`Font` objects on one page should now work correctly.
