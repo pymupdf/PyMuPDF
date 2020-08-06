@@ -29,10 +29,13 @@ def load_libraries():
         return LIBRARIES["default"]
     regex = re.compile("^([\\w]+)=(?:'|\")?(.*?)(?:'|\")?$")
     with open(filepath) as os_release:
-        info = {regex.match(line.strip()).group(1): re.sub(
-                    r'\\([$"\'\\`])', r"\1",
-                    regex.match(line.strip()).group(2))
-                for line in os_release if regex.match(line.strip())}
+        info = {
+            regex.match(line.strip()).group(1): re.sub(
+                r'\\([$"\'\\`])', r"\1", regex.match(line.strip()).group(2)
+            )
+            for line in os_release
+            if regex.match(line.strip())
+        }
 
     os_id = info["ID"]
     if os_id.startswith("opensuse"):
@@ -51,7 +54,7 @@ if sys.platform.startswith("linux"):
             "/usr/include/mupdf",
             "/usr/local/include/mupdf",
         ],
-        libraries=load_libraries()
+        libraries=load_libraries(),
     )
 elif sys.platform.startswith(("darwin", "freebsd")):
     module = Extension(
@@ -106,7 +109,7 @@ long_desc = "\n".join(long_dtab)
 
 setup(
     name="PyMuPDF",
-    version="1.17.4",
+    version="1.17.5",
     description="Python bindings for the PDF rendering library MuPDF",
     long_description=long_desc,
     classifiers=classifier,

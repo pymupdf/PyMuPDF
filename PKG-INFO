@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: PyMuPDF
-Version: 1.17.4
+Version: 1.17.5
 Author: Ruikai Liu
 Author-email: lrk700@gmail.com
 Maintainer: Jorj X. McKie
@@ -9,7 +9,7 @@ Home-page: https://github.com/pymupdf/PyMuPDF
 Download-url: https://github.com/pymupdf/PyMuPDF
 Summary: PyMuPDF is a Python binding for the PDF rendering library MuPDF
 Description:
-        Release date: July 31, 2020
+        Release date: August 6, 2020
         
         Authors
         =======
@@ -20,7 +20,7 @@ Description:
         Introduction
         ============
         
-        This is **version 1.17.4 of PyMuPDF**, a Python binding for `MuPDF <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
+        This is **version 1.17.5 of PyMuPDF**, a Python binding for `MuPDF <http://mupdf.com/>`_ - "a lightweight PDF and XPS viewer".
         
         MuPDF can access files in PDF, XPS, OpenXPS, epub, comic and fiction book formats, and it is known for both, its top performance and high rendering quality.
         
@@ -52,13 +52,9 @@ Description:
         
         Written using **Sphinx**, documentation is available here:
         
-        * View it online at `Read The Docs <https://pymupdf.readthedocs.io/en/latest/>`_. For **best quality downloads**, use the following links.
-        
-        * `HTML <https://github.com/pymupdf/PyMuPDF/tree/master/doc/html.zip>`_
-        
+        * `Read The Docs <https://pymupdf.readthedocs.io/en/latest/>`_.
         * `Windows CHM <https://github.com/JorjMcKie/PyMuPDF-optional-material/tree/master/doc/PyMuPDF.chm>`_
         
-        * `PDF <https://github.com/pymupdf/PyMuPDF/tree/master/doc/pymupdf.pdf>`_
         
 
 Classifier: Development Status :: 5 - Production/Stable
@@ -72,9 +68,4 @@ Classifier: Operating System :: POSIX :: Linux
 Classifier: Programming Language :: C
 Classifier: Programming Language :: Python :: 2.7
 Classifier: Programming Language :: Python :: 3
-Classifier: Programming Language :: Python :: 3.4
-Classifier: Programming Language :: Python :: 3.5
-Classifier: Programming Language :: Python :: 3.6
-Classifier: Programming Language :: Python :: 3.7
-Classifier: Programming Language :: Python :: 3.8
 Classifier: Topic :: Utilities

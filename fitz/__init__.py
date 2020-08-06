@@ -23,7 +23,6 @@ if fitz.VersionFitz != fitz.TOOLS.mupdf_version():
             % (fitz.VersionFitz, fitz.TOOLS.mupdf_version())
         )
 
-
 # copy functions to their respective fitz classes
 import fitz.utils
 

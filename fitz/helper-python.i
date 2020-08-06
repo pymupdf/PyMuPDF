@@ -82,6 +82,7 @@ Base14_fontnames = (
 Base14_fontdict = {}
 for f in Base14_fontnames:
     Base14_fontdict[f.lower()] = f
+    del f
 Base14_fontdict["helv"] = "Helvetica"
 Base14_fontdict["heit"] = "Helvetica-Oblique"
 Base14_fontdict["hebo"] = "Helvetica-Bold"
@@ -1413,7 +1414,7 @@ def repair_mono_font(page, font):
     Notes:
         Some mono-spaced fonts are displayed with a too large character
         distance, e.g. "a b c" instead of "abc". This utility adds an entry
-        "/W[0 65532 w]" to the descendent font(s) of font.
+        "/W[0 65535 w]" to the descendent font(s) of font.
         This should enforce viewers to use 'w' as the character width.
 
     Args:
@@ -1432,7 +1433,7 @@ def repair_mono_font(page, font):
     if xrefs == []:  # our font does not occur
         return
     xrefs = set(xrefs)  # drop any double counts
-    width = int(font.glyph_advance(32) * 1000)
+    width = int(round((font.glyph_advance(32) * 1000)))
     for xref in xrefs:
         if not TOOLS.set_font_width(doc, xref, width):
             print("Could set width for '%s' in xref %i" % (font.name, xref))

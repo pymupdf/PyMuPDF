@@ -100,6 +100,7 @@ fz_pixmap *fz_scale_pixmap(fz_context *ctx, fz_pixmap *src, float x, float y, fl
 int fz_pixmap_size(fz_context *ctx, fz_pixmap *src);
 void fz_subsample_pixmap(fz_context *ctx, fz_pixmap *tile, int factor);
 void fz_copy_pixmap_rect(fz_context *ctx, fz_pixmap *dest, fz_pixmap *src, fz_irect b, const fz_default_colorspaces *default_cs);
+void jm_valid_chars(fz_context *ctx, fz_font *font, void *ptr);
 // end of additional MuPDF headers --------------------------------------------
 
 PyObject *JM_mupdf_warnings_store;
@@ -207,6 +208,14 @@ from binascii import hexlify
 
 fitz_py2 = str is bytes  # if true, this is Python 2
 string_types = (str, unicode) if fitz_py2 else (str,)
+
+try:
+    from pymupdf_fonts import fontdescriptors
+
+    fitz_fontdescriptors = fontdescriptors.copy()
+    del fontdescriptors
+except ImportError:
+    fitz_fontdescriptors = {}
 %}
 %include version.i
 %include helper-defines.i
@@ -2044,27 +2053,27 @@ if not self.isFormPDF:
         //---------------------------------------------------------------------
         // Return the /SigFlags value
         //---------------------------------------------------------------------
-        CLOSECHECK0(getSigFlags, """Get /SigFlags value.""")
-        PyObject *getSigFlags()
+        CLOSECHECK0(getSigFlags, """Get the /SigFlags value.""")
+        int getSigFlags()
         {
             pdf_document *pdf = pdf_specifics(gctx, (fz_document *) $self);
-            if (!pdf) return Py_BuildValue("i", -1);  // not a PDF
-            size_t sigflag = -1;
+            if (!pdf) return -1;  // not a PDF
+            int sigflag = -1;
             fz_try(gctx) {
                 pdf_obj *sigflags = pdf_dict_getl(gctx,
-                                                  pdf_trailer(gctx, pdf),
-                                                  PDF_NAME(Root),
-                                                  PDF_NAME(AcroForm),
-                                                  PDF_NAME(SigFlags),
-                                                  NULL);
+                                        pdf_trailer(gctx, pdf),
+                                        PDF_NAME(Root),
+                                        PDF_NAME(AcroForm),
+                                        PDF_NAME(SigFlags),
+                                        NULL);
                 if (sigflags) {
-                    sigflag = (size_t) pdf_to_int(gctx, sigflags);
+                    sigflag = (int) pdf_to_int(gctx, sigflags);
                 }
             }
             fz_catch(gctx) {
-                return Py_BuildValue("i", -1);  // any problem
+                return -1;  // any problem
             }
-            return Py_BuildValue("I", sigflag);
+            return sigflag;
         }
 
         //---------------------------------------------------------------------
@@ -3177,7 +3186,7 @@ struct Page {
         //---------------------------------------------------------------------
         FITZEXCEPTION(getSVGimage, !result)
         PARENTCHECK(getSVGimage, """Make SVG image from page.""")
-        PyObject *getSVGimage(PyObject *matrix = NULL)
+        PyObject *getSVGimage(PyObject *matrix = NULL, int text_as_path=1)
         {
             fz_rect mediabox = fz_bound_page(gctx, (fz_page *) $self);
             fz_device *dev = NULL;
@@ -3190,6 +3199,7 @@ struct Page {
             fz_var(dev);
             fz_var(res);
             fz_rect tbounds = mediabox;
+            int text_option = (text_as_path == 1) ? FZ_SVG_TEXT_AS_PATH : FZ_SVG_TEXT_AS_TEXT;
             tbounds = fz_transform_rect(tbounds, ctm);
 
             fz_try(gctx) {
@@ -3198,7 +3208,7 @@ struct Page {
                 dev = fz_new_svg_device(gctx, out,
                                         tbounds.x1-tbounds.x0,  // width
                                         tbounds.y1-tbounds.y0,  // height
-                                        FZ_SVG_TEXT_AS_PATH, 1);
+                                        text_option, 1);
                 fz_run_page(gctx, (fz_page *) $self, dev, ctm, NULL);
                 fz_close_device(gctx, dev);
                 text = JM_EscapeStrFromBuffer(gctx, res);
@@ -4760,6 +4770,12 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         except:
             pass
 
+    if fontname.lower() in fitz_fontdescriptors.keys():
+        # one of the extra fonts
+        import pymupdf_fonts
+        fontbuffer = pymupdf_fonts.myfont(fontname)  # make a copy
+        del pymupdf_fonts
+
     # install the font for the page
     val = self._insertFont(fontname, bfname, fontfile, fontbuffer, set_simple, idx,
                            wmode, serif, encoding, CJK_number)
@@ -4848,7 +4864,23 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
 
                 weiter: ;
                 ixref = pdf_to_num(gctx, font_obj);
-
+                if (fz_font_is_monospaced(gctx, font)) {
+                    float adv = fz_advance_glyph(gctx, font,
+                                    fz_encode_character(gctx, font, 32), 0);
+                    int width = (int) floor(adv * 1000.0f + 0.5f);
+                    pdf_obj *dfonts = pdf_dict_get(gctx, font_obj, PDF_NAME(DescendantFonts));
+                    if (pdf_is_array(gctx, dfonts)) {
+                        int i, n = pdf_array_len(gctx, dfonts);
+                        for (i = 0; i < n; i++) {
+                            pdf_obj *dfont = pdf_array_get(gctx, dfonts, i);
+                            pdf_obj *warray = pdf_new_array(gctx, pdf, 3);
+                            pdf_array_push(gctx, warray, pdf_new_int(gctx, 0));
+                            pdf_array_push(gctx, warray, pdf_new_int(gctx, 65535));
+                            pdf_array_push(gctx, warray, pdf_new_int(gctx, (int64_t) width));
+                            pdf_dict_put_drop(gctx, dfont, PDF_NAME(W), warray);
+                        }
+                    }
+                }
                 PyObject *name = JM_EscapeStrFromStr(pdf_to_name(gctx,
                             pdf_dict_get(gctx, font_obj, PDF_NAME(BaseFont))));
 
@@ -4980,7 +5012,7 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
             """Check if /Contents is wrapped in string pair "q" / "Q".
             """
             cont = self.readContents().split()
-            if len(cont) < 1 or cont[0] != b"q" or cont[-1] != "Q":
+            if len(cont) < 1 or cont[0] != b"q" or cont[-1] != b"Q":
                 return False
             return True
 
@@ -7680,7 +7712,7 @@ if type(colorspace) is str:
 
         def __del__(self):
             if self.parent is None:
-                retturn
+                return
             self._erase()%}
     }
 };
@@ -8389,7 +8421,7 @@ struct TextWriter
         self.textRect.__doc__ = "Accumulated area of text spans."
         self.used_fonts = set()
         %}
-        TextWriter(PyObject *page_rect, int opacity=1, PyObject *color=NULL )
+        TextWriter(PyObject *page_rect, float opacity=1, PyObject *color=NULL )
         {
             fz_text *text = NULL;
             fz_try(gctx) {
@@ -8460,7 +8492,7 @@ struct TextWriter
                 or type(morph[1]) is not Matrix
                 ):
                 raise ValueError("morph must be (Point, Matrix) or None")
-        if getattr(opacity, "__float__", None) is None:
+        if getattr(opacity, "__float__", None) is None or opacity == -1:
             opacity = self.opacity
         if color is None:
             color = self.color
@@ -8588,17 +8620,13 @@ struct Font
                 ordering = ("china-t", "china-s", "japan", "korea","china-ts", "china-ss", "japan-s", "korea-s").index(fontname.lower()) % 4
             except ValueError:
                 ordering = -1
-            if fontname.lower().startswith(("fig", "fim")):
-                try:
-                    import pymupdf_fonts  # optional fonts
-                    fontbuffer = pymupdf_fonts.myfont(fontname)[:]  # make a copy
-                    fontname = None  # ensure using fontbuffer only
-                    del pymupdf_fonts  # remove package again
-                except Exception as exc:
-                    if repr(exc).startswith(("ImportError", "AttributeError")):
-                        raise ImportError("Optional package 'pymupdf_fonts' not installed")
-                    else:
-                        raise exc
+
+            if fontname.lower() in fitz_fontdescriptors.keys():
+                import pymupdf_fonts  # optional fonts
+                fontbuffer = pymupdf_fonts.myfont(fontname)  # make a copy
+                fontname = None  # ensure using fontbuffer only
+                del pymupdf_fonts  # remove package again
+
             elif ordering < 0:
                 fontname = Base14_fontdict.get(fontname.lower(), fontname)
         %}
@@ -8651,15 +8679,49 @@ struct Font
             return fz_advance_glyph(gctx, font, gid, wmode);
         }
 
-        %pythonprepend has_glyph
-        %{"""Return whether font has a glyph for this unicode."""%}
-        PyObject *has_glyph(int chr, char *language=NULL, int script=0)
+        %pythonprepend glyph_bbox
+        %{"""Return the glyph bbox of a unicode."""%}
+        %pythonappend glyph_bbox %{val = Rect(val)%}
+        PyObject *glyph_bbox(int chr, char *language=NULL, int script=0, int wmode=0)
         {
             fz_font *font;
             fz_text_language lang = fz_text_language_from_string(language);
             int gid = fz_encode_character_with_fallback(gctx, (fz_font *) $self, chr, script, lang, &font);
+            return JM_py_from_rect(fz_bound_glyph(gctx, font, gid, fz_identity));
+        }
+
+        %pythonprepend has_glyph
+        %{"""Return whether font has a glyph for this unicode."""%}
+        PyObject *has_glyph(int chr, char *language=NULL, int script=0, int fallback=0)
+        {
+            fz_font *font;
+            fz_text_language lang;
+            int gid;
+            if (fallback) {
+                lang = fz_text_language_from_string(language);
+                gid = fz_encode_character_with_fallback(gctx, (fz_font *) $self, chr, script, lang, &font);
+            } else {
+                gid = fz_encode_character(gctx, (fz_font *) $self, chr);
+            }
             if (gid > 0) Py_RETURN_TRUE;
             Py_RETURN_FALSE;
+        }
+
+
+        %pythoncode %{
+        def valid_codepoints(self):
+            from array import array
+            gc = self.glyph_count
+            cp = array("l", (0,) * gc)
+            arr = cp.buffer_info()
+            self._valid_unicodes(arr)
+            return array("l", sorted(set(cp)))
+        %}
+        void _valid_unicodes(PyObject *arr)
+        {
+            fz_font *font = (fz_font *) $self;
+            void *ptr = PyLong_AsVoidPtr(PySequence_ITEM(arr, 0));
+            jm_valid_chars(gctx, font, ptr);
         }
 
 
@@ -8741,9 +8803,8 @@ struct Tools
                     if (FZ_ENABLE_ICC)
                         fz_enable_icc(gctx);
                     else
-                        THROWMSG("PyMuPDF generated without ICC components.");
-                }
-                else if (FZ_ENABLE_ICC) {
+                        THROWMSG("MuPDF generated without ICC suppot.");
+                } else if (FZ_ENABLE_ICC) {
                     fz_disable_icc(gctx);
                 }
             }
@@ -8758,8 +8819,7 @@ struct Tools
         %{"""Free 'percent' of current store size."""%}
         PyObject *store_shrink(int percent)
         {
-            if (percent >= 100)
-            {
+            if (percent >= 100) {
                 fz_empty_store(gctx);
                 return Py_BuildValue("i", 0);
             }
@@ -9128,8 +9188,7 @@ struct Tools
         }
 
 
-        float _measure_string(const char *text, const char *fontname, float fontsize,
-                             int encoding = 0)
+        float _measure_string(const char *text, const char *fontname, float fontsize, int encoding = 0)
         {
             fz_font *font = fz_new_base14_font(gctx, fontname);
             float w = 0;
@@ -9156,7 +9215,7 @@ struct Tools
         PyObject *
         _sine_between(PyObject *C, PyObject *P, PyObject *Q)
         {
-            // calculate the sine between lines CP and QP
+            // for points C, P, Q compute the sine between lines CP and QP
             fz_point c = JM_point_from_py(C);
             fz_point p = JM_point_from_py(P);
             fz_point q = JM_point_from_py(Q);
@@ -9172,8 +9231,8 @@ struct Tools
         PyObject *
         _hor_matrix(PyObject *C, PyObject *P)
         {
-            // calculate matrix m that maps the line from C to P to the x-axis,
-            // such that C * m = (0, 0), and the target line has same length.
+            // calculate matrix m that maps line CP to the x-axis,
+            // such that C * m = (0, 0), and target line has same length.
             fz_point c = JM_point_from_py(C);
             fz_point p = JM_point_from_py(P);
             fz_point s = fz_normalize_vector(fz_make_point(p.x - c.x, p.y - c.y));
@@ -9199,8 +9258,8 @@ struct Tools
                         pdf_obj *dfont = pdf_array_get(gctx, dfonts, i);
                         pdf_obj *warray = pdf_new_array(gctx, pdf, 3);
                         pdf_array_push(gctx, warray, pdf_new_int(gctx, 0));
-                        pdf_array_push(gctx, warray, pdf_new_int(gctx, 65532));
-                        pdf_array_push(gctx, warray, pdf_new_int(gctx, width));
+                        pdf_array_push(gctx, warray, pdf_new_int(gctx, 65535));
+                        pdf_array_push(gctx, warray, pdf_new_int(gctx, (int64_t) width));
                         pdf_dict_put_drop(gctx, dfont, PDF_NAME(W), warray);
                     }
                 }
@@ -9214,7 +9273,7 @@ struct Tools
 
         %pythoncode %{
 def _le_annot_parms(self, annot, p1, p2, fill_color):
-    """Get common parameters for making line end symbols.
+    """Get common parameters for making annot line end symbols.
 
     Returns:
         m: matrix that maps p1, p2 to points L, P on the x-axis
