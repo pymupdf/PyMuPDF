@@ -70,8 +70,8 @@ To do this, you must download and generate MuPDF. This process depends very much
 
 * This repo's `fitz` folder contains one or more files whose names start with a single underscore `"_"`. These files contain configuration data and hotfixes. Each one must be copy-renamed to its correct target location **inside the MuPDF source** that you have downloaded, **before you generate MuPDF**. Currently, these files are:
   - fitz configuration file `_config.h` copy-replace to: `mupdf/include/mupdf/fitz/config.h`. It contains configuration data like e.g. which fonts to support.
-  - font support file `_pdf-font-add.c` copy-replace to: `mupdf/include/mupdf/pdf/pdf-font-add.c`.
-  - fax compression file `_encode-fax.c` copy-replace to: `mupdf/include/mupdf/fitz/encode-fax.c`.
+  - font support file `_pdf-font-add.c` copy-replace to: `mupdf/include/mupdf/source/pdf/pdf-font-add.c`.
+  - fax compression file `_encode-fax.c` copy-replace to: `mupdf/include/mupdf/source/fitz/encode-fax.c`.
 
   - Now MuPDF can be generated.
 
