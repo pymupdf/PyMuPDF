@@ -18,6 +18,7 @@ FEDORA = ARCH_LINUX + ["harfbuzz"]
 LIBRARIES = {
     "default": DEFAULT,
     "arch": ARCH_LINUX,
+    "manjaro": ARCH_LINUX,
     "opensuse": OPENSUSE,
     "fedora": FEDORA,
 }
