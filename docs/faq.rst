@@ -164,11 +164,10 @@ To recover the original image using PyMuPDF, the procedure depicted as follows m
 .. image:: images/img-stencil.jpg
    :scale: 60
 
-::
-    pix1 = fitz.Pixmap(doc, xref)    # (1) pixmap of image w/o alpha
-    pix2 = fitz.Pixmap(doc, smask)   # (2) stencil pixmap
-    pix = fitz.Pixmap(pix1)          # (3) copy of pix1, empty alpha channel added
-    pix.setAlpha(pix2.samples)       # (4) fill alpha channel
+>>> pix1 = fitz.Pixmap(doc, xref)    # (1) pixmap of image w/o alpha
+>>> pix2 = fitz.Pixmap(doc, smask)   # (2) stencil pixmap
+>>> pix = fitz.Pixmap(pix1)          # (3) copy of pix1, empty alpha channel added
+>>> pix.setAlpha(pix2.samples)       # (4) fill alpha channel
 
 Step (1) creates a pixmap of the "netto" image. Step (2) does the same with the stencil mask. Please note that the :attr:`Pixmap.samples` attribute of *pix2* contains the alpha bytes that must be stored in the final pixmap. This is what happens in step (3) and (4).
 
