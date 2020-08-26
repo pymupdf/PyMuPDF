@@ -1,6 +1,14 @@
 Change Logs
 ===============
 
+Changes in Version 1.17.6
+---------------------------
+* **Fixed** issue `#605 <https://github.com/pymupdf/PyMuPDF/issues/605>`_
+* **Fixed** issue `#600 <https://github.com/pymupdf/PyMuPDF/issues/600>`_ -- text should now be correctly positioned also for pages with a CropBox smaller than MediaBox.
+* **Added** text span dictionary key ``origin`` which contains the lower left coordinate of the first character in that span.
+* **Added** attribute :attr:`Font.buffer`, a *bytes* copy of the font file.
+* **Added** parameter *sanitize* to :meth:`Page.cleanContents`. Allows switching of sanitization, so only syntax cleaning will be done.
+
 Changes in Version 1.17.5
 ---------------------------
 * **Fixed** issue `#561 <https://github.com/pymupdf/PyMuPDF/issues/561>`_ -- second go: certain :ref:`TextWriter` usages with many alternating fonts did not work correctly.

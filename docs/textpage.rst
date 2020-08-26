@@ -204,11 +204,13 @@ Span Dictionary
 Spans contain the actual text. A line contains **more than one span only**, if it contains text with different font properties.
 
 *(Changed in version 1.14.17)* Spans now also have a *bbox* key (again).
+*(Changed in version 1.17.6)* Spans now also have an *origin* key.
 
 =============== =====================================================================
 **Key**             **Value**
 =============== =====================================================================
 bbox            span rectangle, formatted as *tuple(fitz.Rect)*
+origin          *tuple* coordinates of the first character's bottom left point
 font            font name *(str)*
 size            font size *(float)*
 flags           font characteristics *(int)*
@@ -219,7 +221,7 @@ chars           (only for :meth:`extractRAWDICT`) *list* of character dictionari
 
 *(New in version 1.16.0)*
 
-*"color"* is the text color encoded in sRGB format, e.g. 0xFF0000 for red.
+*"color"* is the text color encoded in sRGB (int) format, e.g. 0xFF0000 for red. There are functions for converting this integer back to formats (r, g, b) (PDF with float values from 0 to 1) :meth:`sRGB_to_pdf`, or (R, G, B), :meth:`sRGB_to_rgb` (with integer values from 0 to 255).
 
 *"flags"* is an integer, encoding bools of font properties:
 

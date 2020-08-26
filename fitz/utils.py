@@ -216,29 +216,19 @@ def insertImage(
         """ Calculate transformation matrix for image insertion.
 
         Notes:
-            The image will preserve its aspect ratio if and only if arguments
-            fw, fh are both equal to 1.
+            The result is basically a multiplication of four matrices in this
+            sequence: number one moves the image rectangle (always a unit rect!) to (0,0), number two rotates as desired, number three
+            scales using the width-height-ratio, and number four moves to the
+            target rect.
         Args:
-            fw, fh: width / height ratio factors of image - floats in (0,1].
-                At least one of them (corresponding to the longer side) is equal to 1.
-            tr: target rect in PDF coordinates
-            rotate: rotation angle in degrees
+            fw, fh: width / height ratio factors 0 < f <= 1.
+                    The longer one must be 1.
+            tr: target rect in PDF (!) coordinates
+            rotate: (degrees) rotation angle.
         Returns:
             Transformation matrix.
         """
-        # center point of target rect
-        tmp = Point((tr.x1 + tr.x0) / 2.0, (tr.y1 + tr.y0) / 2.0)
-
-        rot = Matrix(rotate)  # rotation matrix
-
-        # matrix m moves image center to (0, 0), then rotates
-        m = Matrix(1, 0, 0, 1, -0.5, -0.5) * rot
-
-        # sr1 = sr * m  # resulting image rect
-
-        # --------------------------------------------------------------------
-        # calculate the scale matrix
-        # --------------------------------------------------------------------
+        # compute scale matrix parameters
         small = min(fw, fh)  # factor of the smaller side
 
         if rotate not in (0, 180):
@@ -260,17 +250,20 @@ def insertImage(
                 w = tr.width
                 h = tr.width * small
 
-        else:  # (treated as) equal sided
+        else:
             w = tr.width
             h = tr.height
 
+        # center point of target rectangle
+        tmp = (tr.tl + tr.br) / 2.0
+
+        # move image center to (0, 0), then rotate
+        m = Matrix(1, 0, 0, 1, -0.5, -0.5) * Matrix(rotate)
         m *= Matrix(w, h)  # concat scale matrix
-
         m *= Matrix(1, 0, 0, 1, tmp.x, tmp.y)  # concat move to target center
-
         return m
 
-    # -------------------------------------------------------------------------
+    # ------------------------------------------------------------------------
 
     CheckParent(page)
     doc = page.parent
@@ -293,7 +286,7 @@ def insertImage(
     if rotate not in (0, 90, 180, 270):
         raise ValueError("bad rotate value")
 
-    r = page.CropBox & rect
+    r = rect
     if r.isEmpty or r.isInfinite:
         raise ValueError("rect must be finite and not empty")
 
@@ -503,7 +496,6 @@ def getPixmap(page, matrix=None, colorspace=csRGB, clip=None, alpha=False, annot
         annots: (bool) whether to also render annotations
     """
     CheckParent(page)
-    doc = page.parent
     if type(colorspace) is str:
         if colorspace.upper() == "GRAY":
             colorspace = csGRAY
@@ -514,7 +506,12 @@ def getPixmap(page, matrix=None, colorspace=csRGB, clip=None, alpha=False, annot
     if colorspace.n not in (1, 3, 4):
         raise ValueError("unsupported colorspace")
 
-    return page._makePixmap(doc, matrix, colorspace, alpha, annots, clip)
+    dl = page.getDisplayList(annots=annots)
+    pix = dl.getPixmap(matrix=matrix, colorspace=colorspace, alpha=alpha, clip=clip)
+    dl = None
+    return pix
+    # doc = page.parent
+    # return page._makePixmap(doc, matrix, colorspace, alpha, annots, clip)
 
 
 def getPagePixmap(
@@ -3426,7 +3423,7 @@ def scrub(
         if not (clean_pages or hidden_text):
             continue  # done with the page
 
-        page.cleanContents()
+        page.cleanContents(sanitize=True)
 
         if hidden_text:
             xref = page.getContents()[0]  # only one b/o cleaning!
@@ -3597,3 +3594,6 @@ def fillTextbox(
 
         idx = i  # number of next word to read
         line_ctr += 1  # line counter
+
+    return (idx, end_idx)  # return count of processed words, total words
+

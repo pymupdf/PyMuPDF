@@ -69,13 +69,13 @@ A Font object also contains useful general information, like the font bbox, the 
 
         *(New in v1.17.5)* Optionally, some new "reserved" fontnames become available if you install `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_. **"Fira Mono"** is a nice mono-spaced sans font set and **FiraGO** is another non-serifed "universal" font, set which supports all European languages (including Cyrillic and Greek) plus Thai, Arabian, Hewbrew and Devanagari -- however none of the CJK languages. The size of a FiraGO font is only a quarter of the "Droid Sans Fallback" size (compressed 400 KB vs. 1.65 MB) -- **and** it provides the style variants bold, italic, bold-italic.
 
-        **"Space Mono"** is another nice and small fixed-width font from Google Fonts, which supports Latin Extended characters.
+        **"Space Mono"** is another nice and small fixed-width font from Google Fonts, which supports Latin Extended characters and comes with all 4 important font weights.
 
         The following table maps a fontname to the corresponding font:
 
-            =========== =========================== ==============
-            Fontname    Font                        Added in
-            =========== =========================== ==============
+            =========== =========================== ======= =============================
+            Fontname    Font                        New in  Comment
+            =========== =========================== ======= =============================
             figo        FiraGO Regular              v1.0.0
             figbo       FiraGO Bold                 v1.0.0
             figit       FiraGO Italic               v1.0.0
@@ -86,11 +86,11 @@ A Font object also contains useful general information, like the font bbox, the 
             spacembo    Space Mono Bold             v1.0.1
             spacemit    Space Mono Italic           v1.0.1
             spacembi    Space Mono Bold-Italic      v1.0.1
-            math        Noto Sans Math Regular      v1.0.2
-            music       Noto Music Regular          v1.0.2
-            symbol1     Noto Sans Symbols Regular   v1.0.2
-            symbol2     Noto Sans Symbols2 Regular  v1.0.2
-            =========== =========================== ==============
+            math        Noto Sans Math Regular      v1.0.2  math symbols
+            music       Noto Music Regular          v1.0.2  musical symbols
+            symbol1     Noto Sans Symbols Regular   v1.0.2  replacemt for "symb"
+            symbol2     Noto Sans Symbols2 Regular  v1.0.2  extended symbol set
+            =========== =========================== ======= =============================
 
 
    .. method:: has_glyph(chr, language=None, script=0, fallback=False)
@@ -105,7 +105,9 @@ A Font object also contains useful general information, like the font bbox, the 
 
    .. method:: valid_codepoints()
 
-      *(New in v1.17.5)* Return an array of unicodes which are supported by this font.
+      *(New in v1.17.5)*
+
+      Return an array of unicodes supported by this font.
 
       :returns: an *array.array* [#f2]_ of length :attr:`Font.glyph_count` (or less). I.e. *chr()* of every item in this array will be found in the font without using fallbacks. This is an example display of the supported glyphs:
 
@@ -175,6 +177,12 @@ A Font object also contains useful general information, like the font bbox, the 
       :arg float fontsize: the fontsize.
 
       :returns: a float representing the length of the string when stored in the PDF. Internally :meth:`glyph_advance` is used on a by-character level. If the font does not have a character, it will automatically be looked up in a fallback font.
+
+   .. attribute:: buffer
+
+      *(New in v1.17.6)*
+      
+      A *bytes* copy of the binary font file.
 
    .. attribute:: flags
 

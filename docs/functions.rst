@@ -451,13 +451,17 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page.cleanContents()
+   .. method:: Page.cleanContents(sanitize=True)
 
-      Clean and concatenate all :data:`contents` objects associated with this page. "Cleaning" includes syntactical corrections, standardizations and "pretty printing" of the contents stream. Discrepancies between :data:`contents` and :data:`resources` objects will also be corrected. See :meth:`Page._getContents` for more details.
+      *(Changed in v1.17.6)*
+      
+      PDF only: Clean and concatenate all :data:`contents` objects associated with this page. "Cleaning" includes syntactical corrections, standardizations and "pretty printing" of the contents stream. Discrepancies between :data:`contents` and :data:`resources` objects will also be corrected if sanitize is true. See :meth:`Page.getContents` for more details.
 
       Changed in version 1.16.0 Annotations are no longer implicitely cleaned by this method. Use :meth:`Annot._cleanContents` separately.
 
-      .. warning:: This is a complex function which may generate large amounts of new data and render other data unused. It is **not recommended** using it together with the **incremental save** option. Also note that the resulting singleton new */Contents* object is **uncompressed**. So you should save to a **new file** using options *"deflate=True, garbage=3"*.
+      :arg bool sanitize: *(new in v1.17.6)* if true, synchronization between resources and their actual use in the contents object is snychronized. For example, if a font is not actually used for any text of the page, then it will be deleted from the ``/Resources/Font`` object.
+
+      .. warning:: This is a complex function which may generate large amounts of new data and render old data unused. It is **not recommended** using it together with the **incremental save** option. Also note that the resulting singleton new */Contents* object is **uncompressed**. So you should save to a **new file** using options *"deflate=True, garbage=3"*.
 
 -----
 
@@ -471,7 +475,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: Annot._cleanContents()
 
-      Clean the :data:`contents` streams associated with the annotation. This is the same type of action which :meth:`Page._cleanContents` performs -- just restricted to this annotation.
+      Clean the :data:`contents` streams associated with the annotation. This is the same type of action which :meth:`Page.cleanContents` performs -- just restricted to this annotation.
 
 
 -----

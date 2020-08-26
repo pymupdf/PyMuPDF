@@ -3051,7 +3051,7 @@ struct Page {
         """Get rectangle occupied by image 'name'.
 
         'name' is either an item of the image full list, or the referencing
-        name string."""
+        name string - elem[7] of the resp. item."""
         CheckParent(self)
         doc = self.parent
         if doc.isClosed or doc.isEncrypted:
@@ -3112,6 +3112,7 @@ struct Page {
         // Page.getTextPage
         //---------------------------------------------------------------------
         FITZEXCEPTION(_get_text_page, !result)
+        %pythonappend _get_text_page %{val.thisown = True%}
         struct TextPage *
         _get_text_page(int flags=0)
         {
@@ -4059,6 +4060,7 @@ struct Page {
 
         CheckParent(self)
         %}
+        %pythonappend getDisplayList %{val.thisown = True%}
         struct DisplayList *getDisplayList(int annots=1)
         {
             fz_display_list *dl = NULL;
@@ -4502,11 +4504,10 @@ except:
         // Page clean contents stream
         //---------------------------------------------------------------------
         PARENTCHECK(_cleanContents, """Clean page /Contents object(s).""")
-        PyObject *_cleanContents()
+        PyObject *_cleanContents(int sanitize=0)
         {
             pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
-            if (!page)
-            {
+            if (!page) {
                 return_none;
             }
             pdf_filter_options filter = {
@@ -4519,7 +4520,8 @@ except:
                 1,     // instance forms
                 1,     // sanitize plus filtering
                 0      // do not ascii-escape binary data
-                }; 
+                };
+            filter.sanitize = sanitize;
             fz_try(gctx) {
                 pdf_filter_page_contents(gctx, page->doc, page, &filter);
             }
@@ -5139,8 +5141,10 @@ def insertFont(self, fontname="helv", fontfile=None, fontbuffer=None,
         def MediaBoxSize(self):
             return Point(self.MediaBox.width, self.MediaBox.height)
 
-        def cleanContents(self):
-            self._cleanContents()
+        def cleanContents(self, sanitize=True):
+            if not sanitize and not self._isWrapped:
+                self.wrapContents()
+            self._cleanContents(sanitize)
 
         getContents = _getContents
         %}
@@ -7545,7 +7549,7 @@ struct Annot
         //---------------------------------------------------------------------
         FITZEXCEPTION(_cleanContents, !result)
         PARENTCHECK(_cleanContents, """Clean appearance contents object.""")
-        PyObject *_cleanContents()
+        PyObject *_cleanContents(int sanitize=0)
         {
             pdf_annot *annot = (pdf_annot *) $self;
             pdf_filter_options filter = {
@@ -7556,9 +7560,10 @@ struct Annot
                 NULL,  // end page
                 1,     // recurse: true
                 1,     // instance forms
-                1,     // only sanitize, no filtering
+                1,     // sanitize,
                 0      // do not ascii-escape binary data
-                }; 
+                };
+            filter.sanitize = sanitize;
             fz_try(gctx) {
                 pdf_filter_annot_contents(gctx, annot->page->doc, annot, &filter);
             }
@@ -7926,6 +7931,7 @@ struct DisplayList {
             DEBUGMSG2;
         }
         FITZEXCEPTION(DisplayList, !result)
+        %pythonappend DisplayList %{self.thisown = True%}
         DisplayList(PyObject *mediabox)
         {
             fz_display_list *dl = NULL;
@@ -7964,9 +7970,10 @@ struct DisplayList {
         // DisplayList.getPixmap
         //---------------------------------------------------------------------
         FITZEXCEPTION(getPixmap, !result)
+        %pythonappend getPixmap %{val.thisown = True%}
         struct Pixmap *getPixmap(PyObject *matrix=NULL,
                                       struct Colorspace *colorspace=NULL,
-                                      int alpha=1,
+                                      int alpha=0,
                                       PyObject *clip=NULL)
         {
             fz_colorspace *cs = NULL;
@@ -7990,6 +7997,7 @@ struct DisplayList {
         // DisplayList.getTextPage
         //---------------------------------------------------------------------
         FITZEXCEPTION(getTextPage, !result)
+        %pythonappend getTextPage %{val.thisown = True%}
         struct TextPage *getTextPage(int flags = 3)
         {
             fz_display_list *this_dl = (fz_display_list *) $self;
@@ -8007,7 +8015,9 @@ struct DisplayList {
         %pythoncode %{
         def __del__(self):
             if not type(self) is DisplayList: return
-            self.__swig_destroy__(self)
+            if getattr(self, "thisown", False):
+                self.__swig_destroy__(self)
+            self.thisown = False
         %}
     }
 };
@@ -8025,6 +8035,7 @@ struct TextPage {
         }
 
         FITZEXCEPTION(TextPage, !result)
+        %pythonappend TextPage %{self.thisown = True%}
         TextPage(PyObject *mediabox)
         {
             fz_stext_page *tp = NULL;
@@ -8350,7 +8361,9 @@ struct TextPage {
 
             def __del__(self):
                 if not type(self) is TextPage: return
-                self.__swig_destroy__(self)
+                if getattr(self, "thisown", False):
+                    self.__swig_destroy__(self)
+                self.thisown = False
         %}
     }
 };
@@ -8448,10 +8461,10 @@ struct TextWriter
             self.used_fonts.add(font)
         %}
         PyObject *
-        append(PyObject *pos, char *text, struct Font *font=NULL, float fontsize=11, char *language=NULL, int wmode=0, int bidi_level=0)
+        append(PyObject *pos, char *text, struct Font *font=NULL, float fontsize=11, char *language=NULL, int wmode=0, int bidi_level=0, int markup_dir=0)
         {
             fz_text_language lang = fz_text_language_from_string(language);
-            fz_bidi_direction markup_dir = 0;
+            //fz_bidi_direction markup_dir = 0;
             fz_point p = JM_point_from_py(pos);
             fz_matrix trm = fz_make_matrix(fontsize, 0, 0, fontsize, p.x, p.y);
             fz_try(gctx) {
@@ -8504,6 +8517,10 @@ struct TextWriter
         old_cont_lines = content.splitlines()
 
         new_cont_lines = ["q"]
+
+        cb = page.CropBoxPosition
+        if bool(cb):
+            new_cont_lines.append("1 0 0 1 %g %g cm" % (cb.x, cb.y))
 
         if morph:
             p = morph[0] * self.ictm
@@ -8750,6 +8767,15 @@ struct Font
         {
             fz_font *this_font = (fz_font *) $self;
             return this_font->glyph_count;
+        }
+
+        %pythoncode %{@property%}
+        PyObject *buffer()
+        {
+            fz_font *this_font = (fz_font *) $self;
+            unsigned char *data = NULL;
+            size_t len = fz_buffer_storage(gctx, this_font->buffer, &data);
+            return JM_BinFromCharSize(data, len);
         }
 
         %pythoncode %{@property%}

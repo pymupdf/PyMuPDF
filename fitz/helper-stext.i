@@ -44,16 +44,11 @@ PyObject *JM_repl_char()
 //-----------------------------------------------------------------------------
 void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
 {
-    if (ch >= 32 && ch <= 127)
-    {
+    if (ch >= 32 && ch <= 127) {
         fz_append_byte(ctx, buff, ch);
-    }
-    else if (ch <= 0xffff)  // 4 hex digits
-    {
+    } else if (ch <= 0xffff) {  // 4 hex digits
         fz_append_printf(ctx, buff, "\\u%04x", ch);
-    }
-    else  // 8 hex digits
-    {
+    } else {  // 8 hex digits
         fz_append_printf(ctx, buff, "\\U%08x", ch);
     }
 }
@@ -64,16 +59,11 @@ void JM_append_rune(fz_context *ctx, fz_buffer *buff, int ch)
 //-----------------------------------------------------------------------------
 void JM_write_rune(fz_context *ctx, fz_output *out, int ch)
 {
-    if (ch >= 32 && ch <= 127)
-    {
+    if (ch >= 32 && ch <= 127) {
         fz_write_byte(ctx, out, ch);
-    }
-    else if (ch <= 0xffff)  // 4 hex digits
-    {
+    } else if (ch <= 0xffff) {  // 4 hex digits
         fz_write_printf(ctx, out, "\\u%04x", ch);
-    }
-    else  // 8 hex digits
-    {
+    } else {  // 8 hex digits
         fz_write_printf(ctx, out, "\\U%08x", ch);
     }
 }
@@ -92,20 +82,15 @@ JM_print_stext_page_as_text(fz_context *ctx, fz_output *out, fz_stext_page *page
     fz_stext_char *ch = NULL;
     int last_char = 0;
 
-    for (block = page->first_block; block; block = block->next)
-    {
-        if (block->type == FZ_STEXT_BLOCK_TEXT)
-        {
+    for (block = page->first_block; block; block = block->next) {
+        if (block->type == FZ_STEXT_BLOCK_TEXT) {
             int line_n = 0;
-            for (line = block->u.t.first_line; line; line = line->next)
-            {
-                if (line_n > 0 && last_char != 10)
-                {
+            for (line = block->u.t.first_line; line; line = line->next) {
+                if (line_n > 0 && last_char != 10) {
                     fz_write_string(ctx, out, "\n");
                 }
                 line_n++;
-                for (ch = line->first_char; ch; ch = ch->next)
-                {
+                for (ch = line->first_char; ch; ch = ch->next) {
                     JM_write_rune(ctx, out, ch->c);
                     last_char = ch->c;
                 }
@@ -167,6 +152,14 @@ static int JM_char_font_flags(fz_context *ctx, fz_font *font, fz_stext_line *lin
     return flags;
 }
 
+static const char *
+JM_font_name(fz_context *ctx, fz_font *font)
+{
+    const char *name = fz_font_name(ctx, font);
+    const char *s = strchr(name, '+');
+    return s ? s + 1 : name;
+}
+
 
 static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw, fz_buffer *buff)
 {
@@ -175,8 +168,9 @@ static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw,
     fz_clear_buffer(ctx, buff);
     fz_stext_char *ch;
     fz_rect span_rect;
+    fz_point span_origin;
     typedef struct style_s
-    {float size; int flags; char *font; int color;} char_style;
+    {float size; int flags; const char *font; int color; } char_style;
 
     char_style old_style = { -1, -1, "", -1 }, style;
 
@@ -184,31 +178,35 @@ static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw,
     {
         fz_rect r = JM_char_bbox(line, ch);
         int flags = JM_char_font_flags(ctx, ch->font, line, ch);
+        fz_point origin = ch->origin;
         style.size = ch->size;
         style.flags = flags;
-        style.font = (char *) fz_font_name(ctx, ch->font);
+        style.font = JM_font_name(ctx, ch->font);
         style.color = ch->color;
 
         if (style.size != old_style.size ||
             style.flags != old_style.flags ||
             style.color != old_style.color ||
-            strcmp(style.font, old_style.font) != 0)  // changed -> new span
-        {
-            if (old_style.size >= 0)  // not 1st one, output previous span
-            {
-                if (raw)  // put character list in the span
-                {
+            strcmp(style.font, old_style.font) != 0) {
+
+            // style changed -> make new span
+
+            if (old_style.size >= 0) {
+                // not first one, output previous
+                if (raw) {
+                    // put character list in the span
                     DICT_SETITEM_DROP(span, dictkey_chars, char_list);
                     char_list = NULL;
-                }
-                else  // put text string in the span
-                {
+                } else {
+                    // put text string in the span
                     DICT_SETITEM_DROP(span, dictkey_text, JM_EscapeStrFromBuffer(ctx, buff));
                     fz_clear_buffer(ctx, buff);
                 }
 
-                DICT_SETITEM_DROP(span, dictkey_bbox, JM_py_from_rect(span_rect));
-
+                DICT_SETITEM_DROP(span, dictkey_origin,
+                    Py_BuildValue("ff", span_origin.x, span_origin.y));
+                DICT_SETITEM_DROP(span, dictkey_bbox,
+                    JM_py_from_rect(span_rect));
                 LIST_APPEND_DROP(span_list, span);
                 span = NULL;
             }
@@ -222,10 +220,15 @@ static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw,
 
             old_style = style;
             span_rect = r;
+            span_origin = origin;
+
         }
         span_rect = fz_union_rect(span_rect, r);
-        if (raw)  // make and append a char dict
-        {
+        if (origin.y > span_origin.y) {
+            span_origin.y = origin.y;
+        }
+
+        if (raw) {  // make and append a char dict
             char_dict = PyDict_New();
 
             DICT_SETITEM_DROP(char_dict, dictkey_origin,
@@ -237,32 +240,26 @@ static PyObject *JM_make_spanlist(fz_context *ctx, fz_stext_line *line, int raw,
             DICT_SETITEM_DROP(char_dict, dictkey_c,
                           Py_BuildValue("C", ch->c));
 
-            if (!char_list)
-            {
+            if (!char_list) {
                 char_list = PyList_New(0);
             }
             LIST_APPEND_DROP(char_list, char_dict);
-        }
-        else  // add character byte to buffer
-        {
+        } else {  // add character byte to buffer
             JM_append_rune(ctx, buff, ch->c);
         }
     }
     // all characters processed, now flush remaining span
-    if (span)
-    {
-        if (raw)
-        {
+    if (span) {
+        if (raw) {
             DICT_SETITEM_DROP(span, dictkey_chars, char_list);
             char_list = NULL;
-        }
-        else
-        {
+        } else {
             DICT_SETITEM_DROP(span, dictkey_text, JM_EscapeStrFromBuffer(ctx, buff));
             fz_clear_buffer(ctx, buff);
         }
+        DICT_SETITEM_DROP(span, dictkey_origin,
+            Py_BuildValue("ff", span_origin.x, span_origin.y));
         DICT_SETITEM_DROP(span, dictkey_bbox, JM_py_from_rect(span_rect));
-
         LIST_APPEND_DROP(span_list, span);
         span = NULL;
     }
@@ -291,15 +288,13 @@ static void JM_make_image_block(fz_context *ctx, fz_stext_block *block, PyObject
         if (buffer && type != FZ_IMAGE_UNKNOWN) {
             buf = buffer->buffer;
             ext = JM_image_extension(type);
-        }
-        else {
+        } else {
             buf = freebuf = fz_new_buffer_from_image_as_png(ctx, image, fz_default_color_params);
             ext = "png";
         }
         if (PY_MAJOR_VERSION > 2) {
             bytes = JM_BinFromBuffer(ctx, buf);
-        }
-        else {
+        } else {
             bytes = JM_BArrayFromBuffer(ctx, buf);
         }
     }
@@ -333,8 +328,7 @@ static void JM_make_text_block(fz_context *ctx, fz_stext_block *block, PyObject 
     fz_stext_line *line;
     PyObject *line_list = PyList_New(0), *line_dict;
 
-    for (line = block->u.t.first_line; line; line = line->next)
-    {
+    for (line = block->u.t.first_line; line; line = line->next) {
         line_dict = PyDict_New();
 
         DICT_SETITEM_DROP(line_dict, dictkey_wmode,
@@ -355,21 +349,17 @@ static void JM_make_text_block(fz_context *ctx, fz_stext_block *block, PyObject 
 void JM_make_textpage_dict(fz_context *ctx, fz_stext_page *tp, PyObject *page_dict, int raw)
 {
     fz_stext_block *block;
-    fz_buffer *text_buffer = fz_new_buffer(ctx, 64);
+    fz_buffer *text_buffer = fz_new_buffer(ctx, 128);
     PyObject *block_dict, *block_list = PyList_New(0);
-    for (block = tp->first_block; block; block = block->next)
-    {
+    for (block = tp->first_block; block; block = block->next) {
         block_dict = PyDict_New();
 
         DICT_SETITEM_DROP(block_dict, dictkey_type, Py_BuildValue("i", block->type));
         DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(block->bbox));
 
-        if (block->type == FZ_STEXT_BLOCK_IMAGE)
-        {
+        if (block->type == FZ_STEXT_BLOCK_IMAGE) {
             JM_make_image_block(ctx, block, block_dict);
-        }
-        else
-        {
+        } else {
             JM_make_text_block(ctx, block, block_dict, raw, text_buffer);
         }
 
@@ -425,8 +415,7 @@ PyObject *JM_merge_resources(fz_context *ctx, pdf_page *page, pdf_obj *temp_res)
     if (pdf_is_dict(ctx, temp_extg))  // any created at all?
     {
         n = pdf_dict_len(ctx, temp_extg);
-        if (pdf_is_dict(ctx, main_extg))  // does page have /ExtGState yet?
-        {
+        if (pdf_is_dict(ctx, main_extg)) {  // does page have /ExtGState yet?
             for (i = 0; i < pdf_dict_len(ctx, main_extg); i++) {
                 // get highest number of objects named /Alpxxx
                 char *alp = (char *) pdf_to_name(ctx, pdf_dict_get_key(ctx, main_extg, i));
@@ -482,8 +471,7 @@ fz_matrix JM_show_string(fz_context *ctx, fz_text *text, fz_font *user_font, fz_
     int gid, ucs;
     float adv;
 
-    while (*s)
-    {
+    while (*s) {
         s += fz_chartorune(&ucs, s);
         gid = fz_encode_character_with_fallback(ctx, user_font, ucs, script, language, &font);
         fz_show_glyph(ctx, text, font, trm, gid, ucs, wmode, bidi_level, markup_dir, language);
@@ -493,7 +481,6 @@ fz_matrix JM_show_string(fz_context *ctx, fz_text *text, fz_font *user_font, fz_
         else
             trm = fz_pre_translate(trm, 0, -adv);
     }
-
     return trm;
 }
 
