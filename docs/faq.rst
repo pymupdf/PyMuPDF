@@ -31,7 +31,7 @@ The script works as a command line tool which expects the filename being supplie
         pix = page.getPixmap(alpha = False)  # render page to an image
         pix.writePNG("page-%i.png" % page.number)  # store image as a PNG
 
-The script directory will now contain PNG image files named *page-0.png*, *page-1.png*, etc. Pictures have the dimension of their pages, e.g. 595 x 842 pixels for an A4 portrait sized page. They will have a resolution of 72 dpi in x and y dimension and have no transparency. You can change all that -- for how to do do this, read the next sections.
+The script directory will now contain PNG image files named *page-0.png*, *page-1.png*, etc. Pictures have the dimension of their pages, e.g. 595 x 842 pixels for an A4 portrait sized page. They will have a resolution of 72 dpi in x and y dimension and have no transparency. You can change all that -- for how to do this, read the next sections.
 
 ----------
 
@@ -79,7 +79,7 @@ In the above we construct *clip* by specifying two diagonally opposite points: t
 
 How to Create or Suppress Annotation Images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Normally, the pixmap of a page also shows the page's annotations. Occasionally, this may not be desireable.
+Normally, the pixmap of a page also shows the page's annotations. Occasionally, this may not be desirable.
 
 To suppress the annotation images on a rendered page, just specify *annots=False* in :meth:`Page.getPixmap`.
 
@@ -150,7 +150,7 @@ and `extract-imgb.py <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master
 
 How to Handle Stencil Masks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Some images in PDFs are accompanied by **stencil masks**. In their simplest form stencil masks represent alpha (transparency) bytes stored as seperate images. In order to reconstruct the original of an image, which has a stencil mask, it must be "enriched" with transparency bytes taken from its stencil mask.
+Some images in PDFs are accompanied by **stencil masks**. In their simplest form stencil masks represent alpha (transparency) bytes stored as separate images. In order to reconstruct the original of an image, which has a stencil mask, it must be "enriched" with transparency bytes taken from its stencil mask.
 
 Whether an image does have such a stencil mask can be recognized in one of two ways in PyMuPDF:
 
@@ -249,7 +249,7 @@ The second script **embeds** arbitrary files -- not only images. The resulting P
 .. image:: images/img-embed-progress.jpg
    :scale: 80
 
-This is by far the fastest method, and it also produces the smallest possible output file size. The above pictures needed 20 seonds on my machine and yielded a PDF size of 510 MB. Look `here <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/all-my-pics-embedded.py>`_ for a more complete source code: it offers a direcory selection dialog and skips non-file entries.
+This is by far the fastest method, and it also produces the smallest possible output file size. The above pictures needed 20 seconds on my machine and yielded a PDF size of 510 MB. Look `here <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/all-my-pics-embedded.py>`_ for a more complete source code: it offers a directory selection dialog and skips non-file entries.
 
 **Method 3: Attaching Files**
 
@@ -414,7 +414,7 @@ How to Use Pixmaps: Making a Fractal
 
 Here is another Pixmap example that creates **Sierpinski's Carpet** -- a fractal generalizing the **Cantor Set** to two dimensions. Given a square carpet, mark its 9 sub-suqares (3 times 3) and cut out the one in the center. Treat each of the remaining eight sub-squares in the same way, and continue *ad infinitum*. The end result is a set with area zero and fractal dimension 1.8928...
 
-This script creates a approximative PNG image of it, by going down to one-pixel granularity. To increase the image precision, change the value of n (precision)::
+This script creates a approximate image of it as a PNG, by going down to one-pixel granularity. To increase the image precision, change the value of n (precision)::
 
     import fitz, time
     if not list(map(int, fitz.VersionBind.split("."))) >= [1, 14, 8]:
@@ -573,7 +573,7 @@ The script works as a command line tool which expects the document filename supp
         out.write(bytes((12,)))  # write page delimiter (form feed 0x0C)
     out.close()
 
-The output will be plain text as it is coded in the document. No effort is made to prettify in any way. Specifally for PDF, this may mean output not in usual reading order, unexpected line breaks and so forth.
+The output will be plain text as it is coded in the document. No effort is made to prettify in any way. Specifically for PDF, this may mean output not in usual reading order, unexpected line breaks and so forth.
 
 You have many options to cure this -- see chapter :ref:`Appendix2`. Among them are:
 
@@ -644,7 +644,7 @@ How to Extract Text in Natural Reading Order
 
 One of the common issues with PDF text extraction is, that text may not appear in any particular reading order.
 
-Responsible for this effect is the PDF creator (software or a human). For example, page headers may have been inserted in a separate step -- after the document had been produced. In such a case, the header text will appear at the end of a page text extraction (allthough it will be correctly shown by PDF viewer software). For example, the following snippet will add some header and footer lines to an existing PDF::
+Responsible for this effect is the PDF creator (software or a human). For example, page headers may have been inserted in a separate step -- after the document had been produced. In such a case, the header text will appear at the end of a page text extraction (although it will be correctly shown by PDF viewer software). For example, the following snippet will add some header and footer lines to an existing PDF::
 
     doc = fitz.open("some.pdf")
     header = "Header"  # text in header
@@ -758,7 +758,7 @@ In those cases, the following function will help composing the original words of
 
 How to :index:`Extract Tables <pair: extract; table>` from Documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-If you see a table in a document, you are not normally looking at something like an embedded Excel or other identifyable object. It usually is just text, formatted to appear as appropriate.
+If you see a table in a document, you are not normally looking at something like an embedded Excel or other identifiable object. It usually is just text, formatted to appear as appropriate.
 
 Extracting a tabular data from such a page area therefore means that you must find a way to **(1)** graphically indicate table and column borders, and **(2)** then extract text based on this information.
 
@@ -964,7 +964,7 @@ This script fills 4 different rectangles with text, each time choosing a differe
     gold = (1,1,0)
     blue = (0,0,1)
     """We use a Shape object (something like a canvas) to output the text and
-    the rectangles surounding it for demonstration.
+    the rectangles surrounding it for demonstration.
     """
     shape = page.newShape()  # create Shape
     shape.drawRect(r1)  # draw rectangles
@@ -1016,7 +1016,7 @@ The result:
 .. image:: images/img-encoding.jpg
    :scale: 50
 
-The snippet above indeed leads to three different copies of the Helvetica font in the PDF. Each copy is uniquely idetified (and referenceable) by using the correct upper-lower case spelling of the reserved word "helv"::
+The snippet above indeed leads to three different copies of the Helvetica font in the PDF. Each copy is uniquely identified (and referenceable) by using the correct upper-lower case spelling of the reserved word "helv"::
 
     for f in doc.getPageFontList(0): print(f)
 
@@ -1030,7 +1030,7 @@ Annotations
 -----------
 In v1.14.0, annotation handling has been considerably extended:
 
-* New annotation type support for 'Ink', 'Rubber Stamp' and 'Squiggly' annotations. Ink annots simulate handwritings by combining one or more lists of interconnected points. Stamps are intended to visuably inform about a document's status or intended usage (like "draft", "confidential", etc.). 'Squiggly' is a text marker annot, which underlines selected text with a zigzagged line.
+* New annotation type support for 'Ink', 'Rubber Stamp' and 'Squiggly' annotations. Ink annots simulate handwriting by combining one or more lists of interconnected points. Stamps are intended to visually inform about a document's status or intended usage (like "draft", "confidential", etc.). 'Squiggly' is a text marker annot, which underlines selected text with a zigzagged line.
 
 * Extended 'FreeText' support:
     1. all characters from the *Latin* character set are now available,
@@ -1045,7 +1045,7 @@ In v1.14.0, annotation handling has been considerably extended:
 How to Add and Modify Annotations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In PyMuPDF, new annotations can be added added via :ref:`Page` methods. Once an annotation exists, it can be modified to a large extent using methods of the :ref:`Annot` class.
+In PyMuPDF, new annotations can be added via :ref:`Page` methods. Once an annotation exists, it can be modified to a large extent using methods of the :ref:`Annot` class.
 
 In contrast to many other tools, initial insert of annotations happens with a minimum number of properties. We leave it to the programmer to e.g. set attributes like author, creation date or subject.
 
@@ -1112,7 +1112,7 @@ This script shows a couple of ways to deal with 'FreeText' annotations::
     doc = fitz.open()
     page = doc.newPage()
 
-    # 3 rectangles, same size, abvove each other
+    # 3 rectangles, same size, above each other
     r1 = fitz.Rect(100,100,200,150)
     r2 = r1 + (0,75,0,75)
     r3 = r2 + (0,75,0,75)
@@ -1150,7 +1150,7 @@ A big **thank you** to our user `@kurokawaikki <https://github.com/kurokawaikki>
 
 How to Use Ink Annotations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Ink annotations are used to contain freehand scribblings. A typical example maybe an image of your signature consisting of first name and last name. Technically an ink annotation is implemented as a **list of lists of points**. Each point list is regarded as a continuous line connecting the points. Different point lists represent indepndent line segments of the annotation.
+Ink annotations are used to contain freehand scribbling. A typical example maybe an image of your signature consisting of first name and last name. Technically an ink annotation is implemented as a **list of lists of points**. Each point list is regarded as a continuous line connecting the points. Different point lists represent independent line segments of the annotation.
 
 The following script creates an ink annotation with two mathematical curves (sine and cosine function graphs) as line segments::
 
@@ -1161,7 +1161,7 @@ The following script creates an ink annotation with two mathematical curves (sin
     # preliminary stuff: create function value lists for sine and cosine
     #------------------------------------------------------------------------------
     w360 = math.pi * 2  # go through full circle
-    deg = w360 / 360  # 1 degree as radiants
+    deg = w360 / 360  # 1 degree as radians
     rect = fitz.Rect(100,200, 300, 300)  # use this rectangle
     first_x = rect.x0  # x starts from left
     first_y = rect.y0 + rect.height / 2.  # rect middle means y = 0
@@ -1219,7 +1219,7 @@ The returned *last_point* **always** is the :ref:`Point` where drawing operation
 
 In fact, :meth:`Shape.finish` *defines* a group of preceding draw operations to form one -- potentially rather complex -- graphics object. PyMuPDF provides several predefined graphics in `shapes_and_symbols.py <https://github.com/JorjMcKie/PyMuPDF-Utilities/blob/master/shapes_and_symbols.py>`_ which demonstrate how this works.
 
-If you import this script, you can also directly use its graphics as in the following exmple::
+If you import this script, you can also directly use its graphics as in the following example::
 
     # -*- coding: utf-8 -*-
     """
@@ -1253,7 +1253,7 @@ If you import this script, you can also directly use its graphics as in the foll
              ]
 
     r = fitz.Rect(50, 50, 100, 100)  # first rect to contain a symbol
-    d = fitz.Rect(0, r.height + 10, 0, r.height + 10)  # displacement to next ret
+    d = fitz.Rect(0, r.height + 10, 0, r.height + 10)  # displacement to next rect
     p = (15, -r.height * 0.2)  # starting point of explanation text
     rlist = [r]  # rectangle list
 
@@ -1317,7 +1317,7 @@ Assume that "some.file" is actually an XPS. Open it like so:
 
 >>> doc = fitz.open("some.file", filetype = "xps")
 
-.. note:: MuPDF itself does not try to determine the file type from the file contents. **You** are responsible for supplying the filetype info in some way -- either implicitely via the file extension, or explicitely as shown. There are pure Python packages like `filetype <https://pypi.org/project/filetype/>`_ that help you doing this. Also consult the :ref:`Document` chapter for a full description.
+.. note:: MuPDF itself does not try to determine the file type from the file contents. **You** are responsible for supplying the filetype info in some way -- either implicitly via the file extension, or explicitly as shown. There are pure Python packages like `filetype <https://pypi.org/project/filetype/>`_ that help you doing this. Also consult the :ref:`Document` chapter for a full description.
 
 ----------
 
@@ -1438,7 +1438,7 @@ The convenience function :meth:`PaperSize` knows over 40 industry standard paper
                         fontfile = None,  # any font file name
                         color = (0, 0, 0))  # text color (RGB)
 
-The text parameter can be a (sequence of) string (assuming UTF-8 encoding). Insertion will start at :ref:`Point` (50, 72), which is one inch below top of page and 50 points from the left. The number of inserted text lines is returned. See the method definiton for more details.
+The text parameter can be a (sequence of) string (assuming UTF-8 encoding). Insertion will start at :ref:`Point` (50, 72), which is one inch below top of page and 50 points from the left. The number of inserted text lines is returned. See the method definition for more details.
 
 ----------
 
@@ -1479,7 +1479,7 @@ If a clean, non-corrupt / decompressed PDF is needed, one could dynamically invo
  #---------------------------------------
  # Main program
  #---------------------------------------
- pdf = reader("pymupdf.pdf", password = None) # inlude a password if necessary
+ pdf = reader("pymupdf.pdf", password = None) # include a password if necessary
  print pdf.Info
  # do further processing
 
@@ -1921,7 +1921,7 @@ If it is *False* or if you want to be on the safe side, pick one of the followin
 
 * **Prepend** the missing stacking command by executing *fitz.TOOLS._insert_contents(page, b"q\n", False)*.
 * **Append** an unstacking command by executing *fitz.TOOLS._insert_contents(page, b"\nQ", True)*.
-* Alternatively, just use :meth:`Page._wrapContents`, wich executes the previous two functions.
+* Alternatively, just use :meth:`Page._wrapContents`, which executes the previous two functions.
 
 .. note:: If small incremental update deltas are a concern, this approach is the most effective. Other contents objects are not touched. The utility method creates two new PDF :data:`stream` objects and inserts them before, resp. after the page's other :data:`contents`. We therefore recommend the following snippet to get this situation under control:
 
@@ -1935,7 +1935,7 @@ Low-Level Interfaces
 ---------------------
 Numerous methods are available to access and manipulate PDF files on a fairly low level. Admittedly, a clear distinction between "low level" and "normal" functionality is not always possible or subject to personal taste.
 
-It also may happen, that functionality previously deemed low-level is lateron assessed as being part of the normal interface. This has happened in v1.14.0 for the class :ref:`Tools` -- you now find it as an item in the Classes chapter.
+It also may happen, that functionality previously deemed low-level is later on assessed as being part of the normal interface. This has happened in v1.14.0 for the class :ref:`Tools` -- you now find it as an item in the Classes chapter.
 
 Anyway -- it is a matter of documentation only: in which chapter of the documentation do you find what. Everything is available always and always via the same interface.
 
@@ -2021,7 +2021,7 @@ Assume that the following snippet wants to read all streams of a PDF for whateve
 
 How to Handle Page Contents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-A PDF page can have one or more :data:`contents` objects -- in fact, a page will be empty if it has no such object. These are stream objects describing **what** appears **where** on a page (like text and images). They are written in a special mini-language desribed e.g. in chapter "APPENDIX A - Operator Summary" on page 985 of the :ref:`AdobeManual`.
+A PDF page can have one or more :data:`contents` objects -- in fact, a page will be empty if it has no such object. These are stream objects describing **what** appears **where** on a page (like text and images). They are written in a special mini-language described e.g. in chapter "APPENDIX A - Operator Summary" on page 985 of the :ref:`AdobeManual`.
 
 Every PDF reader application must be able to interpret the contents syntax to reproduce the intended appearance of the page.
 
