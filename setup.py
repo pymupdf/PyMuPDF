@@ -47,7 +47,7 @@ def load_libraries():
 
 
 # check the platform
-if sys.platform.startswith("linux"):
+if sys.platform.startswith("linux") or 'gnu' in sys.platform:
     module = Extension(
         "fitz._fitz",  # name of the module
         ["fitz/fitz.i"],
