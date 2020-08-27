@@ -367,7 +367,7 @@ The general scheme is just the following two lines::
 .. index::
    pair: copyPixmap;examples
 
-How to Use Pixmaps: Glueing Images
+How to Use Pixmaps: Gluing Images
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This shows how pixmaps can be used for purely graphical, non-document purposes. The script reads an image file and creates a new image which consist of 3 * 4 tiles of the original::
@@ -2052,7 +2052,7 @@ Here are two ways of combining multiple contents of a page::
                 cont += doc.xrefStream(xref)
             # do something with the combined contents
 
-The clean function :meth:`Page._cleanContents` does a lot more than just glueing :data:`contents` objects: it also corrects and optimizes the PDF operator syntax of the page and removes any inconsistencies.
+The clean function :meth:`Page._cleanContents` does a lot more than just gluing :data:`contents` objects: it also corrects and optimizes the PDF operator syntax of the page and removes any inconsistencies.
 
 ----------------------------------
 
