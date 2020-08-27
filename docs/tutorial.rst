@@ -298,7 +298,7 @@ More can be found in the :ref:`Document` chapter. Also have a look at `PDFjoiner
 Embedding Data
 ---------------
 
-PDFs can be used as containers for abitrary data (exeutables, other PDFs, text or binary files, etc.) much like ZIP archives.
+PDFs can be used as containers for abitrary data (executables, other PDFs, text or binary files, etc.) much like ZIP archives.
 
 PyMuPDF fully supports this feature via :ref:`Document` *embeddedFile** methods and attributes. For some detail read :ref:`Appendix 3`, consult the Wiki on `embedding files <https://github.com/pymupdf/PyMuPDF/wiki/Dealing-with-Embedded-Files>`_, or the example scripts `embedded-copy.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-copy.py>`_, `embedded-export.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-export.py>`_, `embedded-import.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-import.py>`_, and `embedded-list.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embedded-list.py>`_.
 
