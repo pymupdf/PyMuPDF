@@ -9,7 +9,7 @@ from fitz import *
 
 
 """
-This is a collection of functions to extend PyMupdf.
+This is a collection of functions to extend PyMuPDF.
 """
 
 
@@ -23,8 +23,8 @@ def writeText(
     keep_proportion=True,
     rotate=0,
 ):
-    """Write the text of one or TextWriter objects.
-    
+    """Write the text of one or more TextWriter objects.
+
     Args:
         rect: target rectangle. If None, the union of the text writers is used.
         writers: one or more TextWriter objects.
@@ -135,7 +135,7 @@ def showPDFpage(
 
     while pno < 0:  # support negative page numbers
         pno += len(src)
-    src_page = src[pno]  # load ource page
+    src_page = src[pno]  # load source page
     if len(src_page._getContents()) == 0:
         raise ValueError("nothing to show - source page empty")
 
@@ -435,7 +435,7 @@ def getText(page, option="text", flags=None):
     Returns:
         the output of Page methods getTextWords / getTextBlocks or TextPage
         methods extractText, extractHTML, extractDICT, extractJSON, extractRAWDICT,
-        extractXHTML or etractXML respectively.
+        extractXHTML or extractXML respectively.
         Default and misspelling choice is "text".
     """
     option = option.lower()
@@ -585,7 +585,7 @@ def getLinks(page):
     """Create a list of all links contained in a PDF page.
 
     Notes:
-        see PyMuPDF ducmentation for details.
+        see PyMuPDF documentation for details.
     """
 
     CheckParent(page)
