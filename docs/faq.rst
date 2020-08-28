@@ -69,7 +69,7 @@ To achieve this, we define a rectangle equal to the area we want to appear in th
 
     mat = fitz.Matrix(2, 2)  # zoom factor 2 in each direction
     rect = page.rect  # the page rectangle
-    mp = rect.tl + (rect.br - rect.tl) * 0.5  # its middle point
+    mp = (rect.tl + rect.br) * 0.5  # its middle point, becomes top-left of clip
     clip = fitz.Rect(mp, rect.br)  # the area we want
     pix = page.getPixmap(matrix=mat, clip=clip)
 

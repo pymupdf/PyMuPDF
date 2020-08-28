@@ -722,9 +722,11 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          Changed in version 1.14.11 By default, the image keeps its aspect ratio.
 
-      :arg rect_like rect: where to put the image on the page. Only the rectangle part which is inside the page is used. This intersection must be finite and not empty.
+      :arg rect_like rect: where to put the image. Must be finite and not empty.
+      
+         *(Changed in v1.17.6)* Needs no longer have a non-empty intersection with the page's :attr:`Page.CropBox` [#f5]_.
 
-         Changed in version 1.14.13 The image is now always placed **centered** in the rectangle, i.e. the center of the image and the rectangle coincide.
+         *(Changed in version 1.14.13)* The image is now always placed **centered** in the rectangle, i.e. the centers of image and rectangle are equal.
 
       :arg str filename: name of an image file (all formats supported by MuPDF -- see :ref:`ImageFiles`). If the same image is to be inserted multiple times, choose one of the other two options to avoid some overhead.
 
@@ -1241,3 +1243,5 @@ The page number "pno" is a 0-based integer *-inf < pno < pageCount*.
 .. [#f3] Not all PDF readers display these fonts at all. Some others do, but use a wrong character spacing, etc.
 
 .. [#f4] You are generally free to choose any of the :ref:`mupdficons` you consider adequate.
+
+.. [#f5] The previous algorithm caused images to be **shrunk** to this intersection. Now the image can be anywhere on :attr:`Page.MediaBox`, potentially being invisible or only partially visible if the cropbox (representing the visible page part) is smaller.
