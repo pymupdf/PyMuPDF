@@ -83,7 +83,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. method:: __init__(self, source, width, height, [clip])
 
-      **Copy and scale:** Copy *source* pixmap choosing new width and height values. Supports partial copying and the source colorspace may be also *None*.
+      **Copy and scale:** Copy *source* pixmap, scaling new width and height values -- the image will appear stretched or shrunk accordingly. Supports partial copying. The source colorspace may be *None*.
 
       :arg source: the source pixmap.
       :type source: *Pixmap*
@@ -92,9 +92,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg float height: desired target height.
 
-      :arg irect_like clip: a region of the source pixmap to take the copy from.
+      :arg irect_like clip: restrict the resulting pixmap to this region of the **scaled** pixmap.
 
-      .. note:: If width or height are not *de facto* integers (meaning e.g. *float(int(width) != width*), then pixmap will be created with *alpha = 1*.
+      .. note:: If width or height are not *de facto* integers (i.e. *float(int(value) != value*), then the resulting pixmap will have an alpha channel.
 
    .. method:: __init__(self, source, alpha=1)
 
